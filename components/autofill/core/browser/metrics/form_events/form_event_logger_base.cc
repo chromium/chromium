@@ -82,11 +82,9 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
 
 FormEventLoggerBase::FormEventLoggerBase(
     const std::string& form_type_name,
-    bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
     : form_type_name_(form_type_name),
-      is_in_any_main_frame_(is_in_any_main_frame),
       form_interactions_ukm_logger_(form_interactions_ukm_logger),
       client_(*client) {}
 
@@ -303,12 +301,6 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
         base::StrCat({"Autofill.FormEvents.",
                       FormTypeNameForLoggingToStringView(form_type)}));
     base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
-
-    // Log again in a different histogram so that iframes can be analyzed on
-    // their own.
-    base::UmaHistogramEnumeration(
-        name + (is_in_any_main_frame_ ? ".IsInMainFrame" : ".IsInIFrame"),
-        event, NUM_FORM_EVENTS);
 
     // Allow specialized types of logging, e.g. splitting metrics in useful
     // ways.

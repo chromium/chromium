@@ -36,7 +36,6 @@ enum class CategoryResolvedKeyMetricBucket {
 class AddressFormEventLogger : public FormEventLoggerBase {
  public:
   AddressFormEventLogger(
-      bool is_in_any_main_frame,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 

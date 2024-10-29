@@ -33,7 +33,6 @@ class FormEventLoggerBase {
  public:
   FormEventLoggerBase(
       const std::string& form_type_name,
-      bool is_in_any_main_frame,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 
@@ -195,7 +194,6 @@ class FormEventLoggerBase {
 
   // Constructor parameters.
   std::string form_type_name_;
-  bool is_in_any_main_frame_;
 
   // State variables.
   bool has_parsed_form_ = false;

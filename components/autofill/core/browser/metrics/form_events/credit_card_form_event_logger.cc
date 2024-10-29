@@ -34,14 +34,10 @@
 namespace autofill::autofill_metrics {
 
 CreditCardFormEventLogger::CreditCardFormEventLogger(
-    bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     PersonalDataManager* personal_data_manager,
     AutofillClient* client)
-    : FormEventLoggerBase("CreditCard",
-                          is_in_any_main_frame,
-                          form_interactions_ukm_logger,
-                          client),
+    : FormEventLoggerBase("CreditCard", form_interactions_ukm_logger, client),
       current_authentication_flow_(UnmaskAuthFlowType::kNone),
       personal_data_manager_(personal_data_manager),
       client_(client) {}

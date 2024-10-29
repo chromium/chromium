@@ -46,13 +46,9 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
 }  // namespace
 
 AddressFormEventLogger::AddressFormEventLogger(
-    bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
-    : FormEventLoggerBase("Address",
-                          is_in_any_main_frame,
-                          form_interactions_ukm_logger,
-                          client) {}
+    : FormEventLoggerBase("Address", form_interactions_ukm_logger, client) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
 

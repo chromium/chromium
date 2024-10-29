@@ -332,13 +332,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.StoredCreditCardDisusedCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillFrame" separator=".">
-  <suffix name="IsInIFrame" label="form is in an iframe"/>
-  <suffix name="IsInMainFrame" label="form is in the main frame"/>
-  <affected-histogram name="Autofill.FormEvents.Address"/>
-  <affected-histogram name="Autofill.FormEvents.CreditCard"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillSaveCreditCardPromptWithMultipleLegalLines"
     separator=".">
   <suffix name="WithMultipleLegalLines"

@@ -721,11 +721,9 @@ bool WasEmailOverrideAppliedOnSuggestions(
 
 BrowserAutofillManager::MetricsState::MetricsState(
     BrowserAutofillManager* owner)
-    : address_form_event_logger(owner->driver().IsInAnyMainFrame(),
-                                owner->form_interactions_ukm_logger(),
+    : address_form_event_logger(owner->form_interactions_ukm_logger(),
                                 &owner->client()),
-      credit_card_form_event_logger(owner->driver().IsInAnyMainFrame(),
-                                    owner->form_interactions_ukm_logger(),
+      credit_card_form_event_logger(owner->form_interactions_ukm_logger(),
                                     owner->client().GetPersonalDataManager(),
                                     &owner->client()) {}
 

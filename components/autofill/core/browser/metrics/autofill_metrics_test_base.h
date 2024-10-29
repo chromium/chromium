@@ -53,7 +53,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 
 class AutofillMetricsBaseTest {
  public:
-  explicit AutofillMetricsBaseTest(bool is_in_any_main_frame = true);
+  AutofillMetricsBaseTest();
   virtual ~AutofillMetricsBaseTest();
 
  protected:
@@ -256,7 +256,6 @@ class AutofillMetricsBaseTest {
         *autofill_client_->GetPaymentsAutofillClient());
   }
 
-  const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;

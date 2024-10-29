@@ -49,8 +49,7 @@ MockPaymentsAutofillClient::MockPaymentsAutofillClient(AutofillClient* client)
 
 MockPaymentsAutofillClient::~MockPaymentsAutofillClient() = default;
 
-AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
-    : is_in_any_main_frame_(is_in_any_main_frame) {}
+AutofillMetricsBaseTest::AutofillMetricsBaseTest() = default;
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
@@ -72,7 +71,6 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
   autofill_driver_ =
       std::make_unique<TestAutofillDriver>(autofill_client_.get());
-  autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);
 
   payments::TestPaymentsNetworkInterface* payments_network_interface =
       new payments::TestPaymentsNetworkInterface(
