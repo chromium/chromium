@@ -253,8 +253,6 @@ source_set("extensions") {
     "api/sessions/session_id.h",
     "api/sessions/sessions_api.cc",
     "api/sessions/sessions_api.h",
-    "api/settings_overrides/settings_overrides_api.cc",
-    "api/settings_overrides/settings_overrides_api.h",
     "api/settings_private/generated_pref.cc",
     "api/settings_private/generated_pref.h",
     "api/settings_private/generated_prefs.cc",

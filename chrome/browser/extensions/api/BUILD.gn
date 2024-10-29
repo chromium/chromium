@@ -51,6 +51,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/safe_browsing_private",
     "//chrome/browser/extensions/api/scripting",
     "//chrome/browser/extensions/api/search",
+    "//chrome/browser/extensions/api/settings_overrides",
     "//chrome/browser/extensions/api/side_panel",
     "//chrome/browser/extensions/api/tab_capture",
     "//chrome/browser/extensions/api/tab_groups",
