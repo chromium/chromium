@@ -21,6 +21,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -850,16 +851,13 @@ void FormStructure::ExtractParseableFieldLabels() {
 }
 
 void FormStructure::ExtractParseableFieldNames() {
-  std::vector<std::u16string_view> names;
-  names.reserve(field_count());
-  for (const auto& field : *this)
-    names.emplace_back(field->name());
-
-  // Determine the parseable names and write them into the corresponding field.
+  std::vector<std::u16string_view> names = base::ToVector(
+      fields_, [](const auto& f) -> std::u16string_view { return f->name(); });
   ComputeParseableNames(names);
-  size_t idx = 0;
-  for (auto& field : *this)
-    field->set_parseable_name(std::u16string(names[idx++]));
+  auto names_it = names.begin();
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    field->set_parseable_name(std::u16string(*names_it++));
+  }
 }
 
 DenseSet<FormType> FormStructure::GetFormTypes() const {
