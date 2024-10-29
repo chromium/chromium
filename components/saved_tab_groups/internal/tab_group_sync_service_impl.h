@@ -129,6 +129,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const GURL& url,
       TabGroupSyncService::UrlRestrictionCallback callback) override;
 
+  std::unique_ptr<std::vector<SavedTabGroup>>
+  TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
+
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
 
@@ -226,6 +229,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                       const GURL& url,
                       const std::u16string& title);
 
+  // Creates a copy of all shared tab groups from the model and stores them in
+  // `shared_tab_groups_available_at_startup_for_messaging_` for later
+  // retrieval.
+  void StoreSharedTabGroupsAvailableAtStartupForMessaging();
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
@@ -253,6 +261,15 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Obsevers of the model.
   base::ObserverList<TabGroupSyncService::Observer> observers_;
+
+  // Temporary storage for shared tab groups that were available at startup,
+  // before applying local changes. This is retrieved by the
+  // MessagingBackendService when it starts up to safely know what changes are
+  // new, and what were there from before, without needing to persist any data
+  // on its own, but still be able to calculate deltas of all network triggered
+  // updates.
+  std::unique_ptr<std::vector<SavedTabGroup>>
+      shared_tab_groups_available_at_startup_for_messaging_;
 
   // Keeps track of API calls received before the service is initialized.
   // Once the initialization is complete, these callbacks are run in the order

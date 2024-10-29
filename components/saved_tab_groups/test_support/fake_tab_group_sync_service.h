@@ -81,6 +81,8 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void GetURLRestriction(
       const GURL& url,
       TabGroupSyncService::UrlRestrictionCallback callback) override;
+  std::unique_ptr<std::vector<SavedTabGroup>>
+  TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

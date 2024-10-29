@@ -164,7 +164,7 @@ class TabGroupSyncServiceTest : public testing::Test {
     tab_group_sync_service_->AddObserver(observer_.get());
     task_environment_.RunUntilIdle();
 
-    InitializeTestGroups();
+    MaybeInitializeTestGroups();
     task_environment_.RunUntilIdle();
   }
 
@@ -178,6 +178,9 @@ class TabGroupSyncServiceTest : public testing::Test {
     model_ = nullptr;
     coordinator_ = nullptr;
   }
+
+  // Enable sub-classes to not load initial test groups.
+  virtual void MaybeInitializeTestGroups() { InitializeTestGroups(); }
 
   void InitializeTestGroups() {
     base::Uuid id_1 = base::Uuid::GenerateRandomV4();
@@ -1312,6 +1315,81 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
 
   EXPECT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
+}
+
+class EmptyTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
+ public:
+  void MaybeInitializeTestGroups() override {}
+};
+
+TEST_F(EmptyTabGroupSyncServiceTest,
+       TestModelLoadAndExtractionOfSharedTabGroupsForMessaging) {
+  ASSERT_EQ(model_->Count(), 0);
+
+  tab_group_sync_service_->SetIsInitializedForTesting(false);
+
+  std::string collaboration_id_1 = "foo";
+  std::string collaboration_id_2 = "bar";
+
+  SavedTabGroup saved_tab_group(test::CreateTestSavedTabGroup());
+
+  SavedTabGroup shared_group_1(test::CreateTestSavedTabGroup());
+  shared_group_1.SetCollaborationId(collaboration_id_1);
+  SavedTabGroup shared_group_2(test::CreateTestSavedTabGroup());
+  shared_group_2.SetCollaborationId(collaboration_id_1);
+
+  SavedTabGroup shared_group_3(test::CreateTestSavedTabGroup());
+  shared_group_3.SetCollaborationId(collaboration_id_2);
+  SavedTabGroup shared_group_4(test::CreateTestSavedTabGroup());
+  shared_group_4.SetCollaborationId(collaboration_id_2);
+  SavedTabGroup shared_group_5(test::CreateTestSavedTabGroup());
+  shared_group_5.SetCollaborationId(collaboration_id_2);
+
+  model_->LoadStoredEntries(
+      /*groups=*/{saved_tab_group, shared_group_1, shared_group_2,
+                  shared_group_3, shared_group_4, shared_group_5},
+      /*tabs=*/{});
+  task_environment_.RunUntilIdle();
+
+  // Verify model internals.
+  ASSERT_TRUE(model_->Contains(saved_tab_group.saved_guid()));
+  ASSERT_TRUE(model_->Contains(shared_group_1.saved_guid()));
+  ASSERT_TRUE(model_->Contains(shared_group_2.saved_guid()));
+  ASSERT_TRUE(model_->Contains(shared_group_3.saved_guid()));
+  ASSERT_TRUE(model_->Contains(shared_group_4.saved_guid()));
+  ASSERT_TRUE(model_->Contains(shared_group_5.saved_guid()));
+  ASSERT_EQ(model_->Count(), 6);
+
+  // Retrieve groups and verify that it does not contain the saved tab group.
+  std::unique_ptr<std::vector<SavedTabGroup>> shared_groups_at_startup =
+      tab_group_sync_service_
+          ->TakeSharedTabGroupsAvailableAtStartupForMessaging();
+  EXPECT_EQ(shared_groups_at_startup.get()->size(), 5U);
+  // We do not want to store this state forever, so verify that it is gone.
+  EXPECT_EQ(tab_group_sync_service_
+                ->TakeSharedTabGroupsAvailableAtStartupForMessaging(),
+            nullptr);
+
+  // We expect all shared groups to be present.
+  std::set<base::Uuid> expected_guids = {
+      shared_group_1.saved_guid(), shared_group_2.saved_guid(),
+      shared_group_3.saved_guid(), shared_group_4.saved_guid(),
+      shared_group_5.saved_guid()};
+  for (const SavedTabGroup& shared_group : *(shared_groups_at_startup.get())) {
+    EXPECT_TRUE(expected_guids.erase(shared_group.saved_guid()))
+        << "Unexpected GUID " << shared_group.saved_guid()
+        << " found among groups";
+  }
+
+  // Add helpful debug information in case of expectation error.
+  std::vector<std::string> guid_strings;
+  for (const base::Uuid& guid : expected_guids) {
+    guid_strings.push_back(guid.AsLowercaseString());
+  }
+
+  // Verify that all GUIDs were found for shared tab groups.
+  EXPECT_TRUE(expected_guids.empty())
+      << "Not all GUIDs were found: " << base::JoinString(guid_strings, ", ");
 }
 
 }  // namespace tab_groups

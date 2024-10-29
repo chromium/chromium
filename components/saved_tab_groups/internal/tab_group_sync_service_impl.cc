@@ -154,6 +154,11 @@ void TabGroupSyncServiceImpl::GetURLRestriction(
       base::BindOnce(&OnCanApplyOptimizationCompleted, std::move(callback)));
 }
 
+std::unique_ptr<std::vector<SavedTabGroup>>
+TabGroupSyncServiceImpl::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
+  return std::move(shared_tab_groups_available_at_startup_for_messaging_);
+}
+
 void TabGroupSyncServiceImpl::AddObserver(
     TabGroupSyncService::Observer* observer) {
   observers_.AddObserver(observer);
@@ -904,6 +909,17 @@ void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(
 void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
   VLOG(2) << __func__;
 
+  // Store a snapshot of shared tab groups before notifying anyone else that
+  // the service is initialized.
+  // It is not safe to use observers to listen for Observer::OnInitialized and
+  // query for the model at that point for a few reasons:
+  // (1) The observer might be added too late, which means some calls could
+  //     already be lost.
+  // (2) There is a PostTask between the model being finished and observers
+  //     being informed. This means that the state could have changed before we
+  //     can retrieve it.
+  StoreSharedTabGroupsAvailableAtStartupForMessaging();
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TabGroupSyncServiceImpl::NotifyServiceInitialized,
@@ -939,6 +955,18 @@ void TabGroupSyncServiceImpl::UpdateAttributions(
   model_->UpdateLastUpdaterCacheGuidForGroup(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge(), group_id,
       tab_id);
+}
+
+void TabGroupSyncServiceImpl::
+    StoreSharedTabGroupsAvailableAtStartupForMessaging() {
+  shared_tab_groups_available_at_startup_for_messaging_ =
+      std::make_unique<std::vector<SavedTabGroup>>();
+  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+    CHECK(group);
+
+    // Dereference to create a safe copy.
+    shared_tab_groups_available_at_startup_for_messaging_->push_back(*group);
+  }
 }
 
 void TabGroupSyncServiceImpl::RecordMetrics() {

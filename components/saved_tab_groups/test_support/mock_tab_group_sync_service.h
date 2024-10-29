@@ -102,6 +102,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               GetURLRestriction,
               (const GURL&, TabGroupSyncService::UrlRestrictionCallback));
+  MOCK_METHOD(std::unique_ptr<std::vector<SavedTabGroup>>,
+              TakeSharedTabGroupsAvailableAtStartupForMessaging,
+              ());
 
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));

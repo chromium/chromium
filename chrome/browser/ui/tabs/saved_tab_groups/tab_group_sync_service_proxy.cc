@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -289,6 +290,12 @@ void TabGroupSyncServiceProxy::GetURLRestriction(
     const GURL& url,
     TabGroupSyncService::UrlRestrictionCallback callback) {
   std::move(callback).Run(std::nullopt);
+}
+
+std::unique_ptr<std::vector<SavedTabGroup>>
+TabGroupSyncServiceProxy::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
+  // This method should only exist and be used in the underlying service.
+  NOTREACHED();
 }
 
 void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {

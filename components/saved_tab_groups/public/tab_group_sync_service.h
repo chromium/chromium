@@ -236,6 +236,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void GetURLRestriction(const GURL& url,
                                  UrlRestrictionCallback callback) = 0;
 
+  // The list of shared tab groups is stored on startup before any local changes
+  // have been applied, which enables the messaging system to safely calculate
+  // deltas for changes to groups without keeping its own persistence layer.
+  virtual std::unique_ptr<std::vector<SavedTabGroup>>
+  TakeSharedTabGroupsAvailableAtStartupForMessaging() = 0;
+
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

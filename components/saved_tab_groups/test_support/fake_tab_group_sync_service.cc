@@ -345,6 +345,11 @@ void FakeTabGroupSyncService::GetURLRestriction(
   std::move(callback).Run(std::nullopt);
 }
 
+std::unique_ptr<std::vector<SavedTabGroup>>
+FakeTabGroupSyncService::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
+  return std::make_unique<std::vector<SavedTabGroup>>();
+}
+
 void FakeTabGroupSyncService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 
