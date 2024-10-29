@@ -118,7 +118,7 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   ~KioskChromeAppManager() override;
 
   // Returns auto launcher app id or an empty string if there is none.
-  std::string GetAutoLaunchApp() const;
+  const std::string& GetAutoLaunchApp() const;
 
   // Returns the cached required platform version of the auto launch with
   // zero delay kiosk app.

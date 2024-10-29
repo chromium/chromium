@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "build/buildflag.h"
@@ -44,9 +43,7 @@ KioskController::~KioskController() {
 void KioskController::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   KioskChromeAppManager::RegisterLocalStatePrefs(registry);
   WebKioskAppManager::RegisterPrefs(registry);
-  if (ash::features::IsIsolatedWebAppKioskEnabled()) {
-    KioskIwaManager::RegisterPrefs(registry);
-  }
+  KioskIwaManager::RegisterPrefs(registry);
   KioskCryptohomeRemover::RegisterPrefs(registry);
 
   kiosk_vision::RegisterLocalStatePrefs(registry);

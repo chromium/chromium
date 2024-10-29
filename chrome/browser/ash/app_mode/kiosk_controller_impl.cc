@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check.h"
@@ -122,9 +121,7 @@ std::vector<KioskApp> KioskControllerImpl::GetApps() const {
   std::vector<KioskApp> apps;
   AppendWebApps(apps);
   AppendChromeApps(apps);
-  if (ash::features::IsIsolatedWebAppKioskEnabled()) {
-    AppendIsolatedWebApps(apps);
-  }
+  AppendIsolatedWebApps(apps);
   return apps;
 }
 
@@ -148,10 +145,18 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
   if (const auto& web_account_id = web_app_manager_.GetAutoLaunchAccountId();
       web_account_id.is_valid()) {
     return WebAppById(web_app_manager_, web_account_id);
-  } else if (std::string chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
-             !chrome_app_id.empty()) {
+  }
+
+  if (const auto& chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
+      !chrome_app_id.empty()) {
     return ChromeAppById(chrome_app_manager_, chrome_app_id);
   }
+
+  if (const auto& iwa_account_id = iwa_manager_.GetAutoLaunchAccountId();
+      iwa_account_id.has_value()) {
+    return IsolatedWebAppById(iwa_manager_, *iwa_account_id);
+  }
+
   return std::nullopt;
 }
 

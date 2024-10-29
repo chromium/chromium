@@ -20,6 +20,7 @@ static_library("isolated_web_app") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/components/settings",
     "//components/prefs",
     "//components/web_package",
     "//url",
@@ -47,11 +48,17 @@ static_library("trust_check") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "kiosk_iwa_data_unittest.cc" ]
+  sources = [
+    "kiosk_iwa_data_unittest.cc",
+    "kiosk_iwa_manager_unittest.cc",
+  ]
   deps = [
     ":isolated_web_app",
     "//base/test:test_support",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/web_applications",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
     "//components/policy/core/common",
     "//testing/gtest",
     "//url",

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_APP_MODE_ISOLATED_WEB_APP_KIOSK_IWA_MANAGER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
@@ -36,10 +38,19 @@ class KioskIwaManager : public KioskAppManagerBase {
   // Returns app data associated with `account_id`.
   const KioskIwaData* GetApp(const AccountId& account_id) const;
 
+  // Returns a valid account id if an IWA kiosk is configured for auto launch.
+  // Returns a nullopt otherwise.
+  const std::optional<AccountId>& GetAutoLaunchAccountId() const;
+
  private:
   void UpdateAppsFromPolicy() override;
 
+  void Clear();
+  void MaybeSetAutoLaunchInfo(const std::string& policy_account_id,
+                              const AccountId& kiosk_app_account_id);
+
   std::vector<std::unique_ptr<KioskIwaData>> isolated_web_apps_;
+  std::optional<AccountId> auto_launch_id_;
 };
 }  // namespace ash
 

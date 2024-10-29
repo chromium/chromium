@@ -208,7 +208,7 @@ void KioskChromeAppManager::RegisterProfilePrefs(
   chromeos::KioskBrowserSession::RegisterProfilePrefs(registry);
 }
 
-std::string KioskChromeAppManager::GetAutoLaunchApp() const {
+const std::string& KioskChromeAppManager::GetAutoLaunchApp() const {
   return auto_launch_app_id_;
 }
 
