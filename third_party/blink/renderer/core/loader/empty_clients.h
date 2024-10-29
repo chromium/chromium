@@ -402,8 +402,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       HTMLMediaElement&,
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*) override;
-  WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
-      HTMLMediaElement&) override;
+  RemotePlaybackClient* CreateRemotePlaybackClient(HTMLMediaElement&) override;
 
   void DidCommitDocumentReplacementNavigation(DocumentLoader*) override {}
   void DispatchDidClearWindowObjectInMainWorld(

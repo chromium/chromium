@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_WEB_REMOTE_PLAYBACK_CLIENT_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_WEB_REMOTE_PLAYBACK_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_REMOTE_PLAYBACK_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_REMOTE_PLAYBACK_CLIENT_H_
 
 #include <optional>
 
@@ -12,23 +12,26 @@ enum class VideoCodec;
 enum class AudioCodec;
 }  // namespace media
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
-class WebURL;
-class WebString;
+class KURL;
 
 // The interface between the HTMLMediaElement and its
 // HTMLMediaElementRemotePlayback supplement.
-class WebRemotePlaybackClient {
+class RemotePlaybackClient {
  public:
-  virtual ~WebRemotePlaybackClient() = default;
+  virtual ~RemotePlaybackClient() = default;
 
   // Returns if the remote playback available for this media element.
   virtual bool RemotePlaybackAvailable() const = 0;
 
   // Notifies the client that the source of the HTMLMediaElement has changed as
   // well as if the new source is supported for remote playback.
-  virtual void SourceChanged(const WebURL&, bool is_source_supported) = 0;
+  virtual void SourceChanged(const KURL&, bool is_source_supported) = 0;
 
   virtual void MediaMetadataChanged(
       std::optional<media::VideoCodec> video_codec,
@@ -36,9 +39,9 @@ class WebRemotePlaybackClient {
 
   // Gets the presentation ID associated with the client. The presentation ID
   // may be null, empty or stale.
-  virtual WebString GetPresentationId() = 0;
+  virtual WTF::String GetPresentationId() = 0;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_WEB_REMOTE_PLAYBACK_CLIENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_REMOTE_PLAYBACK_CLIENT_H_

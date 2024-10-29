@@ -82,9 +82,9 @@ class WebFrameTestProxy : public RenderFrameImpl,
   void FinalizeRequest(blink::WebURLRequest& request) override;
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  void CheckIfAudioSinkExistsAndIsAuthorized(
-      const blink::WebString& sink_id,
-      blink::WebSetSinkIdCompleteCallback completion_callback) override;
+  std::optional<media::OutputDeviceStatus>
+  CheckIfAudioSinkExistsAndIsAuthorized(
+      const blink::WebString& sink_id) override;
   void DidClearWindowObject() override;
   void DidCommitNavigation(
       blink::WebHistoryCommitType commit_type,

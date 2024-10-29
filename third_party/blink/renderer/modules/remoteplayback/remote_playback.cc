@@ -62,7 +62,7 @@ void RunRemotePlaybackTask(
   std::move(task).Run();
 }
 
-KURL GetAvailabilityUrl(const WebURL& source,
+KURL GetAvailabilityUrl(const KURL& source,
                         bool is_source_supported,
                         std::optional<media::VideoCodec> video_codec,
                         std::optional<media::AudioCodec> audio_codec) {
@@ -409,7 +409,7 @@ void RemotePlayback::StateChanged(
     if (auto* video_element =
             DynamicTo<HTMLVideoElement>(media_element_.Get())) {
       video_element->MediaRemotingStopped(
-          WebMediaPlayerClient::kMediaRemotingStopNoText);
+          MediaPlayerClient::kMediaRemotingStopNoText);
     }
     CleanupConnections();
     presentation_id_ = "";
@@ -439,7 +439,7 @@ void RemotePlayback::PromptCancelled() {
   prompt_promise_resolver_ = nullptr;
 }
 
-void RemotePlayback::SourceChanged(const WebURL& source,
+void RemotePlayback::SourceChanged(const KURL& source,
                                    bool is_source_supported) {
   source_ = source;
   is_source_supported_ = is_source_supported;
@@ -489,7 +489,7 @@ void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
   MaybeStartListeningForAvailability();
 }
 
-WebString RemotePlayback::GetPresentationId() {
+String RemotePlayback::GetPresentationId() {
   return presentation_id_;
 }
 

@@ -40,6 +40,7 @@
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_processing.h"
+#include "media/base/output_device_info.h"
 #include "media/base/speech_recognition_client.h"
 #include "media/mojo/mojom/audio_processing.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -718,12 +719,12 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Audio Output Devices API --------------------------------------------
 
-  // Checks that the given audio sink exists and is authorized. The result is
-  // provided via the callbacks.
-  virtual void CheckIfAudioSinkExistsAndIsAuthorized(
-      const WebString& sink_id,
-      WebSetSinkIdCompleteCallback callback) {
-    std::move(callback).Run(WebSetSinkIdError::kNotSupported);
+  // Checks that the given audio sink exists and is authorized. This is mainly
+  // used as a testing hook, if std::nullopt is returned it will fall back
+  // checking that a sink exists.
+  virtual std::optional<media::OutputDeviceStatus>
+  CheckIfAudioSinkExistsAndIsAuthorized(const WebString& sink_id) {
+    return std::nullopt;
   }
 
   // Visibility ----------------------------------------------------------

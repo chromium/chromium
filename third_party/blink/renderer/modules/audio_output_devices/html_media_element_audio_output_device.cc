@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -129,8 +131,18 @@ void SetSinkIdResolver::DoSetSinkId() {
   // This is associated with an HTML element, so the context must be a window.
   if (WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(
           To<LocalDOMWindow>(context)->GetFrame())) {
-    web_frame->Client()->CheckIfAudioSinkExistsAndIsAuthorized(
-        sink_id_, std::move(set_sink_id_completion_callback));
+    std::optional<media::OutputDeviceStatus> status =
+        web_frame->Client()->CheckIfAudioSinkExistsAndIsAuthorized(sink_id_);
+
+    if (!status.has_value()) {
+      status = AudioDeviceFactory::GetInstance()
+                   ->GetOutputDeviceInfo(web_frame->GetLocalFrameToken(),
+                                         sink_id_.Utf8())
+                   .device_status();
+    }
+    std::move(ConvertToOutputDeviceStatusCB(
+                  std::move(set_sink_id_completion_callback)))
+        .Run(status.value());
   } else {
     resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,

@@ -162,7 +162,7 @@ std::unique_ptr<WebMediaPlayer> EmptyLocalFrameClient::CreateWebMediaPlayer(
   return nullptr;
 }
 
-WebRemotePlaybackClient* EmptyLocalFrameClient::CreateWebRemotePlaybackClient(
+RemotePlaybackClient* EmptyLocalFrameClient::CreateRemotePlaybackClient(
     HTMLMediaElement&) {
   return nullptr;
 }

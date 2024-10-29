@@ -56,7 +56,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
-#include "third_party/blink/public/platform/media/remote_playback_client_wrapper_impl.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
@@ -435,8 +434,7 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
   auto factory_selector = CreateRendererFactorySelector(
       player_id, media_log.get(), url,
       render_frame_->GetRenderFrameMediaPlaybackOptions(),
-      decoder_factory_.get(),
-      std::make_unique<blink::RemotePlaybackClientWrapperImpl>(client),
+      decoder_factory_.get(), client->RemotePlaybackClientWrapper(),
       &media_observer, client->GetElementId());
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
@@ -534,7 +532,7 @@ MediaFactory::CreateRendererFactorySelector(
     blink::WebURL url,
     const RenderFrameMediaPlaybackOptions& renderer_media_playback_options,
     media::DecoderFactory* decoder_factory,
-    std::unique_ptr<media::RemotePlaybackClientWrapper> client_wrapper,
+    media::RemotePlaybackClientWrapper* client_wrapper,
     base::WeakPtr<media::MediaObserver>* out_media_observer,
     int element_id) {
   using media::RendererType;

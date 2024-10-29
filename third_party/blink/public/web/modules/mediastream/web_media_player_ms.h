@@ -41,6 +41,7 @@ using CreateSurfaceLayerBridgeCB =
         WebSurfaceLayerBridgeObserver*,
         cc::UpdateSubmissionStateCB)>;
 
+class MediaPlayerClient;
 class MediaStreamAudioRenderer;
 class MediaStreamInternalFrameWrapper;
 class MediaStreamRendererFactory;
@@ -49,10 +50,10 @@ template <typename TimerFiredClass>
 class TaskRunnerTimer;
 class TimerBase;
 class WebLocalFrame;
-class WebMediaPlayerClient;
 class WebMediaPlayerMSCompositor;
 class WebString;
 class WebVideoFrameSubmitter;
+class WebMediaPlayerClient;
 
 // WebMediaPlayerMS delegates calls from WebCore::MediaPlayerPrivate to
 // Chrome's media player when "src" is from media stream.
@@ -65,7 +66,7 @@ class WebVideoFrameSubmitter;
 // MediaStreamVideoRenderer
 //   provides video frames for rendering.
 //
-// WebMediaPlayerClient
+// MediaPlayerClient
 //   WebKit client of this media player object.
 class BLINK_MODULES_EXPORT WebMediaPlayerMS
     : public WebMediaStreamObserver,
@@ -238,7 +239,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetReadyState(WebMediaPlayer::ReadyState state);
 
   // Getter method to |client_|.
-  WebMediaPlayerClient* get_client() { return client_; }
+  MediaPlayerClient* get_client() { return client_; }
 
   // To be run when tracks are added or removed.
   void Reload();
@@ -275,7 +276,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   const WebTimeRanges buffered_;
 
-  const raw_ptr<WebMediaPlayerClient> client_;
+  const raw_ptr<MediaPlayerClient> client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The

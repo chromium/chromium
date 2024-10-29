@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "url/gurl.h"
 
 namespace blink {
 
@@ -26,7 +26,7 @@ class TestResponseGenerator {
 
   // Build an HTTP response generator for the given URL. |content_length| is
   // used to generate Content-Length and Content-Range headers.
-  TestResponseGenerator(const GURL& gurl, int64_t content_length);
+  TestResponseGenerator(const KURL& url, int64_t content_length);
   TestResponseGenerator(const TestResponseGenerator&) = delete;
   TestResponseGenerator& operator=(const TestResponseGenerator&) = delete;
 
@@ -73,7 +73,7 @@ class TestResponseGenerator {
   int64_t content_length() { return content_length_; }
 
  private:
-  GURL gurl_;
+  WebURL url_;
   int64_t content_length_;
 };
 

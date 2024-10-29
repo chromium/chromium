@@ -363,7 +363,7 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
       base::ThreadPool::CreateTaskRunner(base::TaskTraits{}));
 }
 
-WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
+RemotePlaybackClient* ModulesInitializer::CreateRemotePlaybackClient(
     HTMLMediaElement& html_media_element) const {
   return &RemotePlayback::From(html_media_element);
 }

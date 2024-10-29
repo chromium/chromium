@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -148,12 +149,12 @@ class VideoWakeLockTestWebFrameClient
       const WebString& sink_id,
       const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
-    web_media_player_client_ = client;
+    media_player_client_ = static_cast<MediaPlayerClient*>(client);
     return std::move(web_media_player_);
   }
 
-  WebMediaPlayerClient* web_media_player_client() const {
-    return web_media_player_client_;
+  MediaPlayerClient* media_player_client() const {
+    return media_player_client_;
   }
 
   void SetWebMediaPlayer(std::unique_ptr<WebMediaPlayer> web_media_player) {
@@ -161,7 +162,7 @@ class VideoWakeLockTestWebFrameClient
   }
 
  private:
-  WebMediaPlayerClient* web_media_player_client_ = nullptr;
+  MediaPlayerClient* media_player_client_ = nullptr;
   std::unique_ptr<WebMediaPlayer> web_media_player_;
 };
 
@@ -206,8 +207,8 @@ class VideoWakeLockTest : public testing::Test {
   HTMLVideoElement* Video() const { return video_.Get(); }
   VideoWakeLock* GetVideoWakeLock() const { return video_wake_lock_.Get(); }
   VideoWakeLockMediaPlayer* GetMediaPlayer() const { return media_player_; }
-  WebMediaPlayerClient* GetMediaPlayerClient() const {
-    return client_->web_media_player_client();
+  MediaPlayerClient* GetMediaPlayerClient() const {
+    return client_->media_player_client();
   }
 
   LocalFrame& GetFrame() const { return *helper_.LocalMainFrame()->GetFrame(); }

@@ -20,9 +20,9 @@ namespace content {
 
 FlingingRendererClientFactory::FlingingRendererClientFactory(
     std::unique_ptr<media::MojoRendererFactory> mojo_flinging_factory,
-    std::unique_ptr<media::RemotePlaybackClientWrapper> remote_playback_client)
+    media::RemotePlaybackClientWrapper* remote_playback_client)
     : mojo_flinging_factory_(std::move(mojo_flinging_factory)),
-      remote_playback_client_(std::move(remote_playback_client)) {}
+      remote_playback_client_(remote_playback_client) {}
 
 FlingingRendererClientFactory::~FlingingRendererClientFactory() = default;
 

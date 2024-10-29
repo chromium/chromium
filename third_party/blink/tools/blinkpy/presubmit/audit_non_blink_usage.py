@@ -1257,6 +1257,8 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/public/platform/web_audio_device.h',
+            'third_party/blink/public/web/web_local_frame_client.h',
+            'third_party/blink/renderer/modules/audio_output_devices/html_media_element_audio_output_device.cc',
         ],
         'allowed': [
             'media::OutputDeviceStatus',
@@ -2297,6 +2299,14 @@ _CONFIG = [
         ],
         'allowed': [
             'gpu::SharedImageInterface',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/public/platform/web_media_player_client.h',
+        ],
+        'allowed': [
+            'media::.+',
         ]
     },
 ]

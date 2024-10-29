@@ -50,12 +50,11 @@
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/renderer/platform/media/smoothness_helper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -133,7 +132,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // |delegate| and |renderer_factory_selector| must not be null.
   WebMediaPlayerImpl(
       WebLocalFrame* frame,
-      WebMediaPlayerClient* client,
+      MediaPlayerClient* client,
       WebMediaPlayerEncryptedMediaClient* encrypted_client,
       WebMediaPlayerDelegate* delegate,
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
@@ -469,7 +468,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Called after |defer_load_cb_| has decided to allow the load. If
   // |defer_load_cb_| is null this is called immediately.
   void DoLoad(LoadType load_type,
-              const WebURL& url,
+              const KURL& url,
               CorsMode cors_mode,
               bool is_cache_disabled);
 
@@ -811,7 +810,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Set if paused automatically when hidden. Reset if paused for any other
   // reason. If set to PauseReason::kPageHidden, playback should be resumed when
   // the page becomes visible.
-  std::optional<WebMediaPlayerClient::PauseReason> visibility_pause_reason_;
+  std::optional<MediaPlayerClient::PauseReason> visibility_pause_reason_;
 
   // Set when starting, seeking, and resuming (all of which require a Pipeline
   // seek). |seek_time_| is only valid when |seeking_| is true.
@@ -842,7 +841,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Whether the current decoder requires a restart on overlay transitions.
   bool decoder_requires_restart_for_overlay_ = false;
 
-  const raw_ptr<WebMediaPlayerClient> client_;
+  const raw_ptr<MediaPlayerClient> client_;
   const raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using

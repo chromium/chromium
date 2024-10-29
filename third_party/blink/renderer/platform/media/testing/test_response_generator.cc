@@ -12,16 +12,16 @@
 
 namespace blink {
 
-TestResponseGenerator::TestResponseGenerator(const GURL& gurl,
+TestResponseGenerator::TestResponseGenerator(const KURL& url,
                                              int64_t content_length)
-    : gurl_(gurl), content_length_(content_length) {}
+    : url_(url), content_length_(content_length) {}
 
 WebURLError TestResponseGenerator::GenerateError() {
   return WebURLError(net::ERR_ABORTED, WebURL());
 }
 
 WebURLResponse TestResponseGenerator::Generate200() {
-  WebURLResponse response(gurl_);
+  WebURLResponse response(url_);
   response.SetHttpStatusCode(200);
 
   response.SetHttpHeaderField(
@@ -52,7 +52,7 @@ WebURLResponse TestResponseGenerator::GeneratePartial206(
     Flags flags) {
   int64_t range_content_length = content_length_ - first_byte_offset;
 
-  WebURLResponse response(gurl_);
+  WebURLResponse response(url_);
   response.SetHttpStatusCode(206);
 
   if ((flags & kNoAcceptRanges) == 0) {
@@ -82,7 +82,7 @@ WebURLResponse TestResponseGenerator::GeneratePartial206(
 }
 
 WebURLResponse TestResponseGenerator::GenerateResponse(int code) {
-  WebURLResponse response(gurl_);
+  WebURLResponse response(url_);
   response.SetHttpStatusCode(code);
   return response;
 }
@@ -93,7 +93,7 @@ WebURLResponse TestResponseGenerator::Generate404() {
 
 WebURLResponse TestResponseGenerator::GenerateFileResponse(
     int64_t first_byte_offset) {
-  WebURLResponse response(gurl_);
+  WebURLResponse response(url_);
   response.SetHttpStatusCode(0);
 
   if (first_byte_offset >= 0) {

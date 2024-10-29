@@ -731,19 +731,17 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
                                      event.event_intents);
 }
 
-void WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
-    const blink::WebString& sink_id,
-    blink::WebSetSinkIdCompleteCallback completion_callback) {
+std::optional<media::OutputDeviceStatus>
+WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
+    const blink::WebString& sink_id) {
   std::string device_id = sink_id.Utf8();
-  if (device_id == "valid" || device_id.empty())
-    std::move(completion_callback).Run(/*error =*/std::nullopt);
-  else if (device_id == "unauthorized")
-    std::move(completion_callback)
-        .Run(blink::WebSetSinkIdError::kNotAuthorized);
-  else
-    std::move(completion_callback).Run(blink::WebSetSinkIdError::kNotFound);
-
-  // Intentionally does not call RenderFrameImpl.
+  if (device_id == "valid" || device_id.empty()) {
+    return media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK;
+  } else if (device_id == "unauthorized") {
+    return media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED;
+  } else {
+    return media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND;
+  }
 }
 
 void WebFrameTestProxy::DidClearWindowObject() {

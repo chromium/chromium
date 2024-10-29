@@ -32,12 +32,12 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -525,7 +525,7 @@ class WebMediaPlayerMSTest
           testing::tuple<bool /* enable_surface_layer_for_video */,
                          bool /* opaque_frame */,
                          bool /* odd_size_frame */>>,
-      public WebMediaPlayerClient,
+      public MediaPlayerClient,
       public cc::VideoFrameProvider::Client {
  public:
   WebMediaPlayerMSTest()
@@ -566,7 +566,7 @@ class WebMediaPlayerMSTest
   void AddMediaTrack(const media::MediaTrack& track) override {}
 
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
-  void RemotePlaybackCompatibilityChanged(const WebURL& url,
+  void RemotePlaybackCompatibilityChanged(const KURL& url,
                                           bool is_compatible) override {}
   bool WasAlwaysMuted() override { return false; }
   bool HasSelectedVideoTrack() override { return false; }

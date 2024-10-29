@@ -85,9 +85,9 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
       const ResourceMultiBufferDataProviderTest&) = delete;
 
   void Initialize(const char* url, int first_position) {
-    gurl_ = GURL(url);
+    url_ = KURL(url);
     url_data_ =
-        url_index_.GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
+        url_index_.GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
@@ -106,7 +106,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   void Start() { loader_->Start(); }
 
   void FullResponse(int64_t instance_size, bool ok = true) {
-    WebURLResponse response(gurl_);
+    WebURLResponse response(url_);
     response.SetHttpHeaderField(
         WebString::FromUTF8("Content-Length"),
         WebString::FromUTF8(base::StringPrintf("%" PRId64, instance_size)));
@@ -132,7 +132,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
                        int64_t instance_size,
                        bool chunked,
                        bool accept_ranges) {
-    WebURLResponse response(gurl_);
+    WebURLResponse response(url_);
     response.SetHttpHeaderField(
         WebString::FromUTF8("Content-Range"),
         WebString::FromUTF8(
@@ -166,8 +166,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
   void Redirect(const char* url) {
-    WebURL new_url{GURL(url)};
-    WebURLResponse redirect_response(gurl_);
+    WebURL new_url{KURL(url)};
+    WebURLResponse redirect_response(url_);
 
     EXPECT_CALL(*this, RedirectCallback(_))
         .WillOnce(
@@ -216,7 +216,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  GURL gurl_;
+  KURL url_;
   int32_t first_position_;
 
   NiceMock<MockResourceFetchContext> fetch_context_;
@@ -243,7 +243,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, BadHttpResponse) {
 
   EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
 
-  WebURLResponse response(gurl_);
+  WebURLResponse response(url_);
   response.SetHttpStatusCode(404);
   response.SetHttpStatusText("Not Found\n");
   loader_->DidReceiveResponse(response);
@@ -301,7 +301,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, InvalidPartialResponse) {
 
   EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
 
-  WebURLResponse response(gurl_);
+  WebURLResponse response(url_);
   response.SetHttpHeaderField(
       WebString::FromUTF8("Content-Range"),
       WebString::FromUTF8(base::StringPrintf("bytes "

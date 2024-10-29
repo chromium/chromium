@@ -994,9 +994,9 @@ std::unique_ptr<WebMediaPlayer> LocalFrameClientImpl::CreateWebMediaPlayer(
       web_frame->Client(), html_media_element, source, client);
 }
 
-WebRemotePlaybackClient* LocalFrameClientImpl::CreateWebRemotePlaybackClient(
+RemotePlaybackClient* LocalFrameClientImpl::CreateRemotePlaybackClient(
     HTMLMediaElement& html_media_element) {
-  return CoreInitializer::GetInstance().CreateWebRemotePlaybackClient(
+  return CoreInitializer::GetInstance().CreateRemotePlaybackClient(
       html_media_element);
 }
 

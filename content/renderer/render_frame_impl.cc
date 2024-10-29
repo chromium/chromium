@@ -204,7 +204,6 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -6494,19 +6493,6 @@ void RenderFrameImpl::BindMhtmlFileWriter(
   mhtml_file_writer_receiver_.reset();
   mhtml_file_writer_receiver_.Bind(
       std::move(receiver), GetTaskRunner(blink::TaskType::kInternalDefault));
-}
-
-// TODO(crbug.com/40550966): Move this method to Blink, and eliminate
-// the plumbing logic through blink::WebLocalFrameClient.
-void RenderFrameImpl::CheckIfAudioSinkExistsAndIsAuthorized(
-    const blink::WebString& sink_id,
-    blink::WebSetSinkIdCompleteCallback completion_callback) {
-  std::move(
-      blink::ConvertToOutputDeviceStatusCB(std::move(completion_callback)))
-      .Run(blink::AudioDeviceFactory::GetInstance()
-               ->GetOutputDeviceInfo(GetWebFrame()->GetLocalFrameToken(),
-                                     sink_id.Utf8())
-               .device_status());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

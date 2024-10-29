@@ -61,7 +61,6 @@
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -74,6 +73,7 @@
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
@@ -151,7 +151,7 @@ class MockMediaObserver : public media::MediaObserver {
   base::WeakPtrFactory<MediaObserver> weak_ptr_factory_{this};
 };
 
-class MockWebMediaPlayerClient : public WebMediaPlayerClient {
+class MockWebMediaPlayerClient : public MediaPlayerClient {
  public:
   MockWebMediaPlayerClient() = default;
 
@@ -168,7 +168,7 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD1(AddMediaTrack, void(const media::MediaTrack& track));
   MOCK_METHOD1(RemoveMediaTrack, void(const media::MediaTrack&));
   MOCK_METHOD1(MediaSourceOpened, void(std::unique_ptr<WebMediaSource>));
-  MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const WebURL&, bool));
+  MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const KURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());
   MOCK_METHOD0(HasSelectedVideoTrack, bool());
   MOCK_METHOD0(GetSelectedVideoTrackId, WebMediaPlayer::TrackId());
@@ -182,7 +182,7 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(OnPictureInPictureStateChange, void());
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(ResumePlayback, void());
-  MOCK_METHOD1(PausePlayback, void(WebMediaPlayerClient::PauseReason));
+  MOCK_METHOD1(PausePlayback, void(MediaPlayerClient::PauseReason));
   MOCK_METHOD0(DidPlayerStartPlaying, void());
   MOCK_METHOD1(DidPlayerPaused, void(bool));
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
@@ -2384,10 +2384,9 @@ TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
   ScheduleIdlePauseTimer();
   EXPECT_TRUE(IsIdlePauseTimerRunning());
 
-  EXPECT_CALL(
-      client_,
-      PausePlayback(
-          WebMediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
+  EXPECT_CALL(client_,
+              PausePlayback(
+                  MediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
   FireIdlePauseTimer();
   base::RunLoop().RunUntilIdle();
 }

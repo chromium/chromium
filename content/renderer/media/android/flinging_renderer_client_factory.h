@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/media_status.h"
@@ -28,8 +29,7 @@ class CONTENT_EXPORT FlingingRendererClientFactory
  public:
   FlingingRendererClientFactory(
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
-      std::unique_ptr<media::RemotePlaybackClientWrapper>
-          remote_playback_client);
+      media::RemotePlaybackClientWrapper* remote_playback_client);
 
   FlingingRendererClientFactory(const FlingingRendererClientFactory&) = delete;
   FlingingRendererClientFactory& operator=(
@@ -59,7 +59,7 @@ class CONTENT_EXPORT FlingingRendererClientFactory
   std::string GetActivePresentationId();
 
   std::unique_ptr<media::MojoRendererFactory> mojo_flinging_factory_;
-  std::unique_ptr<media::RemotePlaybackClientWrapper> remote_playback_client_;
+  raw_ptr<media::RemotePlaybackClientWrapper> remote_playback_client_;
 
   media::RemotePlayStateChangeCB remote_play_state_change_cb_;
 };

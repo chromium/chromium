@@ -62,6 +62,7 @@
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
@@ -75,7 +76,6 @@
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_media_source.h"
@@ -85,12 +85,12 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
+#include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
@@ -194,11 +194,9 @@ int GetSwitchToLocalMessage(
     case media::MediaObserverClient::ReasonToSwitchToLocal::PIPELINE_ERROR:
       return IDS_MEDIA_REMOTING_STOP_BY_ERROR_TEXT;
     case media::MediaObserverClient::ReasonToSwitchToLocal::ROUTE_TERMINATED:
-      return WebMediaPlayerClient::kMediaRemotingStopNoText;
+      return MediaPlayerClient::kMediaRemotingStopNoText;
   }
-  NOTREACHED_IN_MIGRATION();
-  // To suppress compiler warning on Windows.
-  return WebMediaPlayerClient::kMediaRemotingStopNoText;
+  NOTREACHED();
 }
 
 // These values are persisted to UMA. Entries should not be renumbered and
@@ -337,6 +335,50 @@ bool UsesAudioService(media::RendererType renderer_type) {
   return renderer_type != media::RendererType::kMediaFoundation;
 }
 
+WebTimeRanges ConvertToWebTimeRanges(
+    const media::Ranges<base::TimeDelta>& ranges) {
+  WebTimeRanges result(ranges.size());
+  for (size_t i = 0; i < ranges.size(); ++i) {
+    result[i].start = ranges.start(i).InSecondsF();
+    result[i].end = ranges.end(i).InSecondsF();
+  }
+  return result;
+}
+
+WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
+    media::PipelineStatus error) {
+  switch (error.code()) {
+    case media::PIPELINE_ERROR_NETWORK:
+    case media::PIPELINE_ERROR_READ:
+    case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR:
+      return WebMediaPlayer::kNetworkStateNetworkError;
+
+    case media::PIPELINE_ERROR_INITIALIZATION_FAILED:
+    case media::PIPELINE_ERROR_COULD_NOT_RENDER:
+    case media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED:
+    case media::DEMUXER_ERROR_COULD_NOT_OPEN:
+    case media::DEMUXER_ERROR_COULD_NOT_PARSE:
+    case media::DEMUXER_ERROR_NO_SUPPORTED_STREAMS:
+    case media::DEMUXER_ERROR_DETECTED_HLS:
+    case media::DECODER_ERROR_NOT_SUPPORTED:
+      return WebMediaPlayer::kNetworkStateFormatError;
+
+    case media::PIPELINE_ERROR_DECODE:
+    case media::PIPELINE_ERROR_ABORT:
+    case media::PIPELINE_ERROR_INVALID_STATE:
+    case media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET:
+    case media::PIPELINE_ERROR_DISCONNECTED:
+    case media::CHUNK_DEMUXER_ERROR_APPEND_FAILED:
+    case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR:
+    case media::AUDIO_RENDERER_ERROR:
+      return WebMediaPlayer::kNetworkStateDecodeError;
+
+    case media::PIPELINE_OK:
+      NOTREACHED_IN_MIGRATION() << "Unexpected status! " << error;
+  }
+  return WebMediaPlayer::kNetworkStateFormatError;
+}
+
 }  // namespace
 
 STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeUnspecified,
@@ -347,7 +389,7 @@ STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeUseCredentials,
 
 WebMediaPlayerImpl::WebMediaPlayerImpl(
     WebLocalFrame* frame,
-    WebMediaPlayerClient* client,
+    MediaPlayerClient* client,
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
     WebMediaPlayerDelegate* delegate,
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
@@ -503,7 +545,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   auto on_audio_source_provider_set_client_callback = base::BindOnce(
       [](base::WeakPtr<WebMediaPlayerImpl> self,
-         WebMediaPlayerClient* const client) {
+         MediaPlayerClient* const client) {
         if (!self)
           return;
         client->DidDisableAudioOutputSinkChanges();
@@ -585,7 +627,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // Destruct compositor resources in the proper order.
   client_->SetCcLayer(nullptr);
 
-  client_->MediaRemotingStopped(WebMediaPlayerClient::kMediaRemotingStopNoText);
+  client_->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
 
   if (!surface_layer_for_video_enabled_ && video_layer_)
     video_layer_->StopUsingProvider();
@@ -641,8 +683,8 @@ WebMediaPlayer::LoadTiming WebMediaPlayerImpl::Load(
   // Only URL or MSE blob URL is supported.
   DCHECK(source.IsURL());
   WebURL url = source.GetAsURL();
-  DVLOG(1) << __func__ << "(" << load_type << ", " << GURL(url) << ", "
-           << cors_mode << ")";
+  DVLOG(1) << __func__ << "(" << load_type << ", " << url << ", " << cors_mode
+           << ")";
 
   bool is_deferred = false;
 
@@ -822,7 +864,7 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
 }
 
 void WebMediaPlayerImpl::DoLoad(LoadType load_type,
-                                const WebURL& url,
+                                const KURL& url,
                                 CorsMode cors_mode,
                                 bool is_cache_disabled) {
   TRACE_EVENT1("media", "WebMediaPlayerImpl::DoLoad", "id", media_player_id_);
@@ -852,7 +894,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   demuxer_manager_->SetLoadedUrl(GURL(url));
   load_type_ = load_type;
 
-  ReportMetrics(load_type, demuxer_manager_->LoadedUrl(), media_log_.get());
+  ReportMetrics(load_type, url, media_log_.get());
 
   // Set subresource URL for crash reporting; will be truncated to 256 bytes.
   static base::debug::CrashKeyString* subresource_url =
@@ -866,7 +908,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 
   // Do a truncation to kMaxUrlLength+1 at most; we can add ellipsis later.
   media_log_->AddEvent<MediaLogEvent::kLoad>(
-      url.GetString().Substring(0, media::kMaxUrlLength + 1).Utf8());
+      String(url).Substring(0, media::kMaxUrlLength + 1).Utf8());
   load_start_time_ = base::TimeTicks::Now();
 
   // If we're adapting, then restart the smoothness experiment.
@@ -875,10 +917,9 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 
   media_metrics_provider_->Initialize(
       load_type == kLoadTypeMediaSource,
-      load_type == kLoadTypeURL
-          ? GetMediaURLScheme(demuxer_manager_->LoadedUrl())
-          : media::mojom::MediaURLScheme::kUnknown,
-      media::mojom::MediaStreamType::kNone);
+      load_type == kLoadTypeURL ? GetMediaURLScheme(url)
+                                : media::mojom::blink::MediaURLScheme::kUnknown,
+      media::mojom::blink::MediaStreamType::kNone);
 
   // If a demuxer override was specified or a Media Source pipeline will be
   // used, the pipeline can start immediately.
@@ -1644,7 +1685,7 @@ void WebMediaPlayerImpl::GetUrlData(
     base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto url_data = url_index_->GetByUrl(
-      gurl, static_cast<UrlData::CorsMode>(cors_mode_),
+      KURL(gurl), static_cast<UrlData::CorsMode>(cors_mode_),
       (is_cache_disabled_ || ignore_cache) ? UrlData::kCacheDisabled
                                            : UrlData::kNormal);
   std::move(cb).Run(std::move(url_data));
@@ -2741,7 +2782,7 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
   } else if (state == media::MediaStatus::State::kPaused && !Paused()) {
     DVLOG(1) << __func__ << " requesting PAUSE.";
     client_->PausePlayback(
-        WebMediaPlayerClient::PauseReason::kRemotePlayStateChange);
+        MediaPlayerClient::PauseReason::kRemotePlayStateChange);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -3465,8 +3506,8 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
   background_pause_timer_.Start(
       FROM_HERE, base::Seconds(5),
       base::BindOnce(
-          &WebMediaPlayerClient::PausePlayback, base::Unretained(client_),
-          WebMediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
+          &MediaPlayerClient::PausePlayback, base::Unretained(client_),
+          MediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
@@ -3557,13 +3598,13 @@ bool WebMediaPlayerImpl::IsFrameHidden() const {
 bool WebMediaPlayerImpl::IsPausedBecausePageHidden() const {
   return visibility_pause_reason_ &&
          visibility_pause_reason_ ==
-             WebMediaPlayerClient::PauseReason::kPageHidden;
+             MediaPlayerClient::PauseReason::kPageHidden;
 }
 
 bool WebMediaPlayerImpl::IsPausedBecauseFrameHidden() const {
   return visibility_pause_reason_ &&
          visibility_pause_reason_ ==
-             WebMediaPlayerClient::PauseReason::kFrameHidden;
+             MediaPlayerClient::PauseReason::kFrameHidden;
 }
 
 bool WebMediaPlayerImpl::IsStreaming() const {
@@ -3578,8 +3619,8 @@ bool WebMediaPlayerImpl::DoesOverlaySupportMetadata() const {
 void WebMediaPlayerImpl::UpdateRemotePlaybackCompatibility(bool is_compatible) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  client_->RemotePlaybackCompatibilityChanged(demuxer_manager_->LoadedUrl(),
-                                              is_compatible);
+  client_->RemotePlaybackCompatibilityChanged(
+      KURL(demuxer_manager_->LoadedUrl()), is_compatible);
 }
 
 void WebMediaPlayerImpl::ForceStaleStateForTesting(ReadyState target_state) {
@@ -3778,9 +3819,9 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
       seeking_ || paused_)
     return;
 
-  auto pause_reason = WebMediaPlayerClient::PauseReason::kPageHidden;
+  auto pause_reason = MediaPlayerClient::PauseReason::kPageHidden;
   if (IsFrameHidden() && should_pause_when_frame_is_hidden_) {
-    pause_reason = WebMediaPlayerClient::PauseReason::kFrameHidden;
+    pause_reason = MediaPlayerClient::PauseReason::kFrameHidden;
   }
 
   // client_->PausePlayback() will get `visibility_pause_reason_` set to

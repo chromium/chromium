@@ -23,11 +23,11 @@
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/web_media_player_impl.h"
@@ -99,8 +99,9 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
   DCHECK_EQ(&static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
             frame);
   return std::make_unique<WebMediaPlayerImpl>(
-      frame, client, encrypted_client, delegate, std::move(factory_selector),
-      url_index_.get(), std::move(compositor), std::move(media_log), player_id,
+      frame, static_cast<MediaPlayerClient*>(client), encrypted_client,
+      delegate, std::move(factory_selector), url_index_.get(),
+      std::move(compositor), std::move(media_log), player_id,
       std::move(defer_load_cb), std::move(audio_renderer_sink),
       std::move(media_task_runner), std::move(worker_task_runner),
       std::move(compositor_task_runner),

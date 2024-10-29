@@ -49,7 +49,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
-#include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
@@ -109,6 +108,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/media/remote_playback_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_from_url.h"
@@ -442,7 +442,6 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       audio_source_node_(nullptr),
       speech_synthesis_(nullptr),
       autoplay_policy_(MakeGarbageCollected<AutoplayPolicy>(this)),
-      remote_playback_client_(nullptr),
       media_controls_(nullptr),
       controls_list_(MakeGarbageCollected<HTMLMediaElementControlsList>(this)),
       lazy_load_intersection_observer_(nullptr) {
@@ -453,7 +452,7 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
   LocalFrame* frame = document.GetFrame();
   if (frame) {
     remote_playback_client_ =
-        frame->Client()->CreateWebRemotePlaybackClient(*this);
+        frame->Client()->CreateRemotePlaybackClient(*this);
   }
 
   SetHasCustomStyleCallbacks();
@@ -3746,10 +3745,11 @@ void HTMLMediaElement::DurationChanged(double duration, bool request_seek) {
     Seek(duration);
 }
 
-void HTMLMediaElement::RemotePlaybackCompatibilityChanged(const WebURL& url,
+void HTMLMediaElement::RemotePlaybackCompatibilityChanged(const KURL& url,
                                                           bool is_compatible) {
-  if (RemotePlaybackClient())
-    RemotePlaybackClient()->SourceChanged(url, is_compatible);
+  if (remote_playback_client_) {
+    remote_playback_client_->SourceChanged(url, is_compatible);
+  }
 }
 
 bool HTMLMediaElement::HasSelectedVideoTrack() {
@@ -4956,6 +4956,18 @@ void HTMLMediaElement::OnRemotePlaybackMetadataChange() {
             is_remote_playback_disabled_, is_remote_rendering_,
             WTF::String(remote_device_friendly_name_), is_encrypted_media_));
   }
+}
+
+std::string HTMLMediaElement::GetActivePresentationId() {
+  if (!remote_playback_client_) {
+    return std::string();
+  }
+
+  // The presentation ID is essentially a GUID preceded by the "mr_" prefix,
+  // which makes it ASCII compatible.
+  // If MediaRouterBase::CreatePresentationId() were changed, this line might
+  // need to be updated.
+  return remote_playback_client_->GetPresentationId().Ascii();
 }
 
 HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(
