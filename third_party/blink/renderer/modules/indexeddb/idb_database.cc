@@ -609,9 +609,14 @@ void IDBDatabase::GetAll(int64_t transaction_id,
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
+
+  mojom::blink::IDBGetAllResultType result_type =
+      key_only ? mojom::blink::IDBGetAllResultType::Keys
+               : mojom::blink::IDBGetAllResultType::Values;
+
   database_remote_->GetAll(
       transaction_id, object_store_id, index_id, std::move(key_range_ptr),
-      key_only, max_count,
+      result_type, max_count, mojom::blink::IDBCursorDirection::Next,
       WTF::BindOnce(&IDBRequest::OnGetAll, WrapWeakPersistent(request),
                     key_only));
 }

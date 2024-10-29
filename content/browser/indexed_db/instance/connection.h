@@ -147,8 +147,9 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
               int64_t object_store_id,
               int64_t index_id,
               const blink::IndexedDBKeyRange& key_range,
-              bool key_only,
+              blink::mojom::IDBGetAllResultType result_type,
               int64_t max_count,
+              blink::mojom::IDBCursorDirection direction,
               blink::mojom::IDBDatabase::GetAllCallback callback) override;
   void SetIndexKeys(
       int64_t transaction_id,

@@ -37,18 +37,16 @@ class IDBDatabaseGetAllResultSinkImpl
 
   bool IsWaiting() const { return active_; }
 
-  void ReceiveValues(WTF::Vector<mojom::blink::IDBReturnValuePtr> values,
-                     bool done) override {
-    DCHECK(active_);
-    DCHECK(!key_only_);
-    DCHECK_LE(values.size(),
-              static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (values_.empty()) {
-      values_ = std::move(values);
+  void ReceiveValues(WTF::Vector<mojom::blink::IDBRecordPtr> records,
+                     bool done) {
+    CHECK(!key_only_);
+
+    if (records_.empty()) {
+      records_ = std::move(records);
     } else {
-      values_.reserve(values_.size() + values.size());
-      for (auto& value : values) {
-        values_.emplace_back(std::move(value));
+      records_.reserve(records_.size() + records.size());
+      for (auto& record : records) {
+        records_.emplace_back(std::move(record));
       }
     }
 
@@ -60,9 +58,10 @@ class IDBDatabaseGetAllResultSinkImpl
     owner_->response_type_ = IDBRequestQueueItem::kValueArray;
 
     Vector<std::unique_ptr<IDBValue>> idb_values;
-    idb_values.ReserveInitialCapacity(values_.size());
-    for (const mojom::blink::IDBReturnValuePtr& value : values_) {
-      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
+    idb_values.ReserveInitialCapacity(records_.size());
+    for (const mojom::blink::IDBRecordPtr& record : records_) {
+      std::unique_ptr<IDBValue> idb_value =
+          IDBValue::ConvertReturnValue(record->return_value);
       idb_value->SetIsolate(owner_->request_->GetIsolate());
       idb_values.emplace_back(std::move(idb_value));
     }
@@ -78,19 +77,12 @@ class IDBDatabaseGetAllResultSinkImpl
     }
   }
 
-  void ReceiveKeys(WTF::Vector<std::unique_ptr<IDBKey>> keys,
-                   bool done) override {
-    DCHECK(active_);
-    DCHECK(key_only_);
-    DCHECK_LE(keys.size(),
-              static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (keys_.empty()) {
-      keys_ = std::move(keys);
-    } else {
-      keys_.reserve(keys_.size() + keys.size());
-      for (auto& key : keys) {
-        keys_.emplace_back(std::move(key));
-      }
+  void ReceiveKeys(WTF::Vector<mojom::blink::IDBRecordPtr> records, bool done) {
+    CHECK(key_only_);
+
+    keys_.reserve(keys_.size() + records.size());
+    for (mojom::blink::IDBRecordPtr& record : records) {
+      keys_.emplace_back(std::move(*record->primary_key));
     }
 
     if (!done) {
@@ -101,6 +93,19 @@ class IDBDatabaseGetAllResultSinkImpl
     owner_->response_type_ = IDBRequestQueueItem::kKey;
     owner_->key_ = IDBKey::CreateArray(std::move(keys_));
     owner_->OnResultReady();
+  }
+
+  void ReceiveResults(WTF::Vector<mojom::blink::IDBRecordPtr> records,
+                      bool done) override {
+    CHECK(active_);
+    CHECK_LE(records.size(),
+             static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
+
+    if (key_only_) {
+      ReceiveKeys(std::move(records), done);
+    } else {
+      ReceiveValues(std::move(records), done);
+    }
   }
 
   void OnError(mojom::blink::IDBErrorPtr error) override {
@@ -117,8 +122,15 @@ class IDBDatabaseGetAllResultSinkImpl
   raw_ptr<IDBRequestQueueItem> owner_;
   bool key_only_;
 
-  WTF::Vector<mojom::blink::IDBReturnValuePtr> values_;
+  // Accumulates values in batches for `getAll()`.  Used when `key_only_` is
+  // false.  Each `IDBRecord` contains a `return_value` property only.  The
+  // `primary_key` and `index_key` properties remain null.
+  WTF::Vector<mojom::blink::IDBRecordPtr> records_;
+
+  // Accumulates keys in batches for `getAllKeys()`.  Used when `key_only_` is
+  // true.
   WTF::Vector<std::unique_ptr<IDBKey>> keys_;
+
   // True while results are still being received.
   bool active_ = true;
 };

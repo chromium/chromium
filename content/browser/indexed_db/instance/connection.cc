@@ -295,8 +295,9 @@ void Connection::GetAll(int64_t transaction_id,
                         int64_t object_store_id,
                         int64_t index_id,
                         const IndexedDBKeyRange& key_range,
-                        bool key_only,
+                        blink::mojom::IDBGetAllResultType result_type,
                         int64_t max_count,
+                        blink::mojom::IDBCursorDirection direction,
                         blink::mojom::IDBDatabase::GetAllCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -337,9 +338,7 @@ void Connection::GetAll(int64_t transaction_id,
 
   transaction->ScheduleTask(database_->CreateGetAllOperation(
       object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
-      key_only ? indexed_db::CursorType::kKeyOnly
-               : indexed_db::CursorType::kKeyAndValue,
-      max_count, std::move(callback), transaction));
+      result_type, max_count, direction, std::move(callback), transaction));
 }
 
 void Connection::SetIndexKeys(

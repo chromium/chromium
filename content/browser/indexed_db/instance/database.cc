@@ -62,19 +62,28 @@ using blink::IndexedDBObjectStoreMetadata;
 namespace content::indexed_db {
 namespace {
 
-std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
-    std::vector<IndexedDBReturnValue>&& found_values,
-    BucketContext& bucket_context) {
-  std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
-  mojo_values.reserve(found_values.size());
-  for (size_t i = 0; i < found_values.size(); ++i) {
-    mojo_values.push_back(
-        IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
-    bucket_context.CreateAllExternalObjects(
-        found_values[i].external_objects,
-        &mojo_values[i]->value->external_objects);
+// Returns an `IDBReturnValuePtr` created from the cursor's current position.
+blink::mojom::IDBReturnValuePtr ExtractReturnValueFromCursorValue(
+    BucketContext& bucket_context,
+    const IndexedDBObjectStoreMetadata& object_store_metadata,
+    BackingStore::Cursor& cursor) {
+  IndexedDBReturnValue idb_return_value;
+  idb_return_value.swap(*cursor.value());
+
+  const bool is_generated_key =
+      (!idb_return_value.empty() && object_store_metadata.auto_increment &&
+       !object_store_metadata.key_path.IsNull());
+  if (is_generated_key) {
+    idb_return_value.primary_key = cursor.primary_key();
+    idb_return_value.key_path = object_store_metadata.key_path;
   }
-  return mojo_values;
+
+  blink::mojom::IDBReturnValuePtr mojo_return_value =
+      IndexedDBReturnValue::ConvertReturnValue(&idb_return_value);
+  bucket_context.CreateAllExternalObjects(
+      idb_return_value.external_objects,
+      &mojo_return_value->value->external_objects);
+  return mojo_return_value;
 }
 
 blink::mojom::IDBErrorPtr CreateIDBErrorPtr(blink::mojom::IDBException code,
@@ -836,13 +845,14 @@ Transaction::Operation Database::CreateGetAllOperation(
     int64_t object_store_id,
     int64_t index_id,
     std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-    CursorType cursor_type,
+    blink::mojom::IDBGetAllResultType result_type,
     int64_t max_count,
+    blink::mojom::IDBCursorDirection direction,
     blink::mojom::IDBDatabase::GetAllCallback callback,
     Transaction* transaction) {
   return BindWeakOperation(&Database::GetAllOperation, AsWeakPtr(),
                            object_store_id, index_id, std::move(key_range),
-                           cursor_type, max_count,
+                           result_type, max_count, direction,
                            std::make_unique<GetAllResultSinkWrapper>(
                                transaction->AsWeakPtr(), std::move(callback)));
 }
@@ -886,8 +896,14 @@ Database::GetAllResultSinkWrapper::~GetAllResultSinkWrapper() {
 mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>&
 Database::GetAllResultSinkWrapper::Get() {
   if (!result_sink_) {
-    auto receiver = result_sink_.BindNewEndpointAndPassReceiver();
-    std::move(callback_).Run(std::move(receiver));
+    mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabaseGetAllResultSink>
+        pending_receiver;
+    if (use_dedicated_receiver_for_testing_) {
+      pending_receiver = result_sink_.BindNewEndpointAndPassDedicatedReceiver();
+    } else {
+      pending_receiver = result_sink_.BindNewEndpointAndPassReceiver();
+    }
+    std::move(callback_).Run(std::move(pending_receiver));
   }
   return result_sink_;
 }
@@ -896,8 +912,9 @@ Status Database::GetAllOperation(
     int64_t object_store_id,
     int64_t index_id,
     std::unique_ptr<IndexedDBKeyRange> key_range,
-    CursorType cursor_type,
+    blink::mojom::IDBGetAllResultType result_type,
     int64_t max_count,
+    blink::mojom::IDBCursorDirection direction,
     std::unique_ptr<GetAllResultSinkWrapper> result_sink,
     Transaction* transaction) {
   TRACE_EVENT1("IndexedDB", "Database::GetAllOperation", "txn.id",
@@ -919,18 +936,18 @@ Status Database::GetAllOperation(
   Status s = Status::OK();
   std::unique_ptr<BackingStore::Cursor> cursor;
 
-  if (cursor_type == CursorType::kKeyOnly) {
+  if (result_type == blink::mojom::IDBGetAllResultType::Keys) {
     // Retrieving keys
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // Object Store: Key Retrieval Operation
       cursor = backing_store()->OpenObjectStoreKeyCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
-          *key_range, blink::mojom::IDBCursorDirection::Next, &s);
+          *key_range, direction, &s);
     } else {
       // Index Value: (Primary Key) Retrieval Operation
       cursor = backing_store()->OpenIndexKeyCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
-          index_id, *key_range, blink::mojom::IDBCursorDirection::Next, &s);
+          index_id, *key_range, direction, &s);
     }
   } else {
     // Retrieving values
@@ -938,12 +955,12 @@ Status Database::GetAllOperation(
       // Object Store: Value Retrieval Operation
       cursor = backing_store()->OpenObjectStoreCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
-          *key_range, blink::mojom::IDBCursorDirection::Next, &s);
+          *key_range, direction, &s);
     } else {
       // Object Store: Referenced Value Retrieval Operation
       cursor = backing_store()->OpenIndexCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
-          index_id, *key_range, blink::mojom::IDBCursorDirection::Next, &s);
+          index_id, *key_range, direction, &s);
     }
   }
 
@@ -955,30 +972,20 @@ Status Database::GetAllOperation(
     return s;
   }
 
-  std::vector<IndexedDBKey> found_keys;
-  std::vector<IndexedDBReturnValue> found_values;
+  std::vector<blink::mojom::IDBRecordPtr> found_records;
 
-  auto send_values = [&](bool done) {
-    if (cursor_type == CursorType::kKeyOnly) {
-      result_sink->Get()->ReceiveKeys(std::move(found_keys), done);
-      found_keys.clear();
-    } else {
-      result_sink->Get()->ReceiveValues(
-          CreateMojoValues(std::move(found_values), bucket_context_.get()),
-          done);
-      found_values.clear();
-    }
+  auto send_records = [&](bool done) {
+    result_sink->Get()->ReceiveResults(std::move(found_records), done);
+    found_records.clear();
   };
 
-  // No values or keys found.
+  // No records found.
   if (!cursor) {
-    send_values(/*done=*/true);
+    send_records(/*done=*/true);
     return s;
   }
 
   bool did_first_seek = false;
-  bool generated_key = object_store_metadata.auto_increment &&
-                       !object_store_metadata.key_path.IsNull();
 
   // Max idbvalue size before blob wrapping is 64k, so make an assumption
   // that max key/value size is 128kb tops, to fit under 128mb mojo limit.
@@ -996,7 +1003,9 @@ Status Database::GetAllOperation(
     if (did_first_seek) {
       cursor_valid = cursor->Continue(&s);
     } else {
-      cursor_valid = cursor->FirstSeek(&s);
+      // Cursor creation performs the first seek, returning a nullptr cursor
+      // when invalid.
+      cursor_valid = true;
       did_first_seek = true;
     }
     if (!s.ok()) {
@@ -1010,35 +1019,44 @@ Status Database::GetAllOperation(
       break;
     }
 
-    IndexedDBReturnValue return_value;
-    IndexedDBKey return_key;
+    blink::mojom::IDBRecordPtr return_record;
 
-    if (cursor_type == CursorType::kKeyOnly) {
-      return_key = cursor->primary_key();
-    } else {
-      // Retrieving values
-      return_value.swap(*cursor->value());
-      if (!return_value.empty() && generated_key) {
-        return_value.primary_key = cursor->primary_key();
-        return_value.key_path = object_store_metadata.key_path;
+    if (result_type == blink::mojom::IDBGetAllResultType::Keys) {
+      return_record = blink::mojom::IDBRecord::New(cursor->primary_key(),
+                                                   /*value=*/nullptr,
+                                                   /*index_key=*/std::nullopt);
+    } else if (result_type == blink::mojom::IDBGetAllResultType::Values) {
+      blink::mojom::IDBReturnValuePtr return_value =
+          ExtractReturnValueFromCursorValue(bucket_context_.get(),
+                                            object_store_metadata, *cursor);
+      return_record = blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt, std::move(return_value),
+          /*index_key=*/std::nullopt);
+    } else if (result_type == blink::mojom::IDBGetAllResultType::Records) {
+      // Construct the record, which includes the primary key, value and index
+      // key.
+      blink::mojom::IDBReturnValuePtr return_value =
+          ExtractReturnValueFromCursorValue(bucket_context_.get(),
+                                            object_store_metadata, *cursor);
+      std::optional<IndexedDBKey> index_key;
+      if (index_id != IndexedDBIndexMetadata::kInvalidId) {
+        // The index key only exists for `IDBIndex::getAllRecords()`.
+        index_key = cursor->key();
       }
-    }
-
-    if (cursor_type == CursorType::kKeyOnly) {
-      found_keys.push_back(return_key);
+      return_record = blink::mojom::IDBRecord::New(
+          cursor->primary_key(), std::move(return_value), std::move(index_key));
     } else {
-      found_values.push_back(return_value);
+      NOTREACHED();
     }
 
-    // Periodically stream values and keys if we have too many.
-    if (found_keys.size() >= max_values_before_sending ||
-        found_values.size() >= max_values_before_sending) {
-      send_values(/*done=*/false);
+    found_records.push_back(std::move(return_record));
+
+    // Periodically stream records if we have too many.
+    if (found_records.size() >= max_values_before_sending) {
+      send_records(/*done=*/false);
     }
   }
-
-  send_values(/*done=*/true);
-
+  send_records(/*done=*/true);
   return s;
 }
 

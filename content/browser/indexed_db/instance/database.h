@@ -254,8 +254,9 @@ class CONTENT_EXPORT Database {
       int64_t object_store_id,
       int64_t index_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      indexed_db::CursorType cursor_type,
+      blink::mojom::IDBGetAllResultType result_type,
       int64_t max_count,
+      blink::mojom::IDBCursorDirection direction,
       blink::mojom::IDBDatabase::GetAllCallback callback,
       Transaction* transaction);
 
@@ -288,6 +289,11 @@ class CONTENT_EXPORT Database {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DatabaseTest, OpenDeleteClear);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest,
+                           ObjectStoreGetAllKeysWithInvalidObjectStoreId);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest,
+                           IndexGetAllKeysWithInvalidIndexId);
+  friend class DatabaseOperationTest;
 
   void CallUpgradeTransactionStartedForTesting(int64_t old_version);
 
@@ -301,7 +307,7 @@ class CONTENT_EXPORT Database {
   // deleted without being run. This functionality mimics that of
   // AbortOnDestruct callbacks. `GetAll()` cannot easily be shoe-horned into the
   // abort-on-destruct callback templating.
-  class GetAllResultSinkWrapper {
+  class CONTENT_EXPORT GetAllResultSinkWrapper {
    public:
     GetAllResultSinkWrapper(base::WeakPtr<Transaction> transaction,
                             blink::mojom::IDBDatabase::GetAllCallback callback);
@@ -309,18 +315,26 @@ class CONTENT_EXPORT Database {
 
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>& Get();
 
+    // An override for unit tests to bind the associated receiver successfully
+    // without a pre-existing endpoint entanglement.
+    void UseDedicatedReceiverForTesting() {
+      use_dedicated_receiver_for_testing_ = true;
+    }
+
    private:
     base::WeakPtr<Transaction> transaction_;
     blink::mojom::IDBDatabase::GetAllCallback callback_;
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>
         result_sink_;
+    bool use_dedicated_receiver_for_testing_ = false;
   };
 
   Status GetAllOperation(int64_t object_store_id,
                          int64_t index_id,
                          std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-                         indexed_db::CursorType cursor_type,
+                         blink::mojom::IDBGetAllResultType result_type,
                          int64_t max_count,
+                         blink::mojom::IDBCursorDirection direction,
                          std::unique_ptr<GetAllResultSinkWrapper> result_sink,
                          Transaction* transaction);
 
