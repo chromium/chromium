@@ -13,6 +13,7 @@
 #include <linux/net.h>
 #include <linux/userfaultfd.h>
 #include <sched.h>
+#include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
