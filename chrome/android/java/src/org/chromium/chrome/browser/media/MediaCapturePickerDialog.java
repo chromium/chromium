@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.media;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -35,6 +37,20 @@ public class MediaCapturePickerDialog {
     }
 
     private void show() {
+        var allTabObserver =
+                new AllTabObserver(
+                        new AllTabObserver.Observer() {
+                            @Override
+                            public void onTabAdded(Tab tab) {
+                                // TODO(crbug.com/352186941): Plumb this to the dialog.
+                            }
+
+                            @Override
+                            public void onTabRemoved(Tab tab) {
+                                // TODO(crbug.com/352186941): Plumb this to the dialog.
+                            }
+                        });
+
         var controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -56,6 +72,7 @@ public class MediaCapturePickerDialog {
                             mCallback.onResult(null);
                             mCallback = null;
                         }
+                        allTabObserver.destroy();
                     }
                 };
 
