@@ -10,10 +10,10 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Factory interface to create an untrusted page handler (for the
 // chrome-untrusted:// frame) communicating directly with the browser.
 interface UntrustedPageHandlerFactory {
-  // Create a page handler for the untrusted frame exposing OCR related APIs
-  // between it and the browser via |receiver| and |page|.
-  CreateOcrUntrustedPageHandler(
-      pending_receiver<OcrUntrustedPageHandler> receiver,
+  // Exposes OCR related APIs between the untrusted frame and the browser via
+  // |receiver| and |page|.
+  CreateOcrUntrustedService(
+      pending_receiver<OcrUntrustedService> receiver,
       pending_remote<OcrUntrustedPage> page);
 
   // Create a page handler for the untrusted frame exposing Mahi related APIs
@@ -36,7 +36,7 @@ struct PageMetadata {
 
 // Interface implemented in the browser process and called by the
 // chrome-untrusted:// Media App page.
-interface OcrUntrustedPageHandler {
+interface OcrUntrustedService {
   // Provides metadata about the document. Page metadata is always provided for
   // all pages. Called in the following cases:
   //   a) A page is rotated (only the rotated page is dirty, but potentially all

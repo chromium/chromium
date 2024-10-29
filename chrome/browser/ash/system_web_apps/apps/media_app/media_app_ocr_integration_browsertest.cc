@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -106,11 +106,11 @@ void WaitForFirstFileLoadInActiveWindow(const std::string& filename) {
 
 // Test that the Media App connects to the OCR service when opening PDFs.
 IN_PROC_BROWSER_TEST_P(MediaAppOcrIntegrationTest, MediaAppLaunchPdfMulti) {
-  // Without any instance of MediaApp open, there are no corresponding handlers.
-  auto* ax_factory = ash::AXMediaAppHandlerFactory::GetInstance();
+  // Without any instance of MediaApp open, there are no corresponding services.
+  auto* ax_factory = ash::AXMediaAppServiceFactory::GetInstance();
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 0u);
 
-  // Launch one PDF window and test one handler was created for the guest frame.
+  // Launch one PDF window and test one service was created for the guest frame.
   ash::SystemAppLaunchParams pdf_params_window1;
   pdf_params_window1.launch_paths = {TestFile(kFilePdfImg)};
   LaunchAndWait(pdf_params_window1);
@@ -119,11 +119,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppOcrIntegrationTest, MediaAppLaunchPdfMulti) {
   EXPECT_EQ(browser_list->size(), 2u);
 
   WaitForFirstFileLoadInActiveWindow(kFilePdfImg);
-  // There should be one handler after one PDF window is opened. If it's in the
+  // There should be one service after one PDF window is opened. If it's in the
   // UniqueReceiverSet, this also means it's bound to a remote.
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 1u);
 
-  // Launch a second PDF window and check it's got a second handler.
+  // Launch a second PDF window and check it's got a second service.
   ash::SystemAppLaunchParams pdf_params_window2;
   pdf_params_window2.launch_paths = {TestFile(kFilePdfTall)};
   LaunchAndWait(pdf_params_window2);
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppOcrIntegrationTest, MediaAppLaunchPdfMulti) {
   EXPECT_EQ(browser_list->size(), 3u);
 
   WaitForFirstFileLoadInActiveWindow(kFilePdfTall);
-  // There should be a second handler after a second PDF window is opened.
+  // There should be a second service after a second PDF window is opened.
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 2u);
 }
 

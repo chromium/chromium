@@ -4569,10 +4569,10 @@ static_library("browser") {
   if (is_chromeos_ash) {
     sources += [
       "accessibility/media_app/ax_media_app.h",
-      "accessibility/media_app/ax_media_app_handler_factory.cc",
-      "accessibility/media_app/ax_media_app_handler_factory.h",
-      "accessibility/media_app/ax_media_app_untrusted_handler.cc",
-      "accessibility/media_app/ax_media_app_untrusted_handler.h",
+      "accessibility/media_app/ax_media_app_service_factory.cc",
+      "accessibility/media_app/ax_media_app_service_factory.h",
+      "accessibility/media_app/ax_media_app_untrusted_service.cc",
+      "accessibility/media_app/ax_media_app_untrusted_service.h",
       "apps/digital_goods/digital_goods_ash.cc",
       "apps/digital_goods/digital_goods_ash.h",
       "apps/digital_goods/digital_goods_factory_impl.cc",

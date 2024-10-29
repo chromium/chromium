@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/version.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -122,14 +122,14 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
 }
 
-void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrHandler(
+void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrUntrustedService(
     content::BrowserContext& context,
     gfx::NativeWindow native_window,
-    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedService>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
-  ash::AXMediaAppHandlerFactory::GetInstance()
-      ->CreateAXMediaAppUntrustedHandler(context, native_window,
+  ash::AXMediaAppServiceFactory::GetInstance()
+      ->CreateAXMediaAppUntrustedService(context, native_window,
                                          std::move(receiver), std::move(page));
 }
 

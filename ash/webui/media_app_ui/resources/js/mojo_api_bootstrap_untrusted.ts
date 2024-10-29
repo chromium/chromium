@@ -2,30 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MahiUntrustedPageCallbackRouter, MahiUntrustedPageHandlerRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedPageCallbackRouter, OcrUntrustedPageHandlerRemote, UntrustedPageHandlerFactory} from './media_app_ui_untrusted.mojom-webui.js';
+import {MahiUntrustedPageCallbackRouter, MahiUntrustedPageHandlerRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedPageCallbackRouter, OcrUntrustedServiceRemote, UntrustedPageHandlerFactory} from './media_app_ui_untrusted.mojom-webui.js';
 
-// Used to make calls on the remote OcrUntrustedPageHandler interface. Singleton
+// Used to make calls on the remote OcrUntrustedService interface. Singleton
 // that client modules can use directly.
-let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
+let ocrUntrustedService: OcrUntrustedServiceRemote;
 
 // Use this subscribe to events e.g.
 // `ocrCallbackRouter.onEventOccurred.addListener(handleEvent)`.
 export const ocrCallbackRouter = new OcrUntrustedPageCallbackRouter();
 
-// Used to create a connection to OcrUntrustedPageHandler.
+// Used to create a connection to the services used in the untrusted context
+// (Mahi, OCR, and Mantis).
 const factoryRemote = UntrustedPageHandlerFactory.getRemote();
 
 // Called when a new file that may require OCR is loaded. Closes the existing
 // pipe and establishes a new one.
-export function connectToOcrHandler() {
-  if (ocrUntrustedPageHandler) {
-    ocrUntrustedPageHandler.$.close();
+export function connectToOcrUntrustedService() {
+  if (ocrUntrustedService) {
+    ocrUntrustedService.$.close();
   }
-  ocrUntrustedPageHandler = new OcrUntrustedPageHandlerRemote();
-  factoryRemote.createOcrUntrustedPageHandler(
-      ocrUntrustedPageHandler.$.bindNewPipeAndPassReceiver(),
+  ocrUntrustedService = new OcrUntrustedServiceRemote();
+  factoryRemote.createOcrUntrustedService(
+      ocrUntrustedService.$.bindNewPipeAndPassReceiver(),
       ocrCallbackRouter.$.bindNewPipeAndPassRemote());
-  return ocrUntrustedPageHandler;
+  return ocrUntrustedService;
 }
 
 // Used to make calls on the remote MahiUntrustedPageHandler interface.

@@ -283,11 +283,10 @@ void MediaAppGuestUI::BindInterface(
   untrusted_page_handler_factory_.Bind(std::move(receiver));
 }
 
-void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
-        receiver,
+void MediaAppGuestUI::CreateOcrUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedService> receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
-  delegate_->CreateAndBindOcrHandler(
+  delegate_->CreateAndBindOcrUntrustedService(
       *web_ui()->GetWebContents()->GetBrowserContext(),
       web_ui()->GetWebContents()->GetTopLevelNativeWindow(),
       std::move(receiver), std::move(page));

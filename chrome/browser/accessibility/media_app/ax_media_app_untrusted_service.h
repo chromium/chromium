@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
-#define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_UNTRUSTED_SERVICE_H_
+#define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_UNTRUSTED_SERVICE_H_
 
 #include <stdint.h>
 
@@ -79,8 +79,8 @@ struct AXMediaAppPageMetadata : ash::media_app_ui::mojom::PageMetadata {
   uint32_t page_num;
 };
 
-class AXMediaAppUntrustedHandler
-    : public media_app_ui::mojom::OcrUntrustedPageHandler,
+class AXMediaAppUntrustedService
+    : public media_app_ui::mojom::OcrUntrustedService,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       public ui::AXModeObserver,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -104,14 +104,14 @@ class AXMediaAppUntrustedHandler
     kCompletedWithTextExtracted,
   };
 
-  AXMediaAppUntrustedHandler(
+  AXMediaAppUntrustedService(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page);
-  AXMediaAppUntrustedHandler(const AXMediaAppUntrustedHandler&) = delete;
-  AXMediaAppUntrustedHandler& operator=(
-      const AXMediaAppUntrustedHandler&) = delete;
-  ~AXMediaAppUntrustedHandler() override;
+  AXMediaAppUntrustedService(const AXMediaAppUntrustedService&) = delete;
+  AXMediaAppUntrustedService& operator=(const AXMediaAppUntrustedService&) =
+      delete;
+  ~AXMediaAppUntrustedService() override;
 
   bool IsAccessibilityEnabled() const;
 
@@ -132,7 +132,7 @@ class AXMediaAppUntrustedHandler
   void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) override;
 
-  // ash::media_app_ui::mojom::OcrUntrustedPageHandler:
+  // ash::media_app_ui::mojom::OcrUntrustedService:
   void PageMetadataUpdated(
       const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
           page_metadata) override;
@@ -223,9 +223,9 @@ class AXMediaAppUntrustedHandler
   // Records the greatest page number to which the user has navigated.
   size_t greatest_visited_page_number_ = 0;
 
-  base::WeakPtrFactory<AXMediaAppUntrustedHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AXMediaAppUntrustedService> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_AX_MEDIA_APP_UNTRUSTED_SERVICE_H_

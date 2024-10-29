@@ -13,8 +13,8 @@ source_set("test_support") {
     "../ax_media_app.h",
     "fake_ax_media_app.cc",
     "fake_ax_media_app.h",
-    "test_ax_media_app_untrusted_handler.cc",
-    "test_ax_media_app_untrusted_handler.h",
+    "test_ax_media_app_untrusted_service.cc",
+    "test_ax_media_app_untrusted_service.h",
   ]
 
   deps = [

@@ -33,10 +33,10 @@ class MediaAppGuestUIDelegate {
   // Takes a WebUI and WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUI* web_ui,
                                     content::WebUIDataSource* source) = 0;
-  virtual void CreateAndBindOcrHandler(
+  virtual void CreateAndBindOcrUntrustedService(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
-      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) = 0;
 
@@ -79,10 +79,9 @@ class MediaAppGuestUI
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
-  // media_app_ui::mojom::UntrustedPageHandlerFactory:
-  void CreateOcrUntrustedPageHandler(
-      mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
-          receiver,
+  // media_app_ui::mojom::UntrustedServiceFactory:
+  void CreateOcrUntrustedService(
+      mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedService> receiver,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) override;
   void CreateMahiUntrustedPageHandler(
       mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>

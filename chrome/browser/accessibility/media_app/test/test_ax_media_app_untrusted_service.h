@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
-#define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_SERVICE_H_
+#define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -30,17 +30,17 @@ class AXNode;
 
 namespace ash::test {
 
-class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
+class TestAXMediaAppUntrustedService : public AXMediaAppUntrustedService {
  public:
-  TestAXMediaAppUntrustedHandler(
+  TestAXMediaAppUntrustedService(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page);
-  TestAXMediaAppUntrustedHandler(const TestAXMediaAppUntrustedHandler&) =
+  TestAXMediaAppUntrustedService(const TestAXMediaAppUntrustedService&) =
       delete;
-  TestAXMediaAppUntrustedHandler& operator=(
-      const TestAXMediaAppUntrustedHandler&) = delete;
-  ~TestAXMediaAppUntrustedHandler() override;
+  TestAXMediaAppUntrustedService& operator=(
+      const TestAXMediaAppUntrustedService&) = delete;
+  ~TestAXMediaAppUntrustedService() override;
 
   void SetMediaAppForTesting(AXMediaApp* media_app) { media_app_ = media_app; }
   std::string GetDocumentTreeToStringForTesting() const;
@@ -100,4 +100,4 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
 
 }  // namespace ash::test
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_SERVICE_H_

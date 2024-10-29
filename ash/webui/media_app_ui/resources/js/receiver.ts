@@ -13,9 +13,9 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
-import type {MahiUntrustedPageHandlerRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedPageHandlerRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
+import type {MahiUntrustedPageHandlerRemote, MantisMediaAppUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
-import {connectToMahiHandler, connectToMantisUntrustedService, connectToOcrHandler, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
+import {connectToMahiHandler, connectToMantisUntrustedService, connectToOcrUntrustedService, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -299,7 +299,7 @@ parentMessagePipe.registerHandler(
 // parent frame (privileged context).
 parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
-let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
+let ocrUntrustedService: OcrUntrustedServiceRemote;
 let mahiUntrustedPageHandler: MahiUntrustedPageHandlerRemote;
 let mantisUntrustedService: MantisMediaAppUntrustedServiceRemote;
 
@@ -378,12 +378,12 @@ const DELEGATE: ClientApiDelegate = {
   },
   notifyFileOpened(name?: string, type?: string) {
     // Close any existing pipes when opening a new file.
-    ocrUntrustedPageHandler?.$.close();
+    ocrUntrustedService?.$.close();
     mahiUntrustedPageHandler?.$.close();
     mantisUntrustedService?.$.close();
 
     if (type === 'application/pdf') {
-      ocrUntrustedPageHandler = connectToOcrHandler();
+      ocrUntrustedService = connectToOcrUntrustedService();
       mahiUntrustedPageHandler = connectToMahiHandler(name);
     }
     if (loadTimeData.getBoolean(MANTIS_FLAG) && type != null &&
@@ -422,13 +422,13 @@ const DELEGATE: ClientApiDelegate = {
   // All methods below are on the guest / untrusted frame.
 
   async pageMetadataUpdated(pageMetadata: PageMetadata[]) {
-    await ocrUntrustedPageHandler?.pageMetadataUpdated(pageMetadata);
+    await ocrUntrustedService?.pageMetadataUpdated(pageMetadata);
   },
   async pageContentsUpdated(dirtyPageId: string) {
-    await ocrUntrustedPageHandler?.pageContentsUpdated(dirtyPageId);
+    await ocrUntrustedService?.pageContentsUpdated(dirtyPageId);
   },
   async viewportUpdated(viewportBox: RectF, scaleFactor: number) {
-    await ocrUntrustedPageHandler?.viewportUpdated(viewportBox, scaleFactor);
+    await ocrUntrustedService?.viewportUpdated(viewportBox, scaleFactor);
   },
   async onPdfLoaded() {
     let hasText = false;

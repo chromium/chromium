@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h"
+#include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_service.h"
 
 #include <utility>
 
@@ -14,15 +14,15 @@
 
 namespace ash::test {
 
-TestAXMediaAppUntrustedHandler::TestAXMediaAppUntrustedHandler(
+TestAXMediaAppUntrustedService::TestAXMediaAppUntrustedService(
     content::BrowserContext& context,
     gfx::NativeWindow native_window,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
-    : AXMediaAppUntrustedHandler(context, native_window, std::move(page)) {}
+    : AXMediaAppUntrustedService(context, native_window, std::move(page)) {}
 
-TestAXMediaAppUntrustedHandler::~TestAXMediaAppUntrustedHandler() = default;
+TestAXMediaAppUntrustedService::~TestAXMediaAppUntrustedService() = default;
 
-std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
+std::string TestAXMediaAppUntrustedService::GetDocumentTreeToStringForTesting()
     const {
   if (!document_ || !document_->ax_tree()) {
     return {};
@@ -30,13 +30,13 @@ std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
   return document_->ax_tree()->ToString();
 }
 
-void TestAXMediaAppUntrustedHandler::
+void TestAXMediaAppUntrustedService::
     EnablePendingSerializedUpdatesForTesting() {
   pending_serialized_updates_for_testing_ =
       std::make_unique<std::vector<ui::AXTreeUpdate>>();
 }
 
-void TestAXMediaAppUntrustedHandler::
+void TestAXMediaAppUntrustedService::
     CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty,
                                                    bool is_successful) {
   ocr_.reset();
@@ -46,28 +46,28 @@ void TestAXMediaAppUntrustedHandler::
   OnOCRServiceInitialized(is_successful);
 }
 
-void TestAXMediaAppUntrustedHandler::FlushForTesting() {
+void TestAXMediaAppUntrustedService::FlushForTesting() {
   ocr_->FlushForTesting();  // IN-TEST
 }
 
-bool TestAXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  return AXMediaAppUntrustedHandler::IsOcrServiceEnabled();
+bool TestAXMediaAppUntrustedService::IsOcrServiceEnabled() const {
+  return AXMediaAppUntrustedService::IsOcrServiceEnabled();
 }
 
-void TestAXMediaAppUntrustedHandler::PushDirtyPageForTesting(
+void TestAXMediaAppUntrustedService::PushDirtyPageForTesting(
     const std::string& dirty_page_id) {
-  AXMediaAppUntrustedHandler::PushDirtyPage(dirty_page_id);
+  AXMediaAppUntrustedService::PushDirtyPage(dirty_page_id);
 }
 
-std::string TestAXMediaAppUntrustedHandler::PopDirtyPageForTesting() {
-  return AXMediaAppUntrustedHandler::PopDirtyPage();
+std::string TestAXMediaAppUntrustedService::PopDirtyPageForTesting() {
+  return AXMediaAppUntrustedService::PopDirtyPage();
 }
 
-void TestAXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
+void TestAXMediaAppUntrustedService::OcrNextDirtyPageIfAny() {
   if (delay_calling_ocr_next_dirty_page_) {
     return;
   }
-  AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny();
+  AXMediaAppUntrustedService::OcrNextDirtyPageIfAny();
 }
 
 }  // namespace ash::test

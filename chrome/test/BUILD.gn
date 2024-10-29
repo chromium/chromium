@@ -3399,7 +3399,7 @@ if (!is_android) {
     if (is_chromeos_ash) {
       data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [
-        "../browser/accessibility/media_app/ax_media_app_untrusted_handler_browsertest.cc",
+        "../browser/accessibility/media_app/ax_media_app_untrusted_service_browsertest.cc",
         "../browser/certificate_manager_model_ash_browsertest.cc",
         "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
         "../browser/media/webrtc/capture_policy_utils_browsertest.cc",

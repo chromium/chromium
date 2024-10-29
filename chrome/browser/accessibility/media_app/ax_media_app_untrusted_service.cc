@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
 
 #include <algorithm>
 #include <iterator>
@@ -80,7 +80,7 @@ constexpr size_t kMaxPages = 10000u;
 // user experience.
 constexpr size_t kMaxPagesPerBatch = 20u;
 
-AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
+AXMediaAppUntrustedService::AXMediaAppUntrustedService(
     content::BrowserContext& context,
     gfx::NativeWindow native_window,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
@@ -92,7 +92,7 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     // Unretained is safe because `this` owns the subscription.
     accessibility_status_subscription_ =
         accessibility_manager->RegisterCallback(base::BindRepeating(
-            &AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged,
+            &AXMediaAppUntrustedService::OnAshAccessibilityModeChanged,
             base::Unretained(this)));
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -103,7 +103,7 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
   }
 }
 
-AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
+AXMediaAppUntrustedService::~AXMediaAppUntrustedService() {
   if (!start_reading_time_.is_null() && !latest_reading_time_.is_null() &&
       start_reading_time_ < latest_reading_time_) {
     // Record time difference between `start_reading_time_` and
@@ -126,7 +126,7 @@ AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
   RemoveAllAXTreesFromAccessibilityService();
 }
 
-void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool is_successful) {
+void AXMediaAppUntrustedService::OnOCRServiceInitialized(bool is_successful) {
   if (!is_successful) [[unlikely]] {
     // Regardless of the previous `ocr_status_`, a failure should always stop
     // any use of the Service, overwriting the document contents with the
@@ -153,13 +153,13 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool is_successful) {
   }
 }
 
-bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
+bool AXMediaAppUntrustedService::IsAccessibilityEnabled() const {
   return accessibility_state_utils::IsScreenReaderEnabled() ||
          accessibility_state_utils::IsSelectToSpeakEnabled();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged(
+void AXMediaAppUntrustedService::OnAshAccessibilityModeChanged(
     const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
           ash::AccessibilityNotificationType::kToggleSpokenFeedback ||
@@ -176,7 +176,7 @@ void AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
+void AXMediaAppUntrustedService::OnAXModeAdded(ui::AXMode mode) {
   ToggleAccessibilityState();
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
@@ -187,7 +187,7 @@ void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void AXMediaAppUntrustedHandler::PerformAction(
+void AXMediaAppUntrustedService::PerformAction(
     const ui::AXActionData& action_data) {
   if (!IsAccessibilityEnabled()) {
     return;
@@ -384,7 +384,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
   }
 }
 
-void AXMediaAppUntrustedHandler::AccessibilityEventReceived(
+void AXMediaAppUntrustedService::AccessibilityEventReceived(
     const ui::AXUpdatesAndEvents& details) {
   if (!document_ || !GetMediaAppWebContents() ||
       !GetMediaAppWebContents()
@@ -408,7 +408,7 @@ void AXMediaAppUntrustedHandler::AccessibilityEventReceived(
   }
 }
 
-void AXMediaAppUntrustedHandler::PageMetadataUpdated(
+void AXMediaAppUntrustedService::PageMetadataUpdated(
     const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
         page_metadata) {
   // `mojo::GetBadMessageCallback` only works when in a non-test environment.
@@ -487,7 +487,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   ShowDocumentTree();
 }
 
-void AXMediaAppUntrustedHandler::PageContentsUpdated(
+void AXMediaAppUntrustedService::PageContentsUpdated(
     const std::string& dirty_page_id) {
   // `mojo::GetBadMessageCallback` only works when in a non-test environment.
   base::AutoReset<std::optional<mojo::ReportBadMessageCallback>> call_resetter(
@@ -504,7 +504,7 @@ void AXMediaAppUntrustedHandler::PageContentsUpdated(
   OcrNextDirtyPageIfAny();
 }
 
-content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
+content::WebContents* AXMediaAppUntrustedService::GetMediaAppWebContents()
     const {
   Profile* profile =
       Profile::FromBrowserContext(base::to_address(browser_context_));
@@ -519,7 +519,7 @@ content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
 }
 
 content::RenderFrameHost*
-AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
+AXMediaAppUntrustedService::GetMediaAppRenderFrameHost() const {
   content::WebContents* web_contents = GetMediaAppWebContents();
   content::RenderFrameHost* media_app_render_frame_host =
       web_contents->GetPrimaryMainFrame();
@@ -531,7 +531,7 @@ AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
   return media_app_render_frame_host;
 }
 
-size_t AXMediaAppUntrustedHandler::ComputePagesPerBatch() const {
+size_t AXMediaAppUntrustedService::ComputePagesPerBatch() const {
   DCHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch);
   size_t page_count = page_metadata_.size();
   return std::clamp<size_t>(page_count * 0.1, min_pages_per_batch_,
@@ -539,7 +539,7 @@ size_t AXMediaAppUntrustedHandler::ComputePagesPerBatch() const {
 }
 
 std::vector<ui::AXNodeData>
-AXMediaAppUntrustedHandler::CreateStatusNodesWithLandmark() const {
+AXMediaAppUntrustedService::CreateStatusNodesWithLandmark() const {
   ui::AXNodeData banner;
   banner.role = ax::mojom::Role::kBanner;
   banner.id = kMaxPages;
@@ -631,7 +631,7 @@ AXMediaAppUntrustedHandler::CreateStatusNodesWithLandmark() const {
   return {banner, status, static_text, inline_text_box};
 }
 
-std::vector<ui::AXNodeData> AXMediaAppUntrustedHandler::CreatePostamblePage()
+std::vector<ui::AXNodeData> AXMediaAppUntrustedService::CreatePostamblePage()
     const {
   ui::AXNodeData page;
   page.id = kMaxPages + 4;
@@ -666,7 +666,7 @@ std::vector<ui::AXNodeData> AXMediaAppUntrustedHandler::CreatePostamblePage()
   return {page, paragraph, static_text, inline_text_box};
 }
 
-void AXMediaAppUntrustedHandler::ToggleAccessibilityState() {
+void AXMediaAppUntrustedService::ToggleAccessibilityState() {
   if (IsAccessibilityEnabled()) {
     StartWatchingForAccessibilityEvents();
     SendAllAXTreesToAccessibilityService();
@@ -679,7 +679,7 @@ void AXMediaAppUntrustedHandler::ToggleAccessibilityState() {
   media_app_page_->SetPdfOcrEnabled(IsAccessibilityEnabled());
 }
 
-void AXMediaAppUntrustedHandler::SendAllAXTreesToAccessibilityService() {
+void AXMediaAppUntrustedService::SendAllAXTreesToAccessibilityService() {
   RemoveDocumentTree();
   switch (ocr_status_) {
     case OcrStatus::kUninitialized:
@@ -710,7 +710,7 @@ void AXMediaAppUntrustedHandler::SendAllAXTreesToAccessibilityService() {
   }
 }
 
-void AXMediaAppUntrustedHandler::RemoveAllAXTreesFromAccessibilityService() {
+void AXMediaAppUntrustedService::RemoveAllAXTreesFromAccessibilityService() {
   for (auto& [page_id, tree_manager] : pages_) {
     DCHECK(tree_manager);
     // Keep the OCR results to avoid recomputing them in case accessibility is
@@ -721,7 +721,7 @@ void AXMediaAppUntrustedHandler::RemoveAllAXTreesFromAccessibilityService() {
   RemoveDocumentTree();
 }
 
-void AXMediaAppUntrustedHandler::RemoveDocumentTree() {
+void AXMediaAppUntrustedService::RemoveDocumentTree() {
   if (!document_) {
     return;
   }
@@ -731,7 +731,7 @@ void AXMediaAppUntrustedHandler::RemoveDocumentTree() {
   document_.reset();
 }
 
-void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
+void AXMediaAppUntrustedService::SendAXTreeToAccessibilityService(
     const ui::AXTreeManager& manager,
     TreeSerializer& serializer) {
   DCHECK(manager.GetRoot());
@@ -758,7 +758,7 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
 #endif  // defined(USE_AURA)
 }
 
-void AXMediaAppUntrustedHandler::InitializeOcrService() {
+void AXMediaAppUntrustedService::InitializeOcrService() {
   if (IsOcrServiceEnabled()) {
     return;
   }
@@ -766,18 +766,18 @@ void AXMediaAppUntrustedHandler::InitializeOcrService() {
       Profile::FromBrowserContext(base::to_address(browser_context_));
   ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
       profile, screen_ai::mojom::OcrClientType::kMediaApp,
-      base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
+      base::BindOnce(&AXMediaAppUntrustedService::OnOCRServiceInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AXMediaAppUntrustedHandler::DisconnectFromOcrService() {
+void AXMediaAppUntrustedService::DisconnectFromOcrService() {
   ocr_.reset();
   // To avoid redoing OCR on the content if accessibility is temporarily turned
   // off / on, we keep the existing OCR results and do not reset the
   // `ocr_state_`.
 }
 
-void AXMediaAppUntrustedHandler::StartWatchingForAccessibilityEvents() {
+void AXMediaAppUntrustedService::StartWatchingForAccessibilityEvents() {
   if (auto* web_contents = GetMediaAppWebContents()) {
     // Accessibility for the Media App's 'RenderFrameHost' may not become ready
     // as soon as the assistive software is turned on. Hence we use any event on
@@ -787,11 +787,11 @@ void AXMediaAppUntrustedHandler::StartWatchingForAccessibilityEvents() {
   }
 }
 
-void AXMediaAppUntrustedHandler::StopWatchingForAccessibilityEvents() {
+void AXMediaAppUntrustedService::StopWatchingForAccessibilityEvents() {
   Observe(nullptr);
 }
 
-void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
+void AXMediaAppUntrustedService::ViewportUpdated(const gfx::RectF& viewport_box,
                                                  float scale_factor) {
   viewport_box_ = viewport_box;
   scale_factor_ = scale_factor;
@@ -822,7 +822,7 @@ void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
   SendAXTreeToAccessibilityService(*document_, *document_serializer_);
 }
 
-void AXMediaAppUntrustedHandler::UpdatePageLocation(
+void AXMediaAppUntrustedService::UpdatePageLocation(
     const std::string& page_id,
     const gfx::RectF& page_location) {
   // `bad_message_callback_` (used by `HasRendererTerminatedDueToBadPageId`)
@@ -857,7 +857,7 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
   }
 }
 
-void AXMediaAppUntrustedHandler::ShowOcrServiceFailedToInitializeMessage() {
+void AXMediaAppUntrustedService::ShowOcrServiceFailedToInitializeMessage() {
   DCHECK_EQ(ocr_status_, OcrStatus::kInitializationFailed);
   ui::AXTreeUpdate document_update;
   document_update.nodes = CreateStatusNodesWithLandmark();
@@ -866,7 +866,7 @@ void AXMediaAppUntrustedHandler::ShowOcrServiceFailedToInitializeMessage() {
   UpdateDocumentTree(document_update);
 }
 
-void AXMediaAppUntrustedHandler::ShowDocumentTree() {
+void AXMediaAppUntrustedService::ShowDocumentTree() {
   if (ocr_status_ == OcrStatus::kUninitialized) {
     return;
   }
@@ -984,7 +984,7 @@ void AXMediaAppUntrustedHandler::ShowDocumentTree() {
   UpdateDocumentTree(document_update);
 }
 
-void AXMediaAppUntrustedHandler::UpdateDocumentTree(
+void AXMediaAppUntrustedService::UpdateDocumentTree(
     ui::AXTreeUpdate& document_update) {
   // It wouldn't make sense to send an update with only a root node in it.
   if (document_update.nodes.size() <= 1u) {
@@ -1021,7 +1021,7 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree(
   SendAXTreeToAccessibilityService(*document_, *document_serializer_);
 }
 
-void AXMediaAppUntrustedHandler::StitchDocumentTree() {
+void AXMediaAppUntrustedService::StitchDocumentTree() {
   content::RenderFrameHost* render_frame_host = GetMediaAppRenderFrameHost();
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
     return;
@@ -1049,7 +1049,7 @@ void AXMediaAppUntrustedHandler::StitchDocumentTree() {
   }
 }
 
-bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
+bool AXMediaAppUntrustedService::IsOcrServiceEnabled() const {
   switch (ocr_status_) {
     case OcrStatus::kUninitialized:
     case OcrStatus::kInitializationFailed:
@@ -1066,7 +1066,7 @@ bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
   }
 }
 
-void AXMediaAppUntrustedHandler::PushDirtyPage(
+void AXMediaAppUntrustedService::PushDirtyPage(
     const std::string& dirty_page_id) {
   // If the dirty page is already marked as dirty, move it to the back of the
   // queue.
@@ -1079,7 +1079,7 @@ void AXMediaAppUntrustedHandler::PushDirtyPage(
   dirty_page_ids_.push_back(dirty_page_id);
 }
 
-std::string AXMediaAppUntrustedHandler::PopDirtyPage() {
+std::string AXMediaAppUntrustedService::PopDirtyPage() {
   if (dirty_page_ids_.empty()) {
     mojo::ReportBadMessage("`PopDirtyPage()` found no more dirty pages.");
   }
@@ -1088,7 +1088,7 @@ std::string AXMediaAppUntrustedHandler::PopDirtyPage() {
   return dirty_page_id;
 }
 
-void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
+void AXMediaAppUntrustedService::OcrNextDirtyPageIfAny() {
   if (!IsOcrServiceEnabled()) {
     return;
   }
@@ -1123,17 +1123,17 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
     // OnBitmapReceived() here.
     ocr_->PerformOCR(
         page_bitmap,
-        base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
+        base::BindOnce(&AXMediaAppUntrustedService::OnPageOcred,
                        weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
   } else {
     media_app_ui::mojom::OcrUntrustedPage::RequestBitmapCallback cb =
-        base::BindOnce(&AXMediaAppUntrustedHandler::OnBitmapReceived,
+        base::BindOnce(&AXMediaAppUntrustedService::OnBitmapReceived,
                        weak_ptr_factory_.GetWeakPtr(), dirty_page_id);
     media_app_page_->RequestBitmap(dirty_page_id, std::move(cb));
   }
 }
 
-void AXMediaAppUntrustedHandler::OnBitmapReceived(
+void AXMediaAppUntrustedService::OnBitmapReceived(
     const std::string& dirty_page_id,
     const SkBitmap& bitmap) {
   if (bitmap.drawsNothing()) {
@@ -1141,11 +1141,11 @@ void AXMediaAppUntrustedHandler::OnBitmapReceived(
     return;
   }
   ocr_->PerformOCR(
-      bitmap, base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
+      bitmap, base::BindOnce(&AXMediaAppUntrustedService::OnPageOcred,
                              weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
 }
 
-void AXMediaAppUntrustedHandler::OnPageOcred(
+void AXMediaAppUntrustedService::OnPageOcred(
     const std::string& dirty_page_id,
     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1238,7 +1238,7 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   OcrNextDirtyPageIfAny();
 }
 
-bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
+bool AXMediaAppUntrustedService::HasRendererTerminatedDueToBadPageId(
     const std::string& method_name,
     const std::string& page_id) {
   if (!page_metadata_.contains(page_id)) {
@@ -1256,7 +1256,7 @@ bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
 }
 
 std::unique_ptr<gfx::Transform>
-AXMediaAppUntrustedHandler::MakeTransformFromOffsetAndScale() const {
+AXMediaAppUntrustedService::MakeTransformFromOffsetAndScale() const {
   auto transform = std::make_unique<gfx::Transform>();
   float device_pixel_ratio = 1.0f;
   if (native_window_) {
