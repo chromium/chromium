@@ -528,7 +528,7 @@ LabeledSliderView* AudioDetailedView::CreateLabeledSliderView(
     if (device.active) {
       views::AsViewClass<QuickSettingsSlider>(
           views::AsViewClass<UnifiedVolumeView>(slider.get())->slider())
-          ->set_is_toggleable_volume_slider(true);
+          ->SetIsToggleableVolumeSlider(true);
     }
   }
 

@@ -276,6 +276,61 @@ TEST_P(SliderTest, AccessibleRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kMeter);
 }
 
+TEST_P(SliderTest, AccessibleValue) {
+  slider()->SetAllowedValues(nullptr);
+  // Initial test where slider is at 0 by default.
+  ui::AXNodeData data;
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  if (GetParam() == TestSliderType::kContinuousTest) {
+    EXPECT_EQ(std::string(""),
+              data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+  } else if (GetParam() == TestSliderType::kDiscreteEnd2EndTest) {
+    EXPECT_EQ(std::string(""),
+              data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+  } else {
+    EXPECT_EQ(std::string("10%"),
+              data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+  }
+
+  slider()->SetValue(0.1);
+  data = ui::AXNodeData();
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(std::string("10%"),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
+  slider()->SetValue(0.5);
+  data = ui::AXNodeData();
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(std::string("50%"),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
+// Checks the pending value update when the slider is invisible and becomes
+// visible again.
+TEST_P(SliderTest, SliderPendingValueUpdate) {
+  test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
+
+  // Initially, the slider should be visible.
+  EXPECT_TRUE(slider()->GetVisible());
+  slider()->SetValue(0.5);
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
+
+  // Set the slider to invisible.
+  slider()->SetVisible(false);
+  EXPECT_FALSE(slider()->GetVisible());
+
+  // Set a pending value update while the slider is invisible.
+  slider()->SetValue(0.8);
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
+
+  // Make the slider visible again.
+  slider()->SetVisible(true);
+
+  // Verify that the pending value update triggers the accessibility event.
+  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
+}
+
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 

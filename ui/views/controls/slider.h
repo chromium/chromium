@@ -103,6 +103,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void AddedToWidget() override;
 
  private:
   friend class test::SliderTestApi;
@@ -130,23 +131,24 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnFocus() override;
   void OnBlur() override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
-  void AddedToWidget() override;
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   void set_listener(SliderListener* listener) { listener_ = listener; }
 
-  void NotifyPendingAccessibilityValueChanged();
+  void ApplyPendingAccessibleValueUpdate();
 
   virtual SkColor GetThumbColor() const;
   virtual SkColor GetTroughColor() const;
   int GetSliderExtraPadding() const;
+
+  // Derived classes can override this method to update the accessible value.
+  virtual void UpdateAccessibleValue();
 
   raw_ptr<SliderListener, AcrossTasksDanglingUntriaged> listener_;
 
