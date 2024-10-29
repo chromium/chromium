@@ -717,40 +717,6 @@ bool WasEmailOverrideAppliedOnSuggestions(
       });
 }
 
-// Lookup an email field from the list of filled fields. Returns `nullptr` if
-// not found.
-const FormFieldData* FindEmailField(
-    const FormStructure& form_structure,
-    base::span<const FormFieldData*> safe_filled_fields,
-    base::span<const AutofillField*> cached_autofill_fields) {
-  const auto IsEmailField =
-      [&form_structure](const autofill::FormFieldData* field) {
-        const AutofillField* autofill_field =
-            form_structure.GetFieldById(field->global_id());
-        return autofill_field &&
-               autofill_field->Type().GetStorableType() == EMAIL_ADDRESS;
-      };
-
-  // TODO(crbug.com/40227496): Remove branch once `kAutofillFixValueSemantics`
-  // launches.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillFixValueSemantics)) {
-    if (auto email_field_it =
-            base::ranges::find_if(safe_filled_fields, IsEmailField);
-        email_field_it != safe_filled_fields.end()) {
-      return *email_field_it;
-    }
-  } else {
-    if (auto email_field_it =
-            base::ranges::find_if(cached_autofill_fields, IsEmailField);
-        email_field_it != cached_autofill_fields.end()) {
-      return *email_field_it;
-    }
-  }
-
-  return nullptr;
-}
-
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -2846,36 +2812,59 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     return;
   }
 
-  // Look for the email field in the list of filled fields.
-  if (const FormFieldData* email_field = FindEmailField(
-          form_structure, safe_filled_fields, safe_filled_autofill_fields)) {
-    const std::u16string original_email =
-        original_profile->GetRawInfo(EMAIL_ADDRESS);
-    // Note that the filled `profile` could have been updated with a plus
-    // address email override.
-    const std::u16string potential_email_override =
-        filled_profile->GetRawInfo(EMAIL_ADDRESS);
-    // If the user has selected a plus address email override, show a
-    // notification.
-    if (client().GetPlusAddressDelegate() &&
-        client().GetPlusAddressDelegate()->IsPlusAddress(
-            base::UTF16ToUTF8(potential_email_override)) &&
-        original_email != potential_email_override) {
-      // TODO(crbug.com/324557053): Filter out notifications for suggestion type
-      // `SuggestionType::kFillFullEmail`.
-      client().ShowPlusAddressEmailOverrideNotification(
-          base::UTF16ToUTF8(original_email),
-          base::BindOnce(&BrowserAutofillManager::OnEmailOverrideUndone,
-                         weak_ptr_factory_.GetWeakPtr(), original_email,
-                         form_structure.global_id(), email_field->global_id()));
-    }
+  const AutofillField* email_autofill_field = nullptr;
+  if (auto it = std::ranges::find(safe_filled_autofill_fields, EMAIL_ADDRESS,
+                                  [](const AutofillField* field) {
+                                    return field->Type().GetStorableType();
+                                  });
+      it != safe_filled_autofill_fields.end()) {
+    email_autofill_field = &**it;
+  }
+  if (!email_autofill_field) {
+    return;
+  }
+
+  // TODO: crbug.com/40227496 - Remove `email_field` when
+  // `kAutofillFixValueSemantics` is launched.
+  const FormFieldData* email_field = nullptr;
+  if (auto it = std::ranges::find(safe_filled_fields,
+                                  email_autofill_field->global_id(),
+                                  &FormFieldData::global_id);
+      it != safe_filled_fields.end()) {
+    email_field = *it;
+  }
+  if (!email_field) {
+    return;
+  }
+
+  const std::u16string original_email =
+      original_profile->GetRawInfo(EMAIL_ADDRESS);
+  // Note that the filled `profile` could have been updated with a plus
+  // address email override.
+  const std::u16string potential_email_override =
+      filled_profile->GetRawInfo(EMAIL_ADDRESS);
+  // If the user has selected a plus address email override, show a
+  // notification.
+  if (client().GetPlusAddressDelegate() &&
+      client().GetPlusAddressDelegate()->IsPlusAddress(
+          base::UTF16ToUTF8(potential_email_override)) &&
+      original_email != potential_email_override) {
+    // TODO(crbug.com/324557053): Filter out notifications for suggestion type
+    // `SuggestionType::kFillFullEmail`.
+    client().ShowPlusAddressEmailOverrideNotification(
+        base::UTF16ToUTF8(original_email),
+        base::BindOnce(&BrowserAutofillManager::OnEmailOverrideUndone,
+                       weak_ptr_factory_.GetWeakPtr(), original_email,
+                       form_structure.global_id(),
+                       email_autofill_field->global_id(), *email_field));
   }
 }
 
 void BrowserAutofillManager::OnEmailOverrideUndone(
     const std::u16string& original_email,
     const FormGlobalId& form_id,
-    const FieldGlobalId& field_id) {
+    const FieldGlobalId& field_id,
+    const FormFieldData& field_after_last_autofill) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form_id, field_id, &form_structure,
@@ -2887,11 +2876,21 @@ void BrowserAutofillManager::OnEmailOverrideUndone(
     return;
   }
 
+  const FormFieldData* field_with_latest_known_filled_value = autofill_field;
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
+    // The cached field's value is the field's initial value, but we want the
+    // value the field currently has in the DOM. The `field_after_last_autofill`
+    // is the best approximation of that we have at hand.
+    // TODO: crbug.com/40227496 - Remove when `kAutofillFixValueSemantics` is
+    // launched, because then `AutofillField` has the current value.
+    field_with_latest_known_filled_value = &field_after_last_autofill;
+  }
+
   // Fill the address profile's original email.
   form_filler_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      *autofill_field, autofill_field, original_email, FillingProduct::kAddress,
-      EMAIL_ADDRESS);
+      *field_with_latest_known_filled_value, autofill_field, original_email,
+      FillingProduct::kAddress, EMAIL_ADDRESS);
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
