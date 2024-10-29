@@ -384,8 +384,9 @@ static SVGPropertyBase* DiscreteSelectValue(AnimationMode animation_mode,
                                             float percentage,
                                             SVGPropertyBase* from,
                                             SVGPropertyBase* to) {
-  if ((animation_mode == kFromToAnimation && percentage > 0.5) ||
-      animation_mode == kToAnimation || percentage == 1) {
+  if (((animation_mode == kFromToAnimation || animation_mode == kToAnimation) &&
+       percentage > 0.5) ||
+      percentage == 1) {
     return to;
   }
   return from;
