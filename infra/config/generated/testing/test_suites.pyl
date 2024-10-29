@@ -2998,7 +2998,7 @@
     'chromeos_ctp_preuprev_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
-          'shards-30',
+          'shards-20',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
@@ -3019,7 +3019,7 @@
     'chromeos_ctp_preuprev_tests_slow_boards': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
-          'shards-50',
+          'shards-20',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
@@ -3041,7 +3041,7 @@
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
           'chromeos-tast-public-builder',
-          'shards-30',
+          'shards-20',
         ],
         'variants': [
           'CROS_PUBLIC_LKGM',
@@ -3073,7 +3073,7 @@
     'chromeos_jacuzzi_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
-          'shards-30',
+          'shards-20',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',

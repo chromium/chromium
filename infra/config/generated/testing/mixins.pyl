@@ -614,12 +614,6 @@
   'shards-20': {
     'shards': 20,
   },
-  'shards-30': {
-    'shards': 30,
-  },
-  'shards-50': {
-    'shards': 50,
-  },
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',

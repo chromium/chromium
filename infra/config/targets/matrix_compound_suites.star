@@ -169,7 +169,8 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 "chromeos-tast-public-builder",
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-30",
+                # TODO(b/375974548): revert to 30 shards after CTP issue fixes.
+                "shards-20",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -200,7 +201,8 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-30",
+                # TODO(b/375974548): revert to 30 shards after CTP issue fixes.
+                "shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -373,7 +375,8 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # Board with more capacity will run full tast test with many shards.
-                "shards-30",
+                # TODO(b/375974548): revert to 30 shards after CTP issue fixes.
+                "shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -398,7 +401,8 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-50",
+                # TODO(b/375974548): revert to 50 shards after CTP issue fixes.
+                "shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
