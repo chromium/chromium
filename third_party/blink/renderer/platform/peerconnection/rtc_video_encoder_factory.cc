@@ -228,8 +228,6 @@ struct SupportedFormats {
   bool unknown = true;
   std::vector<media::VideoCodecProfile> profiles
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
-  std::vector<std::vector<media::SVCScalabilityMode>> scalability_modes
-      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
   std::vector<webrtc::SdpVideoFormat> sdp_formats
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
 };
@@ -274,20 +272,15 @@ SupportedFormats GetSupportedFormatsInternal(
           format->parameters[cricket::kH265FmtpLevelId] =
               webrtc::H265LevelToString(webrtc::H265Level::kLevel3_1);
           low_priority_formats.profiles.push_back(profile.profile);
-          low_priority_formats.scalability_modes.push_back(
-              profile.scalability_modes);
           low_priority_formats.sdp_formats.push_back(level_3_1_format);
         }
 
         low_priority_formats.profiles.push_back(profile.profile);
-        low_priority_formats.scalability_modes.push_back(
-            profile.scalability_modes);
         low_priority_formats.sdp_formats.push_back(std::move(*format));
         continue;
       }
 #endif  // BUILDFLAG(RTC_USE_H265)
       supported_formats.profiles.push_back(profile.profile);
-      supported_formats.scalability_modes.push_back(profile.scalability_modes);
       supported_formats.sdp_formats.push_back(std::move(*format));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -301,8 +294,6 @@ SupportedFormats GetSupportedFormatsInternal(
 #endif
       if (kShouldAddH264Cbp) {
         supported_formats.profiles.push_back(profile.profile);
-        supported_formats.scalability_modes.push_back(
-            profile.scalability_modes);
         cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
             &supported_formats.sdp_formats);
       }
@@ -313,18 +304,12 @@ SupportedFormats GetSupportedFormatsInternal(
   supported_formats.profiles.insert(supported_formats.profiles.end(),
                                     low_priority_formats.profiles.begin(),
                                     low_priority_formats.profiles.end());
-  supported_formats.scalability_modes.insert(
-      supported_formats.scalability_modes.end(),
-      low_priority_formats.scalability_modes.begin(),
-      low_priority_formats.scalability_modes.end());
   supported_formats.sdp_formats.insert(supported_formats.sdp_formats.end(),
                                        low_priority_formats.sdp_formats.begin(),
                                        low_priority_formats.sdp_formats.end());
 
   DCHECK_EQ(supported_formats.profiles.size(),
             supported_formats.sdp_formats.size());
-  DCHECK_EQ(supported_formats.profiles.size(),
-            supported_formats.scalability_modes.size());
 
   return supported_formats;
 }
@@ -343,18 +328,6 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
   }
 
   return is_constrained_h264;
-}
-
-bool IsScalabiltiyModeSupported(
-    const std::string& scalability_mode,
-    const std::vector<media::SVCScalabilityMode>& supported_scalability_modes) {
-  for (const auto& supported_scalability_mode : supported_scalability_modes) {
-    if (scalability_mode ==
-        media::GetScalabilityModeName(supported_scalability_mode)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // anonymous namespace
@@ -471,9 +444,14 @@ RTCVideoEncoderFactory::QueryCodecSupport(
 
   for (size_t i = 0; i < supported_formats.sdp_formats.size(); ++i) {
     if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
+      std::optional<webrtc::ScalabilityMode> mode =
+          scalability_mode.has_value()
+              ? webrtc::ScalabilityModeFromString(scalability_mode.value())
+              : std::nullopt;
       if (!scalability_mode ||
-          IsScalabiltiyModeSupported(*scalability_mode,
-                                     supported_formats.scalability_modes[i])) {
+          (mode.has_value() &&
+           base::Contains(supported_formats.sdp_formats[i].scalability_modes,
+                          mode.value()))) {
         return {/*is_supported=*/true, /*is_power_efficient=*/true};
       }
       break;
