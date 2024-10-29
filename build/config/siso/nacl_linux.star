@@ -167,7 +167,7 @@ def __step_config(ctx, step_config):
             "action": "clang_newlib_x64_link",
             "remote": False,
         },
-        # saigo_newlib (irt_x64)
+        # saigo_newlib (irt_x64, irt_arm)
         {
             "name": "nacl/saigo_newlib/x86_64-nacl-clang++",
             "action": "irt_x64_cxx",
@@ -192,17 +192,17 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "nacl/saigo_newlib/alink",
-            "action": "(.*_)?irt_x64_alink",
+            "action": "(.*_)?irt_(x64|arm)_alink",
             "remote": False,
         },
         {
             "name": "nacl/saigo_newlib/solink",
-            "action": "(.*_)?irt_x64_solink",
+            "action": "(.*_)?irt_(x64|arm)_solink",
             "remote": False,
         },
         {
             "name": "nacl/saigo_newlib/link",
-            "action": "(.*_)?irt_x64_link",
+            "action": "(.*_)?irt_(x64|arm)_link",
             "remote": False,
         },
         # nacl_helper_arm32
@@ -233,8 +233,28 @@ def __step_config(ctx, step_config):
         },
         # nacl bootstrap
         {
+            "name": "nacl/bootstrap/cc",
+            "action": "nacl_bootstrap_cc",
+            "remote": False,
+        },
+        {
+            "name": "nacl/bootstrap/cxx",
+            "action": "nacl_bootstrap_cxx",
+            "remote": False,
+        },
+        {
             "name": "nacl/bootstrap/alink",
             "action": "nacl_bootstrap_alink",
+            "remote": False,
+        },
+        {
+            "name": "nacl/bootstrap/solink",
+            "action": "nacl_bootstrap_solink",
+            "remote": False,
+        },
+        {
+            "name": "nacl/bootstrap/link",
+            "action": "nacl_bootstrap_link",
             "remote": False,
         },
     ])
