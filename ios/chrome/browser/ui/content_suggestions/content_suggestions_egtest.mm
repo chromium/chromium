@@ -121,6 +121,9 @@ void TapSecondaryActionButton() {
     std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
                                  kMagicStackMostVisitedModuleParam + "/true";
     config.additional_args.push_back("--enable-features=" + enable_mvt_arg);
+    config.features_disabled.push_back(
+        segmentation_platform::features::
+            kSegmentationPlatformTipsEphemeralCard);
   }
   return config;
 }

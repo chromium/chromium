@@ -96,6 +96,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//base/test:test_support",
+    "//components/segmentation_platform/public",
     "//components/sync/base:features",
     "//components/url_formatter",
     "//components/visited_url_ranking/public",

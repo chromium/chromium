@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
 #import "components/visited_url_ranking/public/features.h"
@@ -121,6 +122,8 @@ NSString* HostnameFromGURL(GURL URL) {
   config.features_disabled.push_back(
       visited_url_ranking::features::
           kVisitedURLRankingHistoryVisibilityScoreFilter);
+  config.features_disabled.push_back(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
   return config;
 }
 
