@@ -191,7 +191,11 @@ void OnTempFileUploaded(base::WeakPtr<ScannerCommandDelegate> delegate,
         base::DoNothingWithBoundArgs(std::move(temp_file)));
   };
 
-  if (error != google_apis::ApiErrorCode::HTTP_CREATED) {
+  // `FakeDriveService` returns `HTTP_CREATED` when multipart files are uploaded
+  // successfully. The real API returns `HTTP_SUCCESS`.
+  // Either one indicates a successful upload.
+  if (error != google_apis::ApiErrorCode::HTTP_SUCCESS &&
+      error != google_apis::ApiErrorCode::HTTP_CREATED) {
     std::move(callback).Run(false);
     return;
   }
