@@ -59,7 +59,10 @@ export class ExtensionsMv2DeprecationPanelElement extends
       /**
        * Whether the panel title should be shown.
        */
-      showTitle: {type: Boolean},
+      showTitle: {
+        type: Boolean,
+        reflect: true,
+      },
 
       /**
        * The string for the panel's header.

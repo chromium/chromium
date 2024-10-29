@@ -171,9 +171,19 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
        */
       activityLogItem_: Object,
 
-      extensions_: Array,
+      extensions_: {
+        type: Array,
+        value: () => {
+          return [];
+        },
+      },
 
-      apps_: Array,
+      apps_: {
+        type: Array,
+        value: () => {
+          return [];
+        },
+      },
 
       /**
        * Prevents page content from showing before data is first loaded.
@@ -482,7 +492,23 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     if (insertBeforeChild === -1) {
       insertBeforeChild = this.get(listId).length;
     }
-    this.splice(listId, insertBeforeChild, 0, item);
+    this.updateList_(listId, insertBeforeChild, 0, item);
+  }
+
+  // Intentionally creating a new array reference to notify the Lit item-list
+  // child via data bindings.
+  private updateList_(
+      listId: string, index: number, removeCount: number,
+      newItem?: chrome.developerPrivate.ExtensionInfo) {
+    assert(listId === 'extensions_' || listId === 'apps_');
+    const list = listId === 'extensions_' ? this.extensions_ : this.apps_;
+    if (newItem) {
+      list.splice(index, removeCount, newItem);
+    } else {
+      list.splice(index, removeCount);
+    }
+    listId === 'extensions_' ? this.extensions_ = list.slice() :
+                               this.apps_ = list.slice();
   }
 
   /**
@@ -493,7 +519,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       item: chrome.developerPrivate.ExtensionInfo) {
     // We should never try and update a non-existent item.
     assert(index >= 0);
-    this.set([listId, index], item);
+    this.updateList_(listId, index, 1, item);
 
     // Update the subpage if it is open and displaying the item. If it's not
     // open, we don't update the data even if it's displaying that item. We'll
@@ -552,9 +578,13 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
 
     // We should never try and remove a non-existent item.
     assert(index >= 0);
-    this.splice(listId, index, 1);
+    this.updateList_(listId, index, 1);
     if (this.currentPage_!.page === Page.LIST) {
-      this.focusAfterItemRemoved_(listId, index);
+      // Wait for the items list to be updated with the new value before trying
+      // to focus an item.
+      this.$['items-list'].updateComplete.then(() => {
+        this.focusAfterItemRemoved_(listId, index);
+      });
     } else if (
         (this.currentPage_!.page === Page.ACTIVITY_LOG ||
          this.currentPage_!.page === Page.DETAILS ||

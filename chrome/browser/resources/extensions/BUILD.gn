@@ -79,6 +79,7 @@ build_webui("build") {
     "host_permissions_toggle_list.css",
     "install_warnings_dialog.css",
     "item.css",
+    "item_list.css",
     "keyboard_shortcuts.css",
     "load_error.css",
     "mv2_deprecation_panel.css",

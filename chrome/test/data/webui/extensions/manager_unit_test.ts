@@ -266,6 +266,7 @@ suite('ExtensionManagerUnitTest', function() {
     // After removing `extension1`, focus should go to the remove button of
     // `extension2` which is now the first extension shown.
     await flushTasks();
+    await microtasksFinished();
     assertEquals(2, getExtensions().length);
     assertEquals(
         getDeepActiveElement(), itemList.getRemoveButton(extension2.id)!);
@@ -278,6 +279,7 @@ suite('ExtensionManagerUnitTest', function() {
     // Since `extension3` cannot be uninstalled, focus should go to its details
     // button.
     await flushTasks();
+    await microtasksFinished();
     assertEquals(1, getExtensions().length);
     assertEquals(
         getDeepActiveElement(), itemList.getDetailsButton(extension3.id)!);

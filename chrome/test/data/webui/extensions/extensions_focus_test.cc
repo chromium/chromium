@@ -15,6 +15,18 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutInputTest, Basic) {
           "runMochaTest('ExtensionShortcutInputTest', 'Basic')");
 }
 
+class CrExtensionsFocusTest : public WebUIMochaFocusTest {
+ protected:
+  CrExtensionsFocusTest() {
+    set_test_loader_host(chrome::kChromeUIExtensionsHost);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UninstallFocus) {
+  RunTest("extensions/manager_unit_test.js",
+          "runMochaTest('ExtensionManagerUnitTest', 'UninstallFocus')");
+}
+
 class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {
  protected:
   void OnWebContentsAvailable(content::WebContents* web_contents) override {

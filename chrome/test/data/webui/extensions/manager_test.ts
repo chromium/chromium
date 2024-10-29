@@ -43,7 +43,7 @@ suite('ExtensionManagerTest', function() {
     return manager.shadowRoot!.querySelector('extensions-item-list')!.apps;
   }
 
-  test('ItemListVisibility', function() {
+  test('ItemListVisibility', async () => {
     function getExtensionByName(name: string):
         chrome.developerPrivate.ExtensionInfo|null {
       return getExtensions().find(el => el.name === name) || null;
@@ -68,6 +68,7 @@ suite('ExtensionManagerTest', function() {
       item_id: extension.id,
     });
     flush();
+    await microtasksFinished();
     assertFalse(listHasItemWithName('My extension 1'));
 
     target.dispatch<chrome.developerPrivate.EventData>({
@@ -76,6 +77,7 @@ suite('ExtensionManagerTest', function() {
       extensionInfo: extension,
     });
     flush();
+    await microtasksFinished();
     assertTrue(listHasItemWithName('My extension 1'));
   });
 
