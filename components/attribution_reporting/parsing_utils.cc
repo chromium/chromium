@@ -83,7 +83,7 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   out << "0x";
   out.setf(out.hex, out.basefield);
   out << value;
-  return out.str();
+  return std::move(out).str();
 }
 
 base::expected<std::optional<uint64_t>, ParseError> ParseUint64(

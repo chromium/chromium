@@ -319,7 +319,7 @@ class AttributionInteropParser {
     }
 
     if (has_error_) {
-      return base::unexpected(error_stream_.str());
+      return base::unexpected(std::move(error_stream_).str());
     }
     return base::ok();
   }
