@@ -11,6 +11,7 @@ import("//extensions/buildflags/buildflags.gni")
 extensions_api_schema_files_ = [
   "alarms.idl",
   "i18n.json",
+  "idle.json",
   "runtime.json",
   "storage.json",
   "test.json",
@@ -59,7 +60,6 @@ if (enable_extensions) {
     "management.json",
     "hid.idl",
     "icon_variants.idl",
-    "idle.json",
     "metrics_private.json",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
