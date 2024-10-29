@@ -137,7 +137,14 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
 
 GeneratedThirdPartyCookieBlockingSettingPref::
     GeneratedThirdPartyCookieBlockingSettingPref(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  user_prefs_registrar_.Init(profile->GetPrefs());
+  user_prefs_registrar_.Add(
+      prefs::kCookieControlsMode,
+      base::BindRepeating(&GeneratedThirdPartyCookieBlockingSettingPref::
+                              OnSourcePreferencesChanged,
+                          base::Unretained(this)));
+}
 
 GeneratedThirdPartyCookieBlockingSettingPref::
     ~GeneratedThirdPartyCookieBlockingSettingPref() = default;
@@ -189,6 +196,7 @@ GeneratedThirdPartyCookieBlockingSettingPref::GetPrefObject() const {
   const PrefService::Preference* cookie_controls_mode_pref =
       profile_->GetPrefs()->FindPreference(prefs::kCookieControlsMode);
 
+  pref_object.key = kThirdPartyCookieBlockingSetting;
   pref_object.type = settings_api::PrefType::kNumber;
   pref_object.value = base::Value(static_cast<int>(GetValue()));
   pref_object.enforcement = GetEnforcement(cookie_controls_mode_pref);
@@ -198,6 +206,11 @@ GeneratedThirdPartyCookieBlockingSettingPref::GetPrefObject() const {
   }
 
   return pref_object;
+}
+
+void GeneratedThirdPartyCookieBlockingSettingPref::
+    OnSourcePreferencesChanged() {
+  NotifyObservers(kThirdPartyCookieBlockingSetting);
 }
 
 }  // namespace content_settings

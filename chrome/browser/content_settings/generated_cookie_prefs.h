@@ -68,8 +68,11 @@ class GeneratedThirdPartyCookieBlockingSettingPref
   extensions::settings_private::SetPrefResult SetPrefResult(
       CookieControlsMode value);
   ThirdPartyCookieBlockingSetting GetValue() const;
+  // Fired when preferences used to generate this preference are changed.
+  void OnSourcePreferencesChanged();
 
   const raw_ptr<Profile> profile_;
+  PrefChangeRegistrar user_prefs_registrar_;
 };
 
 }  // namespace content_settings
