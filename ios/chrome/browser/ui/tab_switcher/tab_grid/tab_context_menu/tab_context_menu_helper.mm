@@ -327,52 +327,79 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // Shared actions.
+  NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
   if (isShared) {
-    [menuElements addObject:[actionFactory actionToManageTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
-                  }]];
+    [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                     [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
+                   }]];
   } else if (IsSharedTabGroupsCreateEnabled(_profile)) {
-    [menuElements addObject:[actionFactory actionToShareTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];
-                  }]];
+    [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
+                     [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];
+                   }]];
+  }
+  if ([sharedActions count] > 0) {
+    [menuElements addObject:[UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:[sharedActions copy]]];
   }
 
   // Edit actions.
-  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate editTabGroup:weakGroup
-                                                   incognito:incognito];
-                }]];
+  NSMutableArray<UIAction*>* editActions = [[NSMutableArray alloc] init];
+  [editActions addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                 [weakSelf.contextMenuDelegate editTabGroup:weakGroup
+                                                  incognito:incognito];
+               }]];
 
   if (!isShared) {
-    [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
-                                                        incognito:incognito
-                                                       sourceView:cell];
-                  }]];
+    [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                   [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
+                                                       incognito:incognito
+                                                      sourceView:cell];
+                 }]];
+  }
+  if ([editActions count] > 0) {
+    [menuElements addObject:[UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:[editActions copy]]];
   }
 
   // Destructive actions.
+  NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
   if (IsTabGroupSyncEnabled()) {
-    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
-                                                      incognito:incognito];
-                  }]];
+    [destructiveActions
+        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+          [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
+                                            incognito:incognito];
+        }]];
     if (!incognito) {
-      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                                         incognito:incognito
-                                                        sourceView:cell];
-                    }]];
+      [destructiveActions
+          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+            [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                               incognito:incognito
+                                              sourceView:cell];
+          }]];
     }
   } else {
-    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                                       incognito:incognito
-                                                      sourceView:cell];
-                  }]];
+    [destructiveActions
+        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+          [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                             incognito:incognito
+                                            sourceView:cell];
+        }]];
+  }
+  if ([destructiveActions count] > 0) {
+    [menuElements addObject:[UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:[destructiveActions copy]]];
   }
 
-  return menuElements;
+  return [menuElements copy];
 }
 
 #pragma mark - Private
