@@ -409,9 +409,7 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
                          user_settings_->IsInitialSyncFeatureSetupComplete());
 
   if (registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
-          .has_value() &&
-      base::FeatureList::IsEnabled(
-          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
+          .has_value()) {
     CHECK(registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_
               ->is_valid());
     registered_trusted_vault_auto_upgrade_synthetic_field_trial_group_

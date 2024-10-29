@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "components/browser_sync/browser_sync_switches.h"
@@ -14,7 +13,6 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -22,7 +20,6 @@
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -107,12 +104,6 @@ void IOSChromeSyncClient::SetPasswordSyncAllowedChangeCb(
 void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
-
-  if (!base::FeatureList::IsEnabled(
-          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
-    // Disabled via variations, as additional safeguard.
-    return;
-  }
 
   // If `trusted_vault_synthetic_field_trial_registered` is true, and given that
   // each SyncService invokes this function at most once, it means that multiple

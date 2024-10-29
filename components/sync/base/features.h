@@ -182,10 +182,6 @@ inline constexpr base::FeatureParam<double>
         &kSyncIncreaseNudgeDelayForSingleClient,
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
-// Guards the registration of synthetic field trials based on information in
-// Nigori's TrustedVaultDebugInfo.
-BASE_DECLARE_FEATURE(kTrustedVaultAutoUpgradeSyntheticFieldTrial);
-
 // If enabled, uses new fields ThemeSpecifics to replace theme prefs, thus
 // avoiding use of preferences to sync themes.
 BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);

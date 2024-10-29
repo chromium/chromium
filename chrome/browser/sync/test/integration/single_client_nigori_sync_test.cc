@@ -294,10 +294,6 @@ class SingleClientNigoriSyncTest : public SyncTest {
                                            &synthetic_trials);
     return synthetic_trials;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial};
 };
 
 class SingleClientNigoriSyncTestWithNotAwaitQuiescence

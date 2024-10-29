@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
@@ -22,7 +21,6 @@
 #include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -174,12 +172,6 @@ void ChromeSyncClient::SetPasswordSyncAllowedChangeCb(
 void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
-
-  if (!base::FeatureList::IsEnabled(
-          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
-    // Disabled via variations, as additional safeguard.
-    return;
-  }
 
   // If `trusted_vault_synthetic_field_trial_registered` is true, and given that
   // each SyncService invokes this function at most once, it means that multiple
