@@ -128,11 +128,10 @@ Matcher<Suggestion> EqualsOptInToAccountThenGeneratePasswordSuggestion() {
       Suggestion::Icon::kKey);
 }
 
-Matcher<Suggestion> EqualsEntryToOptInToAccountStorageThenFill(
-    bool has_passkey_sync) {
+Matcher<Suggestion> EqualsEntryToOptInToAccountStorageThenFill() {
   return EqualsSuggestion(
       SuggestionType::kPasswordAccountStorageOptIn,
-      has_passkey_sync
+      syncer::IsWebauthnCredentialSyncEnabled()
           ? l10n_util::GetStringUTF16(
                 IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS)
           : l10n_util::GetStringUTF16(
@@ -678,8 +677,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               password_label(8u),
                               /*realm_label=*/u"", favicon()),
                           EqualsOptInToAccountThenGeneratePasswordSuggestion(),
-                          EqualsEntryToOptInToAccountStorageThenFill(
-                              /*has_passkey_sync=*/false),
+                          EqualsEntryToOptInToAccountStorageThenFill(),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
 }
@@ -700,8 +698,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
       ShowWebAuthnCredentials(false));
 
   EXPECT_THAT(suggestions,
-              ElementsAre(EqualsEntryToOptInToAccountStorageThenFill(
-                  /*has_passkey_sync=*/false)));
+              ElementsAre(EqualsEntryToOptInToAccountStorageThenFill()));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -721,8 +718,7 @@ TEST_F(PasswordSuggestionGeneratorTest, OptInToAccountStorage_HasPasskeySync) {
                               SuggestionType::kPasswordEntry, u"username",
                               password_label(8u),
                               /*realm_label=*/u"", favicon()),
-                          EqualsEntryToOptInToAccountStorageThenFill(
-                              /*has_passkey_sync=*/true),
+                          EqualsEntryToOptInToAccountStorageThenFill(),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
 }
@@ -836,8 +832,7 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
                                          password_label(12u),
                                          /*realm_label=*/u"", favicon()),
           EqualsOptInToAccountThenGeneratePasswordSuggestion(),
-          EqualsEntryToOptInToAccountStorageThenFill(
-              /*has_passkey_sync=*/false),
+          EqualsEntryToOptInToAccountStorageThenFill(),
           EqualsAccountStorageResignin(),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion(

@@ -21,6 +21,16 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+// The expected table view section where the UI is displayed with and without
+// the webauthn credential sync feature enabled.
+int ExpectedSection() {
+  return syncer::IsWebauthnCredentialSyncEnabled() ? 3 : 2;
+}
+
+}  // namespace
+
 class PasswordSettingsViewControllerTest : public PlatformTest {
  protected:
   PasswordSettingsViewControllerTest() { CreateController(); }
@@ -141,7 +151,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   TableViewImageItem* changeGPMPinDescription =
       static_cast<TableViewImageItem*>(
-          GetTableViewItem(/*section=*/2, /*item=*/0));
+          GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/0));
   EXPECT_NSEQ(changeGPMPinDescription.title,
               l10n_util::GetNSString(
                   IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_TITLE));
@@ -151,7 +161,7 @@ TEST_F(PasswordSettingsViewControllerTest,
           IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION));
 
   TableViewTextItem* changeGPMPinButton = static_cast<TableViewTextItem*>(
-      GetTableViewItem(/*section=*/2, /*item=*/1));
+      GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/1));
   EXPECT_NSEQ(changeGPMPinButton.text,
               l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN));
 }
@@ -167,7 +177,8 @@ TEST_F(PasswordSettingsViewControllerTest,
   controller().presentationDelegate = mockPresentationDelegate;
 
   OCMStub([mockPresentationDelegate showChangeGPMPinDialog]);
-  NSIndexPath* pinButtonIndexPath = [NSIndexPath indexPathForRow:1 inSection:2];
+  NSIndexPath* pinButtonIndexPath =
+      [NSIndexPath indexPathForRow:1 inSection:ExpectedSection()];
   [controller() tableView:controller().tableView
       didSelectRowAtIndexPath:pinButtonIndexPath];
   EXPECT_OCMOCK_VERIFY(mockPresentationDelegate);
@@ -182,7 +193,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   TableViewImageItem* onDeviceEncryptionOptedInDescription =
       static_cast<TableViewImageItem*>(
-          GetTableViewItem(/*section=*/2, /*item=*/0));
+          GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/0));
   EXPECT_NSEQ(
       onDeviceEncryptionOptedInDescription.title,
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION));
@@ -192,7 +203,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   TableViewTextItem* onDeviceEncryptionOptedInLearnMoreButton =
       static_cast<TableViewTextItem*>(
-          GetTableViewItem(/*section=*/2, /*item=*/1));
+          GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/1));
   EXPECT_NSEQ(
       onDeviceEncryptionOptedInLearnMoreButton.text,
       l10n_util::GetNSString(
@@ -208,7 +219,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   TableViewImageItem* onDeviceEncryptionOptInDescription =
       static_cast<TableViewImageItem*>(
-          GetTableViewItem(/*section=*/2, /*item=*/0));
+          GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/0));
   EXPECT_NSEQ(
       onDeviceEncryptionOptInDescription.title,
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION));
@@ -218,7 +229,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   TableViewTextItem* setUpOnDeviceEncryptionButton =
       static_cast<TableViewTextItem*>(
-          GetTableViewItem(/*section=*/2, /*item=*/1));
+          GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/1));
   EXPECT_NSEQ(setUpOnDeviceEncryptionButton.text,
               l10n_util::GetNSString(
                   IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP));
@@ -230,7 +241,8 @@ TEST_F(PasswordSettingsViewControllerTest,
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setCanExportPasswords:NO];
   [consumer updateExportPasswordsButton];
-  EXPECT_TRUE(GetTableViewItem(/*section=*/2, /*item=*/0).accessibilityTraits &
+  EXPECT_TRUE(GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/0)
+                  .accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
 
@@ -240,6 +252,7 @@ TEST_F(PasswordSettingsViewControllerTest,
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setCanExportPasswords:YES];
   [consumer updateExportPasswordsButton];
-  EXPECT_FALSE(GetTableViewItem(/*section=*/2, /*item=*/0).accessibilityTraits &
+  EXPECT_FALSE(GetTableViewItem(/*section=*/ExpectedSection(), /*item=*/0)
+                   .accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
 }
