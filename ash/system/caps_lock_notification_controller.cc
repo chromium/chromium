@@ -29,10 +29,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 using message_center::MessageCenter;
 using message_center::Notification;
 using SystemTrayButtonSize = ash::UnifiedSystemTrayModel::SystemTrayButtonSize;
@@ -61,11 +57,7 @@ int GetMessageStringId() {
     if (base::ranges::find(keyboard->modifier_keys,
                            ui::mojom::ModifierKey::kFunction) !=
         keyboard->modifier_keys.end()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_FN;
-#else
-      return IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_FN_SEARCH;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_FN_QUICK_INSERT;
     }
 
     // If the search key is remapped to kCapsLock, return search key message id.

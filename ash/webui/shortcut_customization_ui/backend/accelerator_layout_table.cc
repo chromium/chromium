@@ -1392,7 +1392,7 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kTogglePicker,
         AcceleratorLayoutDetails(AcceleratorAction::kTogglePicker,
-                                 IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_PICKER,
+                                 IDS_ASH_ACCELERATOR_DESCRIPTION_QUICK_INSERT,
                                  mojom::AcceleratorCategory::kText,
                                  mojom::AcceleratorSubcategory::kTextEditing,
                                  /*locked=*/false,

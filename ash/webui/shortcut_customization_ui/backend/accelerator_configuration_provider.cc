@@ -609,12 +609,6 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
       continue;
     }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (layout_id == AcceleratorAction::kTogglePicker &&
-        Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
-      layout->description_string_id = IDS_ASH_ACCELERATOR_DESCRIPTION_RIGHT_ALT;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     layout_infos_.push_back(LayoutInfoToMojom(*layout));
     accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
         *layout;

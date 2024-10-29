@@ -6136,6 +6136,10 @@
             that includes right alt key." translateable="false">
           Press a new shortcut without right alt.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE" desc="The status message that displays when user press a key combination
+            that includes right alt key.">
+          Quick Insert can't be used for custom shortcuts.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEACH_WITH_FUNCTION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
             that includes the search/launcher key with a function key.">
@@ -6169,6 +6173,9 @@
             desc="The placeholder text that appears in the input box where the
             user is required to press a key combination for a shortcut.">
           key
+        </message>
+        <message name="IDS_KEYBOARD_QUICK_INSERT_LABEL" desc="In keyboard subpage, the item for the super insert key.">
+          quick insert
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys.">
           or

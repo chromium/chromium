@@ -13,6 +13,7 @@
 #include "ash/style/typography.h"
 #include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -25,7 +26,6 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/icons/vector_icons.h"
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
@@ -88,7 +88,7 @@ PickerShortcutHintView::PickerShortcutHintView(
               kShortcutIconSize)));
       shortcut_text_ = base::StrCat(
           {fn_label->GetText(), plus_label->GetText(),
-           l10n_util::GetStringUTF16(IDS_KEYBOARD_RIGHT_ALT_LABEL)});
+           l10n_util::GetStringUTF16(IDS_KEYBOARD_QUICK_INSERT_LABEL)});
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
     }

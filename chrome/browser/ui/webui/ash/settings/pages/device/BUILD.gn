@@ -59,6 +59,7 @@ static_library("device") {
     "//chrome/common:chrome_features",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/constants",
+    "//chromeos/strings",
     "//components/spellcheck/browser",
     "//components/user_manager",
     "//content/public/browser",

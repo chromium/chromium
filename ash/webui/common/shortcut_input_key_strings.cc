@@ -12,10 +12,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/ash/keyboard_capability.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 
 namespace common {
@@ -102,18 +98,13 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
       {"inputKeyPlaceholder", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER},
   };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
     html_source->AddLocalizedString("iconLabelRightAlt",
-                                    IDS_KEYBOARD_RIGHT_ALT_LABEL);
+                                    IDS_KEYBOARD_QUICK_INSERT_LABEL);
   } else {
     html_source->AddLocalizedString(
         "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
   }
-#else
-  html_source->AddLocalizedString(
-      "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-#endif
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();

@@ -40,10 +40,6 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 
 namespace {
@@ -250,26 +246,20 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
   };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // For official builds, only add the real string if the feature is enabled.
   if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
     source->AddLocalizedString(
         "blockRightAltKey",
-        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY_ERROR_MESSAGE);
+        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE);
     source->AddLocalizedString("iconLabelRightAlt",
-                               IDS_KEYBOARD_RIGHT_ALT_LABEL);
+                               IDS_KEYBOARD_QUICK_INSERT_LABEL);
   } else {
     source->AddLocalizedString("blockRightAltKey",
                                IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
     source->AddLocalizedString(
         "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
   }
-#else
-  source->AddLocalizedString("blockRightAltKey",
-                             IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
-  source->AddLocalizedString("iconLabelRightAlt",
-                             IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-#endif
+
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",
                     kShortcutCustomizationLearnMoreURL);
