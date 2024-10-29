@@ -179,8 +179,8 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     base::Value::Dict unused_global_network_config;
     if (!chromeos::onc::ParseAndValidateOncForImport(
             onc_blob, onc::ONCSource::ONC_SOURCE_USER_POLICY,
-            "" /* no passphrase */, &unused_network_configs,
-            &unused_global_network_config, &certificates)) {
+            &unused_network_configs, &unused_global_network_config,
+            &certificates)) {
       LOG(ERROR) << "Value of onc policy has invalid format =" << onc_blob;
     }
   }

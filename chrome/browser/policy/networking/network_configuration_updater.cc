@@ -190,8 +190,8 @@ void NetworkConfigurationUpdater::ParseCurrentPolicy(
                                    ? policy_value->GetString()
                                    : std::string();
   chromeos::onc::ParseAndValidateOncForImport(
-      onc_blob, onc_source_, std::string() /* no passphrase */, network_configs,
-      global_network_config, certificates);
+      onc_blob, onc_source_, network_configs, global_network_config,
+      certificates);
 }
 
 const std::vector<OncParsedCertificates::ClientCertificate>&

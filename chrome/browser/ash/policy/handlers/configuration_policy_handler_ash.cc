@@ -308,7 +308,7 @@ void NetworkConfigurationPolicyHandler::ApplyPolicySettings(
   base::Value::List certificates;
   base::Value::Dict global_network_config;
   chromeos::onc::ParseAndValidateOncForImport(
-      onc_blob, onc_source_, "", &network_configs, &global_network_config,
+      onc_blob, onc_source_, &network_configs, &global_network_config,
       &certificates);
 
   // Currently, only the per-network configuration is stored in a pref. Ignore
