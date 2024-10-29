@@ -191,6 +191,28 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "nacl/saigo_newlib/arm-nacl-clang++",
+            "action": "irt_arm_cxx",
+            "command_prefix": "../../native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang++",
+            "inputs": [
+                "native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang++",
+            ],
+            "remote": True,
+            "input_root_absolute_path": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "nacl/saigo_newlib/arm-nacl-clang",
+            "action": "irt_arm_cc",
+            "command_prefix": "../../native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang",
+            "inputs": [
+                "native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang",
+            ],
+            "remote": True,
+            "input_root_absolute_path": True,
+            "timeout": "2m",
+        },
+        {
             "name": "nacl/saigo_newlib/alink",
             "action": "(.*_)?irt_(x64|arm)_alink",
             "remote": False,
@@ -275,6 +297,8 @@ def __step_config(ctx, step_config):
         "native_client/toolchain/linux_x86/saigo_newlib:headers": [
             "native_client/toolchain/linux_x86/saigo_newlib/bin/x86_64-nacl-clang",
             "native_client/toolchain/linux_x86/saigo_newlib/bin/x86_64-nacl-clang++",
+            "native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang",
+            "native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang++",
             "native_client/toolchain/linux_x86/saigo_newlib:header-files",
         ],
         "native_client/toolchain/linux_x86/pnacl_newlib/bin/pnacl-clang": [
@@ -320,6 +344,12 @@ def __step_config(ctx, step_config):
             "native_client/toolchain/linux_x86/nacl_x86_glibc/lib/gcc/x86_64-nacl:crtbegin",
             "native_client/toolchain/linux_x86/nacl_x86_glibc/libexec/gcc/x86_64-nacl:ccbackend",
             "native_client/toolchain/linux_x86/nacl_x86_glibc/x86_64-nacl/bin/as",
+        ],
+        "native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang++": [
+            "native_client/toolchain/linux_x86/saigo_newlib/bin:clang",
+        ],
+        "native_client/toolchain/linux_x86/saigo_newlib/bin/arm-nacl-clang": [
+            "native_client/toolchain/linux_x86/saigo_newlib/bin:clang",
         ],
     })
     return step_config
