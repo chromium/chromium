@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/user_annotations/user_annotations_types.h"
 
@@ -42,6 +43,10 @@ class AutofillPredictionImprovementsClient {
       base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
 
   virtual ~AutofillPredictionImprovementsClient() = default;
+
+  // Returns the AutofillClient that is scoped to the same object (e.g., tab) as
+  // this AutofillPredictionImprovementsClient.
+  virtual autofill::AutofillClient& GetAutofillClient() = 0;
 
   // Calls `callback` with the accessibility tree snapshot.
   virtual void GetAXTree(AXTreeCallback callback) = 0;

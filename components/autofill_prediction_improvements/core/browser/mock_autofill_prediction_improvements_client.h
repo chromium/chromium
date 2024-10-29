@@ -20,6 +20,7 @@ class MockAutofillPredictionImprovementsClient
       const MockAutofillPredictionImprovementsClient&) = delete;
   ~MockAutofillPredictionImprovementsClient() override;
 
+  MOCK_METHOD(autofill::AutofillClient&, GetAutofillClient, (), (override));
   MOCK_METHOD(void,
               GetAXTree,
               (AutofillPredictionImprovementsClient::AXTreeCallback callback),

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CHROME_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 #define CHROME_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CHROME_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/prefs/pref_service.h"
@@ -36,6 +37,7 @@ class ChromeAutofillPredictionImprovementsClient
                             Profile* profile);
 
   // AutofillPredictionImprovementsClient:
+  autofill::ContentAutofillClient& GetAutofillClient() override;
   void GetAXTree(AXTreeCallback callback) override;
   autofill_prediction_improvements::AutofillPredictionImprovementsManager&
   GetManager() override;

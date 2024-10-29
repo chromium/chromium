@@ -74,6 +74,13 @@ ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
       new ChromeAutofillPredictionImprovementsClient(web_contents, profile));
 }
 
+autofill::ContentAutofillClient&
+ChromeAutofillPredictionImprovementsClient::GetAutofillClient() {
+  // TODO: crbug.com/371534239 - Make the lifecycle relationships explicit.
+  return CHECK_DEREF(
+      autofill::ContentAutofillClient::FromWebContents(&*web_contents_));
+}
+
 void ChromeAutofillPredictionImprovementsClient::GetAXTree(
     AXTreeCallback callback) {
   using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
