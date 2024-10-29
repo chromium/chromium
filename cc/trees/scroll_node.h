@@ -62,7 +62,6 @@ struct CC_EXPORT ScrollNode {
   int transform_id = kRootPropertyNodeId;
 
   // The container area origin in the parent transform space of transform_id.
-  // Used for scroll debug rect visualization only.
   gfx::Point container_origin;
 
   OverscrollBehavior overscroll_behavior{OverscrollBehavior::Type::kAuto};

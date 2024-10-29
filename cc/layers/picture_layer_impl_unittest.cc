@@ -2253,6 +2253,76 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 }
 
+TEST_F(LegacySWPictureLayerImplTest, RasterInducingScrollPaintCheckerboarding) {
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+
+  gfx::Size tile_size(100, 100);
+  gfx::Size layer_bounds(500, 500);
+  // There is a non-composited scroller in the layer.
+  ElementId scroll_element_id(123);
+  gfx::Point scroll_container_origin(10, 20);
+  gfx::Size scroll_container_bounds(200, 200);
+  gfx::Size scroll_contents_bounds(5000, 5000);
+  gfx::Rect cull_rect(scroll_container_origin, gfx::Size(1000, 1000));
+
+  auto scroll_list = base::MakeRefCounted<DisplayItemList>();
+  scroll_list->StartPaint();
+  scroll_list->push<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrcOver);
+  scroll_list->EndPaintOfUnpaired(
+      gfx::Rect(scroll_container_origin, scroll_contents_bounds));
+  scroll_list->Finalize();
+  auto display_list = base::MakeRefCounted<DisplayItemList>();
+  display_list->PushDrawScrollingContentsOp(
+      scroll_element_id, std::move(scroll_list),
+      gfx::Rect(scroll_container_origin, scroll_container_bounds));
+  display_list->Finalize();
+  ASSERT_EQ(1u, display_list->raster_inducing_scrolls().size());
+
+  FakeContentLayerClient client;
+  client.set_display_item_list(display_list);
+  RecordingSource recording;
+  Region invalidation;
+  recording.Update(layer_bounds, 1, client, invalidation);
+  SetupPendingTreeWithFixedTileSize(
+      FakeRasterSource::CreateFromRecordingSource(recording), tile_size,
+      Region());
+  CreateScrollNodeForNonCompositedScroller(
+      host_impl()->pending_tree()->property_trees(),
+      pending_layer()->scroll_tree_index(), scroll_element_id,
+      scroll_contents_bounds, scroll_container_bounds, scroll_container_origin);
+  ScrollTree& pending_scroll_tree =
+      host_impl()->pending_tree()->property_trees()->scroll_tree_mutable();
+  pending_scroll_tree.SetScrollingContentsCullRect(scroll_element_id,
+                                                   cull_rect);
+  ActivateTree();
+
+  auto check_checkerboarding = [&](bool expected) {
+    auto render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData data;
+    active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+    active_layer()->AppendQuads(render_pass.get(), &data);
+    active_layer()->DidDraw(nullptr);
+    EXPECT_EQ(1u, render_pass->quad_list.size());
+    EXPECT_EQ(expected, data.checkerboarded_needs_record);
+  };
+  check_checkerboarding(false);
+
+  // Scroll down just before exceeding the cull rect.
+  ScrollTree& active_scroll_tree =
+      host_impl()->active_tree()->property_trees()->scroll_tree_mutable();
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(800, 0));
+  check_checkerboarding(false);
+
+  // Scroll beyond the cull rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(801, 0));
+  check_checkerboarding(true);
+
+  // Now the cull rect is also scrolled down.
+  cull_rect.Offset(500, 0);
+  active_scroll_tree.SetScrollingContentsCullRect(scroll_element_id, cull_rect);
+  check_checkerboarding(false);
+}
+
 TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenActiveAllReady) {
   gfx::Size layer_bounds(400, 400);
   gfx::Size tile_size(100, 100);

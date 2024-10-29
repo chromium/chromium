@@ -41,6 +41,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/traced_value.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -423,6 +424,28 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     }
   }
 
+  if (const auto& display_list = raster_source_->GetDisplayItemList()) {
+    for (auto& [element_id, info] : display_list->raster_inducing_scrolls()) {
+      if (!info.visual_rect.Intersects(visible_layer_rect())) {
+        continue;
+      }
+      if (const gfx::Rect* cull_rect =
+              scroll_tree.ScrollingContentsCullRect(element_id)) {
+        const auto* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+        CHECK(scroll_node);
+        gfx::RectF visible_rect(
+            gfx::Rect(scroll_node->container_origin,
+                      scroll_tree.container_bounds(scroll_node->id)));
+        visible_rect.Offset(
+            scroll_tree.current_scroll_offset(element_id).OffsetFromOrigin());
+        if (!cull_rect->Contains(gfx::ToEnclosedRect(visible_rect))) {
+          append_quads_data->checkerboarded_needs_record = true;
+          break;
+        }
+      }
+    }
+  }
+
   int missing_tile_count = 0;
   only_used_low_res_last_append_quads_ = true;
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
@@ -513,7 +536,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       }
     }
 
-    if (scaled_cull_rect &&
+    if (!append_quads_data->checkerboarded_needs_record && scaled_cull_rect &&
         !scaled_cull_rect->Contains(visible_geometry_rect)) {
       append_quads_data->checkerboarded_needs_record = true;
     }

@@ -330,7 +330,8 @@ ScrollNode& CreateScrollNodeForNonCompositedScroller(
     int parent_id,
     ElementId element_id,
     const gfx::Size& bounds,
-    const gfx::Size& scroll_container_bounds) {
+    const gfx::Size& scroll_container_bounds,
+    const gfx::Point& scroll_container_origin) {
   auto& scroll_tree = property_trees->scroll_tree_mutable();
   int id = scroll_tree.Insert(ScrollNode(), parent_id);
 
@@ -343,6 +344,7 @@ ScrollNode& CreateScrollNodeForNonCompositedScroller(
 
   node->bounds = bounds;
   node->container_bounds = scroll_container_bounds;
+  node->container_origin = scroll_container_origin;
   node->user_scrollable_horizontal = node->user_scrollable_vertical =
       !scroll_container_bounds.IsEmpty();
   node->is_composited = false;
