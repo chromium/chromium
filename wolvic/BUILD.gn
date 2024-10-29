@@ -302,6 +302,7 @@ generate_jni("jni_headers") {
     "java/org/chromium/wolvic/UserDialogManagerBridge.java",
     "java/org/chromium/wolvic/VRManager.java",
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
+    "java/org/chromium/wolvic/WolvicBrowserContext.java",
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
   ]
 }
@@ -323,6 +324,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/UserDialogManagerBridge.java",
     "java/org/chromium/wolvic/VRManager.java",
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
+    "java/org/chromium/wolvic/WolvicBrowserContext.java",
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
   ]
   srcjar_deps = [ ":jni_headers" ]

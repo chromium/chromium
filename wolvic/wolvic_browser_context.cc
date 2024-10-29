@@ -56,6 +56,7 @@
 #include "wolvic/browser/autocomplete/wolvic_image_decoder.h"
 #include "wolvic/browser/autocomplete/wolvic_password_store_backend.h"
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
+#include "wolvic/jni_headers/WolvicBrowserContext_jni.h"
 #include "wolvic/wolvic_permission_manager.h"
 
 namespace wolvic {
@@ -66,6 +67,12 @@ WolvicBrowserContext::WolvicBrowserContext(bool off_the_record)
   InitWhileIOAllowed();
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> jobj =
+      Java_WolvicBrowserContext_create(env, reinterpret_cast<intptr_t>(this));
+
+  java_obj_.Reset(env, jobj.obj());
 }
 
 WolvicBrowserContext::~WolvicBrowserContext() {
@@ -81,6 +88,9 @@ WolvicBrowserContext::~WolvicBrowserContext() {
 
   SimpleKeyMap::GetInstance()->Dissociate(this);
   ShutdownStoragePartitions();
+
+  Java_WolvicBrowserContext_onNativeDestroyed(
+      base::android::AttachCurrentThread(), java_obj_);
 }
 
 void WolvicBrowserContext::InitWhileIOAllowed() {
@@ -338,6 +348,29 @@ WolvicSigninClient* WolvicBrowserContext::GetSigninClient() {
   if (!signin_client_)
     CreateSigninClient();
   return signin_client_.get();
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+WolvicBrowserContext::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
+}
+
+jlong WolvicBrowserContext::GetBrowserContextPointer(JNIEnv* env) {
+  return reinterpret_cast<jlong>(static_cast<content::BrowserContext*>(this));
+}
+
+// static
+base::android::ScopedJavaLocalRef<jobject>
+JNI_WolvicBrowserContext_FromWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return base::android::ScopedJavaLocalRef<jobject>();
+  }
+
+  return static_cast<WolvicBrowserContext*>(web_contents->GetBrowserContext())
+      ->GetJavaObject();
 }
 
 }  // namespace wolvic

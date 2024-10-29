@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
@@ -91,6 +92,9 @@ class WolvicBrowserContext : public content::BrowserContext,
   signin::IdentityManager* GetIdentityManager();
   WolvicSigninClient* GetSigninClient();
 
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  jlong GetBrowserContextPointer(JNIEnv* env);
+
  protected:
   std::unique_ptr<content::BackgroundSyncController>
       background_sync_controller_;
@@ -128,6 +132,7 @@ class WolvicBrowserContext : public content::BrowserContext,
   std::unique_ptr<password_manager::FieldInfoManager> field_info_manager_;
   std::unique_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<WolvicSigninClient> signin_client_;
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };
 
 }  // namespace wolvic
