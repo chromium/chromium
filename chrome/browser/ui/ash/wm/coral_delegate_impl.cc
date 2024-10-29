@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,9 +21,7 @@
 
 namespace {
 
-// TODO(crbug.com/375117758): temporarily use the ID to avoid the conflict with
-// the newly created browser window until the issue is fixed.
-constexpr int kRestoredBrowserWindowsId = 40;
+constexpr base::TimeDelta kClearLaunchDataDuration = base::Seconds(20);
 
 std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     coral::mojom::GroupPtr group) {
@@ -43,7 +42,7 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
             ->mutable_app_id_to_launch_list()[app_constants::kChromeAppId];
     // All tabs go into the same window.
     auto& app_restore_data =
-        launch_list[/*window_id=*/kRestoredBrowserWindowsId];
+        launch_list[/*window_id=*/Browser::kDefaultRestoreId];
     app_restore_data = std::make_unique<app_restore::AppRestoreData>();
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
@@ -124,6 +123,10 @@ CoralDelegateImpl::CoralDelegateImpl() = default;
 
 CoralDelegateImpl::~CoralDelegateImpl() = default;
 
+void CoralDelegateImpl::OnPostLoginLaunchComplete() {
+  app_launch_handler_.reset();
+}
+
 void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
   if (app_launch_handler_) {
     return;
@@ -139,6 +142,13 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
   app_launch_handler_->LaunchCoralGroup(
       CoralGroupToRestoreData(std::move(group)),
       DesksTemplatesAppLaunchHandler::GetNextLaunchId());
+
+  // Clears the launch handler after a given duration.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CoralDelegateImpl::OnPostLoginLaunchComplete,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kClearLaunchDataDuration);
 }
 
 void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
