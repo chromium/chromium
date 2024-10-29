@@ -358,8 +358,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void Reset();
 
-  void SetCanvas2DLayerBridgeInternal();
-
   void SetSurfaceSize(gfx::Size);
 
   bool SizeChangesAreAllowed(ExceptionState& exception_state);

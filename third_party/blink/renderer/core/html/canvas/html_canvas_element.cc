@@ -1434,44 +1434,10 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
       .ShouldDisableAcceleration();
 }
 
-void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal() {
-  DCHECK(IsRenderingContext2D() && !canvas2d_bridge_);
-  did_fail_to_create_resource_provider_ = true;
-
-  if (!IsValidImageSize(Size()))
-    return;
-
-  // If the canvas meets the criteria to use accelerated-GPU rendering, and
-  // the user signals that the canvas will not be read frequently through
-  // getImageData, which is a slow operation with GPU, the canvas will try to
-  // use accelerated-GPU rendering.
-  // If any of the two conditions fails, or if the creation of accelerated
-  // resource provider fails, the canvas will fallback to CPU rendering.
-  UMA_HISTOGRAM_BOOLEAN(
-      "Blink.Canvas.2DLayerBridge.WillReadFrequently",
-      context_ &&
-          context_->CreationAttributes().will_read_frequently ==
-              CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
-
-  bool will_read_frequently =
-      context_->CreationAttributes().will_read_frequently ==
-      CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
-  RasterModeHint hint = ShouldAccelerate() && context_ && !will_read_frequently
-                            ? RasterModeHint::kPreferGPU
-                            : RasterModeHint::kPreferCPU;
-  SetPreferred2DRasterMode(hint);
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
-
-  did_fail_to_create_resource_provider_ = false;
-  UpdateMemoryUsage();
-
-  if (context_)
-    SetNeedsCompositingUpdate();
-}
-
 void HTMLCanvasElement::NotifyGpuContextLost() {
-  if (IsRenderingContext2D())
+  if (IsRenderingContext2D()) {
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
+  }
 
   // TODO(juonv): Do we need to do anything about frame_dispatcher_ here?
   // Desynchronized canvases seem to continue to work after recovering from a
@@ -1497,10 +1463,41 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
     return nullptr;
   }
 
-  SetCanvas2DLayerBridgeInternal();
+  did_fail_to_create_resource_provider_ = true;
 
-  if (did_fail_to_create_resource_provider_ && !Size().IsEmpty() && context_) {
-    context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+  if (!IsValidImageSize(Size())) {
+    if (!Size().IsEmpty() && context_) {
+      context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+    }
+    return nullptr;
+  }
+
+  // If the canvas meets the criteria to use accelerated-GPU rendering, and
+  // the user signals that the canvas will not be read frequently through
+  // getImageData, which is a slow operation with GPU, the canvas will try to
+  // use accelerated-GPU rendering.
+  // If any of the two conditions fails, or if the creation of accelerated
+  // resource provider fails, the canvas will fallback to CPU rendering.
+  UMA_HISTOGRAM_BOOLEAN(
+      "Blink.Canvas.2DLayerBridge.WillReadFrequently",
+      context_ &&
+          context_->CreationAttributes().will_read_frequently ==
+              CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
+
+  bool will_read_frequently =
+      context_->CreationAttributes().will_read_frequently ==
+      CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
+  RasterModeHint hint = ShouldAccelerate() && context_ && !will_read_frequently
+                            ? RasterModeHint::kPreferGPU
+                            : RasterModeHint::kPreferCPU;
+  SetPreferred2DRasterMode(hint);
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
+
+  did_fail_to_create_resource_provider_ = false;
+  UpdateMemoryUsage();
+
+  if (context_) {
+    SetNeedsCompositingUpdate();
   }
 
   return canvas2d_bridge_.get();
