@@ -323,7 +323,7 @@ BASE_FEATURE(kEnableMainFrameOnlyADPFRendererMain,
 // of the GPU Main Thread.
 BASE_FEATURE(kEnableADPFGpuCompositorThread,
              "EnableADPFGpuCompositorThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Chrome puts Renderer Main threads into a separate
 // ADPF(Android Dynamic Performance Framework) hint session, and does not
