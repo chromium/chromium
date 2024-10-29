@@ -620,8 +620,7 @@ void AwContentBrowserClient::OverrideWebkitPrefs(
   if (aw_settings) {
     aw_settings->PopulateWebPreferences(web_prefs);
   }
-  web_prefs->modal_context_menu =
-      !base::FeatureList::IsEnabled(features::kWebViewImageDrag);
+  web_prefs->modal_context_menu = false;
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

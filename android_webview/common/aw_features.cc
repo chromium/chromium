@@ -185,11 +185,6 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
 const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
     &kWebViewXRequestedWithHeaderControl, "WebViewXRequestedWithHeaderMode", 0};
 
-// This enables image drage out for Webview.
-BASE_FEATURE(kWebViewImageDrag,
-             "WebViewImageDrag",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled zoom picker is invoked on every kGestureScrollUpdate consumed ack,
 // otherwise the zoom picker is persistently shown from scroll start to scroll
 // end plus the usual delay in hiding.

@@ -530,9 +530,6 @@ public final class ProductionSupportedFlagList {
                 "If enabled, servers will be able to use persistent origin trials "
                         + "on this device."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_IMAGE_DRAG,
-                "If enabled, images can be dragged out from Webview"),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_DRAG_DROP_FILES,
                 "If enabled, files can be dropped into WebView"),
         Flag.baseFeature(
