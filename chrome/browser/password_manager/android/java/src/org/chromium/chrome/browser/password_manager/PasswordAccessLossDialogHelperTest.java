@@ -75,9 +75,10 @@ public class PasswordAccessLossDialogHelperTest {
     }
 
     @Test
-    public void testPasswordAccessLossDialogNoGmsCore() {
+    public void testPasswordAccessLossDialogNoGmsCoreButPasswords() {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
                 .thenReturn(PasswordAccessLossWarningType.NO_GMS_CORE);
+        when(mPrefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE)).thenReturn(false);
 
         assertTrue(
                 PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
@@ -205,7 +206,7 @@ public class PasswordAccessLossDialogHelperTest {
     @Test
     public void testAccessLossWarningWhenNoGmsNoPasswords() {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
-                .thenReturn(PasswordAccessLossWarningType.NONE);
+                .thenReturn(PasswordAccessLossWarningType.NO_GMS_CORE);
         when(mBuildInfo.getGmsVersionCode()).thenReturn("");
         when(mPrefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE)).thenReturn(true);
 
