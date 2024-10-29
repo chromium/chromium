@@ -955,10 +955,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void onTabMergeToGroup_willMergingCreateNewGroup() {
         doReturn(true).when(mTabGroupModelFilter).willMergingCreateNewGroup(any());
 

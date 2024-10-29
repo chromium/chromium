@@ -24,7 +24,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,7 +42,6 @@ import org.chromium.url.GURL;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
 public class TabContextMenuItemDelegateTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -77,10 +75,7 @@ public class TabContextMenuItemDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void testOpenInNewTabInGroup_NewGroup_ParityEnabled_ContextMenuDialogDisabled() {
         openNewTabUsingContextMenu();
 
@@ -89,7 +84,6 @@ public class TabContextMenuItemDelegateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testOpenInNewTabInGroup_ExistingGroup_ParityEnabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -103,15 +97,6 @@ public class TabContextMenuItemDelegateTest {
                     filter.createSingleTabGroup(tab, /* notify= */ false);
                 });
 
-        openNewTabUsingContextMenu();
-
-        assertFalse(mModalDialogManager.isShowing());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testOpenInNewTabInGroup_NewGroup_ParityDisabled() {
         openNewTabUsingContextMenu();
 
         assertFalse(mModalDialogManager.isShowing());

@@ -30,7 +30,6 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Intent;
@@ -72,7 +71,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -123,7 +121,6 @@ import java.util.Map;
 /** End-to-end test for the selectable TabListEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures({TAB_GROUP_PARITY_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class SelectableTabListEditorTest {
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =

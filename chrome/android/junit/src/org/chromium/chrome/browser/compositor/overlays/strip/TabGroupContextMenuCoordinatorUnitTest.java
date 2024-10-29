@@ -74,10 +74,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
-})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
 public class TabGroupContextMenuCoordinatorUnitTest {
     private static final String GAIA_ID = "Z";
     private static final String EMAIL = "fake@gmail.com";

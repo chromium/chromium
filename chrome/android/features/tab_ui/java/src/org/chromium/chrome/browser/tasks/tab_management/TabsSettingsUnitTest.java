@@ -57,7 +57,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
 })
@@ -218,8 +217,8 @@ public class TabsSettingsUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testTabGroupCreationDialogSettingsHiddenWhenFeatureOff() {
+    public void testTabGroupCreationDialogSettingsHiddenWhenParamOff() {
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference showTabGroupCreationDialogSwitch =
                 tabsSettings.findPreference(

@@ -1023,7 +1023,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testColorIcon_Grid() {
         // Prevent errors with duplicate view attachment.
         mListMcp.destroy();
@@ -1063,7 +1062,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testColorIcon_List() {
         // Prevent errors with duplicate view attachment.
         mSelectableMcp.destroy();

@@ -30,9 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -42,7 +40,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link TabGroupListCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
 public class TabGroupListCoordinatorUnitTest {
     public static final long FAKE_NATIVE_PTR = 1L;
 

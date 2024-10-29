@@ -128,7 +128,6 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 @Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherLayoutTest {
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
@@ -323,6 +322,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testCloseButtonDescription() {
         String expectedDescription = "Close New tab tab";
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -488,6 +488,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupClosureInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -511,10 +512,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisabledTest(message = "crbug.com/353946452")
     public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -546,10 +544,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_renameGroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -603,10 +598,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_renameGroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -661,7 +653,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
@@ -697,10 +688,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisabledTest(message = "crbug.com/353946452")
     public void testTabGroupOverflowMenuInTabSwitcher_ungroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -733,10 +721,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisabledTest(message = "Flaky - crbug.com/353463207")
     public void testTabGroupOverflowMenuInTabSwitcher_ungroupDoNotShowAgain() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -784,7 +769,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
@@ -821,7 +805,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
@@ -863,7 +846,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
@@ -900,7 +882,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
@@ -983,7 +964,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
     })
@@ -1003,10 +983,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisableFeatures({
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
@@ -1037,10 +1014,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     @DisableFeatures({
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
@@ -1064,7 +1038,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupColorInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1089,7 +1062,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupCreation_acceptInputValues() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1137,7 +1109,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupCreation_acceptNullTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1172,7 +1143,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupCreation_dismissEmptyTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1211,7 +1181,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     @DisabledTest(message = "Flaky - crbug.com/353463207")
     public void testTabGroupCreation_rejectInvalidTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1241,7 +1210,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     @DisabledTest(message = "Flaky - crbug.com/353463207")
     public void testTabGroupCreation_dismissSavesState() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1357,7 +1325,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_TabToGroupAdjacent() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1416,10 +1383,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     public void testGroupMerge_UndoBarGoneAfterManualUngroup() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 3);
@@ -1447,7 +1411,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1537,7 +1500,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent_TabsAreSelected() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1618,7 +1580,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_PostMergeGroupTitleCommit() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1683,7 +1644,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoClosure_UndoGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1739,7 +1699,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoClosure_AcceptGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();

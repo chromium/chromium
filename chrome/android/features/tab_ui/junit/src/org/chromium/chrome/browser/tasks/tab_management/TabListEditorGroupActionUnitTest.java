@@ -172,10 +172,7 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void testSingleTabToGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -212,10 +209,7 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void testGroupActionWithTabs_WillMergingCreateNewGroup() throws Exception {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(

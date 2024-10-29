@@ -310,7 +310,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.DATA_SHARING})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testTabGridDialogVisibilitySupplier() {
 
         Supplier<Boolean> tabGridDialogVisibilitySupplier =
@@ -405,7 +404,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID, ChromeFeatureList.DATA_SHARING})
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testOpenInvitationModal() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);

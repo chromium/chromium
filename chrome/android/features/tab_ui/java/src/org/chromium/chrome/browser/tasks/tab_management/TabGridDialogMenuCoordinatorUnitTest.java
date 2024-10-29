@@ -30,9 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,7 +58,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabGridDialogMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
 public class TabGridDialogMenuCoordinatorUnitTest {
     private static final int TAB_ID = 123;
     private static final String COLLABORATION_ID1 = "A";

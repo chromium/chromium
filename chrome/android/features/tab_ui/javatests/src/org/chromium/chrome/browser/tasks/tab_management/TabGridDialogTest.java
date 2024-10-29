@@ -46,7 +46,6 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB_SE
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PANE_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_SYNC_ANDROID;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createTabStatesAndMetadataFile;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
@@ -177,7 +176,6 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({
-    TAB_GROUP_PARITY_ANDROID,
     NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND,
     ANDROID_HUB_SEARCH
 })
@@ -469,7 +467,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @RequiresRestart("Group creation modal dialog is sometimes persistent after dismissing")
     public void testTabGroupDialogUi() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -610,7 +607,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     public void testColorPickerOnIconClick() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -672,7 +668,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     public void testColorPickerOnToolbarMenuItemClick() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -762,7 +757,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     public void testDialogToolbarSelectionEditor() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1336,7 +1330,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @DisabledTest(message = "TODO(crbug.com/373952611): Fix flakiness.")
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
@@ -1516,7 +1509,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_PARITY_ANDROID})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Portrait(boolean nightModeEnabled) throws Exception {
@@ -1541,7 +1533,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_PARITY_ANDROID})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Landscape_NewAspectRatio(boolean nightModeEnabled)
@@ -1568,7 +1559,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_PARITY_ANDROID})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_5Tabs_InitialScroll(boolean nightModeEnabled) throws Exception {
@@ -1599,7 +1589,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
@@ -1996,7 +1985,6 @@ public class TabGridDialogTest {
     @Feature({"RenderTest"})
     @EnableFeatures({
         DATA_SHARING,
-        TAB_GROUP_PARITY_ANDROID,
         TAB_GROUP_SYNC_ANDROID,
         TAB_GROUP_PANE_ANDROID
     })

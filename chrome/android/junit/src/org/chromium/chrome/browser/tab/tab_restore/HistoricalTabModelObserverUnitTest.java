@@ -33,8 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,7 +49,6 @@ import java.util.Set;
 
 /** Unit tests for {@link HistoricalTabModelObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 public class HistoricalTabModelObserverUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

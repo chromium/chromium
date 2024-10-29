@@ -127,99 +127,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-    public void testRecentlyClosedGroupNoColorContentDescriptions() throws ExecutionException {
-        mPage = loadRecentTabsPage();
-        // Set a recently closed group with a title and confirm a view is rendered for it.
-        final RecentlyClosedGroup titleGroup =
-                new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
-        Token titleTabGroupId = new Token(27839L, 4789L);
-        titleGroup
-                .getTabs()
-                .add(
-                        new RecentlyClosedTab(
-                                0,
-                                0,
-                                "Tab Title 0",
-                                new GURL("https://www.example.com/url/0"),
-                                titleTabGroupId));
-        titleGroup
-                .getTabs()
-                .add(
-                        new RecentlyClosedTab(
-                                1,
-                                0,
-                                "Tab Title 1",
-                                new GURL("https://www.example.com/url/1"),
-                                titleTabGroupId));
-
-        // Set a recently closed group without a title and confirm a view is rendered for it.
-        final RecentlyClosedGroup noTitleGroup = new RecentlyClosedGroup(3, 0, null, COLOR_ID_2);
-        Token noTitleTabGroupId = new Token(798L, 4389L);
-        noTitleGroup
-                .getTabs()
-                .add(
-                        new RecentlyClosedTab(
-                                0,
-                                0,
-                                "Tab Title 0",
-                                new GURL("https://www.example.com/url/0"),
-                                noTitleTabGroupId));
-
-        List<RecentlyClosedEntry> entries = new ArrayList<>();
-        entries.add(titleGroup);
-        entries.add(noTitleGroup);
-        setRecentlyClosedEntries(entries);
-        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
-        final String titleGroupString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getString(
-                                            R.string.recent_tabs_group_closure_with_title,
-                                            titleGroup.getTitle());
-                        });
-        final String titleGroupAccessibilityString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getString(
-                                            R.string
-                                                    .recent_tabs_group_closure_with_title_accessibility,
-                                            titleGroup.getTitle());
-                        });
-        final String noTitleGroupString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals.recent_tabs_group_closure_without_title,
-                                            noTitleGroup.getTabs().size(),
-                                            noTitleGroup.getTabs().size());
-                        });
-        final String noTitleGroupAccessibilityString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals
-                                                    .recent_tabs_group_closure_without_title_accessibility,
-                                            noTitleGroup.getTabs().size(),
-                                            noTitleGroup.getTabs().size());
-                        });
-        final View titleGroupView = waitForView(titleGroupString);
-        final View noTitleGroupView = waitForTabCountTitleView(noTitleGroupString);
-        assertEquals(titleGroupAccessibilityString, titleGroupView.getContentDescription());
-        assertEquals(noTitleGroupAccessibilityString, noTitleGroupView.getContentDescription());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RecentTabsPage"})
     public void testRecentlyClosedTabs() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed tab and confirm a view is rendered for it.
@@ -254,7 +161,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testRecentlyClosedGroupColor() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
@@ -282,7 +188,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testRecentlyClosedGroupIconDoesNotPersist() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
@@ -323,7 +228,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
@@ -394,7 +298,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {

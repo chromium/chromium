@@ -33,7 +33,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
@@ -66,7 +65,7 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID, ChromeFeatureList.ANDROID_HUB_SEARCH})
+@DisableFeatures({ChromeFeatureList.ANDROID_HUB_SEARCH})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherLayoutPTTest {
@@ -249,7 +248,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();

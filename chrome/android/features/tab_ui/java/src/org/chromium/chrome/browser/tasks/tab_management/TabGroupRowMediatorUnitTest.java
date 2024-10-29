@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
@@ -38,7 +37,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -67,7 +65,7 @@ import java.util.List;
 
 /** Tests for {@link TabGroupRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID, ChromeFeatureList.DATA_SHARING})
+@EnableFeatures({ChromeFeatureList.DATA_SHARING})
 public class TabGroupRowMediatorUnitTest {
     private static final String COLLABORATION_ID1 = "collaborationId1";
     private static final String EMAIL1 = "one@gmail.com";
@@ -181,15 +179,6 @@ public class TabGroupRowMediatorUnitTest {
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
         mReadGroupCallbackCaptor.getValue().onResult(outcome);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testNoParity() {
-        PropertyModel propertyModel = buildTestModel(Arrays.asList(new SavedTabGroupTab()));
-        // 0 is the default value.
-        assertEquals(0, propertyModel.get(COLOR_INDEX));
     }
 
     @Test

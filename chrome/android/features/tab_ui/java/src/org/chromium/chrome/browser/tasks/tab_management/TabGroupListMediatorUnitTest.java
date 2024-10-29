@@ -88,7 +88,6 @@ import java.util.List;
 /** Tests for {@link TabGroupListMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.DATA_SHARING)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
 public class TabGroupListMediatorUnitTest {
     private static final String SYNC_GROUP_ID1 = "remote one";
     private static final String SYNC_GROUP_ID2 = "remote two";

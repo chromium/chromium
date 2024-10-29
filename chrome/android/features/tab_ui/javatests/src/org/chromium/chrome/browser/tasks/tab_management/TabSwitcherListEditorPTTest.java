@@ -18,7 +18,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,6 +46,7 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testLeaveEditorViaBackPress() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
@@ -60,7 +60,7 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -77,27 +77,7 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testCreateTabGroupOf2() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        int firstTabId = firstPage.getLoadedTab().getId();
-        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
-        int secondTabId = secondPage.getLoadedTab().getId();
-        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
-        editor = editor.addTabToSelection(0, firstTabId);
-        editor = editor.addTabToSelection(1, secondTabId);
-
-        editor.openAppMenuWithEditor().groupTabs();
-
-        // Go back to PageStation for InitialStateRule to reset
-        secondPage =
-                tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
-        assertFinalDestination(secondPage);
-    }
-
-    @Test
-    @MediumTest
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testClose2Tabs() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -122,9 +102,8 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     @DisabledTest(message = "crbug.com/360800262")
-    public void testCreateTabGroupOf2_parity() {
+    public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();

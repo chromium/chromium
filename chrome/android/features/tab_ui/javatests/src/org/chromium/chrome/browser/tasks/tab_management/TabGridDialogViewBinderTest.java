@@ -22,7 +22,6 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB_SWITCHER;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
 import android.content.res.ColorStateList;
@@ -651,7 +650,6 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testSetTabGroupColorIdAndIncognito() {
         int color = TabGroupColorId.GREY;
 
@@ -669,7 +667,6 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testSetColorIconClickListener() {
         AtomicBoolean colorIconClicked = new AtomicBoolean();
         colorIconClicked.set(false);

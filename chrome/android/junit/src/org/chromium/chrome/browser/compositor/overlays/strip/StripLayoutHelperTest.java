@@ -1792,10 +1792,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU,
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
     public void testOnLongPress_OnGroupTitle() {
         // Initialize.
         initializeTest(false, false, 0);

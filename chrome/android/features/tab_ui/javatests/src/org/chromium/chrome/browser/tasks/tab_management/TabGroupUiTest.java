@@ -54,7 +54,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -84,7 +83,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /** End-to-end tests for TabGroupUi component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 @Restriction(DeviceFormFactor.PHONE)
 @Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {

@@ -1112,7 +1112,6 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void showDialog_FromGts_setSelectedColor() {
         // Mock that tab1 and tab2 are in a group.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -1131,7 +1130,6 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void showDialog_FromGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
@@ -1167,10 +1165,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.FORCE_LIST_TAB_SWITCHER
-    })
+    @EnableFeatures({ChromeFeatureList.FORCE_LIST_TAB_SWITCHER})
     public void showDialog_FromListGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
@@ -1240,7 +1235,6 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void showDialog_FromStrip() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
@@ -1519,7 +1513,6 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testTabGroupColorUpdated() {
         int rootId = TAB1_ID;
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));

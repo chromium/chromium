@@ -1094,7 +1094,6 @@ public class MainSettingsFragmentTest {
     @DisableFeatures({
         ChromeFeatureList.ANDROID_TAB_DECLUTTER,
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
     })
     public void testTabsSettingsOn_GroupSync_KillSwitchActive() {
@@ -1121,7 +1120,6 @@ public class MainSettingsFragmentTest {
     @DisableFeatures({
         ChromeFeatureList.ANDROID_TAB_DECLUTTER,
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
     })
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
