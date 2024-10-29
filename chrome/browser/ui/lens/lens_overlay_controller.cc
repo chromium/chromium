@@ -1583,7 +1583,8 @@ void LensOverlayController::OnPdfBytesReceived(
 void LensOverlayController::OnInnerTextReceived(
     PageContentRetrievedCallback callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  if (!result) {
+  if (!result || result->inner_text.size() >
+                     lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(std::vector<uint8_t>(),
                             lens::PageContentMimeType::kNone);
     return;
@@ -1596,7 +1597,8 @@ void LensOverlayController::OnInnerTextReceived(
 void LensOverlayController::OnInnerHtmlReceived(
     PageContentRetrievedCallback callback,
     const std::optional<std::string>& result) {
-  if (!result.has_value()) {
+  if (!result.has_value() ||
+      result->size() > lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(std::vector<uint8_t>(),
                             lens::PageContentMimeType::kNone);
     return;
