@@ -431,6 +431,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/files/ui/star.svg);
     }
 
+    :host([type='odfs']) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/odfs.svg);
+    }
+
     :host([type='gdoc']) span,
     :host([type='script']) span,
     :host([type='tini']) span {

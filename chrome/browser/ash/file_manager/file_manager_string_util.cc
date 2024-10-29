@@ -1159,6 +1159,7 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE",
              IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE);
   SET_STRING("ONEDRIVE_OFFLINE_TITLE", IDS_FILE_BROWSER_ONEDRIVE_OFFLINE_TITLE);
+  SET_STRING("ONEDRIVE", IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE);
 }  // NOLINT(readability/fn_size): Structure of AddStringsGeneric function
    // should be easy to manage.
 
