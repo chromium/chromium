@@ -1218,7 +1218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit"
-    units="frames" expires_after="M132">
+    units="frames" expires_after="M135">
   <owner>dtapuska@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

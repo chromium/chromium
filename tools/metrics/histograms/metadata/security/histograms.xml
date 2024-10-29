@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.IsDevToolsUser"
-    enum="Boolean" expires_after="2024-10-30">
+    enum="Boolean" expires_after="M135">
   <owner>dtapuska@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
