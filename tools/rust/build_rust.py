@@ -65,36 +65,12 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          GetRustClangRevision)
 
 EXCLUDED_TESTS = [
-    # https://github.com/rust-lang/rust/issues/45222 which appears to have
-    # regressed as of a recent LLVM update. This test is purely performance
-    # related, not correctness.
-    os.path.join('tests', 'codegen', 'issue-45222.rs'),
-    # https://github.com/rust-lang/rust/issues/96497
-    os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # TODO(crbug.com/342026487): benign failure; remove when fixed.
-    os.path.join('tests', 'codegen', 'vec-in-place.rs'),
-    # TODO(crbug.com/360916952): Benign, remove when fixed.
-    os.path.join('tests', 'assembly', 'x86_64-cmp.rs'),
-    os.path.join('tests', 'assembly', 'x86_64-cmp.rs#OPTIM'),
-    os.path.join('tests', 'codegen', 'integer-cmp.rs'),
-    os.path.join('tests', 'codegen', 'comparison-operators-2-tuple.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
-    # https://github.com/rust-lang/rust/issues/96464
-    os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
-    # https://crbug.com/1521497 These fail on Mac.
-    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs#x64'),
-    os.path.join('tests', 'ui', 'abi', 'stack-probes.rs#x64'),
 ]
 EXCLUDED_TESTS_MAC_ARM64 = [
-    # https://crbug.com/1519640 This fails on Mac/ARM64. We didn't even run it
-    # until recently, so ignore it for now.
-    os.path.join('tests', 'ui', 'extern',
-                 'issue-64655-extern-rust-must-allow-unwind.rs#fat0'),
-    os.path.join('tests', 'ui', 'extern',
-                 'issue-64655-extern-rust-must-allow-unwind.rs#thin0'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
