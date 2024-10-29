@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -989,8 +988,6 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
     })
     public void testNoTabGroupDialogSingleTab() {
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
-
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 1);
@@ -1008,8 +1005,6 @@ public class TabSwitcherLayoutTest {
                     Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
                 });
         verifyTabSwitcherCardCount(cta, 1);
-
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test

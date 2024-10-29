@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
+import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -76,41 +76,26 @@ public class TabGroupCreationDialogManagerUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
-    public void testCreationDialogNotSkippedByParityParam() {
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
-        assertFalse(
-                TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                        /* shouldShow= */ true));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void testCreationDialogSkippedByParityParam() {
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
         assertTrue(
                 TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ true));
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void testCreationDialogNotSkippedByDialogFlag_shouldShow() {
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
         assertFalse(
                 TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ true));
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void testCreationDialogSkippedByDialogFlag_shouldNotShow() {
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
         assertTrue(
                 TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ false));
-        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test

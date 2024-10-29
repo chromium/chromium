@@ -12,14 +12,6 @@ import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 /** Feature related utilities for tab groups. */
 public class TabGroupFeatureUtils {
-    private static final String SKIP_TAB_GROUP_CREATION_DIALOG_PARAM =
-            "skip_tab_group_creation_dialog";
-    public static final BooleanCachedFieldTrialParameter SKIP_TAB_GROUP_CREATION_DIALOG =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-                    SKIP_TAB_GROUP_CREATION_DIALOG_PARAM,
-                    true);
-
     public static final String SHOW_TAB_GROUP_CREATION_DIALOG_SETTING_PARAM =
             "show_tab_group_creation_dialog_setting";
     public static final BooleanCachedFieldTrialParameter SHOW_TAB_GROUP_CREATION_DIALOG_SETTING =
@@ -54,7 +46,7 @@ public class TabGroupFeatureUtils {
         if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
             return !shouldShow;
         } else {
-            return SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
+            return true;
         }
     }
 
