@@ -45,7 +45,7 @@
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "extensions/common/manifest_handlers/input_components_handler.h"
 #endif
@@ -57,7 +57,7 @@ void RegisterCommonManifestHandlers() {
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
 
   registry->RegisterHandler(std::make_unique<AboutPageHandler>());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterHandler(std::make_unique<ActionHandlersHandler>());
 #endif
   registry->RegisterHandler(std::make_unique<AutomationHandler>());
@@ -80,7 +80,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<IconsHandler>());
   registry->RegisterHandler(std::make_unique<IconVariantsHandler>());
   registry->RegisterHandler(std::make_unique<IncognitoHandler>());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterHandler(std::make_unique<InputComponentsHandler>());
 #endif
   registry->RegisterHandler(std::make_unique<KioskModeHandler>());

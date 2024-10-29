@@ -55,11 +55,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
@@ -70,13 +65,10 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "extensions/shell/browser/shell_audio_controller_chromeos.h"
 #include "extensions/shell/browser/shell_network_controller_chromeos.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
-#include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -104,18 +96,13 @@ ShellBrowserMainParts::ShellBrowserMainParts(
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
 void ShellBrowserMainParts::PostCreateMainMessageLoop() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Perform initialization of D-Bus objects here rather than in the below
   // helper classes so those classes' tests can initialize stub versions of the
   // D-Bus objects.
   ash::DBusThreadManager::Initialize();
   dbus::Bus* bus = ash::DBusThreadManager::Get()->GetSystemBus();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Initialize();
-  dbus::Bus* bus = chromeos::LacrosDBusThreadManager::Get()->GetSystemBus();
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (bus) {
     bluez::BluezDBusManager::Initialize(bus);
   } else {
@@ -123,7 +110,7 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (bus) {
     ash::shill_clients::Initialize(bus);
     ash::hermes_clients::Initialize(bus);
@@ -150,7 +137,7 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
       switches::kAppShellAllowRoaming)) {
     network_controller_->SetCellularAllowRoaming(true);
   }
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   // app_shell doesn't need GTK, so the fake input method context can work.
   // See crbug.com/381852 and revision fb69f142.
   // TODO(michaelpg): Verify this works for target environments.
@@ -202,7 +189,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   extensions_browser_client_->InitWithBrowserContext(browser_context_.get(),
                                                      user_pref_service_.get());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>
       media_controller_manager;
   content::GetMediaSessionService().BindMediaControllerManager(
@@ -282,7 +269,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 
   storage_monitor::StorageMonitor::Destroy();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   audio_controller_.reset();
   ash::CrasAudioHandler::Shutdown();
 #endif
@@ -308,7 +295,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   bluez::DBusBluezManagerWrapperLinux::Shutdown();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   network_controller_.reset();
   ash::NetworkHandler::Shutdown();
   ash::disks::DiskMountManager::Shutdown();
@@ -318,10 +305,8 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   ash::shill_clients::Shutdown();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::DBusThreadManager::Shutdown();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Shutdown();
 #endif
 }
 

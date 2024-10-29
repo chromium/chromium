@@ -12,8 +12,8 @@
 namespace extensions {
 
 // Implemented by event handlers so they are notified when a change event
-// occurs. Triggered by NetworkingPrivateServiceClient,
-// NetworkingPrivateLinux or LacrosNetworkingPrivateObserver.
+// occurs. Triggered by NetworkingPrivateServiceClient or
+// NetworkingPrivateLinux.
 class NetworkingPrivateDelegateObserver {
  public:
   NetworkingPrivateDelegateObserver& operator=(

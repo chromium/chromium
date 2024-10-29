@@ -33,15 +33,15 @@ void AddURLPatternSetToList(
     std::vector<network::mojom::CorsOriginPatternPtr>* list,
     network::mojom::CorsOriginAccessMatchPriority priority) {
   static const char* const kSchemes[] = {
-    content::kChromeUIScheme,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    content::kExternalFileScheme,
+      content::kChromeUIScheme,
+#if BUILDFLAG(IS_CHROMEOS)
+      content::kExternalFileScheme,
 #endif
-    extensions::kExtensionScheme,
-    url::kFileScheme,
-    url::kFtpScheme,
-    url::kHttpScheme,
-    url::kHttpsScheme,
+      extensions::kExtensionScheme,
+      url::kFileScheme,
+      url::kFtpScheme,
+      url::kHttpScheme,
+      url::kHttpsScheme,
   };
   for (const URLPattern& pattern : pattern_set) {
     for (const char* const scheme : kSchemes) {

@@ -100,7 +100,7 @@
   "bluetoothLowEnergy": {
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["privileged_extension"],
-    "platforms": ["chromeos", "lacros", "linux"]
+    "platforms": ["chromeos", "linux"]
   },
   "bluetoothPrivate": [{
     "dependencies": ["permission:bluetoothPrivate"],
@@ -210,7 +210,7 @@
   },
   "feedbackPrivate.readLogSource": [
     {
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     },
     {
@@ -283,7 +283,7 @@
     "contexts": ["privileged_extension"]
   },
   "idle.getAutoLockDelay": {
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "lockScreen.data": {
     "dependencies": ["permission:lockScreen"],
@@ -459,7 +459,7 @@
     "dependencies": ["behavior:imprivata_in_session_extension"],
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],
@@ -500,7 +500,7 @@
     "contexts": ["privileged_extension"]
   },
   "power.reportActivity": {
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "printerProvider": {
     "dependencies": ["permission:printerProvider"],

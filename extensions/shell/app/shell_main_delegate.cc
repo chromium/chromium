@@ -23,11 +23,8 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_paths.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -135,10 +132,8 @@ ShellMainDelegate::~ShellMainDelegate() {
 std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   InitLogging();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::RegisterPathProvider();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))

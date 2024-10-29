@@ -26,7 +26,7 @@
     "dependencies": ["permission:accessibilityServicePrivate"],
     "channel": "stable",
     "contexts": ["privileged_extension"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "action": {
     "dependencies": ["manifest:action"],
@@ -202,7 +202,7 @@
     "matches": [
       "chrome://version/*"
     ],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }],
   // This feature controls the availability of the <webview> tag itself. This
   // is separate from the chromeWebViewInternal API, which is needed by other
@@ -803,7 +803,7 @@
       "chrome://settings/*",
       "chrome://oobe/*"
     ],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "readingList": {
     "dependencies": ["permission:readingList"],

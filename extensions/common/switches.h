@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_COMMON_SWITCHES_H_
 #define EXTENSIONS_COMMON_SWITCHES_H_
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace extensions::switches {
 
@@ -56,7 +56,7 @@ extern const char kLoadApps[];
 // Comma-separated list of paths to extensions to load at startup.
 extern const char kLoadExtension[];
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Path to the unpacked test extension to load into the signin profile. The ID
 // extension loaded must match kTestSigninProfileExtensionId.
 extern const char kLoadSigninProfileTestExtension[];

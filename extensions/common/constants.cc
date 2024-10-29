@@ -72,9 +72,6 @@ bool IsDemoModeChromeApp(std::string_view extension_id) {
   });
   return base::Contains(kDemoModeApps, extension_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsSystemUIApp(std::string_view extension_id) {
   constexpr auto kApps = base::MakeFixedFlatSet<std::string_view>({
@@ -88,7 +85,7 @@ bool IsSystemUIApp(std::string_view extension_id) {
   return base::Contains(kApps, extension_id);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsQuickOfficeExtension(std::string_view extension_id) {
   constexpr auto kQuickOfficeIds = base::MakeFixedFlatSet<std::string_view>({

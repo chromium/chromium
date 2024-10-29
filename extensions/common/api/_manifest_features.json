@@ -92,7 +92,7 @@
     // APIs.
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros", "win", "mac"]
+    "platforms": ["chromeos", "win", "mac"]
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
@@ -227,7 +227,7 @@
       "channel": "stable",
       "extension_types": ["extension"],
       "min_manifest_version": 3,
-      "platforms": ["chromeos", "lacros"]
+      "platforms": ["chromeos"]
     }
   ],
   "homepage_url": {
@@ -464,7 +464,7 @@
     {
       "channel": "dev",
       "extension_types": ["extension"],
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     }
   ],

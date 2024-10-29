@@ -50,7 +50,7 @@ TEST_F(ShellPrefsTest, CreateLocalState) {
       shell_prefs::CreateLocalState(browser_context_.GetPath());
   ASSERT_TRUE(local_state);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Verify prefs were registered.
   EXPECT_TRUE(local_state->FindPreference("hardware.audio_output_enabled"));
 
