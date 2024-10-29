@@ -4,14 +4,16 @@
 
 #include "pdf/pdfium/pdfium_ink_writer.h"
 
-#include <array>
 #include <optional>
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "printing/units.h"
+#include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/point.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
@@ -29,103 +31,119 @@ namespace {
 // with other writers.
 constexpr char kInkAnnotationIdentifierKey[] = "ink-annot-id";
 
-// Wrapper around an ink::ModeledShape to allow for iterating through all the
-// triangles that make up its many meshes.
-class TriangleIterator {
+// Wrapper around an `ink::ModeledShape` to iterate through all the outlines
+// that make up the shape.
+class ModeledShapeOutlinesIterator {
  public:
-  explicit TriangleIterator(const ink::ModeledShape& shape)
-      : meshes_(shape.Meshes()) {}
+  struct OutlineData {
+    uint32_t group_index;
+    // Guaranteeded to be non-empty.
+    base::span<const ink::ModeledShape::VertexIndexPair> outline;
+  };
 
-  std::optional<ink::Triangle> GetAndAdvance() {
-    if (mesh_index_ == meshes_.size()) {
-      return std::nullopt;
+  explicit ModeledShapeOutlinesIterator(const ink::ModeledShape& shape)
+      : shape_(shape) {}
+
+  std::optional<OutlineData> GetAndAdvance() {
+    while (group_index_ < shape_->RenderGroupCount()) {
+      if (outline_index_ < shape_->OutlineCount(group_index_)) {
+        OutlineData outline_data{
+            .group_index = group_index_,
+            .outline = shape_->Outline(group_index_, outline_index_),
+        };
+        ++outline_index_;
+        return outline_data;
+      }
+
+      ++group_index_;
+      outline_index_ = 0;
     }
-
-    // Get the triangle to be returned.
-    ink::Triangle triangle = meshes_[mesh_index_].GetTriangle(triangle_index_);
-
-    // Advance to next triangle in preparation for the next call.  When all
-    // triangles of a mesh have been consumed, advance to the next mesh.  Meshes
-    // are guaranteed by ink::ModeledShape to never be empty.
-    ++triangle_index_;
-    if (triangle_index_ == meshes_[mesh_index_].TriangleCount()) {
-      ++mesh_index_;
-      triangle_index_ = 0;
-    }
-    return triangle;
+    return std::nullopt;
   }
 
  private:
-  const base::span<const ink::Mesh> meshes_;
-  size_t mesh_index_ = 0;
-  uint32_t triangle_index_ = 0;
+  const raw_ref<const ink::ModeledShape> shape_;
+  uint32_t group_index_ = 0;
+  uint32_t outline_index_ = 0;
 };
 
-std::array<gfx::PointF, 3> TransformTriangle(
-    const gfx::AxisTransform2d& transform,
-    const ink::Triangle& triangle) {
-  return {transform.MapPoint({triangle.p0.x, triangle.p0.y}),
-          transform.MapPoint({triangle.p1.x, triangle.p1.y}),
-          transform.MapPoint({triangle.p2.x, triangle.p2.y})};
+gfx::PointF GetVertexPosition(
+    base::span<const ink::Mesh> meshes,
+    const ink::ModeledShape::VertexIndexPair& vertex_index_pair) {
+  ink::Point vertex_position =
+      meshes[vertex_index_pair.mesh_index].VertexPosition(
+          vertex_index_pair.vertex_index);
+  return {vertex_position.x, vertex_position.y};
 }
 
-// Creates a path on `page` using `triangle`.
-// `transform` converts the positions in `triangle` to PDF coordinates.
+// Creates a path on `page` using `outline_data`.
+// `shape` is the object that contains `outline_data`.
+// `transform` converts the positions in `outline_data` to PDF coordinates.
 //
 // The returned page object is always a `FPDF_PAGEOBJ_PATH` and never null.
-ScopedFPDFPageObject CreatePathFromTriangle(
+ScopedFPDFPageObject CreatePathFromOutlineData(
     FPDF_PAGE page,
-    const ink::Triangle& triangle,
+    const ink::ModeledShape& shape,
+    const ModeledShapeOutlinesIterator::OutlineData& outline_data,
     const gfx::AxisTransform2d& transform) {
   CHECK(page);
 
-  std::array<gfx::PointF, 3> transformed_triangle =
-      TransformTriangle(transform, triangle);
+  base::span<const ink::Mesh> meshes =
+      shape.RenderGroupMeshes(outline_data.group_index);
+  const auto& first_outline_position = outline_data.outline.front();
+  gfx::PointF transformed_vertex_position =
+      transform.MapPoint(GetVertexPosition(meshes, first_outline_position));
   ScopedFPDFPageObject path(FPDFPageObj_CreateNewPath(
-      transformed_triangle[0].x(), transformed_triangle[0].y()));
+      transformed_vertex_position.x(), transformed_vertex_position.y()));
   CHECK(path);
 
-  bool result = FPDFPath_LineTo(path.get(), transformed_triangle[1].x(),
-                                transformed_triangle[1].y());
-  CHECK(result);
-  result = FPDFPath_LineTo(path.get(), transformed_triangle[2].x(),
-                           transformed_triangle[2].y());
-  CHECK(result);
+  for (const auto& outline_position : outline_data.outline.subspan<1u>()) {
+    transformed_vertex_position =
+        transform.MapPoint(GetVertexPosition(meshes, outline_position));
+    bool result = FPDFPath_LineTo(path.get(), transformed_vertex_position.x(),
+                                  transformed_vertex_position.y());
+    CHECK(result);
+  }
 
   return path;
 }
 
-// Appends `triangle` to `path`. `transform` is the same as the
-// CreatePathFromTriangle() parameter with the same name.
-void AppendTriangleToPath(FPDF_PAGEOBJECT path,
-                          const ink::Triangle& triangle,
-                          const gfx::AxisTransform2d& transform) {
+// Appends `outline_data` to `path`. `shape` and `transform` are the same as
+// the CreatePathFromOutline() parameters with the same names.
+void AppendOutlineToPath(
+    FPDF_PAGEOBJECT path,
+    const ink::ModeledShape& shape,
+    const ModeledShapeOutlinesIterator::OutlineData& outline_data,
+    const gfx::AxisTransform2d& transform) {
   CHECK(path);
 
-  std::array<gfx::PointF, 3> transformed_triangle =
-      TransformTriangle(transform, triangle);
-  bool result = FPDFPath_MoveTo(path, transformed_triangle[0].x(),
-                                transformed_triangle[0].y());
+  base::span<const ink::Mesh> meshes =
+      shape.RenderGroupMeshes(outline_data.group_index);
+  const auto& first_outline_position = outline_data.outline.front();
+  gfx::PointF transformed_vertex_position =
+      transform.MapPoint(GetVertexPosition(meshes, first_outline_position));
+  bool result = FPDFPath_MoveTo(path, transformed_vertex_position.x(),
+                                transformed_vertex_position.y());
   CHECK(result);
-  result = FPDFPath_LineTo(path, transformed_triangle[1].x(),
-                           transformed_triangle[1].y());
-  CHECK(result);
-  result = FPDFPath_LineTo(path, transformed_triangle[2].x(),
-                           transformed_triangle[2].y());
-  CHECK(result);
+
+  for (const auto& outline_position : outline_data.outline.subspan<1u>()) {
+    transformed_vertex_position =
+        transform.MapPoint(GetVertexPosition(meshes, outline_position));
+    result = FPDFPath_LineTo(path, transformed_vertex_position.x(),
+                             transformed_vertex_position.y());
+    CHECK(result);
+  }
 }
 
 ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
                                                FPDF_PAGE page) {
   CHECK(page);
 
-  // A shape is made up of meshes, which in turn are made up of triangles.
-  // All of these get combined into a single PDF path.  The first triangle is
-  // special because its first point is used to create the path.
-  TriangleIterator triangle_iter(shape);
-  std::optional<ink::Triangle> triangle = triangle_iter.GetAndAdvance();
-  if (!triangle.has_value()) {
-    return nullptr;  // No meshes with actual shape data.
+  ModeledShapeOutlinesIterator it(shape);
+  std::optional<ModeledShapeOutlinesIterator::OutlineData> outline_data =
+      it.GetAndAdvance();
+  if (!outline_data.has_value()) {
+    return nullptr;  // `shape` is empty.
   }
 
   // The transform converts from canonical coordinates (which has a top-left
@@ -137,15 +155,14 @@ ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
       {kScreenToPageScale, -kScreenToPageScale},
       {0, FPDF_GetPageHeightF(page)});
 
-
-  // Outline the edges of the first triangle.
+  // Create a path using the first outline.
   ScopedFPDFPageObject path =
-      CreatePathFromTriangle(page, triangle.value(), transform);
+      CreatePathFromOutlineData(page, shape, outline_data.value(), transform);
 
-  // Work through the remaining triangles, which are part of the same path.
-  for (triangle = triangle_iter.GetAndAdvance(); triangle.has_value();
-       triangle = triangle_iter.GetAndAdvance()) {
-    AppendTriangleToPath(path.get(), triangle.value(), transform);
+  // Work through the remaining outlines, which are part of the same path.
+  for (outline_data = it.GetAndAdvance(); outline_data.has_value();
+       outline_data = it.GetAndAdvance()) {
+    AppendOutlineToPath(path.get(), shape, outline_data.value(), transform);
   }
 
   bool result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
