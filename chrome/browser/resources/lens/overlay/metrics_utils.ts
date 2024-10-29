@@ -34,3 +34,18 @@ export function recordTimeToWebUIReady(durationMs: number) {
       },
       Math.floor(durationMs));
 }
+
+/**
+ * Records |averageFps| in the Lens.Overlay.Performance.AverageFPS histogram.
+ */
+export function recordAverageFps(averageFps: number) {
+  chrome.metricsPrivate.recordValue(
+      {
+        metricName: 'Lens.Overlay.Performance.AverageFPS',
+        type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+        min: 1,
+        max: 200,
+        buckets: 50,
+      },
+      Math.floor(averageFps));
+}

@@ -249,6 +249,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.Performance.AverageFPS" units="fps"
+    expires_after="2025-10-28">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once at the end of a Lens Overlay session. Measures the average FPS
+    of the Lens Overlay, as calculated via Javascript requestAnimationFrame.
+    This is an estimate, but should be accurate enough to provide an indication
+    of performance changes. This is only logged when the overlay is closed
+    asyncronously, so the Javascript has time to run the logging code.
+  </summary>
+</histogram>
+
 <histogram
     name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.Shown"
     enum="BooleanShown" expires_after="2025-05-06">

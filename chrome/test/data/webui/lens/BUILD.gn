@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "overlay/object_selection_test.ts",
     "overlay/overlay_background_scrim_test.ts",
     "overlay/overlay_close_button_test.ts",
+    "overlay/performance_tracker_test.ts",
     "overlay/overlay_cursor_test.ts",
     "overlay/overlay_more_options_button_test.ts",
     "overlay/overlay_screenshot_test.ts",

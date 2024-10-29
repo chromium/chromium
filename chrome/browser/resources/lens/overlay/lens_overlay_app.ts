@@ -33,6 +33,7 @@ import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
+import {PerformanceTracker} from './performance_tracker.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
 import type {TranslateButtonElement} from './translate_button.js';
 
@@ -166,6 +167,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the translate language pickers are open.
   private areLanguagePickersOpen: boolean = false;
 
+  // The performance tracker used to log performance metrics for the overlay.
+  private performanceTracker: PerformanceTracker = new PerformanceTracker();
+
   private eventTracker_: EventTracker = new EventTracker();
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -197,6 +201,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
           this.onNotifyResultsPanelOpened.bind(this)),
       callbackRouter.notifyOverlayClosing.addListener(() => {
         this.isClosing = true;
+        this.performanceTracker.endSession();
       }),
     ];
     this.eventTracker_.add(
@@ -230,6 +235,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(document, 'language-picker-opened', () => {
       this.handleLanguagePickersOpened();
     });
+
+    this.performanceTracker.startSession();
   }
 
   override disconnectedCallback() {

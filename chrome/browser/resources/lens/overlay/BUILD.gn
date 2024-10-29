@@ -69,6 +69,7 @@ build_webui("build_overlay") {
     "hit.ts",
     "language_browser_proxy.ts",
     "metrics_utils.ts",
+    "performance_tracker.ts",
     "post_selection_paint_worklet.ts",
     "screenshot_bitmap_browser_proxy.ts",
     "screenshot_utils.ts",
