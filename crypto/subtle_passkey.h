@@ -7,6 +7,10 @@
 
 #include "crypto/crypto_export.h"
 
+namespace syncer {
+class Nigori;
+}
+
 namespace crypto {
 
 // A crypto::SubtlePassKey allows you to call subtle, difficult-to-get-right, or
@@ -27,6 +31,9 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // Deprecated: remove this once the DeriveKey*() methods are deleted from
   // SymmetricKey.
   friend class SymmetricKey;
+
+  // This class uses custom PBKDF2 parameters - the Nigori spec requires this.
+  friend class syncer::Nigori;
 };
 
 }  // namespace crypto
