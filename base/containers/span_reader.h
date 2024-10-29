@@ -281,8 +281,8 @@ class SpanReader {
   size_t original_size_;
 };
 
-template <class T, size_t N>
-SpanReader(span<T, N>) -> SpanReader<T>;
+template <typename T, size_t N, typename InternalPtrType>
+SpanReader(span<T, N, InternalPtrType>) -> SpanReader<T>;
 
 }  // namespace base
 

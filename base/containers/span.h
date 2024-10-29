@@ -74,6 +74,14 @@ concept LegalDataConversion =
     std::is_convertible_v<std::remove_reference_t<From> (*)[],
                           std::remove_reference_t<To> (*)[]>;
 
+// Akin to `std::constructible_from<span, T>`, but meant to be used in a
+// type-deducing context where we don't know what args would be deduced;
+// `std::constructible_from` can't be directly used in such a case since the
+// type parameters must be fully-specified (e.g. `span<int>`), requiring us to
+// have that knowledge already.
+template <typename T>
+concept SpanConstructibleFrom = requires(const T& t) { span(t); };
+
 template <typename T, typename It>
 concept CompatibleIter = std::contiguous_iterator<It> &&
                          LegalDataConversion<std::iter_reference_t<It>, T>;
@@ -1489,41 +1497,19 @@ auto as_writable_chars(span<T, X, InternalPtrType> s) noexcept {
 }
 
 // Type-deducing helper for constructing a span.
-//
-// # Safety
-// The contiguous iterator `it` must point to the first element of at least
-// `size` many elements or Undefined Behaviour may result as the span may give
-// access beyond the bounds of the collection pointed to by `it`.
-template <int&... ExplicitArgumentBarrier, typename It>
-UNSAFE_BUFFER_USAGE constexpr auto make_span(
-    It it,
-    StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<std::iter_reference_t<It>>;
-  // SAFETY: The caller guarantees that `it` is the first of at least `size`
-  // many elements.
-  return UNSAFE_BUFFERS(span<T>(it, size));
-}
-
-// Type-deducing helper for constructing a span.
 // Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
 // TODO(crbug.com/341907909): Remove.
 //
-// # Checks
-// The function CHECKs that `it <= end` and will terminate otherwise.
-//
-// # Safety
-// The contiguous iterator `it` and its end sentinel `end` must be for the same
-// allocation or Undefined Behaviour may result as the span may give access
-// beyond the bounds of the collection pointed to by `it`.
-template <int&... ExplicitArgumentBarrier,
-          typename It,
-          typename End,
-          typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
-UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<std::iter_reference_t<It>>;
-  // SAFETY: The caller guarantees that `it` and `end` are iterators of the
-  // same allocation.
-  return UNSAFE_BUFFERS(span<T>(it, end));
+// SAFETY: `it` must point to the first of a (possibly-empty) series of
+// contiguous valid elements. If `end_or_size` is a size, the series must
+// contain at least that many valid elements; if it is an iterator or sentinel,
+// it must refer to the same allocation, and all elements in the range [it,
+// end_or_size) must be valid. Otherwise, the span will allow access to invalid
+// elements, resulting in UB.
+template <int&... ExplicitArgumentBarrier, typename It, typename EndOrSize>
+  requires(std::contiguous_iterator<It>)
+UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, EndOrSize end_or_size) {
+  return UNSAFE_BUFFERS(span(it, end_or_size));
 }
 
 // make_span utility function that deduces both the span's value_type and extent
@@ -1533,6 +1519,7 @@ UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, End end) noexcept {
 // Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
 // TODO(crbug.com/341907909): Remove.
 template <int&... ExplicitArgumentBarrier, typename Container>
+  requires(internal::SpanConstructibleFrom<Container>)
 constexpr auto make_span(Container&& container) noexcept {
   return span(std::forward<Container>(container));
 }
@@ -1664,9 +1651,9 @@ constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires byte spans.
 template <int&... ExplicitArgumentBarrier, typename Spannable>
-  requires requires(const Spannable& arg) { make_span(arg); }
+  requires(internal::SpanConstructibleFrom<Spannable>)
 constexpr auto as_byte_span(const Spannable& arg) {
-  return as_bytes(make_span(arg));
+  return as_bytes(span(arg));
 }
 
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
@@ -1681,26 +1668,20 @@ constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires mutable byte spans.
 template <int&... ExplicitArgumentBarrier, typename Spannable>
-  requires requires(Spannable&& arg) {
-    make_span(arg);
-    requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
-  }
+  requires(internal::SpanConstructibleFrom<Spannable> &&
+           !std::is_const_v<typename decltype(span(
+               std::declval<Spannable>()))::element_type>)
 constexpr auto as_writable_byte_span(Spannable&& arg) {
-  return as_writable_bytes(make_span(std::forward<Spannable>(arg)));
+  return as_writable_bytes(span(std::forward<Spannable>(arg)));
 }
 
 // This overload for arrays preserves the compile-time size N of the array in
 // the span type signature span<uint8_t, N>.
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
+  requires(!std::is_const_v<T>)
 constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
     T (&arr LIFETIME_BOUND)[N]) {
-  return as_writable_bytes(make_span(arr));
-}
-
-template <int&... ExplicitArgumentBarrier, typename T, size_t N>
-constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
-    T (&&arr LIFETIME_BOUND)[N]) {
-  return as_writable_bytes(make_span(arr));
+  return as_writable_bytes(span(arr));
 }
 
 namespace internal {

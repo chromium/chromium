@@ -1940,15 +1940,16 @@ TEST(SpanTest, AsWritableByteSpan) {
     EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
-  // Rvalue input.
+  // Result can be passed as rvalue.
   {
+    int kMutArray[] = {2, 3, 5, 7, 11, 13};
     [](auto byte_span) {
       static_assert(
           std::is_same_v<decltype(byte_span), span<uint8_t, 6u * sizeof(int)>>);
       EXPECT_EQ(byte_span.size(), 6u * sizeof(int));
       // Little endian puts the low bits in the first byte.
       EXPECT_EQ(byte_span[0u], 2);
-    }(as_writable_byte_span({2, 3, 5, 7, 11, 13}));
+    }(as_writable_byte_span(kMutArray));
   }
 }
 
