@@ -23,6 +23,7 @@
 #include "components/value_store/value_store.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
+#include "extensions/browser/api/lock_screen_data/crypto.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/extension_registry.h"
@@ -329,7 +330,9 @@ DataItem::DataItem(const std::string& id,
       context_(context),
       value_store_cache_(value_store_cache),
       task_runner_(task_runner),
-      crypto_key_(crypto_key) {}
+      crypto_key_(crypto_key) {
+  CHECK_EQ(crypto_key_.size(), kAesKeySize);
+}
 
 DataItem::~DataItem() = default;
 

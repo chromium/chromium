@@ -34,6 +34,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/value_store/test_value_store_factory.h"
 #include "content/public/test/test_browser_context.h"
+#include "extensions/browser/api/lock_screen_data/crypto.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_value_store_migrator.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
@@ -54,7 +55,7 @@ namespace lock_screen_data {
 namespace {
 
 constexpr char kTestUserIdHash[] = "user_id_hash";
-constexpr char kTestSymmetricKey[] = "fake_symmetric_key";
+constexpr char kTestSymmetricKey[] = "symmetric keys must be 32 bytes!";
 
 constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 constexpr char kSecondTestExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";

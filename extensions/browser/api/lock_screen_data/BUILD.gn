@@ -9,6 +9,7 @@ assert(enable_extensions,
 
 source_set("lock_screen_data") {
   sources = [
+    "crypto.h",
     "data_item.cc",
     "data_item.h",
     "lock_screen_data_api.cc",

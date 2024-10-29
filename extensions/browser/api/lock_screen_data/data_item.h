@@ -73,7 +73,7 @@ class DataItem {
   //     that the Data item does not retain a reference to the task runner -
   //     the caller should ensure |task_runner| outlives the data item.
   // |crypto_key| - Symmetric AES key for encrypting/decrypting data item
-  //     content.
+  //     content. Must be extensions::lock_screen_data::kAesKeySize bytes long.
   DataItem(const std::string& id,
            const ExtensionId& extension_id,
            content::BrowserContext* context,

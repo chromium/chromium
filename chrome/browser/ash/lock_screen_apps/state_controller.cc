@@ -43,6 +43,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "crypto/symmetric_key.h"
+#include "extensions/browser/api/lock_screen_data/crypto.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -72,7 +73,9 @@ StateController* g_state_controller_instance = nullptr;
 // Generates a random 256 bit AES key. Returns an empty string on error.
 std::string GenerateCryptoKey() {
   std::unique_ptr<crypto::SymmetricKey> symmetric_key =
-      crypto::SymmetricKey::GenerateRandomKey(crypto::SymmetricKey::AES, 256);
+      crypto::SymmetricKey::GenerateRandomKey(
+          crypto::SymmetricKey::AES,
+          extensions::lock_screen_data::kAesKeySize * 8);
   if (!symmetric_key)
     return "";
   return symmetric_key->key();
@@ -194,8 +197,10 @@ void StateController::Shutdown() {
 
 bool StateController::GetUserCryptoKey(Profile* profile, std::string* key) {
   *key = profile->GetPrefs()->GetString(kDataCryptoKeyPref);
-  if (!key->empty() && base::Base64Decode(*key, key))
+  if (!key->empty() && base::Base64Decode(*key, key) &&
+      key->size() == extensions::lock_screen_data::kAesKeySize) {
     return true;
+  }
 
   *key = GenerateCryptoKey();
 

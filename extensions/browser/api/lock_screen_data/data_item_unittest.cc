@@ -121,7 +121,7 @@ class DataItemTest : public testing::Test {
   std::string GenerateKey(const std::string& password) {
     std::unique_ptr<crypto::SymmetricKey> key =
         crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-            crypto::SymmetricKey::AES, password, "salt", 1000, 256);
+            crypto::SymmetricKey::AES, password, "salt", 1, 256);
     if (!key) {
       ADD_FAILURE() << "Failed to create symmetric key";
       return std::string();
@@ -643,29 +643,6 @@ TEST_F(DataItemTest, WriteDeletedItem) {
             WriteItemAndWaitForResult(item.get(), content));
 }
 
-TEST_F(DataItemTest, WriteWithInvalidKey) {
-  std::unique_ptr<DataItem> item =
-      CreateAndRegisterDataItem("data_id", extension()->id(), "invalid");
-
-  std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
-  EXPECT_EQ(OperationResult::kInvalidKey,
-            WriteItemAndWaitForResult(item.get(), content));
-}
-
-TEST_F(DataItemTest, ReadWithInvalidKey) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
-
-  std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
-  EXPECT_EQ(OperationResult::kSuccess,
-            WriteItemAndWaitForResult(item.get(), content));
-
-  std::unique_ptr<DataItem> reader =
-      CreateDataItem("data_id", extension()->id(), "invalid");
-  EXPECT_EQ(OperationResult::kInvalidKey,
-            ReadItemAndWaitForResult(reader.get(), nullptr));
-}
-
 TEST_F(DataItemTest, ReadWithWrongKey) {
   std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
       "data_id", extension()->id(), GenerateKey("key_1"));
@@ -737,6 +714,12 @@ TEST_F(DataItemTest, DeleteAllForExtension) {
   ASSERT_EQ(OperationResult::kSuccess,
             GetRegisteredItemIds(extension()->id(), &item_ids));
   EXPECT_EQ(std::set<std::string>({"data_id_1"}), item_ids);
+}
+
+TEST_F(DataItemTest, KeyLengthRequirementEnforced) {
+  const char kShortKey[] = "this key is not 32 bytes";
+  EXPECT_DEATH_IF_SUPPORTED(
+      CreateAndRegisterDataItem("data_id_1", extension()->id(), kShortKey), "");
 }
 
 }  // namespace lock_screen_data
