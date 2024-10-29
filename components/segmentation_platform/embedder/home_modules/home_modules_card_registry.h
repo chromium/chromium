@@ -32,8 +32,16 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
   // Registers all the profile prefs needed for the ephemeral cards system.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Returns `true` if the given `label` corresponds to any of the Tips
+  // ephemeral module classes.
+  static bool IsEphemeralTipsModuleLabel(std::string_view label);
+
   // Indicates that `card_name` was shown to the user.
   void NotifyCardShown(const char* card_name);
+
+  // Indicates that the user interacted with `card_name`. This could be
+  // through clicking, tapping, or engaging with the card in some way.
+  void NotifyCardInteracted(const char* card_name);
 
   const std::vector<std::string>& all_output_labels() const {
     return all_output_labels_;

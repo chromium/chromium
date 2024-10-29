@@ -124,7 +124,7 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformTipsEphemeralCard);
 
 // Defines the sequence of tips variations for the experimental train. The
 // sequence uses the underlying variation labels defined in
-// `tips_ephemeral_module_constants`.
+// `home_modules/constants`.
 extern const char kTipsEphemeralCardExperimentTrainParam[];
 
 // Returns the enabled experimental train for the Tips Ephemeral Card
@@ -132,6 +132,14 @@ extern const char kTipsEphemeralCardExperimentTrainParam[];
 // labels in the string determines the order in which the corresponding Tips
 // Ephemeral Card variations will be considered for display.
 std::string TipsExperimentTrainEnabled();
+
+// Defines the maximum number of times an ephemeral tips card can be visible
+// to the user.
+extern const char kTipsEphemeralCardModuleMaxImpressionCount[];
+
+// Returns the maximum number of times an ephemeral tips card can be visible
+// to the user.
+int GetTipsEphemeralCardModuleMaxImpressionCount();
 
 BASE_DECLARE_FEATURE(kSegmentationSurveyPage);
 extern const base::FeatureParam<bool> kSegmentationSurveyInternalsPage;

@@ -70,4 +70,28 @@ constexpr char kTotalOccurrences[] = "total_occurrences";
 constexpr char kTipsSignalHistory[] =
     "segmentation_platform.tips.signal_history";
 
+const char kAddressBarPositionEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "address_bar_position_ephemeral_module_interacted";
+const char kAutofillPasswordsEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "autofill_passwords_ephemeral_module_interacted";
+const char kEnhancedSafeBrowsingEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "enhanced_safe_browsing_ephemeral_module_interacted";
+const char kSavePasswordsEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "save_passwords_ephemeral_module_interacted";
+const char kLensEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted.lens_ephemeral_module_interacted";
+const char kLensEphemeralModuleSearchVariationInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "lens_ephemeral_module_search_variation_interacted";
+const char kLensEphemeralModuleShopVariationInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "lens_ephemeral_module_shop_variation_interacted";
+const char kLensEphemeralModuleTranslateVariationInteractedPref[] =
+    "ephemeral_pref_interacted."
+    "lens_ephemeral_module_translate_variation_interacted";
+
 }  // namespace segmentation_platform

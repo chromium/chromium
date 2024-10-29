@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 
+#import <string_view>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
@@ -594,6 +595,7 @@ using segmentation_platform::TipIdentifier;
 
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
   CHECK(IsTipsMagicStackEnabled());
+  CHECK(_tipsMediator);
 
   // TODO(crbug.com/369457289): Track user interactions with the Tips module
   // using new metrics.
@@ -670,6 +672,19 @@ using segmentation_platform::TipIdentifier;
   }
 
   [self.NTPActionsDelegate tipsOpened];
+  [_tipsMediator removeModule];
+
+  std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
+
+  if (name.has_value()) {
+    segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetHomeCardRegistryForProfile(self.browser->GetProfile());
+
+    CHECK(registry);
+
+    registry->NotifyCardInteracted(std::string(name.value()).c_str());
+  }
 }
 
 #pragma mark - MagicStackCollectionViewAudience
@@ -721,9 +736,16 @@ using segmentation_platform::TipIdentifier;
           segmentation_platform::kPriceTrackingNotificationPromo);
       break;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
-    case ContentSuggestionsModuleType::kTips:
-      registry->NotifyCardShown(segmentation_platform::kTipsEphemeralModule);
-      break;
+    case ContentSuggestionsModuleType::kTips: {
+      CHECK(_tipsMediator);
+      std::optional<std::string_view> name =
+          OutputLabelForTipIdentifier(_tipsMediator.state.identifier);
+      if (name.has_value()) {
+        registry->NotifyCardShown(std::string(name.value()).c_str());
+        break;
+      }
+      [[fallthrough]];
+    }
     default:
       NOTREACHED();
   }

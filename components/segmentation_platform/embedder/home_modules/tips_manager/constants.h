@@ -94,6 +94,28 @@ extern const char kTotalOccurrences[];
 //                         observed (`int`).
 extern const char kTipsSignalHistory[];
 
+// Pref names
+
+// Whether or not the Address Bar Position ephemeral module has been
+// interacted with.
+extern const char kAddressBarPositionEphemeralModuleInteractedPref[];
+// Whether or not the Autofill Passwords ephemeral module has been interacted
+// with.
+extern const char kAutofillPasswordsEphemeralModuleInteractedPref[];
+// Whether or not the Enhanced Safe Browsing ephemeral module has been
+// interacted with.
+extern const char kEnhancedSafeBrowsingEphemeralModuleInteractedPref[];
+// Whether or not the Save Passwords ephemeral module has been interacted with.
+extern const char kSavePasswordsEphemeralModuleInteractedPref[];
+// Whether or not the Lens ephemeral module has been interacted with.
+extern const char kLensEphemeralModuleInteractedPref[];
+// Whether or not the Lens Search variation has been interacted with.
+extern const char kLensEphemeralModuleSearchVariationInteractedPref[];
+// Whether or not the Lens Shop variation has been interacted with.
+extern const char kLensEphemeralModuleShopVariationInteractedPref[];
+// Whether or not the Lens Translate variation has been interacted with.
+extern const char kLensEphemeralModuleTranslateVariationInteractedPref[];
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TIPS_MANAGER_CONSTANTS_H_

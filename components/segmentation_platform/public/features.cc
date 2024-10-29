@@ -6,7 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
-#include "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
+#include "components/segmentation_platform/embedder/home_modules/constants.h"
 
 namespace segmentation_platform::features {
 
@@ -196,15 +196,19 @@ std::string TipsExperimentTrainEnabled() {
       segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
       kTipsEphemeralCardExperimentTrainParam,
       /*default_value=*/
-      base::StrCat(
-          {segmentation_platform::home_modules::kTipsLensSearchVariation, ",",
-           segmentation_platform::home_modules::kTipsSavePasswordsVariation,
-           ",",
-           segmentation_platform::home_modules::
-               kTipsEnhancedSafeBrowsingVariation,
-           ",",
-           segmentation_platform::home_modules::
-               kTipsAddressBarPositionVariation}));
+      base::StrCat({kLensEphemeralModuleSearchVariation, ",",
+                    kSavePasswordsEphemeralModule, ",",
+                    kEnhancedSafeBrowsingEphemeralModule, ",",
+                    kAddressBarPositionEphemeralModule}));
+}
+
+const char kTipsEphemeralCardModuleMaxImpressionCount[] =
+    "TipsEphemeralCardModuleMaxImpressionCount";
+
+int GetTipsEphemeralCardModuleMaxImpressionCount() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
+      kTipsEphemeralCardModuleMaxImpressionCount, /*default_value=*/3);
 }
 
 BASE_FEATURE(kSegmentationSurveyPage,
