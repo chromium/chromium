@@ -75,9 +75,6 @@ void FilterSensitiveValuesByPossibleFieldType(FormStructure& form) {
     if (field->possible_types().contains_any(sensitive_types)) {
       auto x = field->possible_types();
       x.intersect(sensitive_types);
-      LOG(ERROR) << field->name()
-                 << " has possible field types: " << field->possible_types()
-                 << " out of which are sensitive: " << x;
       ApplyFilter(*field);
       continue;
     }
@@ -89,8 +86,6 @@ void FilterSensitiveValuesByInputType(FormStructure& form) {
   for (auto& field : form) {
     if (field->form_control_type() ==
         autofill::FormControlType::kInputPassword) {
-      LOG(ERROR) << field->name() << " has form control type "
-                 << field->form_control_type();
       ApplyFilter(*field);
       continue;
     }
