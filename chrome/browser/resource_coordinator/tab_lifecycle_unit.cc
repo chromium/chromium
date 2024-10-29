@@ -124,47 +124,6 @@ StateChangeReason DiscardReasonToStateChangeReason(
 
 }  // namespace
 
-class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
- public:
-  explicit TabLifecycleUnitExternalImpl(
-      TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit)
-      : tab_lifecycle_unit_(tab_lifecycle_unit) {}
-
-  // TabLifecycleUnitExternal:
-
-  content::WebContents* GetWebContents() const override {
-    return tab_lifecycle_unit_->web_contents();
-  }
-
-  bool IsAutoDiscardable() const override {
-    return tab_lifecycle_unit_->IsAutoDiscardable();
-  }
-
-  void SetAutoDiscardable(bool auto_discardable) override {
-    tab_lifecycle_unit_->SetAutoDiscardable(auto_discardable);
-  }
-
-  bool DiscardTab(LifecycleUnitDiscardReason reason,
-                  uint64_t memory_footprint_estimate) override {
-    return tab_lifecycle_unit_->Discard(reason, memory_footprint_estimate);
-  }
-
-  bool IsDiscarded() const override {
-    return tab_lifecycle_unit_->GetState() == LifecycleUnitState::DISCARDED;
-  }
-
-  int GetDiscardCount() const override {
-    return tab_lifecycle_unit_->GetDiscardCount();
-  }
-
-  base::Time GetLastFocusedTime() const override {
-    return tab_lifecycle_unit_->GetLastFocusedTime();
-  }
-
- private:
-  raw_ptr<TabLifecycleUnitSource::TabLifecycleUnit> tab_lifecycle_unit_ =
-      nullptr;
-};
 
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
     TabLifecycleUnitSource* source,
@@ -290,10 +249,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdateLifecycleState(
 
 TabLifecycleUnitExternal*
 TabLifecycleUnitSource::TabLifecycleUnit::AsTabLifecycleUnitExternal() {
-  // Create an impl the first time this is called.
-  if (!external_impl_)
-    external_impl_ = std::make_unique<TabLifecycleUnitExternalImpl>(this);
-  return external_impl_.get();
+  return this;
 }
 
 std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
@@ -657,6 +613,21 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
   }
 
   return true;
+}
+
+content::WebContents* TabLifecycleUnitSource::TabLifecycleUnit::GetWebContents()
+    const {
+  return web_contents();
+}
+
+bool TabLifecycleUnitSource::TabLifecycleUnit::IsDiscarded() const {
+  return GetState() == LifecycleUnitState::DISCARDED;
+}
+
+bool TabLifecycleUnitSource::TabLifecycleUnit::DiscardTab(
+    mojom::LifecycleUnitDiscardReason reason,
+    uint64_t memory_footprint_estimate) {
+  return Discard(reason, memory_footprint_estimate);
 }
 
 TabLifecycleUnitSource* TabLifecycleUnitSource::TabLifecycleUnit::GetTabSource()

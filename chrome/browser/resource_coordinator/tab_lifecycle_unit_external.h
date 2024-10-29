@@ -47,9 +47,6 @@ class TabLifecycleUnitExternal {
   // Returns true if the tab is discarded.
   virtual bool IsDiscarded() const = 0;
 
-  // Returns the number of times that the tab was discarded.
-  virtual int GetDiscardCount() const = 0;
-
   // Last time ticks at which this tab was focused, or Time::Max() if it is
   // currently focused.
   virtual base::Time GetLastFocusedTime() const = 0;
