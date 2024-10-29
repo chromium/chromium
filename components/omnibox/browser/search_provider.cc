@@ -969,12 +969,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         /*input_text=*/trimmed_verbatim);
     if (match_with_answer) {
       verbatim.SetAnswerType(match_with_answer->answer_type);
-      if (match_with_answer->answer) {
-        verbatim.SetAnswer(*match_with_answer->answer);
-      }
-      if (match_with_answer->answer_template) {
-        verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
-      }
+      verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
     }
     AddMatchToMap(verbatim, GetInput(verbatim.from_keyword()),
                   GetTemplateURL(verbatim.from_keyword()),
@@ -1102,7 +1097,6 @@ void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
         answer_seen = true;
       } else {
         it->answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-        it->answer.reset();
         it->answer_template.reset();
       }
     }
@@ -1571,11 +1565,9 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
     }
 
     GURL answer_image_url =
-        omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-                suggestion.answer_template()
+        suggestion.answer_template()
             ? GURL(suggestion.answer_template()->answers(0).image().url())
-            : ((suggestion.answer() ? suggestion.answer()->image_url()
-                                    : GURL()));
+            : GURL();
     if (answer_image_url.is_valid()) {
       prefetch_image_urls.push_back(std::move(answer_image_url));
     }

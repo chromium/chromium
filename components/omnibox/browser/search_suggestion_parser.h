@@ -190,9 +190,6 @@ class SearchSuggestionParser {
       return suggestion_group_id_;
     }
 
-    void SetAnswer(const SuggestionAnswer& answer);
-    const std::optional<SuggestionAnswer>& answer() const { return answer_; }
-
     void SetRichAnswerTemplate(
         const omnibox::RichAnswerTemplate& answer_template);
     const std::optional<omnibox::RichAnswerTemplate>& answer_template() const {
@@ -237,9 +234,6 @@ class SearchSuggestionParser {
     // The optional suggestion group ID used to look up the suggestion group
     // config for the group this suggestion belongs to from the server response.
     std::optional<omnibox::GroupId> suggestion_group_id_;
-
-    // Optional short answer to the input that produced this suggestion.
-    std::optional<SuggestionAnswer> answer_;
 
     // Optional proto that contains answer info for rich answers.
     std::optional<omnibox::RichAnswerTemplate> answer_template_;

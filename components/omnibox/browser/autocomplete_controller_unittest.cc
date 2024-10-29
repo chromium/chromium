@@ -41,13 +41,14 @@ namespace {
 
 bool ParseAnswer(const std::string& answer_json,
                  omnibox::AnswerType answer_type,
-                 SuggestionAnswer* answer) {
+                 omnibox::RichAnswerTemplate* answer) {
   std::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict()) {
     return false;
   }
 
-  return SuggestionAnswer::ParseAnswer(value->GetDict(), answer_type, answer);
+  return omnibox::answer_data_parser::ParseJsonToAnswerData(value->GetDict(),
+                                                            answer);
 }
 
 }  // namespace
@@ -163,9 +164,9 @@ class AutocompleteControllerTest : public testing::Test {
     AutocompleteMatch match = CreateSearchMlScoredMatch(
         name, allowed_to_be_default_match, traditional_relevance, ml_output);
     match.answer_type = answer_type;
-    SuggestionAnswer answer;
+    omnibox::RichAnswerTemplate answer;
     EXPECT_TRUE(ParseAnswer(answer_json, match.answer_type, &answer));
-    match.answer = answer;
+    match.answer_template = answer;
     return match;
   }
 

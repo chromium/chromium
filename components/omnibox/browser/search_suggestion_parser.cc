@@ -403,11 +403,6 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
       ClassifyAllMatchesInString(input_text, match_contents_, true);
 }
 
-void SearchSuggestionParser::SuggestResult::SetAnswer(
-    const SuggestionAnswer& answer) {
-  answer_ = answer;
-}
-
 void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
     const omnibox::RichAnswerTemplate& answer_template) {
   answer_template_ = answer_template;
@@ -858,7 +853,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::optional<int> suggestion_group_id;
       bool answer_parsed_successfully = false;
       omnibox::RichAnswerTemplate answer_template;
-      SuggestionAnswer answer;
       omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
@@ -913,15 +907,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
             answer_parsed_successfully = answer_template.answers_size() > 0;
           } else if (const auto* answer_json =
                          suggestion_detail.FindDict("ansa")) {
-            if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
-                    .enabled) {
               answer_parsed_successfully =
                   omnibox::answer_data_parser::ParseJsonToAnswerData(
                       *answer_json, &answer_template);
-            } else {
-              answer_parsed_successfully = SuggestionAnswer::ParseAnswer(
-                  *answer_json, answer_type, &answer);
-            }
           }
           base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
                                     answer_parsed_successfully);
@@ -939,13 +927,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
                         should_prefetch, should_prerender, trimmed_input));
 
       if (answer_parsed_successfully) {
+        // Ensure `answer_template` has an answer.
+        DCHECK(answer_template.answers_size() > 0);
         results->suggest_results.back().SetAnswerType(answer_type);
-        if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-          results->suggest_results.back().SetRichAnswerTemplate(
-              answer_template);
-        } else {
-          results->suggest_results.back().SetAnswer(answer);
-        }
+        results->suggest_results.back().SetRichAnswerTemplate(answer_template);
       }
 
       if (suggestion_group_id) {

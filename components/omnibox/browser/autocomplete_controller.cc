@@ -1611,7 +1611,6 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // If the match has an answer, it will look strange to try to display
       // it along with a keyword hint. Prefer the keyword hint, and revert
       // to a typical search.
-      match.answer.reset();
       match.answer_template.reset();
       match.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
       match.associated_keyword = std::make_unique<AutocompleteMatch>(

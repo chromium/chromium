@@ -140,7 +140,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   } else {
     match.suggestion_group_id = suggestion.suggestion_group_id();
   }
-  match.answer = suggestion.answer();
   match.answer_template = suggestion.answer_template();
   match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
@@ -675,16 +674,7 @@ void BaseSearchProvider::AddMatchToMap(
     // This is to avoid losing the Answers in Suggest information.
     const auto& less_relevant_duplicate_match =
         existing_match.duplicate_matches.back();
-    if (less_relevant_duplicate_match.answer && !existing_match.answer) {
-      existing_match.answer = less_relevant_duplicate_match.answer;
-      existing_match.answer_type = less_relevant_duplicate_match.answer_type;
-      if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
-        existing_match.suggestion_group_id =
-            less_relevant_duplicate_match.suggestion_group_id;
-      }
-    }
-    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-        less_relevant_duplicate_match.answer_template &&
+    if (less_relevant_duplicate_match.answer_template &&
         !existing_match.answer_template) {
       existing_match.actions = less_relevant_duplicate_match.actions;
       existing_match.answer_template =

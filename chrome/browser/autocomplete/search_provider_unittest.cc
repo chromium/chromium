@@ -3772,7 +3772,7 @@ TEST_F(SearchProviderTest, AnswersCache) {
   AutocompleteResult result;
   ACMatches matches;
   AutocompleteMatch match1;
-  match1.answer = SuggestionAnswer();
+  match1.answer_template = omnibox::RichAnswerTemplate();
   match1.answer_type = omnibox::ANSWER_TYPE_WEATHER;
   match1.fill_into_edit = u"weather los angeles";
 
@@ -3788,22 +3788,6 @@ TEST_F(SearchProviderTest, AnswersCache) {
   AnswersQueryData answer =
       provider_->answers_cache_.GetTopAnswerEntry(u"weather l");
   EXPECT_EQ(u"weather los angeles", answer.full_query_text);
-
-  AutocompleteMatch match2;
-  match2.answer_template = omnibox::RichAnswerTemplate();
-  match2.answer_type = omnibox::ANSWER_TYPE_WEATHER;
-  match2.fill_into_edit = u"weather san diego";
-
-  AutocompleteResult result2;
-  ACMatches matches2;
-  matches2.push_back(match2);
-  matches2.push_back(non_answer_match1);
-  result2.AppendMatches(matches2);
-  provider_->RegisterDisplayedAnswers(result2);
-  ASSERT_FALSE(provider_->answers_cache_.empty());
-  AnswersQueryData answer2 =
-      provider_->answers_cache_.GetTopAnswerEntry(u"weather s");
-  EXPECT_EQ(u"weather san diego", answer2.full_query_text);
 
   // Without scored results, no answers will be retrieved.
   answer = provider_->FindAnswersPrefetchData();
@@ -3827,17 +3811,12 @@ TEST_F(SearchProviderTest, AnswersCache) {
 }
 
 TEST_F(SearchProviderTest, RemoveExtraAnswers) {
-  SuggestionAnswer answer1;
-  SuggestionAnswer answer2;
-
   ACMatches matches;
   AutocompleteMatch match1, match2, match3, match4, match5;
-  match1.answer = answer1;
+  match1.answer_template = omnibox::RichAnswerTemplate();
   match1.answer_type = omnibox::ANSWER_TYPE_WEATHER;
-  match3.answer = answer2;
+  match3.answer_template = omnibox::RichAnswerTemplate();
   match3.answer_type = omnibox::ANSWER_TYPE_TRANSLATION;
-  match5.answer_template = omnibox::RichAnswerTemplate();
-  match5.answer_type = omnibox::ANSWER_TYPE_FINANCE;
 
   matches.push_back(match1);
   matches.push_back(match2);
@@ -3847,11 +3826,10 @@ TEST_F(SearchProviderTest, RemoveExtraAnswers) {
 
   SearchProvider::RemoveExtraAnswers(&matches);
   EXPECT_EQ(omnibox::ANSWER_TYPE_WEATHER, matches[0].answer_type);
-  EXPECT_TRUE(answer1.Equals(*matches[0].answer));
-  EXPECT_FALSE(matches[1].answer || matches[1].answer_template);
-  EXPECT_FALSE(matches[2].answer || matches[2].answer_template);
-  EXPECT_FALSE(matches[3].answer || matches[3].answer_template);
-  EXPECT_FALSE(matches[4].answer || matches[4].answer_template);
+  EXPECT_FALSE(matches[1].answer_template);
+  EXPECT_FALSE(matches[2].answer_template);
+  EXPECT_FALSE(matches[3].answer_template);
+  EXPECT_FALSE(matches[4].answer_template);
   EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[1].answer_type);
   EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[2].answer_type);
   EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[3].answer_type);
