@@ -91,7 +91,6 @@ blink_core_sources_bindings =
                     "core/v8/script_function.h",
                     "core/v8/script_iterator.cc",
                     "core/v8/script_iterator.h",
-                    "core/v8/script_promise.cc",
                     "core/v8/script_promise.h",
                     "core/v8/script_promise_property.h",
                     "core/v8/script_promise_resolver.cc",

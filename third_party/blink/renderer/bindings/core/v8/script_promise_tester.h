@@ -32,6 +32,9 @@ class ScriptPromiseTester final {
       : script_state_(script_state),
         value_object_(MakeGarbageCollected<ScriptValueObject>()) {
     CHECK(script_state);
+    if (script_promise.IsEmpty()) {
+      return;
+    }
     script_promise.React(script_state,
                          MakeGarbageCollected<ThenFunction<IDLType>>(
                              weak_factory_.GetWeakPtr(), State::kFulfilled),

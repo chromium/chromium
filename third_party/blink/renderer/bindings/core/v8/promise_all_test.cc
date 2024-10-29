@@ -157,7 +157,7 @@ TEST(PromiseAllTest, RejectTypeMismatch) {
 
   HeapVector<ScriptPromise<Document>> promises;
   promises.push_back(ScriptPromise<Document>::FromV8Value(
-      script_state->GetIsolate(),
+      script_state,
       ToV8Traits<LocalDOMWindow>::ToV8(script_state, &scope.GetWindow())));
 
   auto promise = PromiseAll<Document>::Create(script_state, promises);

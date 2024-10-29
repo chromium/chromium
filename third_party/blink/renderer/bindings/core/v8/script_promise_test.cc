@@ -386,7 +386,7 @@ TEST(ScriptPromiseTest, RejectTypeMismatch) {
   ScriptState* script_state = scope.GetScriptState();
 
   auto promise = ScriptPromise<Document>::FromV8Value(
-      script_state->GetIsolate(),
+      script_state,
       ToV8Traits<LocalDOMWindow>::ToV8(script_state, &scope.GetWindow()));
 
   auto* resolve = MakeGarbageCollected<ResolveDocument>();
