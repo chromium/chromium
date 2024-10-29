@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -850,11 +851,11 @@ void QuicSessionPool::ClearCachedStatesInCryptoConfig(
   }
 }
 
-int QuicSessionPool::ConnectAndConfigureSocket(CompletionOnceCallback callback,
-                                               DatagramClientSocket* socket,
-                                               IPEndPoint addr,
-                                               handles::NetworkHandle network,
-                                               const SocketTag& socket_tag) {
+void QuicSessionPool::ConnectAndConfigureSocket(CompletionOnceCallback callback,
+                                                DatagramClientSocket* socket,
+                                                IPEndPoint addr,
+                                                handles::NetworkHandle network,
+                                                const SocketTag& socket_tag) {
   socket->UseNonBlockingIO();
 
   int rv;
@@ -880,7 +881,6 @@ int QuicSessionPool::ConnectAndConfigureSocket(CompletionOnceCallback callback,
     FinishConnectAndConfigureSocket(std::move(split_callback.second), socket,
                                     socket_tag, rv);
   }
-  return ERR_IO_PENDING;
 }
 
 void QuicSessionPool::FinishConnectAndConfigureSocket(
@@ -1527,9 +1527,10 @@ int QuicSessionPool::CreateSessionAsync(
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
-  return ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
-                                   socket_ptr, std::move(peer_address), network,
-                                   key.session_key().socket_tag());
+  ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
+                            socket_ptr, std::move(peer_address), network,
+                            key.session_key().socket_tag());
+  return ERR_IO_PENDING;
 }
 
 int QuicSessionPool::CreateSessionOnProxyStream(
@@ -1587,16 +1588,25 @@ int QuicSessionPool::CreateSessionOnProxyStream(
           ? guaranteed_largest_message_payload - overhead
           : 0;
 
-  CompletionOnceCallback on_connected_via_stream = base::BindOnce(
-      &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
-      std::move(callback), std::move(key), quic_version, cert_verify_flags,
-      require_confirmation, proxy_peer_address, std::move(metadata),
-      dns_resolution_time, dns_resolution_time, session_max_packet_length,
-      net_log, network, std::move(socket));
+  auto [on_connected_via_stream_async, on_connected_via_stream_sync] =
+      base::SplitOnceCallback(base::BindOnce(
+          &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
+          std::move(callback), std::move(key), quic_version, cert_verify_flags,
+          require_confirmation, proxy_peer_address, std::move(metadata),
+          dns_resolution_time, dns_resolution_time, session_max_packet_length,
+          net_log, network, std::move(socket)));
 
-  return socket_ptr->ConnectViaStream(
+  int rv = socket_ptr->ConnectViaStream(
       std::move(local_address), std::move(proxy_peer_address),
-      std::move(proxy_stream), std::move(on_connected_via_stream));
+      std::move(proxy_stream), std::move(on_connected_via_stream_async));
+  if (rv != ERR_IO_PENDING) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce([](CompletionOnceCallback callback,
+                                     int rv) { std::move(callback).Run(rv); },
+                                  std::move(on_connected_via_stream_sync), rv));
+  }
+
+  return ERR_IO_PENDING;
 }
 
 void QuicSessionPool::FinishCreateSession(

@@ -410,13 +410,13 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Helper method that connects a DatagramClientSocket. Socket is
   // bound to the default network if the |network| param is
   // handles::kInvalidNetworkHandle. This method calls
-  // DatagramClientSocket::ConnectAsync and completes asynchronously. Returns
-  // ERR_IO_PENDING.
-  int ConnectAndConfigureSocket(CompletionOnceCallback callback,
-                                DatagramClientSocket* socket,
-                                IPEndPoint addr,
-                                handles::NetworkHandle network,
-                                const SocketTag& socket_tag);
+  // DatagramClientSocket::ConnectAsync and always completes asynchronously,
+  // implicitly returning ERR_IO_PENDING.
+  void ConnectAndConfigureSocket(CompletionOnceCallback callback,
+                                 DatagramClientSocket* socket,
+                                 IPEndPoint addr,
+                                 handles::NetworkHandle network,
+                                 const SocketTag& socket_tag);
 
   // Helper method that configures a DatagramClientSocket once
   // DatagramClientSocket::ConnectAsync completes. Posts a task to run
