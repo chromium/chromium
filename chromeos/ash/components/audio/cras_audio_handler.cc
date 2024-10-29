@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
@@ -600,6 +602,28 @@ CrasAudioHandler::GetNumberOfInputStreamsWithPermission() const {
 
 void CrasAudioHandler::GetDefaultOutputBufferSize(int32_t* buffer_size) const {
   *buffer_size = default_output_buffer_size_;
+}
+
+void CrasAudioHandler::RequestGetAudioEffectDlcs() {
+  CrasAudioClient::Get()->GetAudioEffectDlcs(
+      base::BindOnce(&CrasAudioHandler::HandleGetAudioEffectDlcs,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetAudioEffectDlcs(
+    std::optional<std::string> audio_effect_dlcs) {
+  if (!audio_effect_dlcs.has_value()) {
+    LOG(ERROR) << "cras_audio_handler: Failed to retrieve audio effect dlcs";
+  } else {
+    audio_effect_dlcs_ =
+        base::SplitString(audio_effect_dlcs.value(), ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+  }
+}
+
+std::optional<std::vector<std::string>> CrasAudioHandler::GetAudioEffectDlcs()
+    const {
+  return audio_effect_dlcs_;
 }
 
 bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(
@@ -1845,6 +1869,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetSystemAecGroupId();
   GetSystemNsSupported();
   GetSystemAgcSupported();
+  RequestGetAudioEffectDlcs();
   RequestNoiseCancellationSupported(base::BindOnce(
       &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
   RequestStyleTransferSupported(base::BindOnce(&CrasAudioHandler::GetNodes,

@@ -185,6 +185,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Sets input mute state to |mute_on| value.
   virtual void SetInputMute(bool mute_on) = 0;
 
+  // Gets the DLC IDs of the audio effects supported by the device.
+  virtual void GetAudioEffectDlcs(
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
+
   // Sets input noise cancellation state to |noise_cancellation_on| value.
   virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;
 

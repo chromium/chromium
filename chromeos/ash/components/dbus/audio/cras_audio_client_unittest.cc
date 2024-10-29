@@ -15,8 +15,10 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -1938,6 +1940,26 @@ TEST_F(CrasAudioClientTest, SetSpatialAudioEnabled) {
   client()->SetSpatialAudio(kSpatialAudioOn);
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, GetAudioEffectDlcs) {
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+  std::string expected = "dlc1,dlc2,dlc4";
+  writer.AppendString(expected);
+
+  PrepareForMethodCall(cras::kGetAudioEffectDlcs,
+                       base::BindRepeating(&ExpectNoArgument), response.get());
+
+  std::string got;
+  base::RepeatingCallback<void(std::optional<std::string>)> lambda_cb =
+      base::BindLambdaForTesting(
+          [&got](std::optional<std::string> audio_effect_dlcs) {
+            got = audio_effect_dlcs.value_or("");
+          });
+  client()->GetAudioEffectDlcs(lambda_cb);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(got, expected);
 }
 
 }  // namespace ash

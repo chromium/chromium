@@ -68,6 +68,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetOutputUserMute(bool mute_on) override;
   void SetInputNodeGain(uint64_t node_id, int32_t gain) override;
   void SetInputMute(bool mute_on) override;
+  void GetAudioEffectDlcs(
+      chromeos::DBusMethodCallback<std::string> callback) override;
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override;
   void GetNoiseCancellationSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
@@ -158,6 +160,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // Sets the number of ARC streams.
   void SetNumberOfArcStreams(int32_t streams);
 
+  void SetAudioEffectDlcsForTesting(const std::string& audio_effect_dlcs);
+
   const AudioNodeList& node_list() const { return node_list_; }
   const uint64_t& active_input_node_id() const { return active_input_node_id_; }
   const uint64_t& active_output_node_id() const {
@@ -230,6 +234,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // with the type specified
   ClientTypeToInputStreamCount active_input_streams_;
   int32_t number_arc_streams_ = 0;
+  std::string audio_effect_dlcs_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

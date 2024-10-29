@@ -383,6 +383,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void GetAudioEffectDlcs(
+      chromeos::DBusMethodCallback<std::string> callback) override {
+    VLOG(1) << "cras_audio_client: Requesting getting audio effect dlcs.";
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetAudioEffectDlcs);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetAudioEffectDlcs,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetNoiseCancellationSupported(
       chromeos::DBusMethodCallback<bool> callback) override {
     VLOG(1) << "cras_audio_client: Requesting noise cancellation support.";
@@ -1321,6 +1332,26 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
 
     std::move(callback).Run(true);
+  }
+
+  void OnGetAudioEffectDlcs(chromeos::DBusMethodCallback<std::string> callback,
+                            dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling GetAudioEffectDlcs";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::string audio_effect_dlcs;
+    dbus::MessageReader reader(response);
+    if (!reader.PopString(&audio_effect_dlcs)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(audio_effect_dlcs);
+    VLOG(1) << "cras_audio_client: Retrieved audio effect dlcs: "
+            << audio_effect_dlcs;
   }
 
   void OnGetNoiseCancellationSupported(

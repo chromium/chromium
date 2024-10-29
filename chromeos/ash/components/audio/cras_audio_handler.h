@@ -427,6 +427,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Gets the default output buffer size in frames.
   void GetDefaultOutputBufferSize(int32_t* buffer_size) const;
 
+  // Requests to get the audio effect dlcs.
+  void RequestGetAudioEffectDlcs();
+
+  // Handles dbus callback for GetAudioEffectDlcs.
+  void HandleGetAudioEffectDlcs(std::optional<std::string> audio_effect_dlcs);
+
+  // Returns the required DLCs of the supported audio effects.
+  std::optional<std::vector<std::string>> GetAudioEffectDlcs() const;
+
   // Returns noise cancellation supported if:
   // - Overall board/device supports noise cancellation
   // - Audio device has bit for Noise Cancellation set in `audio_effect`.
@@ -1169,6 +1178,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   base::flat_map<ClientType, uint32_t> number_of_input_streams_with_permission_;
 
   bool system_aec_supported_ = false;
+  std::optional<std::vector<std::string>> audio_effect_dlcs_;
   bool noise_cancellation_supported_ = false;
   bool style_transfer_supported_ = false;
   int32_t system_aec_group_id_ = kSystemAecGroupIdNotAvailable;

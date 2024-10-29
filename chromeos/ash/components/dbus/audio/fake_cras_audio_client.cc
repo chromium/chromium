@@ -234,6 +234,16 @@ void FakeCrasAudioClient::SetInputMute(bool mute_on) {
   }
 }
 
+void FakeCrasAudioClient::SetAudioEffectDlcsForTesting(
+    const std::string& audio_effect_dlcs) {
+  audio_effect_dlcs_ = audio_effect_dlcs;
+}
+
+void FakeCrasAudioClient::GetAudioEffectDlcs(
+    chromeos::DBusMethodCallback<std::string> callback) {
+  std::move(callback).Run(audio_effect_dlcs_);
+}
+
 void FakeCrasAudioClient::SetNoiseCancellationSupported(
     bool noise_cancellation_supported) {
   noise_cancellation_supported_ = noise_cancellation_supported;
