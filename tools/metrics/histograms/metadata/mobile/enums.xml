@@ -230,6 +230,7 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="Recent Activity in Shared Tab Group"/>
   <int value="63" label="AI Prototyping"/>
   <int value="64" label="Manage shared tab group"/>
+  <int value="65" label="Share local tab group"/>
 </enum>
 
 <enum name="IOSMenuScenario">

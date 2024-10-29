@@ -1035,6 +1035,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for openning lens overlay.">
         Search screen with Google Lens
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP" desc="The iOS context menu item for sharing a local tab group. [iOS only]">
+        Share Group
+      </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
         Manage
       </message>

@@ -326,21 +326,32 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
+  // Shared actions.
   if (isShared) {
     [menuElements addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                     [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
                   }]];
+  } else if (IsSharedTabGroupsCreateEnabled(_profile)) {
+    [menuElements addObject:[actionFactory actionToShareTabGroupWithBlock:^{
+                    [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];
+                  }]];
   }
+
+  // Edit actions.
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
                   [weakSelf.contextMenuDelegate editTabGroup:weakGroup
                                                    incognito:incognito];
                 }]];
-  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
-                                                      incognito:incognito
-                                                     sourceView:cell];
-                }]];
 
+  if (!isShared) {
+    [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                    [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
+                                                        incognito:incognito
+                                                       sourceView:cell];
+                  }]];
+  }
+
+  // Destructive actions.
   if (IsTabGroupSyncEnabled()) {
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
                     [weakSelf.contextMenuDelegate closeTabGroup:weakGroup

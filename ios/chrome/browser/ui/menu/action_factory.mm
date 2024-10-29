@@ -592,6 +592,21 @@
   return action;
 }
 
+- (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(IsTabGroupInGridEnabled());
+  CHECK(IsTabGroupSyncEnabled());
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP)
+                      image:image
+                       type:MenuActionType::ShareLocalTabGroup
+                      block:block];
+  return action;
+}
+
 - (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
   CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());

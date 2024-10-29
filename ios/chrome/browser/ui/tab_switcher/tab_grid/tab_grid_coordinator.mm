@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -1584,6 +1585,22 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   config.applicationHandler = HandlerForProtocol(
       self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
   shareKitService->ManageGroup(config);
+}
+
+- (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.regularBrowser->GetProfile());
+  const TabGroup* tabGroup = group.get();
+  if (!tabGroup || !shareKitService) {
+    return;
+  }
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = HandlerForProtocol(
+      self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ShareGroup(config);
 }
 
 - (void)selectTabs {

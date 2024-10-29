@@ -97,6 +97,9 @@ class WebStateID;
 // Tells the delegate to manage the shared group.
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group;
 
+// Tells the delegate to share the local group.
+- (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_TAB_CONTEXT_MENU_DELEGATE_H_
