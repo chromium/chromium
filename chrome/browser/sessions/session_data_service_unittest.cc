@@ -8,7 +8,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -200,21 +198,6 @@ TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletions) {
 
   // A finished deletion does not continue after restart.
   RestartService(CreateDeleter());
-  Mock::VerifyAndClearExpectations(deleter());
-}
-
-TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletionsFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kDeleteSessionOnlyDataOnStartup);
-
-  EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
-  service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(deleter());
-
-  // Deletion is not marked as finished, but it will not continue on startup
-  // because the feature is disabled.
-  auto new_deleter = CreateDeleter();
-  RestartService(std::move(new_deleter));
   Mock::VerifyAndClearExpectations(deleter());
 }
 

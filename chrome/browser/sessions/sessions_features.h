@@ -7,8 +7,6 @@
 
 #include "base/feature_list.h"
 
-BASE_DECLARE_FEATURE(kDeleteSessionOnlyDataOnStartup);
-
 // Clears session cookies last accessed/modified more than 7 days ago on startup
 // even when session restore is enabled.
 // See crbug.com/40285083 for more info.

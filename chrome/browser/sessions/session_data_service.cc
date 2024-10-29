@@ -47,8 +47,7 @@ SessionDataService::SessionDataService(
 
   SetStatusPref(Status::kInitialized);
   auto* policy = profile_->GetSpecialStoragePolicy();
-  if (policy && policy->HasSessionOnlyOrigins() &&
-      base::FeatureList::IsEnabled(kDeleteSessionOnlyDataOnStartup)) {
+  if (policy && policy->HasSessionOnlyOrigins()) {
     MaybeContinueDeletionFromLastSesssion(last_status);
   }
 
