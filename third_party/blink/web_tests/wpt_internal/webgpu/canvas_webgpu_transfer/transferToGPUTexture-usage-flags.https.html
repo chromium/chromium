@@ -20,64 +20,66 @@ runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
  * transferToGPUTexture() should create a texture which honors the requested
  * usage flags.
  */
-canvasPromiseTest(async (canvas) => {
-  const adapter = await getWebGPUAdapter();
-  // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
-  if (isMacSwiftShader(adapter.info)) {
-    return;
-  }
+for (const {name, usageFlag, usageCode} of [
+    {name: "COPY_SRC",
+     usageFlag: GPUTextureUsage.COPY_SRC,
+     usageCode: (device, tex) => copyOnePixelFromTextureAndSubmit(device, tex)},
+    {name: "COPY_DST",
+     usageFlag: GPUTextureUsage.COPY_DST,
+     usageCode: (device, tex) => copyOnePixelToTextureAndSubmit(device, tex)},
+    {name: "TEXTURE_BINDING",
+     usageFlag: GPUTextureUsage.TEXTURE_BINDING,
+     usageCode: (device, tex) => createBindGroupUsingTexture(device, tex)},
+    {name: "RENDER_ATTACHMENT",
+     usageFlag: GPUTextureUsage.RENDER_ATTACHMENT,
+     usageCode: (device, tex) => clearTextureToColor(
+          device, tex, { r: 1.0, g: 1.0, b: 1.0, a: 1.0 })},
+]) {
+  /**
+   * Usage produce an error if flag isn't specified in transferToGPUTexture().
+   */
+  canvasPromiseTest(async (canvas) => {
+    const adapter = await getWebGPUAdapter();
+    // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
+    if (isMacSwiftShader(adapter.info)) {
+      return;
+    }
 
-  const device = await getWebGPUDevice(adapter);
-
-  // Declare a helper function which tests individual usage flags.
-  const testOneUsageFlag = async function(canvas, usageToEnable, usageToTest) {
+    const device = await getWebGPUDevice(adapter);
     const ctx = canvas.getContext('2d');
-    const tex = ctx.transferToGPUTexture({device: device,
-                                          usage: usageToEnable});
 
-    // Check that the GPUTexture's usage flags match our requested flags.
-    assert_equals(tex.usage, usageToEnable);
+    // Transfer texture without any usage flags.
+    const tex = ctx.transferToGPUTexture({device: device, usage: 0});
+    assert_equals(tex.usage, 0);
 
-    // Confirm that we _actually_ have the requested usage by performing an
-    // action requiring that usage, and verifying no GPUValidationError occurs.
+    // Trying to perform the usage should fail with a GPUValidationError.
     device.pushErrorScope('validation');
+    usageCode(device, tex);
+    assert_not_equals(await device.popErrorScope(), null);
+  }, name + ' won\'t work if usage isn\'t specified in transferToGPUTexture()');
 
-    if (usageToTest & GPUTextureUsage.COPY_SRC) {
-      copyOnePixelFromTextureAndSubmit(device, tex);
-    }
-    if (usageToTest & GPUTextureUsage.COPY_DST) {
-      copyOnePixelToTextureAndSubmit(device, tex);
-    }
-    if (usageToTest & GPUTextureUsage.TEXTURE_BINDING) {
-      createBindGroupUsingTexture(device, tex);
-    }
-    if (usageToTest & GPUTextureUsage.RENDER_ATTACHMENT) {
-      clearTextureToColor(device, tex, { r: 1.0, g: 1.0, b: 1.0, a: 1.0 });
+  /**
+   * Usage succeed if corresponding flag is specified in transferToGPUTexture().
+   */
+  canvasPromiseTest(async (canvas) => {
+    const adapter = await getWebGPUAdapter();
+    // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
+    if (isMacSwiftShader(adapter.info)) {
+      return;
     }
 
-    const errors = await device.popErrorScope();
-    if (usageToTest == usageToEnable) {
-      assert_equals(errors, null, 'enabled ' + usageToEnable +
-                                  ', tested ' + usageToTest);
-    } else {
-      assert_not_equals(errors, null, 'enabled ' + usageToEnable +
-                                      ', tested ' + usageToTest);
-    }
-    ctx.transferBackFromGPUTexture();
-  };
+    const device = await getWebGPUDevice(adapter);
+    const ctx = canvas.getContext('2d');
 
-  // Build up a chain of promises which test each TextureUsage flag.
-  const supportedUsageFlags = [GPUTextureUsage.COPY_SRC,
-                               GPUTextureUsage.COPY_DST,
-                               GPUTextureUsage.TEXTURE_BINDING,
-                               GPUTextureUsage.RENDER_ATTACHMENT];
+    // Transfer texture with the usage flag under test.
+    const tex = ctx.transferToGPUTexture({device: device, usage: usageFlag});
+    assert_equals(tex.usage, usageFlag);
 
-  for (const usageToEnable of supportedUsageFlags) {
-    for (const usageToTest of supportedUsageFlags) {
-      await testOneUsageFlag(canvas, usageToEnable, usageToTest);
-    }
-  }
-}, 'transferToGPUTexture() should create a texture which honors the ' +
-   'requested usage flags.');
+    // Performing the usage should succeed.
+    device.pushErrorScope('validation');
+    usageCode(device, tex);
+    assert_equals(await device.popErrorScope(), null);
+  }, name + ' will work if usage is specified in transferToGPUTexture()');
+}
 
 </script>
