@@ -293,7 +293,7 @@ public class PageInfoViewTest {
                 });
     }
 
-    private void setBlockAll3PC(boolean value) {
+    private void setBlockAll3pc(boolean value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
@@ -732,7 +732,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
         enableTrackingProtection();
-        setBlockAll3PC(false);
+        setBlockAll3pc(false);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -755,7 +755,7 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
     }
 
-    private void launchAndCheckTrackingProtectionLaunchUI() {
+    private void launchAndCheckTrackingProtectionLaunchUi() {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -782,20 +782,20 @@ public class PageInfoViewTest {
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
-    public void testShowCookiesSubpageTrackingProtectionLaunchIPP() throws IOException {
-        setBlockAll3PC(false);
+    public void testShowCookiesSubpageTrackingProtectionLaunchIpp() throws IOException {
+        setBlockAll3pc(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.IP_PROTECTION_ENABLED, true);
                 });
-        launchAndCheckTrackingProtectionLaunchUI();
+        launchAndCheckTrackingProtectionLaunchUi();
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchIPP_Toggle_Off");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchIpp_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchIPP_Toggle_On");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchIpp_Toggle_On");
     }
 
     /** Same as the previous one but with Fingerprinting Protection feature enabled. */
@@ -807,20 +807,20 @@ public class PageInfoViewTest {
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
-    public void testShowCookiesSubpageTrackingProtectionLaunchFPP() throws IOException {
-        setBlockAll3PC(false);
+    public void testShowCookiesSubpageTrackingProtectionLaunchFpp() throws IOException {
+        setBlockAll3pc(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
                 });
-        launchAndCheckTrackingProtectionLaunchUI();
+        launchAndCheckTrackingProtectionLaunchUi();
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPP_Toggle_Off");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFpp_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPP_Toggle_On");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchFpp_Toggle_On");
     }
 
     /** Same as the previous one but with both IP and Fingerprinting Protection features enabled. */
@@ -833,8 +833,8 @@ public class PageInfoViewTest {
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
-    public void testShowCookiesSubpageTrackingProtectionLaunchFPPIPP() throws IOException {
-        setBlockAll3PC(false);
+    public void testShowCookiesSubpageTrackingProtectionLaunchFppIpp() throws IOException {
+        setBlockAll3pc(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
@@ -842,14 +842,14 @@ public class PageInfoViewTest {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
                 });
-        launchAndCheckTrackingProtectionLaunchUI();
+        launchAndCheckTrackingProtectionLaunchUi();
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPPIPP_Toggle_Off");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFppIpp_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPPIPP_Toggle_On");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFppIpp_Toggle_On");
     }
 
     /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
@@ -858,7 +858,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
         enableTrackingProtection();
-        setBlockAll3PC(true);
+        setBlockAll3pc(true);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
