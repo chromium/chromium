@@ -281,6 +281,10 @@ suite('AutoTabGroupsPageTest', () => {
   });
 
   test('Single organization create group accepts organization', async () => {
+    loadTimeData.overrideValues({
+      multiTabOrganizationEnabled: false,
+    });
+
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(

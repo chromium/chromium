@@ -192,8 +192,7 @@ const base::FeatureParam<std::string> kPreloadTopChromeWebUIExcludeOrigins{
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
@@ -297,13 +296,27 @@ bool IsTabstripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
 }
 
-BASE_FEATURE(kMultiTabOrganization,
-             "MultiTabOrganization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabOrganizationAppMenuItem,
              "TabOrganizationAppMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kMultiTabOrganization,
+             "MultiTabOrganization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabReorganization,
+             "TabReorganization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabReorganizationDivider,
+             "TabReorganizationDivider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kMultiTabOrganization,
+             "MultiTabOrganization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabReorganization,
              "TabReorganization",
@@ -312,6 +325,7 @@ BASE_FEATURE(kTabReorganization,
 BASE_FEATURE(kTabReorganizationDivider,
              "TabReorganizationDivider",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kTabOrganizationModelStrategy,
              "TabOrganizationModelStrategy",
