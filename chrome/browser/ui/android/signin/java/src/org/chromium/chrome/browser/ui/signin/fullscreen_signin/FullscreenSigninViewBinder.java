@@ -14,6 +14,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -84,6 +85,9 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
+        } else if (propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID) {
+            @DrawableRes int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
+            view.getLogo().setImageResource(logoId);
         } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);
             view.getTitle().setText(textId);

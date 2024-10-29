@@ -129,6 +129,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                             mModalDialogManager,
                             this,
                             mPrivacyPreferencesManager,
+                            mConfig.signinConfig,
                             SigninAccessPoint.SIGNIN_PROMO);
             mViewHolder.addView(getCurrentChildView());
             mSigninCoordinator.setView((FullscreenSigninView) getCurrentChildView());
@@ -324,6 +325,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                                 mModalDialogManager,
                                 this,
                                 mPrivacyPreferencesManager,
+                                mConfig.signinConfig,
                                 SigninAccessPoint.SIGNIN_PROMO);
                 mSigninCoordinator.setView((FullscreenSigninView) getCurrentChildView());
                 if (mHistorySyncCoordinator != null) {

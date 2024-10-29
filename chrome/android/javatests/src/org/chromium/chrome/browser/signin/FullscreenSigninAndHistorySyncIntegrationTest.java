@@ -375,6 +375,25 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
     }
 
+    @Test
+    @LargeTest
+    public void testFullscreenSigninCustomisation() {
+        FullscreenSigninAndHistorySyncConfig config =
+                new FullscreenSigninAndHistorySyncConfig.Builder()
+                        .signinTitleId(R.string.signin_account_picker_dialog_title)
+                        .signinSubtitleId(R.string.signin_add_account_to_device)
+                        .signinLogoId(R.drawable.ic_globe_24dp)
+                        .build();
+        launchActivity(/* shouldReplaceProgressBars= */ true, config);
+
+        // Verify that the strings are corrects and that the logo is shown.
+        onView(allOf(withId(R.id.title), withText(R.string.signin_account_picker_dialog_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle), withText(R.string.signin_add_account_to_device)))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
+    }
+
     private void launchActivity() {
         launchActivity(true);
     }
@@ -382,6 +401,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     private void launchActivity(boolean shouldReplaceProgressBars) {
         FullscreenSigninAndHistorySyncConfig config =
                 new FullscreenSigninAndHistorySyncConfig.Builder().build();
+        launchActivity(shouldReplaceProgressBars, config);
+    }
+
+    private void launchActivity(
+            boolean shouldReplaceProgressBars, FullscreenSigninAndHistorySyncConfig config) {
         Intent intent =
                 SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                         ApplicationProvider.getApplicationContext(), config);

@@ -1277,13 +1277,8 @@ public class SigninFirstRunFragmentTest {
                         ? R.string.signin_fre_title
                         : R.string.fre_welcome;
         onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
-        @StringRes
-        int subtitleStrId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_fre_subtitle
-                        : R.string.signin_fre_subtitle_legacy;
-        onView(allOf(withId(R.id.subtitle), withText(subtitleStrId))).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -1356,13 +1351,7 @@ public class SigninFirstRunFragmentTest {
                         : R.string.fre_welcome;
         onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
         if (shouldShowSubtitle) {
-            @StringRes
-            int subtitleStrId =
-                    ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                            ? R.string.signin_fre_subtitle
-                            : R.string.signin_fre_subtitle_legacy;
-            onView(allOf(withId(R.id.subtitle), withText(subtitleStrId)))
+            onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                     .check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
@@ -1503,13 +1492,8 @@ public class SigninFirstRunFragmentTest {
                             ? R.string.signin_fre_title
                             : R.string.fre_welcome;
             onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
-            @StringRes
-            int subtitleStrId =
-                    ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                            ? R.string.signin_fre_subtitle
-                            : R.string.signin_fre_subtitle_legacy;
-            onView(allOf(withId(R.id.subtitle), withText(subtitleStrId)))
+
+            onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                     .check(matches(isDisplayed()));
             onView(withText(email)).check(matches(not(isDisplayed())));
         }

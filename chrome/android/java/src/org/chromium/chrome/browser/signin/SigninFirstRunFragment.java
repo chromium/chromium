@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -75,6 +76,10 @@ public class SigninFirstRunFragment extends Fragment
                         mModalDialogManager,
                         this,
                         PrivacyPreferencesManagerImpl.getInstance(),
+                        new FullscreenSigninConfig(
+                                /* titleId= */ R.string.signin_fre_title,
+                                /* subtitleId= */ R.string.signin_fre_subtitle,
+                                /* logoId= */ R.drawable.fre_product_logo),
                         SigninAccessPoint.START_PAGE);
 
         if (getPageDelegate().isLaunchedFromCct()) {

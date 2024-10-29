@@ -88,6 +88,7 @@ public class FullscreenSigninMediator
     private final Delegate mDelegate;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final @SigninAccessPoint int mAccessPoint;
+    private final FullscreenSigninConfig mConfig;
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
@@ -109,6 +110,7 @@ public class FullscreenSigninMediator
             ModalDialogManager modalDialogManager,
             Delegate delegate,
             PrivacyPreferencesManager privacyPreferencesManager,
+            FullscreenSigninConfig config,
             @SigninAccessPoint int accessPoint) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -116,6 +118,7 @@ public class FullscreenSigninMediator
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mAccessPoint = accessPoint;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
+        mConfig = config;
         mModel =
                 FullscreenSigninProperties.createModel(
                         this::onSelectedAccountClicked,
@@ -123,8 +126,9 @@ public class FullscreenSigninMediator
                         this::onDismissClicked,
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !disableSignInForAutomotiveDevice(),
+                        mConfig.logoId,
                         R.string.fre_welcome,
-                        R.string.signin_fre_subtitle_legacy);
+                        mConfig.subtitleId);
 
         mDelegate
                 .getNativeInitializationPromise()
@@ -252,7 +256,7 @@ public class FullscreenSigninMediator
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             if (isSigninSupported) {
-                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, R.string.signin_fre_title);
+                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
             }
             SyncService syncService = SyncServiceFactory.getForProfile(profile);
             boolean isSyncDataManaged =
@@ -262,7 +266,7 @@ public class FullscreenSigninMediator
                     FullscreenSigninProperties.SUBTITLE_STRING_ID,
                     isSyncDataManaged
                             ? R.string.signin_fre_subtitle_without_sync
-                            : R.string.signin_fre_subtitle);
+                            : mConfig.subtitleId);
         }
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;

@@ -116,6 +116,7 @@ public class FullscreenSigninCoordinator {
             ModalDialogManager modalDialogManager,
             Delegate delegate,
             PrivacyPreferencesManager privacyPreferencesManager,
+            FullscreenSigninConfig config,
             @SigninAccessPoint int accessPoint) {
         mMediator =
                 new FullscreenSigninMediator(
@@ -123,6 +124,7 @@ public class FullscreenSigninCoordinator {
                         modalDialogManager,
                         delegate,
                         privacyPreferencesManager,
+                        config,
                         accessPoint);
     }
 

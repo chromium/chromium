@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.view.View.OnClickListener;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -51,6 +52,9 @@ class FullscreenSigninProperties {
     static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
             new WritableBooleanPropertyKey("is_signin_supported");
 
+    static final WritableIntPropertyKey LOGO_DRAWABLE_ID =
+            new WritableIntPropertyKey("logo_drawable_id");
+
     static final WritableIntPropertyKey TITLE_STRING_ID =
             new WritableIntPropertyKey("title_string_id");
 
@@ -72,6 +76,7 @@ class FullscreenSigninProperties {
                 SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
                 SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                 IS_SIGNIN_SUPPORTED,
+                LOGO_DRAWABLE_ID,
                 TITLE_STRING_ID,
                 SUBTITLE_STRING_ID,
                 FOOTER_STRING,
@@ -83,6 +88,7 @@ class FullscreenSigninProperties {
             Runnable onContinueAsClicked,
             Runnable onDismissClicked,
             boolean isSigninSupported,
+            @DrawableRes int logoDrawableId,
             @StringRes int titleStringId,
             @StringRes int subtitleStringId) {
         return new PropertyModel.Builder(ALL_KEYS)
@@ -94,6 +100,7 @@ class FullscreenSigninProperties {
                 .with(SHOW_INITIAL_LOAD_PROGRESS_SPINNER, true)
                 .with(SHOW_ENTERPRISE_MANAGEMENT_NOTICE, false)
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
+                .with(LOGO_DRAWABLE_ID, logoDrawableId)
                 .with(TITLE_STRING_ID, titleStringId)
                 .with(SUBTITLE_STRING_ID, subtitleStringId)
                 .with(FOOTER_STRING, null)

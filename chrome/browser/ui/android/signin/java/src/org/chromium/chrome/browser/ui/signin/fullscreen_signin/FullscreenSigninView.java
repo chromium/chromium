@@ -19,8 +19,9 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View that wraps the fullscreen signin promo and caches references to UI elements. **/
+/** View that wraps the fullscreen signin promo and caches references to UI elements. * */
 public class FullscreenSigninView extends RelativeLayout {
+    private ImageView mLogo;
     private TextView mTitle;
     private TextView mSubtitle;
     private View mBrowserManagedHeader;
@@ -42,6 +43,7 @@ public class FullscreenSigninView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mLogo = findViewById(R.id.fre_logo);
         mTitle = findViewById(R.id.title);
         mSubtitle = findViewById(R.id.subtitle);
         mBrowserManagedHeader = findViewById(R.id.fre_browser_managed_by);
@@ -103,5 +105,9 @@ public class FullscreenSigninView extends RelativeLayout {
 
     TextView getTitle() {
         return mTitle;
+    }
+
+    ImageView getLogo() {
+        return mLogo;
     }
 }
