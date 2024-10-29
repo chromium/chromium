@@ -1095,6 +1095,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::ReadOnlySharedMemoryRegion GetGlobalPerformanceScenarioRegion()
       override;
 
+  bool ShouldDispatchPagehideDuringCommit(
+      content::BrowserContext* browser_context,
+      const GURL& destination_url) override;
+
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
 

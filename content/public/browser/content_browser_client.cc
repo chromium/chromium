@@ -1810,4 +1810,10 @@ bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
   return false;
 }
 
+bool ContentBrowserClient::ShouldDispatchPagehideDuringCommit(
+    BrowserContext* browser_context,
+    const GURL& destination_url) {
+  return true;
+}
+
 }  // namespace content
