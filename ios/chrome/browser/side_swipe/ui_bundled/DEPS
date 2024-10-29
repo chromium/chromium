@@ -8,6 +8,8 @@ include_rules = [
   "+ios/chrome/browser/ui/toolbar/public",
   "+ios/chrome/browser/web/model/page_placeholder_tab_helper.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
+  "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 ]
 
 specific_include_rules = {

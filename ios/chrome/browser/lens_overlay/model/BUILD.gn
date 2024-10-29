@@ -20,7 +20,6 @@ source_set("model") {
   deps = [
     ":detent_state_header",
     "//base",
-    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -35,6 +34,7 @@ source_set("model") {
   public_deps = [
     ":detent_state_header",
     "//base",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
   ]
 }
 

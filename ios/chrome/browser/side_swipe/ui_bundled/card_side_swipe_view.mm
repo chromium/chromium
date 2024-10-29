@@ -11,13 +11,15 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
@@ -174,6 +176,25 @@ const CGFloat kResizeFactor = 4;
   [card setHidden:NO];
 
   web::WebState* webState = _webStateList->GetWebStateAt(index);
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  // Lens overlay displays content fullscreen and hides the vertical toolbars.
+  if (IsLensOverlayAvailable()) {
+    if (LensOverlayTabHelper* lensOverlayTabHelper =
+            LensOverlayTabHelper::FromWebState(webState)) {
+      BOOL lensOverlayShown =
+          lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+      UIImage* lensOverlaySnapshot =
+          lensOverlayTabHelper->GetViewportSnapshot();
+      if (lensOverlayShown && lensOverlaySnapshot) {
+        [self enableFullscreenCard:card];
+        [self colorSnapshotRetrieved:lensOverlaySnapshot
+                                card:card
+                        weakWebState:weakWebState];
+        return;
+      }
+    }
+  }
+
   UIImage* topToolbarSnapshot = [self.toolbarSnapshotProvider
       toolbarSideSwipeSnapshotForWebState:webState
                           withToolbarType:ToolbarType::kPrimary];
@@ -184,11 +205,18 @@ const CGFloat kResizeFactor = 4;
   [card setBottomToolbarImage:bottomToolbarSnapshot];
 
   __weak CardSideSwipeView* weakSelf = self;
-  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(^(
       UIImage* image) {
     [weakSelf colorSnapshotRetrieved:image card:card weakWebState:weakWebState];
   });
+}
+
+// Helper method that turns a card fullscreen by removing the vertical margins
+// and the toolbar images.
+- (void)enableFullscreenCard:(SwipeView*)card {
+  [card setTopMargin:0];
+  [card setTopToolbarImage:nil];
+  [card setBottomToolbarImage:nil];
 }
 
 // Helper method that is invoked once the color snapshot has been fetched

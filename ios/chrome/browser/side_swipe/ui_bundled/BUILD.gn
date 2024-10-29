@@ -22,6 +22,7 @@ source_set("ui_bundled") {
     "//components/feature_engagement/public",
     "//components/reading_list/core",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/reading_list/model",
