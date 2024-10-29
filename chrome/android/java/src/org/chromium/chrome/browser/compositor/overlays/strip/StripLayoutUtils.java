@@ -19,9 +19,13 @@ public class StripLayoutUtils {
     //         - overlap(28-16) =
     @VisibleForTesting static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
 
+    // Animation Constants
     static final int ANIM_TAB_MOVE_MS = 125;
     static final int ANIM_TAB_SLIDE_OUT_MS = 250;
+
+    // Reorder Constants.
     static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
+    static final long INVALID_TIME = 0L;
 
     // ============================================================================================
     // Tab group helpers

@@ -2615,14 +2615,14 @@ public class StripLayoutHelperTest {
         int tabCount = 6;
         initializeTest(false, false, false, 0, tabCount);
         groupTabs(0, 2);
-        StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        ReorderDelegate reorderDelegateSpy = spy(mStripLayoutHelper.getReorderDelegateForTesting());
 
         // Start and stop reorder mode for tab drop.
-        stripLayoutHelperSpy.updateStripForExternalTabDrop(10.f);
-        stripLayoutHelperSpy.stopReorderMode();
+        mStripLayoutHelper.updateStripForExternalTabDrop(10.f);
+        mStripLayoutHelper.stopReorderMode();
 
         // Verify: folio reattachment animation does not run for tab drop.
-        verify(stripLayoutHelperSpy, never()).updateTabAttachState(any(), eq(true), notNull());
+        verify(reorderDelegateSpy, never()).updateTabAttachState(any(), eq(true), notNull());
     }
 
     private float calculateExpectedBottomIndicatorWidth(
