@@ -145,12 +145,31 @@ public class MismatchNotificationControllerTest {
                         mMismatchNotificationController.showSignedOutMessage(
                                 mActivityTestRule.getActivity(), closeType -> {}));
 
-        // Verify that the message is displayed
+        // Verify that the message is displayed.
         onView(withText(R.string.custom_tabs_signed_out_message_subtitle))
                 .check(matches(isDisplayed()));
 
-        // Sign in
+        // Sign in.
         SigninTestUtil.signin(TestAccounts.ACCOUNT1);
+
+        // Verify that the message was dismissed.
+        onView(withText(R.string.custom_tabs_signed_out_message_subtitle)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountRemovedWhileMessageIsDisplayed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mMismatchNotificationController.showSignedOutMessage(
+                                mActivityTestRule.getActivity(), closeType -> {}));
+
+        // Verify that the message is displayed.
+        onView(withText(R.string.custom_tabs_signed_out_message_subtitle))
+                .check(matches(isDisplayed()));
+
+        // Remove the account.
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
         // Verify that the message was dismissed.
         onView(withText(R.string.custom_tabs_signed_out_message_subtitle)).check(doesNotExist());

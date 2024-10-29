@@ -23,16 +23,27 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /** A controller for the account mismatched notice message. */
-public class MismatchNotificationController implements SigninManager.SignInStateObserver {
+public class MismatchNotificationController
+        implements SigninManager.SignInStateObserver, AccountsChangeObserver {
     private final WindowAndroid mWindowAndroid;
     private final Profile mProfile;
+    private final String mAppAccountEmail;
     private final CoreAccountId mAppAccountId;
+    private final AccountManagerFacade mAccountManagerFacade;
+    private final SigninManager mSigninManager;
 
     private PropertyModel mMessageProperties;
 
@@ -51,14 +62,16 @@ public class MismatchNotificationController implements SigninManager.SignInState
             WindowAndroid windowAndroid, Profile profile, String appAccountName) {
         mWindowAndroid = windowAndroid;
         mProfile = profile;
+        mAppAccountEmail = appAccountName;
         mAppAccountId =
                 IdentityServicesProvider.get()
                         .getIdentityManager(profile)
                         .findExtendedAccountInfoByEmailAddress(appAccountName)
                         .getId();
-        final SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(mProfile);
-        signinManager.addSignInStateObserver(this);
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mSigninManager.addSignInStateObserver(this);
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        mAccountManagerFacade.addObserver(this);
     }
 
     public void showSignedOutMessage(Context context) {
@@ -128,8 +141,24 @@ public class MismatchNotificationController implements SigninManager.SignInState
 
     @Override
     public void onSignedIn() {
+        dismissMessage();
+    }
+
+    @Override
+    public void onCoreAccountInfosChanged() {
+        assert mAccountManagerFacade.getCoreAccountInfos().isFulfilled();
+        final List<CoreAccountInfo> coreAccountInfos =
+                mAccountManagerFacade.getCoreAccountInfos().getResult();
+        if (AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, mAppAccountEmail) == null) {
+            dismissMessage();
+        }
+    }
+
+    private void dismissMessage() {
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
         dispatcher.dismissMessage(mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
+        mAccountManagerFacade.removeObserver(this);
+        mSigninManager.removeSignInStateObserver(this);
     }
 
     public static void setInstanceForTesting(
