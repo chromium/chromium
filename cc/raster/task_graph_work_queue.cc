@@ -305,15 +305,18 @@ bool TaskGraphWorkQueue::ExternalDependencyCompletedForTask(
     NamespaceToken token,
     scoped_refptr<Task> task) {
   TaskNamespace* task_namespace = GetNamespaceForToken(token);
-  CHECK(task_namespace);
-  auto iter = base::ranges::find(task_namespace->graph.nodes, task.get(),
-                                 &TaskGraph::Node::task);
-  if (iter == task_namespace->graph.nodes.end()) {
-    return false;
+  CHECK(task_namespace || task->state().IsCanceled());
+  if (task_namespace) {
+    auto iter = base::ranges::find(task_namespace->graph.nodes, task.get(),
+                                   &TaskGraph::Node::task);
+    if (iter == task_namespace->graph.nodes.end()) {
+      return false;
+    }
+    iter->has_external_dependency = false;
+    return DecrementNodeDependencies(*iter, task_namespace,
+                                     /*rebuild_heap*/ true);
   }
-  iter->has_external_dependency = false;
-  return DecrementNodeDependencies(*iter, task_namespace,
-                                   /*rebuild_heap*/ true);
+  return false;
 }
 
 bool TaskGraphWorkQueue::DecrementNodeDependencies(
