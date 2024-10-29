@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -80,7 +81,7 @@ public class TabRemoverImplUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        mTabModel = new MockTabModel(mProfile, null);
+        mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabRemoverForTesting(mMockTabRemover);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModelRemover.getTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
@@ -344,5 +345,38 @@ public class TabRemoverImplUnitTest {
                                 (TabClosureParams placeholderCloseParams) -> {
                                     return placeholderCloseParams.tabs.equals(placeholderTabs);
                                 }));
+    }
+
+    @Test
+    public void testRemoveTabHandler_NoDialog() {
+        int id = 0;
+        Tab tab0 = mTabModel.addTab(id);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+
+        mTabRemoverImpl.removeTab(tab0, /* allowDialog= */ false, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = id;
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = TAB_GROUP_ID;
+        savedTabGroup.collaborationId = COLLABORATION_ID;
+        savedTabGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
+        when(mTabGroupSyncService.getGroup(SYNC_ID)).thenReturn(savedTabGroup);
+
+        GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
+        assertFalse(groupsPendingDestroy.isEmpty());
+        assertFalse(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
+        assertTrue(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
+
+        Tab placeholderTab = mTabModel.addTab(/* id= */ 1);
+        handler.onPlaceholderTabsCreated(List.of(placeholderTab));
+
+        handler.performAction();
+        verify(mTabModel).removeTab(tab0);
+        verify(mListener).onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verifyNoMoreInteractions(mListener);
     }
 }

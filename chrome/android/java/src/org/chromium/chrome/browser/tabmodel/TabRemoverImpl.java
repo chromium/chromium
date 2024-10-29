@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -74,13 +75,11 @@ public class TabRemoverImpl implements TabRemover {
     @Override
     public void removeTab(
             @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
-        // TODO(crbug.com/347981662, crbug.com/347981397, crbug.com/345854441): Show a dialog and
-        // create NTPs if needed.
-        PassthroughTabRemover.doRemoveTab(
-                mTabModelRemover.getTabGroupModelFilter().getTabModel(), tab);
-        if (listener != null) {
-            listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        }
+        assert !allowDialog : "removeTab does not support allowDialog.";
+
+        RemoveTabHandler removeTabHandler =
+                new RemoveTabHandler(mTabModelRemover.getTabGroupModelFilter(), tab, listener);
+        mTabModelRemover.doTabRemovalFlow(removeTabHandler, /* allowDialog= */ false);
     }
 
     private static class CloseTabsHandler implements TabModelRemoverFlowHandler {
@@ -152,6 +151,62 @@ public class TabRemoverImpl implements TabRemover {
             TabModelActionListener listener = mListener;
             mListener = null;
             return listener;
+        }
+    }
+
+    private static class RemoveTabHandler implements TabModelRemoverFlowHandler {
+        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final Tab mTabToRemove;
+        private @Nullable TabModelActionListener mListener;
+
+        RemoveTabHandler(
+                @NonNull TabGroupModelFilter tabGroupModelFilter,
+                @NonNull Tab tabToRemove,
+                @Nullable TabModelActionListener listener) {
+            mTabGroupModelFilter = tabGroupModelFilter;
+            mTabToRemove = tabToRemove;
+            mListener = listener;
+        }
+
+        @Override
+        public @NonNull GroupsPendingDestroy computeGroupsPendingDestroy() {
+            return DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
+                    mTabGroupModelFilter.getTabModel(), Collections.singletonList(mTabToRemove));
+        }
+
+        @Override
+        public void onPlaceholderTabsCreated(@NonNull List<Tab> placeholderTabs) {
+            // Intentional no-op as there is no possibility to undo this operation so the tabs do
+            // not need to be tracked.
+        }
+
+        @Override
+        public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
+            assert false : "removeTab does not support tab group deletion dialogs.";
+
+            // This behavior is a safe default even if the assert trips.
+            onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        }
+
+        @Override
+        public void showCollaborationKeepDialog(
+                @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+            assert false : "removeTab does not support collaboration keep dialogs.";
+
+            // This behavior is a safe default even if the assert trips.
+            onResult.onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        }
+
+        @Override
+        public void performAction() {
+            TabModel tabModel = mTabGroupModelFilter.getTabModel();
+            if (tabModel.getTabById(mTabToRemove.getId()) == null || mTabToRemove.isClosing()) {
+                return;
+            }
+            PassthroughTabRemover.doRemoveTab(tabModel, mTabToRemove);
+            if (mListener != null) {
+                mListener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+            }
         }
     }
 

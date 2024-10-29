@@ -53,7 +53,7 @@ public class TabModelImplTest {
     @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+    public BlankCTATabInitialStateRule mBlankCtaTabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private ChromeTabbedActivity mActivity;
@@ -193,7 +193,7 @@ public class TabModelImplTest {
                     Tab tab1 = tabModel.getTabAt(1);
                     assertNotNull(tab1);
 
-                    tabModel.getTabRemover().removeTab(tab1, /* allowDialog= */ true);
+                    tabModel.getTabRemover().removeTab(tab1, /* allowDialog= */ false);
                     assertEquals(1, tabModel.getCount());
 
                     assertFalse(tab1.isClosing());
