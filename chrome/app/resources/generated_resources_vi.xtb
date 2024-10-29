@@ -8935,7 +8935,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="741906494724992817">Ứng dụng này không yêu cầu quyền truy cập đặc biệt.</translation>
 <translation id="7419142833919893307">Chưa thêm tên người dùng nào</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{Mã PIN không đúng. Bạn còn 1 lần thử.}other{Mã PIN không đúng. Bạn còn # lần thử.}}</translation>
-<translation id="7419565702166471774">Luôn sử dụng kết nối an toàn</translation>
+<translation id="7419565702166471774">Luôn sử dụng kết nối bảo mật</translation>
 <translation id="742130257665691897">Đã xóa dấu trang</translation>
 <translation id="7421925624202799674">&amp;Xem Nguồn Trang</translation>
 <translation id="7422192691352527311">Lựa chọn ưu tiên...</translation>

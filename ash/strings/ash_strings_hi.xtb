@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">कैरेट ब्राउज़िंग को चालू या बंद करने के लिए</translation>
 <translation id="2531025035050312891">डिवाइस धीमा चल रहा है</translation>
 <translation id="2531107890083353124">टैब को खींचकर रखते समय, <ph name="KEY_ONE" /> दबाएं</translation>
+<translation id="2545334090614121435">क्या आपको Home का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
 <translation id="254900897760075745">चुने गए कॉन्टेंट को क्लिपबोर्ड पर कॉपी करें</translation>
 <translation id="2549711466868162843">रोशनी बढ़ाना</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">सभी ऐप्लिकेशन देखें</translation>
 <translation id="2992272421330787632">मीडिया से जुड़े सभी सुझाव छिपाएं</translation>
 <translation id="2992327365391326550">डिवाइस के माइक्रोफ़ोन का बटन बंद है.</translation>
+<translation id="2993956882370897557">क्या आपको End का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
 <translation id="3000461861112256445">मोनो ऑडियो</translation>
 <translation id="3001391739687111021">स्क्रीन के साइज़ में बदलाव करें</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" />, आपके <ph name="DEVICE_TYPE" /> को रोल बैक कर रहा है. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
 <translation id="316798519864381606">Google स्लाइड</translation>
 <translation id="3171170659304083361">इनपुट के तरीकों से जुड़ी सेटिंग</translation>
+<translation id="3174897399179348329">क्या आपको Page Up का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
 <translation id="3176221688814061633">आपके ब्लूटूथ डिवाइस या Chromebook में, ब्लूटूथ के पुराने वर्शन का इस्तेमाल किया जा रहा है. बेहतर ऑडियो क्वालिटी के लिए, ब्लूटूथ सुपर रिज़ॉल्यूशन को चालू करें या इंटरनल माइक्रोफ़ोन का इस्तेमाल करें.</translation>
 <translation id="3181441307743005334">रीस्टार्ट होने में कुछ समय लगेगा</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{किसी डिवाइस से कनेक्ट है}one{# डिवाइस से कनेक्ट है}other{# डिवाइस से कनेक्ट है}}</translation>
@@ -1262,6 +1265,7 @@
 <translation id="5297704307811127955">बंद है</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5302048478445481009">भाषा</translation>
+<translation id="5302531370473608800">YouTube Music का इस्तेमाल करने के लिए, अपना <ph name="DEVICE_TYPE" /> अपडेट करें</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% बैटरी बची है.
 बैटरी लाइफ़ बढ़ाने के लिए, कुछ सुविधाओं को सीमित किया गया है.</translation>
 <translation id="5308380583665731573">कनेक्ट करें</translation>
@@ -1821,6 +1825,7 @@
 <translation id="7144942256906679589">बैटरी इतनी चार्ज है</translation>
 <translation id="7145639536026937076">बैटरी <ph name="PERCENTAGE" />% बाकी है और चार्ज हो रही है. बैटरी सेवर की सुविधा चालू है.</translation>
 <translation id="7147587499155271409">कोई ब्राउज़िंग इतिहास मौजूद नहीं है</translation>
+<translation id="7147657298465433425">फ़ंक्शन बटन ऐक्सेस करने के लिए, fn बटन + सबसे ऊपर वाली पंक्ति के बटन दबाएं</translation>
 <translation id="7149149900052329230">Files ऐप्लिकेशन में, अपनी लोकल फ़ाइलें और Google Drive में मौजूद फ़ाइलें मैनेज करें.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />, फ़िलहाल आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
 <translation id="7564874036684306347">विंडो को किसी दूसरे डेस्कटॉप पर ले जाने से अनचाहा बर्ताव हो सकता है. इसके बाद की सूचनाएं, विंडो और संवाद डेस्कटॉप के बीच बंट सकती हैं.</translation>
+<translation id="7568154670718626683">क्या आपको कुछ मिटाना है? इनका इस्तेमाल करें</translation>
 <translation id="7568790562536448087">अपडेट कर रहा है</translation>
 <translation id="7569509451529460200">ब्रेल और ChromeVox सक्षम हैं</translation>
 <translation id="7569886975397378678">अपने फ़ोन की सूचनाओं और ऐप्लिकेशन को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
@@ -2132,6 +2138,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> आपने अभी <ph name="FOCUSED_TIME" /> तक फ़ोकस किया. फिर से फ़ोकस करने के लिए, क्विक सेटिंग खोलें.</translation>
 <translation id="8203224998425013577">ज़्यादा इमोजी और GIF दिखाएं</translation>
 <translation id="8203795194971602413">राइट क्लिक करें</translation>
+<translation id="8205469348819768313">क्या आपको Page Down का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
 <translation id="8214996719228530800">कैनरी चैनल</translation>
 <translation id="8219451629189078428">इस दौरान यह ज़रूरी है कि आपका Chromebook चालू रहे और चार्ज हो रहा हो. पक्का करें कि चार्जर या अडैप्टर केबल आपके Chromebook और पावर सॉकेट में अच्छी तरह से प्लग इन हैं. अपने Chromebook को बंद न करें.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> जोड़ें</translation>
@@ -2324,6 +2331,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>
+<translation id="8929566928381252430">क्या आपको Caps Lock का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>

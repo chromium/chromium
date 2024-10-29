@@ -28,6 +28,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1330562121671411446">Détecter la langue</translation>
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />) ?</translation>
 <translation id="1345251407431278948">Recherche dans des images épinglée ! Vous pouvez de nouveau y accéder à l'aide du nouveau bouton de la barre d'outils.</translation>
+<translation id="1356661055722410047">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran.</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide concernant Chrome for Testing</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
@@ -129,8 +130,10 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
+<translation id="277338894894732084">Plus tard, Chromium vous demandera si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
 <translation id="2785438272836277133">Cette extension contient un logiciel malveillant et n'est pas sécurisée. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="2799223571221894425">Relancer</translation>
+<translation id="2806241689335397269">Chromium vous demandera si vous souhaitez enregistrer les informations du formulaire, comme votre date de naissance, votre âge et votre numéro de passeport</translation>
 <translation id="2837693172913560447">Cela va créer un profil Chromium pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Traduire depuis</translation>
 <translation id="2846251086934905009">Erreur d'installation : le processus du programme d'installation ne s'est pas terminé. L'installation a été annulée.</translation>
@@ -231,6 +234,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chromium</translation>
 <translation id="421369550622382712">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels pour Chromium.</translation>
+<translation id="4217972271355023382">Pour te protéger en ligne avec les choix de ton parent, passe au profil Chromium sur lequel tu es déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Annulation…</translation>
 <translation id="4224210481850767180">L'installation a été annulée.</translation>
 <translation id="4230135487732243613">Associer vos données Chromium à ce compte ?</translation>
@@ -438,6 +442,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="6843464627590537736">Bulle de la recherche dans des images</translation>
 <translation id="6847869444787758381">Chromium vous indique si vos mots de passe ont été piratés</translation>
 <translation id="684888714667046800">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, assurez-vous que <ph name="PRODUCT_EXE_NAME" /> figure dans la liste d'autorisation.</translation>
+<translation id="685279860330610299">Chromium peut comprendre davantage de types d'informations et remplir automatiquement vos formulaires plus rapidement. En savoir plus sur la <ph name="BEGIN_LINK" />saisie automatique de Chrome<ph name="END_LINK" /></translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium a détecté que <ph name="EXTENSION_NAME" /> contient un logiciel malveillant</translation>
 <translation id="6896758677409633944">Copier</translation>
@@ -549,6 +554,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8397248745433792218">Chromium vous recommande de la supprimer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Cette extension peut présenter des risques, car son développeur a annulé sa publication. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relancer Chromium d'ici un jour}one{Relancer Chromium d'ici # jour}other{Relancer Chromium d'ici # jours}}</translation>
+<translation id="8438543370129609977">Lorsque vous utilisez la recherche dans des images, le titre, l'URL et le contenu de la page, y compris les PDF, sont envoyés au serveur. <ph name="LEARN_MORE" /></translation>
 <translation id="8453117565092476964">L'archive du programme d'installation est corrompue ou n'est pas valide. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="8458614432758743027">Chromium requiert Windows 10 ou version ultérieure.</translation>
 <translation id="8463672209299734063">Facultatif : contribuez à améliorer les fonctionnalités et les performances de Chromium OS en envoyant automatiquement des données de diagnostic et d'utilisation à Google.</translation>
@@ -560,6 +566,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8568283329061645092">Chromium peut vérifier vos mots de passe lorsque vous vous connectez à votre compte Google</translation>
 <translation id="8576826849825683917">Plusieurs organisations gèrent Chromium</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
+<translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : les sites peuvent stocker des informations sur vos centres d'intérêt dans Chromium. Par exemple, si vous allez sur un site afin d'acheter des chaussures pour un marathon, le site peut définir le marathon comme l'un de vos centres d'intérêt. Ensuite, si vous consultez un autre site pour vous enregistrer pour une course, ce site peut diffuser une annonce pour des chaussures de running en se basant sur vos centres d'intérêt.</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>
 <translation id="8621669128220841554">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Chromium à nouveau.</translation>

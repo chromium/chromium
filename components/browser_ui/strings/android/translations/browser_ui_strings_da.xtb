@@ -9,7 +9,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1192844206376121885">Denne handling sletter alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Næste</translation>
-<translation id="1240190568154816272">Tips til Chrome</translation>
+<translation id="1240190568154816272">Tip til Chrome</translation>
 <translation id="1242008676835033345">Indlejret på <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Billederne på denne side er blevet optimeret af Google, så du sparer data.</translation>
@@ -40,7 +40,7 @@
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
-<translation id="1799920918471566157">Tips til Chrome</translation>
+<translation id="1799920918471566157">Tip til Chrome</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
@@ -438,7 +438,7 @@
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7667547420449112975">Den vidunderlige troldmand fra Oz</translation>
 <translation id="7684642910516280563">Tillad ikke, at et website bruger tredjepartscookies</translation>
-<translation id="7688240020069572972">Skjul kort med Chrome-tips</translation>
+<translation id="7688240020069572972">Skjul kort med Chrome-tip</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
 <translation id="7781829728241885113">I går</translation>

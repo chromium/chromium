@@ -419,6 +419,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2942036813789421260">A pestana de vista previa está pechada</translation>
 <translation id="2946420957526726953">Actualizando Chrome para conectarse a outros dispositivos</translation>
 <translation id="2951071800649516099">Engade páxinas á lista de lectura para consultalas noutro momento</translation>
+<translation id="2954586176076923855">Mover barra de enderezos á parte superior</translation>
 <translation id="2956070106555335453">Resumo</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> páxina sen ler}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páxinas sen ler}}</translation>
 <translation id="2972109037780336501">Quitar permisos automaticamente</translation>
@@ -653,6 +654,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4095425503313512126">A navegación e a busca son máis rápidas</translation>
 <translation id="4096227151372679484">Fluxo para gardar marcadores aberto a media pantalla</translation>
 <translation id="4101475238162928417">Sincroniza os datos para ter todos os teus contrasinais, marcadores e máis nos teus outros dispositivos</translation>
+<translation id="4105527135143631701">Actualización do xestor de contrasinais de Google aberta</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
@@ -1257,6 +1259,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6813446258015311409">Panel Iniciar sesión en Chrome (aberto).</translation>
 <translation id="6817747507826986771">Compartir rapidamente esta páxina. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820942662346226299">Actualización do xestor de contrasinais de Google pechada</translation>
 <translation id="6822587385560699678">Cando a opción estea activada, os contrasinais gardaranse en <ph name="ACCOUNT" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
 <translation id="6823561724060793716">Na barra de enderezos, poderás abrir a información da páxina que esteas visitando para ver datos adicionais sobre ela</translation>
 <translation id="6828070228333235514">Deter seguimento do prezo</translation>
@@ -1458,6 +1461,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7612619742409846846">Iniciaches sesión en Google como</translation>
 <translation id="7612989789287281429">Iniciando sesión…</translation>
 <translation id="7619072057915878432">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros na rede.</translation>
+<translation id="762537095495606755">Os contrasinais deixarán de funcionar en breve neste dispositivo</translation>
 <translation id="7626032353295482388">Dámosche a benvida a Chrome</translation>
 <translation id="7628417132421583481">Ir ao xestor de contrasinais</translation>
 <translation id="7630202231528827509">URL do provedor</translation>
@@ -1550,6 +1554,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8015452622527143194">Recuperar o tamaño predeterminado da páxina</translation>
 <translation id="8017431260099661477">Non se puido abrir a ligazón de invitación</translation>
 <translation id="8026238112629815203">Cambiamos o modo no que se gardan os contrasinais neste dispositivo</translation>
+<translation id="8027395186860110042">Os contrasinais poden deixar de funcionar en breve</translation>
 <translation id="8027863900915310177">Escolle onde queres gardar o ficheiro</translation>
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032569120109842252">Seguindo</translation>
@@ -1620,7 +1625,9 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8282297628636750033">Aplicar tema escuro aos sitios cando sexa posible</translation>
 <translation id="8282950411412455249">Ir á configuración de seguranza</translation>
 <translation id="829672787777123339">Conectando co teu dispositivo…</translation>
+<translation id="8306751933352925837">Os contrasinais deixarán de funcionar en breve neste dispositivo. Para poder seguir usándoos, actualiza os servizos de Google Play. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> quitou a pestana "<ph name="TAB_NAME" />"</translation>
+<translation id="8310451567823644042">Os contrasinais deixarán de funcionar en breve</translation>
 <translation id="831192587911042850">Engade o sitio web actual á lista de sitios web que estás seguindo.</translation>
 <translation id="8342727528718219152">Chrome informarate se hai algún sitio que podería estar enviando demasiadas notificacións</translation>
 <translation id="834313815369870491">Sitios que non quero que se traduzan nunca</translation>
@@ -1687,6 +1694,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8570677896027847510">Non se pode descargar o ficheiro de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8582529315803410153">Aquí atoparás as túas pestanas doutros dispositivos</translation>
+<translation id="8585103689515290060">Servizos de autocompletar</translation>
 <translation id="859046281437143747">Facer seguimento do prezo desde o botón Máis opcións</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> grupo de pestanas eliminado</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
@@ -1755,6 +1763,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8963117664422609631">Ir á configuración do sitio</translation>
 <translation id="8965591936373831584">pendente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
+<translation id="897061774231912216">Os contrasinais deixarán de funcionar en breve porque os servizos de Google Play non están dispoñibles. Para usar os contrasinais gardados na túa Conta de Google, inicia sesión con outro dispositivo ou vai a passwords.google.com.</translation>
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8972098258593396643">Queres gardar a descarga no cartafol predeterminado?</translation>
 <translation id="8982113230057126145">Coa opción Non me gusta indicas que non che gusta este resumo</translation>
@@ -1804,6 +1813,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9157212632995922070">Selecciona unha conta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartir só contido</translation>
+<translation id="9168847423516963845">Mover barra de enderezos á parte inferior</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="100421257800558142">राइट ऐरो बटन दबाएं</translation>
 <translation id="100506692671054486">कोई पिछला निर्देश नहीं है</translation>
 <translation id="1009046985747440431">नेविगेट करने के लिए ऊपर या नीचे की ओर तीर का निशान और चालू करने के लिए enter बटन दबाएं</translation>
 <translation id="1011903154582639569">कुंजी ढूंढें, फिर लिखने के लिए उठाएं</translation>
@@ -59,6 +60,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1291286136605998134">टॉगल बटन</translation>
 <translation id="1299774449519412690">हल्का आसमानी नीला</translation>
 <translation id="1303806948938513162">ChromeVox मेन्यू में जाने के लिए चार उंगलियों से टैप करें</translation>
+<translation id="1304162325618937178">स्पेस बटन दबाएं</translation>
 <translation id="1313373992684326101">पिछले सेक्शन पर जाएं. जैसे कि स्टेटस ट्रे और लॉन्चर.</translation>
 <translation id="1315077335264761176">टच ओरिएंटेशन</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, मेन्यू आइटम रेडियो बटन से चुने का निशान हटाया गया</translation>
@@ -112,6 +114,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1616111909442424068">गेहुंआ</translation>
 <translation id="1618597272655350600">वर्तमान स्थिति का संपूर्ण विवरण दर्शाता है</translation>
 <translation id="1627222324347828322">भूतिया सफ़ेद रंग</translation>
+<translation id="1632810692616643246">स्क्रोल मोड में जाएं या उससे बाहर निकलें</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{इससे बड़ा}one{# इससे बड़ा चिह्न}other{# इससे बड़ा चिह्न}}</translation>
 <translation id="1653266918374749391">पिछले लेवल 3 का टाइटल</translation>
 <translation id="1657616855184033958">इवेंट स्ट्रीम फ़िल्टर दिखाएं</translation>
@@ -165,6 +168,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2045055672832940894">पहले से कोई सेटिंग नहीं है</translation>
 <translation id="2045606329038304310">फ़ॉर्म फ़ील्ड कंट्रोल</translation>
 <translation id="2063539687800151747">इपिग्राफ़</translation>
+<translation id="2067158561093481039">अपनी ज़रूरत के मुताबिक बटन के कॉम्बिनेशन सेट करें</translation>
 <translation id="2086961585857038472">अगला शब्‍द</translation>
 <translation id="2087981446621639008">जानकारी वाली सूची का ब्यौरा</translation>
 <translation id="2089387485033699258">hi</translation>
@@ -184,9 +188,11 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2197863150503783129">सैडल ब्राउन</translation>
 <translation id="2199994615414171367">पिछला गणित</translation>
 <translation id="2203046366315513658">मान घटाएं</translation>
+<translation id="2206580811360135054">विंडो की खास जानकारी दिखाएं या छिपाएं</translation>
 <translation id="2216790501338699346">यूआरएल लिंक करें: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">एक वर्ण पीछे जाएं</translation>
 <translation id="2220529011494928058">किसी समस्या की रिपोर्ट करें</translation>
+<translation id="2239819015858077439">डाउन ऐरो बटन दबाएं</translation>
 <translation id="2243633977138166243">नेविगेट करने के लिए लेफ़्ट या राइट ऐरो को दबाएं; चालू करने के लिए enter दबाएं</translation>
 <translation id="224426591676115802">इस भाषा में बोलकर निर्देश देने की सुविधा नहीं है: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">सीखने वाला मोड बंद किया जा रहा है</translation>
@@ -535,6 +541,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4432457053224379116">हल्का मरून</translation>
 <translation id="4432896207833262240">मार्क किया गया कॉन्टेंट</translation>
 <translation id="4437615272777527928">मेन्यू खोजने के लिए टाइप करें. नतीजों पर जाने के लिए अप और डाउन ऐरो का इस्तेमाल करें. टेक्स्ट कैरेट को व्यवस्थित करने और एक से दूसरे मेन्यू पर जाने के लिए, लेफ़्ट और राइट ऐरो का इस्तेमाल करें.</translation>
+<translation id="4441677939526091190">अप ऐरो बटन दबाएं</translation>
 <translation id="4453530046591759283">टूलबार या सिस्टम ट्रे जैसे स्क्रीन के अन्य हिस्सों पर जाने के लिए, Control+F1 दबाएं. F1, Escape बटन की दाईं ओर मौजूद पहला बटन है.</translation>
 <translation id="4457472090507035117">मौजूदा ध्वनि चुनें:</translation>
 <translation id="4476183483923481720">नई पंक्ति</translation>
@@ -713,6 +720,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5653397561111110475">Chromebook टच स्क्रीन सुलभता सुविधाओं का इस्तेमाल करें</translation>
 <translation id="5655682562155942719">आदेशों पर जाएं</translation>
 <translation id="56637627897541303">लेख क्षेत्र</translation>
+<translation id="5666746275818170484">लेफ़्ट ऐरो बटन दबाएं</translation>
 <translation id="5669637233317991674">इस लेसन पर जाने के लिए, खोज बटन और राइट ऐरो या खोज बटन और लेफ़्ट ऐरो दबाएं</translation>
 <translation id="5677240841070992068">मौजूदा जगह की जानकारी</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7161771961008409533">पॉप-अप बटन</translation>
 <translation id="7167657087543110">वर्ण इको</translation>
 <translation id="7173102181852295013">चटख नीला</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">विस्तृत</translation>
 <translation id="7209751026933045237">आगे कोई स्लाइडर नहीं है</translation>
 <translation id="7218782500591078391">गोल्डन रॉड</translation>
@@ -1089,6 +1098,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8382679411218029383">अपने आप पूरा होने का इनलाइन और सूची</translation>
 <translation id="8394908167088220973">मीडिया चलाएं/रोकें</translation>
+<translation id="8409502156784390079">स्क्रोल मोड चालू है</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8428603554127842284">स्तर <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1166,6 +1176,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8989104346085848538">ChromeVox को बोलने से रोकने के लिए, Control बटन दबाएं.</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
+<translation id="9034592733577768445">फ़ेस कंट्रोल की सुविधा रोक दी गई है</translation>
 <translation id="9040132695316389094">टाइटल 1</translation>
 <translation id="9061884144798498064">8 बिंदु वाली ब्रेल टेबल चुनें:</translation>
 <translation id="9063946545000394379">पिछले वर्ण पर जाएं</translation>

@@ -445,6 +445,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="2530896289327917474">Activer ou désactiver la navigation au clavier</translation>
 <translation id="2531025035050312891">appareil lent</translation>
 <translation id="2531107890083353124">Appuyez sur <ph name="KEY_ONE" /> tout en faisant glisser l'onglet</translation>
+<translation id="2545334090614121435">Vous essayez d'utiliser Début ? Utilisez</translation>
 <translation id="254900897760075745">Copier le contenu sélectionné dans le presse-papiers</translation>
 <translation id="2549711466868162843">Améliorer l'éclairage</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
@@ -563,6 +564,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="2985148236010982088">Voir toutes les applis</translation>
 <translation id="2992272421330787632">Masquer toutes les suggestions de contenus multimédias</translation>
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
+<translation id="2993956882370897557">Vous essayez d'utiliser Fin ? Utilisez</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Modifier la taille de l'écran</translation>
 <translation id="3009178788565917040">Sortie</translation>
@@ -615,6 +617,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="316798519864381606">Présentation Google Slides</translation>
 <translation id="3171170659304083361">Paramètres des modes de saisie</translation>
+<translation id="3174897399179348329">Vous essayez d'utiliser Page précédente ? Utilisez</translation>
 <translation id="3176221688814061633">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version du Bluetooth. Activez le Bluetooth Super Résolution ou utilisez un micro interne pour une meilleure qualité audio.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
@@ -1261,6 +1264,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5297704307811127955">Désactivé</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5302048478445481009">Langue</translation>
+<translation id="5302531370473608800">Mettez à jour votre <ph name="DEVICE_TYPE" /> pour utiliser YouTube Music</translation>
 <translation id="5303319262469238330">Il reste <ph name="PERCENTAGE" /> % de batterie.
 Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la batterie.</translation>
 <translation id="5308380583665731573">Connexion</translation>
@@ -1820,6 +1824,7 @@ Nouvelle installation</translation>
 <translation id="7144942256906679589">État de la batterie</translation>
 <translation id="7145639536026937076">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant. Économiseur de batterie activé.</translation>
 <translation id="7147587499155271409">Aucun historique de navigation</translation>
+<translation id="7147657298465433425">Pour accéder aux touches F, appuyez sur la touche Fn et sur une touche de la rangée supérieure</translation>
 <translation id="7149149900052329230">Gérez vos fichiers locaux et vos fichiers Google Drive dans l'appli Fichiers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre micro</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
+<translation id="7568154670718626683">Vous essayez d'utiliser Suppr ? Utilisez</translation>
 <translation id="7568790562536448087">Mise à jour en cours</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7569886975397378678">Ignorer la configuration concernant l'affichage des notifications et applis de votre téléphone</translation>
@@ -2132,6 +2138,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="820256110035940528"><ph name="TITLE" /> Vous venez de vous concentrer pendant <ph name="FOCUSED_TIME" />. Ouvrez les Réglages rapides pour réactiver le mode Sans distractions.</translation>
 <translation id="8203224998425013577">Afficher plus d'emoji et de GIF</translation>
 <translation id="8203795194971602413">Clic droit</translation>
+<translation id="8205469348819768313">Vous essayez d'utiliser Page suivante ? Utilisez</translation>
 <translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché à une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise électrique. N'éteignez pas votre Chromebook.</translation>
 <translation id="8220076512072059941">Ajouter <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translatio
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
 <translation id="8926951137623668982">Étagère toujours masquée</translation>
+<translation id="8929566928381252430">Vous essayez d'utiliser Verr Maj ? Utilisez</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">a désactivé</translation>
 <translation id="8938800817013097409">Appareil USB de type C (port situé sur l'arrière de l'appareil, à droite)</translation>

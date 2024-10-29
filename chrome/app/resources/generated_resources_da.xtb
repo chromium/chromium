@@ -2850,7 +2850,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2979493931538961252">Når din Chromebook er offline, og hotspots er tilgængelige</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
 <translation id="2979893796619951531">Ekskluder website</translation>
-<translation id="2979966855249721010">Baseret på dine interesser kan du få vist appanbefalinger, tips og meget mere</translation>
+<translation id="2979966855249721010">Baseret på dine interesser kan du få vist appanbefalinger, tip og meget mere</translation>
 <translation id="2981033191524548279">Noget gik galt. Send os feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />. Problemet kan muligvis løses ved at genstarte og prøve igen.</translation>
 <translation id="2981113813906970160">Vis stor musemarkør</translation>
 <translation id="2983102365694924129">Baseret på din aktivitet på et website. Denne indstilling er deaktiveret.</translation>
@@ -3477,7 +3477,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3448492834076427715">Opdater konto</translation>
 <translation id="3449393517661170867">Nyt fanevindue</translation>
 <translation id="3449839693241009168">Tryk på <ph name="SEARCH_KEY" /> for at sende kommandoer til <ph name="EXTENSION_NAME" /></translation>
-<translation id="3450056559545492516">Vis systemnotifikationer om Chrome-funktioner og -tips</translation>
+<translation id="3450056559545492516">Vis systemnotifikationer om Chrome-funktioner og -tip</translation>
 <translation id="3450157232394774192">Anvendt andel for inaktiv tilstand</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering.</translation>
 <translation id="345078987193237421">Dette giver apps, websites med kameratilladelse og systemtjenester adgang til kameraet</translation>
@@ -4422,7 +4422,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4096421352214844684">Oprette automatisk forbindelse til din telefons hotspot.</translation>
 <translation id="4096797685681362305">Set inden for den seneste uge</translation>
 <translation id="4097406557126260163">Apps og udvidelser</translation>
-<translation id="409742781329613461">Tips til Chrome</translation>
+<translation id="409742781329613461">Tip til Chrome</translation>
 <translation id="4097560579602855702">Søg på Google</translation>
 <translation id="4098667039111970300">Styluspenværktøjer på værktøjslinje</translation>
 <translation id="4099874310852108874">Der opstod en netværksfejl.</translation>
@@ -6708,7 +6708,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5798079537501238810">Websites kan installere betalingshandlere</translation>
 <translation id="5798086737841799234">Angiv bekræftelseskoden</translation>
 <translation id="579915268381781820">Din sikkerhedsnøgle blev fjernet.</translation>
-<translation id="5799478978078236781">Få tips, tilbud og opdateringer vedrørende <ph name="DEVICE_TYPE" />, og giv feedback.</translation>
+<translation id="5799478978078236781">Få tip, tilbud og opdateringer vedrørende <ph name="DEVICE_TYPE" />, og giv feedback.</translation>
 <translation id="5799508265798272974">Virtuel Linux-maskine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Destinationsfilen er blevet forkortet eller fjernet siden sidste download.</translation>
 <translation id="5800290746557538611">Aktivér øjeblikkeligt hotspot</translation>
@@ -7090,7 +7090,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6076491747490570887">Kølig grå</translation>
 <translation id="6076576896267434196">Udvidelsen "<ph name="EXTENSION_NAME" />" anmoder om adgang til din konto</translation>
 <translation id="6077131872140550515">Fjern fra foretrukne</translation>
-<translation id="6077189836672154517">Tips og opdateringer om <ph name="DEVICE_TYPE" /></translation>
+<translation id="6077189836672154517">Tip og opdateringer om <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Indtaling</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gæst}one{# åbent gæstevindue}other{# åbne gæstevinduer}}</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
@@ -9109,7 +9109,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> blev ikke downloadet</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="755198739067769724">Velkommen, <ph name="CHILD_NAME" /></translation>
-<translation id="7552846755917812628">Prøv de følgende tips:</translation>
+<translation id="7552846755917812628">Prøv de følgende tip:</translation>
 <translation id="7553012839257224005">Tjekker Linux-containeren</translation>
 <translation id="7553242001898162573">Angiv din adgangskode</translation>
 <translation id="755472745191515939">Din administrator tillader ikke brug af dette sprog</translation>
