@@ -7,6 +7,10 @@
  * #import=./shared_vars.css.js
  * #css_wrapper_metadata_end */
 
+:host {
+  display: inline-block;
+}
+
 div {
   display: flex;
   justify-content: center;
