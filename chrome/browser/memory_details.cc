@@ -33,12 +33,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/zygote/zygote_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #endif
 

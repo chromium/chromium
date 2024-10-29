@@ -35,9 +35,9 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/nacl/common/nacl_paths.h"  // nogncheck
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_ZYGOTE)
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(IS_WIN)
@@ -178,14 +178,14 @@ void ShellMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_ZYGOTE)
 void ShellMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
 #if BUILDFLAG(ENABLE_NACL)
   nacl::AddNaClZygoteForkDelegates(delegates);
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(USE_ZYGOTE)
 
 // static
 bool ShellMainDelegate::ProcessNeedsResourceBundle(
