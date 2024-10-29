@@ -249,7 +249,7 @@ void AuctionProcessManager::WorkletProcess::OnBoundToOrigin() {
   auto* trusted_signals_cache =
       auction_process_manager_->trusted_signals_cache_.get();
   if (trusted_signals_cache && worklet_type_ == WorkletType::kBidder) {
-    service_->SetTrustedSignalsCache(trusted_signals_cache->CreateMojoPipe(
+    service_->SetTrustedSignalsCache(trusted_signals_cache->CreateRemote(
         TrustedSignalsCacheImpl::SignalsType::kBidding, origin_));
   }
 }

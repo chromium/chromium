@@ -593,8 +593,8 @@ TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
 
 mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-TrustedSignalsCacheImpl::CreateMojoPipe(SignalsType signals_type,
-                                        const url::Origin& script_origin) {
+TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
+                                      const url::Origin& script_origin) {
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache> out;
   receiver_set_.Add(this, out.InitWithNewPipeAndPassReceiver(),
                     ReceiverRestrictions{signals_type, script_origin});

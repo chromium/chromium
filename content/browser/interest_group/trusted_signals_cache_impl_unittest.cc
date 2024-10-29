@@ -704,10 +704,10 @@ class TrustedSignalsCacheTest : public testing::Test {
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
   CreateMojoPendingRemoteForOrigin(const url::Origin& script_origin) {
     if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
-      return trusted_signals_cache_->CreateMojoPipe(
+      return trusted_signals_cache_->CreateRemote(
           TrustedSignalsCacheImpl::SignalsType::kBidding, script_origin);
     } else {
-      return trusted_signals_cache_->CreateMojoPipe(
+      return trusted_signals_cache_->CreateRemote(
           TrustedSignalsCacheImpl::SignalsType::kScoring, script_origin);
     }
   }
@@ -2984,7 +2984,7 @@ TYPED_TEST(TrustedSignalsCacheTest, RequestWithWrongSignalsType) {
 
   // Create a remote associated with the right origin, but wrong signals type.
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> remote(
-      this->trusted_signals_cache_->CreateMojoPipe(
+      this->trusted_signals_cache_->CreateRemote(
           wrong_signals_type, this->GetOriginFromParams(params)));
 
   // Trying to use the remote to get data using the wrong type should result in
