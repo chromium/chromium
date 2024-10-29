@@ -49,45 +49,28 @@ void WebInstallServiceImpl::CreateIfAllowed(
   new WebInstallServiceImpl(*render_frame_host, std::move(receiver));
 }
 
-void WebInstallServiceImpl::InstallCurrentDocument(
-    const GURL& manifest_id,
-    InstallCurrentDocumentCallback callback) {
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh) {
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                            GURL());
-    return;
+void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
+                                    InstallCallback callback) {
+  GURL install_target;
+  if (!options) {
+    install_target = render_frame_host().GetLastCommittedURL();
+  } else {
+    install_target = options->install_url;
   }
-
-  GURL current_url = rfh->GetLastCommittedURL();
 
   // Do not allow installation of file:// or chrome:// urls.
-  if (!current_url.SchemeIsHTTPOrHTTPS()) {
+  if (!install_target.SchemeIsHTTPOrHTTPS()) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
                             GURL());
     return;
   }
 
-  // TODO(333795265): Queue a WebInstallCommand to prompt for installation.
-  std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+  // TODO(crbug.com/333795265): Queue a web app command to prompt for
+  // installation depending on whether `install_current_document` or
+  // `install_background_document` is true. For the time being, stub out the
+  // callback to prevent the calls from hanging.
+  std::move(callback).Run(blink::mojom::WebInstallServiceResult::kSuccess,
                           GURL());
-}
-
-void WebInstallServiceImpl::InstallBackgroundDocument(
-    const GURL& manifest_id,
-    const GURL& install_url,
-    InstallBackgroundDocumentCallback callback) {
-  // Do not allow installation of file:// or chrome:// urls.
-  if (!install_url.SchemeIsHTTPOrHTTPS()) {
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                            GURL());
-    return;
-  }
-
-  // TODO(333795265): Queue a WebInstallCommand to prompt for installation.
-  std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                          GURL());
-  return;
 }
 
 }  // namespace web_app

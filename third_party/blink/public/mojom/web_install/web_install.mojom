@@ -14,21 +14,22 @@ enum WebInstallServiceResult {
   // and add appropriate error codes.
 };
 
+// Parameters passed into calls to Install.
+struct InstallOptions {
+  url.mojom.Url manifest_id;
+  url.mojom.Url install_url;
+};
+
 // Allows installation of web apps via JS. This mojo interface is only bound on
 // the main frame in browser contexts that support web app installation.
 interface WebInstallService {
-  // Installs the current document as a web app, verifying that it has the
-  // given resolved `manifest_id`. Returns a success/failure result. If success,
-  // populates the absolute computed manifest id for the installed app. This can
-  // only be used for same-origin app installation.
-  InstallCurrentDocument(url.mojom.Url manifest_id)
-      => (WebInstallServiceResult result, url.mojom.Url manifest_id);
-
-  // Installs the web content at `install_url`, verifying that it has the
-  // given resolved `manifest_id`. Returns a success/failure result. If success,
-  // populates the absolute computed manifest id for the installed app. This can
-  // be used for either same-origin or cross-origin app installation.
-  InstallBackgroundDocument(url.mojom.Url manifest_id,
-                            url.mojom.Url install_url)
+  // Installs a site as a web app. If `InstallOptions` is not set, it installs
+  // the current document as a web app if the app defines an 'id' in the web
+  // app manifest file or returns an 'AbortError' if the 'id' is not defined.
+  // if `InstallOptions` is set, it installs the web content at `install_url`,
+  // verifying that the provided `manifest_id` matches the app's computed id.
+  // Returns a success/failure result. If success, populates the absolute
+  // computed manifest id for the installed app.
+  Install(InstallOptions? options)
       => (WebInstallServiceResult result, url.mojom.Url manifest_id);
 };

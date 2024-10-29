@@ -22,13 +22,8 @@ class WebInstallServiceImpl
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
 
   // blink::mojom::WebInstallService implementation:
-  void InstallCurrentDocument(const GURL& manifest_id,
-                              InstallCurrentDocumentCallback callback) override;
-
-  void InstallBackgroundDocument(
-      const GURL& manifest_id,
-      const GURL& install_url,
-      InstallBackgroundDocumentCallback callback) override;
+  void Install(blink::mojom::InstallOptionsPtr options,
+               InstallCallback callback) override;
 
  private:
   WebInstallServiceImpl(
