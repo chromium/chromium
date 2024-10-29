@@ -79,7 +79,7 @@ public class TabGroupCreationDialogManagerUnitTest {
     public void testCreationDialogNotSkippedByParityParam() {
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
         assertFalse(
-                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ true));
     }
 
@@ -88,7 +88,7 @@ public class TabGroupCreationDialogManagerUnitTest {
     public void testCreationDialogSkippedByParityParam() {
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
         assertTrue(
-                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ true));
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
@@ -98,7 +98,7 @@ public class TabGroupCreationDialogManagerUnitTest {
     public void testCreationDialogNotSkippedByDialogFlag_shouldShow() {
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
         assertFalse(
-                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ true));
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
@@ -108,7 +108,7 @@ public class TabGroupCreationDialogManagerUnitTest {
     public void testCreationDialogSkippedByDialogFlag_shouldNotShow() {
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
         assertTrue(
-                TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ false));
         TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }

@@ -231,7 +231,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                && !shouldSkipGroupCreationDialog(
+                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch())) {
             notify = false;
         }
@@ -359,7 +359,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                     // If this is a new tab group creation that will show a dialog, do not trigger a
                     // snackbar.
                     if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && !shouldSkipGroupCreationDialog(
+                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                                     TabGroupFeatureUtils
                                             .shouldShowGroupCreationDialogViaSettingsSwitch())) {
                         continue;
@@ -504,7 +504,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             boolean skipSnackbarForCreation =
                     willMergingCreateNewGroup
                             && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && !shouldSkipGroupCreationDialog(
+                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                                     TabGroupFeatureUtils
                                             .shouldShowGroupCreationDialogViaSettingsSwitch());
             if (notify && !skipSnackbarForCreation) {
@@ -1702,14 +1702,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         if (!skipAttributes) {
             tabStateAttributes.endBatchEdit();
-        }
-    }
-
-    private static boolean shouldSkipGroupCreationDialog(boolean shouldShow) {
-        if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
-            return !shouldShow;
-        } else {
-            return TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
         }
     }
 

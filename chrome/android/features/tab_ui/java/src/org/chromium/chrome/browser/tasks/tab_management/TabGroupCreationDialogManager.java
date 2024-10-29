@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
@@ -149,21 +148,6 @@ public class TabGroupCreationDialogManager {
 
     ModalDialogProperties.Controller getDialogControllerForTesting() {
         return mTabGroupCreationDialogController;
-    }
-
-    /**
-     * Returns whether the group creation dialog will be skipped based on current flags.
-     *
-     * @param shouldShow Whether the creation dialog should show if TabGroupCreationDialogAndroid is
-     *     enabled. Currently it should only show for drag and drop merge and bulk selection editor
-     *     merge. It should not show for context menu group creations.
-     */
-    public static boolean shouldSkipGroupCreationDialog(boolean shouldShow) {
-        if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
-            return !shouldShow;
-        } else {
-            return TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
-        }
     }
 
     /**

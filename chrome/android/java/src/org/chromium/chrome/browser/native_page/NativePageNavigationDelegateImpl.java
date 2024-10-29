@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
@@ -108,7 +109,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                         /* incognito= */ false);
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                 && willMergingCreateNewGroup
-                && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ false)) {
             mTabGroupCreationDialogManager.showDialog(mTab.getRootId(), filter);
         }

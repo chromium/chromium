@@ -14,6 +14,7 @@ import org.chromium.base.Token;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -105,7 +106,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
 
             tabGroupModelFilter.createSingleTabGroup(tab, /* notify= */ true);
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                    && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                    && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                             /* shouldShow= */ TabGroupCreationDialogManager
                                     .shouldShowGroupCreationDialogViaSettingsSwitch())) {
                 mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
@@ -141,7 +142,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                 && willMergingCreateNewGroup
-                && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ TabGroupCreationDialogManager
                                 .shouldShowGroupCreationDialogViaSettingsSwitch())) {
             mTabGroupCreationDialogManager.showDialog(

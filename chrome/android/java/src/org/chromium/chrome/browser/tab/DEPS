@@ -91,6 +91,9 @@ specific_include_rules = {
   'TabBrowserControlsConstraintsHelper\.java': [
     "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ToolbarFeatures.java",
   ],
+  'TabContextMenuItemDelegate\.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupFeatureUtils.java",
+  ],
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
