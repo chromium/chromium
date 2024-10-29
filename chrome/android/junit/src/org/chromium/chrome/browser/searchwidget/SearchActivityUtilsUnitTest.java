@@ -422,29 +422,37 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void createLoadUrlIntent_nullParams() {
-        assertNull(SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, null));
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, null);
+        assertNotNull(intent);
+        assertNull(intent.getData());
     }
 
     @Test
     public void createLoadUrlIntent_nullUrl() {
-        assertNull(
+        Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_NULL_URL));
+                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_NULL_URL);
+        assertNotNull(intent);
+        assertNull(intent.getData());
     }
 
     @Test
     public void createLoadUrlIntent_invalidUrl() {
-        assertNull(
+        Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_INVALID_URL));
+                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_INVALID_URL);
+        assertNotNull(intent);
+        assertNull(intent.getData());
     }
 
     @Test
     public void createLoadUrlIntent_invalidFixedUpUrl() {
         doReturn(null).when(mFormatter).fixupUrl(any());
-        assertNull(
+        Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, getLoadUrlParamsBuilder().build()));
+                        mActivity, COMPONENT_TRUSTED, getLoadUrlParamsBuilder().build());
+        assertNotNull(intent);
+        assertNull(intent.getData());
     }
 
     @Test

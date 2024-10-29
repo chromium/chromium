@@ -89,10 +89,20 @@ public @interface SearchActivityExtras {
     }
 
     /** Defines resolution types for the search intent. */
-    @IntDef({ResolutionType.OPEN_IN_CHROME, ResolutionType.SEND_TO_CALLER})
+    @IntDef({
+        ResolutionType.OPEN_IN_CHROME,
+        ResolutionType.OPEN_OR_LAUNCH_CHROME,
+        ResolutionType.SEND_TO_CALLER
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface ResolutionType {
+        /** Successful selection is opened in Chrome; canceled selection exits. */
         int OPEN_IN_CHROME = 0;
-        int SEND_TO_CALLER = 1;
+
+        /** Successful selection is opened in Chrome; canceled selection launches Chrome. */
+        int OPEN_OR_LAUNCH_CHROME = 1;
+
+        /** Successful selection is sent back to calling Activity; canceled selection exits. */
+        int SEND_TO_CALLER = 2;
     }
 }

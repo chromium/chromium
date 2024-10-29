@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
@@ -509,7 +510,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
                     if (result == null || !result.booleanValue()) {
                         Log.e(TAG, "User failed to select a default search engine.");
-                        finish(TerminationReason.FRE_NOT_COMPLETED);
+                        finish(TerminationReason.FRE_NOT_COMPLETED, /* loadUrlParams= */ null);
                         return;
                     }
 
@@ -523,7 +524,7 @@ public class SearchActivity extends AsyncInitializationActivity
     // OverrideBackKeyBehaviorDelegate implementation.
     @Override
     public boolean handleBackKeyPressed() {
-        finish(TerminationReason.BACK_KEY_PRESSED);
+        finish(TerminationReason.BACK_KEY_PRESSED, /* loadUrlParams= */ null);
         return true;
     }
 
@@ -637,24 +638,12 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator.getUrlBarCoordinator().setUrlBarHintText(hintTextRes);
     }
 
-    /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
-        recordNavigationTargetType(new GURL(params.url));
-
-        switch (SearchActivityUtils.getResolutionType(getIntent())) {
-            case ResolutionType.SEND_TO_CALLER:
-                SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
-                break;
-
-            case ResolutionType.OPEN_IN_CHROME:
-                loadUrlInChromeBrowser(params);
-                break;
-        }
-
-        finish(TerminationReason.NAVIGATION);
+    /* package */ boolean loadUrl(@NonNull OmniboxLoadUrlParams params, boolean isIncognito) {
+        finish(TerminationReason.NAVIGATION, params);
         return true;
     }
 
-    private void loadUrlInChromeBrowser(@NonNull OmniboxLoadUrlParams params) {
+    private void openChromeBrowser(@Nullable OmniboxLoadUrlParams params) {
         Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
         if (intent == null) return;
 
@@ -668,9 +657,12 @@ public class SearchActivity extends AsyncInitializationActivity
                 ActivityOptionsCompat.makeCustomAnimation(
                                 this, android.R.anim.fade_in, android.R.anim.fade_out)
                         .toBundle());
-        RecordUserAction.record("SearchWidget.SearchMade");
-        LocaleManager.getInstance()
-                .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
+
+        if (params != null) {
+            RecordUserAction.record("SearchWidget.SearchMade");
+            LocaleManager.getInstance()
+                    .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
+        }
     }
 
     private void setHubSearchBoxVisualElements() {
@@ -691,7 +683,8 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ ViewGroup createContentView() {
         var contentView =
                 (ViewGroup) getLayoutInflater().inflate(R.layout.search_activity, null, false);
-        contentView.setOnClickListener(v -> finish(TerminationReason.TAP_OUTSIDE));
+        contentView.setOnClickListener(
+                v -> finish(TerminationReason.TAP_OUTSIDE, /* loadUrlParams= */ null));
         return contentView;
     }
 
@@ -702,22 +695,36 @@ public class SearchActivity extends AsyncInitializationActivity
      * <p>This method should be called instead of {@link finish()}.
      *
      * @param reason the reason session was terminated
+     * @param loadUrlParams parameters specifying what page to load, when reason is NAVIGATION.
      */
     @VisibleForTesting
-    /* package */ void finish(@TerminationReason int reason) {
+    /* package */ void finish(
+            @TerminationReason int reason, @Nullable OmniboxLoadUrlParams loadUrlParams) {
         if (isFinishing()) return;
+
+        if (loadUrlParams != null) {
+            recordNavigationTargetType(new GURL(loadUrlParams.url));
+        }
 
         var exitAnimationRes = 0;
         switch (SearchActivityUtils.getResolutionType(getIntent())) {
             case ResolutionType.SEND_TO_CALLER:
-                if (reason != TerminationReason.NAVIGATION) {
-                    SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
-                }
+                // Return loadUrlParams to sender. Null value will report canceled action.
+                SearchActivityUtils.resolveOmniboxRequestForResult(this, loadUrlParams);
                 exitAnimationRes = android.R.anim.fade_out;
                 break;
 
             case ResolutionType.OPEN_IN_CHROME:
+                // Open Chrome and load page only when selection was made.
+                if (loadUrlParams != null) openChromeBrowser(loadUrlParams);
                 exitAnimationRes = R.anim.activity_close_exit;
+                break;
+
+            case ResolutionType.OPEN_OR_LAUNCH_CHROME:
+                // Always open Chrome. When loadUrlParams is null, we will simply resume where the
+                // user left off.
+                openChromeBrowser(loadUrlParams);
+                exitAnimationRes = android.R.anim.fade_out;
                 break;
         }
 
@@ -730,7 +737,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     public void finish() {
-        finish(TerminationReason.UNSPECIFIED);
+        finish(TerminationReason.UNSPECIFIED, /* loadUrlParams= */ null);
     }
 
     @VisibleForTesting
@@ -806,6 +813,7 @@ public class SearchActivity extends AsyncInitializationActivity
                     switch (mIntentOrigin) {
                         case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
                         case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
+                        case IntentOrigin.LAUNCHER -> ".Launcher";
                         default -> ".SearchWidget";
                     };
             RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);

@@ -203,9 +203,10 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SearchActivityIntentOriginVariants">
   <variant name="" summary="overall"/>
-  <variant name=".CustomTab" summary="Chrome Custom Tab specific"/>
-  <variant name=".SearchWidget" summary="(old) Search widget specific"/>
-  <variant name=".ShortcutsWidget" summary="(new) Shortcuts widget specific"/>
+  <variant name=".CustomTab" summary="Chrome Custom Tab"/>
+  <variant name=".Launcher" summary="Launcher / Jump-start Omnibox"/>
+  <variant name=".SearchWidget" summary="(old) Search widget"/>
+  <variant name=".ShortcutsWidget" summary="(new) Shortcuts widget"/>
 </variants>
 
 <variants name="TaskType">
@@ -2858,9 +2859,9 @@ chromium-metrics-reviews@google.com.
     Records the intended navigation search target type for every navigation
     initiated from the SearchActivity.
 
-    Captures the {IntentOrigin} SearchActivity metrics. Recorded exactly once
-    per user initiated navigation. Not recorded if the user abandons
-    SearchActivity.
+    Captures the {IntentOrigin} specific SearchActivity metrics. Recorded
+    exactly once per user initiated navigation. Not recorded if the user
+    abandons SearchActivity.
   </summary>
   <token key="IntentOrigin" variants="SearchActivityIntentOriginVariants"/>
 </histogram>
@@ -2890,8 +2891,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason SearchActivity was closed.
 
-    Captures the {IntentOrigin} SearchActivity metrics. Recorded exactly once
-    per SearchActivity session.
+    Captures the {IntentOrigin} specific SearchActivity metrics. Recorded
+    exactly once per SearchActivity session.
   </summary>
   <token key="IntentOrigin" variants="SearchActivityIntentOriginVariants"/>
 </histogram>

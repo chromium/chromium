@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity.TerminationReason
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentBuilder;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
@@ -104,6 +105,7 @@ public class SearchActivityUnitTest {
     private static final String HISTOGRAM_SUFFIX_SEARCH_WIDGET = ".SearchWidget";
     private static final String HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET = ".ShortcutsWidget";
     private static final String HISTOGRAM_SUFFIX_CUSTOM_TAB = ".CustomTab";
+    private static final String HISTOGRAM_SUFFIX_LAUNCHER = ".Launcher";
 
     // SearchActivityUtils call intercepting mock.
     private interface TestSearchActivityUtils {
@@ -231,24 +233,19 @@ public class SearchActivityUnitTest {
     }
 
     private Intent buildTestWidgetIntent(@IntentOrigin int intentOrigin) {
-        return buildTestIntent(intentOrigin, TEST_URL, null, false);
+        return newIntentBuilder(intentOrigin, TEST_URL).build();
     }
 
     private Intent buildTestServiceIntent(@IntentOrigin int intentOrigin) {
-        return buildTestIntent(intentOrigin, TEST_URL, null, true);
+        return newIntentBuilder(intentOrigin, TEST_URL)
+                .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                .build();
     }
 
-    private Intent buildTestIntent(
-            @IntentOrigin int intentOrigin, String url, String referrer, boolean isServiceIntent) {
+    private IntentBuilder newIntentBuilder(@IntentOrigin int intentOrigin, String url) {
         return new SearchActivityClientImpl(mActivity, intentOrigin)
                 .newIntentBuilder()
-                .setPageUrl(new GURL(url))
-                .setReferrer(referrer)
-                .setResolutionType(
-                        isServiceIntent
-                                ? ResolutionType.SEND_TO_CALLER
-                                : ResolutionType.OPEN_IN_CHROME)
-                .build();
+                .setPageUrl(new GURL(url));
     }
 
     @Test
@@ -311,14 +308,54 @@ public class SearchActivityUnitTest {
                                             + HISTOGRAM_SUFFIX_CUSTOM_TAB,
                                     reason)
                             .build()) {
-                mActivity.finish(reason);
+                mActivity.finish(reason, null);
                 verify(mUtils).resolveOmniboxRequestForResult(mActivity, null);
                 clearInvocations(mUtils);
 
                 // Subsequent calls must be ignored.
-                mActivity.finish(reason);
+                mActivity.finish(reason, null);
                 verifyNoMoreInteractions(mUtils);
 
+                mShadowActivity.resetIsFinishing();
+            }
+        }
+    }
+
+    @Test
+    public void terminateSession_startsChrome() {
+        var intent =
+                newIntentBuilder(IntentOrigin.LAUNCHER, TEST_URL)
+                        .setResolutionType(ResolutionType.OPEN_OR_LAUNCH_CHROME)
+                        .build();
+        mActivity.handleNewIntent(intent, false);
+        clearInvocations(mUtils);
+
+        // Start at the first non-NAVIGATION reason. NAVIGATION is covered by a separate test
+        // because it resolves termination slightly differently.
+        for (@TerminationReason int reason = TerminationReason.NAVIGATION + 1;
+                reason < TerminationReason.COUNT;
+                reason++) {
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON, reason)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                            + HISTOGRAM_SUFFIX_LAUNCHER,
+                                    reason)
+                            .build()) {
+                mActivity.finish(reason, null);
+
+                Intent nextStartedActivity = mShadowActivity.getNextStartedActivity();
+                assertNotNull(nextStartedActivity);
+                assertNull(nextStartedActivity.getData());
+                verifyNoMoreInteractions(mUtils);
+                clearInvocations(mUtils);
+
+                // Subsequent calls must be ignored.
+                mShadowActivity.clearNextStartedActivities();
+                mActivity.finish(reason, null);
+                assertNull(mShadowActivity.getNextStartedActivity());
                 mShadowActivity.resetIsFinishing();
             }
         }
@@ -341,11 +378,11 @@ public class SearchActivityUnitTest {
                                             + HISTOGRAM_SUFFIX_SEARCH_WIDGET,
                                     reason)
                             .build()) {
-                mActivity.finish(reason);
+                mActivity.finish(reason, null);
                 verifyNoMoreInteractions(mUtils);
 
                 // Verify that termination reason is recorded exactly once.
-                mActivity.finish(reason);
+                mActivity.finish(reason, null);
                 verifyNoMoreInteractions(mUtils);
                 mShadowActivity.resetIsFinishing();
             }
@@ -371,11 +408,11 @@ public class SearchActivityUnitTest {
                                             + HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET,
                                     reason)
                             .build()) {
-                mActivity.finish(reason);
+                mActivity.finish(reason, null);
                 verifyNoMoreInteractions(mUtils);
 
                 // Verify that termination reason is recorded exactly once.
-                mActivity.finish(reason);
+                mActivity.finish(reason, null);
                 verifyNoMoreInteractions(mUtils);
                 mShadowActivity.resetIsFinishing();
             }
@@ -629,11 +666,9 @@ public class SearchActivityUnitTest {
     public void refinePageClassWithProfile_ignoresNullUrl() {
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
         mActivity.handleNewIntent(
-                buildTestIntent(
-                        IntentOrigin.CUSTOM_TAB,
-                        /* url= */ null,
-                        /* referrer= */ null,
-                        /* isServiceIntent= */ true),
+                newIntentBuilder(IntentOrigin.CUSTOM_TAB, /* url= */ null)
+                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                        .build(),
                 false);
 
         assertEquals(
@@ -645,11 +680,9 @@ public class SearchActivityUnitTest {
     public void refinePageClassWithProfile_ignoresEmptyUrl() {
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
         mActivity.handleNewIntent(
-                buildTestIntent(
-                        IntentOrigin.CUSTOM_TAB,
-                        /* url= */ "",
-                        /* referrer= */ null,
-                        /* isServiceIntent= */ true),
+                newIntentBuilder(IntentOrigin.CUSTOM_TAB, /* url= */ "")
+                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                        .build(),
                 false);
 
         assertEquals(
@@ -661,11 +694,9 @@ public class SearchActivityUnitTest {
     public void refinePageClassWithProfile_ignoresInvalidUrl() {
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
         mActivity.handleNewIntent(
-                buildTestIntent(
-                        IntentOrigin.CUSTOM_TAB,
-                        /* url= */ "aoeui",
-                        /* referrer= */ null,
-                        /* isServiceIntent= */ true),
+                newIntentBuilder(IntentOrigin.CUSTOM_TAB, /* url= */ "aoeui")
+                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                        .build(),
                 false);
 
         assertEquals(
@@ -763,7 +794,7 @@ public class SearchActivityUnitTest {
         verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
 
         // Cancel activity, and notify that the search engine promo dialog was completed.
-        mActivity.finish(TerminationReason.ACTIVITY_FOCUS_LOST);
+        mActivity.finish(TerminationReason.ACTIVITY_FOCUS_LOST, null);
         captor.getValue().onResult(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -900,11 +931,10 @@ public class SearchActivityUnitTest {
     public void onResumeWithNative_fromCustomTabs_withPackage() {
         SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(true);
         mActivity.onNewIntent(
-                buildTestIntent(
-                        IntentOrigin.CUSTOM_TAB,
-                        TEST_URL,
-                        TEST_REFERRER,
-                        /* isServiceIntent= */ true));
+                newIntentBuilder(IntentOrigin.CUSTOM_TAB, TEST_URL)
+                        .setReferrer(TEST_REFERRER)
+                        .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                        .build());
 
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(

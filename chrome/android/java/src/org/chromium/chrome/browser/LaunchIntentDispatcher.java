@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -121,7 +122,10 @@ public class LaunchIntentDispatcher {
      */
     public static @Action int dispatchToSearchActivity(
             SearchActivityClient client, Activity currentActivity, Intent intent) {
-        client.requestOmniboxForResult(client.newIntentBuilder().build());
+        client.requestOmniboxForResult(
+                client.newIntentBuilder()
+                        .setResolutionType(ResolutionType.OPEN_OR_LAUNCH_CHROME)
+                        .build());
         return Action.FINISH_ACTIVITY;
     }
 

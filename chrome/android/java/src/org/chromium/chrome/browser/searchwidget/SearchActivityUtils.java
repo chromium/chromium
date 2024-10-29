@@ -145,7 +145,7 @@ public class SearchActivityUtils {
      * @return the intent will be passed to ChromeLauncherActivity, or null if page cannot be loaded
      */
     /* package */ static @Nullable Intent createIntentForStartActivity(
-            Context context, OmniboxLoadUrlParams params) {
+            Context context, @Nullable OmniboxLoadUrlParams params) {
         var intent =
                 createLoadUrlIntent(
                         context,
@@ -161,7 +161,7 @@ public class SearchActivityUtils {
     }
 
     /**
-     * Create a base intent that can be further expanded to request URL loading.
+     * Create a base intent that can be used to open Chrome and (optionally) load specific URL.
      *
      * @param context the current context
      * @param recipient the activity being targeted
@@ -171,19 +171,11 @@ public class SearchActivityUtils {
      */
     @VisibleForTesting
     /* package */ static @Nullable Intent createLoadUrlIntent(
-            Context context, ComponentName recipient, OmniboxLoadUrlParams params) {
-        // Don't do anything if the input was empty.
-        if (params == null || TextUtils.isEmpty(params.url)) return null;
-
-        // Fix up the URL and send it to the full browser.
-        GURL fixedUrl = UrlFormatter.fixupUrl(params.url);
-        if (GURL.isEmptyOrInvalid(fixedUrl)) return null;
-
+            Context context, ComponentName recipient, @Nullable OmniboxLoadUrlParams params) {
         var intent =
                 new Intent()
                         .putExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, true)
-                        .setComponent(recipient)
-                        .setData(Uri.parse(fixedUrl.getSpec()));
+                        .setComponent(recipient);
 
         // Do not pass any of these information if the calling package is something we did not
         // expect, but somehow it managed to fabricate a trust token.
@@ -191,13 +183,22 @@ public class SearchActivityUtils {
             return null;
         }
 
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        // Optionally attach target page URL - only if params are available and valid.
+        if (params == null || TextUtils.isEmpty(params.url)) return intent;
+
+        GURL fixedUrl = UrlFormatter.fixupUrl(params.url);
+        if (GURL.isEmptyOrInvalid(fixedUrl)) return intent;
+
+        // Attach information about page to load.
+        intent.setData(Uri.parse(fixedUrl.getSpec()));
         if (!TextUtils.isEmpty(params.postDataType)
                 && params.postData != null
                 && params.postData.length != 0) {
             intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, params.postDataType)
                     .putExtra(IntentHandler.EXTRA_POST_DATA, params.postData);
         }
-        IntentUtils.addTrustedIntentExtras(intent);
 
         return intent;
     }
