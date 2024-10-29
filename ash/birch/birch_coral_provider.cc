@@ -458,6 +458,7 @@ void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
   // Only cache tab embeddings for the primary user.
   auto* session_controller = Shell::Get()->session_controller();
   if (session_controller->IsUserPrimary() &&
+      session_controller->GetPrimaryUserPrefService() &&
       session_controller->GetPrimaryUserPrefService()->GetBoolean(
           prefs::kBirchUseCoral) &&
       IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {

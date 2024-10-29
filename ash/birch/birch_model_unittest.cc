@@ -837,6 +837,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());

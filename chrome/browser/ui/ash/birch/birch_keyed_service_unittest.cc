@@ -756,6 +756,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   model->SetAttachmentItems({});
+  model->SetCoralItems({});
 
   // Trigger a file update, with no available files.
   birch_keyed_service()
