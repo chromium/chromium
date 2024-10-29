@@ -463,8 +463,12 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         // transition.
         if (background || isStartingToHide()) return;
 
-        // Tablet Hub doesn't handle new tab animations.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+        HubContainerView containerView = mHubController.getContainerView();
+
+        // Skip animation:
+        // * If ContainerView is not laid out there will be no geometry for an animation.
+        // * For LFF devices which don't have new tab animations in the tab switcher.
+        if (!containerView.isLaidOut() || DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             selectTabAndHideHubLayout(tabId);
             return;
         }
@@ -493,8 +497,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         EXPAND_NEW_TAB_DURATION_MS,
                         mOnToolbarAlphaChange);
 
-        HubContainerView containerView = mHubController.getContainerView();
-        assert containerView.isLaidOut();
         Rect containerViewRect = new Rect();
         containerView.getGlobalVisibleRect(containerViewRect);
 
