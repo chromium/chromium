@@ -159,6 +159,17 @@ void AddDataSourceConfigs(
   }
 
   if (stripped_config.IsCategoryGroupEnabled(
+          TRACE_DISABLED_BY_DEFAULT("process_metrics"))) {
+    DCHECK_EQ(
+        1u, source_names.empty() ||
+                source_names.count(tracing::mojom::kProcessMetricsSourceName));
+    AddDataSourceConfig(
+        perfetto_config, tracing::mojom::kProcessMetricsSourceName,
+        chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
+        client_priority, json_agent_label_filter);
+  }
+
+  if (stripped_config.IsCategoryGroupEnabled(
           TRACE_DISABLED_BY_DEFAULT("java-heap-profiler"))) {
     DCHECK_EQ(1u, source_names.empty() ||
                       source_names.count(
