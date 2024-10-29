@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -239,6 +240,10 @@ class ProfileNetworkContextService
   // Used to post schedule CT and Certificate policy updates
   base::OneShotTimer ct_policy_update_timer_;
   base::OneShotTimer cert_policy_update_timer_;
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  base::CallbackListSubscription server_cert_database_observer_;
+#endif
 
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>

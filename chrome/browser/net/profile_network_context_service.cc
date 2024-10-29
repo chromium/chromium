@@ -422,6 +422,22 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
                              schedule_update_cert_policy);
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
+    // Register observer to update certificates when changes are made to the
+    // server cert database. Unretained is safe as the
+    // `server_cert_database_observer_` is a CallbackListSubscription which
+    // will unregister the observer once the ProfileNetworkContextService is
+    // destroyed.
+    server_cert_database_observer_ =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            profile_)
+            ->AddObserver(base::BindRepeating(
+                &ProfileNetworkContextService::UpdateAdditionalCertificates,
+                base::Unretained(this)));
+  }
+#endif
+
   pref_change_registrar_.Add(
       prefs::kGloballyScopeHTTPAuthCacheEnabled,
       base::BindRepeating(&ProfileNetworkContextService::
