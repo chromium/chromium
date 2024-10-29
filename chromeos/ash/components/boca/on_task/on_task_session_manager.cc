@@ -238,6 +238,7 @@ void OnTaskSessionManager::OnTabAdded(const SessionID active_tab_id,
   }
   if (!active_tab_id.is_valid()) {
     provider_url_tab_ids_map_[url].insert(tab_id);
+    return;
   }
   for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     // Guarantee that tabs sent by provider are not regarded as child tabs.

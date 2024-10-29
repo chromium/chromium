@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/webui/boca_ui/url_constants.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -190,9 +191,13 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
   if (change.type() == TabStripModelChange::kInserted) {
     content::WebContents* const old_contents = selection.old_contents;
     SessionID active_tab_id = SessionID::InvalidValue();
+    // When new tabs are added, if the current active tab is closed or is boca
+    // app homepage, then we set `active_tab_id` to be invalid.
     if (old_contents &&
         (TabStripModel::kNoTab !=
-         browser_->tab_strip_model()->GetIndexOfWebContents(old_contents))) {
+         browser_->tab_strip_model()->GetIndexOfWebContents(old_contents)) &&
+        (old_contents->GetVisibleURL() !=
+         GURL(ash::boca::kChromeBocaAppUntrustedIndexURL))) {
       active_tab_id = sessions::SessionTabHelper::IdForTab(old_contents);
     }
     for (const auto& contents : change.GetInsert()->contents) {
