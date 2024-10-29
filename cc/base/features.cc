@@ -239,4 +239,8 @@ bool MultiImplOnlyScrollAnimationsSupported() {
       features::kMultipleImplOnlyScrollAnimations);
 }
 
+BASE_FEATURE(kPreventDuplicateImageDecodes,
+             "PreventDuplicateImageDecodes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 
 namespace cc {
 
@@ -47,14 +49,16 @@ bool TileTask::TaskContainsLCPCandidateImages() const {
 }
 
 void TileTask::SetExternalDependent(scoped_refptr<TileTask> dependent) {
-  CHECK(IsRasterTask() != dependent->IsRasterTask());
-  // A task may have at most one external dependent.
-  CHECK(!external_dependent_);
-  // A task may have at most one external dependency, and may not mix internal
-  // and external dependencies.
-  CHECK_EQ(dependent->dependencies_.size(), 0u);
-  dependent->dependencies_.push_back(this);
-  external_dependent_ = std::move(dependent);
+  if (base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    CHECK(IsRasterTask() != dependent->IsRasterTask());
+    // A task may have at most one external dependent.
+    CHECK(!external_dependent_);
+    // A task may have at most one external dependency, and may not mix internal
+    // and external dependencies.
+    CHECK_EQ(dependent->dependencies_.size(), 0u);
+    dependent->dependencies_.push_back(this);
+    external_dependent_ = std::move(dependent);
+  }
 }
 
 void TileTask::ExternalDependencyCompleted() {

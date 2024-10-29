@@ -226,6 +226,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMultipleImplOnlyScrollAnimations);
 CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();
 
+// When enabled, and an image decode is requested by both a tile task and
+// explicitly via img.decode(), it will be decoded only once.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
