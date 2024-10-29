@@ -393,3 +393,29 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280246,"GESTURE_SCROLL_UPDATE_EVENT","STEP_SEND_INPUT_EVENT_UI,STEP_HANDLE_INPUT_EVENT_IMPL,STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,STEP_GESTURE_EVENT_HANDLED"
         """))
 
+  def test_chrome_coalesced_inputs(self):
+        return DiffTestBlueprint(
+        trace=DataPath('scroll_m131.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.input;
+
+        SELECT
+          coalesced_latency_id,
+          presented_latency_id
+        FROM chrome_coalesced_inputs
+        ORDER BY coalesced_latency_id
+        LIMIT 10
+        """,
+        out=Csv("""
+        "coalesced_latency_id","presented_latency_id"
+        -2143831735395280239,-2143831735395280239
+        -2143831735395280183,-2143831735395280179
+        -2143831735395280179,-2143831735395280179
+        -2143831735395280166,-2143831735395280166
+        -2143831735395280158,-2143831735395280153
+        -2143831735395280153,-2143831735395280153
+        -2143831735395280150,-2143831735395280146
+        -2143831735395280146,-2143831735395280146
+        -2143831735395280144,-2143831735395280139
+        -2143831735395280139,-2143831735395280139
+        """))

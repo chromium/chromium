@@ -85,3 +85,19 @@ LEFT JOIN
   _chrome_input_pipeline_steps_no_input_type
   USING (latency_id)
 WHERE chrome_inputs.input_type IS NOT NULL;
+
+-- For each input, get the latency id of the input that it was coalesced into.
+CREATE PERFETTO TABLE chrome_coalesced_inputs(
+  -- The `latency_id` of the coalesced input.
+  coalesced_latency_id INT,
+  -- The `latency_id` of the input that the current input was coalesced into.
+  presented_latency_id INT
+) AS
+SELECT
+  args.int_value AS coalesced_latency_id,
+  latency_id AS presented_latency_id
+FROM chrome_input_pipeline_steps step
+JOIN slice USING (slice_id)
+JOIN args USING (arg_set_id)
+WHERE step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
+  AND args.flat_key = 'chrome_latency_info.coalesced_trace_ids';
