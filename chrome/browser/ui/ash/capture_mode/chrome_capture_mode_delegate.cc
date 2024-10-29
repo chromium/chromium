@@ -499,11 +499,11 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
     const SkBitmap& image,
     const gfx::Rect& region,
     ash::OnSearchUrlFetchedCallback callback) {
-  DCHECK(ash::features::IsSunfishFeatureEnabled());
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile) {
+  if (!profile || image.empty() || region.IsEmpty()) {
     return;
   }
+  DCHECK(ash::features::IsSunfishFeatureEnabled());
   if (!gen204_controller_) {
     gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
   }
@@ -552,7 +552,10 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
     ash::OnSearchUrlFetchedCallback callback) {
   // TODO(crbug.com/375670205): Investigate edge cases when the region is
   // adjusted or `SendMultimodalSearch()` is called before `StartQueryFlow()`.
-  DCHECK(lens_overlay_query_controller_);
+  if (!lens_overlay_query_controller_ || image.empty() || region.IsEmpty() ||
+      text.empty()) {
+    return;
+  }
   on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->SendMultimodalRequest(
       lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
@@ -572,7 +575,8 @@ void ChromeCaptureModeDelegate::HandleStartQueryResponse(
 
 void ChromeCaptureModeDelegate::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
-  if (on_search_url_fetched_callback_) {
+  if (on_search_url_fetched_callback_ && response.IsInitialized() &&
+      response.has_url()) {
     std::move(on_search_url_fetched_callback_).Run(GURL(response.url()));
   }
 }
