@@ -256,9 +256,7 @@ void InputMethodContextImplGtk::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
     const gfx::Range& composition_range,
-    const gfx::Range& selection_range,
-    const std::optional<ui::GrammarFragment>& fragment,
-    const std::optional<ui::AutocorrectInfo>& autocorrect) {}
+    const gfx::Range& selection_range) {}
 
 // private:
 

@@ -404,7 +404,7 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
       text_range_ = text_range;
       selection_range_ = selection_range;
       context_->SetSurroundingText(text, text_range, composition_range,
-                                   selection_range, std::nullopt, std::nullopt);
+                                   selection_range);
     }
   }
 }

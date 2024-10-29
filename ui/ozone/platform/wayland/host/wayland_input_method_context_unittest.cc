@@ -587,8 +587,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
   });
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 50),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -644,8 +643,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
   });
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -701,8 +699,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
   });
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -759,8 +756,7 @@ TEST_P(WaylandInputMethodContextTest,
   });
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -806,9 +802,8 @@ TEST_P(WaylandInputMethodContextTest, DISABLED_SetSurroundingTextForLongRange) {
           .Times(0);
     });
 
-    input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                              gfx::Range::InvalidRange(), range,
-                                              std::nullopt, std::nullopt);
+    input_method_context_->SetSurroundingText(
+        text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), range);
     // Predicted state in SurroundingTextTracker is reset when the range is
     // longer than wayland message size maximum.
     EXPECT_EQ(
@@ -835,9 +830,8 @@ TEST_P(WaylandInputMethodContextTest, DISABLED_SetSurroundingTextForLongRange) {
           .Times(1);
     });
 
-    input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                              gfx::Range::InvalidRange(), range,
-                                              std::nullopt, std::nullopt);
+    input_method_context_->SetSurroundingText(
+        text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), range);
     EXPECT_EQ(
         input_method_context_->predicted_state_for_testing().surrounding_text,
         text);
@@ -850,121 +844,6 @@ TEST_P(WaylandInputMethodContextTest, DISABLED_SetSurroundingTextForLongRange) {
           server->text_input_manager_v1()->text_input());
     });
   }
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       SetSurroundingTextForShortTextWithGrammmarFragment) {
-  const std::u16string text(50, u'あ');
-  constexpr gfx::Range range(20, 30);
-
-  const std::string kExpectedSentText(base::UTF16ToUTF8(text));
-  constexpr gfx::Range kExpectedSentRange(60, 90);
-
-  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
-                          wl::TestWaylandServerThread* server) {
-    // The text and range sent as wayland protocol must be same to the original
-    // text and range where the original text is shorter than 4000 byte.
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
-        .Times(1);
-    EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
-                SetGrammarFragmentAtCursor(gfx::Range(0, 30), "abc"))
-        .Times(1);
-  });
-
-  input_method_context_->SetSurroundingText(
-      text, gfx::Range(0, 50), gfx::Range::InvalidRange(), range,
-      GrammarFragment(gfx::Range(0, 10), "abc"), std::nullopt);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  connection_->Flush();
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       SetSurroundingTextForLongTextWithGrammmarFragment) {
-  const std::u16string text(5000, u'あ');
-  constexpr gfx::Range range(2800, 3200);
-
-  std::string expected_sent_text;
-  gfx::Range expected_sent_range;
-  gfx::Range expected_fragment_range;
-  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-    // In the old protocol, the text sent as wayland protocol must be at
-    // most 4000 byte and long enough in the limitation.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
-    // The selection range must be relocated accordingly to the sent text.
-    expected_sent_range = gfx::Range(1398, 2598);
-    expected_fragment_range = gfx::Range(1098, 1128);
-  } else {
-    // In the new protocol, whole selection range and grammar fragment are
-    // sent with at most 500 bytes buffer.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(832, u'あ'));
-    expected_sent_range = gfx::Range(798, 1998);
-    expected_fragment_range = gfx::Range(498, 528);
-  }
-
-  PostToServerAndWait(
-      [expected_sent_text, expected_sent_range,
-       expected_fragment_range](wl::TestWaylandServerThread* server) {
-        EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                    SetSurroundingText(expected_sent_text, expected_sent_range))
-            .Times(1);
-        EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
-                    SetGrammarFragmentAtCursor(expected_fragment_range, "abc"))
-            .Times(1);
-      });
-
-  input_method_context_->SetSurroundingText(
-      text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), range,
-      GrammarFragment(gfx::Range(2700, 2710), "abc"), std::nullopt);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  connection_->Flush();
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       SetSurroundingTextForShortTextWithAutocorrect) {
-  const std::u16string text(50, u'あ');
-  constexpr gfx::Range range(20, 30);
-
-  const std::string kExpectedSentText(base::UTF16ToUTF8(text));
-  constexpr gfx::Range kExpectedSentRange(60, 90);
-
-  PostToServerAndWait([this, kExpectedSentText, kExpectedSentRange](
-                          wl::TestWaylandServerThread* server) {
-    // The text and range sent as wayland protocol must be same to the original
-    // text and range where the original text is shorter than 4000 byte.
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
-        .Times(1);
-    gfx::Range autocorrect_range;
-    if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-      // In older protocol, the autocorrection range is not converted.
-      autocorrect_range = gfx::Range(15, 18);
-    } else {
-      // In new protocol, it is byte offsets within the surrounding text.
-      autocorrect_range = gfx::Range(45, 54);
-    }
-
-    EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
-                SetAutocorrectInfo(autocorrect_range, gfx::Rect(10, 20)));
-  });
-
-  input_method_context_->SetSurroundingText(
-      text, gfx::Range(0, 50), gfx::Range::InvalidRange(), range, std::nullopt,
-      AutocorrectInfo{gfx::Range(15, 18), gfx::Rect(10, 20)});
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  connection_->Flush();
 }
 
 TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
@@ -985,8 +864,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
   });
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -1022,8 +900,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextInIncorrectOrder) {
   const gfx::Range range(3);
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 3),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   connection_->Flush();
 
   // 1. Delete the second character 'b'.
@@ -1058,8 +935,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextInIncorrectOrder) {
   // 3. Set surrounding text for step 1. Ideally this thould be called before
   // step 2, but the order could be different due to the timing issue.
   input_method_context_->SetSurroundingText(
-      u"aあ", gfx::Range(0, 2), gfx::Range::InvalidRange(), gfx::Range(2),
-      std::nullopt, std::nullopt);
+      u"aあ", gfx::Range(0, 2), gfx::Range::InvalidRange(), gfx::Range(2));
   connection_->Flush();
 
   // Surrounding text tracker should predict "a" instead of "aあ" here as that
@@ -1074,8 +950,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextInIncorrectOrder) {
 
   // 4. Set surrounding text for step 2.
   input_method_context_->SetSurroundingText(
-      u"a", gfx::Range(0, 1), gfx::Range::InvalidRange(), gfx::Range(1),
-      std::nullopt, std::nullopt);
+      u"a", gfx::Range(0, 1), gfx::Range::InvalidRange(), gfx::Range(1));
   connection_->Flush();
 
   EXPECT_EQ(
@@ -1093,9 +968,9 @@ TEST_P(WaylandInputMethodContextTest,
 
   // 1. Set CommitString as a initial state. Cursor is between "Commit" and
   // "String".
-  input_method_context_->SetSurroundingText(
-      u"CommitString", gfx::Range(0, 12), gfx::Range::InvalidRange(),
-      gfx::Range(6), std::nullopt, std::nullopt);
+  input_method_context_->SetSurroundingText(u"CommitString", gfx::Range(0, 12),
+                                            gfx::Range::InvalidRange(),
+                                            gfx::Range(6));
   connection_->Flush();
 
   EXPECT_EQ(
@@ -1138,8 +1013,7 @@ TEST_P(WaylandInputMethodContextTest,
   // 4. Set surrounding text for step 2. Ideally this should be sent before step
   // 3.
   input_method_context_->SetSurroundingText(
-      u"String", gfx::Range(0, 6), gfx::Range::InvalidRange(), gfx::Range(0),
-      std::nullopt, std::nullopt);
+      u"String", gfx::Range(0, 6), gfx::Range::InvalidRange(), gfx::Range(0));
   connection_->Flush();
 
   EXPECT_EQ(
@@ -1149,9 +1023,9 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(7));
 
   // 5. Set surrounding text for step 3.
-  input_method_context_->SetSurroundingText(
-      u"UpdatedString", gfx::Range(0, 13), gfx::Range::InvalidRange(),
-      gfx::Range(7), std::nullopt, std::nullopt);
+  input_method_context_->SetSurroundingText(u"UpdatedString", gfx::Range(0, 13),
+                                            gfx::Range::InvalidRange(),
+                                            gfx::Range(7));
   connection_->Flush();
 
   EXPECT_EQ(
@@ -1403,8 +1277,7 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
                 SetSurroundingText("ab😀cあdef", gfx::Range(7, 10)));
   });
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 9),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -1438,8 +1311,7 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
 TEST_P(WaylandInputMethodContextTest,
        OnConfirmCompositionTextExtendedKeepSelectionNoComposition) {
   input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4),
-      std::nullopt, std::nullopt);
+      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -1459,8 +1331,7 @@ TEST_P(WaylandInputMethodContextTest,
 TEST_P(WaylandInputMethodContextTest,
        OnConfirmCompositionTextExtendedKeepSelectionComposition) {
   input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2),
-      std::nullopt, std::nullopt);
+      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
   input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
   connection_->Flush();
 
@@ -1481,8 +1352,7 @@ TEST_P(WaylandInputMethodContextTest,
 TEST_P(WaylandInputMethodContextTest,
        OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition) {
   input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4),
-      std::nullopt, std::nullopt);
+      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -1504,8 +1374,7 @@ TEST_P(WaylandInputMethodContextTest,
 TEST_P(WaylandInputMethodContextTest,
        OnConfirmCompositionTextExtendedDontKeepSelectionComposition) {
   input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2),
-      std::nullopt, std::nullopt);
+      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
   input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
   connection_->Flush();
 
@@ -1552,8 +1421,7 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionTextForLongRange) {
                 SetSurroundingText(expected_sent_text, expected_sent_range));
   });
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -1599,8 +1467,7 @@ TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
   });
 
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 7),
-                                            gfx::Range::InvalidRange(), range,
-                                            std::nullopt, std::nullopt);
+                                            gfx::Range::InvalidRange(), range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -1656,8 +1523,7 @@ TEST_P(WaylandInputMethodContextTest,
   });
 
   input_method_context_->SetSurroundingText(
-      u16_text, gfx::Range(0, 1), gfx::Range::InvalidRange(), u16_range,
-      std::nullopt, std::nullopt);
+      u16_text, gfx::Range(0, 1), gfx::Range::InvalidRange(), u16_range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       u16_text);
@@ -1700,8 +1566,7 @@ TEST_P(WaylandInputMethodContextTest,
   });
 
   input_method_context_->SetSurroundingText(
-      u16_text, gfx::Range(0, 2), gfx::Range::InvalidRange(), u16_range,
-      std::nullopt, std::nullopt);
+      u16_text, gfx::Range(0, 2), gfx::Range::InvalidRange(), u16_range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       u16_text);
@@ -2087,7 +1952,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
               SetSurroundingText(kExpectedSentText, kExpectedSentRange,
                                  kExpectedSentRange));
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 50), range,
-                                            range, std::nullopt, std::nullopt);
+                                            range);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -2109,7 +1974,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
               SetSurroundingText(kExpectedSentText, kExpectedSentRange,
                                  kExpectedSentRange));
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000), kRange,
-                                            kRange, std::nullopt, std::nullopt);
+                                            kRange);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -2132,8 +1997,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
               SetSurroundingText(kExpectedSentText, gfx::Range::InvalidRange(),
                                  kExpectedSentSelectionRange));
   input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            kCompositionRange, kSelectionRange,
-                                            std::nullopt, std::nullopt);
+                                            kCompositionRange, kSelectionRange);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -2146,9 +2010,8 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   EXPECT_CALL(*mock_wrapper_,
               SetSurroundingText(kExpectedSentText, gfx::Range::InvalidRange(),
                                  kExpectedSentSelectionRange));
-  input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            kCompositionRange2, kSelectionRange,
-                                            std::nullopt, std::nullopt);
+  input_method_context_->SetSurroundingText(
+      text, gfx::Range(0, 5000), kCompositionRange2, kSelectionRange);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -2163,8 +2026,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
 
   EXPECT_CALL(*mock_wrapper_, SetSurroundingText(_, _, _)).Times(0);
   input_method_context_->SetSurroundingText(
-      text, gfx::Range(0, 5000), gfx::Range(6000, 7000), kSelectionRange,
-      std::nullopt, std::nullopt);
+      text, gfx::Range(0, 5000), gfx::Range(6000, 7000), kSelectionRange);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
@@ -2186,8 +2048,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
                                  kExpectedSentSelectionRange));
   // invalid composition range
   input_method_context_->SetSurroundingText(
-      text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), kSelectionRange,
-      std::nullopt, std::nullopt);
+      text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), kSelectionRange);
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);

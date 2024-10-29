@@ -53,13 +53,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // See also WaylandEventSource::OnKeyboardKeyEvent about how the flag is set.
   bool IsPeekKeyEvent(const KeyEvent& key_event) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
-  void SetSurroundingText(
-      const std::u16string& text,
-      const gfx::Range& text_range,
-      const gfx::Range& composition_range,
-      const gfx::Range& selection_range,
-      const std::optional<GrammarFragment>& fragment,
-      const std::optional<AutocorrectInfo>& autocorrect) override;
+  void SetSurroundingText(const std::u16string& text,
+                          const gfx::Range& text_range,
+                          const gfx::Range& composition_range,
+                          const gfx::Range& selection_range) override;
   void WillUpdateFocus(TextInputClient* old_client,
                        TextInputClient* new_client) override;
   void UpdateFocus(bool has_client,
