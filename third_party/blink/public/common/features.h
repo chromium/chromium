@@ -1646,6 +1646,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageCrossOriginScript);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageCreateWorkletUseContextOriginByDefault);
 
+// For the Shared Storage API, allow custom data origins in `createWorklet`.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSharedStorageCreateWorkletCustomDataOrigin);
+
 // For the Shared Storage API, allows saved queries in `selectURL()`.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageSelectURLSavedQueries);
 
