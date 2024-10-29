@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -82,15 +83,15 @@ class PassthroughProgramCacheTest : public GpuServiceTest,
     if (blob_size <= 0)
       return "";
 
-    // Note: after C++17, this can directly be a std::string as it has a
-    // non-const `char *data()` member.
-    std::vector<uint8_t> binary_blob(blob_size);
+    // Directly use std::string for the blob.
+    std::string binary_blob;
+    binary_blob.resize(blob_size);
     EGLsizeiANDROID blob_size_after = PassthroughProgramCache::BlobCacheGet(
         binary_key.data(), key_size, binary_blob.data(), blob_size);
 
     EXPECT_EQ(blob_size, blob_size_after);
 
-    return std::string(binary_blob.begin(), binary_blob.end());
+    return binary_blob;
   }
 
   std::unique_ptr<PassthroughProgramCache> cache_;
