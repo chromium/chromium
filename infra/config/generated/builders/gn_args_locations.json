@@ -117,6 +117,7 @@
     "mac-build-perf-developer": "build/mac-build-perf-developer/gn-args.json",
     "mac-build-perf-ninja": "build/mac-build-perf-ninja/gn-args.json",
     "mac-build-perf-siso": "build/mac-build-perf-siso/gn-args.json",
+    "win-build-perf-ci-siso": "build/win-build-perf-ci-siso/gn-args.json",
     "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json",
     "win-build-perf-ninja": "build/win-build-perf-ninja/gn-args.json",
     "win-build-perf-siso": "build/win-build-perf-siso/gn-args.json"

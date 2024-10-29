@@ -117,6 +117,17 @@ def cq_build_perf_builder(description_html, **kwargs):
         **kwargs
     )
 
+def ci_build_perf_builder(description_html, **kwargs):
+    # Use CI RBE instance to simulate CI builds.
+    if not kwargs.get("siso_configs"):
+        kwargs["siso_configs"] = ["builder", "remote-link"]
+    return ci.builder(
+        description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
+        siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+        siso_project = siso.project.DEFAULT_TRUSTED,
+        **kwargs
+    )
+
 cq_build_perf_builder(
     name = "android-build-perf-ninja",
     description_html = "This builder measures Android CQ build performance with Ninja.<br/>" +
@@ -307,6 +318,37 @@ cq_build_perf_builder(
     console_view_entry = consoles.console_view_entry(
         category = "windows",
         short_name = "siso",
+    ),
+)
+
+ci_build_perf_builder(
+    name = "win-build-perf-ci-siso",
+    description_html = "This builder measures Windows CI build performance with Siso.<br/>" +
+                       "The build configs and the bot specs should be in sync with " + linkify_builder("ci", " Win x64 Builder", "chromium"),
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient"]),
+        "reproxy": "ci/Win x64 Builder",
+    },
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "windows",
+        short_name = "sisoci",
     ),
 )
 
