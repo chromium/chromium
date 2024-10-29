@@ -34,6 +34,7 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
     GAIA_PASSWORD_FALLBACK,
     GAIA_PASSWORD_CHOICE,
     GAIA_PASSWORD_ENTERPRISE,
+    PIN_RESET,
   };
 
   static std::string GetResultString(Result result);

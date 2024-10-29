@@ -1560,6 +1560,42 @@ const KNOWN_SCREENS: ScreenDefType[] = [
           usingPinAsMainSignInFactor: false,
         },
       },
+      {
+        id: 'pin-recovery',
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
+          isRecoveryMode: true,
+        },
+      },
+      {
+        id: 'pin-recovery-child',
+        data: {
+          authToken: '',
+          isChildAccount: true,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
+          isRecoveryMode: true,
+        },
+      },
+      {
+        id: 'pin-recovery-done',
+        trigger: (screen: any) => {
+          screen.setUIStep('done');
+        },
+        data: {
+          authToken: '',
+          isChildAccount: false,
+          hasLoginSupport: true,
+          usingPinAsMainSignInFactor: false,
+          isRecoveryMode: true,
+        },
+      },
+
+
+
     ],
   },
   {

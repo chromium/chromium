@@ -111,8 +111,7 @@ class WizardContext {
   enum class PinSetupMode {
     kSetupAsPrimaryFactor,
     kSetupAsSecondaryFactor,
-    // TODO(b/365059362) : Add support for recovery.
-    // kRecovery
+    kRecovery,
     kAlreadyPerformed,
   };
 

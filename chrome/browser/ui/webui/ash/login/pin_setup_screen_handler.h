@@ -26,7 +26,8 @@ class PinSetupScreenView {
   virtual void Show(const std::string& token,
                     bool is_child_account,
                     bool has_login_support,
-                    bool using_pin_as_main_factor) = 0;
+                    bool using_pin_as_main_factor,
+                    bool is_recovery_mode) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<PinSetupScreenView> AsWeakPtr() = 0;
@@ -53,7 +54,8 @@ class PinSetupScreenHandler final : public BaseScreenHandler,
   void Show(const std::string& token,
             bool is_child_account,
             bool has_login_support,
-            bool using_pin_as_main_factor) override;
+            bool using_pin_as_main_factor,
+            bool is_recovery_mode) override;
 
   base::WeakPtr<PinSetupScreenView> AsWeakPtr() override;
 

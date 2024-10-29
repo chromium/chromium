@@ -100,6 +100,12 @@ class PinSetup extends PinSetupBase {
         type: Boolean,
         value: false,
       },
+
+      // Whether the screen is being used for resetting the PIN during recovery.
+      isRecoveryMode: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -110,6 +116,7 @@ class PinSetup extends PinSetupBase {
   private hasLoginSupport: boolean;
   private usingPinAsMainSignInFactor: boolean;
   isChildAccount: boolean;
+  private isRecoveryMode: boolean;
 
   override get UI_STEPS() {
     return PinSetupState;
@@ -144,6 +151,7 @@ class PinSetup extends PinSetupBase {
     this.isChildAccount = data.isChildAccount;
     this.hasLoginSupport = data.hasLoginSupport;
     this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
+    this.isRecoveryMode = data.isRecoveryMode;
   }
 
   private onIsConfirmStepChanged(): void {

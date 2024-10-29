@@ -2460,6 +2460,17 @@ void WizardController::OnPasswordSelectionScreenExit(
       ShowPinSetupScreen();
       return;
     }
+    case PasswordSelectionScreen::Result::PIN_RESET: {
+      // User has PIN-only. This can only happen during the recovery path.
+      CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
+               WizardContext::AuthChangeFlow::kRecovery)
+          << "PasswordSelection exited with PIN_RESET result outside recovery.";
+      CHECK(features::IsAllowPasswordlessRecoveryEnabled());
+      wizard_context_->knowledge_factor_setup.pin_setup_mode =
+          WizardContext::PinSetupMode::kRecovery;
+      ShowPinSetupScreen();
+      return;
+    }
     case PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE:
     case PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED:
       ShowLocalPasswordSetupScreen();
@@ -2613,12 +2624,12 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
         wizard_context_->knowledge_factor_setup.pin_setup_mode =
             WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
         ShowPasswordSelectionScreen();
-        break;
+        return;
       case PinSetupScreen::Result::kDoneAsMainFactor:
         wizard_context_->knowledge_factor_setup.pin_setup_mode =
             WizardContext::PinSetupMode::kAlreadyPerformed;
         ShowFingerprintSetupScreen();
-        break;
+        return;
       // These are emitted when the screen is surfaced at the end of the flow,
       // offering PIN as an additional factor.
       case PinSetupScreen::Result::kDoneAsSecondaryFactor:
@@ -2626,7 +2637,15 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
       case PinSetupScreen::Result::kNotApplicable:
       case PinSetupScreen::Result::kTimedOut:
         FinishAuthFactorsSetup();
-        break;
+        return;
+      // Proceed into session when PIN is reset via recovery.
+      case PinSetupScreen::Result::kDoneRecoveryReset:
+        CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
+                 WizardContext::AuthChangeFlow::kRecovery);
+        CHECK(features::IsAllowPasswordlessRecoveryEnabled());
+        wizard_context_->knowledge_factor_setup.pin_setup_mode.reset();
+        ObtainContextAndLoginAuthenticated();
+        return;
     }
   } else {
     FinishAuthFactorsSetup();

@@ -1692,6 +1692,21 @@
   <message name="IDS_DISCOVER_PIN_SETUP_DONE" desc="Label for the done button on the success screen in 'PIN-unlock' setup dialog.">
     Done
   </message>
+  <message name="IDS_DISCOVER_PIN_RESET_TITLE" desc="A title of the dialog asking the user to reset their PIN">
+    Reset your PIN
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_SUBTITLE" desc="A subtitle of the dialog asking the user to reset their PIN">
+    You can use this PIN to sign in to your device
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_SUBTITLE_CHILD" desc="A subtitle of the dialog asking the user to reset their PIN">
+    Your child can use this PIN to sign in to their device
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_DONE_TITLE" desc="A title of the dialog that is shown to the user when their PIN has been updated during recovery.">
+    Your PIN has been updated
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_DONE_TITLE_CHILD" desc="A title of the dialog that is shown to the user's child when their PIN has been updated during recovery.">
+    Your child’s PIN has been updated
+  </message>
   <message name="IDS_APP_START_PREPARING_PROFILE_MESSAGE" desc="Message displayed while preparing profile in which the app will be run.">
     Preparing app profile...
   </message>

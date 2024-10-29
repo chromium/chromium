@@ -3087,6 +3087,13 @@ BASE_FEATURE(kAllowPasswordlessSetup,
              "AllowPasswordlessSetup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature controls whether or not after ChromeOS recovery
+// the user can reset PIN as their main factor. If disabled, they will set
+// a password as their main factor.
+BASE_FEATURE(kAllowPasswordlessRecovery,
+             "AllowPasswordlessRecovery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This features controls whether or not pin will be setup as timeout based
 // lockout or attempt based lockout.
 BASE_FEATURE(kAllowPinTimeoutSetup,
@@ -5031,6 +5038,10 @@ bool IsUseAuthPanelInSessionEnabled() {
 
 bool IsAllowPasswordlessSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
+}
+
+bool IsAllowPasswordlessRecoveryEnabled() {
+  return base::FeatureList::IsEnabled(kAllowPasswordlessRecovery);
 }
 
 bool IsLocalAuthenticationWithPinEnabled() {

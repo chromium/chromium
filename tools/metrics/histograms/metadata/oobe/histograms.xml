@@ -388,6 +388,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Password-selection.GaiaPasswordFallback"/>
   <variant name="Password-selection.LocalPasswordChoice"/>
   <variant name="Password-selection.LocalPasswordForced"/>
+  <variant name="Password-selection.PinReset"/>
   <variant name="Perks-discovery.Error"/>
   <variant name="Perks-discovery.Next"/>
   <variant name="Perks-discovery.Timeout"/>
@@ -399,6 +400,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Personalized-apps.Timeout"/>
   <variant name="Pin-setup.Done"/>
   <variant name="Pin-setup.DoneAsMainFactor"/>
+  <variant name="Pin-setup.DoneRecoveryReset"/>
   <variant name="Pin-setup.Skipped"/>
   <variant name="Pin-setup.TimedOut"/>
   <variant name="Pin-setup.UserChosePassword"/>

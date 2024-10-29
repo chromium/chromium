@@ -33,6 +33,7 @@ class PinSetupScreen : public BaseScreen {
     kTimedOut,
     kUserChosePassword,
     kDoneAsMainFactor,
+    kDoneRecoveryReset,
   };
 
   // Detailed reason describing why the screen is being skipped.
