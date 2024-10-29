@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -64,7 +63,7 @@
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -140,7 +139,7 @@ class UninstallCheckboxView : public views::View,
 BEGIN_METADATA(UninstallCheckboxView)
 END_METADATA
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsArcShortcutApp(Profile* profile, const std::string& app_id) {
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
   DCHECK(arc_prefs);
@@ -156,7 +155,7 @@ std::u16string GetWindowTitleForApp(Profile* profile,
                                     apps::AppType app_type,
                                     const std::string& app_id,
                                     const std::string& app_name) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, all app types exist, but Arc shortcut apps get the regular
   // extension uninstall title.
   if (app_type == apps::AppType::kArc && IsArcShortcutApp(profile, app_id)) {
@@ -274,15 +273,16 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kStandaloneBrowserChromeApp:
       // Do nothing special for kStandaloneBrowserChromeApp.
       break;
+    // TODO(crbug.com/376071296): Clean up the switch/case items below.
     case apps::AppType::kArc:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       InitializeViewForArcApp(profile, app_id);
       break;
 #else
       NOTREACHED();
 #endif
     case apps::AppType::kPluginVm:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       AddSubtitle(
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_UNINSTALL_PROMPT_BODY));
       break;
@@ -290,7 +290,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       NOTREACHED();
 #endif
     case apps::AppType::kBorealis:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       if (app_id == borealis::kClientAppId) {
         AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY));
@@ -303,7 +303,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       NOTREACHED();
 #endif
     case apps::AppType::kCrostini:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       AddSubtitle(l10n_util::GetStringUTF16(
           IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY));
       break;
@@ -311,7 +311,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       NOTREACHED();
 #endif
     case apps::AppType::kBruschetta:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // TODO(b/247636749): Implement Bruschetta uninstall.
       break;
 #else
@@ -485,7 +485,8 @@ void AppUninstallDialogView::LoadSubAppIds(const std::string& short_app_name,
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/376071296): Remove the crosapi code below.
+#if BUILDFLAG(IS_CHROMEOS)
   crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
       crosapi::CrosapiManager::Get()
           ->crosapi_ash()
@@ -562,7 +563,7 @@ void AppUninstallDialogView::InitializeViewForWebApp(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AppUninstallDialogView::InitializeViewForArcApp(
     Profile* profile,
     const std::string& app_id) {

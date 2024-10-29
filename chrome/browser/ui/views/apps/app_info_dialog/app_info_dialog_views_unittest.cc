@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -33,8 +32,9 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/app/arc_app_constants.h"
+// TODO(crbug.com/376071296): check whether this `nogncheck` is needed.
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -57,7 +57,7 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
 }
 
 }  // namespace
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace test {
 
@@ -98,7 +98,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   // Overridden from testing::Test:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Sets up a fake user manager over |BrowserWithTestWindowTest| user
     // manager.
     arc_test_ =
@@ -124,7 +124,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     CloseAppInfo();
     extension_ = nullptr;
     chrome_app_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     chrome_shelf_controller_.reset();
     shelf_model_.reset();
     if (arc_test_) {
@@ -205,11 +205,11 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
       extensions::TestExtensionEnvironment::Type::
           kInheritExistingTaskEnvironment,
       extensions::TestExtensionEnvironment::ProfileCreationType::kNoCreate,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       extensions::TestExtensionEnvironment::OSSetupType::kNoSetUp,
 #endif
   };
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<ArcAppTest> arc_test_;
@@ -261,7 +261,7 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
     // tearing down arc_test user_manager.
     base::RunLoop().RunUntilIdle();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Avoid a race condition when tearing down arc_test_ and deleting the user
     // manager.
     chrome_shelf_controller_.reset();
@@ -337,7 +337,7 @@ TEST_F(AppInfoDialogViewsTest, ViewInStore) {
   EXPECT_FALSE(widget_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
   ShowAppInfo(app_constants::kChromeAppId);
   EXPECT_FALSE(widget_->IsClosed());
