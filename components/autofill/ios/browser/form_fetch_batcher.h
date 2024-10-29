@@ -32,8 +32,12 @@ class FormFetchBatcher {
   ~FormFetchBatcher();
 
   // Pushes a request into the current batch. Automatically schedules a new
-  // batch if there isn't already one. Consumes the request.
-  void PushRequest(FormFetchCompletion&& fetch_request);
+  // batch if there isn't already one. Consumes the request. Applies
+  // `form_name_filter` filtering which will filter forms by name when
+  // specified.
+  void PushRequest(
+      FormFetchCompletion&& fetch_request,
+      std::optional<std::u16string> form_name_filter = std::nullopt);
 
  private:
   // Runs an extraction of forms in the frame's document to complete the current

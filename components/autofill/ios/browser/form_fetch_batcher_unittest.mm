@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -30,15 +31,35 @@ void FormFetchCompletionCallback(
   *complete_ptr = true;
 }
 
+autofill::FormData MakeTestFormData(const std::u16string& name) {
+  autofill::FormData form_data;
+  form_data.set_name(name);
+  return form_data;
+}
+
 }  // namespace
 
 // AutofillDriverIosBridge used for testing. Provides a simple implementation of
 // the methods that are used during testing, e.g. call the completion block upon
 // calling -fetchFormsFiltered.
 @interface TestAutofillDriverIOSBridge : NSObject <AutofillDriverIOSBridge>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithForms:(std::vector<autofill::FormData>)forms;
+
 @end
 
-@implementation TestAutofillDriverIOSBridge
+@implementation TestAutofillDriverIOSBridge {
+  std::vector<autofill::FormData> _forms;
+}
+
+- (instancetype)initWithForms:(std::vector<autofill::FormData>)forms {
+  if ((self = [super init])) {
+    _forms = std::move(forms);
+  }
+  return self;
+}
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)form
          inFrame:(web::WebFrame*)frame {
@@ -66,7 +87,7 @@ void FormFetchCompletionCallback(
                   withName:(const std::u16string&)formName
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
-  std::move(completionHandler).Run(/*forms=*/{});
+  std::move(completionHandler).Run(_forms);
 }
 
 @end
@@ -74,7 +95,9 @@ void FormFetchCompletionCallback(
 class FormFetchBatcherTest : public PlatformTest {
  protected:
   FormFetchBatcherTest()
-      : test_bridge_([[TestAutofillDriverIOSBridge alloc] init]),
+      : test_bridge_([[TestAutofillDriverIOSBridge alloc]
+            initWithForms:{MakeTestFormData(u"form1"),
+                           MakeTestFormData(u"form2")}]),
         fake_web_frame_(
             web::FakeWebFrame::Create("main_frame_id", true, GURL())),
         batcher_(test_bridge_,
@@ -94,7 +117,7 @@ class FormFetchBatcherTest : public PlatformTest {
 TEST_F(FormFetchBatcherTest, Batch) {
   // Completion trackers, true when the request is completed.
   bool r1_completed = false;
-  bool r2_completed = FALSE;
+  bool r2_completed = false;
 
   // Verify that there is not any scheduled batch at this point, not until the
   // first request push.
@@ -212,4 +235,31 @@ TEST_F(FormFetchBatcherTest, Batch_OnlyWhenNeeded) {
   histogram_tester_.ExpectTotalCount(
       "Autofill.iOS.FormExtraction.ForScan.BatchSize",
       /*exprected_count=*/0);
+}
+
+// Tests fetch filtered requests.
+TEST_F(FormFetchBatcherTest, Filtered) {
+  // Hold the fetched forms for each request.
+  std::vector<autofill::FormData> r1_forms;
+  std::vector<autofill::FormData> r2_forms;
+
+  auto callback = [](std::vector<autofill::FormData>* captured_forms,
+                     std::optional<std::vector<autofill::FormData>> result) {
+    CHECK(result);
+    *captured_forms = *result;
+  };
+
+  // Push request #1 (r1).
+  { batcher_.PushRequest(base::BindOnce(callback, &r1_forms), u"form1"); }
+  // Push request #2 (r2).
+  { batcher_.PushRequest(base::BindOnce(callback, &r2_forms), u"form2"); }
+
+  task_environment_.FastForwardBy(kBatchPeriodMs + base::Milliseconds(50));
+
+  // Verify that only the forms matching the name specified in the request are
+  // returned for each request.
+  EXPECT_THAT(r1_forms, testing::ElementsAre(testing::Property(
+                            &autofill::FormData::name, u"form1")));
+  EXPECT_THAT(r2_forms, testing::ElementsAre(testing::Property(
+                            &autofill::FormData::name, u"form2")));
 }

@@ -180,6 +180,11 @@ class AutofillDriverIOS final : public AutofillDriver,
   // Scans to find all eligible forms in the frame's document.
   void ScanForms();
 
+  // Fetches forms filtered by `form_name` and calls `caller_completion` with
+  // the form fetch results upon completion of the fetch.
+  void FetchFromsFilteredByName(const std::u16string& form_name,
+                                FormFetchCompletion completion);
+
  private:
   friend class AutofillDriverIOSTestApi;
 
@@ -291,6 +296,10 @@ class AutofillDriverIOS final : public AutofillDriver,
 
   // FetchRequestBatcher used exclusively for batching document form scans.
   FormFetchBatcher document_scan_batcher_;
+
+  // FetchRequestBatcher used exclusively for batching filtered document form
+  // scans.
+  FormFetchBatcher document_filtered_scan_batcher_;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

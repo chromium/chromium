@@ -51,3 +51,13 @@ BASE_FEATURE(kAutofillThrottleDocumentFormScanIos,
 extern const base::FeatureParam<int> kAutofillDocumentFormScanPeriodMs = {
     &kAutofillThrottleDocumentFormScanIos,
     /*name=*/"period-ms", /*default_value=*/250};
+
+// Throttles the filtered document form scanning done for taking a snapshot of
+// specific forms on the spot. Throttles with scheduled batches.
+BASE_FEATURE(kAutofillThrottleFilteredDocumentFormScanIos,
+             "AutofillThrottleFilteredDocumentFormScanIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Minimal period of time between the filtered document form scanning batches.
+extern const base::FeatureParam<int> kAutofillFilteredDocumentFormScanPeriodMs =
+    {&kAutofillThrottleFilteredDocumentFormScanIos,
+     /*name=*/"period-ms", /*default_value=*/250};

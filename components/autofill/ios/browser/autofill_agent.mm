@@ -267,6 +267,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     return;
   }
 
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
+  if (!driver) {
+    completion(NO);
+    return;
+  }
+
   const auto callback = [](AutofillAgent* agent,
                            FormSuggestionProviderQuery* formQuery,
                            base::WeakPtr<web::WebFrame> frame,
@@ -289,12 +296,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Re-extract the active form and field only. All forms with at least one
   // input element are considered because key/value suggestions are offered
   // even on short forms.
-  [self fetchFormsFiltered:YES
-                  withName:SysNSStringToUTF16(formQuery.formName)
-                   inFrame:frame
-         completionHandler:base::BindOnce(callback, self, formQuery,
-                                          frame->AsWeakPtr(),
-                                          webState->GetWeakPtr(), completion)];
+  driver->FetchFromsFilteredByName(
+      SysNSStringToUTF16(formQuery.formName),
+      base::BindOnce(callback, self, formQuery, frame->AsWeakPtr(),
+                     webState->GetWeakPtr(), completion));
 }
 
 - (void)retrieveSuggestionsForForm:(FormSuggestionProviderQuery*)formQuery
@@ -826,12 +831,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       };
 
   // Extract the active form and field only.
-  [self
-      fetchFormsFiltered:YES
-                withName:base::UTF8ToUTF16(params.form_name)
-                 inFrame:frame
-       completionHandler:base::BindOnce(callback, weakSelf, frame->AsWeakPtr(),
-                                        params.field_renderer_id)];
+  driver->FetchFromsFilteredByName(
+      base::UTF8ToUTF16(params.form_name),
+      base::BindOnce(callback, weakSelf, frame->AsWeakPtr(),
+                     params.field_renderer_id));
 }
 
 - (void)webState:(web::WebState*)webState

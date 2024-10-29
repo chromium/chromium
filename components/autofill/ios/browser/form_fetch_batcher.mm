@@ -4,9 +4,11 @@
 
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
 
+#include "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/ranges/algorithm.h"
 #import "base/task/task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/common/form_data.h"
@@ -15,6 +17,27 @@
 
 namespace autofill {
 
+namespace {
+// Filters the `forms` by `form_name`. No op if `form_name` is nullopt.
+// This filter is the equivalent of the form name filter
+// in autofill:ExtractFormData(). Will still filter if the `form_name` string is
+// empty as long as it is not nullopt.
+std::optional<std::vector<FormData>> ApplyFormFilterIfNeeded(
+    std::optional<std::u16string> form_name,
+    std::optional<std::vector<FormData>> forms) {
+  if (!forms || !form_name) {
+    return forms;
+  }
+
+  std::vector<FormData> filtered_forms;
+  base::ranges::copy_if(
+      *forms, std::back_inserter(filtered_forms),
+      [&](const std::u16string& name) { return name == *form_name; },
+      &FormData::name);
+  return filtered_forms;
+}
+}  // namespace
+
 FormFetchBatcher::FormFetchBatcher(id<AutofillDriverIOSBridge> bridge,
                                    base::WeakPtr<web::WebFrame> frame,
                                    base::TimeDelta batch_period)
@@ -22,14 +45,19 @@ FormFetchBatcher::FormFetchBatcher(id<AutofillDriverIOSBridge> bridge,
 
 FormFetchBatcher::~FormFetchBatcher() = default;
 
-void FormFetchBatcher::PushRequest(FormFetchCompletion&& fetch_request) {
+void FormFetchBatcher::PushRequest(
+    FormFetchCompletion&& completion,
+    std::optional<std::u16string> form_name_filter) {
   if (fetch_requests_.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FormFetchBatcher::Run, weak_factory_.GetWeakPtr()),
         batch_period_);
   }
-  fetch_requests_.emplace_back(std::move(fetch_request));
+
+  fetch_requests_.emplace_back(
+      base::BindOnce(&ApplyFormFilterIfNeeded, std::move(form_name_filter))
+          .Then(std::move(completion)));
 }
 
 void FormFetchBatcher::Run() {

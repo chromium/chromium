@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "base/containers/to_vector.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -56,6 +57,10 @@ base::TimeDelta GetDocumentFormScanPeriod() {
   return base::Milliseconds(kAutofillDocumentFormScanPeriodMs.Get());
 }
 
+base::TimeDelta GetFilteredDocumentFormScanPeriod() {
+  return base::Milliseconds(kAutofillFilteredDocumentFormScanPeriodMs.Get());
+}
+
 }  // namespace
 
 // static
@@ -92,7 +97,11 @@ AutofillDriverIOS::AutofillDriverIOS(
       router_(router),
       document_scan_batcher_(bridge,
                              web_frame ? web_frame->AsWeakPtr() : nullptr,
-                             GetDocumentFormScanPeriod()) {
+                             GetDocumentFormScanPeriod()),
+      document_filtered_scan_batcher_(
+          bridge,
+          web_frame ? web_frame->AsWeakPtr() : nullptr,
+          GetFilteredDocumentFormScanPeriod()) {
   manager_observation_.Observe(manager_.get());
 
   if (IsAcrossIframesEnabled()) {
@@ -313,6 +322,24 @@ void AutofillDriverIOS::ScanForms() {
                         inFrame:web_frame()
               completionHandler:base::BindOnce(callback, bridge_,
                                                web_frame()->AsWeakPtr())];
+  }
+}
+
+void AutofillDriverIOS::FetchFromsFilteredByName(
+    const std::u16string& form_name,
+    FormFetchCompletion completion) {
+  if (!web_frame()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kAutofillThrottleDocumentFormScanIos)) {
+    document_filtered_scan_batcher_.PushRequest(std::move(completion),
+                                                form_name);
+  } else {
+    [bridge_ fetchFormsFiltered:YES
+                       withName:form_name
+                        inFrame:web_frame()
+              completionHandler:std::move(completion)];
   }
 }
 
