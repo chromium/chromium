@@ -71,7 +71,8 @@ enum class OverviewEndAction {
   kWindowDeactivating,
   kFullRestore,
   kPine,
-  kMaxValue = kPine,
+  kCoral,
+  kMaxValue = kCoral,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 

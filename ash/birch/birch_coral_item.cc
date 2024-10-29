@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "base/barrier_callback.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -137,11 +138,14 @@ void BirchCoralItem::PerformAction() {
   coral::mojom::GroupPtr group =
       BirchCoralProvider::Get()->ExtractGroupById(group_id_);
 
-  // TODO(http://b/365839465): Handle post-login case.
   switch (source_) {
     case CoralSource::kPostLogin:
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
+      // End the Overview after restore.
+      // TODO(zxdan|sammie): Consider the restoring failed cases.
+      OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
+                                             OverviewEnterExitType::kNormal);
       break;
     case CoralSource::kInSession:
       Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
