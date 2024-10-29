@@ -166,10 +166,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     dataHolder.message = BuildMessage(@[
-      [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
-                                 l10n_util::GetNSString(
-                                     IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
-                                 l10n_util::GetNSString(IDS_LEARN_MORE)],
+      l10n_util::GetNSString(IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
       certificateDetails
     ]);
 
