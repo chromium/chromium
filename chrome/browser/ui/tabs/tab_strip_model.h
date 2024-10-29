@@ -587,6 +587,13 @@ class TabStripModel : public TabGroupController {
   std::vector<tab_groups::TabGroupId> GetGroupsDestroyedFromRemovingIndices(
       const std::vector<int>& indices) const;
 
+  // This should be called after GetGroupsDestroyedFromRemovingIndices(). Marks
+  // all groups in `group_ids` as closing. This is useful in the event you need
+  // to know if a group is currently closing or not such as when a grouped tab
+  // is closed which has an unload handler.
+  void MarkTabGroupsForClosing(
+      const std::vector<tab_groups::TabGroupId> group_ids);
+
   // There are multiple commands that close by indices. They all must check the
   // Group affiliation of the indices, confirm that they can delete groups, and
   // then perform the close of the indices. A bulk operation is denoted

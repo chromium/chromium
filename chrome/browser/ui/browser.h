@@ -831,6 +831,9 @@ class Browser : public TabStripModelObserver,
   Browser* GetBrowserForOpeningWebUi();
 
   StatusBubble* GetStatusBubbleForTesting();
+  UnloadController* GetUnloadControllerForTesting() {
+    return &unload_controller_;
+  }
 
   // Sets or clears the flags to force showing bookmark bar.
   void SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag);

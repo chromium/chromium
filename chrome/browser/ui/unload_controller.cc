@@ -13,6 +13,8 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -127,8 +129,14 @@ bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
     std::optional<tab_groups::TabGroupId> group =
         browser_->tab_strip_model()->GetTabGroupForTab(
             browser_->tab_strip_model()->GetIndexOfWebContents(contents));
-    if (group.has_value())
-      browser_->tab_strip_model()->GroupCloseStopped(group.value());
+    if (group.has_value()) {
+      TabGroup* const tab_group =
+          browser_->tab_strip_model()->group_model()->GetTabGroup(
+              group.value());
+      if (tab_group->IsGroupClosing()) {
+        browser_->tab_strip_model()->GroupCloseStopped(group.value());
+      }
+    }
   }
 
   if (!is_attempting_to_close_browser_) {
