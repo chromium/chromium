@@ -45,8 +45,7 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
       std::make_unique<babelorca::LiveCaptionControllerWrapperImpl>(
           live_caption_controller, std::move(caption_bubble_context)));
   return std::make_unique<BabelOrcaManager>(
-      std::move(translation_dispatcher), identity_manager, url_loader_factory,
-      std::move(controller_factory));
+      identity_manager, url_loader_factory, std::move(controller_factory));
 }
 
 // static
@@ -63,17 +62,14 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
       std::make_unique<babelorca::LiveCaptionControllerWrapperImpl>(
           live_caption_controller, std::move(caption_bubble_context)));
   return std::make_unique<BabelOrcaManager>(
-      std::move(translation_dispatcher), identity_manager, url_loader_factory,
-      std::move(controller_factory));
+      identity_manager, url_loader_factory, std::move(controller_factory));
 }
 
 BabelOrcaManager::BabelOrcaManager(
-    std::unique_ptr<captions::TranslationDispatcher> translation_dispatcher,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     ControllerFactory controller_factory)
-    : translation_dispatcher_(std::move(translation_dispatcher)),
-      client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+    : client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       token_manager_(
           std::make_unique<babelorca::OAuthTokenFetcher>(identity_manager)),
       authed_client_(

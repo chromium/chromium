@@ -56,20 +56,19 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      captions::LiveCaptionController* live_caption_controller,
-      std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+      ::captions::LiveCaptionController* live_caption_controller,
+      std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer);
 
   static std::unique_ptr<BabelOrcaManager> CreateAsConsumer(
       std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      captions::LiveCaptionController* live_caption_controller,
-      std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+      ::captions::LiveCaptionController* live_caption_controller,
+      std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       const std::string& gaia_id);
 
   BabelOrcaManager(
-      std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ControllerFactory controller_factory);
@@ -101,7 +100,6 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   std::optional<std::string> sender_email() const override;
 
  private:
-  std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher_;
   const std::string client_uuid_;
   babelorca::TokenManagerImpl token_manager_;
   babelorca::TachyonAuthedClientImpl authed_client_;

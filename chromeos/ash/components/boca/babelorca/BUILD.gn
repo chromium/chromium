@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 static_library("babelorca") {
   sources = [
+    "babel_orca_caption_translator.cc",
+    "babel_orca_caption_translator.h",
     "babel_orca_consumer.cc",
     "babel_orca_consumer.h",
     "babel_orca_controller.h",
@@ -17,6 +19,7 @@ static_library("babelorca") {
     "babel_orca_producer.cc",
     "babel_orca_producer.h",
     "babel_orca_speech_recognizer.h",
+    "babel_orca_translation_dispatcher.h",
     "live_caption_controller_wrapper.h",
     "live_caption_controller_wrapper_impl.cc",
     "live_caption_controller_wrapper_impl.h",
@@ -66,6 +69,7 @@ static_library("babelorca") {
     "//chromeos/ash/services/boca/babelorca/mojom",
     "//components/live_caption",
     "//components/live_caption:live_translate",
+    "//components/live_caption:utils",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
@@ -105,6 +109,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "babel_orca_caption_translator_unittest.cc",
     "babel_orca_consumer_unittest.cc",
     "babel_orca_manager_unittest.cc",
     "babel_orca_producer_unittest.cc",

@@ -149,7 +149,6 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>(
-            /*translation_dispatcher=*/nullptr,
             identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
             GetBabelOrcaControllerFactory()));
@@ -189,7 +188,6 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>(
-            /*translation_dispatcher=*/nullptr,
             identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
             GetBabelOrcaControllerFactory()));
