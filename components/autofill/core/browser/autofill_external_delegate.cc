@@ -642,10 +642,13 @@ void AutofillExternalDelegate::DidSelectSuggestion(
                                    /*field_type_used=*/std::nullopt);
       break;
     case SuggestionType::kIbanEntry:
+      // Always shows the masked IBAN value as the preview of the suggestion.
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kPreview,
           mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
-          suggestion.main_text.value, suggestion.type, IBAN_VALUE);
+          suggestion.labels.empty() ? suggestion.main_text.value
+                                    : suggestion.labels[0][0].value,
+          suggestion.type, IBAN_VALUE);
       break;
     case SuggestionType::kMerchantPromoCodeEntry:
       manager_->FillOrPreviewField(

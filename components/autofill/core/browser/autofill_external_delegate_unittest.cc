@@ -1176,10 +1176,10 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
           _));
   std::vector<Suggestion> suggestions;
   Iban iban = test::GetLocalIban();
-  suggestions.emplace_back(
-      /*main_text=*/iban.GetIdentifierStringForAutofillDisplay(),
-      SuggestionType::kIbanEntry);
-  suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
+  suggestions.emplace_back(/*main_text=*/u"My doctor's IBAN",
+                           SuggestionType::kIbanEntry);
+  suggestions[0].labels = {
+      {Suggestion::Text(iban.GetIdentifierStringForAutofillDisplay())}};
   suggestions[0].payload = Suggestion::Guid(iban.guid());
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
@@ -1200,10 +1200,10 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  iban.value(), SuggestionType::kIbanEntry,
                                  std::optional(IBAN_VALUE)));
-  Suggestion suggestion(iban.GetIdentifierStringForAutofillDisplay(),
-                        SuggestionType::kIbanEntry);
+  Suggestion suggestion(u"My doctor's IBAN", SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::Guid(iban.guid());
-  suggestion.labels = {{Suggestion::Text(u"My doctor's IBAN")}};
+  suggestion.labels = {
+      {Suggestion::Text(iban.GetIdentifierStringForAutofillDisplay())}};
   EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetIbanManager(),
               OnSingleFieldSuggestionSelected(suggestion));
   ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
