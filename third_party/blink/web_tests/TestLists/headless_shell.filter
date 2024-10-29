@@ -40,6 +40,7 @@ external/wpt/ecmascript/*
 external/wpt/fullscreen/*
 external/wpt/js*
 external/wpt/longtask-timing/*
+external/wpt/media*
 external/wpt/picture-in-picture/*
 external/wpt/preload/*
 external/wpt/referrer-policy/*
@@ -57,6 +58,9 @@ virtual/float16array-enabled/external/wpt/xhr/*
 virtual/gpu/external/wpt/*
 virtual/keepalive-in-browser-migration/external/wpt/xhr/*
 virtual/longtask-from-loaf/external/wpt/*
+virtual/media-foundation-for-clear-frameserver/*
+virtual/media-gpu-accelerated/*
+virtual/oopr-canvas2d/external/wpt/mediacapture-record/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/threaded/external/wpt/scheduler/*
