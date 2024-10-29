@@ -37,6 +37,8 @@ using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
 using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+using ::testing::UnorderedElementsAreArray;
 
 MATCHER_P(IsValidAndHolds, v, "") {
   if (!arg.IsValid()) {
@@ -464,15 +466,18 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
       },
   };
 
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              internal::GetFakeReportsForSequenceIndex(
-                  TriggerSpecs(test_case.source_type,
-                               *EventReportWindows::FromDefaults(
-                                   base::Days(30), test_case.source_type),
-                               MaxEventLevelReports(test_case.source_type)),
-                  test_case.sequence_index))
-        << test_case.sequence_index;
+  for (int i = 0; const auto& test_case : kTestCases) {
+    SCOPED_TRACE(i);
+
+    EXPECT_THAT(internal::GetFakeReportsForSequenceIndex(
+                    TriggerSpecs(test_case.source_type,
+                                 *EventReportWindows::FromDefaults(
+                                     base::Days(30), test_case.source_type),
+                                 MaxEventLevelReports(test_case.source_type)),
+                    test_case.sequence_index),
+                ValueIs(UnorderedElementsAreArray(test_case.expected)));
+
+    ++i;
   }
 }
 
