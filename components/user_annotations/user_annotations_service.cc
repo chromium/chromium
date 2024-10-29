@@ -66,7 +66,7 @@ void ProcessEntryRetrieval(
     std::move(callback).Run({});
     return;
   }
-  std::move(callback).Run(user_annotations.value());
+  std::move(callback).Run(std::move(user_annotations).value());
 }
 
 void RecordRemoveEntryResult(UserAnnotationsExecutionResult result) {
