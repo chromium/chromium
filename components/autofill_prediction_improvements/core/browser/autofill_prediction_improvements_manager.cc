@@ -653,10 +653,9 @@ void AutofillPredictionImprovementsManager::
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
-    autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback) {
+    UserFeedback feedback) {
   if (form_filling_predictions_model_execution_id_ &&
-      feedback == autofill::AutofillPredictionImprovementsDelegate::
-                      UserFeedback::kThumbsDown) {
+      feedback == UserFeedback::kThumbsDown) {
     client_->TryToOpenFeedbackPage(
         *form_filling_predictions_model_execution_id_);
   }
@@ -665,10 +664,8 @@ void AutofillPredictionImprovementsManager::UserFeedbackReceived(
 void AutofillPredictionImprovementsManager::
     SaveAutofillPredictionsUserFeedbackReceived(
         const std::string& model_execution_id,
-        autofill::AutofillPredictionImprovementsDelegate::UserFeedback
-            feedback) {
-  if (feedback == autofill::AutofillPredictionImprovementsDelegate::
-                      UserFeedback::kThumbsDown) {
+        UserFeedback feedback) {
+  if (feedback == UserFeedback::kThumbsDown) {
     client_->TryToOpenFeedbackPage(model_execution_id);
   }
 }

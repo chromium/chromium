@@ -31,10 +31,7 @@ class MockAutofillPredictionImprovementsDelegate
               ShouldProvidePredictionImprovements,
               (const GURL& url),
               (const override));
-  MOCK_METHOD(void,
-              UserFeedbackReceived,
-              (AutofillPredictionImprovementsDelegate::UserFeedback feedback),
-              (override));
+  MOCK_METHOD(void, UserFeedbackReceived, (UserFeedback feedback), (override));
   MOCK_METHOD(bool,
               IsPredictionImprovementsEligible,
               (const autofill::FormStructure& form,

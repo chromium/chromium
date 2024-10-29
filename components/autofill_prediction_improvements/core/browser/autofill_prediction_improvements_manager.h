@@ -67,7 +67,7 @@ class AutofillPredictionImprovementsManager
       const AutofillPredictionImprovementsManager&) = delete;
   ~AutofillPredictionImprovementsManager() override;
 
-  // autofill::AutofillPredictionImprovementsDelegate
+  // autofill::AutofillPredictionImprovementsDelegate:
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<autofill::Suggestion>& autofill_suggestions,
       const autofill::FormData& form,
@@ -77,9 +77,7 @@ class AutofillPredictionImprovementsManager
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
   bool ShouldProvidePredictionImprovements(const GURL& url) const override;
-  void UserFeedbackReceived(
-      autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback)
-      override;
+  void UserFeedbackReceived(UserFeedback feedback) override;
   void UserClickedLearnMore() override;
   void OnClickedTriggerSuggestion(
       const autofill::FormData& form,
@@ -114,7 +112,7 @@ class AutofillPredictionImprovementsManager
   // logs and will be sent part of the user feedback.
   void SaveAutofillPredictionsUserFeedbackReceived(
       const std::string& model_execution_id,
-      autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback);
+      UserFeedback feedback);
 
   base::flat_map<autofill::FieldGlobalId, bool> GetFieldFillingEligibilityMap(
       const autofill::FormData& form_data);

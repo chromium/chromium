@@ -198,8 +198,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievalFailed_ShowError) {
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
   AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
       predictions_received_callback;
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
+  base::MockCallback<
+      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
 
   {
@@ -250,8 +250,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
   AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
       predictions_received_callback;
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
+  base::MockCallback<
+      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   {
     InSequence s;
@@ -299,8 +299,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
   AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
       predictions_received_callback;
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
+  base::MockCallback<
+      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   std::vector<Suggestion> loading_suggestion;
   std::vector<Suggestion> filling_suggestion;
@@ -378,8 +378,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
   AutofillPredictionImprovementsFillingEngine::PredictionsReceivedCallback
       predictions_received_callback;
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
+  base::MockCallback<
+      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   std::vector<Suggestion> loading_suggestion;
   std::vector<Suggestion> filling_suggestion;
@@ -894,14 +894,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 class AutofillPredictionImprovementsManagerUserFeedbackTest
     : public AutofillPredictionImprovementsManagerTest,
       public testing::WithParamInterface<
-          autofill::AutofillPredictionImprovementsDelegate::UserFeedback> {};
+          AutofillPredictionImprovementsManager::UserFeedback> {};
 
 // Given a non-null feedback id, tests that an attempt to open the feedback page
 // is only made if `UserFeedback::kThumbsDown` was received.
 TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
-  using UserFeedback =
-      autofill::AutofillPredictionImprovementsDelegate::UserFeedback;
+  using UserFeedback = AutofillPredictionImprovementsManager::UserFeedback;
   test_api(*manager_).SetFormFillingPredictionsModelExecutionId(
       "randomstringrjb");
   EXPECT_CALL(client_, TryToOpenFeedbackPage)
@@ -920,10 +919,9 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     AutofillPredictionImprovementsManagerUserFeedbackTest,
-    testing::Values(autofill::AutofillPredictionImprovementsDelegate::
-                        UserFeedback::kThumbsUp,
-                    autofill::AutofillPredictionImprovementsDelegate::
-                        UserFeedback::kThumbsDown));
+    testing::Values(
+        AutofillPredictionImprovementsManager::UserFeedback::kThumbsUp,
+        AutofillPredictionImprovementsManager::UserFeedback::kThumbsDown));
 
 class AutofillPredictionImprovementsManagerImportFormTest
     : public AutofillPredictionImprovementsManagerTest,
@@ -1071,15 +1069,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // `HasData(true)` if there's data stored in the user annotations.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        HasDataStoredReturnsTrueIfDataIsStored) {
-  base::MockCallback<
-      autofill::AutofillPredictionImprovementsDelegate::HasDataCallback>
+  base::MockCallback<AutofillPredictionImprovementsManager::HasDataCallback>
       has_data_callback;
   user_annotations_service_.ReplaceAllEntries(
       {optimization_guide::proto::UserAnnotationsEntry()});
   manager_->HasDataStored(has_data_callback.Get());
-  EXPECT_CALL(
-      has_data_callback,
-      Run(autofill::AutofillPredictionImprovementsDelegate::HasData(true)));
+  EXPECT_CALL(has_data_callback,
+              Run(AutofillPredictionImprovementsManager::HasData(true)));
   manager_->HasDataStored(has_data_callback.Get());
 }
 
@@ -1087,14 +1083,12 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // `HasData(false)` if there's no data stored in the user annotations.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        HasDataStoredReturnsFalseIfDataIsNotStored) {
-  base::MockCallback<
-      autofill::AutofillPredictionImprovementsDelegate::HasDataCallback>
+  base::MockCallback<AutofillPredictionImprovementsManager::HasDataCallback>
       has_data_callback;
   user_annotations_service_.ReplaceAllEntries({});
   manager_->HasDataStored(has_data_callback.Get());
-  EXPECT_CALL(
-      has_data_callback,
-      Run(autofill::AutofillPredictionImprovementsDelegate::HasData(false)));
+  EXPECT_CALL(has_data_callback,
+              Run(AutofillPredictionImprovementsManager::HasData(false)));
   manager_->HasDataStored(has_data_callback.Get());
 }
 
@@ -1116,8 +1110,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   .label = u"First Name",
                   .value = u"Jane"}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
+  base::MockCallback<
+      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   EXPECT_CALL(update_suggestions_callback, Run).Times(0);
   EXPECT_CALL(client_, GetAXTree).Times(0);
@@ -1226,8 +1220,8 @@ TEST_P(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
+  base::MockCallback<
+      AutofillPredictionImprovementsManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
   if (GetParam()) {
     EXPECT_CALL(client_, GetAXTree);
