@@ -63,6 +63,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
@@ -705,5 +706,20 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
         int appHeaderHeight = 10;
         mModel.set(TabGridDialogProperties.APP_HEADER_HEIGHT, appHeaderHeight);
         assertEquals(appHeaderHeight, mTabGridDialogView.getAppHeaderHeightForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testSetIsContentSensitive() {
+        assertEquals(
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mTabGridDialogView.getContentSensitivity());
+        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, true);
+        assertEquals(
+                View.CONTENT_SENSITIVITY_SENSITIVE, mTabGridDialogView.getContentSensitivity());
+        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, false);
+        assertEquals(
+                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mTabGridDialogView.getContentSensitivity());
     }
 }

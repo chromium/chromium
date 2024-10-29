@@ -109,6 +109,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey FORCE_ANIMATION_TO_FINISH =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -153,5 +155,6 @@ class TabGridDialogProperties {
                 HAIRLINE_COLOR,
                 HAIRLINE_VISIBILITY,
                 FORCE_ANIMATION_TO_FINISH,
+                IS_CONTENT_SENSITIVE,
             };
 }

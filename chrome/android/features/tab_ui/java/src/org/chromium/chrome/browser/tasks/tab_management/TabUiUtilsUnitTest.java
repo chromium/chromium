@@ -75,6 +75,7 @@ public class TabUiUtilsUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
     @Mock private Callback<Boolean> mDidCloseTabsCallback;
+    @Mock private Callback<Boolean> mContentSensitivitySetter;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCaptor;
 
@@ -492,5 +493,18 @@ public class TabUiUtilsUnitTest {
                 mModalDialogManager,
                 TAB_ID);
         verify(mActionConfirmationManager, never()).processLeaveGroupAttempt(any(), any());
+    }
+
+    @Test
+    public void testUpdateViewContentSensitivityForTabs() {
+        List<Tab> tabList = List.of(mTab);
+
+        when(mTab.getTabHasSensitiveContent()).thenReturn(true);
+        TabUiUtils.updateViewContentSensitivityForTabs(tabList, mContentSensitivitySetter);
+        verify(mContentSensitivitySetter).onResult(true);
+
+        when(mTab.getTabHasSensitiveContent()).thenReturn(false);
+        TabUiUtils.updateViewContentSensitivityForTabs(tabList, mContentSensitivitySetter);
+        verify(mContentSensitivitySetter).onResult(false);
     }
 }

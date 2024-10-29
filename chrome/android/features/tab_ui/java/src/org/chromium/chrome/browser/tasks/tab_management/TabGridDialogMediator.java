@@ -160,10 +160,14 @@ public class TabGridDialogMediator
         boolean messageCardExists(@MessageType int messageType);
 
         /**
-         * Returns the dialog view. Note: This view is shared between all tab grid dialog instances.
+         * Sets the content sensitivity on the dialog view.
+         *
+         * <p>Note: The view on which the content sensitivity is set is shared between all tab grid
+         * dialog instances.
+         *
+         * @param contentIsSensitive True if the grid is sensitive.
          */
-        @NonNull
-        TabGridDialogView getDialogView();
+        void setGridContentSensitivity(boolean contentIsSensitive);
     }
 
     /**
@@ -516,6 +520,7 @@ public class TabGridDialogMediator
                 };
         mModel.set(TabGridDialogProperties.VISIBILITY_LISTENER, this);
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, false);
         mModel.set(
                 TabGridDialogProperties.UNGROUP_BAR_STATUS,
                 TabGridDialogView.UngroupBarStatus.HIDE);
@@ -679,6 +684,10 @@ public class TabGridDialogMediator
         if (currentTab != null) {
             filter.setTabGroupColor(currentTab.getRootId(), selectedColor);
         }
+    }
+
+    void setGridContentSensitivity(boolean contentIsSensitive) {
+        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, contentIsSensitive);
     }
 
     private void updateGridTabSwitcher() {

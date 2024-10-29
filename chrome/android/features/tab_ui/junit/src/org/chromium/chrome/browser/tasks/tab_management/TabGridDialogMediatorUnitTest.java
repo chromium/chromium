@@ -1698,6 +1698,15 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
     }
 
+    @Test
+    public void testSetGridContentSensitivity() {
+        assertFalse(mModel.get(TabGridDialogProperties.IS_CONTENT_SENSITIVE));
+        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, true);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_CONTENT_SENSITIVE));
+        mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, false);
+        assertFalse(mModel.get(TabGridDialogProperties.IS_CONTENT_SENSITIVE));
+    }
+
     private void remakeMediator(boolean withResetHandler, boolean withAnimSource) {
         if (mMediator != null) {
             mMediator.destroy();

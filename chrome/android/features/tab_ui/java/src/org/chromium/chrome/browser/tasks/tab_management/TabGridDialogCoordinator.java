@@ -536,7 +536,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     @Override
-    public @NonNull TabGridDialogView getDialogView() {
-        return mDialogView;
+    public void setGridContentSensitivity(boolean contentIsSensitive) {
+        mMediator.setGridContentSensitivity(contentIsSensitive);
     }
 }

@@ -392,27 +392,28 @@ public class TabUiUtils {
     }
 
     /**
-     * Mark the {@param tabSwitcherView} as sensitive if at least one of the tabs in {@param
-     * tabList} has sensitive content. Note that if all sensitive tabs are removed from the tab
-     * switcher, the tab switcher will have to be closed and opened again to become not sensitive.
+     * Mark the tab switcher view as sensitive if at least one of the tabs in {@param tabList} has
+     * sensitive content. Note that if all sensitive tabs are removed from the tab switcher, the tab
+     * switcher will have to be closed and opened again to become not sensitive.
      *
      * @param tabList List of all tabs to be checked for sensitive content.
-     * @param tabSwitcherView The {@link View} whose content sensitivity is updated.
+     * @param contentSensitivitySetter Function that sets the content sensitivity on the tab
+     *     switcher view. The parameter of this function is a boolean, which is true if the content
+     *     is sensitive.
      */
-    // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static void updateViewContentSensitivityForTabs(
-            @Nullable List<Tab> tabList, View tabSwitcherView) {
+            @Nullable List<Tab> tabList, Callback<Boolean> contentSensitivitySetter) {
         if (tabList == null) {
             return;
         }
 
         if (tabList.stream().anyMatch(tab -> tab.getTabHasSensitiveContent())) {
-            tabSwitcherView.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+            contentSensitivitySetter.onResult(/* contentIsSensitive= */ true);
         } else {
             // If not marked as not sensitive, the tab switcher might remain sensitive from a
             // previous set of tabs.
-            tabSwitcherView.setContentSensitivity(View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+            contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
         }
     }
 }

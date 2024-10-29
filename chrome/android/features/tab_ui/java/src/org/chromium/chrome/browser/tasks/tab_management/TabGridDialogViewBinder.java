@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_CONTENT_SENSITIVE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_DIALOG_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_KEYBOARD_VISIBLE;
@@ -47,6 +48,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.UNGROUP_BAR_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.VISIBILITY_LISTENER;
 
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -269,6 +271,13 @@ class TabGridDialogViewBinder {
         } else if (FORCE_ANIMATION_TO_FINISH == propertyKey) {
             if (model.get(FORCE_ANIMATION_TO_FINISH)) {
                 viewHolder.dialogView.forceAnimationToFinish();
+            }
+        } else if (IS_CONTENT_SENSITIVE == propertyKey) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                viewHolder.dialogView.setContentSensitivity(
+                        model.get(IS_CONTENT_SENSITIVE)
+                                ? View.CONTENT_SENSITIVITY_SENSITIVE
+                                : View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
             }
         }
     }

@@ -319,13 +319,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     @Override
     public void resetGridWithListOfTabs(List<Tab> tabs) {
         if (mTabGridDialogControllerSupplier != null) {
-            // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                     && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 TabUiUtils.updateViewContentSensitivityForTabs(
-                        tabs, mTabGridDialogControllerSupplier.get().getDialogView());
+                        tabs, mTabGridDialogControllerSupplier.get()::setGridContentSensitivity);
             }
             mTabGridDialogControllerSupplier.get().resetWithListOfTabs(tabs);
         }
