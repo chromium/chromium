@@ -73,7 +73,7 @@ public final class CommandLineFlags {
             // Store features from initial command-line for proper merging later.
             CommandLine commandLine = CommandLine.getInstance();
             String origEnabledFeatures = commandLine.getSwitchValue(ENABLE_FEATURES, "");
-            String origDisabledFeatures = commandLine.getSwitchValue(ENABLE_FEATURES, "");
+            String origDisabledFeatures = commandLine.getSwitchValue(DISABLE_FEATURES, "");
             sOrigFeatures =
                     collectFeaturesFromFlags(
                             List.of(
