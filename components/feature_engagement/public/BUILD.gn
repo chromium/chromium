@@ -12,7 +12,7 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-source_set("public") {
+static_library("public") {
   sources = [
     "configuration.cc",
     "configuration.h",
@@ -73,7 +73,7 @@ source_set("public") {
     ]
   }
 
-  if (is_chromeos && is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "scalable_iph_feature_configurations.cc",
       "scalable_iph_feature_configurations.h",
