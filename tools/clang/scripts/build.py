@@ -236,32 +236,24 @@ def AddCMakeToPath():
   os.environ['PATH'] = cmake_dir + os.pathsep + os.environ.get('PATH', '')
 
 
-def AddGnuWinToPath():
-  """Download some GNU win tools and add them to PATH."""
+def AddGitForWindowsToPath():
+  """Download Git for Windows and add it to PATH.
+
+  Git for Windows provides command line utilities (not Git) for tests."""
   assert sys.platform == 'win32'
 
-  gnuwin_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gnuwin')
-  GNUWIN_VERSION = '14'
-  GNUWIN_STAMP = os.path.join(gnuwin_dir, 'stamp')
-  if ReadStampFile(GNUWIN_STAMP) == GNUWIN_VERSION:
-    print('GNU Win tools already up to date.')
+  git_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'git-for-windows')
+  version = '2.47.0'
+  stamp_file = os.path.join(git_dir, 'stamp')
+  if ReadStampFile(stamp_file) == version:
+    print('Git for Windows already up to date.')
   else:
-    zip_name = 'gnuwin-%s.zip' % GNUWIN_VERSION
-    DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
-    WriteStampFile(GNUWIN_VERSION, GNUWIN_STAMP)
+    archive_name = 'PortableGit-%s-64-bit.zip' % version
+    DownloadAndUnpack(CDS_URL + '/tools/' + archive_name, git_dir)
+    WriteStampFile(version, stamp_file)
 
-  os.environ['PATH'] = gnuwin_dir + os.pathsep + os.environ.get('PATH', '')
-
-  # find.exe, mv.exe and rm.exe are from MSYS (see crrev.com/389632). MSYS uses
-  # Cygwin under the hood, and initializing Cygwin has a race-condition when
-  # getting group and user data from the Active Directory is slow. To work
-  # around this, use a horrible hack telling it not to do that.
-  # See https://crbug.com/905289
-  etc = os.path.join(gnuwin_dir, '..', '..', 'etc')
-  EnsureDirExists(etc)
-  with open(os.path.join(etc, 'nsswitch.conf'), 'w') as f:
-    f.write('passwd: files\n')
-    f.write('group: files\n')
+  os.environ['PATH'] = os.path.join(
+      git_dir, 'usr', 'bin') + os.pathsep + os.environ.get('PATH', '')
 
 
 def AddZlibToPath(dry_run = False):
@@ -917,7 +909,7 @@ def main():
       base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_amd64)
 
   if sys.platform == 'win32':
-    AddGnuWinToPath()
+    AddGitForWindowsToPath()
 
     base_cmake_args.append('-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded')
 
