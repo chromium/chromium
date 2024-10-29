@@ -46,6 +46,8 @@ export class HistoryClustersAppElement extends CrLitElement {
     return {
       enableHistoryEmbeddings_: {type: Boolean, reflect: true},
 
+      hasHistoryEmbeddingsResults_: {type: Boolean, reflect: true},
+
       historyEmbeddingsDisclaimerLinkClicked_: {type: Boolean},
 
       nonEmbeddingsResultClicked_: {type: Boolean},
@@ -74,6 +76,7 @@ export class HistoryClustersAppElement extends CrLitElement {
 
   protected enableHistoryEmbeddings_ =
       loadTimeData.getBoolean('enableHistoryEmbeddings');
+  protected hasHistoryEmbeddingsResults_ = false;
   protected historyEmbeddingsDisclaimerLinkClicked_ = false;
   query: string = '';
   protected nonEmbeddingsResultClicked_: boolean = false;
@@ -155,6 +158,11 @@ export class HistoryClustersAppElement extends CrLitElement {
           x: event.detail.x,
           y: event.detail.y,
         });
+  }
+
+  protected onHistoryEmbeddingsIsEmptyChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.hasHistoryEmbeddingsResults_ = !e.detail.value;
   }
 
   protected onHistoryEmbeddingsItemRemoveClick_(

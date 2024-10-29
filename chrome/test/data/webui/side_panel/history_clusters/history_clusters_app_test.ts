@@ -268,4 +268,29 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     await app.updateComplete;
     assertEquals(0, embeddingsComponent.numCharsForQuery, 'resets on clear');
   });
+
+  test('HidesEmptyClusters', async () => {
+    const clustersComponent = app.$.historyClusters;
+    assertTrue(!!clustersComponent);
+    assertTrue(isVisible(clustersComponent));
+
+    // Pretend that history-clusters is empty.
+    clustersComponent.isEmpty = true;
+    await app.updateComplete;
+    assertTrue(isVisible(clustersComponent));
+
+    // When history-embeddings has results, history-clusters should be hidden.
+    const embeddingsComponent = await forceEmbeddingsComponent();
+    embeddingsComponent.dispatchEvent(
+        new CustomEvent('is-empty-changed', {detail: {value: false}}));
+    await app.updateComplete;
+    assertFalse(isVisible(clustersComponent));
+
+    // When history-embeddings is empty, history-clusters should be visible
+    // again.
+    embeddingsComponent.dispatchEvent(
+        new CustomEvent('is-empty-changed', {detail: {value: true}}));
+    await app.updateComplete;
+    assertTrue(isVisible(clustersComponent));
+  });
 });
