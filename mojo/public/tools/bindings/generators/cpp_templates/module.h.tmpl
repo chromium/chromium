@@ -81,6 +81,12 @@
 #include "{{export_header}}"
 {%- endif %}
 
+{%- if for_blink %}
+#if !BLINK_MOJO_IMPL && !INSIDE_BLINK
+#error "File must only be imported inside blink"
+#endif
+{%- endif %}
+
 {% if enable_kythe_annotations -%}
 #ifdef KYTHE_IS_RUNNING
 #pragma kythe_inline_metadata "Metadata comment"

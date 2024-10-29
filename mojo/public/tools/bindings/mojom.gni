@@ -1366,6 +1366,9 @@ template("mojom") {
           "base/component_export.h",
         ]
       }
+      if (defined(variant) && variant == "blink") {
+        export_defines += [ "BLINK_MOJO_IMPL=1" ]
+      }
 
       generator_cpp_output_suffixes = []
       variant_dash_suffix = ""

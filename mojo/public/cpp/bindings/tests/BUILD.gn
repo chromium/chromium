@@ -110,6 +110,7 @@ source_set("tests") {
       ":struct_with_traits_impl",
       "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
     ]
+    defines = [ "BLINK_MOJO_IMPL=1" ]
   }
 }
 
@@ -130,6 +131,8 @@ if (use_blink) {
       "wtf_map_unittest.cc",
       "wtf_types_unittest.cc",
     ]
+
+    defines = [ "BLINK_MOJO_IMPL=1" ]
 
     deps = [
       "//base/test:test_support",
