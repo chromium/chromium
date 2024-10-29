@@ -1047,7 +1047,9 @@ AXObject* AXObjectCacheImpl::EnsureFocusedObject() {
   // return an included ancestor of the focus.
   obj = FocusedObject();
   CHECK(obj) << "Object could not be recreated with aria-hidden off.";
-  CHECK(!obj->IsAriaHidden());
+  CHECK(!obj->IsAriaHidden())
+      << obj << "\nGet(FocusedNode()): " << Get(FocusedNode());
+
   return obj;
 }
 
@@ -2264,13 +2266,13 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(Node* node) {
 }
 
 bool AXObjectCacheImpl::HasBadAriaHidden(const AXObject& obj) const {
-  return nodes_with_bad_aria_hidden.Contains(obj.AXObjectID());
+  return nodes_with_bad_aria_hidden_.Contains(obj.AXObjectID());
 }
 
 void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfElement(
     const AXObject& obj) {
   bool is_first_time =
-      nodes_with_bad_aria_hidden.insert(obj.AXObjectID()).is_new_entry;
+      nodes_with_bad_aria_hidden_.insert(obj.AXObjectID()).is_new_entry;
 
   if (!is_first_time) {
     return;
@@ -2299,8 +2301,10 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   for (AXObject* ancestor = &obj; ancestor;
        ancestor = ancestor->ParentObject()) {
     if (ancestor->IsAriaAttributeTrue(html_names::kAriaHiddenAttr)) {
-      bad_aria_hidden_ancestor = ancestor;
-      nodes_with_bad_aria_hidden.insert(ancestor->AXObjectID());
+      if (nodes_with_bad_aria_hidden_.insert(ancestor->AXObjectID())
+              .is_new_entry) {
+        bad_aria_hidden_ancestor = ancestor;
+      }
     }
   }
   // Invalidate the subtree and rebuild it now that this aria-hidden has
@@ -2336,12 +2340,16 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   // The root is always included, so ancestor_to_rebuild is never null.
   DCHECK(ancestor_to_rebuild);
   RemoveSubtree(bad_aria_hidden_ancestor_node);
+  relation_cache_->ProcessUpdatesWithCleanLayout();
   CHECK(bad_aria_hidden_ancestor->IsDetached());
 
   ancestor_to_rebuild->UpdateChildrenIfNecessary();
   bad_aria_hidden_ancestor = Get(bad_aria_hidden_ancestor_node);
   CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());
   CHECK(!bad_aria_hidden_ancestor->IsAriaHidden());
+  if (AXObject* new_focused_obj = Get(&focused_element)) {
+    CHECK(!new_focused_obj->IsAriaHidden());
+  }
 }
 
 void AXObjectCacheImpl::DocumentTitleChanged() {
@@ -3152,6 +3160,7 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       // If MarkDocumentDirty() was called, do it now, so that the entire tree
       // is invalidated before updating it.
       if (mark_all_dirty_) {
+        EnsureFocusedObject();
         MarkDocumentDirtyWithCleanLayout();
       }
 

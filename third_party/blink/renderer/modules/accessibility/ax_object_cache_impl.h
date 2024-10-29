@@ -1143,7 +1143,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // will be ignored so that the user can navigate the page.
   // Example, aria-hidden="true" on an element, where focus has gone inside
   // of the element.
-  HashSet<AXID> nodes_with_bad_aria_hidden;
+  HashSet<AXID> nodes_with_bad_aria_hidden_;
 
   AXID last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 

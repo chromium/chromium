@@ -644,6 +644,18 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     // Now that the child is owned, it's "included in tree" state must be
     // recomputed because owned children are always included in the tree.
     added_child->UpdateCachedAttributeValuesIfNeeded(false);
+
+    // If the added child had a change in an inherited state because of the new
+    // owner, that state needs to propagate into the subtree. Remove its
+    // descendants so they are re-added with the correct cached states.
+    // The new states would also be propagted in FinalizeTree(), but this is
+    // safer for certain situations such as the aria-owns + aria-hidden state,
+    // where the aria-hidden state could be invalidated late in the cycle due
+    // to focus changes.
+    if (added_child->ChildrenNeedToUpdateCachedValues()) {
+      object_cache_->RemoveSubtree(added_child->GetNode(),
+                                   /*remove_root*/ false);
+    }
   }
 }
 

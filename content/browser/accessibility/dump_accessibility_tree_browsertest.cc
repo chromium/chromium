@@ -1067,6 +1067,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenFocusedButtonOwned) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-focused-button-owned.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaHiddenFocusedInput) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-focused-input.html"));
 }
