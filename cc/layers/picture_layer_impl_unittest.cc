@@ -2164,18 +2164,21 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
+  gfx::Vector2dF layer_offset(56, 78);
   gfx::Size layer_bounds(500, 500);
   gfx::Rect recorded_bounds(0, 0, 150, 150);
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
       FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_bounds);
   SetupPendingTreeWithFixedTileSize(pending_raster_source, tile_size, Region());
+  pending_layer()->SetOffsetToTransformParent(layer_offset);
   host_impl()
       ->pending_tree()
       ->property_trees()
       ->scroll_tree_mutable()
-      .SetScrollingContentsCullRect(pending_layer()->element_id(),
-                                    gfx::Rect(0, 0, 120, 120));
+      .SetScrollingContentsCullRect(
+          pending_layer()->element_id(),
+          gfx::Rect(layer_offset.x(), layer_offset.y(), 120, 120));
   ActivateTree();
 
   auto render_pass = viz::CompositorRenderPass::Create();
@@ -2233,8 +2236,10 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
       ->active_tree()
       ->property_trees()
       ->scroll_tree_mutable()
-      .SetScrollingContentsCullRect(active_layer()->element_id(),
-                                    gfx::Rect(layer_bounds));
+      .SetScrollingContentsCullRect(
+          active_layer()->element_id(),
+          gfx::Rect(layer_offset.x(), layer_offset.y(), layer_bounds.width(),
+                    layer_bounds.height()));
 
   render_pass = viz::CompositorRenderPass::Create();
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);

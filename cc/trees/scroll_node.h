@@ -57,6 +57,8 @@ struct CC_EXPORT ScrollNode {
   bool is_composited : 1 = false;
 
   ElementId element_id;
+
+  // The transform node containing the scroll offset.
   int transform_id = kRootPropertyNodeId;
 
   // The container area origin in the parent transform space of transform_id.
