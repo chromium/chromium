@@ -70,11 +70,8 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
       "shortcut-customization-app",
       "navigation-view-panel#navigationPanel",
       "#category-0",
-      "#container",
-      "accelerator-subsection",
-      "tbody#rowList",
-      // Action 93 corresponds to the "Open/Close Calendar" shortcut.
-      "accelerator-row[action='93']",
+      "#contentWrapper > accelerator-subsection:nth-child(1)",
+      "#open-close-calendar",
   };
 
   const DeepQuery kAddShortcutButtonQuery{
@@ -115,7 +112,7 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
       "#category-3",
       // Text editing subsection
       "#contentWrapper > accelerator-subsection:nth-child(2)",
-      "#rowList > accelerator-row:nth-child(10)",
+      "#redo-last-action",
   };
 
   auto FocusSearchBox() {
@@ -516,18 +513,6 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
   ui::Accelerator new_accel(ui::VKEY_N,
                             ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 
-  const DeepQuery kCustomAcceleratorViewQuery{
-      "shortcut-customization-app",
-      "navigation-view-panel#navigationPanel",
-      "#category-0",
-      "#container",
-      "accelerator-subsection",
-      "tbody#rowList",
-      // Action 93 corresponds to the "Open/Close Calendar" shortcut.
-      "accelerator-row[action='93']",
-      "#container > td > accelerator-view:nth-child(2)",
-  };
-
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
       InAnyContext(Steps(
@@ -540,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
           EnsureAcceleratorsAreProcessed(),
           Log("Adding Search + Ctrl + n as a custom open/close calendar "
               "shortcut"),
-          EnsurePresent(webcontents_id_, kCustomAcceleratorViewQuery),
+          EnsurePresent(webcontents_id_, kCalendarAcceleratorRowQuery),
           Log("New shortcut is present in the UI"),
           SendShortcutAccelerator(new_accel),
           WaitForShow(kCalendarViewElementId),
@@ -702,11 +687,8 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
       "shortcut-customization-app",
       "#navigationPanel",
       "#category-0",
-      "#container",
-      "accelerator-subsection",
-      "tbody#rowList",
-      // Action 113 corresponds to the "Open Quick Settings" shortcut.
-      "accelerator-row[action='113']",
+      "#contentWrapper > accelerator-subsection:nth-child(1)",
+      "#open-quick-settings",
   };
   ui::Accelerator custom_calendar_accel(
       ui::VKEY_N, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);

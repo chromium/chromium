@@ -5,6 +5,7 @@
 import './accelerator_row.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -153,6 +154,24 @@ export class AcceleratorSubsectionElement extends
       return false;
     }
     return this.lookupManager.isSubcategoryLocked(this.subcategory);
+  }
+
+  // Normalize the description by converting it to lowercase and removing
+  // special characters.
+  accelDescriptionToId(description: string): string {
+    assert(description.trim() !== '');
+    const normalizedDescription =
+        description.toLowerCase()
+            .replace(/[^a-z0-9 /]/g, '')  // Keep slashes for now
+            .replace(/\//g, '-');         // Replace slashes with hyphens
+
+    // Split the description into individual words using the spaces as
+    // delimiters.
+    const tokens = normalizedDescription.split(' ');
+
+    const id = tokens.join('-');
+
+    return id;
   }
 }
 

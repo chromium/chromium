@@ -206,4 +206,43 @@ suite('acceleratorSubsectionTest', function() {
         AcceleratorSubcategory.kGeneralControls);
   });
 
+  // Verifies logic for converting accelerator descriptions to IDs.
+  test('DescriptionToId', async () => {
+    type DescToIdTestCase = {
+      description: string; expectedId: string; testCase: string;
+    };
+
+    await initAcceleratorSubsectionElement(
+        AcceleratorCategory.kGeneral, AcceleratorSubcategory.kGeneralControls);
+    const testAccelDescriptions: DescToIdTestCase[] = [
+      {
+        description: 'Open Calculator App',
+        expectedId: 'open-calculator-app',
+        testCase: 'convert description with plain text',
+      },
+      {
+        description: 'Click or tap shelf icons 1-8',
+        expectedId: 'click-or-tap-shelf-icons-18',
+        testCase: 'convert description with numbers',
+      },
+      {
+        description: 'Open/close Google assistant',
+        expectedId: 'open-close-google-assistant',
+        testCase: 'convert description with slash',
+
+      },
+      {
+        description: 'Turn on/off dictation (type with your voice)',
+        expectedId: 'turn-on-off-dictation-type-with-your-voice',
+        testCase: 'convert description with parens',
+      },
+    ];
+
+    testAccelDescriptions.forEach(
+        ({description, expectedId, testCase}: DescToIdTestCase) => {
+          const actualId = sectionElement!.accelDescriptionToId(description);
+          assertEquals(expectedId, actualId, testCase);
+        });
+  });
+
 });
