@@ -89,8 +89,9 @@ void AudioRendererMixerInput::Start() {
   CHECK_EQ(device_info_->device_status(), media::OUTPUT_DEVICE_STATUS_OK);
 
   started_ = true;
-  mixer_ = mixer_pool_->GetMixer(main_frame_token_, params_, latency_,
-                                 *device_info_, std::move(sink_));
+  mixer_ =
+      mixer_pool_->GetMixer(source_frame_token_, main_frame_token_, params_,
+                            latency_, *device_info_, std::move(sink_));
 
   // Note: OnRenderError() may be called immediately after this call returns.
   mixer_->AddErrorCallback(this);
@@ -171,7 +172,8 @@ void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
   device_info_.reset();
 
   // If we don't have a sink yet start the process of getting one.
-  sink_ = mixer_pool_->GetSink(source_frame_token_, device_id_);
+  sink_ =
+      mixer_pool_->GetSink(source_frame_token_, main_frame_token_, device_id_);
 
   // Retain a ref to this sink to ensure it is not destructed while this occurs.
   // The callback is guaranteed to execute on this thread, so there are no
@@ -221,7 +223,8 @@ void AudioRendererMixerInput::SwitchOutputDevice(
   // Request a new sink using the new device id. This process may fail, so to
   // avoid interrupting working audio, don't set any class variables until we
   // know it's a success.
-  auto new_sink = mixer_pool_->GetSink(source_frame_token_, device_id);
+  auto new_sink =
+      mixer_pool_->GetSink(source_frame_token_, main_frame_token_, device_id);
 
   // Retain a ref to this sink to ensure it is not destructed while this occurs.
   // The callback is guaranteed to execute on this thread, so there are no

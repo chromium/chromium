@@ -81,6 +81,7 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // media::AudioRendererMixerPool implementation. The rest of the
   // implementation is kept private (see comment below).
   AudioRendererMixer* GetMixer(
+      const LocalFrameToken& source_frame_token,
       const FrameToken& main_frame_token,
       const media::AudioParameters& input_params,
       media::AudioLatency::Type latency,
@@ -88,7 +89,8 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
       scoped_refptr<media::AudioRendererSink> sink) final;
   void ReturnMixer(AudioRendererMixer* mixer) final;
   scoped_refptr<media::AudioRendererSink> GetSink(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
+      const FrameToken& main_frame_token,
       std::string_view device_id) final;
 
  private:
@@ -97,12 +99,14 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // Define a key so that only those AudioRendererMixerInputs from the same
   // RenderView, AudioParameters and output device can be mixed together.
   struct MixerKey {
-    MixerKey(const blink::FrameToken& main_frame_token,
+    MixerKey(const LocalFrameToken& source_frame_token,
+             const FrameToken& main_frame_token,
              const media::AudioParameters& params,
              media::AudioLatency::Type latency,
              std::string_view device_id);
     MixerKey(const MixerKey& other);
     ~MixerKey();
+    blink::LocalFrameToken source_frame_token;
     blink::FrameToken main_frame_token;
     media::AudioParameters params;
     media::AudioLatency::Type latency;
@@ -113,18 +117,12 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // mixers where only irrelevant keys mismatch.
   struct MixerKeyCompare {
     bool operator()(const MixerKey& a, const MixerKey& b) const {
-      // `main_frame_token` allows sharing of output devices across multiple
-      // RenderFrames. We don't need to check the `device_id` to allow this
-      // sharing since an AudioRendererMixerInput can't join this sharing
-      // without having already completed authorization for `device_id` through
-      // GetOutputDeviceInfo(). See AudioRendererMixerInput::Start().
       if (a.main_frame_token != b.main_frame_token) {
         return a.main_frame_token < b.main_frame_token;
       }
       if (a.params.channels() != b.params.channels()) {
         return a.params.channels() < b.params.channels();
       }
-
       if (a.latency != b.latency) {
         return a.latency < b.latency;
       }
@@ -146,8 +144,16 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
       if (media::AudioDeviceDescription::IsDefaultDevice(a.device_id) &&
           media::AudioDeviceDescription::IsDefaultDevice(b.device_id)) {
         // Both device IDs represent the same default device => do not compare
-        // them.
+        // them. We can skip the `source_frame_token` check in this case since
+        // the default device is always authorized.
         return false;
+      }
+
+      // The lifetime of sinks for non-default devices are bound to the frame
+      // that created them. So even if two sub-frames are authorized for the
+      // same device, they can't share an output device.
+      if (a.source_frame_token != b.source_frame_token) {
+        return a.source_frame_token < b.source_frame_token;
       }
 
       return a.device_id < b.device_id;
