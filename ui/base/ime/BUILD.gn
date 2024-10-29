@@ -45,7 +45,7 @@ component("ime_types") {
     "//skia",
   ]
 
-  if (is_chromeos_ash || use_ozone) {
+  if (use_ozone) {
     sources += [
       "character_composer.cc",
       "character_composer.h",
@@ -101,8 +101,6 @@ component("ime") {
     "//ui/gfx/geometry",
     "//ui/gfx/range",
   ]
-
-  deps = [ "//build:chromeos_buildflags" ]
 }
 
 source_set("text_edit_commands") {

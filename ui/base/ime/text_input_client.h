@@ -17,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/grammar_fragment.h"
@@ -376,9 +375,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
 
   // Does the current text client support always confirming a composition, even
   // if there isn't a composition currently set?
-  // TODO(b/265853952): This is required to resolve an incompatibility between
-  //   Crostini and Lacros text clients. Remove this method and its use once
-  //   both clients support the required behavior.
   virtual bool SupportsAlwaysConfirmComposition();
 #endif
 
@@ -407,7 +403,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
       bool is_composition_committed) = 0;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   struct EditingContext {
     // Contains the active web content's URL.
     GURL page_url;

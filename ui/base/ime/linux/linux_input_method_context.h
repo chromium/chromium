@@ -117,19 +117,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   virtual void OnSetPreeditRegion(const gfx::Range& range,
                                   const std::vector<ImeTextSpan>& spans) = 0;
 
-  // Clears all the grammar fragments in |range|. All indices are measured in
-  // UTF-16 code point.
-  virtual void OnClearGrammarFragments(const gfx::Range& range) = 0;
-
-  // Adds a new grammar marker according to |fragments|. Clients should show
-  // some visual indications such as underlining. All indices are measured in
-  // UTF-16 code point.
-  virtual void OnAddGrammarFragment(const ui::GrammarFragment& fragment) = 0;
-
-  // Sets the autocorrect range in the text input client.
-  // |range| is in UTF-16 code range.
-  virtual void OnSetAutocorrectRange(const gfx::Range& range) = 0;
-
   // Sets the virtual keyboard's occluded bounds in screen DIP.
   virtual void OnSetVirtualKeyboardOccludedBounds(
       const gfx::Rect& screen_bounds) = 0;

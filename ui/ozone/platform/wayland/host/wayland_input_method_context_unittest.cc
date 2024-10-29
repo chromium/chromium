@@ -220,15 +220,6 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     was_on_preedit_changed_called_ = true;
     last_on_preedit_changed_args_ = composition_text;
   }
-  void OnClearGrammarFragments(const gfx::Range& range) override {
-    was_on_clear_grammar_fragments_called_ = true;
-  }
-  void OnAddGrammarFragment(const ui::GrammarFragment& fragment) override {
-    was_on_add_grammar_fragment_called_ = true;
-  }
-  void OnSetAutocorrectRange(const gfx::Range& range) override {
-    was_on_set_autocorrect_range_called_ = true;
-  }
   void OnInsertImage(const GURL& src) override {
     was_on_insert_image_range_called_ = true;
   }
@@ -270,18 +261,6 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return was_on_set_preedit_region_called_;
   }
 
-  bool was_on_clear_grammar_fragments_called() const {
-    return was_on_clear_grammar_fragments_called_;
-  }
-
-  bool was_on_add_grammar_fragment_called() const {
-    return was_on_add_grammar_fragment_called_;
-  }
-
-  bool was_on_set_autocorrect_range_called() const {
-    return was_on_set_autocorrect_range_called_;
-  }
-
   bool was_on_insert_image_called() const {
     return was_on_insert_image_range_called_;
   }
@@ -301,9 +280,6 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   std::optional<bool> last_on_confirm_composition_arg_;
   bool was_on_preedit_changed_called_ = false;
   bool was_on_set_preedit_region_called_ = false;
-  bool was_on_clear_grammar_fragments_called_ = false;
-  bool was_on_add_grammar_fragment_called_ = false;
-  bool was_on_set_autocorrect_range_called_ = false;
   bool was_on_insert_image_range_called_ = false;
   std::optional<ui::CompositionText> last_on_preedit_changed_args_;
   std::optional<std::pair<size_t, size_t>>
@@ -1749,21 +1725,6 @@ TEST_P(WaylandInputMethodContextTest,
             u16_range);
 }
 
-TEST_P(WaylandInputMethodContextTest, OnClearGrammarFragments) {
-  input_method_context_->OnClearGrammarFragments(gfx::Range(1, 5));
-  WaylandTestBase::SyncDisplay();
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_clear_grammar_fragments_called());
-}
-
-TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
-  input_method_context_->OnAddGrammarFragment(
-      ui::GrammarFragment(gfx::Range(1, 5), "test"));
-  WaylandTestBase::SyncDisplay();
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_add_grammar_fragment_called());
-}
-
 TEST_P(WaylandInputMethodContextTest, OnInsertImage) {
   const GURL some_image_url = GURL("");
   input_method_context_->OnInsertImage(some_image_url);
@@ -1771,12 +1732,6 @@ TEST_P(WaylandInputMethodContextTest, OnInsertImage) {
   EXPECT_TRUE(input_method_context_delegate_->was_on_insert_image_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
-  input_method_context_->OnSetAutocorrectRange(gfx::Range(1, 5));
-  WaylandTestBase::SyncDisplay();
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_set_autocorrect_range_called());
-}
 
 TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
   constexpr gfx::Rect kBounds(10, 20, 300, 400);

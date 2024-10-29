@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 

@@ -897,49 +897,22 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
 
 void WaylandInputMethodContext::OnClearGrammarFragments(
     const gfx::Range& range) {
-  const auto& [surrounding_text, utf16_offset, selection, composition] =
-      surrounding_text_tracker_.predicted_state();
-
-  std::vector<size_t> offsets = {range.start() + surrounding_text_offset_,
-                                 range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
-                                    &offsets);
-  ime_delegate_->OnClearGrammarFragments(
-      gfx::Range(static_cast<uint32_t>(offsets[0]) + utf16_offset,
-                 static_cast<uint32_t>(offsets[1]) + utf16_offset));
+  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
+  // Lacros. Grammar and autocorrect are features of CrOS.
+  NOTREACHED();
 }
 
 void WaylandInputMethodContext::OnAddGrammarFragment(
     const GrammarFragment& fragment) {
-  const auto& [surrounding_text, utf16_offset, selection, composition] =
-      surrounding_text_tracker_.predicted_state();
-
-  std::vector<size_t> offsets = {
-      fragment.range.start() + surrounding_text_offset_,
-      fragment.range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
-                                    &offsets);
-  ime_delegate_->OnAddGrammarFragment({GrammarFragment(
-      gfx::Range(static_cast<uint32_t>(offsets[0]) + utf16_offset,
-                 static_cast<uint32_t>(offsets[1]) + utf16_offset),
-      fragment.suggestion)});
+  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
+  // Lacros. Grammar and autocorrect are features of CrOS.
+  NOTREACHED();
 }
 
 void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
-  if (range.is_empty()) {
-    ime_delegate_->OnSetAutocorrectRange(range);
-    return;
-  }
-
-  const auto& [surrounding_text, utf16_offset, selection, composition] =
-      surrounding_text_tracker_.predicted_state();
-  std::vector<size_t> offsets = {range.start() + surrounding_text_offset_,
-                                 range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
-                                    &offsets);
-  ime_delegate_->OnSetAutocorrectRange(
-      gfx::Range(static_cast<uint32_t>(offsets[0]) + utf16_offset,
-                 static_cast<uint32_t>(offsets[1]) + utf16_offset));
+  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
+  // Lacros. Grammar and autocorrect are features of CrOS.
+  NOTREACHED();
 }
 
 void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(

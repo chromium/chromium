@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -260,6 +259,11 @@ bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
 void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {}
+
+ui::TextInputClient::EditingContext
+FakeTextInputClient::GetTextEditingContext() {
+  return EditingContext{.page_url = url_};
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -267,13 +271,6 @@ void FakeTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,
     bool is_composition_committed) {}
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-ui::TextInputClient::EditingContext
-FakeTextInputClient::GetTextEditingContext() {
-  return EditingContext{.page_url = url_};
-}
 #endif
 
 }  // namespace ui
