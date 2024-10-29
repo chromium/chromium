@@ -59,6 +59,8 @@ PinTextfield::PinTextfield(int pin_digits_amount)
   for (int i = 0; i < pin_digits_count_; i++) {
     render_texts_.push_back(CreatePinDigitRenderText(font_list));
   }
+
+  UpdatePinAccessibleValue();
 }
 
 PinTextfield::~PinTextfield() = default;
@@ -107,6 +109,7 @@ void PinTextfield::SetPin(const std::u16string& pin) {
     render_texts_[i]->SetText(std::u16string(1, pin[i]));
   }
   digits_typed_count_ = pin_length;
+  UpdatePinAccessibleValue();
   SchedulePaint();
 }
 
@@ -130,6 +133,7 @@ void PinTextfield::SetDisabled(bool disabled) {
   }
 
   disabled_ = disabled;
+  UpdatePinAccessibleValue();
   SetTextInputType(disabled ? ui::TEXT_INPUT_TYPE_NONE
                             : ui::TEXT_INPUT_TYPE_PASSWORD);
   UpdateTextColor();
@@ -192,15 +196,6 @@ void PinTextfield::OnThemeChanged() {
   UpdateTextColor();
 }
 
-void PinTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  std::u16string pin = GetPin();
-  node_data->SetValue(
-      (obscured_ || disabled_)
-          ? std::u16string(pin.size(),
-                           gfx::RenderText::kPasswordReplacementChar)
-          : pin);
-}
-
 void PinTextfield::UpdateAccessibleTextSelection() {
   // Pin textfield does not support selecting characters, set it to an empty
   // selection at the end of the currently typed pin.
@@ -217,14 +212,22 @@ bool PinTextfield::HasCellFocus(int cell) const {
 
 void PinTextfield::UpdateAccessibilityAfterPinChange() {
   UpdateAccessibleTextSelection();
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged,
-                           /*send_native_event=*/true);
+  UpdatePinAccessibleValue();
 
   // Don't announce the selected text (last typed digit) in `obscured_` mode.
   if (!obscured_) {
     NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged,
                              /*send_native_event=*/true);
   }
+}
+
+void PinTextfield::UpdatePinAccessibleValue() {
+  std::u16string pin = GetPin();
+  GetViewAccessibility().SetValue(
+      (obscured_ || disabled_)
+          ? std::u16string(pin.size(),
+                           gfx::RenderText::kPasswordReplacementChar)
+          : pin);
 }
 
 void PinTextfield::UpdateTextColor() {
