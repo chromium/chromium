@@ -139,9 +139,22 @@ void OpenLanguageSettings(TranslateBubbleModel* model_,
 
 TranslateBubbleView::~TranslateBubbleView() {
   // A child view could refer to a model which is owned by this class when
-  // the child view is destructed. For example, |source_language_combobx_model_|
-  // is referred by Combobox's destructor. Before destroying the models,
-  // removing the child views is needed.
+  // the child view is destructed. For example, `source_language_combobox_` has
+  // a pointer to `model_`. Before destroying the models, removing the child
+  // views is needed.
+  translate_view_ = nullptr;
+  error_view_ = nullptr;
+  advanced_view_source_ = nullptr;
+  advanced_view_target_ = nullptr;
+  source_language_combobox_ = nullptr;
+  target_language_combobox_ = nullptr;
+  always_translate_checkbox_ = nullptr;
+  advanced_always_translate_checkbox_ = nullptr;
+  tabbed_pane_ = nullptr;
+  advanced_reset_button_source_ = nullptr;
+  advanced_reset_button_target_ = nullptr;
+  advanced_done_button_source_ = nullptr;
+  advanced_done_button_target_ = nullptr;
   RemoveAllChildViews();
   if (features::IsToolbarPinningEnabled() && translate_action_item_) {
     translate_action_item_->SetIsShowingBubble(false);
@@ -497,9 +510,7 @@ TranslateBubbleView::TranslateBubbleView(
 views::View* TranslateBubbleView::GetCurrentView() const {
   switch (GetViewState()) {
     case TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE:
-      return translate_view_;
     case TranslateBubbleModel::VIEW_STATE_TRANSLATING:
-      return translate_view_;
     case TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE:
       return translate_view_;
     case TranslateBubbleModel::VIEW_STATE_ERROR:

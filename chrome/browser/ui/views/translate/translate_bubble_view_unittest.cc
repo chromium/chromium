@@ -216,7 +216,8 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    bubble_->GetWidget()->CloseNow();
+    mock_model_ = nullptr;
+    bubble_.ExtractAsDangling()->GetWidget()->CloseNow();
     anchor_widget_.reset();
 
     ChromeViewsTestBase::TearDown();
@@ -233,8 +234,8 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<MockTranslateBubbleModel, DanglingUntriaged> mock_model_;
-  raw_ptr<TranslateBubbleView, DanglingUntriaged> bubble_;
+  raw_ptr<MockTranslateBubbleModel> mock_model_ = nullptr;
+  raw_ptr<TranslateBubbleView> bubble_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
