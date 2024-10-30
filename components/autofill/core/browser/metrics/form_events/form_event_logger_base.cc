@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -82,7 +83,7 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
 
 FormEventLoggerBase::FormEventLoggerBase(
     const std::string& form_type_name,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
     : form_type_name_(form_type_name),
       form_interactions_ukm_logger_(form_interactions_ukm_logger),

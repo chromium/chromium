@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -7696,8 +7697,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
   // No typing on field 5.
 
-  AutofillMetrics::FormInteractionsUkmLogger logger(autofill_client_.get(),
-                                                    &test_ukm_recorder());
+  autofill_metrics::FormInteractionsUkmLogger logger(autofill_client_.get(),
+                                                     &test_ukm_recorder());
   logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(form_structure);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(

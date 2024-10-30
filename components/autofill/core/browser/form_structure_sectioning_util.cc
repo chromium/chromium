@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -213,7 +214,7 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
 void LogSectioningMetrics(
     FormSignature form_signature,
     base::span<const std::unique_ptr<AutofillField>> fields,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   // UMA:
   base::flat_map<Section, size_t> fields_per_section;
   for (auto& field : fields) {

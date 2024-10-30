@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -46,7 +47,7 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
 }  // namespace
 
 AddressFormEventLogger::AddressFormEventLogger(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
     : FormEventLoggerBase("Address", form_interactions_ukm_logger, client) {}
 

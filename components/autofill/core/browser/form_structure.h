@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_types.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -41,6 +40,10 @@ class TimeTicks;
 }
 
 namespace autofill {
+
+namespace autofill_metrics {
+class FormInteractionsUkmLogger;
+}
 
 class LogBuffer;
 class LogManager;
@@ -72,7 +75,7 @@ class FormStructure {
   // types.
   void DetermineHeuristicTypes(
       const GeoIpCountryCode& client_country,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
   // Returns predictions using the details from the given |form_structures| and
@@ -235,7 +238,7 @@ class FormStructure {
   // Rationalize the form's autocomplete attributes, repeated fields and field
   // type predictions.
   void RationalizeFormStructure(
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual

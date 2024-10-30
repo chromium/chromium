@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/is_required.h"
@@ -46,6 +45,10 @@ class FormData;
 class FormFieldData;
 class FormStructure;
 class LogManager;
+
+namespace autofill_metrics {
+class FormInteractionsUkmLogger;
+}
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
@@ -327,7 +330,7 @@ class AutofillManager
   AutofillDriver& driver() { return *driver_; }
 
   // The return value shouldn't be cached, retrieve it as needed.
-  AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
+  autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
     return form_interactions_ukm_logger_.get();
   }
 
@@ -453,7 +456,7 @@ class AutofillManager
   // |form_structures|.
   void OnFormsParsed(const std::vector<FormData>& forms);
 
-  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+  std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
   // Returns a callback that runs `callback` on the main thread after all
@@ -489,7 +492,7 @@ class AutofillManager
   std::map<FormGlobalId, std::unique_ptr<FormStructure>> form_structures_;
 
   // Utility for logging URL keyed metrics.
-  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+  std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
 
   // Observers that listen to updates of this instance.

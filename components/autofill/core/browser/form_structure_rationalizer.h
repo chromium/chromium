@@ -11,13 +11,16 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "url/origin.h"
 
 namespace autofill {
 
 class LogManager;
+
+namespace autofill_metrics {
+class FormInteractionsUkmLogger;
+}
 
 // Rationalization is the process of taking a parsed form structure and
 // changing the types of fields based on their context based on assumptions
@@ -63,9 +66,10 @@ class FormStructureRationalizer {
 
   // Tunes the fields with identical predictions.
   // The `form_signature` is needed for logging.
-  void RationalizeRepeatedFields(FormSignature form_signature,
-                                 AutofillMetrics::FormInteractionsUkmLogger*,
-                                 LogManager* log_manager);
+  void RationalizeRepeatedFields(
+      FormSignature form_signature,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      LogManager* log_manager);
 
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
@@ -133,7 +137,7 @@ class FormStructureRationalizer {
       size_t field_index,
       FieldType new_type,
       FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*);
+      autofill_metrics::FormInteractionsUkmLogger*);
 
   // Returns true if we can replace server predictions with the heuristics one.
   bool HeuristicsPredictionsAreApplicable(size_t upper_index,
@@ -149,7 +153,7 @@ class FormStructureRationalizer {
       FieldType upper_type,
       FieldType lower_type,
       FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*);
+      autofill_metrics::FormInteractionsUkmLogger*);
 
   // Returns true if the fields_[index] server type should be rationalized to
   // ADDRESS_HOME_COUNTRY.
@@ -160,14 +164,15 @@ class FormStructureRationalizer {
       size_t field_index,
       FieldType new_type,
       FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
+      autofill_metrics::FormInteractionsUkmLogger*
+          form_interactions_ukm_logger);
 
   // Two or three fields predicted as the whole address should be address lines
   // 1, 2 and 3 instead.
   void RationalizeAddressLineFields(
       SectionedFieldsIndexes* sections_of_address_indexes,
       FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*,
+      autofill_metrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);
 
   // Rationalize state and country interdependently.
@@ -175,7 +180,7 @@ class FormStructureRationalizer {
       SectionedFieldsIndexes* sections_of_state_indexes,
       SectionedFieldsIndexes* sections_of_country_indexes,
       FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*,
+      autofill_metrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);
 
   // Filters out fields that don't meet the relationship ruleset for their type

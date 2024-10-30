@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
@@ -489,9 +490,9 @@ bool AutofillManager::GetCachedFormAndField(
   return *autofill_field != nullptr;
 }
 
-std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
 AutofillManager::CreateFormInteractionsUkmLogger() {
-  return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
+  return std::make_unique<autofill_metrics::FormInteractionsUkmLogger>(
       &client(), client().GetUkmRecorder());
 }
 

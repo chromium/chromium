@@ -11,6 +11,8 @@
 
 namespace autofill::autofill_metrics {
 
+class FormInteractionsUkmLogger;
+
 // Metrics measuring how well we predict field types.  These metric values are
 // logged for each field in a submitted form for:
 //     - the heuristic prediction
@@ -139,7 +141,7 @@ enum RationalizationQualityMetric {
 };
 
 void LogHeuristicPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type);
@@ -148,19 +150,19 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
     const AutofillField& field);
 
 void LogMlPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type);
 
 void LogServerPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type);
 
 void LogOverallPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type);

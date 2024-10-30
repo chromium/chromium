@@ -20,6 +20,8 @@
 
 namespace autofill::autofill_metrics {
 
+class FormInteractionsUkmLogger;
+
 enum class FilledFieldTypeMetric {
   kClassifiedWithRecognizedAutocomplete = 0,
   kClassifiedWithUnrecognizedAutocomplete = 1,
@@ -33,7 +35,7 @@ class FormEventLoggerBase {
  public:
   FormEventLoggerBase(
       const std::string& form_type_name,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
@@ -249,7 +251,7 @@ class FormEventLoggerBase {
   std::map<FormGlobalId, AutofillMetrics::FormEventSet> form_events_set_;
 
   // Weak reference.
-  raw_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+  raw_ptr<autofill_metrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
 
   // Weak reference.

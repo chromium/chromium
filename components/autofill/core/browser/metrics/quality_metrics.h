@@ -7,10 +7,11 @@
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
 namespace autofill::autofill_metrics {
+
+class FormInteractionsUkmLogger;
 
 // Logs quality metrics for the `form_structure`.
 // This method should only be called after the possible field types have been
@@ -25,7 +26,7 @@ void LogQualityMetrics(
     base::TimeTicks load_time,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool observed_submission);
 
 // Log the quality of the heuristics and server predictions for the
@@ -33,7 +34,7 @@ void LogQualityMetrics(
 // fields (they are used as golden truths).
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
 
 }  // namespace autofill::autofill_metrics
 

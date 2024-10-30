@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/label_source_util.h"
 
@@ -619,7 +620,7 @@ void LogPredictionQualityMetricsForCommonFields(
 void LogPredictionQualityMetrics(
     AutofillMetrics::QualityMetricPredictionSource prediction_source,
     FieldType predicted_type,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type,
@@ -686,7 +687,7 @@ void LogPredictionQualityMetrics(
 }  // namespace
 
 void LogHeuristicPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type) {
@@ -720,7 +721,7 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
 }
 
 void LogMlPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type) {
@@ -733,7 +734,7 @@ void LogMlPredictionQualityMetrics(
 
 // static
 void LogServerPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type) {
@@ -745,7 +746,7 @@ void LogServerPredictionQualityMetrics(
 
 // static
 void LogOverallPredictionQualityMetrics(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::QualityMetricType metric_type) {

@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -682,7 +683,7 @@ void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(
     size_t field_index,
     FieldType new_type,
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   if (field_index >= fields_->size())
     return;
   auto old_type = (*fields_)[field_index]->Type().GetStorableType();
@@ -696,7 +697,7 @@ void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(
 void FormStructureRationalizer::RationalizeAddressLineFields(
     SectionedFieldsIndexes* sections_of_address_indexes,
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   // The rationalization happens within sections.
   for (sections_of_address_indexes->Reset();
@@ -754,7 +755,7 @@ void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
     size_t field_index,
     FieldType new_type,
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   FieldType old_type = (*fields_)[field_index]->Type().GetStorableType();
 
   // Walk on the unfocusable select fields right after the field_index which
@@ -813,7 +814,7 @@ void FormStructureRationalizer::ApplyRationalizationsToFields(
     FieldType upper_type,
     FieldType lower_type,
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   // Unfocusable fields are ignored during the rationalization, but unfocusable
   // 'select' fields also get autofilled to support their corresponding visible
   // 'synthetic fields'. So, if a field's type is rationalized, we should make
@@ -852,7 +853,7 @@ void FormStructureRationalizer::RationalizeAddressStateCountry(
     SectionedFieldsIndexes* sections_of_state_indexes,
     SectionedFieldsIndexes* sections_of_country_indexes,
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   // Walk on the sections of state and country indexes simultaneously. If they
   // both point to the same section, it means that the section includes both the
@@ -952,7 +953,7 @@ void FormStructureRationalizer::RationalizeAddressStateCountry(
 
 void FormStructureRationalizer::RationalizeRepeatedFields(
     FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   // The type of every field whose index is in
   // sectioned_field_indexes_by_type[|type|] is predicted by server as |type|.

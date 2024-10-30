@@ -193,7 +193,7 @@ void FormStructure::DetermineFieldRanks() {
 
 void FormStructure::DetermineHeuristicTypes(
     const GeoIpCountryCode& client_country,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
@@ -890,7 +890,7 @@ void FormStructure::RationalizePhoneNumbersInSection(const Section& section) {
 }
 
 void FormStructure::RationalizeFormStructure(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   FormStructureRationalizer rationalizer(&fields_);
   rationalizer.RationalizeContentEditables(log_manager);
