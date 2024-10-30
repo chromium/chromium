@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
@@ -45,16 +44,6 @@ struct WriteState {
   std::unique_ptr<FileWriterDelegate> delegate;
   DelegateNoProgressWriteCallback callback;
   base::CheckedNumeric<int64_t> total_bytes;
-};
-
-// Error cases where kInvalidBlob is reported. Used to track down
-// crbug.com/40728654
-enum class InvalidBlobReasons {
-  kConstructionError = 0,
-  kFullCopyTimestampWrong = 1,
-  kPartialCopyTimestampWrong = 2,
-  kUnexpectedBytesCopied = 3,
-  kMaxValue = kUnexpectedBytesCopied,
 };
 
 // Utility function to ignore all progress events returned when running
@@ -169,16 +158,12 @@ mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
     base::GetFileInfo(copy_from, &info);
     if (!FileStreamReader::VerifySnapshotTime(expected_last_modified_copy_from,
                                               info)) {
-      base::UmaHistogramEnumeration(
-          "Storage.Blob.InvalidBlob",
-          InvalidBlobReasons::kFullCopyTimestampWrong);
       return mojom::WriteBlobToFileResult::kInvalidBlob;
     }
     if (!size || info.size == size.value()) {
       bool success = base::CopyFile(copy_from, copy_to);
-      if (!success) {
+      if (!success)
         return mojom::WriteBlobToFileResult::kIOError;
-      }
       if (last_modified && !base::TouchFile(copy_to, last_modified.value(),
                                             last_modified.value())) {
         return mojom::WriteBlobToFileResult::kTimestampError;
@@ -193,17 +178,13 @@ mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
       base::File(copy_from, base::File::FLAG_OPEN | base::File::FLAG_READ);
   base::File outfile(copy_to,
                      base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
-  if (!outfile.IsValid()) {
+  if (!outfile.IsValid())
     return mojom::WriteBlobToFileResult::kIOError;
-  }
 
   base::File::Info info;
   infile.GetInfo(&info);
   if (!FileStreamReader::VerifySnapshotTime(expected_last_modified_copy_from,
                                             info)) {
-    base::UmaHistogramEnumeration(
-        "Storage.Blob.InvalidBlob",
-        InvalidBlobReasons::kPartialCopyTimestampWrong);
     return mojom::WriteBlobToFileResult::kInvalidBlob;
   }
 
@@ -213,11 +194,8 @@ mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
           size.value_or(std::numeric_limits<int64_t>::max()))) {
     return mojom::WriteBlobToFileResult::kIOError;
   }
-  if (size && bytes_copied != size.value()) {
-    base::UmaHistogramEnumeration("Storage.Blob.InvalidBlob",
-                                  InvalidBlobReasons::kUnexpectedBytesCopied);
+  if (size && bytes_copied != size.value())
     return mojom::WriteBlobToFileResult::kInvalidBlob;
-  }
 
   if (last_modified &&
       !outfile.SetTimes(last_modified.value(), last_modified.value())) {
@@ -325,10 +303,6 @@ void WriteConstructedBlobToFile(
   DCHECK(!last_modified || !last_modified.value().is_null());
   if (status != BlobStatus::DONE) {
     DCHECK(BlobStatusIsError(status));
-    base::UmaHistogramEnumeration("Storage.Blob.InvalidBlob",
-                                  InvalidBlobReasons::kConstructionError);
-    base::UmaHistogramEnumeration("Storage.Blob.InvalidBlob.ConstructionError",
-                                  status, BlobStatus::LAST_ERROR);
     std::move(callback).Run(mojom::WriteBlobToFileResult::kInvalidBlob);
     return;
   }

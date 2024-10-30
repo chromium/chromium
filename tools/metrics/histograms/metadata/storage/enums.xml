@@ -63,32 +63,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Denied by preventSilentAccess"/>
 </enum>
 
-<!-- LINT.IfChange(BlobConstructionErrors) -->
-
-<enum name="BlobConstructionErrors">
-  <int value="0"
-      label="The construction arguments are invalid. This is considered a bad
-             ipc."/>
-  <int value="1" label="We don't have enough memory for the blob."/>
-  <int value="2"
-      label="We couldn't create or write to a file. File system error, like a
-             full disk."/>
-  <int value="3" label="The renderer was destroyed while data was in transit."/>
-  <int value="4"
-      label="The renderer destructed the blob before it was done
-             transferring, and there were no outstanding references (no one
-             is waiting to read) to keep the blob alive."/>
-  <int value="5"
-      label="A blob that we referenced during construction is broken, or a
-             browser-side builder tries to build a blob with a blob reference
-             that isn't finished constructing."/>
-  <int value="6"
-      label="A file that we referenced during construction is not accessible
-             to the renderer trying to create the blob."/>
-</enum>
-
-<!-- LINT.ThenChange(//storage/browser/blob/blob_storage_constants.h:BlobStatus) -->
-
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>
@@ -321,19 +295,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
-
-<!-- LINT.IfChange(InvalidBlobReasons) -->
-
-<enum name="InvalidBlobReasons">
-  <int value="0"
-      label="error during blob construction; see
-             Storage.Blob.InvalidBlob.ConstructionError"/>
-  <int value="1" label="unexpected timestamp while copying a file wholesale"/>
-  <int value="2" label="unexpected timestamp while copying part of a file"/>
-  <int value="3" label="unexpected number of bytes copied"/>
-</enum>
-
-<!-- LINT.ThenChange(//storage/browser/blob/write_blob_to_file.cc:InvalidBlobReasons) -->
 
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>

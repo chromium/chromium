@@ -545,26 +545,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.InvalidBlob" enum="InvalidBlobReasons"
-    expires_after="2024-12-16">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Recorded when there was an error writing a blob to a file, and the reported
-    error type is InvalidBlob. Provides extra granularity for crbug.com/40728654
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.InvalidBlob.ConstructionError"
-    enum="BlobConstructionErrors" expires_after="2024-12-16">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Recorded when Storage.Blob.InvalidBlob emits to the construction error
-    bucket. Provides extra granularity for crbug.com/40728654
-  </summary>
-</histogram>
-
 <histogram name="Storage.Buckets.BucketCount" units="buckets"
     expires_after="2025-04-01">
   <owner>estade@chromium.org</owner>
