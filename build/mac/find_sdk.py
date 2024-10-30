@@ -44,7 +44,7 @@ def parse_version(version_str):
 
 
 def main():
-  parser = OptionParser()
+  parser = OptionParse()
   parser.add_option("--print_sdk_path",
                     action="store_true", dest="print_sdk_path", default=False,
                     help="Additionally print the path the SDK (appears first).")
