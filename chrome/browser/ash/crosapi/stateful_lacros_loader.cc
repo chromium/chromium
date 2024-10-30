@@ -59,42 +59,6 @@ bool IsInstalledMayBlock(const std::string& name) {
   return !path.empty();
 }
 
-// Called after preloading is finished.
-void DonePreloading(component_updater::ComponentManagerAsh::Error error,
-                    const base::FilePath& path) {
-  LOG(WARNING) << "Done preloading stateful Lacros. " << static_cast<int>(error)
-               << " " << path;
-}
-
-// Preloads the given component, or does nothing if |component| is empty.
-// Must be called on main thread.
-void PreloadComponent(
-    scoped_refptr<component_updater::ComponentManagerAsh> manager,
-    std::string component) {
-  if (!component.empty()) {
-    LOG(WARNING) << "Preloading stateful lacros. " << component;
-    manager->Load(component,
-                  component_updater::ComponentManagerAsh::MountPolicy::kMount,
-                  component_updater::ComponentManagerAsh::UpdatePolicy::kSkip,
-                  base::BindOnce(&DonePreloading));
-  }
-}
-
-// This method is dispatched pre-login. At this time, we don't know whether
-// Lacros is enabled. This method checks to see if the Lacros stateful component
-// matching the ash channel is installed -- if it is then Lacros is enabled. At
-// which point this method will begin loading stateful lacros.
-// Returns the name of the component on success, empty string on failure.
-std::string CheckForComponentToPreloadMayBlock() {
-  ash::standalone_browser::ComponentInfo info =
-      ash::standalone_browser::GetLacrosComponentInfoForChannel(
-          ash::GetChannel());
-  bool registered = IsInstalledMayBlock(info.name);
-  if (registered) {
-    return info.name;
-  }
-  return "";
-}
 
 }  // namespace
 
@@ -112,10 +76,6 @@ StatefulLacrosLoader::StatefulLacrosLoader(
     : component_manager_(manager),
       component_update_service_(updater),
       lacros_component_name_(lacros_component_name) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CheckForComponentToPreloadMayBlock),
-      base::BindOnce(&PreloadComponent, component_manager_));
   DCHECK(component_manager_);
 }
 
