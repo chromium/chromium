@@ -19,6 +19,8 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
@@ -112,12 +114,43 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   return account_preference_map;
 }
 
+// Call ContentNotificationService::SendNAUForConfiguration() after fetching
+// the notification settings if `weak_profile` is still valid.
+void SendNAUFConfigurationForProfileWithSettings(
+    base::WeakPtr<ProfileIOS> weak_profile,
+    UNNotificationSettings* settings) {
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
+    return;
+  }
+
+  UNAuthorizationStatus previousAuthStatus =
+      [PushNotificationUtil getSavedPermissionSettings];
+  ContentNotificationNAUConfiguration* config =
+      [[ContentNotificationNAUConfiguration alloc] init];
+  ContentNotificationSettingsAction* settingsAction =
+      [[ContentNotificationSettingsAction alloc] init];
+  settingsAction.previousAuthorizationStatus = previousAuthStatus;
+  settingsAction.currentAuthorizationStatus = settings.authorizationStatus;
+  config.settingsAction = settingsAction;
+  ContentNotificationServiceFactory::GetForProfile(profile)
+      ->SendNAUForConfiguration(config);
+}
+
 }  // anonymous namespace
 
-@implementation PushNotificationDelegate
+@interface PushNotificationDelegate () <AppStateObserver>
+@end
+
+@implementation PushNotificationDelegate {
+  __weak AppState* _appState;
+}
 
 - (instancetype)initWithAppState:(AppState*)appState {
-  [appState addObserver:self];
+  if ((self = [super init])) {
+    _appState = appState;
+    [_appState addObserver:self];
+  }
   return self;
 }
 
@@ -242,25 +275,31 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       // Send an initial NAU to share the OS auth status and channel status with
       // the server. Send an NAU on every foreground to report the OS Auth
       // Settings.
-      ContentNotificationService* contentNotificationService =
-          ContentNotificationServiceFactory::GetForProfile(profile);
-      [self sendSettingsChangeNAUWithService:contentNotificationService];
+      [self sendSettingsChangeNAUForProfile:profile];
     }
   }
 
+  __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<ProfileIOS> weakProfile =
+      profile ? profile->AsWeakPtr() : base::WeakPtr<ProfileIOS>{};
+
   notificationService->RegisterDevice(config, ^(NSError* error) {
-    if (error) {
-      base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
-                                false);
-    } else {
-      base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
-                                true);
+    [weakSelf deviceRegistrationForProfile:weakProfile withError:error];
+  });
+}
+
+- (void)deviceRegistrationForProfile:(base::WeakPtr<ProfileIOS>)weakProfile
+                           withError:(NSError*)error {
+  base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
+                            !error);
+  if (!error) {
+    if (ProfileIOS* profile = weakProfile.get()) {
       if (base::FeatureList::IsEnabled(
               send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
         [self setUpAndEnableSendTabNotificationsWithProfile:profile];
       }
     }
-  });
+  }
 }
 
 #pragma mark - AppStateObserver
@@ -338,27 +377,16 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       }
     }
     // Send an NAU on every foreground to report the OS Auth Settings.
-    [self sendSettingsChangeNAUWithService:contentNotificationService];
+    [self sendSettingsChangeNAUForProfile:profile];
   }
   [PushNotificationUtil updateAuthorizationStatusPref];
 }
 
-- (void)sendSettingsChangeNAUWithService:
-    (ContentNotificationService*)contentNotificationService {
+- (void)sendSettingsChangeNAUForProfile:(ProfileIOS*)profile {
   [PushNotificationUtil
-      getPermissionSettings:^(UNNotificationSettings* settings) {
-        UNAuthorizationStatus previousAuthStatus =
-            [PushNotificationUtil getSavedPermissionSettings];
-        ContentNotificationNAUConfiguration* config =
-            [[ContentNotificationNAUConfiguration alloc] init];
-        ContentNotificationSettingsAction* settingsAction =
-            [[ContentNotificationSettingsAction alloc] init];
-        settingsAction.previousAuthorizationStatus = previousAuthStatus;
-        settingsAction.currentAuthorizationStatus =
-            settings.authorizationStatus;
-        config.settingsAction = settingsAction;
-        contentNotificationService->SendNAUForConfiguration(config);
-      }];
+      getPermissionSettings:base::CallbackToBlock(base::BindOnce(
+                                &SendNAUFConfigurationForProfileWithSettings,
+                                profile->AsWeakPtr()))];
 }
 
 - (void)recordLifeCycleEvent:(PushNotificationLifecycleEvent)event {
@@ -370,22 +398,16 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
          IsContentNotificationRegistered(profile);
 }
 
-// Returns YES if there is a foreground active browser. Checks all profiles.
+// Returns YES if there is a foreground active scene for any profile.
 - (BOOL)isSceneLevelForegroundActive {
-  std::vector<ProfileIOS*> loaded_profiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-
-  for (ProfileIOS* profile : loaded_profiles) {
-    std::set<Browser*> browsers =
-        BrowserListFactory::GetForProfile(profile)->BrowsersOfType(
-            BrowserList::BrowserType::kRegular);
-    for (Browser* browser : browsers) {
-      if (browser->GetSceneState().activationLevel ==
-          SceneActivationLevelForegroundActive) {
-        return YES;
-      }
+  for (SceneState* scene in _appState.connectedScenes) {
+    if (scene.activationLevel < SceneActivationLevelForegroundActive) {
+      continue;
     }
+
+    return YES;
   }
+
   return NO;
 }
 
@@ -394,10 +416,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 // OR 2) enrolls user in provisional notifications for Send Tab notification
 // type.
 - (void)setUpAndEnableSendTabNotificationsWithProfile:(ProfileIOS*)profile {
-  if (!profile) {
-    return;
-  }
-
   // Refresh the local device info now that the client has a Chime
   // Representative Target ID.
   syncer::DeviceInfoSyncService* deviceInfoSyncService =

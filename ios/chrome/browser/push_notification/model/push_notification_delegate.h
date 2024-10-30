@@ -9,13 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
-
+@class AppState;
 class ProfileIOS;
 
 @interface PushNotificationDelegate
-    : NSObject <UNUserNotificationCenterDelegate, AppStateObserver>
+    : NSObject <UNUserNotificationCenterDelegate>
 
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 
