@@ -1013,6 +1013,7 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
                           IsAnswererUseAllowed();
   VLOG(3) << "OnQueryIntentComputed for '" << result.query << "' ("
           << query_is_answerable << "," << answerable << ")";
+  VLOG(3) << "ComputeIntentStatus: " << static_cast<int>(status);
   base::UmaHistogramBoolean("History.Embeddings.QueryAnswerable", answerable);
   if (!answerable) {
     return;
