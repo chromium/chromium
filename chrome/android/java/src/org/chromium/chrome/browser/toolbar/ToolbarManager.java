@@ -2603,12 +2603,11 @@ public class ToolbarManager
 
     private void onBackForwardTransitionAnimationChange() {
         Tab tab = mActivityTabProvider.get();
-        final boolean backGestureInvokeAnimationInProgress =
+        final boolean nativeDrawsProgressBar =
                 tab != null
                         && tab.getWebContents().getCurrentBackForwardTransitionStage()
-                                == AnimationStage.INVOKE_ANIMATION;
-        mToolbar.setShowingProgressBarForBackForwardTransition(
-                backGestureInvokeAnimationInProgress);
+                                == AnimationStage.INVOKE_ANIMATION_WITH_PROGRESS_BAR;
+        mToolbar.setShowingProgressBarForBackForwardTransition(nativeDrawsProgressBar);
     }
 
     public @BackPressResult int handleBackPress() {

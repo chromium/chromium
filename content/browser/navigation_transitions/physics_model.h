@@ -86,6 +86,10 @@ class CONTENT_EXPORT PhysicsModel {
   // request (when there are multiple navigation requests).
   void OnNavigationFinished(bool navigation_committed);
 
+  // Returns true if the current animation is driven by the commit-pending
+  // spring, and the animation has reached the commit-pending position.
+  bool ReachedCommitPending() const;
+
  private:
   // The "state" of the physics model. The animations can be driven by four
   // models:

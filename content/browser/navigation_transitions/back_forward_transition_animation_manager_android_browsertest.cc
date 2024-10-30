@@ -3269,26 +3269,50 @@ class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerBrowserTestWithProgressBar,
     ProgressBar) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
   ValidateNoProgressBar();
 
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+
   GetAnimationManager()->OnGestureInvoked();
   {
+    ASSERT_TRUE(back_to_red.WaitForRequestStart());
     // Progress bar should be displayed when invoke animation starts.
     TestFuture<void> on_animate;
     GetAnimator()->set_next_on_animate_callback(on_animate.GetCallback());
     ASSERT_TRUE(on_animate.Wait())
         << "Timed out waiting for invoke animation to start";
+
     EXPECT_STATE_EQ(kDisplayingInvokeAnimation, GetAnimator()->state());
+    ValidateNoProgressBar();
+  }
+
+  {
+    // Since the gap between the two time ticks are long enough, the next
+    // OnAnimate() drives the animation to the commit-pending state.
+    TestFuture<void> on_animate;
+    GetAnimator()->set_next_on_animate_callback(on_animate.GetCallback());
+    ASSERT_TRUE(on_animate.Wait())
+        << "Timed out waiting for invoke animation to start";
+
+    ASSERT_FALSE(back_to_red.was_committed());
+
     const auto* progress_layer = GetProgressBarLayer();
+    ASSERT_TRUE(progress_layer);
     const int viewport_width = GetViewportSize().width();
     EXPECT_EQ(progress_layer->bounds(),
               gfx::Size(viewport_width, kConfig.height_physical));
   }
 
   {
+    ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+
     TestFuture<void> did_invoke;
     GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
     ASSERT_TRUE(did_invoke.Wait())

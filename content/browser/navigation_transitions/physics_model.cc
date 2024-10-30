@@ -419,6 +419,11 @@ void PhysicsModel::OnNavigationFinished(bool committed) {
       committed ? NavigationState::kCommitted : NavigationState::kCancelled;
 }
 
+bool PhysicsModel::ReachedCommitPending() const {
+  return animation_driver_ == Driver::kSpringCommitPending &&
+         foreground_has_reached_target_commit_pending_;
+}
+
 void PhysicsModel::StartAnimating(base::TimeTicks time) {
   animation_start_time_ = time;
   animation_start_offset_viewport_ = foreground_offset_viewport_;

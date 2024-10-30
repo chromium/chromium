@@ -525,8 +525,12 @@ void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
 
 AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
   switch (state_) {
-    case State::kDisplayingInvokeAnimation:
-      return AnimationStage::kInvokeAnimation;
+    case State::kDisplayingInvokeAnimation: {
+      if (!progress_bar_) {
+        return AnimationStage::kInvokeAnimation;
+      }
+      return AnimationStage::kInvokeAnimationWithProgressBar;
+    }
     case State::kWaitingForContentForNavigationEntryShown:
       return AnimationStage::kWaitingForEmbedderContentForCommittedEntry;
     case State::kAnimationFinished:
@@ -551,6 +555,17 @@ void BackForwardTransitionAnimator::OnAnimate(
     case State::kDisplayingInvokeAnimation: {
       PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
       animation_finished = SetLayerTransformationAndTickEffect(result);
+
+      // https://crbug.com/371534496: If the navigation hasn't committed at
+      // when the animation has reached commit-pending, show the progress bar
+      // for native pages.
+      if (!progress_bar_ && physics_model_.ReachedCommitPending() &&
+          navigation_state_ != NavigationState::kCommitted) {
+        SetupProgressBar();
+        // `kInvokeAnimation` => `kInvokeAnimationWithProgressBar`. Inform Java
+        // UI that C++ is displaying a progress bar.
+        animation_manager_->OnAnimationStageChanged();
+      }
 
       if (progress_bar_) {
         progress_bar_->Animate(frame_begin_time);
@@ -1451,7 +1466,6 @@ void BackForwardTransitionAnimator::ProcessState() {
 
       CHECK(animation_manager_->web_contents_view_android()
                 ->GetTopLevelNativeWindow());
-      SetupProgressBar();
       animation_manager_->web_contents_view_android()
           ->GetTopLevelNativeWindow()
           ->SetNeedsAnimate();
