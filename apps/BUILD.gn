@@ -20,7 +20,7 @@ static_library("apps") {
     "app_lifetime_monitor_factory.cc",
     "app_lifetime_monitor_factory.h",
     "app_restore_service.cc",
-    "app_restore_service.h",
+    "app_restore_service.j",
     "app_restore_service_factory.cc",
     "app_restore_service_factory.h",
     "browser_context_keyed_service_factories.cc",
