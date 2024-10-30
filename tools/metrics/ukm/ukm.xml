@@ -19882,6 +19882,13 @@ be describing additional metrics about the same event.
       Duration in units of milliseconds.
     </summary>
   </metric>
+  <metric name="InitialWorkerStatus" enum="ServiceWorkerStatus">
+    <summary>
+      ServiceWorker running status at the time when the SW is handling the main
+      resource. Recorded regardless of the router existence via Static Routing
+      API.
+    </summary>
+  </metric>
   <metric name="MatchedFirstRouterSourceType"
       enum="ServiceWorkerRouterSourceType">
     <summary>
@@ -19910,6 +19917,11 @@ be describing additional metrics about the same event.
     <summary>
       ServiceWorker running status at the time when router evaluation is
       conducted.
+
+      We expect this is equivalent to `InitialWorkerStatus` in most cases.
+      However, those are set in different tasks (ctor and `StartRequest()` in
+      SWMainResourceLoader) and some other task may update the status between
+      them. We keep both metrics just in case.
     </summary>
   </metric>
 </event>

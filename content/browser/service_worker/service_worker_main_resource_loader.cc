@@ -150,7 +150,8 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     initial_service_worker_status_ = ConvertToServiceWorkerStatus(
         running_status, active_worker->IsWarmingUp(),
         active_worker->IsWarmedUp());
-
+    response_head_->initial_service_worker_status =
+        initial_service_worker_status_;
     base::WeakPtr<ServiceWorkerContextCore> core = active_worker->context();
     if (running_status == blink::EmbeddedWorkerStatus::kStopping && core) {
       base::UmaHistogramBoolean(
@@ -301,6 +302,9 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           // ServiceWorker startup.
           response_head_->service_worker_router_info->actual_source_type =
               network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+          // `initial_service_worker_status_` should be set if `active_worker`
+          // exists.
+          CHECK(initial_service_worker_status_.has_value());
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
@@ -308,10 +312,14 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                          fallback_callback,
                      scoped_refptr<ServiceWorkerVersion> active_worker,
                      network::mojom::ServiceWorkerRouterInfoPtr router_info,
-                     net::LoadTimingInfo load_timing_info) {
+                     net::LoadTimingInfo load_timing_info,
+                     network::mojom::ServiceWorkerStatus
+                         initial_service_worker_status) {
                     ResponseHeadUpdateParams head_update_params;
                     head_update_params.router_info = std::move(router_info);
                     head_update_params.load_timing_info = load_timing_info;
+                    head_update_params.initial_service_worker_status =
+                        initial_service_worker_status;
                     std::move(fallback_callback)
                         .Run(std::move(head_update_params));
                     if (active_worker->running_status() !=
@@ -326,7 +334,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   },
                   std::move(fallback_callback_), active_worker,
                   std::move(response_head_->service_worker_router_info),
-                  response_head_->load_timing));
+                  response_head_->load_timing,
+                  initial_service_worker_status_.value()));
           return;
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
           race_network_request_mode = RaceNetworkRequestMode::kForced;
@@ -619,6 +628,8 @@ void ServiceWorkerMainResourceLoader::CommitResponseBody(
       response_head->load_timing.service_worker_router_evaluation_start =
           response_head_->load_timing.service_worker_router_evaluation_start;
     }
+    response_head->initial_service_worker_status =
+        initial_service_worker_status_;
   }
 
   url_loader_client_->OnReceiveResponse(response_head.Clone(),
@@ -893,10 +904,13 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
     if (fallback_callback_) {
+      CHECK(initial_service_worker_status_.has_value());
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info = response_head_->load_timing;
       head_update_params.router_info =
           std::move(response_head_->service_worker_router_info);
+      head_update_params.initial_service_worker_status =
+          initial_service_worker_status_.value();
       std::move(fallback_callback_).Run(std::move(head_update_params));
     }
     return;

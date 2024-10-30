@@ -266,9 +266,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Records UKM for the navigation load.
   void RecordReceivedResponseUkmForOutermostMainFrame();
 
-  // Record static routing API evaluation related results.
-  void RecordServiceWorkerRouterEvaluationResults(
-      network::mojom::ServiceWorkerRouterInfo* router_info);
+  // Record ServiceWorker and the static routing API evaluation related results.
+  void MaybeRecordServiceWorkerMainResourceInfo(
+      const network::mojom::URLResponseHeadPtr& head);
 
   raw_ptr<NavigationURLLoaderDelegate, DanglingUntriaged> delegate_;
   raw_ptr<BrowserContext> browser_context_;
