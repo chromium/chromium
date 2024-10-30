@@ -5,13 +5,10 @@
 #ifndef IOS_CHROME_APP_SAFE_MODE_APP_STATE_AGENT_H_
 #define IOS_CHROME_APP_SAFE_MODE_APP_STATE_AGENT_H_
 
-#import "ios/chrome/app/application_delegate/app_state_agent.h"
-
-@class AppState;
+#import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
 // App state agent that triggers the safe mode stage when needed.
-@interface SafeModeAppAgent : NSObject <AppStateAgent>
-
+@interface SafeModeAppAgent : SceneObservingAppAgent
 @end
 
 #endif  // IOS_CHROME_APP_SAFE_MODE_APP_STATE_AGENT_H_
