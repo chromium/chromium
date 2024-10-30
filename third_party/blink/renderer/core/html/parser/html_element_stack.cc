@@ -44,25 +44,19 @@ using HTMLTag = html_names::HTMLTag;
 
 namespace {
 
-// The following macro is used in switch statements for common types. It is
-// defined so that it looks like a normal case statement, e.g.:
-//   case FOO_CASES:
-
-// Disable formatting as it mangles the formatting.
-// clang-format off
-
-#define SCOPE_MARKER_CASES \
-  HTMLTag::kApplet: \
-  case HTMLTag::kCaption: \
-  case HTMLTag::kHTML: \
-  case HTMLTag::kMarquee: \
-  case HTMLTag::kObject: \
-  case HTMLTag::kTable: \
-  case HTMLTag::kTd: \
-  case HTMLTag::kTemplate: \
-  case HTMLTag::kTh
-
-// clang-format on
+inline bool IsScopeMarkerTag(const HTMLTag& tag) {
+  if (tag == HTMLTag::kCaption || tag == HTMLTag::kApplet ||
+      tag == HTMLTag::kHTML || tag == HTMLTag::kMarquee ||
+      tag == HTMLTag::kObject || tag == HTMLTag::kTable ||
+      tag == HTMLTag::kTd || tag == HTMLTag::kTemplate || tag == HTMLTag::kTh) {
+    return true;
+  }
+  if (tag == HTMLTag::kSelect &&
+      RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    return true;
+  }
+  return false;
+}
 
 inline bool IsRootNode(HTMLStackItem* item) {
   return item->IsDocumentFragmentNode() ||
@@ -84,26 +78,18 @@ inline bool IsScopeMarkerNonHTML(HTMLStackItem* item) {
 
 inline bool IsScopeMarker(HTMLStackItem* item) {
   if (item->IsHTMLNamespace()) {
-    switch (item->GetHTMLTag()) {
-      case SCOPE_MARKER_CASES:
-        return true;
-      default:
-        return item->IsDocumentFragmentNode();
-    }
+    return IsScopeMarkerTag(item->GetHTMLTag()) ||
+           item->IsDocumentFragmentNode();
   }
   return IsScopeMarkerNonHTML(item);
 }
 
 inline bool IsListItemScopeMarker(HTMLStackItem* item) {
   if (item->IsHTMLNamespace()) {
-    switch (item->GetHTMLTag()) {
-      case SCOPE_MARKER_CASES:
-      case HTMLTag::kOl:
-      case HTMLTag::kUl:
-        return true;
-      default:
-        return item->IsDocumentFragmentNode();
-    }
+    return IsScopeMarkerTag(item->GetHTMLTag()) ||
+           item->IsDocumentFragmentNode() ||
+           item->GetHTMLTag() == HTMLTag::kOl ||
+           item->GetHTMLTag() == HTMLTag::kUl;
   }
   return IsScopeMarkerNonHTML(item);
 }
@@ -160,13 +146,9 @@ inline bool IsForeignContentScopeMarker(HTMLStackItem* item) {
 
 inline bool IsButtonScopeMarker(HTMLStackItem* item) {
   if (item->IsHTMLNamespace()) {
-    switch (item->GetHTMLTag()) {
-      case SCOPE_MARKER_CASES:
-      case HTMLTag::kButton:
-        return true;
-      default:
-        return item->IsDocumentFragmentNode();
-    }
+    return IsScopeMarkerTag(item->GetHTMLTag()) ||
+           item->IsDocumentFragmentNode() ||
+           item->GetHTMLTag() == HTMLTag::kButton;
   }
   return IsScopeMarkerNonHTML(item);
 }

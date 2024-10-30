@@ -15,10 +15,9 @@ Got:
 |       <b>
 |         <option>
 |     <b>
-|     <select>
-|       <b>
+|       <select>
 |         <option>
-|     "X"
+|       "X"
 Expected:
 | <html>
 |   <head>
@@ -38,8 +37,7 @@ Got:
 |       <b>
 |         <option>
 |     <b>
-|     <select>
-|       <b>
+|       <select>
 |         <option>
 Expected:
 | <html>
