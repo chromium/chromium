@@ -14,6 +14,7 @@
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_constants/constants.h"
+#include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/display/display.h"
@@ -23,6 +24,8 @@ namespace {
 
 constexpr base::TimeDelta kClearLaunchDataDuration = base::Seconds(20);
 
+// Converts a coral `group` to a full restore struct that can be used by
+// `DesksTemplatesAppLaunchHandler` to create a browser and launch apps.
 std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     coral::mojom::GroupPtr group) {
   auto restore_data = std::make_unique<app_restore::RestoreData>();
@@ -46,18 +49,20 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     app_restore_data = std::make_unique<app_restore::AppRestoreData>();
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
-
   for (const std::string& app_id : app_ids) {
+    // TODO(http://crbug.com/365839465): The window id should also be passed
+    // through the pipeline. For now we just use the first window restore data
+    // as multi window apps are rare.
+    int32_t window_id;
+    app_restore::AppRestoreData* full_restore_app_restore_data =
+        full_restore::FullRestoreReadHandler::GetInstance()
+            ->GetFirstAppRestoreDataForActiveProfile(app_id, window_id);
+    if (!full_restore_app_restore_data) {
+      continue;
+    }
     auto& launch_list = restore_data->mutable_app_id_to_launch_list()[app_id];
-    auto& app_restore_data = launch_list[/*window_id=*/0];
-    app_restore_data = std::make_unique<app_restore::AppRestoreData>();
-
-    // TODO(http://b/365839465): These fields are required to launch an app.
-    // Retrieve them from full restore read handler.
-    app_restore_data->container = 0;
-    app_restore_data->display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
-    app_restore_data->disposition = 3;
+    auto& app_restore_data = launch_list[window_id];
+    app_restore_data = full_restore_app_restore_data->Clone();
   }
 
   return restore_data;

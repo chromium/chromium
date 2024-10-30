@@ -35,6 +35,9 @@
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/restore_data.h"
 #include "content/public/test/browser_test.h"
 #include "gmock/gmock.h"
 
@@ -105,17 +108,42 @@ class CoralBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kCoralFeature};
 };
 
-IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginBrowser) {
-  // Ensure that post login overview shows up by having at least one app open
-  // and immediate saving to bypass the 2.5 second throttle.
-  CreateBrowser(ProfileManager::GetActiveUserProfile());
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginLaunch) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  test::InstallSystemAppsForTesting(profile);
+
+  // Launch settings SWA. We will confirm their window bounds in the real test.
+  // This will also ensure that post login overview shows up by having at least
+  // one app open.
+  test::CreateSystemWebApp(profile, SystemWebAppType::SETTINGS);
+  BrowserList::GetInstance()
+      ->GetLastActive()
+      ->window()
+      ->GetNativeWindow()
+      ->SetBounds(gfx::Rect(600, 600));
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
   AppLaunchInfoSaveWaiter::Wait();
 }
 
 // Launches a browser with the expected tabs when the post login coral chip is
 // clicked.
-IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
-  test::InstallSystemAppsForTesting(ProfileManager::GetActiveUserProfile());
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
+  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  // `InstallSystemAppsForTesting()` will uninstall and reinstall SWA's. This
+  // will invalidate full restore data in the read handler (see
+  // `FullRestoreDataHandler::OnAppUpdate()`). We manually clone the data and
+  // add it back, SWA's won't be uninstalled in production code like this.
+  auto* full_restore_read_handler =
+      ::full_restore::FullRestoreReadHandler::GetInstance();
+  auto restore_data =
+      full_restore_read_handler->GetRestoreDataForTesting(profile->GetPath());
+  test::InstallSystemAppsForTesting(profile);
+  full_restore_read_handler->SetRestoreDataForTesting(profile->GetPath(),
+                                                      std::move(restore_data));
 
   // Wait until the chip is visible, it may not be visible while data fetch is
   // underway or the overview animation is still running.
@@ -127,15 +155,16 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
   BirchChipButtonBase* coral_chip = GetBirchChipButton();
   ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
 
-  test::BrowsersWaiter waiter(/*expected_count=*/3);
+  test::BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(coral_chip);
   waiter.Wait();
 
   // TODO(sammiequon): These tabs and apps are currently hardcoded in ash for
   // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
   // instead.
+  BrowserList* browsers = BrowserList::GetInstance();
   EXPECT_TRUE(
-      base::ranges::any_of(*BrowserList::GetInstance(), [](Browser* browser) {
+      base::ranges::any_of(*browsers, [](Browser* browser) {
         TabStripModel* tab_strip_model = browser->tab_strip_model();
         return tab_strip_model->count() == 3 &&
                tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
@@ -145,15 +174,15 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
                tab_strip_model->GetWebContentsAt(2)->GetVisibleURL() ==
                    GURL("https://www.notion.so/");
       }));
-  EXPECT_TRUE(
-      base::ranges::any_of(*BrowserList::GetInstance(), [](Browser* browser) {
-        return IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS);
-      }));
-  EXPECT_TRUE(
-      base::ranges::any_of(*BrowserList::GetInstance(), [](Browser* browser) {
-        return IsBrowserForSystemWebApp(browser,
-                                        SystemWebAppType::FILE_MANAGER);
-      }));
+
+  // Tests that the settings SWA is launched and has their previous session
+  // window bounds.
+  auto settings_it = base::ranges::find_if(*browsers, [](Browser* browser) {
+    return IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS);
+  });
+  ASSERT_NE(browsers->end(), settings_it);
+  aura::Window* settings_window = (*settings_it)->window()->GetNativeWindow();
+  EXPECT_EQ(gfx::Rect(600, 600), settings_window->GetBoundsInScreen());
 }
 
 // Tests that clicking the in session coral button opens and activates a new
