@@ -1967,10 +1967,8 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
       }
       break;
   }
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
-    ResetLastInteractedElements();
-    OnFormNoLongerSubmittable();
-  }
+  ResetLastInteractedElements();
+  OnFormNoLongerSubmittable();
 }
 
 void AutofillAgent::AddFormObserver(Observer* observer) {

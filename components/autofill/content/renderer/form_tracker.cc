@@ -294,9 +294,7 @@ void FormTracker::FormControlDidChangeImpl(
 
 void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
-    ResetLastInteractedElements();
-  }
+  ResetLastInteractedElements();
 }
 
 void FormTracker::DidFinishSameDocumentNavigation() {
@@ -343,8 +341,7 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
     FireInferredFormSubmission(SubmissionSource::FRAME_DETACHED);
   }
   if (base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking) &&
-      !base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+          features::kAutofillUnifyAndFixFormTracking)) {
     // TODO(crbug.com/40281981): Figure out if this is still needed, and
     // document the reason, otherwise remove.
     ResetLastInteractedElements();
@@ -418,10 +415,9 @@ void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
   base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
   for (auto& observer : observers_)
     observer.OnInferredFormSubmission(source);
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking) &&
-      (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
-       !base::FeatureList::IsEnabled(
-           features::kAutofillAcceptDomMutationAfterAutofillSubmission))) {
+  if (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
     ResetLastInteractedElements();
   }
 }

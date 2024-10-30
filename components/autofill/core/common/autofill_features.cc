@@ -306,10 +306,8 @@ BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Removes logic that resets form submission tracking data upon receiving a
-// submission signal, so that integrators (namely Autofill and PasswordManager)
-// can decide what sources to use and what sources to ignore. Also, fixes
-// submission deduplication so that it ignores password submissions that PWM
-// doesn't act upon.
+// FORM_SUBMISSION or PROBABLE_FORM_SUBMISSION signal. Also, fixes submission
+// deduplication so that it ignores submissions that PWM doesn't act upon.
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillFixFormTracking,
              "AutofillFixFormTracking",
