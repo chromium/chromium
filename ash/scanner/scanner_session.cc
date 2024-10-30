@@ -56,26 +56,14 @@ std::optional<ScannerAction> ProtoActionToVariant(
     case manta::proto::ScannerAction::kNewContact:
       return std::move(*proto_action.mutable_new_contact());
 
-    case manta::proto::ScannerAction::kNewGoogleDoc: {
-      manta::proto::NewGoogleDocAction& new_doc_action =
-          *proto_action.mutable_new_google_doc();
-      return NewGoogleDocAction(std::move(new_doc_action.title()),
-                                std::move(new_doc_action.html_contents()));
-    }
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return std::move(*proto_action.mutable_new_google_doc());
 
-    case manta::proto::ScannerAction::kNewGoogleSheet: {
-      manta::proto::NewGoogleSheetAction& new_sheet_action =
-          *proto_action.mutable_new_google_sheet();
-      return NewGoogleSheetAction(std::move(new_sheet_action.title()),
-                                  std::move(new_sheet_action.csv_contents()));
-    }
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return std::move(*proto_action.mutable_new_google_sheet());
 
-    case manta::proto::ScannerAction::kCopyToClipboard: {
-      manta::proto::CopyToClipboardAction& copy_action =
-          *proto_action.mutable_copy_to_clipboard();
-      return CopyToClipboardAction(std::move(copy_action.plain_text()),
-                                   std::move(copy_action.html_text()));
-    }
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      return std::move(*proto_action.mutable_copy_to_clipboard());
 
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       return std::nullopt;

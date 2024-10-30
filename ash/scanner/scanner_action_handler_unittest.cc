@@ -242,8 +242,11 @@ TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
 }
 
 TEST(ScannerActionToCommandTest, NewGoogleDoc) {
-  ScannerCommand command = ScannerActionToCommand(
-      NewGoogleDocAction("Doc Title", "<span>Contents</span>"));
+  manta::proto::NewGoogleDocAction action;
+  action.set_title("Doc Title");
+  action.set_html_contents("<span>Contents</span>");
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,
@@ -254,8 +257,11 @@ TEST(ScannerActionToCommandTest, NewGoogleDoc) {
 }
 
 TEST(ScannerActionToCommandTest, NewGoogleSheet) {
-  ScannerCommand command =
-      ScannerActionToCommand(NewGoogleSheetAction("Sheet Title", "a,b\n1,2"));
+  manta::proto::NewGoogleSheetAction action;
+  action.set_title("Sheet Title");
+  action.set_csv_contents("a,b\n1,2");
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,
@@ -266,8 +272,10 @@ TEST(ScannerActionToCommandTest, NewGoogleSheet) {
 }
 
 TEST(ScannerActionHandlerTest, CopyToClipboardWithPlainText) {
-  ScannerCommand command =
-      ScannerActionToCommand(CopyToClipboardAction("Hello", /*html_text=*/""));
+  manta::proto::CopyToClipboardAction action;
+  action.set_plain_text("Hello");
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,
@@ -278,8 +286,10 @@ TEST(ScannerActionHandlerTest, CopyToClipboardWithPlainText) {
 }
 
 TEST(ScannerActionHandlerTest, CopyToClipboardWithHtmlText) {
-  ScannerCommand command = ScannerActionToCommand(
-      CopyToClipboardAction(/*plain_text=*/"", "<img />"));
+  manta::proto::CopyToClipboardAction action;
+  action.set_html_text("<img />");
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,
@@ -291,8 +301,11 @@ TEST(ScannerActionHandlerTest, CopyToClipboardWithHtmlText) {
 }
 
 TEST(ScannerActionHandlerTest, CopyToClipboardWithMultipleFields) {
-  ScannerCommand command =
-      ScannerActionToCommand(CopyToClipboardAction("Hello", "<b>Hello</b>"));
+  manta::proto::CopyToClipboardAction action;
+  action.set_plain_text("Hello");
+  action.set_html_text("<b>Hello</b>");
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,

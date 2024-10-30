@@ -262,13 +262,13 @@ void HandleDriveUploadCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
 }
 
 std::unique_ptr<ui::ClipboardData> ClipboardDataFromAction(
-    CopyToClipboardAction action) {
+    manta::proto::CopyToClipboardAction action) {
   auto data = std::make_unique<ui::ClipboardData>();
-  if (!action.plain_text.empty()) {
-    data->set_text(std::move(action.plain_text));
+  if (!action.plain_text().empty()) {
+    data->set_text(std::move(*action.mutable_plain_text()));
   }
-  if (!action.html_text.empty()) {
-    data->set_markup_data(std::move(action.html_text));
+  if (!action.html_text().empty()) {
+    data->set_markup_data(std::move(*action.mutable_html_text()));
   }
   return data;
 }
@@ -284,20 +284,21 @@ ScannerCommand ScannerActionToCommand(ScannerAction action) {
           [&](manta::proto::NewContactAction& action) -> ScannerCommand {
             return OpenUrlCommand(GetContactUrl(action));
           },
-          [&](NewGoogleDocAction& action) -> ScannerCommand {
+          [&](manta::proto::NewGoogleDocAction& action) -> ScannerCommand {
             return DriveUploadCommand(
-                std::move(action.title), std::move(action.html_contents),
+                std::move(*action.mutable_title()),
+                std::move(*action.mutable_html_contents()),
                 /*contents_mime_type=*/"text/html",
                 /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType);
           },
-          [&](NewGoogleSheetAction& action) -> ScannerCommand {
-            return DriveUploadCommand(std::move(action.title),
-                                      std::move(action.csv_contents),
+          [&](manta::proto::NewGoogleSheetAction& action) -> ScannerCommand {
+            return DriveUploadCommand(std::move(*action.mutable_title()),
+                                      std::move(*action.mutable_csv_contents()),
                                       /*contents_mime_type=*/"text/csv",
                                       /*converted_mime_type=*/
                                       drive::util::kGoogleSpreadsheetMimeType);
           },
-          [&](CopyToClipboardAction& action) -> ScannerCommand {
+          [&](manta::proto::CopyToClipboardAction& action) -> ScannerCommand {
             return CopyToClipboardCommand(
                 ClipboardDataFromAction(std::move(action)));
           },

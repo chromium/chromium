@@ -45,9 +45,15 @@ std::u16string ScannerActionViewModel::GetText() const {
       base::Overloaded{
           [](const manta::proto::NewEventAction&) { return u"New event"; },
           [](const manta::proto::NewContactAction&) { return u"New contact"; },
-          [](const NewGoogleDocAction&) { return u"New Google Doc"; },
-          [](const NewGoogleSheetAction&) { return u"New Google Sheet"; },
-          [](const CopyToClipboardAction&) { return u"Copy to clipboard"; },
+          [](const manta::proto::NewGoogleDocAction&) {
+            return u"New Google Doc";
+          },
+          [](const manta::proto::NewGoogleSheetAction&) {
+            return u"New Google Sheet";
+          },
+          [](const manta::proto::CopyToClipboardAction&) {
+            return u"Copy to clipboard";
+          },
       },
       action_);
 }
