@@ -23,6 +23,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
+GPU_EXPORT BASE_DECLARE_FEATURE(kAggressiveShaderCacheLimits);
+
 #if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);

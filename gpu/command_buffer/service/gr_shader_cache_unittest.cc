@@ -7,6 +7,8 @@
 #include <thread>
 
 #include "base/base64.h"
+#include "base/test/scoped_feature_list.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -130,6 +132,36 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   cache_.PurgeMemory(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(cache_.num_cache_entries(), 0u);
+}
+
+TEST_F(GrShaderCacheTest, AggressiveCacheAndMemoryPressure) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kAggressiveShaderCacheLimits};
+  int32_t regular_client_id = 3;
+  cache_.CacheClientIdOnDisk(regular_client_id);
+
+  auto key = SkData::MakeWithCopy(kShaderKey, strlen(kShaderKey));
+  auto shader = SkData::MakeUninitialized(kCacheLimit);
+  {
+    GrShaderCache::ScopedCacheUse cache_use(&cache_, regular_client_id);
+    EXPECT_EQ(cache_.load(*key), nullptr);
+    cache_.store(*key, *shader);
+  }
+  EXPECT_EQ(cache_.num_cache_entries(), 1u);
+
+  // Moderate memory pressure is ignored
+  cache_.PurgeMemory(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(cache_.num_cache_entries(), 1u);
+
+  // But not critical, except on Android
+  cache_.PurgeMemory(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(cache_.num_cache_entries(), 1u);
+#else
+  EXPECT_EQ(cache_.num_cache_entries(), 0u);
+#endif
 }
 
 TEST_F(GrShaderCacheTest, StoringSameEntry) {

@@ -52,6 +52,12 @@ BASE_FEATURE(kUseGles2ForOopR,
              "UseGles2ForOopR",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// More aggressive behavior for the shader cache: increase size, and do not
+// purge as much in case of memory pressure.
+BASE_FEATURE(kAggressiveShaderCacheLimits,
+             "AggressiveShaderCacheLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Use android SurfaceControl API for managing display compositor's buffer queue
 // and using overlays on Android. Also used by webview to disable surface
