@@ -41,11 +41,11 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGMarkerOrientType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGMarkerOrientAuto, "auto"},
-      {kSVGMarkerOrientAngle, "angle"},
-      {kSVGMarkerOrientAutoStartReverse, "auto-start-reverse"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "auto",
+      "angle",
+      "auto-start-reverse",
+  });
   static const SVGEnumerationMap entries(enum_items, kSVGMarkerOrientAngle);
   return entries;
 }

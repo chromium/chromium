@@ -60,24 +60,24 @@ static BlendMode ToBlendMode(SVGFEBlendElement::Mode mode) {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGFEBlendElement::Mode>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {SVGFEBlendElement::kModeNormal, "normal"},
-      {SVGFEBlendElement::kModeMultiply, "multiply"},
-      {SVGFEBlendElement::kModeScreen, "screen"},
-      {SVGFEBlendElement::kModeDarken, "darken"},
-      {SVGFEBlendElement::kModeLighten, "lighten"},
-      {SVGFEBlendElement::kModeOverlay, "overlay"},
-      {SVGFEBlendElement::kModeColorDodge, "color-dodge"},
-      {SVGFEBlendElement::kModeColorBurn, "color-burn"},
-      {SVGFEBlendElement::kModeHardLight, "hard-light"},
-      {SVGFEBlendElement::kModeSoftLight, "soft-light"},
-      {SVGFEBlendElement::kModeDifference, "difference"},
-      {SVGFEBlendElement::kModeExclusion, "exclusion"},
-      {SVGFEBlendElement::kModeHue, "hue"},
-      {SVGFEBlendElement::kModeSaturation, "saturation"},
-      {SVGFEBlendElement::kModeColor, "color"},
-      {SVGFEBlendElement::kModeLuminosity, "luminosity"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "normal",
+      "multiply",
+      "screen",
+      "darken",
+      "lighten",
+      "overlay",
+      "color-dodge",
+      "color-burn",
+      "hard-light",
+      "soft-light",
+      "difference",
+      "exclusion",
+      "hue",
+      "saturation",
+      "color",
+      "luminosity",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }

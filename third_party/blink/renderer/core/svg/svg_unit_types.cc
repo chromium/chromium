@@ -36,10 +36,10 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGUnitTypes::SVGUnitType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {SVGUnitTypes::kSvgUnitTypeUserspaceonuse, "userSpaceOnUse"},
-      {SVGUnitTypes::kSvgUnitTypeObjectboundingbox, "objectBoundingBox"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "userSpaceOnUse",
+      "objectBoundingBox",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }

@@ -31,12 +31,12 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<ColorMatrixType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {FECOLORMATRIX_TYPE_MATRIX, "matrix"},
-      {FECOLORMATRIX_TYPE_SATURATE, "saturate"},
-      {FECOLORMATRIX_TYPE_HUEROTATE, "hueRotate"},
-      {FECOLORMATRIX_TYPE_LUMINANCETOALPHA, "luminanceToAlpha"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "matrix",
+      "saturate",
+      "hueRotate",
+      "luminanceToAlpha",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }

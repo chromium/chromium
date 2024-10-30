@@ -39,11 +39,11 @@ namespace blink {
 template <>
 CORE_EXPORT const SVGEnumerationMap&
 GetEnumerationMap<FEConvolveMatrix::EdgeModeType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {FEConvolveMatrix::EDGEMODE_DUPLICATE, "duplicate"},
-      {FEConvolveMatrix::EDGEMODE_WRAP, "wrap"},
-      {FEConvolveMatrix::EDGEMODE_NONE, "none"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "duplicate",
+      "wrap",
+      "none",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }

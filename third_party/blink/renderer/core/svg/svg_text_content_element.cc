@@ -51,10 +51,10 @@ bool IsNGTextOrInline(const LayoutObject* object) {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGLengthAdjustType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGLengthAdjustSpacing, "spacing"},
-      {kSVGLengthAdjustSpacingAndGlyphs, "spacingAndGlyphs"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "spacing",
+      "spacingAndGlyphs",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }

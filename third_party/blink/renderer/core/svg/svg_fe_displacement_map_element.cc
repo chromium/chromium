@@ -30,12 +30,12 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<ChannelSelectorType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {CHANNEL_R, "R"},
-      {CHANNEL_G, "G"},
-      {CHANNEL_B, "B"},
-      {CHANNEL_A, "A"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "R",
+      "G",
+      "B",
+      "A",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }

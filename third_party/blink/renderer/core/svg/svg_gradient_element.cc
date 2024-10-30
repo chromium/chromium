@@ -36,11 +36,11 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGSpreadMethodType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGSpreadMethodPad, "pad"},
-      {kSVGSpreadMethodReflect, "reflect"},
-      {kSVGSpreadMethodRepeat, "repeat"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "pad",
+      "reflect",
+      "repeat",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
