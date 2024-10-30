@@ -128,6 +128,7 @@ const CGFloat kPeakDetentHeight = 100;
     case SheetDetentStateConsentDialog:
       _sheet.detents = @[ self.consentDetent ];
       _sheet.largestUndimmedDetentIdentifier = self.consentDetent.identifier;
+      _sheet.selectedDetentIdentifier = self.consentDetent.identifier;
       break;
   }
 
