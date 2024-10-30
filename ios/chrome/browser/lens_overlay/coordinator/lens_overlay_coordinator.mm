@@ -414,19 +414,14 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)hideLensUI:(BOOL)animated {
-  if (![self isUICreated] || !self.isOverlayPresented) {
-    return;
-  }
-  [self lockOrientationInPortrait:NO];
-
   // Add the foreground duration and reset the timer.
   _foregroundDuration =
       _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
   _foregroundTime = base::TimeTicks();
 
   _associatedTabHelper->UpdateSnapshotStorage();
-  _restorationWindow.hidden = YES;
-  _restorationWindow = nil;
+  [self dismissRestorationWindow];
+  [self lockOrientationInPortrait:NO];
 
   [_containerViewController.presentingViewController
       dismissViewControllerAnimated:animated
@@ -915,7 +910,8 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (BOOL)isOverlayPresented {
-  return _containerViewController.presentingViewController != nil;
+  // The overlay is presented over of the base view controller.
+  return self.baseViewController.presentedViewController != nil;
 }
 
 - (BOOL)isResultsBottomSheetOpen {
@@ -1148,9 +1144,13 @@ const CGFloat kMenuSymbolSize = 18;
   _restorationWindow.hidden = NO;
 }
 
-- (void)resultsBottomSheetPresented {
+- (void)dismissRestorationWindow {
   _restorationWindow.hidden = YES;
   _restorationWindow = nil;
+}
+
+- (void)resultsBottomSheetPresented {
+  [self dismissRestorationWindow];
   if (_associatedTabHelper) {
     _associatedTabHelper->ClearViewportSnapshot();
   }
