@@ -64,6 +64,19 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*"],
         },
+        "third_party/llvm-build/Release+Asserts/bin:llddeps": {
+            "type": "glob",
+            "includes": [
+                "clang*",
+                "ld.lld",
+                "lld",
+                "llvm-nm",
+                "llvm-objcopy",
+                "llvm-readelf",
+                "llvm-readobj",
+                "llvm-strip",
+            ],
+        },
         "third_party/llvm-build/Release+Asserts/lib/clang:libs": {
             "type": "glob",
             "includes": ["*/lib/*/*", "*/lib/*", "*/share/*"],
@@ -77,6 +90,18 @@ def __filegroups(ctx):
             "includes": ["*.o", "*.so*", "lib*.a"],
         },
         "build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu:libgcc": {
+            "type": "glob",
+            "includes": ["*.o", "*.a", "*.so"],
+        },
+        "build/linux/debian_bullseye_i386-sysroot/lib:libso": {
+            "type": "glob",
+            "includes": ["*.so*"],
+        },
+        "build/linux/debian_bullseye_i386-sysroot/usr/lib/i386-linux-gnu:libs": {
+            "type": "glob",
+            "includes": ["*.o", "*.so*", "lib*.a"],
+        },
+        "build/linux/debian_bullseye_i386-sysroot/usr/lib/gcc/i686-linux-gnu:libgcc": {
             "type": "glob",
             "includes": ["*.o", "*.a", "*.so"],
         },
@@ -106,6 +131,8 @@ def __clang_link(ctx, cmd):
             sysroot = ctx.fs.canonpath(sysroot)
         elif arg.startswith("--target="):
             target = arg.removeprefix("--target=")
+    if sysroot:
+        inputs.extend([sysroot + ":link"])
 
     for arch in android_archs:
         if target.startswith(arch):
@@ -142,18 +169,16 @@ def __step_config(ctx, step_config):
             "build/linux/debian_bullseye_amd64-sysroot/lib64/ld-linux-x86-64.so.2",
             "build/linux/debian_bullseye_amd64-sysroot/usr/lib/gcc/x86_64-linux-gnu:libgcc",
             "build/linux/debian_bullseye_amd64-sysroot/usr/lib/x86_64-linux-gnu:libs",
-            "third_party/llvm-build/Release+Asserts/bin/clang",
-            "third_party/llvm-build/Release+Asserts/bin/clang++",
-            "third_party/llvm-build/Release+Asserts/bin/ld.lld",
-            "third_party/llvm-build/Release+Asserts/bin/lld",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-nm",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-objcopy",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-readelf",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
-            "third_party/llvm-build/Release+Asserts/bin/llvm-strip",
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
             # The following inputs are used for sanitizer builds.
             # It might be better to add them only for sanitizer builds if there is a performance issue.
             "third_party/llvm-build/Release+Asserts/lib/clang:libs",
+        ],
+        "build/linux/debian_bullseye_i386-sysroot:link": [
+            "build/linux/debian_bullseye_i386-sysroot/lib:libso",
+            "build/linux/debian_bullseye_i386-sysroot/usr/lib/gcc/i686-linux-gnu:libgcc",
+            "build/linux/debian_bullseye_i386-sysroot/usr/lib/i386-linux-gnu:libs",
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
         ],
         "build/toolchain/gcc_solink_wrapper.py": [
             "build/toolchain/whole_archive.py",
@@ -269,6 +294,8 @@ def __step_config(ctx, step_config):
             "inputs": [
                 # TODO: b/316267242 - Add inputs to GN config.
                 "build/toolchain/gcc_solink_wrapper.py",
+                # TODO: Choose either amd64 sysroot or i386 sysroot
+                # appropriately.
                 "build/linux/debian_bullseye_amd64-sysroot:link",
             ],
             "exclude_input_patterns": [
@@ -292,6 +319,8 @@ def __step_config(ctx, step_config):
             "inputs": [
                 # TODO: b/316267242 - Add inputs to GN config.
                 "build/toolchain/gcc_link_wrapper.py",
+                # TODO: Choose either amd64 sysroot or i386 sysroot
+                # appropriately.
                 "build/linux/debian_bullseye_amd64-sysroot:link",
             ],
             "exclude_input_patterns": [
