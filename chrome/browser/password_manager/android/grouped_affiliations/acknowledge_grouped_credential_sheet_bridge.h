@@ -32,7 +32,8 @@ class AcknowledgeGroupedCredentialSheetBridge {
       const gfx::NativeWindow window);
   // Test constructors
   AcknowledgeGroupedCredentialSheetBridge(
-      base::PassKey<class TouchToFillControllerAutofillTest>,
+      base::PassKey<
+          class AcknowledgeGroupedCredentialSheetControllerTestHelper>,
       std::unique_ptr<JniDelegate> jni_delegate,
       gfx::NativeWindow window);
   AcknowledgeGroupedCredentialSheetBridge(

@@ -63,7 +63,8 @@ AcknowledgeGroupedCredentialSheetBridge::
 
 AcknowledgeGroupedCredentialSheetBridge::
     AcknowledgeGroupedCredentialSheetBridge(
-        base::PassKey<class TouchToFillControllerAutofillTest>,
+        base::PassKey<
+            class AcknowledgeGroupedCredentialSheetControllerTestHelper>,
         std::unique_ptr<JniDelegate> jni_delegate,
         const gfx::NativeWindow window)
     : jni_delegate_(std::move(jni_delegate)), window_android_(window) {}

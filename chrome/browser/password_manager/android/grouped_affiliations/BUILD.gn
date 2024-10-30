@@ -55,6 +55,19 @@ android_resources("java_resources") {
       [ "java/res/layout/acknowledge_grouped_credential_sheet_content.xml" ]
 }
 
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "acknowledge_grouped_credential_sheet_controller_test_helper.cc",
+    "acknowledge_grouped_credential_sheet_controller_test_helper.h",
+  ]
+  deps = [
+    ":public",
+    "//base/test:test_support",
+    "//ui/android:android",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "acknowledge_grouped_credential_sheet_controller_unittest.cc" ]
