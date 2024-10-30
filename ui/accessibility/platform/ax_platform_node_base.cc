@@ -1222,11 +1222,13 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         from = "table-caption";
         break;
       case ax::mojom::DescriptionFrom::kTitle:
-      case ax::mojom::DescriptionFrom::kPopoverAttribute:
+      case ax::mojom::DescriptionFrom::kPopoverTarget:
+      case ax::mojom::DescriptionFrom::kInterestTarget:
         // The following types of markup are mapped to "tooltip":
         // * The title attribute.
         // * A popover=something related via the `popovertarget` attribute.
         // * A tooltip related via aria-describedby (see kRelatedElement above).
+        // * An interesttarget pointing to plain content.
         from = "tooltip";
         break;
       case ax::mojom::DescriptionFrom::kNone:
@@ -1313,7 +1315,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       from = "related-element";
       DCHECK(!GetName().empty());
       break;
-    case ax::mojom::NameFrom::kPopoverAttribute:
+    case ax::mojom::NameFrom::kPopoverTarget:
+    case ax::mojom::NameFrom::kInterestTarget:
     case ax::mojom::NameFrom::kTitle:
       from = "tooltip";
       DCHECK(!GetName().empty());
@@ -1592,8 +1595,11 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DetailsFrom::kCssAnchor:
         AddAttributeToList("details-from", "css-anchor", attributes);
         break;
-      case ax::mojom::DetailsFrom::kPopoverAttribute:
-        AddAttributeToList("details-from", "popover-attribute", attributes);
+      case ax::mojom::DetailsFrom::kPopoverTarget:
+        AddAttributeToList("details-from", "popover-target", attributes);
+        break;
+      case ax::mojom::DetailsFrom::kInterestTarget:
+        AddAttributeToList("details-from", "interest-target", attributes);
         break;
     }
   }

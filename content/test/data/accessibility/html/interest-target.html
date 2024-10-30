@@ -1,0 +1,36 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:details-from*
+@WIN-ALLOW:details-roles*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:details*
+@BLINK-ALLOW:desc*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@AURALINUX-ALLOW:details-from*
+@AURALINUX-ALLOW:details-roles*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
+-->
+<!-- Rich interest target -->
+
+<!-- Set details relation when target is rich -->
+<div id="interestee1"><input></div>
+<button interesttarget="interestee1">Button</button>
+
+<!-- No details relation when interest target is next in the dom -->
+<button interesttarget="interestee2">Button</button>
+<div id="interestee2"><input></div>
+
+<!-- Plain interest target -->
+
+<!-- No details relation when target is not rich, will use as name -->
+<div id="interestee3">Plain #3</div>
+<button interesttarget="interestee3"></button>
+
+<!-- Uae as description if there's already a name-->
+<div id="interestee4">Plain #4</div>
+<button interesttarget="interestee4">Button</button>
+

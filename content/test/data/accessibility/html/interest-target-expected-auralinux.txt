@@ -1,0 +1,13 @@
+[document web]
+++[section] details-for=[push button]
+++++[entry] selectable-text
+++[push button] name='Button' details=[section] details-from:interest-target details-roles:*
+++[push button] name='Button'
+++[section]
+++++[entry] selectable-text
+++[section] label-for=[push button]
+++++[static] name='Plain #3'
+++[push button] name='Plain #3' labelled-by=[section]
+++[section] description-for=[push button]
+++++[static] name='Plain #4'
+++[push button] name='Button' description='Plain #4' described-by=[section] description-from:tooltip

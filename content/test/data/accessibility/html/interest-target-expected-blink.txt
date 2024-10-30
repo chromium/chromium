@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++button name='Button' detailsFrom=interestTarget detailsIds=genericContainer
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++button name='Button'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++genericContainer
+++++++++staticText name='Plain #3'
+++++++++++inlineTextBox name='Plain #3'
+++++++button name='Plain #3'
+++++++genericContainer
+++++++++staticText name='Plain #4'
+++++++++++inlineTextBox name='Plain #4'
+++++++button description='Plain #4' name='Button' descriptionFrom=interestTarget describedbyIds=genericContainer
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'

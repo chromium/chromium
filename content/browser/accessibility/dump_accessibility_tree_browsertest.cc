@@ -2541,6 +2541,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityImgMimeType) {
   RunHtmlTest(FILE_PATH_LITERAL("img-mime-type.png"));  // Open an image file.
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInterestTarget) {
+  RunPopoverHintTest(FILE_PATH_LITERAL("interest-target.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
@@ -3236,12 +3240,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithProhibitedNamesTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
-  RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
+  RunPopoverHintTest(FILE_PATH_LITERAL("popover-api.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
                        AccessibilityPopoverApi) {
-  RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
+  RunPopoverHintTest(FILE_PATH_LITERAL("popover-api.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -3263,6 +3267,10 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunPopoverHintTest(FILE_PATH_LITERAL("popover-hint.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityPopoverRichHint) {
+  RunPopoverHintTest(FILE_PATH_LITERAL("popover-rich-hint.html"));
+}
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPre) {
   RunHtmlTest(FILE_PATH_LITERAL("pre.html"));
 }

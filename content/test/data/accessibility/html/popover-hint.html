@@ -4,10 +4,11 @@
 @WIN-ALLOW:EXPANDED*
 @WIN-ALLOW:HASPOPUP*
 @WIN-ALLOW:haspopup*
+@BLINK-ALLOW:details*
 @BLINK-ALLOW:haspopup*
 @BLINK-ALLOW:expanded*
 @BLINK-ALLOW:nameFrom*
-@BLINK-ALLOW:descriptionFrom*
+@BLINK-ALLOW:description*
 @AURALINUX-ALLOW:details-roles*
 @AURALINUX-ALLOW:expanded*
 @AURALINUX-ALLOW:haspopup:*
@@ -55,6 +56,8 @@
 </div>
 <button title="the title" popovertarget="popover5">popover5</button>
 
+<!-- A plain hint set description and does not set the details relation -->
+<!-- See popover-rich-hint.html for rich hint mappings -->
 <div popover="hint" id="popover6">Test popover, open</div>
 <button popovertarget="popover6">popover6</button>
 

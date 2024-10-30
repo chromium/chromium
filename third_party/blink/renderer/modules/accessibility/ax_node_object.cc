@@ -4841,11 +4841,12 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
     case ax::mojom::blink::NameFrom::kCssAltText:
+    case ax::mojom::blink::NameFrom::kInterestTarget:
     case ax::mojom::blink::NameFrom::kPlaceholder:
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
     case ax::mojom::blink::NameFrom::kValue:
-    case ax::mojom::blink::NameFrom::kPopoverAttribute:
+    case ax::mojom::blink::NameFrom::kPopoverTarget:
       return true;
   }
   switch (name_from) {
@@ -4858,11 +4859,12 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
     case ax::mojom::blink::NameFrom::kCssAltText:
+    case ax::mojom::blink::NameFrom::kInterestTarget:
     case ax::mojom::blink::NameFrom::kPlaceholder:
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
     case ax::mojom::blink::NameFrom::kValue:
-    case ax::mojom::blink::NameFrom::kPopoverAttribute:
+    case ax::mojom::blink::NameFrom::kPopoverTarget:
       return true;
   }
 
@@ -6319,36 +6321,46 @@ String AXNodeObject::TextAlternativeFromTooltip(
     return title_text;
   }
 
-  auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
-  if (!form_control) {
-    return String();
+  // First try for interest target, then for hint popover.
+  // TODO(accessibility) Consider only using interest target.
+  AXObject* popover_ax_object = nullptr;
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+    popover_ax_object =
+        AXObjectCache().Get(GetElement()->interestTargetElement());
+  }
+  if (popover_ax_object) {
+    DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    name_from = ax::mojom::blink::NameFrom::kInterestTarget;
+  } else {
+    auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
+    if (!form_control) {
+      return String();
+    }
+    auto popover_target = form_control->popoverTargetElement();
+    if (!popover_target.popover ||
+        popover_target.popover->PopoverType() != PopoverValueType::kHint) {
+      return String();
+    }
+    popover_ax_object = AXObjectCache().Get(popover_target.popover);
+    name_from = ax::mojom::blink::NameFrom::kPopoverTarget;
+    DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
   }
 
-  auto popover_target = form_control->popoverTargetElement();
-  if (!popover_target.popover ||
-      popover_target.popover->PopoverType() != PopoverValueType::kHint) {
-    return String();
-  }
-
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
-
-  name_from = ax::mojom::blink::NameFrom::kPopoverAttribute;
   if (name_sources) {
     name_sources->push_back(
         NameSource(*found_text_alternative, html_names::kPopovertargetAttr));
     name_sources->back().type = name_from;
   }
-  AXObject* popover_ax_object = AXObjectCache().Get(popover_target.popover);
 
-  // Hint popovers are used for text if and only if all of the contents are
-  // plain, e.g. have no interesting semantic or interactive elements.
-  // Otherwise, the hint will be exposed via the kDetails relationship. The
-  // motivation for this is that by reusing the simple mechanism of titles,
-  // screen reader users can easily access the information of plain hints
-  // without having to navigate to it, making the content more accessible.
-  // However, in the case of rich hints, a kDetails relationship is required to
-  // ensure that users are able to access and interact with the hint as they can
-  // navigate to it using commands.
+  // Hint popovers and interest targets are used for text if and only if all of
+  // the contents are plain, e.g. have no interesting semantic or interactive
+  // elements. Otherwise, the hint will be exposed via the kDetails
+  // relationship. The motivation for this is that by reusing the simple
+  // mechanism of titles, screen reader users can easily access the information
+  // of plain hints without having to navigate to it, making the content more
+  // accessible. However, in the case of rich hints, a kDetails relationship is
+  // required to ensure that users are able to access and interact with the hint
+  // as they can navigate to it using commands.
   if (!popover_ax_object || !popover_ax_object->IsPlainContent()) {
     return String();
   }
@@ -7291,15 +7303,49 @@ String AXNodeObject::Description(
     }
   }
 
+  // For form controls that act as interest target triggering elements, use
+  // the target for a description if it only contains plain contents.
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled() &&
+      name_from != ax::mojom::blink::NameFrom::kInterestTarget) {
+    if (Element* interest_target = GetElement()->interestTargetElement()) {
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+      description_from = ax::mojom::blink::DescriptionFrom::kInterestTarget;
+      if (description_sources) {
+        description_sources->push_back(DescriptionSource(
+            found_description, html_names::kInteresttargetAttr));
+        description_sources->back().type = description_from;
+      }
+      AXObject* interest_ax_object = AXObjectCache().Get(interest_target);
+      if (interest_ax_object && interest_ax_object->IsPlainContent()) {
+        AXObjectSet visited;
+        description = RecursiveTextAlternative(*interest_ax_object,
+                                               interest_ax_object, visited);
+        if (related_objects) {
+          related_objects->push_back(
+              MakeGarbageCollected<NameSourceRelatedObject>(interest_ax_object,
+                                                            description));
+        }
+        if (description_sources) {
+          DescriptionSource& source = description_sources->back();
+          source.related_objects = *related_objects;
+          source.text = description;
+          found_description = true;
+        } else {
+          return description;
+        }
+      }
+    }
+  }
+
   // For form controls that act as triggering elements for popovers of type
   // kHint, then set aria-describedby to the popover.
-  if (name_from != ax::mojom::blink::NameFrom::kPopoverAttribute) {
+  if (name_from != ax::mojom::blink::NameFrom::kPopoverTarget) {
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
       auto popover_target = form_control->popoverTargetElement();
       if (popover_target.popover &&
           popover_target.popover->PopoverType() == PopoverValueType::kHint) {
         DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
-        description_from = ax::mojom::blink::DescriptionFrom::kPopoverAttribute;
+        description_from = ax::mojom::blink::DescriptionFrom::kPopoverTarget;
         if (description_sources) {
           description_sources->push_back(DescriptionSource(
               found_description, html_names::kPopovertargetAttr));

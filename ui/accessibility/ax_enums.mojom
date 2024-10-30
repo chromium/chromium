@@ -1332,7 +1332,11 @@ enum NameFrom {
 
   // The name comes from a tooltip-style popover (aka hint popover), where the
   // contents could be distilled to a plain text string.
-  kPopoverAttribute,
+  kPopoverTarget,
+
+  // The name comes from an interest target, where the contents could be
+  // distilled to a plain text string.
+  kInterestTarget,
 };
 
 // The source of the accessible description. Used by some screen readers
@@ -1386,9 +1390,12 @@ enum DescriptionFrom {
   // (SVG), or a View's tooltip.
   kTitle,
 
-  // The description comes from a non-tooltip popover, e.g. the
-  // |popovertarget| attribute pointing to a `popover=auto`.
-  kPopoverAttribute,
+  // The description comes from a tooltip popover, e.g. the
+  // |popovertarget| attribute pointing to a `popover=hint`.
+  kPopoverTarget,
+
+  // The description comes from an interest target.
+  kInterestTarget,
 };
 
 // The source of the accessible details.
@@ -1400,8 +1407,13 @@ enum DetailsFrom {
   // https://www.w3.org/TR/css-anchor-position-1/
   kCssAnchor,
 
-  // The details comes from a tooltip-style popover (aka hint popover).
-  kPopoverAttribute,
+  // The details comes from a popover that will show when the current element
+  // is triggered (e.g. click or space key on a button).
+  kPopoverTarget,
+
+  // The details comes from a popover that will show when the user shows
+  // interest in the current element, e.g. hovers.
+  kInterestTarget,
 };
 
 // Next value: 4

@@ -2622,21 +2622,21 @@ void AXObject::SerializeComputedDetailsRelation(
   }
 
   // Add aria-details for a popover invoker.
-  // TODO(https://crbug.com/1426607) Support this for non-plain hint popovers.
-  if (AXObject* popover = GetTargetPopoverForInvoker()) {
-    if (!GetElement()->IsDescendantOrShadowDescendantOf(
-            popover->GetElement())) {
-      // Only expose a details relationship if the trigger button isn't
-      // contained within the popover itself (shadow-including). E.g. a close
-      // button within the popover should not get a details relationship back
-      // to the containing popover.
-      node_data->AddIntListAttribute(
-          ax::mojom::blink::IntListAttribute::kDetailsIds,
-          {static_cast<int32_t>(popover->AXObjectID())});
-      node_data->SetDetailsFrom(
-          ax::mojom::blink::DetailsFrom::kPopoverAttribute);
-      return;
-    }
+  if (AXObject* popover = GetPopoverTargetForInvoker()) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds,
+        {static_cast<int32_t>(popover->AXObjectID())});
+    node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kPopoverTarget);
+    return;
+  }
+
+  // Add aria-details for a popover invoker.
+  if (AXObject* interest_popover = GetInterestTargetForInvoker()) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds,
+        {static_cast<int32_t>(interest_popover->AXObjectID())});
+    node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestTarget);
+    return;
   }
 
   // Add aria-details for the element anchored to this object.
@@ -2661,22 +2661,75 @@ bool AXObject::IsPlainContent() const {
 }
 
 // Popover invoking elements should have details relationships with their
-// target popover, when that popover is a) open, and b) not the next element
-// in the DOM (depth first search order).
-AXObject* AXObject::GetTargetPopoverForInvoker() const {
+// target popover, when that popover is:
+// a) open, and
+// b) not the next element in the DOM (depth first search order), and
+// c) either not a hint or a rich hint.
+AXObject* AXObject::GetPopoverTargetForInvoker() const {
   auto* form_element = DynamicTo<HTMLFormControlElement>(GetElement());
   if (!form_element) {
     return nullptr;
   }
-  HTMLElement* target_popover = form_element->popoverTargetElement().popover;
-  if (!target_popover || !target_popover->popoverOpen()) {
+  HTMLElement* popover = form_element->popoverTargetElement().popover;
+  if (!popover || !popover->popoverOpen()) {
     return nullptr;
   }
-  if (ElementTraversal::NextSkippingChildren(*form_element) == target_popover) {
+  if (ElementTraversal::NextSkippingChildren(*form_element) == popover) {
     // The next element is already the popover.
     return nullptr;
   }
-  return AXObjectCache().Get(target_popover);
+
+  AXObject* ax_popover = AXObjectCache().Get(popover);
+  if (popover->PopoverType() == PopoverValueType::kHint &&
+      ax_popover->IsPlainContent()) {
+    return nullptr;
+  }
+
+  // Only expose a details relationship if the trigger isn't
+  // contained within the popover itself (shadow-including). E.g. a close
+  // button within the popover should not get a details relationship back
+  // to the containing popover.
+  if (GetElement()->IsDescendantOrShadowDescendantOf(popover)) {
+    return nullptr;
+  }
+
+  return ax_popover;
+}
+
+// Interest target invoking elements should have details relationships with
+// their interest target, when that interest target is a) visible, b) is rich,
+// and c) not the next element in the DOM (depth first search order).
+AXObject* AXObject::GetInterestTargetForInvoker() const {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+    return nullptr;
+  }
+
+  if (!GetElement()) {
+    return nullptr;
+  }
+
+  Element* popover = GetElement()->interestTargetElement();
+  if (ElementTraversal::NextSkippingChildren(*GetElement()) == popover) {
+    // The next element is already the popover.
+    return nullptr;
+  }
+
+  AXObject* ax_popover = AXObjectCache().Get(popover);
+  if (!ax_popover) {
+    return nullptr;
+  }
+
+  // Only expose a details relationship if the trigger isn't
+  // contained within the popover itself (shadow-including).
+  if (GetElement()->IsDescendantOrShadowDescendantOf(popover)) {
+    return nullptr;
+  }
+
+  if (ax_popover->IsPlainContent()) {
+    return nullptr;
+  }
+
+  return ax_popover->IsVisible() ? ax_popover : nullptr;
 }
 
 AXObject* AXObject::GetPositionedObjectForAnchor(ui::AXNodeData* data) const {

@@ -903,7 +903,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual ax::mojom::blink::IsPopup IsPopup() const;
 
   // Heuristic to get the target popover for an invoking element.
-  AXObject* GetTargetPopoverForInvoker() const;
+  AXObject* GetPopoverTargetForInvoker() const;
+
+  // Heuristic to get the interest target for an invoking element.
+  AXObject* GetInterestTargetForInvoker() const;
 
   // Elements can be positioned relative to other elements with CSS anchor
   // positioning. This function returns the positioned element that should be

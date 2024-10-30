@@ -2387,6 +2387,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "contents";
     case ax::mojom::NameFrom::kCssAltText:
       return "cssAltText";
+    case ax::mojom::NameFrom::kInterestTarget:
+      return "interestTarget";
     case ax::mojom::NameFrom::kPlaceholder:
       return "placeholder";
     case ax::mojom::NameFrom::kProhibited:
@@ -2397,8 +2399,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "relatedElement";
     case ax::mojom::NameFrom::kTitle:
       return "title";
-    case ax::mojom::NameFrom::kPopoverAttribute:
-      return "popoverAttribute";
+    case ax::mojom::NameFrom::kPopoverTarget:
+      return "popoverTarget";
     case ax::mojom::NameFrom::kValue:
       return "value";
   }
@@ -2416,8 +2418,10 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "attributeExplicitlyEmpty";
     case ax::mojom::DescriptionFrom::kButtonLabel:
       return "buttonLabel";
-    case ax::mojom::DescriptionFrom::kPopoverAttribute:
-      return "popoverAttribute";
+    case ax::mojom::DescriptionFrom::kInterestTarget:
+      return "interestTarget";
+    case ax::mojom::DescriptionFrom::kPopoverTarget:
+      return "popoverTarget";
     case ax::mojom::DescriptionFrom::kProhibitedNameRepair:
       return "prohibitedNameRepair";
     case ax::mojom::DescriptionFrom::kRelatedElement:
@@ -2458,8 +2462,10 @@ const char* ToString(ax::mojom::DetailsFrom details_from) {
       return "ariaDetails";
     case ax::mojom::DetailsFrom::kCssAnchor:
       return "cssAnchor";
-    case ax::mojom::DetailsFrom::kPopoverAttribute:
-      return "popoverAttribute";
+    case ax::mojom::DetailsFrom::kPopoverTarget:
+      return "popoverTarget";
+    case ax::mojom::DetailsFrom::kInterestTarget:
+      return "interestTarget";
   }
 
   return "";
