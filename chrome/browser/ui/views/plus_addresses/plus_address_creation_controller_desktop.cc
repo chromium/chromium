@@ -12,9 +12,13 @@
 
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -206,13 +210,13 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
+  const bool was_notice_shown = ShouldShowNotice();
   if (maybe_plus_profile.has_value()) {
     // Autofill the plus address.
     std::move(callback_).Run(*maybe_plus_profile->plus_address);
 
     // If this was a first run dialog, record that the user has accepted the
     // notice.
-    const bool was_notice_shown = ShouldShowNotice();
     if (was_notice_shown) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
       if (Browser* browser = chrome::FindBrowserWithTab(&GetWebContents())) {
@@ -234,6 +238,30 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   if (dialog_delegate_) {
     dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
   }
+
+  if (was_notice_shown) {
+    // The survey is shown only during the first time creation flow.
+    MaybeTriggerUserPerceptionSurvey();
+  }
+}
+
+void PlusAddressCreationControllerDesktop::MaybeTriggerUserPerceptionSurvey() {
+  if (!base::FeatureList::IsEnabled(
+          features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+  hats_service->LaunchSurvey(
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing(),
+      /*product_specific_bits_data=*/{}, /*product_specific_string_data=*/{});
 }
 
 bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {

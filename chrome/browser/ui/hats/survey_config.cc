@@ -14,6 +14,7 @@
 #include "components/lens/lens_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/plus_addresses/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -71,6 +72,8 @@ constexpr char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[] =
     "performance-high-efficiency-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
     "performance-battery-saver-opt-out";
+constexpr char kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate[] =
+    "plus-address-accepted-first-time-create";
 // The permission prompt trigger permits configuring multiple triggers
 // simultaneously. Each trigger increments a counter at the end -->
 // "permission-prompt0", "permission-prompt1", ...
@@ -481,6 +484,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &performance_manager::features::
           kPerformanceControlsBatterySaverOptOutSurvey,
       kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut);
+  survey_configs.emplace_back(
+      &plus_addresses::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate);
 
   // Red Warning surveys.
   survey_configs.emplace_back(

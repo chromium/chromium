@@ -20,6 +20,12 @@ constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 
 }  // namespace
 
+// When enabled, HaTS survey is shown after the successful first time creation
+// flow.
+BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
+             "PlusAddressAcceptedFirstTimeCreateSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, the user is shown the GMS core plus address management activity
 // instead of the web page in a Chrome custom tab.

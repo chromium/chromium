@@ -64,6 +64,8 @@ class PlusAddressCreationControllerDesktop
   // Autofills `plus_address` in the targeted field by running callback_.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
 
+  void MaybeTriggerUserPerceptionSurvey();
+
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
   std::unique_ptr<PlusAddressCreationDialogDelegate> dialog_delegate_;

@@ -13,7 +13,11 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
@@ -21,6 +25,7 @@
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,7 +35,12 @@
 namespace plus_addresses {
 namespace {
 
+using ::testing::_;
+using ::testing::IsEmpty;
+
 constexpr char kPlusAddressModalEventHistogram[] = "PlusAddresses.Modal.Events";
+constexpr char kPlusAddressModalEventHistogramWithNotice[] =
+    "PlusAddresses.ModalWithNotice.Events";
 
 constexpr base::TimeDelta kDuration = base::Milliseconds(2400);
 
@@ -42,6 +52,14 @@ std::string FormatModalDurationMetrics(
       /*offsets=*/nullptr);
 }
 
+std::string FormatModalWithNoticeDurationMetrics(
+    metrics::PlusAddressModalCompletionStatus status) {
+  return base::ReplaceStringPlaceholders(
+      "PlusAddresses.ModalWithNotice.$1.ShownDuration",
+      {metrics::PlusAddressModalCompletionStatusToString(status)},
+      /*offsets=*/nullptr);
+}
+
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
 class PlusAddressCreationControllerDesktopEnabledTest
@@ -49,7 +67,13 @@ class PlusAddressCreationControllerDesktopEnabledTest
  public:
   PlusAddressCreationControllerDesktopEnabledTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    features_.InitWithFeatures(
+        {features::kPlusAddressesEnabled,
+         features::kPlusAddressUserOnboardingEnabled,
+         features::kPlusAddressAcceptedFirstTimeCreateSurvey},
+        {});
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -58,10 +82,20 @@ class PlusAddressCreationControllerDesktopEnabledTest
         base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
                                 PlusAddressServiceTestFactory,
                             base::Unretained(this)));
+    PlusAddressSettingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser_context(),
+        base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
+                                PlusAddressSettingServiceTestFactory,
+                            base::Unretained(this)));
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockHatsService)));
   }
 
   void TearDown() override {
     fake_plus_address_service_ = nullptr;
+    fake_plus_address_setting_service_ = nullptr;
+    mock_hats_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -72,13 +106,65 @@ class PlusAddressCreationControllerDesktopEnabledTest
     return unique_service;
   }
 
+  std::unique_ptr<KeyedService> PlusAddressSettingServiceTestFactory(
+      content::BrowserContext* context) {
+    auto unique_service = std::make_unique<FakePlusAddressSettingService>();
+    fake_plus_address_setting_service_ = unique_service.get();
+    return unique_service;
+  }
+
+  FakePlusAddressSettingService& setting_service() {
+    return *fake_plus_address_setting_service_;
+  }
+
  protected:
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
-  base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
+  base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_tester_;
   raw_ptr<FakePlusAddressService> fake_plus_address_service_ = nullptr;
+  raw_ptr<FakePlusAddressSettingService> fake_plus_address_setting_service_ =
+      nullptr;
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
 };
+
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       ConfirmedFirstTimeUsage) {
+  setting_service().set_has_accepted_notice(false);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+                           _, _, IsEmpty(), IsEmpty()));
+  controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          kPlusAddressModalEventHistogramWithNotice),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalWithNoticeDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      kDuration, 1);
+}
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   std::unique_ptr<content::WebContents> web_contents =
@@ -98,6 +184,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
+  EXPECT_CALL(*mock_hats_service_, LaunchSurvey).Times(0);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(

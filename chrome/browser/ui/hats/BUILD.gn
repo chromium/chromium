@@ -74,6 +74,7 @@ source_set("impl") {
     "//components/password_manager/core/common",
     "//components/permissions",
     "//components/permissions:permissions_common",
+    "//components/plus_addresses:features",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/privacy_sandbox:features",
