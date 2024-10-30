@@ -712,11 +712,6 @@ WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
 }
 #endif
 
-// TODO(crbug.com/375937556): Remove this method now that Lacros support is
-// gone.
-void ActivateBrowserAndWait(Browser* browser) {
-}
-
 void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
   std::string simple_dialog_name =
       base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
@@ -1262,7 +1257,6 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
     ASSERT_TRUE(app_browser_);
-    ActivateBrowserAndWait(app_browser_);
   }
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
@@ -1290,7 +1284,6 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
-  ActivateBrowserAndWait(app_browser_);
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
@@ -1356,7 +1349,6 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
   ASSERT_EQ(app_id, active_app_id_);
-  ActivateBrowserAndWait(app_browser_);
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
@@ -1775,7 +1767,6 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
-  ActivateBrowserAndWait(app_browser_);
   ASSERT_TRUE(app_browser_->is_type_app());
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
   active_app_id_ = app_browser()->app_controller()->app_id();
@@ -1797,7 +1788,6 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
-  ActivateBrowserAndWait(app_browser_);
   active_app_id_ = app_id;
 
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
@@ -1863,7 +1853,6 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     LaunchAppStartupBrowserCreator(app_id);
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
-    ActivateBrowserAndWait(app_browser_);
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
