@@ -96,6 +96,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   void SetEncoderColorSpace();
 
+  void NotifyEncoderInfo();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
@@ -161,6 +163,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;
+
+  media::VideoEncoderInfo encoder_info_;
 };
 
 }  // namespace media
