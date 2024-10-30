@@ -1853,7 +1853,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.ErrorHasFilename" enum="Boolean"
-    expires_after="2024-12-31">
+    expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1865,7 +1865,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Authorized"
-    enum="GeolocationAPI" expires_after="2024-12-31">
+    enum="GeolocationAPI" expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1878,7 +1878,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Denied"
-    enum="GeolocationAPI" expires_after="2024-12-31">
+    enum="GeolocationAPI" expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1891,7 +1891,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.NotDetermined"
-    enum="GeolocationAPI" expires_after="2024-12-31">
+    enum="GeolocationAPI" expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1904,7 +1904,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Restricted"
-    enum="GeolocationAPI" expires_after="2024-12-31">
+    enum="GeolocationAPI" expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1917,7 +1917,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Denied" enum="MediaAPIParams"
-    expires_after="2024-12-31">
+    expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1930,7 +1930,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Granted"
-    enum="MediaAPIParams" expires_after="2024-12-31">
+    enum="MediaAPIParams" expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1943,7 +1943,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Undetermined"
-    enum="MediaAPIParams" expires_after="2024-12-31">
+    enum="MediaAPIParams" expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>
@@ -1956,7 +1956,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.ScriptExecutionFailed" enum="Boolean"
-    expires_after="2024-12-31">
+    expires_after="2025-05-31">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@google.com</owner>
   <summary>

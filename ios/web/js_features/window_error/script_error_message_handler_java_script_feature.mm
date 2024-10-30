@@ -92,7 +92,7 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
   }
 
   bool has_scriptname = details.filename && details.filename.length > 0;
-  UMA_HISTOGRAM_BOOLEAN("IOS.Javascript.ErrorHasFilename", has_scriptname);
+  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ErrorHasFilename", has_scriptname);
 
   if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
       !has_scriptname) {
