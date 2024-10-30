@@ -48,6 +48,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -1096,6 +1097,7 @@ TEST_F(WebAppSyncBridgeTest,
             std::make_unique<WebApp>(expected_app.app_id());
         entity_data_app->AddSource(WebAppManagement::kPolicy);
         entity_data_app->SetName("Name");
+        entity_data_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
         entity_data_app->SetInstallState(
             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
 

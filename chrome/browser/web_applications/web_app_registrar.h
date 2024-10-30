@@ -75,6 +75,11 @@ using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar {
  public:
+  // Returns if the given display mode is supported for navigation capturing.
+  // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+  static bool IsSupportedDisplayModeForNavigationCapture(
+      blink::mojom::DisplayMode display_mode);
+
   explicit WebAppRegistrar(Profile* profile);
   WebAppRegistrar(const WebAppRegistrar&) = delete;
   WebAppRegistrar& operator=(const WebAppRegistrar&) = delete;

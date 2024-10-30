@@ -87,6 +87,26 @@ bool IsLinkCapturingDisabledByDefaultBasedOnFlagState() {
 
 }  // namespace
 
+// static
+bool WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+    blink::mojom::DisplayMode display_mode) {
+  // Explicitly disable navigation capturing on display modes that aren't
+  // supported.
+  switch (display_mode) {
+    case blink::mojom::DisplayMode::kUndefined:
+    case blink::mojom::DisplayMode::kTabbed:
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      return false;
+    case blink::mojom::DisplayMode::kBrowser:
+    case blink::mojom::DisplayMode::kFullscreen:
+    case blink::mojom::DisplayMode::kMinimalUi:
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+    case blink::mojom::DisplayMode::kBorderless:
+    case blink::mojom::DisplayMode::kStandalone:
+      return true;
+  }
+}
+
 WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
 
 WebAppRegistrar::~WebAppRegistrar() {
@@ -1100,7 +1120,9 @@ bool WebAppRegistrar::CanCaptureLinksInScope(
   if (!IsInstallState(app_id,
                       {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
-      IsShortcutApp(app_id)) {
+      IsShortcutApp(app_id) ||
+      !IsSupportedDisplayModeForNavigationCapture(
+          GetAppEffectiveDisplayMode(app_id))) {
     return false;
   }
   return true;

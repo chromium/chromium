@@ -294,6 +294,11 @@ bool IsNavigationCapturingReimplExperimentEnabled(
     const GURL& url,
     const std::optional<webapps::AppId>& controlling_app_id,
     const std::optional<blink::mojom::DisplayMode>& display_mode) {
+  if (display_mode &&
+      !WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+          *display_mode)) {
+    return false;
+  }
   // Enabling the generic flag turns it on for all navigations.
   if (apps::features::IsNavigationCapturingReimplEnabled()) {
     return true;
@@ -504,6 +509,8 @@ AppNavigationResult AppNavigationResult::ForcedNewAppContext(
     Browser* host_browser,
     WindowOpenDisposition disposition,
     base::Value::Dict debug_data) {
+  CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+      new_client_display_mode));
   CHECK((new_client_display_mode != blink::mojom::DisplayMode::kBrowser) ==
         (!!host_browser->app_controller()));
   CHECK(disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
@@ -526,6 +533,8 @@ AppNavigationResult AppNavigationResult::CapturedNewClient(
     Browser* host_browser,
     WindowOpenDisposition disposition,
     base::Value::Dict debug_data) {
+  CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+      new_client_display_mode));
   CHECK((new_client_display_mode != blink::mojom::DisplayMode::kBrowser) ==
         (!!host_browser->app_controller()));
   CHECK(disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB);
@@ -1364,6 +1373,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   if (controlling_app_id) {
     controlling_app_display_mode =
         registrar.GetAppEffectiveDisplayMode(*controlling_app_id);
+    CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+        *controlling_app_display_mode));
   }
 
   // Only proceed as below if the navigation capturing is enabled. The flag in

@@ -598,6 +598,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
   web_app->AddSource(source_type);
+  web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("Name");
   // Adding OS integration to this app introduces too many edge cases in tests.

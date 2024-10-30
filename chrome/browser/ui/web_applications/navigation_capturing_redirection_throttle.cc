@@ -207,6 +207,8 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
 
   blink::mojom::DisplayMode target_display_mode =
       registrar.GetAppEffectiveDisplayMode(*target_app_id);
+  CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+      target_display_mode));
 
   // For the remaining cases we know that the navigation ended up in scope of a
   // target application.

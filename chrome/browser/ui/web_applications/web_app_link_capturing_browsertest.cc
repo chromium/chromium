@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
@@ -45,6 +46,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 using content::RenderFrameHost;
@@ -693,6 +695,10 @@ class WebAppTabStripLinkCapturingBrowserTest
 // the app window.
 IN_PROC_BROWSER_TEST_P(WebAppTabStripLinkCapturingBrowserTest,
                        InScopeNavigationsCaptured) {
+  if (!WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+          blink::mojom::DisplayMode::kTabbed)) {
+    GTEST_SKIP() << "kTabbed mode not yet supported for navigation capturing.";
+  }
   const auto [app_id, in_scope_1, in_scope_2, scope] = InstallTestTabbedApp();
   ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
             base::ok());
