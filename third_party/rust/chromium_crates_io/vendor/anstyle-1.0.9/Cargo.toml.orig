@@ -1,11 +1,11 @@
 [package]
 name = "anstyle"
-version = "1.0.8"
+version = "1.0.9"
 description = "ANSI text styling"
-repository = "https://github.com/rust-cli/anstyle.git"
 homepage = "https://github.com/rust-cli/anstyle"
 categories = ["command-line-interface"]
 keywords = ["ansi", "terminal", "color", "no_std"]
+repository.workspace = true
 license.workspace = true
 edition.workspace = true
 rust-version.workspace = true

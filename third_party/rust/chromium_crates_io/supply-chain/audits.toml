@@ -131,6 +131,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.7 -> 1.0.8"
 notes = "Only Cargo.toml changes in the 1.0.7 => 1.0.8 delta."
 
+[[audits.anstyle]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+delta = "1.0.8 -> 1.0.9"
+notes = "No changes"
+
 [[audits.anyhow]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
