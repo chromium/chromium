@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -99,10 +100,7 @@ std::vector<FormData> CreateTestForms(size_t num_forms) {
 
 // Returns the FormGlobalIds of the specified |forms|.
 std::vector<FormGlobalId> GetFormIds(const std::vector<FormData>& forms) {
-  std::vector<FormGlobalId> ids;
-  ids.reserve(forms.size());
-  base::ranges::transform(forms, std::back_inserter(ids), &FormData::global_id);
-  return ids;
+  return base::ToVector(forms, &FormData::global_id);
 }
 
 // Matches a std::map<FormGlobalId, std::unique_ptr<FormStructure>>::value_type

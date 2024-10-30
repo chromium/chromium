@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -92,16 +93,6 @@ NotifyObserversCallback(Functor&& functor, Args&&... args) {
 // See ParsingCallback().
 base::OnceCallback<void(AutofillManager&)> NotifyNoObserversCallback() {
   return base::DoNothingAs<void(AutofillManager&)>();
-}
-
-// Collects the FormGlobalIds of `forms`.
-std::vector<FormGlobalId> GetFormGlobalIds(base::span<const FormData> forms) {
-  std::vector<FormGlobalId> form_ids;
-  form_ids.reserve(forms.size());
-  for (const FormData& form : forms) {
-    form_ids.push_back(form.global_id());
-  }
-  return form_ids;
 }
 
 // Returns true if |live_form| does not match |cached_form|.
@@ -260,7 +251,8 @@ void AutofillManager::OnFormsSeen(
     return;
   }
 
-  NotifyObservers(&Observer::OnBeforeFormsSeen, GetFormGlobalIds(updated_forms),
+  NotifyObservers(&Observer::OnBeforeFormsSeen,
+                  base::ToVector(updated_forms, &FormData::global_id),
                   removed_forms);
   erase_removed_forms();
 
@@ -270,7 +262,8 @@ void AutofillManager::OnFormsSeen(
     if (!parsed_forms.empty())
       self.OnFormsParsed(parsed_forms);
     self.NotifyObservers(&Observer::OnAfterFormsSeen,
-                         GetFormGlobalIds(parsed_forms), removed_forms);
+                         base::ToVector(parsed_forms, &FormData::global_id),
+                         removed_forms);
   };
   ParseFormsAsync(updated_forms,
                   base::BindOnce(ProcessParsedForms, std::move(removed_forms)));

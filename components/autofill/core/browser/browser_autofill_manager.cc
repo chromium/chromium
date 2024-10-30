@@ -31,6 +31,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -948,17 +949,10 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     // Copy the profile and credit card data, so that it can be accessed on a
     // separate thread.
-    std::vector<AutofillProfile> copied_profiles;
-    copied_profiles.reserve(profiles.size());
-    for (const AutofillProfile* profile : profiles) {
-      copied_profiles.push_back(*profile);
-    }
-
-    std::vector<CreditCard> copied_credit_cards;
-    copied_credit_cards.reserve(credit_cards.size());
-    for (const CreditCard* card : credit_cards) {
-      copied_credit_cards.push_back(*card);
-    }
+    std::vector<AutofillProfile> copied_profiles = base::ToVector(
+        profiles, [](const AutofillProfile* profile) { return *profile; });
+    std::vector<CreditCard> copied_credit_cards = base::ToVector(
+        credit_cards, [](const CreditCard* card) { return *card; });
 
     // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
     // |form_structure| with the help of |AlternativeStateNameMap|.
@@ -1072,17 +1066,10 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
 
   // Copy the profile and credit card data, so that it can be accessed on a
   // separate thread.
-  std::vector<AutofillProfile> copied_profiles;
-  copied_profiles.reserve(profiles.size());
-  for (const AutofillProfile* profile : profiles) {
-    copied_profiles.push_back(*profile);
-  }
-
-  std::vector<CreditCard> copied_credit_cards;
-  copied_credit_cards.reserve(credit_cards.size());
-  for (const CreditCard* card : credit_cards) {
-    copied_credit_cards.push_back(*card);
-  }
+  std::vector<AutofillProfile> copied_profiles = base::ToVector(
+      profiles, [](const AutofillProfile* profile) { return *profile; });
+  std::vector<CreditCard> copied_credit_cards = base::ToVector(
+      credit_cards, [](const CreditCard* card) { return *card; });
 
   // Annotate the form with the source language of the page.
   form_structure->set_current_page_language(GetCurrentPageLanguage());

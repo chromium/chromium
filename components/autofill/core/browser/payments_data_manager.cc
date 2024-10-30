@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
@@ -640,24 +641,15 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetLocalCreditCards() const {
-  std::vector<CreditCard*> result;
-  result.reserve(local_credit_cards_.size());
-  for (const auto& card : local_credit_cards_) {
-    result.push_back(card.get());
-  }
-  return result;
+  return base::ToVector(local_credit_cards_, &std::unique_ptr<CreditCard>::get);
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetServerCreditCards() const {
   if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
-  std::vector<CreditCard*> result;
-  result.reserve(server_credit_cards_.size());
-  for (const auto& card : server_credit_cards_) {
-    result.push_back(card.get());
-  }
-  return result;
+  return base::ToVector(server_credit_cards_,
+                        &std::unique_ptr<CreditCard>::get);
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetCreditCards() const {

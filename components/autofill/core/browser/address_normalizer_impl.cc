@@ -5,10 +5,12 @@
 #include "components/autofill/core/browser/address_normalizer_impl.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -335,10 +337,8 @@ void AddressNormalizerImpl::OnAddressValidatorCreated(
   // Make a copy of region keys before calling LoadRulesForRegion on them,
   // because LoadRulesForRegion may synchronously modify
   // |pending_normalization_|.
-  std::vector<std::string> region_keys;
-  region_keys.reserve(pending_normalization_.size());
-  for (const auto& entry : pending_normalization_)
-    region_keys.push_back(entry.first);
+  std::vector<std::string> region_keys = base::ToVector(
+      pending_normalization_, [](const auto& entry) { return entry.first; });
 
   // Load rules for regions with pending normalization requests.
   for (const std::string& region : region_keys)
