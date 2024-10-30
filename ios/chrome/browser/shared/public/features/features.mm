@@ -221,15 +221,6 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
              "IOSDockingPromoPreventDeregistrationKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
-             "NonModalDefaultBrowserPromoCooldownRefactor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int>
-    kNonModalDefaultBrowserPromoCooldownRefactorParam{
-        &kNonModalDefaultBrowserPromoCooldownRefactor,
-        /*name=*/"cooldown-days", /*default_value=*/14};
-
 BASE_FEATURE(kIOSEditMenuHideSearchWeb,
              "IOSEditMenuHideSearchWeb",
              base::FEATURE_ENABLED_BY_DEFAULT);

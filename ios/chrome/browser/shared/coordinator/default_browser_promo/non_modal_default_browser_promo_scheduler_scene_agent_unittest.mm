@@ -553,7 +553,7 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundingDoesNotRecordIfCannotDisplayPromo) {
   // Make sure the impression limit is met.
   for (int i = 0; i < GetNonModalDefaultBrowserPromoImpressionLimit(); i++) {
-    LogUserInteractionWithNonModalPromo(i, i);
+    LogUserInteractionWithNonModalPromo(i);
   }
 
   base::HistogramTester histogram_tester;

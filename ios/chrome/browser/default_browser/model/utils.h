@@ -184,10 +184,6 @@ void RecordDefaultBrowserBlueDotFirstDisplay();
 bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker);
 
-// Returns true if the non-modal default browser promo cooldown refactor is
-// enabled.
-bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled();
-
 // Returns true if client is in Default Browser promo trigger criteria
 // experiment.
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
@@ -236,12 +232,10 @@ void LogUserInteractionWithFullscreenPromo();
 void LogUserInteractionWithTailoredFullscreenPromo();
 
 // Logs that the user has interacted with a non-modal promo. The expected
-// parameters are the current counts, because they will be incremented by 1 and
-// then saved to NSUserDefaults. If kNonModalDefaultBrowserPromoCooldownRefactor
-// is disabled, kDisplayedFullscreenPromoCount will also be incremented by 1.
+// parameter value is the current count, because it will be incremented by 1 and
+// then saved to NSUserDefaults.
 void LogUserInteractionWithNonModalPromo(
-    NSInteger currentNonModalPromoInteractionsCount,
-    NSInteger currentFullscreenPromoInteractionsCount);
+    NSInteger currentNonModalPromoInteractionsCount);
 
 // Logs that the user has interacted with the first run promo.
 void LogUserInteractionWithFirstRunPromo();

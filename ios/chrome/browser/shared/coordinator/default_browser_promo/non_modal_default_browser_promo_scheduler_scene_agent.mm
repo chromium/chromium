@@ -83,7 +83,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
   __weak id<DefaultBrowserPromoNonModalCommands> _handler;
   NSInteger _userInteractionWithNonModalPromoCount;
-  NSInteger _displayedFullscreenPromoCount;
 }
 
 // Time when a promo was shown on screen, used for metrics only.
@@ -216,13 +215,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     return false;
   }
 
-  if (IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() &&
-      UserInNonModalPromoCooldown()) {
-    return false;
-  }
-
-  if (!IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() &&
-      UserInFullscreenPromoCooldown()) {
+  if (UserInNonModalPromoCooldown()) {
     return false;
   }
 
@@ -231,13 +224,11 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 }
 
 - (void)notifyHandlerShowPromo {
-  // The count of past non-modal promo interactions and fullscreen promo
-  // displays is cached because multiple interactions may be logged for the
-  // current non-modal promo impression. This makes sure we don't over-increment
-  // the interactions count value.
+  // The count of past non-modal promo interactions is cached because multiple
+  // interactions may be logged for the current non-modal promo impression. This
+  // makes sure we don't over-increment the interactions count value.
   _userInteractionWithNonModalPromoCount =
       UserInteractionWithNonModalPromoCount();
-  _displayedFullscreenPromoCount = DisplayedFullscreenPromoCount();
 
   [_handler showDefaultBrowserNonModalPromo];
 }
@@ -271,8 +262,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
                          MetricTypeForPromoReason(currentPromoReason),
                          _userInteractionWithNonModalPromoCount);
   LogNonModalTimeOnScreen(promoShownTime);
-  LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount,
-                                      _displayedFullscreenPromoCount);
+  LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 
   NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
   [[UIApplication sharedApplication] openURL:settingsURL
@@ -287,8 +277,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
                          MetricTypeForPromoReason(currentPromoReason),
                          _userInteractionWithNonModalPromoCount);
   LogNonModalTimeOnScreen(promoShownTime);
-  LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount,
-                                      _displayedFullscreenPromoCount);
+  LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 }
 
 - (void)logPromoTimeout:(PromoReason)currentPromoReason
@@ -297,8 +286,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
                          MetricTypeForPromoReason(currentPromoReason),
                          _userInteractionWithNonModalPromoCount);
   LogNonModalTimeOnScreen(promoShownTime);
-  LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount,
-                                      _displayedFullscreenPromoCount);
+  LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 }
 
 #pragma mark - Accessors
