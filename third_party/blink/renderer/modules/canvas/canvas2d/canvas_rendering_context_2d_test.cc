@@ -1480,7 +1480,7 @@ TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
 }
 
 TEST_P(CanvasRenderingContext2DTest,
-       NoResourceProviderInCanvas2DBufferInitialization) {
+       NoResourceProviderAfterCanvas2DLayerBridgeCreation) {
   // This test enforces that there is no eager creation of
   // CanvasResourceProvider for html canvas with 2d context when its
   // Canvas2DLayerBridge is initially set up. This enforcement might be changed
@@ -1488,12 +1488,9 @@ TEST_P(CanvasRenderingContext2DTest,
   // certain code paths in canvas 2d (that depend on the existence of
   // CanvasResourceProvider) will be changed too, causing bad regressions.
   CreateContext(kNonOpaque);
-  gfx::Size size(10, 10);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr, size);
 
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge());
+  EXPECT_TRUE(CanvasElement().GetOrCreateCanvas2DLayerBridge());
   EXPECT_FALSE(CanvasElement().ResourceProvider());
 }
 
