@@ -4506,6 +4506,10 @@ enum WebFeature {
   kSetHTMLSafe = 5132,
   kSelectElementAppearanceBaseSelect = 5133,
   kSelectElementPickerAppearanceBaseSelect = 5134,
+  kCssValueWritingModeVerticalRl = 5135,
+  kCssValueWritingModeVerticalLr = 5136,
+  kCssValueWritingModeSidewaysRl = 5137,
+  kCssValueWritingModeSidewaysLr = 5138,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

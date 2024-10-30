@@ -10780,6 +10780,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5132" label="SetHTMLSafe"/>
   <int value="5133" label="SelectElementAppearanceBaseSelect"/>
   <int value="5134" label="SelectElementPickerAppearanceBaseSelect"/>
+  <int value="5135" label="CssValueWritingModeVerticalRl"/>
+  <int value="5136" label="CssValueWritingModeVerticalLr"/>
+  <int value="5137" label="CssValueWritingModeSidewaysRl"/>
+  <int value="5138" label="CssValueWritingModeSidewaysLr"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

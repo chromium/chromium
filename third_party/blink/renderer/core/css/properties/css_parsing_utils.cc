@@ -3593,6 +3593,19 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
         context.Count(WebFeature::kCSSValueOverflowOverlay);
       }
       break;
+    case CSSPropertyID::kWritingMode:
+    case CSSPropertyID::kWebkitWritingMode:
+      if (value_id == CSSValueID::kVerticalRl || value_id == CSSValueID::kTb ||
+          value_id == CSSValueID::kTbRl) {
+        context.Count(WebFeature::kCssValueWritingModeVerticalRl);
+      } else if (value_id == CSSValueID::kVerticalLr) {
+        context.Count(WebFeature::kCssValueWritingModeVerticalLr);
+      } else if (value_id == CSSValueID::kSidewaysRl) {
+        context.Count(WebFeature::kCssValueWritingModeSidewaysRl);
+      } else if (value_id == CSSValueID::kSidewaysLr) {
+        context.Count(WebFeature::kCssValueWritingModeSidewaysLr);
+      }
+      break;
     default:
       break;
   }
