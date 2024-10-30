@@ -185,8 +185,7 @@ void TabGroupSyncServiceProxy::UnsaveGroup(const LocalTabGroupID& local_id) {
 void TabGroupSyncServiceProxy::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {
-  service_->model()->MakeTabGroupShared(local_group_id,
-                                        std::string(collaboration_id));
+  NOTIMPLEMENTED();
 }
 
 std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() const {

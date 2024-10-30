@@ -83,8 +83,10 @@ enum class OpeningSource {
   // Desktop only. Triggered when a unsaved group from v1 implementation is
   // migrated to autosave.
   kAutoSaveOnSessionRestoreForV1Group = 7,
+  // The group was connected as a part of sharing a group.
+  kConnectOnGroupShare = 8,
 
-  kMaxValue = kAutoSaveOnSessionRestoreForV1Group,
+  kMaxValue = kConnectOnGroupShare,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpenReason)
 
@@ -112,7 +114,10 @@ enum class ClosingSource {
   kCloseOtherTabs = 7,
   // iOS only. Triggered when user closes the last tab in a group in tab strip.
   kCloseLastTab = 8,
-  kMaxValue = kCloseLastTab,
+  // The local group was disconnected from its sync group because the group was
+  // shared.
+  kDisconnectOnGroupShared = 9,
+  kMaxValue = kDisconnectOnGroupShared,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupCloseReason)
 

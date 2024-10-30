@@ -448,7 +448,38 @@ void TabGroupSyncServiceImpl::UnsaveGroup(const LocalTabGroupID& local_id) {
 void TabGroupSyncServiceImpl::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {
-  model_->MakeTabGroupShared(local_group_id, std::string(collaboration_id));
+  const SavedTabGroup* saved_group = model_->Get(local_group_id);
+  CHECK(saved_group);
+  CHECK(!saved_group->is_shared_tab_group());
+
+  // Make a deep copy of the group without fields which are not used in shared
+  // tab groups, and without migration of local IDs.
+  SavedTabGroup shared_group =
+      saved_group->CloneAsSharedTabGroup(std::string(collaboration_id));
+  // Make a copy before moving the group.
+  base::Uuid shared_group_id = shared_group.saved_guid();
+  // Clear the pointer before adding the new group as it might invalidate the
+  // pointer.
+  saved_group = nullptr;
+  // TODO(crbug.com/370745855): remove the originating saved tab group from the
+  // model afterwards.
+  model_->Add(std::move(shared_group));
+
+  // TODO(crbug.com/370745855): move the code below to HandleTabGroupAdded() to
+  // cover transition on remote devices.
+
+  // First, remove the local tab group mapping and then disconnect the local tab
+  // group. Note that on some platforms the coordinator may call
+  // RemoveLocalTabGroupMapping() but it should be a no-op.
+  RemoveLocalTabGroupMapping(local_group_id,
+                             ClosingSource::kDisconnectOnGroupShared);
+  coordinator_->DisconnectLocalTabGroup(local_group_id);
+
+  // Connect the shared tab group to the local group. The coordinator updates
+  // the local tab group mapping on all platforms, and updates the mapping for
+  // session restore.
+  ConnectLocalTabGroup(shared_group_id, local_group_id,
+                       OpeningSource::kConnectOnGroupShare);
 }
 
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(

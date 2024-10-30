@@ -175,7 +175,9 @@ class SavedTabGroup {
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroup& other) const;
 
-  // Creates a copy of this group and converts it to a shared tab group.
+  // Creates a copy of this group and converts it to a shared tab group. The new
+  // group and new tabs will have new UUIDs. Local tab and group IDs are not
+  // copied.
   SavedTabGroup CloneAsSharedTabGroup(std::string collaboration_id) const;
 
  private:

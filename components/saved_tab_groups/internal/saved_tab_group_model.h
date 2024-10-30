@@ -88,10 +88,6 @@ class SavedTabGroupModel {
   void UpdateVisualData(const LocalTabGroupID local_group_id,
                         const tab_groups::TabGroupVisualData* visual_data);
 
-  // Make the tab group shared and associate it with the `collaboration_id`. The
-  // tab group must exist and must not be shared.
-  void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
-                          std::string collaboration_id);
   // Does not notify observers or create a deep copy. Rather this directly sets
   // the collaboration_id on the group. It is up to callers to ensure the
   // updated group is retrieved from the service before use.

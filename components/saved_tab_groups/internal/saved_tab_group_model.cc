@@ -211,36 +211,6 @@ void SavedTabGroupModel::UpdateVisualData(
   }
 }
 
-void SavedTabGroupModel::MakeTabGroupShared(
-    const LocalTabGroupID& local_group_id,
-    std::string collaboration_id) {
-  const SavedTabGroup* group = Get(local_group_id);
-  CHECK(group);
-  CHECK(!group->is_shared_tab_group());
-
-  // Make a deep copy of the group without fields which are not used in shared
-  // tab groups. Create a new group and new tabs to generate new UUIDs. Note
-  // that the new group will have the same local ID as the original group.
-  SavedTabGroup shared_group =
-      group->CloneAsSharedTabGroup(std::move(collaboration_id));
-
-  // `local_group_id` needs to be associated with the new shared tab group.
-  // First, clear the local ID from the old group. This will store the tab on
-  // the disk, and in case of crash, the tab group will be duplicated on browser
-  // restart. It's safer than resolving duplicate local group IDs on browser
-  // startup.
-  // The order is important here because `OnGroupClosedInTabStrip` will remove
-  // all associated local tab IDs.
-  OnGroupClosedInTabStrip(local_group_id);
-
-  // Add the new shared group to the model and associate it with the same local
-  // ID.
-  Add(std::move(shared_group));
-
-  // No additional observers are notified because all mutations are done using
-  // the existing methods which should notify observers.
-}
-
 void SavedTabGroupModel::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
     std::string collaboration_id) {

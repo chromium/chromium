@@ -404,7 +404,6 @@ SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
   SavedTabGroup shared_group(title(), color(), /*urls=*/{});
   shared_group.SetCollaborationId(std::move(collaboration_id));
   shared_group.SetOriginatingSavedTabGroupGuid(saved_guid());
-  shared_group.SetLocalGroupId(local_group_id());
 
   for (size_t i = 0; i < saved_tabs().size(); ++i) {
     const SavedTabGroupTab& tab = saved_tabs()[i];
@@ -414,7 +413,6 @@ SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
     SavedTabGroupTab shared_tab(tab.url(), tab.title(),
                                 shared_group.saved_guid(), /*position=*/i);
     shared_tab.SetFavicon(tab.favicon());
-    shared_tab.SetLocalTabID(tab.local_tab_id());
     shared_group.AddTabLocally(std::move(shared_tab));
   }
   return shared_group;
