@@ -146,14 +146,22 @@ void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
         pending_receiver) {
   if (!ash::features::IsLobsterEnabled()) {
-    mojo::ReportBadMessage("Editor is disabled by flags.");
+    mojo::ReportBadMessage("Lobster is disabled by flags.");
     return;
   }
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  lobster_page_handler_ = std::make_unique<LobsterPageHandler>(
-      LobsterServiceProvider::GetForProfile(profile)->active_session(),
-      profile);
+
+  LobsterSession* active_session =
+      LobsterServiceProvider::GetForProfile(profile)->active_session();
+
+  if (active_session == nullptr) {
+    mojo::ReportBadMessage("No active session found.");
+    return;
+  }
+
+  lobster_page_handler_ =
+      std::make_unique<LobsterPageHandler>(active_session, profile);
 
   lobster_page_handler_->BindInterface(std::move(pending_receiver));
 }

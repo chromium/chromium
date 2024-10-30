@@ -33,7 +33,9 @@ bool IsUrlAllowed(const GURL& url) {
 
 LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session,
                                        Profile* profile)
-    : session_(active_session), profile_(profile) {}
+    : session_(active_session), profile_(profile) {
+  CHECK(session_);
+}
 
 LobsterPageHandler::~LobsterPageHandler() = default;
 
