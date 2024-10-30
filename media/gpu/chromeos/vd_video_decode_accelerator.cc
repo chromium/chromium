@@ -16,6 +16,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -260,7 +261,8 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     vd_ = create_vd_cb_.Run(
         gpu::GpuDriverBugWorkarounds(), client_task_runner_,
         std::move(frame_pool),
-        VideoDecoderPipeline::DefaultPreferredRenderableFourccs());
+        VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+        std::make_unique<NullMediaLog>());
     if (!vd_)
       return false;
 

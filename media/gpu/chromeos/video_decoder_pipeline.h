@@ -201,11 +201,12 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       bool in_video_decoder_process);
   // Same idea but creates a VideoDecoderPipeline instance intended to be
   // adapted or bridged to a VideoDecodeAccelerator interface, for ARC clients.
-  static std::unique_ptr<VideoDecoder> CreateForVDAAdapterForARC(
+  static std::unique_ptr<VideoDecoder> CreateForARC(
       const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
-      std::vector<Fourcc> renderable_fourccs);
+      std::vector<Fourcc> renderable_fourccs,
+      std::unique_ptr<MediaLog> media_log);
 
   static std::unique_ptr<VideoDecoder> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
