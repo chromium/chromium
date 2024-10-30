@@ -4,11 +4,11 @@
 
 // https://github.com/explainers-by-googlers/prompt-api
 
-dictionary AIAssistantCloneOptions {
+dictionary AILanguageModelCloneOptions {
   AbortSignal signal;
 };
 
-dictionary AIAssistantPromptOptions {
+dictionary AILanguageModelPromptOptions {
   AbortSignal signal;
 };
 
@@ -16,7 +16,7 @@ dictionary AIAssistantPromptOptions {
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
 ]
-interface AIAssistant {
+interface AILanguageModel {
   [
     Measure,
     CallWith=ScriptState,
@@ -24,7 +24,7 @@ interface AIAssistant {
   ]
   Promise<DOMString> prompt(
     DOMString input,
-    optional AIAssistantPromptOptions options = {}
+    optional AILanguageModelPromptOptions options = {}
   );
   [
     Measure,
@@ -33,7 +33,7 @@ interface AIAssistant {
   ]
   ReadableStream promptStreaming(
     DOMString input,
-    optional AIAssistantPromptOptions options = {}
+    optional AILanguageModelPromptOptions options = {}
   );
 
   [
@@ -43,7 +43,7 @@ interface AIAssistant {
   ]
   Promise<unsigned long long> countPromptTokens(
     DOMString input,
-    optional AIAssistantPromptOptions options = {}
+    optional AILanguageModelPromptOptions options = {}
   );
 
   [Measure]
@@ -63,7 +63,7 @@ interface AIAssistant {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAssistant> clone(optional AIAssistantCloneOptions options = {});
+  Promise<AILanguageModel> clone(optional AILanguageModelCloneOptions options = {});
   [
     Measure,
     CallWith=ScriptState,

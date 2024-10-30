@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
+#include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 
 #include <optional>
 
@@ -12,17 +12,17 @@
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_initial_prompt.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_initial_prompt_role.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
-#include "third_party/blink/renderer/modules/ai/ai_assistant.h"
-#include "third_party/blink/renderer/modules/ai/ai_assistant_capabilities.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
+#include "third_party/blink/renderer/modules/ai/ai_language_model.h"
+#include "third_party/blink/renderer/modules/ai/ai_language_model_capabilities.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -34,28 +34,28 @@ namespace blink {
 
 namespace {
 
-mojom::blink::AIAssistantInitialPromptRole AIAssistantInitialPromptRole(
-    V8AIAssistantInitialPromptRole role) {
+mojom::blink::AIAssistantInitialPromptRole AILanguageModelInitialPromptRole(
+    V8AILanguageModelInitialPromptRole role) {
   switch (role.AsEnum()) {
-    case V8AIAssistantInitialPromptRole::Enum::kSystem:
+    case V8AILanguageModelInitialPromptRole::Enum::kSystem:
       return mojom::blink::AIAssistantInitialPromptRole::kSystem;
-    case V8AIAssistantInitialPromptRole::Enum::kUser:
+    case V8AILanguageModelInitialPromptRole::Enum::kUser:
       return mojom::blink::AIAssistantInitialPromptRole::kUser;
-    case V8AIAssistantInitialPromptRole::Enum::kAssistant:
+    case V8AILanguageModelInitialPromptRole::Enum::kAssistant:
       return mojom::blink::AIAssistantInitialPromptRole::kAssistant;
   }
   NOTREACHED();
 }
 
-class CreateAssistantClient
-    : public GarbageCollected<CreateAssistantClient>,
+class CreateLanguageModelClient
+    : public GarbageCollected<CreateLanguageModelClient>,
       public mojom::blink::AIManagerCreateAssistantClient,
-      public AIMojoClient<AIAssistant> {
+      public AIMojoClient<AILanguageModel> {
  public:
-  CreateAssistantClient(
+  CreateLanguageModelClient(
       ScriptState* script_state,
       AI* ai,
-      ScriptPromiseResolver<AIAssistant>* resolver,
+      ScriptPromiseResolver<AILanguageModel>* resolver,
       AbortSignal* signal,
       mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
@@ -79,10 +79,11 @@ class CreateAssistantClient
                                       std::move(sampling_params), system_prompt,
                                       std::move(initial_prompts)));
   }
-  ~CreateAssistantClient() override = default;
+  ~CreateLanguageModelClient() override = default;
 
-  CreateAssistantClient(const CreateAssistantClient&) = delete;
-  CreateAssistantClient& operator=(const CreateAssistantClient&) = delete;
+  CreateLanguageModelClient(const CreateLanguageModelClient&) = delete;
+  CreateLanguageModelClient& operator=(const CreateLanguageModelClient&) =
+      delete;
 
   void Trace(Visitor* visitor) const override {
     AIMojoClient::Trace(visitor);
@@ -91,17 +92,18 @@ class CreateAssistantClient
     visitor->Trace(receiver_);
   }
 
-  void OnResult(mojo::PendingRemote<mojom::blink::AIAssistant> assistant_remote,
-                mojom::blink::AIAssistantInfoPtr info) override {
+  void OnResult(
+      mojo::PendingRemote<mojom::blink::AIAssistant> language_model_remote,
+      mojom::blink::AIAssistantInfoPtr info) override {
     if (!GetResolver()) {
       return;
     }
 
     if (info) {
-      AIAssistant* assistant = MakeGarbageCollected<AIAssistant>(
-          ai_->GetExecutionContext(), std::move(assistant_remote),
+      AILanguageModel* language_model = MakeGarbageCollected<AILanguageModel>(
+          ai_->GetExecutionContext(), std::move(language_model_remote),
           ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
-      GetResolver()->Resolve(assistant);
+      GetResolver()->Resolve(language_model);
     } else {
       GetResolver()->RejectWithDOMException(
           DOMExceptionCode::kInvalidStateError,
@@ -114,33 +116,33 @@ class CreateAssistantClient
 
  private:
   Member<AI> ai_;
-  // The `CreateAssistantClient` owns the `AICreateMonitor`, so the
+  // The `CreateLanguageModelClient` owns the `AICreateMonitor`, so the
   // `ai.languageModel.create()` will only receive model download progress
-  // update while the creation promise is pending. After the `AIAssistant` is
-  // created, the `AICreateMonitor` will be destroyed so there is no more events
-  // even if the model is uninstalled and downloaded again.
+  // update while the creation promise is pending. After the `AILanguageModel`
+  // is created, the `AICreateMonitor` will be destroyed so there is no more
+  // events even if the model is uninstalled and downloaded again.
   Member<AICreateMonitor> monitor_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateAssistantClient,
-                   CreateAssistantClient>
+                   CreateLanguageModelClient>
       receiver_;
 };
 
 }  // namespace
 
-AIAssistantFactory::AIAssistantFactory(AI* ai)
+AILanguageModelFactory::AILanguageModelFactory(AI* ai)
     : ExecutionContextClient(ai->GetExecutionContext()),
       ai_(ai),
       task_runner_(ai->GetTaskRunner()) {}
 
-void AIAssistantFactory::Trace(Visitor* visitor) const {
+void AILanguageModelFactory::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_);
 }
 
-void AIAssistantFactory::OnGetModelInfoComplete(
-    ScriptPromiseResolver<AIAssistantCapabilities>* resolver,
-    AIAssistantCapabilities* capabilities,
+void AILanguageModelFactory::OnGetModelInfoComplete(
+    ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
+    AILanguageModelCapabilities* capabilities,
     mojom::blink::AIModelInfoPtr model_info) {
   CHECK(model_info);
   capabilities->SetDefaultTopK(model_info->default_top_k);
@@ -149,13 +151,13 @@ void AIAssistantFactory::OnGetModelInfoComplete(
   resolver->Resolve(capabilities);
 }
 
-void AIAssistantFactory::OnCanCreateSessionComplete(
-    ScriptPromiseResolver<AIAssistantCapabilities>* resolver,
+void AILanguageModelFactory::OnCanCreateSessionComplete(
+    ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
     mojom::blink::ModelAvailabilityCheckResult check_result) {
   AICapabilityAvailability availability = HandleModelAvailabilityCheckResult(
-      GetExecutionContext(), AIMetrics::AISessionType::kAssistant,
+      GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
       check_result);
-  auto* capabilities = MakeGarbageCollected<AIAssistantCapabilities>(
+  auto* capabilities = MakeGarbageCollected<AILanguageModelCapabilities>(
       AICapabilityAvailabilityToV8(availability));
   if (availability == AICapabilityAvailability::kNo) {
     resolver->Resolve(capabilities);
@@ -163,50 +165,50 @@ void AIAssistantFactory::OnCanCreateSessionComplete(
   }
 
   ai_->GetAIRemote()->GetModelInfo(WTF::BindOnce(
-      &AIAssistantFactory::OnGetModelInfoComplete, WrapPersistent(this),
+      &AILanguageModelFactory::OnGetModelInfoComplete, WrapPersistent(this),
       WrapPersistent(resolver), WrapPersistent(capabilities)));
 }
 
-ScriptPromise<AIAssistantCapabilities> AIAssistantFactory::capabilities(
+ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AIAssistantCapabilities>();
+    return ScriptPromise<AILanguageModelCapabilities>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AIAssistantCapabilities>>(
+      MakeGarbageCollected<ScriptPromiseResolver<AILanguageModelCapabilities>>(
           script_state);
   auto promise = resolver->Promise();
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kCanCreateSession);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kCanCreateSession);
 
   ai_->GetAIRemote()->CanCreateAssistant(
-      WTF::BindOnce(&AIAssistantFactory::OnCanCreateSessionComplete,
+      WTF::BindOnce(&AILanguageModelFactory::OnCanCreateSessionComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
 
-ScriptPromise<AIAssistant> AIAssistantFactory::create(
+ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
     ScriptState* script_state,
-    const AIAssistantCreateOptions* options,
+    const AILanguageModelCreateOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AIAssistant>();
+    return ScriptPromise<AILanguageModel>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AILanguageModel>>(
+      script_state);
   auto promise = resolver->Promise();
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kCreateSession);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kCreateSession);
 
   if (!ai_->GetAIRemote().is_connected()) {
     RejectPromiseWithInternalError(resolver);
@@ -257,7 +259,7 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
         // separately.
         auto* first_prompt = prompts.begin()->Get();
         if (first_prompt->role() ==
-            V8AIAssistantInitialPromptRole::Enum::kSystem) {
+            V8AILanguageModelInitialPromptRole::Enum::kSystem) {
           if (options->hasSystemPrompt()) {
             // If the system prompt cannot be provided both from system prompt
             // and initial prompts, so reject with a `TypeError`.
@@ -270,7 +272,8 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
         }
         for (size_t index = start_index; index < prompts.size(); ++index) {
           auto prompt = prompts[index];
-          if (prompt->role() == V8AIAssistantInitialPromptRole::Enum::kSystem) {
+          if (prompt->role() ==
+              V8AILanguageModelInitialPromptRole::Enum::kSystem) {
             // If any prompt except the first one has a `system` role, reject
             // with a `TypeError`.
             resolver->RejectWithTypeError(
@@ -278,13 +281,14 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
             return promise;
           }
           initial_prompts.push_back(mojom::blink::AIAssistantInitialPrompt::New(
-              AIAssistantInitialPromptRole(prompt->role()), prompt->content()));
+              AILanguageModelInitialPromptRole(prompt->role()),
+              prompt->content()));
         }
       }
     }
   }
 
-  MakeGarbageCollected<CreateAssistantClient>(
+  MakeGarbageCollected<CreateLanguageModelClient>(
       script_state, ai_, resolver, signal, std::move(sampling_params),
       system_prompt, std::move(initial_prompts), monitor);
 

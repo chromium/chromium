@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/ai_assistant.h"
+#include "third_party/blink/renderer/modules/ai/ai_language_model.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
+#include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -24,50 +24,53 @@ namespace blink {
 
 namespace {
 
-class CloneAssistantClient
-    : public GarbageCollected<CloneAssistantClient>,
+class CloneLanguageModelClient
+    : public GarbageCollected<CloneLanguageModelClient>,
       public mojom::blink::AIManagerCreateAssistantClient,
-      public AIMojoClient<AIAssistant> {
+      public AIMojoClient<AILanguageModel> {
  public:
-  CloneAssistantClient(ScriptState* script_state,
-                       AIAssistant* assistant,
-                       ScriptPromiseResolver<AIAssistant>* resolver,
-                       AbortSignal* signal,
-                       base::PassKey<AIAssistant> pass_key)
-      : AIMojoClient(script_state, assistant, resolver, signal),
+  CloneLanguageModelClient(ScriptState* script_state,
+                           AILanguageModel* language_model,
+                           ScriptPromiseResolver<AILanguageModel>* resolver,
+                           AbortSignal* signal,
+                           base::PassKey<AILanguageModel> pass_key)
+      : AIMojoClient(script_state, language_model, resolver, signal),
         pass_key_(pass_key),
-        assistant_(assistant),
-        receiver_(this, assistant->GetExecutionContext()) {
+        language_model_(language_model),
+        receiver_(this, language_model->GetExecutionContext()) {
     mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   assistant->GetTaskRunner());
-    assistant_->GetAIAssistantRemote()->Fork(std::move(client_remote));
+                   language_model->GetTaskRunner());
+    language_model_->GetAILanguageModelRemote()->Fork(std::move(client_remote));
   }
-  ~CloneAssistantClient() override = default;
+  ~CloneLanguageModelClient() override = default;
 
-  CloneAssistantClient(const CloneAssistantClient&) = delete;
-  CloneAssistantClient& operator=(const CloneAssistantClient&) = delete;
+  CloneLanguageModelClient(const CloneLanguageModelClient&) = delete;
+  CloneLanguageModelClient& operator=(const CloneLanguageModelClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
     AIMojoClient::Trace(visitor);
-    visitor->Trace(assistant_);
+    visitor->Trace(language_model_);
     visitor->Trace(receiver_);
   }
 
   // mojom::blink::AIManagerCreateAssistantClient implementation.
-  void OnResult(mojo::PendingRemote<mojom::blink::AIAssistant> assistant_remote,
-                mojom::blink::AIAssistantInfoPtr info) override {
+  void OnResult(
+      mojo::PendingRemote<mojom::blink::AIAssistant> language_model_remote,
+      mojom::blink::AIAssistantInfoPtr info) override {
     if (!GetResolver()) {
       return;
     }
 
     if (info) {
-      AIAssistant* cloned_assistant = MakeGarbageCollected<AIAssistant>(
-          assistant_->GetExecutionContext(), std::move(assistant_remote),
-          assistant_->GetTaskRunner(), std::move(info),
-          assistant_->GetCurrentTokens());
-      GetResolver()->Resolve(cloned_assistant);
+      AILanguageModel* cloned_language_model =
+          MakeGarbageCollected<AILanguageModel>(
+              language_model_->GetExecutionContext(),
+              std::move(language_model_remote),
+              language_model_->GetTaskRunner(), std::move(info),
+              language_model_->GetCurrentTokens());
+      GetResolver()->Resolve(cloned_language_model);
     } else {
       GetResolver()->RejectWithDOMException(
           DOMExceptionCode::kInvalidStateError,
@@ -80,10 +83,10 @@ class CloneAssistantClient
   void ResetReceiver() override { receiver_.reset(); }
 
  private:
-  base::PassKey<AIAssistant> pass_key_;
-  Member<AIAssistant> assistant_;
+  base::PassKey<AILanguageModel> pass_key_;
+  Member<AILanguageModel> language_model_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateAssistantClient,
-                   CloneAssistantClient>
+                   CloneLanguageModelClient>
       receiver_;
 };
 
@@ -93,18 +96,18 @@ class CountPromptTokensClient
       public AIMojoClient<IDLUnsignedLongLong> {
  public:
   CountPromptTokensClient(ScriptState* script_state,
-                          AIAssistant* assistant,
+                          AILanguageModel* language_model,
                           ScriptPromiseResolver<IDLUnsignedLongLong>* resolver,
                           AbortSignal* signal,
                           const WTF::String& input)
-      : AIMojoClient(script_state, assistant, resolver, signal),
-        assistant_(assistant),
-        receiver_(this, assistant->GetExecutionContext()) {
+      : AIMojoClient(script_state, language_model, resolver, signal),
+        language_model_(language_model),
+        receiver_(this, language_model->GetExecutionContext()) {
     mojo::PendingRemote<mojom::blink::AIAssistantCountPromptTokensClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   assistant->GetTaskRunner());
-    assistant_->GetAIAssistantRemote()->CountPromptTokens(
+                   language_model->GetTaskRunner());
+    language_model_->GetAILanguageModelRemote()->CountPromptTokens(
         input, std::move(client_remote));
   }
   ~CountPromptTokensClient() override = default;
@@ -114,7 +117,7 @@ class CountPromptTokensClient
 
   void Trace(Visitor* visitor) const override {
     AIMojoClient::Trace(visitor);
-    visitor->Trace(assistant_);
+    visitor->Trace(language_model_);
     visitor->Trace(receiver_);
   }
 
@@ -132,7 +135,7 @@ class CountPromptTokensClient
   void ResetReceiver() override { receiver_.reset(); }
 
  private:
-  Member<AIAssistant> assistant_;
+  Member<AILanguageModel> language_model_;
   HeapMojoReceiver<mojom::blink::AIAssistantCountPromptTokensClient,
                    CountPromptTokensClient>
       receiver_;
@@ -140,7 +143,7 @@ class CountPromptTokensClient
 
 }  // namespace
 
-AIAssistant::AIAssistant(
+AILanguageModel::AILanguageModel(
     ExecutionContext* execution_context,
     mojo::PendingRemote<mojom::blink::AIAssistant> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -149,41 +152,41 @@ AIAssistant::AIAssistant(
     : ExecutionContextClient(execution_context),
       current_tokens_(current_tokens),
       task_runner_(task_runner),
-      assistant_remote_(execution_context) {
-  assistant_remote_.Bind(std::move(pending_remote), task_runner);
+      language_model_remote_(execution_context) {
+  language_model_remote_.Bind(std::move(pending_remote), task_runner);
   if (info) {
-    SetInfo(base::PassKey<AIAssistant>(), std::move(info));
+    SetInfo(base::PassKey<AILanguageModel>(), std::move(info));
   }
 }
 
-void AIAssistant::Trace(Visitor* visitor) const {
+void AILanguageModel::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(assistant_remote_);
+  visitor->Trace(language_model_remote_);
 }
 
-ScriptPromise<IDLString> AIAssistant::prompt(
+ScriptPromise<IDLString> AILanguageModel::prompt(
     ScriptState* script_state,
     const WTF::String& input,
-    const AIAssistantPromptOptions* options,
+    const AILanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<IDLString>();
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kSessionPrompt);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionPrompt);
 
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
-                                 AIMetrics::AISessionType::kAssistant),
+                                 AIMetrics::AISessionType::kLanguageModel),
                              int(input.CharactersSizeInBytes()));
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
 
-  if (!assistant_remote_) {
+  if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return promise;
   }
@@ -196,32 +199,32 @@ ScriptPromise<IDLString> AIAssistant::prompt(
 
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
-      AIMetrics::AISessionType::kAssistant,
-      WTF::BindOnce(&AIAssistant::OnResponseComplete,
+      AIMetrics::AISessionType::kLanguageModel,
+      WTF::BindOnce(&AILanguageModel::OnResponseComplete,
                     WrapWeakPersistent(this)));
-  assistant_remote_->Prompt(input, std::move(pending_remote));
+  language_model_remote_->Prompt(input, std::move(pending_remote));
   return promise;
 }
 
-ReadableStream* AIAssistant::promptStreaming(
+ReadableStream* AILanguageModel::promptStreaming(
     ScriptState* script_state,
     const WTF::String& input,
-    const AIAssistantPromptOptions* options,
+    const AILanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return nullptr;
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kSessionPromptStreaming);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionPromptStreaming);
 
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
-                                 AIMetrics::AISessionType::kAssistant),
+                                 AIMetrics::AISessionType::kLanguageModel),
                              int(input.CharactersSizeInBytes()));
 
-  if (!assistant_remote_) {
+  if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return nullptr;
   }
@@ -237,31 +240,32 @@ ReadableStream* AIAssistant::promptStreaming(
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
           script_state, signal, task_runner_,
-          AIMetrics::AISessionType::kAssistant,
-          WTF::BindOnce(&AIAssistant::OnResponseComplete,
+          AIMetrics::AISessionType::kLanguageModel,
+          WTF::BindOnce(&AILanguageModel::OnResponseComplete,
                         WrapWeakPersistent(this)));
-  assistant_remote_->Prompt(input, std::move(pending_remote));
+  language_model_remote_->Prompt(input, std::move(pending_remote));
   return readable_stream;
 }
 
-ScriptPromise<AIAssistant> AIAssistant::clone(
+ScriptPromise<AILanguageModel> AILanguageModel::clone(
     ScriptState* script_state,
-    const AIAssistantCloneOptions* options,
+    const AILanguageModelCloneOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AIAssistant>();
+    return ScriptPromise<AILanguageModel>();
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kSessionClone);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionClone);
 
-  ScriptPromiseResolver<AIAssistant>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
+  ScriptPromiseResolver<AILanguageModel>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<AILanguageModel>>(
+          script_state);
   auto promise = resolver->Promise();
 
-  if (!assistant_remote_) {
+  if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return promise;
   }
@@ -272,32 +276,32 @@ ScriptPromise<AIAssistant> AIAssistant::clone(
     return promise;
   }
 
-  MakeGarbageCollected<CloneAssistantClient>(
-      script_state, this, resolver, signal, base::PassKey<AIAssistant>());
+  MakeGarbageCollected<CloneLanguageModelClient>(
+      script_state, this, resolver, signal, base::PassKey<AILanguageModel>());
 
   return promise;
 }
 
-ScriptPromise<IDLUnsignedLongLong> AIAssistant::countPromptTokens(
+ScriptPromise<IDLUnsignedLongLong> AILanguageModel::countPromptTokens(
     ScriptState* script_state,
     const WTF::String& input,
-    const AIAssistantPromptOptions* options,
+    const AILanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<IDLUnsignedLongLong>();
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kSessionCountPromptTokens);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionCountPromptTokens);
 
   ScriptPromiseResolver<IDLUnsignedLongLong>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUnsignedLongLong>>(
           script_state);
   auto promise = resolver->Promise();
 
-  if (!assistant_remote_) {
+  if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return promise;
   }
@@ -315,47 +319,50 @@ ScriptPromise<IDLUnsignedLongLong> AIAssistant::countPromptTokens(
 }
 
 // TODO(crbug.com/355967885): reset the remote to destroy the session.
-void AIAssistant::destroy(ScriptState* script_state,
-                          ExceptionState& exception_state) {
+void AILanguageModel::destroy(ScriptState* script_state,
+                              ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return;
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
-      AIMetrics::AIAPI::kSessionDestroy);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kSessionDestroy);
 
-  if (assistant_remote_) {
-    assistant_remote_->Destroy();
-    assistant_remote_.reset();
+  if (language_model_remote_) {
+    language_model_remote_->Destroy();
+    language_model_remote_.reset();
   }
 }
 
-void AIAssistant::OnResponseComplete(std::optional<uint64_t> current_tokens) {
+void AILanguageModel::OnResponseComplete(
+    std::optional<uint64_t> current_tokens) {
   if (current_tokens.has_value()) {
     current_tokens_ = current_tokens.value();
   }
 }
 
-void AIAssistant::SetInfo(std::variant<base::PassKey<AIAssistantFactory>,
-                                       base::PassKey<AIAssistant>> pass_key,
-                          const blink::mojom::blink::AIAssistantInfoPtr info) {
+void AILanguageModel::SetInfo(
+    std::variant<base::PassKey<AILanguageModelFactory>,
+                 base::PassKey<AILanguageModel>> pass_key,
+    const blink::mojom::blink::AIAssistantInfoPtr info) {
   CHECK(info);
   top_k_ = info->sampling_params->top_k;
   temperature_ = info->sampling_params->temperature;
   max_tokens_ = info->max_tokens;
 }
 
-HeapMojoRemote<mojom::blink::AIAssistant>& AIAssistant::GetAIAssistantRemote() {
-  return assistant_remote_;
+HeapMojoRemote<mojom::blink::AIAssistant>&
+AILanguageModel::GetAILanguageModelRemote() {
+  return language_model_remote_;
 }
 
-scoped_refptr<base::SequencedTaskRunner> AIAssistant::GetTaskRunner() {
+scoped_refptr<base::SequencedTaskRunner> AILanguageModel::GetTaskRunner() {
   return task_runner_;
 }
 
-uint64_t AIAssistant::GetCurrentTokens() {
+uint64_t AILanguageModel::GetCurrentTokens() {
   return current_tokens_;
 }
 

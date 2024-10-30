@@ -4,14 +4,14 @@
 
 // https://github.com/explainers-by-googlers/prompt-api
 
-enum AIAssistantInitialPromptRole { "system", "user", "assistant" };
-enum AIAssistantPromptRole { "user", "assistant" };
+enum AILanguageModelInitialPromptRole { "system", "user", "assistant" };
+enum AILanguageModelPromptRole { "user", "assistant" };
 
 [
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
 ]
-interface AIAssistantCapabilities {
+interface AILanguageModelCapabilities {
   [Measure]
   readonly attribute AICapabilityAvailability available;
   [Measure]
@@ -30,19 +30,19 @@ interface AIAssistantCapabilities {
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
 ]
-interface AIAssistantFactory {
+interface AILanguageModelFactory {
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAssistantCapabilities> capabilities();
+  Promise<AILanguageModelCapabilities> capabilities();
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAssistant> create(
-    optional AIAssistantCreateOptions options = {}
+  Promise<AILanguageModel> create(
+    optional AILanguageModelCreateOptions options = {}
   );
 };

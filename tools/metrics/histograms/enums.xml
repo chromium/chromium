@@ -10715,24 +10715,25 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5078" label="V8AISummarizer_Format_AttributeGetter"/>
   <int value="5079" label="V8AISummarizer_Length_AttributeGetter"/>
   <int value="5080"
-      label="V8AIAssistantCapabilities_Available_AttributeGetter"/>
+      label="OBSOLETE_V8AIAssistantCapabilities_Available_AttributeGetter"/>
   <int value="5081"
-      label="V8AIAssistantCapabilities_DefaultTopK_AttributeGetter"/>
-  <int value="5082" label="V8AIAssistantCapabilities_MaxTopK_AttributeGetter"/>
+      label="OBSOLETE_V8AIAssistantCapabilities_DefaultTopK_AttributeGetter"/>
+  <int value="5082"
+      label="OBSOLETE_V8AIAssistantCapabilities_MaxTopK_AttributeGetter"/>
   <int value="5083"
-      label="V8AIAssistantCapabilities_DefaultTemperature_AttributeGetter"/>
-  <int value="5084" label="V8AIAssistantFactory_Capabilities_Method"/>
-  <int value="5085" label="V8AIAssistantFactory_Create_Method"/>
+      label="OBSOLETE_V8AIAssistantCapabilities_DefaultTemperature_AttributeGetter"/>
+  <int value="5084" label="OBSOLETE_V8AIAssistantFactory_Capabilities_Method"/>
+  <int value="5085" label="OBSOLETE_V8AIAssistantFactory_Create_Method"/>
   <int value="5086" label="OBSOLETE_V8AI_Assistant_AttributeGetter"/>
-  <int value="5087" label="V8AIAssistant_MaxTokens_AttributeGetter"/>
-  <int value="5088" label="V8AIAssistant_TokensSoFar_AttributeGetter"/>
-  <int value="5089" label="V8AIAssistant_TokensLeft_AttributeGetter"/>
-  <int value="5090" label="V8AIAssistant_TopK_AttributeGetter"/>
-  <int value="5091" label="V8AIAssistant_Temperature_AttributeGetter"/>
-  <int value="5092" label="V8AIAssistant_Clone_Method"/>
-  <int value="5093" label="V8AIAssistant_Destroy_Method"/>
-  <int value="5094" label="V8AIAssistant_Prompt_Method"/>
-  <int value="5095" label="V8AIAssistant_PromptStreaming_Method"/>
+  <int value="5087" label="OBSOLETE_V8AIAssistant_MaxTokens_AttributeGetter"/>
+  <int value="5088" label="OBSOLETE_V8AIAssistant_TokensSoFar_AttributeGetter"/>
+  <int value="5089" label="OBSOLETE_V8AIAssistant_TokensLeft_AttributeGetter"/>
+  <int value="5090" label="OBSOLETE_V8AIAssistant_TopK_AttributeGetter"/>
+  <int value="5091" label="OBSOLETE_V8AIAssistant_Temperature_AttributeGetter"/>
+  <int value="5092" label="OBSOLETE_V8AIAssistant_Clone_Method"/>
+  <int value="5093" label="OBSOLETE_V8AIAssistant_Destroy_Method"/>
+  <int value="5094" label="OBSOLETE_V8AIAssistant_Prompt_Method"/>
+  <int value="5095" label="OBSOLETE_V8AIAssistant_PromptStreaming_Method"/>
   <int value="5096" label="V8Window_PopinContextTypesSupported_Method"/>
   <int value="5097" label="V8Window_PopinContextType_Method"/>
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
@@ -10747,7 +10748,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8PublicKeyCredential_SignalAllAcceptedCredentials_Method"/>
   <int value="5106"
       label="V8PublicKeyCredential_SignalCurrentUserDetails_Method"/>
-  <int value="5107" label="V8AIAssistant_CountPromptTokens_Method"/>
+  <int value="5107" label="OBSOLETE_V8AIAssistant_CountPromptTokens_Method"/>
   <int value="5108" label="HTMLSearchElement"/>
   <int value="5109" label="HTMLUnsafeMethods"/>
   <int value="5110"
@@ -10767,7 +10768,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5119" label="V8AI_LanguageModel_AttributeGetter"/>
   <int value="5120" label="V8RTCEncodedVideoFrame_Timestamp_AttributeGetter"/>
   <int value="5121" label="V8RTCEncodedAudioFrame_Timestamp_AttributeGetter"/>
-  <int value="5122" label="V8AIAssistantCapabilities_LanguageAvailable_Method"/>
+  <int value="5122"
+      label="OBSOLETE_V8AIAssistantCapabilities_LanguageAvailable_Method"/>
   <int value="5123" label="WebGLRenderingContextReadPixels"/>
   <int value="5124" label="SelectAudioOutput"/>
   <int value="5125" label="V8PaymentManager_UserHint_AttributeGetter"/>
@@ -10784,6 +10786,28 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5136" label="CssValueWritingModeVerticalLr"/>
   <int value="5137" label="CssValueWritingModeSidewaysRl"/>
   <int value="5138" label="CssValueWritingModeSidewaysLr"/>
+  <int value="5139" label="V8AILanguageModel_TopK_AttributeGetter"/>
+  <int value="5140" label="V8AILanguageModel_Temperature_AttributeGetter"/>
+  <int value="5141" label="V8AILanguageModel_Clone_Method"/>
+  <int value="5142" label="V8AILanguageModel_Destroy_Method"/>
+  <int value="5143" label="V8AILanguageModel_Prompt_Method"/>
+  <int value="5144" label="V8AILanguageModel_PromptStreaming_Method"/>
+  <int value="5145" label="V8AILanguageModel_CountPromptTokens_Method"/>
+  <int value="5146"
+      label="V8AILanguageModelCapabilities_LanguageAvailable_Method"/>
+  <int value="5147"
+      label="V8AILanguageModelCapabilities_Available_AttributeGetter"/>
+  <int value="5148"
+      label="V8AILanguageModelCapabilities_DefaultTopK_AttributeGetter"/>
+  <int value="5149"
+      label="V8AILanguageModelCapabilities_MaxTopK_AttributeGetter"/>
+  <int value="5150"
+      label="V8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter"/>
+  <int value="5151" label="V8AILanguageModelFactory_Capabilities_Method"/>
+  <int value="5152" label="V8AILanguageModelFactory_Create_Method"/>
+  <int value="5153" label="V8AILanguageModel_MaxTokens_AttributeGetter"/>
+  <int value="5154" label="V8AILanguageModel_TokensSoFar_AttributeGetter"/>
+  <int value="5155" label="V8AILanguageModel_TokensLeft_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

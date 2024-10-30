@@ -65,7 +65,7 @@ TEST(CreateModelExecutionResponder, Simple) {
   auto pending_remote = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       base::BindOnce(
           [](uint64_t expected_tokens, base::RunLoop* runloop,
              std::optional<uint64_t> current_tokens) {
@@ -107,7 +107,7 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
   auto pending_remote = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
@@ -143,7 +143,7 @@ TEST(CreateModelExecutionResponder, AbortWithoutResponse) {
   auto pending_remote = CreateModelExecutionResponder(
       script_state, controller->signal(), resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   controller->abort(scope.GetScriptState());
@@ -178,7 +178,7 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   auto pending_remote = CreateModelExecutionResponder(
       script_state, controller->signal(), resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
@@ -213,7 +213,7 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
   auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
@@ -248,7 +248,7 @@ TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {
   auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
@@ -284,7 +284,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortWithoutResponse) {
   auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   controller->abort(scope.GetScriptState());
@@ -319,7 +319,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
   auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kAssistant,
+      AIMetrics::AISessionType::kLanguageModel,
       /*complete_callback=*/base::DoNothing());
 
   controller->abort(scope.GetScriptState());

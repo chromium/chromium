@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-class AIAssistantFactory;
+class AILanguageModelFactory;
 class AIRewriterFactory;
 class AISummarizerFactory;
 class AIWriterFactory;
@@ -32,7 +32,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  AIAssistantFactory* languageModel();
+  AILanguageModelFactory* languageModel();
   AISummarizerFactory* summarizer();
   AIRewriterFactory* rewriter();
   AIWriterFactory* writer();
@@ -45,7 +45,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
-  Member<AIAssistantFactory> ai_assistant_factory_;
+  Member<AILanguageModelFactory> ai_language_model_factory_;
   Member<AISummarizerFactory> ai_summarizer_factory_;
   Member<AIWriterFactory> ai_writer_factory_;
   Member<AIRewriterFactory> ai_rewriter_factory_;

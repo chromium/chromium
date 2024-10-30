@@ -14,7 +14,7 @@ class AIMetrics {
   // This class contains all the supported session types.
   // LINT.IfChange(AISessionType)
   enum class AISessionType {
-    kAssistant = 0,
+    kLanguageModel = 0,
     kWriter = 1,
     kRewriter = 2,
     kSummarizer = 3,
@@ -26,7 +26,7 @@ class AIMetrics {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // TODO(crbug.com/355967885): update the enums when adding metrics for
-  // assistant API.
+  // language model API.
   // LINT.IfChange(AIAPI)
   enum class AIAPI {
     kCanCreateSession = 0,

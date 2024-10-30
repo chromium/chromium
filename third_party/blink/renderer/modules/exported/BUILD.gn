@@ -5,7 +5,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("exported") {
   sources = [
-    "web_ai_assistant.cc",
+    "web_ai_language_model.cc",
     "web_ax_context.cc",
     "web_ax_object.cc",
     "web_crypto_histograms.cc",

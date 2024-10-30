@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_ASSISTANT_CAPABILITIES_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_ASSISTANT_CAPABILITIES_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_CAPABILITIES_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_CAPABILITIES_H_
 
 #include <optional>
 
@@ -14,16 +14,16 @@
 
 namespace blink {
 
-class AIAssistantCapabilities final : public ScriptWrappable {
+class AILanguageModelCapabilities final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AIAssistantCapabilities(
+  explicit AILanguageModelCapabilities(
       V8AICapabilityAvailability capability_availability);
 
   void Trace(Visitor* visitor) const override;
 
-  // ai_assistant_factory.idl implementation
+  // ai_language_model_factory.idl implementation
   V8AICapabilityAvailability available() const {
     return capability_availability_;
   }
@@ -51,4 +51,4 @@ class AIAssistantCapabilities final : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_ASSISTANT_CAPABILITIES_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_CAPABILITIES_H_

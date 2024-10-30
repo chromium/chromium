@@ -4,17 +4,17 @@
 
 // https://github.com/explainers-by-googlers/prompt-api
 
-dictionary AIAssistantInitialPrompt {
-  required AIAssistantInitialPromptRole role;
+dictionary AILanguageModelInitialPrompt {
+  required AILanguageModelInitialPromptRole role;
   required DOMString content;
 };
 
-dictionary AIAssistantCreateOptions {
+dictionary AILanguageModelCreateOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
 
   [EnforceRange] unsigned long topK;
   float temperature;
   DOMString systemPrompt;
-  sequence<AIAssistantInitialPrompt> initialPrompts;
+  sequence<AILanguageModelInitialPrompt> initialPrompts;
 };

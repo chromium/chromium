@@ -19,7 +19,7 @@ interface AI {
     Measure,
     RuntimeEnabled=AIPromptAPI
   ]
-  readonly attribute AIAssistantFactory languageModel;
+  readonly attribute AILanguageModelFactory languageModel;
   [
     Measure,
     RuntimeEnabled=AISummarizationAPI

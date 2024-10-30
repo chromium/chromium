@@ -11,32 +11,6 @@ interface AI
     getter summarizer
     getter writer
     method constructor
-interface AIAssistant
-    attribute @@toStringTag
-    getter maxTokens
-    getter temperature
-    getter tokensLeft
-    getter tokensSoFar
-    getter topK
-    method clone
-    method constructor
-    method countPromptTokens
-    method destroy
-    method prompt
-    method promptStreaming
-interface AIAssistantCapabilities
-    attribute @@toStringTag
-    getter available
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTopK
-    method constructor
-    method languageAvailable
-interface AIAssistantFactory
-    attribute @@toStringTag
-    method capabilities
-    method constructor
-    method create
 interface AICreateMonitor : EventTarget
     attribute @@toStringTag
     getter ondownloadprogress
@@ -53,6 +27,32 @@ interface AILanguageDetectorCapabilities
     method constructor
     method languageAvailable
 interface AILanguageDetectorFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
+interface AILanguageModel
+    attribute @@toStringTag
+    getter maxTokens
+    getter temperature
+    getter tokensLeft
+    getter tokensSoFar
+    getter topK
+    method clone
+    method constructor
+    method countPromptTokens
+    method destroy
+    method prompt
+    method promptStreaming
+interface AILanguageModelCapabilities
+    attribute @@toStringTag
+    getter available
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTopK
+    method constructor
+    method languageAvailable
+interface AILanguageModelFactory
     attribute @@toStringTag
     method capabilities
     method constructor
