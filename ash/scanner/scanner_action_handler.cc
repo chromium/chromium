@@ -33,12 +33,16 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_parser.h"
+#include "google_apis/people/people_api_requests.h"
+#include "google_apis/people/people_api_response_types.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "url/gurl.h"
@@ -46,6 +50,12 @@
 namespace ash {
 
 namespace {
+
+// The prefix that all `Person.resourceName`s from the People API should start
+// with.
+constexpr std::string_view kPersonResourceNamePrefix = "people/";
+// The path for the Contacts web UI that displays a Person.
+constexpr std::string_view kPersonContactsWebUiPath = "/person/";
 
 const GURL& GetCalendarEventTemplateUrl() {
   // Required to delay the creation of this GURL to avoid hitting the
@@ -58,6 +68,11 @@ const GURL& GetCalendarEventTemplateUrl() {
 const GURL& GetGoogleContactsNewUrl() {
   static GURL kGoogleContactsNewUrl("https://contacts.google.com/new");
   return kGoogleContactsNewUrl;
+}
+
+const GURL& GetGoogleContactsBaseUrl() {
+  static GURL kGoogleContactsBaseUrl("https://contacts.google.com/");
+  return kGoogleContactsBaseUrl;
 }
 
 GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
@@ -124,6 +139,33 @@ GURL GetContactUrl(const manta::proto::NewContactAction& contact) {
   std::string query = base::JoinString(std::move(query_params), "&");
   replacements.SetQueryStr(query);
   return GetGoogleContactsNewUrl().ReplaceComponents(replacements);
+}
+
+// Given a resource name of a Person from the People API, returns a URL to the
+// "edit" view of that Person in the Google Contacts web interface.
+// Returns an invalid GURL if the resource name is invalid.
+GURL GetEditContactUrl(std::string_view resource_name) {
+  if (!resource_name.starts_with(kPersonResourceNamePrefix)) {
+    // Resource names are guaranteed by the People API documentation to start
+    // with the prefix ("people/");
+    return GURL();
+  }
+  resource_name.remove_prefix(kPersonResourceNamePrefix.size());
+  GURL::Replacements replacements;
+  std::string path = base::StrCat({kPersonContactsWebUiPath, resource_name});
+  replacements.SetPathStr(path);
+  replacements.SetQueryStr("edit=1");
+  GURL edit_contact_url =
+      GetGoogleContactsBaseUrl().ReplaceComponents(replacements);
+
+  if (!edit_contact_url.path_piece().starts_with(kPersonContactsWebUiPath)) {
+    // The resulting URL's path should always start with the given Contacts web
+    // UI path.
+    // This may be indicative of a path traversal attack.
+    return GURL();
+  }
+
+  return edit_contact_url;
 }
 
 // Opens the supplied URL in a browser tab using the provided
@@ -273,6 +315,25 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromAction(
   return data;
 }
 
+// Run when the create contact request to the People API finishes.
+void OnContactCreated(base::WeakPtr<ScannerCommandDelegate> delegate,
+                      ScannerCommandCallback callback,
+                      base::expected<google_apis::people::Person,
+                                     google_apis::ApiErrorCode> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  GURL edit_contact_url = GetEditContactUrl(result->resource_name);
+  if (!edit_contact_url.is_valid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  OpenInBrowserTab(std::move(delegate), edit_contact_url, std::move(callback));
+}
+
 }  // namespace
 
 ScannerCommand ScannerActionToCommand(ScannerAction action) {
@@ -309,26 +370,42 @@ ScannerCommand ScannerActionToCommand(ScannerAction action) {
 void HandleScannerCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
                           ScannerCommand command,
                           ScannerCommandCallback callback) {
-  std::visit(base::Overloaded{
-                 [&](OpenUrlCommand& command) {
-                   OpenInBrowserTab(std::move(delegate), command.url,
-                                    std::move(callback));
-                 },
-                 [&](DriveUploadCommand& command) {
-                   HandleDriveUploadCommand(std::move(delegate),
-                                            std::move(command),
-                                            std::move(callback));
-                 },
-                 [&](CopyToClipboardCommand& command) {
-                   if (delegate == nullptr) {
-                     std::move(callback).Run(false);
-                     return;
-                   }
-                   delegate->SetClipboard(std::move(command.clipboard_data));
-                   std::move(callback).Run(true);
-                 },
-             },
-             command);
+  if (delegate == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::visit(
+      base::Overloaded{
+          [&](OpenUrlCommand& command) {
+            OpenInBrowserTab(std::move(delegate), command.url,
+                             std::move(callback));
+          },
+          [&](DriveUploadCommand& command) {
+            HandleDriveUploadCommand(std::move(delegate), std::move(command),
+                                     std::move(callback));
+          },
+          [&](CopyToClipboardCommand& command) {
+            delegate->SetClipboard(std::move(command.clipboard_data));
+            std::move(callback).Run(true);
+          },
+          [&](CreateContactCommand& command) {
+            google_apis::RequestSender* request_sender =
+                delegate->GetGoogleApisRequestSender();
+
+            if (request_sender == nullptr) {
+              std::move(callback).Run(false);
+              return;
+            }
+
+            request_sender->StartRequestWithAuthRetry(
+                std::make_unique<google_apis::people::CreateContactRequest>(
+                    request_sender, std::move(command.contact),
+                    base::BindOnce(&OnContactCreated, std::move(delegate),
+                                   std::move(callback))));
+          },
+      },
+      command);
 }
 
 }  // namespace ash

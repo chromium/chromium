@@ -12,15 +12,32 @@
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_command.h"
 #include "ash/scanner/scanner_command_delegate.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/common/dummy_auth_service.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_parser.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
+#include "google_apis/people/people_api_request_types.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -29,13 +46,18 @@
 namespace ash {
 namespace {
 
+using ::base::test::IsJson;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::FieldsAre;
+using ::testing::HasSubstr;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::VariantWith;
+
+constexpr std::string_view kJsonMimeType = "application/json";
 
 class TestScannerCommandDelegate : public ScannerCommandDelegate {
  public:
@@ -470,6 +492,262 @@ TEST(ScannerActionHandlerTest, HandlesCopyToClipboardAction) {
                        done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Get());
+}
+
+// Wrapper around an `EmbeddedTestServer` which starts the server in the
+// constructor, so a `base_url()` can be obtained immediately after
+// construction.
+// This is required so `ScannerCreateContactCommandHandlerTest` can initialise
+// `gaia_urls_overrider_` in the constructor - which requires `base_url()`.
+//
+// TODO: b/374624760 - Consider deduplicating this with
+// google_apis/people/people_api_requests_unittest.cc.
+class MockServer {
+ public:
+  MockServer() {
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &MockServer::HandleRequest, base::Unretained(this)));
+    CHECK(test_server_.Start());
+  }
+
+  MOCK_METHOD(std::unique_ptr<net::test_server::HttpResponse>,
+              HandleRequest,
+              (const net::test_server::HttpRequest& request));
+
+  const GURL& base_url() const { return test_server_.base_url(); }
+
+ private:
+  net::test_server::EmbeddedTestServer test_server_;
+};
+
+// TODO: b/374624760 - Consider deduplicating this with
+// google_apis/people/people_api_requests_unittest.cc.
+class ScannerCreateContactCommandHandlerTest : public testing::Test {
+ public:
+  ScannerCreateContactCommandHandlerTest()
+      : request_sender_(
+            std::make_unique<google_apis::DummyAuthService>(),
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
+                /*network_service=*/nullptr,
+                /*is_trusted=*/true),
+            task_environment_.GetMainThreadTaskRunner(),
+            "test-user-agent",
+            TRAFFIC_ANNOTATION_FOR_TESTS),
+        gaia_urls_overrider_(base::CommandLine::ForCurrentProcess(),
+                             "people_api_origin_url",
+                             mock_server_.base_url().spec()) {
+    CHECK_EQ(mock_server_.base_url(),
+             GaiaUrls::GetInstance()->people_api_origin_url());
+  }
+
+  google_apis::RequestSender& request_sender() { return request_sender_; }
+  MockServer& mock_server() { return mock_server_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  google_apis::RequestSender request_sender_;
+  MockServer mock_server_;
+  GaiaUrlsOverriderForTesting gaia_urls_overrider_;
+};
+
+TEST_F(ScannerCreateContactCommandHandlerTest, WithoutDelegate) {
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(nullptr,
+                       CreateContactCommand(google_apis::people::Contact()),
+                       done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest, WithoutRequestSender) {
+  TestScannerCommandDelegate delegate;
+  EXPECT_CALL(delegate, GetGoogleApisRequestSender).WillOnce(Return(nullptr));
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CreateContactCommand(google_apis::people::Contact()),
+                       done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest, WithDelayedDelegateDeletion) {
+  // The response must be valid and successful to attempt to open a URL.
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HttpStatusCode::HTTP_OK);
+  response->set_content(R"json({"resourceName": "people/c1"})json");
+  response->set_content_type(kJsonMimeType);
+  EXPECT_CALL(mock_server(), HandleRequest)
+      .WillOnce(Return(std::move(response)));
+
+  base::test::TestFuture<bool> done_future;
+  {
+    testing::StrictMock<TestScannerCommandDelegate> delegate;
+    EXPECT_CALL(delegate, GetGoogleApisRequestSender)
+        .WillOnce(Return(&request_sender()));
+    HandleScannerCommand(delegate.GetWeakPtr(),
+                         CreateContactCommand(google_apis::people::Contact()),
+                         done_future.GetCallback());
+    // `delegate` is deleted here, invalidating weak pointers.
+  }
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest, SendsRequestToServer) {
+  constexpr std::string_view kContactJson = R"json({
+    "emailAddresses": [
+      {
+        "value": "afrancois@example.com",
+        "type": "home",
+      },
+      {
+        "value": "afrancois@work.example.com",
+        "type": "work",
+      },
+    ],
+    "names": [
+      {
+        "familyName": "Francois",
+        "givenName": "Andre",
+      },
+    ],
+    "phoneNumbers": [
+      {
+        "value": "+61400000000",
+        "type": "mobile",
+      },
+      {
+        "value": "+61390000000",
+        "type": "home",
+      },
+    ],
+  })json";
+  // We are not interested in the server response in this test - just the server
+  // request - so return any arbitrary response.
+  EXPECT_CALL(
+      mock_server(),
+      HandleRequest(AllOf(
+          Field("relative_url", &net::test_server::HttpRequest::relative_url,
+                HasSubstr("createContact")),
+          Field("content", &net::test_server::HttpRequest::content,
+                IsJson(kContactJson)))))
+      .WillOnce(
+          Return(std::make_unique<net::test_server::BasicHttpResponse>()));
+  testing::StrictMock<TestScannerCommandDelegate> delegate;
+  EXPECT_CALL(delegate, GetGoogleApisRequestSender)
+      .WillOnce(Return(&request_sender()));
+
+  google_apis::people::Contact contact;
+  google_apis::people::EmailAddress home_email;
+  home_email.value = "afrancois@example.com";
+  home_email.type = "home";
+  contact.email_addresses.push_back(std::move(home_email));
+  google_apis::people::EmailAddress work_email;
+  work_email.value = "afrancois@work.example.com";
+  work_email.type = "work";
+  contact.email_addresses.push_back(std::move(work_email));
+  google_apis::people::Name name;
+  name.family_name = "Francois";
+  name.given_name = "Andre";
+  contact.name = std::move(name);
+  google_apis::people::PhoneNumber mobile_number;
+  mobile_number.value = "+61400000000";
+  mobile_number.type = "mobile";
+  contact.phone_numbers.push_back(std::move(mobile_number));
+  google_apis::people::PhoneNumber home_number;
+  home_number.value = "+61390000000";
+  home_number.type = "home";
+  contact.phone_numbers.push_back(std::move(home_number));
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CreateContactCommand(std::move(contact)),
+                       done_future.GetCallback());
+
+  // We are not interested in the result of the command in this test, just
+  // whether the command sends the right JSON to the server.
+  // However, we should still wait for the future to be resolved.
+  ASSERT_TRUE(done_future.Wait());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest, OpensEditContactInBrowser) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HttpStatusCode::HTTP_OK);
+  response->set_content(R"json({"resourceName": "people/c1"})json");
+  response->set_content_type(kJsonMimeType);
+  EXPECT_CALL(mock_server(), HandleRequest)
+      .WillOnce(Return(std::move(response)));
+  testing::StrictMock<TestScannerCommandDelegate> delegate;
+  EXPECT_CALL(delegate, GetGoogleApisRequestSender)
+      .WillOnce(Return(&request_sender()));
+  EXPECT_CALL(delegate,
+              OpenUrl(GURL("https://contacts.google.com/person/c1?edit=1")))
+      .Times(1);
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CreateContactCommand(google_apis::people::Contact()),
+                       done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest, HandlesServerErrors) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR);
+  EXPECT_CALL(mock_server(), HandleRequest)
+      .WillOnce(Return(std::move(response)));
+  testing::StrictMock<TestScannerCommandDelegate> delegate;
+  EXPECT_CALL(delegate, GetGoogleApisRequestSender)
+      .WillOnce(Return(&request_sender()));
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CreateContactCommand(google_apis::people::Contact()),
+                       done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest, HandlesInvalidResourceNames) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HttpStatusCode::HTTP_OK);
+  response->set_content(R"json({"resourceName": "c1"})json");
+  response->set_content_type(kJsonMimeType);
+  EXPECT_CALL(mock_server(), HandleRequest)
+      .WillOnce(Return(std::move(response)));
+  testing::StrictMock<TestScannerCommandDelegate> delegate;
+  EXPECT_CALL(delegate, GetGoogleApisRequestSender)
+      .WillOnce(Return(&request_sender()));
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CreateContactCommand(google_apis::people::Contact()),
+                       done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
+}
+
+TEST_F(ScannerCreateContactCommandHandlerTest,
+       HandlesResourceNamesWithPathTraversal) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HttpStatusCode::HTTP_OK);
+  response->set_content(
+      R"json({"resourceName": "people/../deleteAccount"})json");
+  response->set_content_type(kJsonMimeType);
+  EXPECT_CALL(mock_server(), HandleRequest)
+      .WillOnce(Return(std::move(response)));
+  testing::StrictMock<TestScannerCommandDelegate> delegate;
+  EXPECT_CALL(delegate, GetGoogleApisRequestSender)
+      .WillOnce(Return(&request_sender()));
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerCommand(delegate.GetWeakPtr(),
+                       CreateContactCommand(google_apis::people::Contact()),
+                       done_future.GetCallback());
+
+  EXPECT_FALSE(done_future.Get());
 }
 
 }  // namespace

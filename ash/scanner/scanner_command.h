@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "google_apis/people/people_api_request_types.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -67,13 +68,21 @@ struct ASH_EXPORT CopyToClipboardCommand {
   ~CopyToClipboardCommand();
 };
 
+// Command to create a new contact in Google Contacts, then open the created
+// contact's page in the Google Contacts web interface.
+struct ASH_EXPORT CreateContactCommand {
+  google_apis::people::Contact contact;
+};
+
 // Holds a single command that can be applied to the system. Used as an
 // intermediate step between an `ash::ScannerAction` and performing the command.
 // In some cases where `ash::ScannerAction` defines a very specific action
 // without any preprocessing, the command type may be the same as the action
 // type.
-using ScannerCommand =
-    std::variant<OpenUrlCommand, DriveUploadCommand, CopyToClipboardCommand>;
+using ScannerCommand = std::variant<OpenUrlCommand,
+                                    DriveUploadCommand,
+                                    CopyToClipboardCommand,
+                                    CreateContactCommand>;
 
 }  // namespace ash
 
