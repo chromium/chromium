@@ -33678,6 +33678,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="147" label="Accelerometer"/>
   <int value="148" label="ContentVisibility"/>
   <int value="149" label="CounterSet"/>
+  <int value="150" label="WebAudio"/>
+  <int value="151" label="OfflineAudioContext"/>
+  <int value="152" label="AudioWorklet"/>
+  <int value="153" label="WebMidi"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

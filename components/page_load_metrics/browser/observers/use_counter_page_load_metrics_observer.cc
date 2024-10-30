@@ -488,6 +488,12 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kLinearAccelerationSensorConstructor,
            WebDXFeature::kAccelerometer},
           {WebFeature::kGravitySensorConstructor, WebDXFeature::kAccelerometer},
+          {WebFeature::kV8AudioContext_Constructor, WebDXFeature::kWebAudio},
+          {WebFeature::kV8OfflineAudioContext_Constructor,
+           WebDXFeature::kOfflineAudioContext},
+          {WebFeature::kAudioWorkletNodeConstructor,
+           WebDXFeature::kAudioWorklet},
+          {WebFeature::kMIDIPortOpen, WebDXFeature::kWebMidi},
       }};
 
   return *kMap;

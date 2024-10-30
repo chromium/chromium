@@ -205,6 +205,10 @@ enum WebDXFeature {
   kAccelerometer = 147,
   kContentVisibility = 148,
   kCounterSet = 149,
+  kWebAudio = 150,
+  kOfflineAudioContext = 151,
+  kAudioWorklet = 152,
+  kWebMidi = 153,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
