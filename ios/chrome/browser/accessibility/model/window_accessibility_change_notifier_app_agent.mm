@@ -76,6 +76,15 @@ const base::TimeDelta kWindowNotifcationDelay = base::Seconds(0.5);
   [self maybeScheduleWindowCountWithDelay];
 }
 
+// If the SceneState reaches SceneActivationLevelForegroundActive before the
+// ProfileState is set, it would not have been possible to observe it in the
+// -visibleWindowCount method (as it would be nil). Listening to this method
+// allow to deal with this rare occurrence.
+- (void)sceneState:(SceneState*)sceneState
+    profileStateConnected:(ProfileState*)profileState {
+  [self maybeScheduleWindowCountWithDelay];
+}
+
 #pragma mark - Private methods
 
 - (void)maybeScheduleWindowCountWithDelay {

@@ -228,6 +228,11 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   }
 }
 
+- (void)setProfileState:(ProfileState*)profileState {
+  _profileState = profileState;
+  [self.observers sceneState:self profileStateConnected:_profileState];
+}
+
 #pragma mark - UIBlockerTarget
 
 - (BOOL)isUIBlocked {
