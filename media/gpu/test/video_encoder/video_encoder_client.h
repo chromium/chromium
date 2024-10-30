@@ -68,6 +68,8 @@ struct VideoEncoderClientConfig {
   media::VideoBitrateAllocation bitrate_allocation;
   // The desired framerate in frames/second.
   uint32_t framerate = 30.0;
+  // Group of pictures length.
+  uint32_t gop_length = 0;
   // The interval of calling VideoEncodeAccelerator::Encode(). If this is
   // std::nullopt, Encode() is called once VideoEncodeAccelerator consumes
   // the previous VideoFrames.

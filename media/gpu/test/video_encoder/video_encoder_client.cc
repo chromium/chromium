@@ -515,6 +515,9 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
       encoder_client_config_.drop_frame_thresh;
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
+  if (encoder_client_config_.gop_length != 0) {
+    config.gop_length = encoder_client_config_.gop_length;
+  }
 
   encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
       config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),

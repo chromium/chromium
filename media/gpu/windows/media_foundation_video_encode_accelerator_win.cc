@@ -262,6 +262,24 @@ bool IsValidQp(VideoCodec codec, uint64_t qp) {
       return false;
   }
 }
+
+uint8_t GetMaxQuantizer(VideoCodec codec) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      return kH264MaxQuantizer;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    case VideoCodec::kHEVC:
+      return kH265MaxQuantizer;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    case VideoCodec::kVP9:
+      return kVP9MaxQuantizer;
+    case VideoCodec::kAV1:
+      return kAV1MaxQuantizer;
+    default:
+      return 0;  // Return invalid value for unsupported codec.
+  }
+}
+
 // Only eAVEncVP9VProfile_420_8 is supported on Intel graphics.
 eAVEncVP9VProfile GetVP9VProfile(VideoCodecProfile profile) {
   switch (profile) {
@@ -1312,16 +1330,27 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     EncodeInternal(frame, discard_options, /*discard_output=*/true);
   }
 
-  if ((codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) &&
-      vendor_ == DriverVendor::kIntel && IsTemporalScalabilityCoding() &&
-      options.key_frame) {
-    // Currently, Intel drivers only allow apps to request keyframe on base
-    // layer(T0) when encoding at L1T2/L1T3, any keyframe requests on T1/T2
-    // layer will be ignored by driver and not return a keyframe. For VP9/AV1,
-    // we expect when keyframe is requested, encoder will reset the temporal
-    // layer state and produce a keyframe, to work around this issue, MFVEA will
-    // add input and internally discard output until driver transition to T0
-    // layer.
+  bool force_key_frame =
+      (input_since_keyframe_count_ + pending_input_queue_.size()) %
+          gop_length_ ==
+      0;
+
+  bool discard_high_layer_frames =
+      (((codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) &&
+        vendor_ == DriverVendor::kIntel) ||
+       (codec_ == VideoCodec::kH264 && (vendor_ == DriverVendor::kIntel ||
+                                        vendor_ == DriverVendor::kNvidia))) &&
+      IsTemporalScalabilityCoding() && (options.key_frame || force_key_frame);
+
+  if (discard_high_layer_frames) {
+    // Currently, Intel and NVIDIA drivers only allow apps to request keyframe
+    // on base layer(T0) when encoding at L1T2/L1T3, any keyframe requests on
+    // T1/T2 layer will be ignored by driver and not return a keyframe. For
+    // VP9, AV1 and H.264, we expect when keyframe is requested, encoder will
+    // reset the temporal layer state and produce a keyframe, to work around
+    // this issue, MFVEA will add input and internally discard output until
+    // driver transition to T0 layer.
+
     uint32_t distance_to_base_layer = GetDistanceToNextTemporalBaseLayer(
         input_since_keyframe_count_ + pending_input_queue_.size(),
         num_temporal_layers_);
@@ -2220,9 +2249,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                "timestamp", input.timestamp, "discard_output",
                input.discard_output);
 
+  // Force key frame for the first frame in GOP.
+  bool force_key_frame = input_since_keyframe_count_ % gop_length_ == 0;
+
   // Reset the frame count when keyframe is requested.
-  if (input.options.key_frame ||
-      (input_since_keyframe_count_ % kDefaultGOPLength) == 0) {
+  if (input.options.key_frame || force_key_frame) {
     input_since_keyframe_count_ = 0;
   }
 
@@ -2236,7 +2267,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
   } else if (rate_ctrl_ && !input.discard_output) {
     VideoRateControlWrapper::FrameParams frame_params{};
     frame_params.frame_type =
-        input.options.key_frame
+        input.options.key_frame || force_key_frame
             ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
             : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
     // H.264 and H.265 SW BRC need timestamp information.
@@ -2277,7 +2308,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
   } else if (input.discard_output) {
     // Set up encoder for maximum speed if we're anyway going to discard the
     // output.
-    quantizer = kVP9MaxQuantizer;
+    quantizer = GetMaxQuantizer(codec_);
   }
 
   HRESULT hr = S_OK;
@@ -2299,7 +2330,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                                        var.ullVal);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
   }
-  if (input.options.key_frame) {
+  if (input.options.key_frame || force_key_frame) {
     VARIANT var;
     var.vt = VT_UI4;
     var.ulVal = 1;
