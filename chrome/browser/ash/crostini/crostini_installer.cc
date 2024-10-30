@@ -446,7 +446,7 @@ void CrostiniInstaller::UpdateState(State new_state) {
         base::BindRepeating(&CrostiniInstaller::RunProgressCallback,
                             weak_ptr_factory_.GetWeakPtr()));
   } else {
-    state_progress_timer_.AbandonAndStop();
+    state_progress_timer_.Stop();
   }
 }
 

@@ -94,7 +94,7 @@ AppActivityRegistry::AppDetails::~AppDetails() = default;
 void AppActivityRegistry::AppDetails::ResetTimeCheck() {
   activity.set_last_notification(AppNotification::kUnknown);
   if (app_limit_timer)
-    app_limit_timer->AbandonAndStop();
+    app_limit_timer->Stop();
 }
 
 bool AppActivityRegistry::AppDetails::IsLimitReached() const {

@@ -268,7 +268,7 @@ void FastCheckoutClientImpl::InternalStop(bool allow_further_runs) {
   form_signatures_to_fill_.clear();
   selected_autofill_profile_guid_ = std::nullopt;
   selected_credit_card_id_ = std::nullopt;
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
   credit_card_form_global_id_ = std::nullopt;
   run_id_ = 0;
   // Reset UI related state.
@@ -276,7 +276,7 @@ void FastCheckoutClientImpl::InternalStop(bool allow_further_runs) {
   // Reset personal data manager observation.
   personal_data_manager_observation_.Reset();
   // Reset `autofill_manager_` and related objects.
-  form_extraction_timer_.AbandonAndStop();
+  form_extraction_timer_.Stop();
   autofill_manager_observation_.Reset();
   autofill_manager_.reset();
 

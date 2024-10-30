@@ -116,7 +116,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   void CloseChannel(const std::string& error_message) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    timeout_.AbandonAndStop();
+    timeout_.Stop();
 
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   }

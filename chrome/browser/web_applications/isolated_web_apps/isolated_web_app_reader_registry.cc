@@ -438,7 +438,7 @@ void IsolatedWebAppReaderRegistry::Cache::StartCleanupTimerIfNotRunning() {
 void IsolatedWebAppReaderRegistry::Cache::StopCleanupTimerIfCacheIsEmpty() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cache_.empty()) {
-    cleanup_timer_.AbandonAndStop();
+    cleanup_timer_.Stop();
   }
 }
 

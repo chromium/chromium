@@ -55,7 +55,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
                    &SafeBrowsingClient::OnTimeout);
 
     if (database_manager_->CheckDownloadUrl({url}, this)) {
-      timeout_.AbandonAndStop();
+      timeout_.Stop();
       SendResultToHandler(/*is_url_safe=*/true);
     }
   }
@@ -79,7 +79,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
   void OnCheckDownloadUrlResult(
       const std::vector<GURL>& url_chain,
       safe_browsing::SBThreatType threat_type) override {
-    timeout_.AbandonAndStop();
+    timeout_.Stop();
     bool is_url_safe =
         threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE;
     SendResultToHandler(is_url_safe);

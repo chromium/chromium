@@ -3071,7 +3071,7 @@ void AutotestPrivateGetPrinterListFunction::RespondWithSuccess() {
     return;
   }
 
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
   DestroyPrintersManager();
   Respond(WithArguments(std::move(results_)));
 }
@@ -3299,7 +3299,7 @@ void AutotestPrivateSetAssistantEnabledFunction::OnAssistantStatusChanged(
 
   Respond(NoArguments());
   enabled_.reset();
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 }
 
 void AutotestPrivateSetAssistantEnabledFunction::Timeout() {
@@ -3581,7 +3581,7 @@ void AutotestPrivateSendAssistantTextQueryFunction::
 
   // |timeout_timer_| need to be hold until |Respond(.)| is called to avoid
   // |this| being destructed.
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 }
 
 void AutotestPrivateSendAssistantTextQueryFunction::Timeout() {
@@ -3666,7 +3666,7 @@ void AutotestPrivateWaitForAssistantQueryStatusFunction::
 
   // |timeout_timer_| need to be hold until |Respond(.)| is called to avoid
   // |this| being destructed.
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 }
 
 void AutotestPrivateWaitForAssistantQueryStatusFunction::Timeout() {
@@ -4960,7 +4960,7 @@ void AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstalled(
     const webapps::AppId& app_id) {
   web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   Respond(WithArguments(app_id));
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 }
 
 void AutotestPrivateInstallPWAForCurrentURLFunction::PWATimeout() {
@@ -5862,7 +5862,7 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
   if (!tracker->Stop(base::BindOnce(
           &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this,
           tracker->start_time()))) {
-    timeout_timer_.AbandonAndStop();
+    timeout_timer_.Stop();
     trackers->erase(it);
     return RespondNow(
         Error("No smoothness report, GPU process may have crashed"));
@@ -5890,7 +5890,7 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
     return;
   }
 
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 
   std::vector<int> jank_timestamps;  // In milliseconds.
   std::vector<int> jank_durations;   // In milliseconds.
@@ -6390,7 +6390,7 @@ void AutotestPrivateGetAccessTokenFunction::OnAccessToken(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
   access_token_fetcher_.reset();
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
   if (did_respond()) {
     return;
   }

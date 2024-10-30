@@ -60,7 +60,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
                    &SafeBrowsingClient::OnTimeout);
 
     if (database_manager_->CheckApiBlocklistUrl(origin.GetURL(), this)) {
-      timeout_.AbandonAndStop();
+      timeout_.Stop();
       SendResultToHandler(Verdict::kAcceptable);
     }
   }
@@ -93,7 +93,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   void OnCheckApiBlocklistUrlResult(
       const GURL& url,
       const safe_browsing::ThreatMetadata& metadata) override {
-    timeout_.AbandonAndStop();
+    timeout_.Stop();
     SendResultToHandler(ExtractVerdictFromMetadata(metadata));
   }
 

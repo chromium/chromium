@@ -446,7 +446,7 @@ base::Time AppTimeController::GetNextResetTime() const {
 
 void AppTimeController::ScheduleForTimeLimitReset() {
   if (reset_timer_.IsRunning())
-    reset_timer_.AbandonAndStop();
+    reset_timer_.Stop();
 
   base::TimeDelta time_until_reset = GetNextResetTime() - base::Time::Now();
   reset_timer_.Start(FROM_HERE, time_until_reset,
