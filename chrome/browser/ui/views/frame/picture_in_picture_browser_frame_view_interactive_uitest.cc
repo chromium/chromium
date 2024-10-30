@@ -226,7 +226,6 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
 #endif
   }
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   std::unique_ptr<views::Widget> OpenChildDialog(
       const gfx::Size& size,
       std::optional<gfx::Size> initial_size = std::nullopt) {
@@ -234,7 +233,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW);
     init_params.child = true;
-    init_params.parent = pip_frame_view_->GetWidget()->GetNativeWindow();
+    init_params.parent = pip_frame_view_->GetWidget()->GetNativeView();
 
     auto child_dialog = std::make_unique<views::Widget>(std::move(init_params));
     child_dialog->GetContentsView()->SetPreferredSize(size);
@@ -242,7 +241,6 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
     child_dialog->Show();
     return child_dialog;
   }
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   PictureInPictureBrowserFrameView* pip_frame_view() { return pip_frame_view_; }
 
@@ -298,7 +296,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
 }
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                        ResizesToFitChildDialogs) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
@@ -405,8 +402,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_TRUE(actual_final_bounds.ApproximatelyEqual(moved_bounds, 1));
 }
-
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                        TitleActivatesWithOverlayView) {

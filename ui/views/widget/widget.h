@@ -1245,6 +1245,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetAllowScreenshots(bool allow);
   bool AreScreenshotsAllowed();
 
+  // Called when we become / stop being `child_widget`'s parent.
+  void OnChildAdded(Widget* child_widget);
+  void OnChildRemoved(Widget* child_widget);
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.

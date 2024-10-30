@@ -45,18 +45,6 @@ SublevelManager::SublevelManager(Widget* owner, int sublevel)
 
 SublevelManager::~SublevelManager() = default;
 
-void SublevelManager::TrackChildWidget(Widget* child) {
-  DCHECK_EQ(0, base::ranges::count(children_, child));
-  DCHECK(child->parent() == owner_);
-  children_.push_back(child);
-}
-
-void SublevelManager::UntrackChildWidget(Widget* child) {
-  // During shutdown a child might get untracked more than once by the same
-  // parent. We don't want to DCHECK on that.
-  children_.erase(base::ranges::remove(children_, child), std::end(children_));
-}
-
 void SublevelManager::SetSublevel(int sublevel) {
   sublevel_ = sublevel;
   EnsureOwnerSublevel();
@@ -87,6 +75,20 @@ void SublevelManager::EnsureOwnerTreeSublevel() {
   if (Widget* parent = owner_->parent()) {
     parent->GetSublevelManager()->OrderChildWidget(owner_);
   }
+}
+
+void SublevelManager::OnWidgetChildAdded(Widget* owner, Widget* child) {
+  CHECK_EQ(owner, owner_);
+  CHECK(!base::Contains(children_, child));
+  CHECK_EQ(child->parent(), owner_);
+  children_.push_back(child);
+}
+
+void SublevelManager::OnWidgetChildRemoved(Widget* owner, Widget* child) {
+  CHECK_EQ(owner, owner_);
+  // During shutdown a child might get untracked more than once by the same
+  // parent. We don't want to DCHECK on that.
+  std::erase(children_, child);
 }
 
 void SublevelManager::OrderChildWidget(Widget* child) {
@@ -129,12 +131,6 @@ void SublevelManager::OrderChildWidget(Widget* child) {
   }
 
   children_.insert(insert_it, child);
-}
-
-void SublevelManager::OnWidgetDestroying(Widget* owner) {
-  DCHECK(owner == owner_);
-  if (owner->parent())
-    owner->parent()->GetSublevelManager()->UntrackChildWidget(owner);
 }
 
 bool SublevelManager::IsTrackingChildWidget(Widget* child) {

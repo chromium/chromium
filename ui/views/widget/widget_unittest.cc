@@ -5735,6 +5735,71 @@ TEST_F(WidgetTest, NonClientViewAccessibilityProperties) {
   EXPECT_EQ(node_data.role, ax::mojom::Role::kClient);
 }
 
+class WidgetChildObserver : public WidgetObserver {
+ public:
+  explicit WidgetChildObserver(Widget* widget) { observation_.Observe(widget); }
+
+  const Widget* child_widget() const { return child_widget_; }
+
+ private:
+  // WidgetObserver:
+  void OnWidgetChildAdded(Widget* widget, Widget* child_widget) override {
+    child_widget_ = child_widget;
+    WidgetObserver::OnWidgetChildAdded(widget, child_widget);
+  }
+
+  void OnWidgetChildRemoved(Widget* widget, Widget* child_widget) override {
+    EXPECT_EQ(widget, observation_.GetSource());
+    EXPECT_EQ(child_widget, child_widget_);
+    child_widget_ = nullptr;
+    WidgetObserver::OnWidgetChildRemoved(widget, child_widget);
+  }
+
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+  raw_ptr<Widget> child_widget_ = nullptr;
+};
+
+TEST_F(WidgetTest, ChildWidgetNotifiesObserverWhenInitializedAndDestroyed) {
+  // Adding a child widget should call back the observer.
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetChildObserver observer(widget.get());
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildPlatformWidget(
+          widget->GetNativeView(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  EXPECT_EQ(observer.child_widget(), child_widget.get());
+
+  // Destroy the child and verify that the observer was notified.
+  child_widget.reset();
+  EXPECT_EQ(observer.child_widget(), nullptr);
+}
+
+TEST_F(WidgetTest, ChildWidgetNotifiesObserverWhenReparented) {
+  // Verify that reparenting a child widget notifies both the outgoing and
+  // incoming parent widgets.
+  std::unique_ptr<Widget> widget_1 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetChildObserver observer_1(widget_1.get());
+
+  std::unique_ptr<Widget> widget_2 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetChildObserver observer_2(widget_2.get());
+
+  // Create a child widget of `widget_1`.
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildPlatformWidget(
+          widget_1->GetNativeView(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  EXPECT_EQ(observer_1.child_widget(), child_widget.get());
+
+  Widget::ReparentNativeView(child_widget->GetNativeView(),
+                             widget_2->GetNativeView());
+  EXPECT_EQ(observer_1.child_widget(), nullptr);
+  EXPECT_EQ(observer_2.child_widget(), child_widget.get());
+
+  child_widget.reset();
+  EXPECT_EQ(observer_2.child_widget(), nullptr);
+}
+
 // Parameterized test that verifies the behavior of SetAspectRatio with respect
 // to the excluded margin.
 class WidgetSetAspectRatioTest

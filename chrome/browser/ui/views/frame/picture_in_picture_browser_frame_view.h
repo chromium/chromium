@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
@@ -30,21 +31,6 @@
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/window_frame_provider.h"
 #endif
-
-// On Windows and Linux, child dialogs don't draw outside of their
-// parent window, so to prevent cutting off important dialogs we resize the
-// picture-in-picture window to fit them. While ChromeOS Ash also uses Aura, it
-// does not have this issue so we do not resize on ChromeOS Ash.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG 1
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-#include "base/scoped_multi_source_observation.h"
-#include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/client/transient_window_client_observer.h"
-#include "ui/aura/window_observer.h"
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 class BrowserFrameBoundsChangeAnimation;
 
@@ -250,14 +236,10 @@ class PictureInPictureBrowserFrameView
  private:
   CloseReason close_reason_ = CloseReason::kOther;
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   // Observe child dialogs so that we can resize to ensure that they fit on
   // platforms where child dialogs would otherwise be cut off by our typically
   // small size.
-  class ChildDialogObserverHelper
-      : public views::WidgetObserver,
-        public aura::WindowObserver,
-        public aura::client::TransientWindowClientObserver {
+  class ChildDialogObserverHelper : public views::WidgetObserver {
    public:
     explicit ChildDialogObserverHelper(PictureInPictureBrowserFrameView*);
     ChildDialogObserverHelper(const ChildDialogObserverHelper&) = delete;
@@ -271,16 +253,8 @@ class PictureInPictureBrowserFrameView
     void OnWidgetDestroying(views::Widget* widget) override;
     void OnWidgetVisibilityChanged(views::Widget* widget,
                                    bool visible) override;
-
-    // aura::WindowObserver:
-    void OnWindowAdded(aura::Window* new_window) override;
-
-    // aura::client::TransientWindowClientObserver:
-    void OnTransientChildWindowAdded(aura::Window* parent,
-                                     aura::Window* transient_child) override;
-    void OnTransientChildWindowRemoved(aura::Window* parent,
-                                       aura::Window* transient_child) override {
-    }
+    void OnWidgetChildAdded(views::Widget* widget,
+                            views::Widget* child_dialog) override;
 
    private:
     enum class ResizingState {
@@ -296,7 +270,6 @@ class PictureInPictureBrowserFrameView
       kSizedToChildren,
     };
 
-    void OnChildDialogOpened(views::Widget* child_dialog);
     void MaybeResizeForChildDialog(views::Widget* child_dialog);
     void MaybeRevertSizeAfterChildDialogCloses();
 
@@ -306,11 +279,6 @@ class PictureInPictureBrowserFrameView
 
     ResizingState resizing_state_ = ResizingState::kNormal;
 
-    base::ScopedObservation<aura::Window, aura::WindowObserver>
-        aura_window_observation_{this};
-    base::ScopedObservation<aura::client::TransientWindowClient,
-                            aura::client::TransientWindowClientObserver>
-        transient_window_observation_{this};
     base::ScopedObservation<views::Widget, views::WidgetObserver>
         pip_widget_observation_{this};
 
@@ -331,7 +299,6 @@ class PictureInPictureBrowserFrameView
   };
 
   std::unique_ptr<ChildDialogObserverHelper> child_dialog_observer_helper_;
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;

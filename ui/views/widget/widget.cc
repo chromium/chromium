@@ -412,8 +412,9 @@ void Widget::Init(InitParams params) {
       params.name = params.delegate->GetContentsView()->GetClassName();
   }
 
-  if (params.parent && GetWidgetForNativeView(params.parent))
+  if (params.parent && GetWidgetForNativeView(params.parent)) {
     parent_ = GetWidgetForNativeView(params.parent)->GetWeakPtr();
+  }
 
   // Subscripbe to parent's paint-as-active change.
   if (parent_) {
@@ -555,7 +556,7 @@ void Widget::Init(InitParams params) {
   }
 
   if (parent_) {
-    parent_->GetSublevelManager()->TrackChildWidget(this);
+    parent_->OnChildAdded(this);
   }
 
   native_theme_observation_.Observe(GetNativeTheme());
@@ -2317,10 +2318,10 @@ void Widget::SetParent(Widget* parent) {
   }
 
   if (old_parent) {
-    old_parent->GetSublevelManager()->UntrackChildWidget(this);
+    old_parent->OnChildRemoved(this);
   }
   if (parent) {
-    parent->GetSublevelManager()->TrackChildWidget(this);
+    parent->OnChildAdded(this);
   }
 }
 
@@ -2387,6 +2388,9 @@ void Widget::HandleWidgetDestroying() {
   if (GetFocusManager() && root_view_) {
     GetFocusManager()->ViewRemoved(root_view_.get());
   }
+  if (parent_) {
+    parent_->OnChildRemoved(this);
+  }
   observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {
     non_client_view_->WindowClosing();
@@ -2427,6 +2431,14 @@ void Widget::HandleWidgetDestroyed() {
   // WIDGET_OWNS_NATIVE_WIDGET the NativeWidget will be cleaned up through
   // |owned_native_widget_|
   native_widget_.reset();
+}
+
+void Widget::OnChildAdded(Widget* child_widget) {
+  observers_.Notify(&WidgetObserver::OnWidgetChildAdded, this, child_widget);
+}
+
+void Widget::OnChildRemoved(Widget* child_widget) {
+  observers_.Notify(&WidgetObserver::OnWidgetChildRemoved, this, child_widget);
 }
 
 BEGIN_METADATA_BASE(Widget)

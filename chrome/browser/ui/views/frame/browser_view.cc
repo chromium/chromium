@@ -4135,8 +4135,8 @@ views::View* BrowserView::CreateMacOverlayView() {
     // have an associated Widget. This will cause issues in sublevel manager
     // which operates at the Widget level.
     if (overlay_widget->GetSublevelManager()) {
-      overlay_widget->parent()->GetSublevelManager()->UntrackChildWidget(
-          overlay_widget);
+      overlay_widget->parent()->GetSublevelManager()->OnWidgetChildRemoved(
+          overlay_widget->parent(), overlay_widget);
     }
 
     return overlay_widget;

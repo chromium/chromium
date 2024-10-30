@@ -70,11 +70,6 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-#include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/window.h"
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -229,14 +224,10 @@ void DefinitelyExitPictureInPicture(
 
 }  // namespace
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     ChildDialogObserverHelper(PictureInPictureBrowserFrameView* pip_frame)
     : pip_frame_(pip_frame), pip_widget_(pip_frame->GetWidget()) {
   pip_widget_observation_.Observe(pip_widget_);
-  aura_window_observation_.Observe(pip_widget_->GetNativeWindow());
-  transient_window_observation_.Observe(
-      aura::client::GetTransientWindowClient());
 }
 
 PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
@@ -297,29 +288,11 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   }
 }
 
-void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::OnWindowAdded(
-    aura::Window* new_window) {
-  auto* child_dialog = views::Widget::GetWidgetForNativeWindow(new_window);
-  if (child_dialog) {
-    OnChildDialogOpened(child_dialog);
-  }
-}
-
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
-    OnTransientChildWindowAdded(aura::Window* parent,
-                                aura::Window* transient_child) {
-  if (parent != pip_widget_->GetNativeWindow()) {
+    OnWidgetChildAdded(views::Widget* widget, views::Widget* child_dialog) {
+  if (widget != pip_widget_) {
     return;
   }
-
-  auto* child_dialog = views::Widget::GetWidgetForNativeWindow(transient_child);
-  if (child_dialog) {
-    OnChildDialogOpened(child_dialog);
-  }
-}
-
-void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
-    OnChildDialogOpened(views::Widget* child_dialog) {
   child_dialog_observations_.AddObservation(child_dialog);
   if (child_dialog->IsVisible()) {
     MaybeResizeForChildDialog(child_dialog);
@@ -381,7 +354,6 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   resizing_state_ = ResizingState::kNormal;
   pip_widget_->SetBoundsConstrained(latest_user_desired_bounds_);
 }
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     BrowserFrame* frame,
@@ -845,10 +817,8 @@ void PictureInPictureBrowserFrameView::Layout(PassKey) {
 void PictureInPictureBrowserFrameView::AddedToWidget() {
   widget_observation_.Observe(GetWidget());
   window_event_observer_ = std::make_unique<WindowEventObserver>(this);
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_ =
       std::make_unique<ChildDialogObserverHelper>(this);
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // Creates an animation container to ensure all the animations update at the
   // same time.
@@ -889,9 +859,7 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 void PictureInPictureBrowserFrameView::RemovedFromWidget() {
   widget_observation_.Reset();
   window_event_observer_.reset();
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_.reset();
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // Clear the AutoPiP setting overlay view.
   if (auto_pip_setting_overlay_) {
@@ -1100,9 +1068,7 @@ void PictureInPictureBrowserFrameView::OnWidgetDestroying(
     views::Widget* widget) {
   window_event_observer_.reset();
   widget_observation_.Reset();
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_.reset();
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 }
 
 void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(

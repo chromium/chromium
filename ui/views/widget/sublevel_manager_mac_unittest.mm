@@ -95,8 +95,8 @@ TEST_P(SublevelManagerMacTest, ExplicitUntrack) {
 
     // Disable the second widget.
     if (i == 1) {
-      children[i]->parent()->GetSublevelManager()->UntrackChildWidget(
-          children[i].get());
+      children[i]->parent()->GetSublevelManager()->OnWidgetChildRemoved(
+          children[i]->parent(), children[i].get());
     }
   }
 

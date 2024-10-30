@@ -68,6 +68,13 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // depending on the platform in question.
   virtual void OnWidgetShowStateChanged(Widget* widget) {}
 
+  // Called when `widget` becomes parent of `child`.
+  virtual void OnWidgetChildAdded(Widget* widget, Widget* child) {}
+
+  // Called when `widget` stopes being the parent of `child`, including when
+  // `child` is destroying.
+  virtual void OnWidgetChildRemoved(Widget* widget, Widget* child) {}
+
  protected:
   ~WidgetObserver() override = default;
 };
