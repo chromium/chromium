@@ -261,7 +261,10 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public WebContents prepareSpareWebcontents() {
         WebContents webContents = mock(WebContents.class);
-        when(warmupManager.takeSpareWebContents(anyBoolean(), anyBoolean()))
+        when(warmupManager.takeSpareWebContents(
+                        /* incognito= */ anyBoolean(),
+                        /* initiallyHidden= */ anyBoolean(),
+                        /* targetsNetwork= */ anyBoolean()))
                 .thenReturn(webContents);
         return webContents;
     }

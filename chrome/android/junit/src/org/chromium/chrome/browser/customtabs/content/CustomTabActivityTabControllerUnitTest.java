@@ -193,7 +193,9 @@ public class CustomTabActivityTabControllerUnitTest {
     public void usesWebContentsCreatedWithWarmRenderer_ByDefault() {
         WebContents webContents = mock(WebContents.class);
         when(env.webContentsFactory.createWebContentsWithWarmRenderer(
-                        any(), anyBoolean(), anyLong()))
+                        /* profile= */ any(),
+                        /* initiallyHidden= */ anyBoolean(),
+                        /* targetNetwork= */ anyLong()))
                 .thenReturn(webContents);
         env.reachNativeInit(mTabController);
         assertEquals(webContents, env.webContentsCaptor.getValue());
@@ -205,9 +207,49 @@ public class CustomTabActivityTabControllerUnitTest {
         env.reachNativeInit(mTabController);
         verify(env.webContentsFactory, never())
                 .createWebContentsWithWarmRenderer(
-                        any(), anyBoolean(), not(eq(TEST_TARGET_NETWORK)));
+                        /* profile= */ any(),
+                        /* initiallyHidden= */ anyBoolean(),
+                        /* targetNetwork= */ not(eq(TEST_TARGET_NETWORK)));
         verify(env.webContentsFactory)
-                .createWebContentsWithWarmRenderer(any(), anyBoolean(), eq(TEST_TARGET_NETWORK));
+                .createWebContentsWithWarmRenderer(
+                        /* profile= */ any(),
+                        /* initiallyHidden= */ anyBoolean(),
+                        /* targetNetwork= */ eq(TEST_TARGET_NETWORK));
+    }
+
+    @Test
+    public void createsWebContentsFromScratch_whenIntentDataProviderTargetsNetwork() {
+        WebContents webContents = mock(WebContents.class);
+        when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
+        when(env.webContentsFactory.createWebContentsWithWarmRenderer(
+                        /* profile= */ any(),
+                        /* initiallyHidden= */ anyBoolean(),
+                        /* targetNetwork= */ eq(TEST_TARGET_NETWORK)))
+                .thenReturn(webContents);
+        env.reachNativeInit(mTabController);
+        // CustomTabActivityTabController#takeWebContents is the only entrypoint that can correctly
+        // handle IntentDataProvider#targetNetwork. As such, we expect it to always create a
+        // WebContents, targeting that network, when a network is specified in the intent.
+        // What does this mean? In practice, with the current code layout, we expect
+        // CustomTabActivityTabFactory#createTab to
+        // be called with a pre-existing WebContents. More specifically, we expect
+        // WebContentsFactory#createWebContentsWithWarmRenderer, within
+        // CustomTabActivityTabController#takeWebContents to have handled that (for the reasons
+        // stated above).
+        // Note: This is a lot of ifs and poking into internal implementation details, which is
+        // definitely not ideal. Unfortunately, this is the best we could come up to confirm that
+        // IntentDataProvider#targetNetwork is being correctly handled.
+        verify(env.tabFactory, never())
+                .createTab(
+                        /* webContents= */ eq(null),
+                        /* delegateFactory= */ any(),
+                        /* action= */ any());
+        verify(env.tabFactory)
+                .createTab(
+                        /* webContents= */ eq(webContents),
+                        /* delegateFactory= */ any(),
+                        /* action= */ any());
+        assertEquals(webContents, env.webContentsCaptor.getValue());
     }
 
     @Test

@@ -119,12 +119,19 @@ public class HiddenTabHolder {
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
         WarmupManager warmupManager = WarmupManager.getInstance();
-        if (warmupManager.hasSpareTab(profile) && webContents != null) {
+        // launchUrlInHiddenTab is called only during speculative loads/as a side effect of
+        // mayLaunchUrl being called. Hence, it's safe to always pass targetsNetwork = false because
+        // multi-network CCT does not support that. Or, more correctly, currently multi-network CCT
+        // ignores these performance improvements, as it's not considered performance critical and
+        // supporting this would increase its complexity by a lot.
+        if (warmupManager.hasSpareTab(profile, /* targetsNetwork= */ false)
+                && webContents != null) {
             warmupManager.destroySpareTab();
         }
         warmupManager.createRegularSpareTab(profile, webContents);
         // In case creating the tab fails for some reason.
-        if (!warmupManager.hasSpareTab(profile)) return;
+        // See above as to why we can always pass targetsNetwork = false.
+        if (!warmupManager.hasSpareTab(profile, /* targetsNetwork= */ false)) return;
         Tab tab =
                 warmupManager.takeSpareTab(
                         profile, TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION);

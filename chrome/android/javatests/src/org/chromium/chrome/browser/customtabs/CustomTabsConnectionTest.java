@@ -399,7 +399,11 @@ public class CustomTabsConnectionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertNull(
-                                WarmupManager.getInstance().takeSpareWebContents(false, false)));
+                                WarmupManager.getInstance()
+                                        .takeSpareWebContents(
+                                                /* incognito= */ false,
+                                                /* initiallyHidden= */ false,
+                                                /* targetsNetwork= */ false)));
     }
 
     /**
@@ -576,11 +580,17 @@ public class CustomTabsConnectionTest {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
             Assert.assertTrue(
                     WarmupManager.getInstance()
-                            .hasSpareTab(ProfileManager.getLastUsedRegularProfile()));
+                            .hasSpareTab(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    /* targetsNetwork= */ false));
             WarmupManager.getInstance().destroySpareTab();
         } else {
             WebContents webContents =
-                    WarmupManager.getInstance().takeSpareWebContents(false, false);
+                    WarmupManager.getInstance()
+                            .takeSpareWebContents(
+                                    /* incognito= */ false,
+                                    /* initiallyHidden= */ false,
+                                    /* targetsNetwork= */ false);
             Assert.assertNotNull(webContents);
             webContents.destroy();
         }
@@ -749,7 +759,11 @@ public class CustomTabsConnectionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertNull(
-                                WarmupManager.getInstance().takeSpareWebContents(false, false)));
+                                WarmupManager.getInstance()
+                                        .takeSpareWebContents(
+                                                /* incognito= */ false,
+                                                /* initiallyHidden= */ false,
+                                                /* targetsNetwork= */ false)));
     }
 
     @Test
@@ -800,7 +814,8 @@ public class CustomTabsConnectionTest {
                             Assert.assertTrue(
                                     WarmupManager.getInstance()
                                             .hasSpareTab(
-                                                    ProfileManager.getLastUsedRegularProfile())));
+                                                    ProfileManager.getLastUsedRegularProfile(),
+                                                    /* targetsNetwork= */ false)));
         } else {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> Assert.assertTrue(WarmupManager.getInstance().hasSpareWebContents()));
@@ -812,7 +827,8 @@ public class CustomTabsConnectionTest {
                             Assert.assertFalse(
                                     WarmupManager.getInstance()
                                             .hasSpareTab(
-                                                    ProfileManager.getLastUsedRegularProfile())));
+                                                    ProfileManager.getLastUsedRegularProfile(),
+                                                    /* targetsNetwork= */ false)));
         } else {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> Assert.assertFalse(WarmupManager.getInstance().hasSpareWebContents()));

@@ -371,7 +371,9 @@ public class SearchActivityTest {
                 () -> {
                     return WarmupManager.getInstance().hasSpareWebContents()
                             || WarmupManager.getInstance()
-                                    .hasSpareTab(ProfileManager.getLastUsedRegularProfile());
+                                    .hasSpareTab(
+                                            ProfileManager.getLastUsedRegularProfile(),
+                                            /* targetsNetwork= */ false);
                 });
     }
 
