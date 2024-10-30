@@ -281,24 +281,23 @@ bool NavigationTransitionUtils::
   // `is_same_rfh_or_early_commit`.
   CHECK(navigation_request.HasRenderFrameHost());
 
-  auto* destination_entry = navigation_request.GetNavigationEntry();
-  if (!destination_entry) {
-    // We don't always have a destination entry (e.g., a new (non-history)
-    // subframe navigation). However if this is a session history navigation, we
-    // most-likely have a destination entry to navigate toward, from which we
-    // need to purge any existing screenshot.
-    return false;
-  }
-
   NavigationControllerImpl& navigation_controller =
       navigation_request.frame_tree_node()->navigator().controller();
-  auto* last_committed_entry = navigation_controller.GetLastCommittedEntry();
 
-  // Remove the screenshot from the destination before checking the conditions.
-  // We might not capture for this navigation due to some conditions, but the
-  // navigation still continues (to commit/finish), for which we need to remove
-  // the screenshot from the destination entry.
-  RemoveScreenshotFromDestination(navigation_controller, destination_entry);
+  if (auto* destination_entry = navigation_request.GetNavigationEntry()) {
+    // Remove the screenshot from the destination before checking the
+    // conditions. We might not capture for this navigation due to some
+    // conditions, but the navigation still continues, for which we need to
+    // remove the screenshot from the destination entry.
+    RemoveScreenshotFromDestination(navigation_controller, destination_entry);
+  } else {
+    // We don't always have a destination entry (e.g., a new (non-history)
+    // subframe navigation). However we should still capture for navigations
+    // even without destination entries, as the screenshots are captured for the
+    // origin entries of the navigations.
+  }
+
+  auto* last_committed_entry = navigation_controller.GetLastCommittedEntry();
 
   if (gfx::Animation::PrefersReducedMotion()) {
     last_committed_entry->navigation_transition_data()
