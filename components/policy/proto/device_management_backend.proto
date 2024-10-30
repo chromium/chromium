@@ -4933,6 +4933,8 @@ message DeviceManagementRequest {
 //     indicate that a certificate has not been issued yet.
 // 413 Request payload too large.
 // 417 Consumer (non-dasher) account can not enroll with packaged license.
+// 418 Cannot enroll to kiosk with packaged license.
+// 419 Org unit enrollment limit exceeded.
 // 429 Too many requests.
 // 500 Internal Server Error: most likely a bug in DM server.
 // 503 Service Unavailable: most likely a backend error.
