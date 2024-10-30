@@ -75,7 +75,7 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testIPAddress() {
+    public void testIpAddress() {
         Website origin = new Website(WebsiteAddress.create("https://1.1.1.1"), null);
         WebsiteGroup group =
                 new WebsiteGroup(origin.getAddress().getDomainAndRegistry(), Arrays.asList(origin));
@@ -137,9 +137,9 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testRWSInfo() {
+    public void testRwsInfo() {
         var rwsInfo =
-                new RWSCookieInfo(
+                new RwsCookieInfo(
                         "google.com",
                         Arrays.asList(
                                 new Website(null, null),
@@ -150,13 +150,13 @@ public class WebsiteGroupTest {
         Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
         Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);
-        origin2.setRWSCookieInfo(rwsInfo);
+        origin2.setRwsCookieInfo(rwsInfo);
         WebsiteGroup group =
                 new WebsiteGroup(
                         origin2.getAddress().getDomainAndRegistry(),
                         Arrays.asList(origin1, origin2, origin3));
 
-        Assert.assertEquals(rwsInfo, group.getRWSInfo());
+        Assert.assertEquals(rwsInfo, group.getRwsInfo());
     }
 
     @Test

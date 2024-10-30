@@ -10,11 +10,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /** Related Website Sets information for a given website. */
-public class RWSCookieInfo implements Serializable {
+public class RwsCookieInfo implements Serializable {
     private final String mOwnerHost;
     private final List<Website> mMembers;
 
-    public RWSCookieInfo(String ownerHost, List<Website> members) {
+    public RwsCookieInfo(String ownerHost, List<Website> members) {
         mOwnerHost = ownerHost;
         mMembers = members;
     }

@@ -471,10 +471,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     merged.addSharedDictionaryInfo(sharedDictionaryInfo);
                 }
             }
-            if (merged.getRWSCookieInfo() == null
-                    && other.getRWSCookieInfo() != null
+            if (merged.getRwsCookieInfo() == null
+                    && other.getRwsCookieInfo() != null
                     && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
-                merged.setRWSCookieInfo(other.getRWSCookieInfo());
+                merged.setRwsCookieInfo(other.getRwsCookieInfo());
             }
             if (merged.getFileEditingInfo() == null
                     && other.getFileEditingInfo() != null
@@ -975,12 +975,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                        && mSite.getRWSCookieInfo() != null;
+                        && mSite.getRwsCookieInfo() != null;
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
 
         if (shouldRelatedSitesPrefBeVisible) {
-            var rwsInfo = mSite.getRWSCookieInfo();
+            var rwsInfo = mSite.getRwsCookieInfo();
             relatedSitesText.setTitle(
                     getContext()
                             .getResources()
@@ -1004,7 +1004,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
                 relatedSitesHeader.removeAll();
                 relatedSitesHeader.addPreference(relatedSitesText);
-                for (Website site : mSite.getRWSCookieInfo().getMembers()) {
+                for (Website site : mSite.getRwsCookieInfo().getMembers()) {
                     WebsiteRowPreference preference =
                             new RwsRowPreference(
                                     relatedSitesHeader.getContext(),
@@ -1313,7 +1313,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 isOneTime(ContentSettingsType.ADS));
     }
 
-    private String getDSECategorySummary(@ContentSettingValues int value) {
+    private String getDseCategorySummary(@ContentSettingValues int value) {
         return value == ContentSettingValues.ALLOW
                 ? getString(R.string.website_settings_permissions_allowed_dse)
                 : getString(R.string.website_settings_permissions_blocked_dse);

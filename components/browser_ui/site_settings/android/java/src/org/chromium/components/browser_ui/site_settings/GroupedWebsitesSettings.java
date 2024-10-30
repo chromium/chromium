@@ -247,20 +247,20 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                        && mSiteGroup.getRWSInfo() != null;
+                        && mSiteGroup.getRwsInfo() != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
 
         if (shouldRelatedSitesPrefBeVisible) {
-            var rwsInfo = mSiteGroup.getRWSInfo();
+            var rwsInfo = mSiteGroup.getRwsInfo();
 
             relatedSitesText.setTitle(
                     getContext()
                             .getResources()
                             .getQuantityString(
                                     R.plurals.allsites_rws_summary,
-                                    mSiteGroup.getRWSInfo().getMembersCount(),
-                                    Integer.toString(mSiteGroup.getRWSInfo().getMembersCount()),
+                                    mSiteGroup.getRwsInfo().getMembersCount(),
+                                    Integer.toString(mSiteGroup.getRwsInfo().getMembersCount()),
                                     rwsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(
                     new ForwardingManagedPreferenceDelegate(
@@ -282,7 +282,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
                 relatedSitesHeader.removeAll();
                 relatedSitesHeader.addPreference(relatedSitesText);
-                for (Website site : mSiteGroup.getRWSInfo().getMembers()) {
+                for (Website site : mSiteGroup.getRwsInfo().getMembers()) {
                     WebsiteRowPreference preference =
                             new RwsRowPreference(
                                     relatedSitesHeader.getContext(),

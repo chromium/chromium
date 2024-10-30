@@ -189,9 +189,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState) {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(RWSCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
+        fragmentArgs.putInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
 
-        mSettingsNavigation.startSettings(getActivity(), RWSCookieSettings.class, fragmentArgs);
+        mSettingsNavigation.startSettings(getActivity(), RwsCookieSettings.class, fragmentArgs);
     }
 
     @Override

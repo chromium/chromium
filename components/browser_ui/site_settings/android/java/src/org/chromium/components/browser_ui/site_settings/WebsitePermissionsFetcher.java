@@ -675,8 +675,8 @@ public class WebsitePermissionsFetcher {
                                         site.getAddress().getOrigin());
                         if (rwsOwnerHostname == null
                                 || rwsOwnerToMembers.get(rwsOwnerHostname) == null) continue;
-                        site.setRWSCookieInfo(
-                                new RWSCookieInfo(
+                        site.setRwsCookieInfo(
+                                new RwsCookieInfo(
                                         rwsOwnerHostname, rwsOwnerToMembers.get(rwsOwnerHostname)));
                     }
                 }

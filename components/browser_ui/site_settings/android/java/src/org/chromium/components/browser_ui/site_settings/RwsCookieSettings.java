@@ -23,7 +23,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Related Website Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
-public class RWSCookieSettings extends BaseSiteSettingsFragment
+public class RwsCookieSettings extends BaseSiteSettingsFragment
         implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
     public static final String ALLOW_RWS_COOKIE_PREFERENCE = "allow_rws";
     public static final String SUBTITLE = "subtitle";
@@ -32,7 +32,7 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
     public static final String EXTRA_COOKIE_PAGE_STATE = "cookie_page_state";
 
     // UI Elements.
-    private ChromeSwitchPreference mAllowRWSPreference;
+    private ChromeSwitchPreference mAllowRwsPreference;
     private TextMessagePreference mSubtitle;
     private TextMessagePreference mBulletTwo;
 
@@ -45,23 +45,23 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
         mPageTitle.set(getContext().getString(R.string.cookies_title));
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE);
         mBulletTwo = (TextMessagePreference) findPreference(BULLET_TWO);
-        mAllowRWSPreference = (ChromeSwitchPreference) findPreference(ALLOW_RWS_COOKIE_PREFERENCE);
+        mAllowRwsPreference = (ChromeSwitchPreference) findPreference(ALLOW_RWS_COOKIE_PREFERENCE);
 
         @CookieControlsMode
-        int pageState = getArguments().getInt(RWSCookieSettings.EXTRA_COOKIE_PAGE_STATE);
+        int pageState = getArguments().getInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE);
 
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
-            setupAllowRWSPreference();
+            setupAllowRwsPreference();
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
             mBulletTwo.setSummary(R.string.website_settings_category_cookie_subpage_bullet_two);
-            mAllowRWSPreference.setVisible(true);
+            mAllowRwsPreference.setVisible(true);
         } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_incognito_subtitle);
             mBulletTwo.setSummary(
                     R.string.website_settings_category_cookie_subpage_incognito_bullet_two);
-            mAllowRWSPreference.setVisible(false);
+            mAllowRwsPreference.setVisible(false);
         } else {
             assert false
                     : "Unexpected cookies subpage state: "
@@ -79,18 +79,18 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
         return mPageTitle;
     }
 
-    private void setupAllowRWSPreference() {
+    private void setupAllowRwsPreference() {
         var mManagedPreferenceDelegate =
-                new RWSCookieSettingsManagedPreferenceDelegate(
+                new RwsCookieSettingsManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate());
-        mAllowRWSPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-        mAllowRWSPreference.setChecked(
+        mAllowRwsPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        mAllowRwsPreference.setChecked(
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled());
 
         if (!isBlockThirdPartyCookieSelected()) {
-            mAllowRWSPreference.setEnabled(false);
+            mAllowRwsPreference.setEnabled(false);
         }
-        mAllowRWSPreference.setOnPreferenceChangeListener(this);
+        mAllowRwsPreference.setOnPreferenceChangeListener(this);
     }
 
     private boolean isBlockThirdPartyCookieSelected() {
@@ -110,9 +110,9 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
         return true;
     }
 
-    private class RWSCookieSettingsManagedPreferenceDelegate
+    private class RwsCookieSettingsManagedPreferenceDelegate
             extends ForwardingManagedPreferenceDelegate {
-        RWSCookieSettingsManagedPreferenceDelegate(ManagedPreferenceDelegate base) {
+        RwsCookieSettingsManagedPreferenceDelegate(ManagedPreferenceDelegate base) {
             super(base);
         }
 
