@@ -1395,8 +1395,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 #pragma mark - New Tab menu tests
 
 // Tests the "new search" menu item from the new tab menu.
-// TODO(crbug.com/375610995): Re-enable when fixed.
-- (void)DISABLED_testNewSearchFromNewTabMenu {
+- (void)testNewSearchFromNewTabMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }

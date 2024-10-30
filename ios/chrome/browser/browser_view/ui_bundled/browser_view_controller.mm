@@ -2335,6 +2335,14 @@ enum HeaderBehaviour {
     [strongSelf executeAndClearForegroundTabWasAddedCompletionBlock:YES];
   };
 
+  // Skip animation if animations are disabled (e.g. new search action from
+  // toolbar).
+  if (!UIView.areAnimationsEnabled) {
+    [toolbarSnapshot removeFromSuperview];
+    commonCompletion();
+    return;
+  }
+
   CGPoint origin = [self lastTapPoint];
 
   CGRect frame = [self.contentArea convertRect:self.view.bounds
