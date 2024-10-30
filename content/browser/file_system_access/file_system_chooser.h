@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -41,11 +42,17 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
             base::FilePath default_directory,
             base::FilePath suggested_name);
     Options(const Options&);
+    ~Options();
 
     ui::SelectFileDialog::Type type() const { return type_; }
     const ui::SelectFileDialog::FileTypeInfo& file_type_info() const {
       return file_types_;
     }
+#if BUILDFLAG(IS_ANDROID)
+    const std::vector<std::u16string>& mime_types() const {
+      return mime_types_;
+    }
+#endif
     const std::u16string& title() const { return title_; }
     const base::FilePath& default_path() const { return default_path_; }
     int default_file_type_index() const { return default_file_type_index_; }
@@ -58,6 +65,9 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     ui::SelectFileDialog::Type type_;
     ui::SelectFileDialog::FileTypeInfo file_types_;
     int default_file_type_index_ = 0;
+#if BUILDFLAG(IS_ANDROID)
+    std::vector<std::u16string> mime_types_;
+#endif
     std::u16string title_;
     base::FilePath default_path_;
   };

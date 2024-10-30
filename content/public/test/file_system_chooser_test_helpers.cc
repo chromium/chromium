@@ -53,6 +53,14 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
     listener_->FileSelectionCanceled();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetAcceptTypes(std::vector<std::u16string> types) override {
+    if (out_params_) {
+      out_params_->accept_types = std::move(types);
+    }
+  }
+#endif
+
   bool IsRunning(gfx::NativeWindow owning_window) const override {
     return false;
   }
