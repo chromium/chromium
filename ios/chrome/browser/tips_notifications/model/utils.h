@@ -38,6 +38,10 @@ extern const char kTipsNotificationsUserType[];
 // Pref that stores how many Tips notifications have been dismissed in a row.
 extern const char kTipsNotificationsDismissCount[];
 
+// Pref that stores how many Reactivation notifications were canceled because
+// the user returned to the app before it triggered.
+extern const char kReactivationNotificationsCanceledCount[];
+
 // The type of Tips Notification, for an individual notification.
 // Always keep this enum in sync with
 // the corresponding IOSTipsNotificationType in enums.xml.
@@ -102,7 +106,10 @@ UNNotificationTrigger* TipsNotificationTrigger(
 int TipsNotificationsEnabledBitfield();
 
 // Returns an ordered array containing the types of Tips Notifications to send.
-std::vector<TipsNotificationType> TipsNotificationsTypesOrder();
+// `for_reactivation` specifies whether to get the order for Reactivation
+// notifications.
+std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
+    bool for_reactivation);
 
 // Returns the dismiss limit. If the user dismisses this number of Tips
 // notifications in a row, no more Tips notifications will be sent. Zero

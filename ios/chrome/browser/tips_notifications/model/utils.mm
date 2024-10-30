@@ -92,6 +92,8 @@ const char kTipsNotificationsLastRequestedTime[] =
 const char kTipsNotificationsUserType[] = "tips_notifications.user_type";
 const char kTipsNotificationsDismissCount[] =
     "tips_notifications.dismiss_count";
+const char kReactivationNotificationsCanceledCount[] =
+    "reactivation_notifications.canceled_count";
 
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];
@@ -168,7 +170,15 @@ int TipsNotificationsEnabledBitfield() {
                                           kEnableAllNotifications);
 }
 
-std::vector<TipsNotificationType> TipsNotificationsTypesOrder() {
+std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
+    bool for_reactivation) {
+  if (for_reactivation) {
+    return {
+        TipsNotificationType::kLens,
+        TipsNotificationType::kWhatsNew,
+        TipsNotificationType::kEnhancedSafeBrowsing,
+    };
+  }
   int order_num = GetFieldTrialParamByFeatureAsInt(
       kIOSTipsNotifications, kIOSTipsNotificationsOrderParam, 1);
   switch (order_num) {

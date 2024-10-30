@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
@@ -34,7 +35,9 @@ PushNotificationClientManager::PushNotificationClientManager(
         std::make_unique<CommercePushNotificationClient>());
   }
 
-  if (IsIOSTipsNotificationsEnabled()) {
+  if (IsIOSTipsNotificationsEnabled() ||
+      (IsFirstRunRecent(base::Days(28)) &&
+       IsIOSReactivationNotificationsEnabled())) {
     AddPushNotificationClient(std::make_unique<TipsNotificationClient>());
   }
 
@@ -143,7 +146,9 @@ PushNotificationClientManager::GetClients() {
     client_ids.push_back(PushNotificationClientId::kContent);
     client_ids.push_back(PushNotificationClientId::kSports);
   }
-  if (IsIOSTipsNotificationsEnabled()) {
+  if (IsIOSTipsNotificationsEnabled() ||
+      (IsFirstRunRecent(base::Days(28)) &&
+       IsIOSReactivationNotificationsEnabled())) {
     client_ids.push_back(PushNotificationClientId::kTips);
   }
   if (IsSafetyCheckNotificationsEnabled()) {

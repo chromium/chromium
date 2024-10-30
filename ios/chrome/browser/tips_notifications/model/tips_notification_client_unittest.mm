@@ -647,7 +647,7 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
       kIOSTipsNotifications, {
                                  {kIOSTipsNotificationsOrderParam, "1"},
                              });
-  std::vector<TipsNotificationType> order = TipsNotificationsTypesOrder();
+  std::vector<TipsNotificationType> order = TipsNotificationsTypesOrder(false);
   EXPECT_EQ(order[0], TipsNotificationType::kSetUpListContinuation);
   EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
 
@@ -657,7 +657,7 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
       kIOSTipsNotifications, {
                                  {kIOSTipsNotificationsOrderParam, "2"},
                              });
-  order = TipsNotificationsTypesOrder();
+  order = TipsNotificationsTypesOrder(false);
   EXPECT_EQ(order[0], TipsNotificationType::kLens);
   EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
 
@@ -667,7 +667,7 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
       kIOSTipsNotifications, {
                                  {kIOSTipsNotificationsOrderParam, "3"},
                              });
-  order = TipsNotificationsTypesOrder();
+  order = TipsNotificationsTypesOrder(false);
   EXPECT_EQ(order[0], TipsNotificationType::kEnhancedSafeBrowsing);
   EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
 
@@ -677,8 +677,15 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
       kIOSTipsNotifications, {
                                  {kIOSTipsNotificationsOrderParam, "4"},
                              });
-  order = TipsNotificationsTypesOrder();
+  order = TipsNotificationsTypesOrder(false);
   EXPECT_EQ(order[0], TipsNotificationType::kLens);
   EXPECT_EQ(order[1], TipsNotificationType::kOmniboxPosition);
+  EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
+
+  // Test Reactivation notifications order.
+  order = TipsNotificationsTypesOrder(true);
+  EXPECT_EQ(order.size(), 3u);
+  EXPECT_EQ(order[0], TipsNotificationType::kLens);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
   EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
 }

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -105,16 +106,14 @@ bool FETHasEverTriggered(Browser* browser, const base::Feature& feature) {
 }
 
 // Returns the user's type stored in local state prefs.
-TipsNotificationUserType GetUserType() {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
+TipsNotificationUserType GetUserType(PrefService* local_state) {
   return static_cast<TipsNotificationUserType>(
       local_state->GetInteger(kTipsNotificationsUserType));
 }
 
 // Sets the user's type in local state prefs, and records a histogram with the
 // type.
-void SetUserType(TipsNotificationUserType user_type) {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
+void SetUserType(PrefService* local_state, TipsNotificationUserType user_type) {
   local_state->SetInteger(kTipsNotificationsUserType, int(user_type));
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.UserType", user_type);
 }
@@ -123,13 +122,14 @@ void SetUserType(TipsNotificationUserType user_type) {
 
 TipsNotificationClient::TipsNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kTips) {
-  pref_change_registrar_.Init(GetApplicationContext()->GetLocalState());
+  local_state_ = GetApplicationContext()->GetLocalState();
+  pref_change_registrar_.Init(local_state_);
   PrefChangeRegistrar::NamedChangeCallback pref_callback = base::BindRepeating(
       &TipsNotificationClient::OnPermittedPrefChanged, base::Unretained(this));
   pref_change_registrar_.Add(prefs::kAppLevelPushNotificationPermissions,
                              pref_callback);
   permitted_ = IsPermitted();
-  user_type_ = GetUserType();
+  user_type_ = GetUserType(local_state_);
 }
 
 TipsNotificationClient::~TipsNotificationClient() = default;
@@ -195,7 +195,8 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (user_type_ == TipsNotificationUserType::kUnknown) {
+  if (user_type_ == TipsNotificationUserType::kUnknown &&
+      !CanSendReactivation()) {
     ClassifyUser();
   }
   CheckAndMaybeRequestNotification(std::move(closure));
@@ -214,7 +215,7 @@ void TipsNotificationClient::CheckAndMaybeRequestNotification(
 
   // If the user hasn't opted-in, exit early to avoid incurring the cost of
   // checking delivered and requested notifications.
-  if (!permitted_) {
+  if (!permitted_ && !CanSendReactivation()) {
     std::move(closure).Run();
     return;
   }
@@ -234,6 +235,7 @@ void TipsNotificationClient::RegisterLocalStatePrefs(
   registry->RegisterTimePref(kTipsNotificationsLastRequestedTime, base::Time());
   registry->RegisterIntegerPref(kTipsNotificationsUserType, 0);
   registry->RegisterIntegerPref(kTipsNotificationsDismissCount, 0);
+  registry->RegisterIntegerPref(kReactivationNotificationsCanceledCount, 0);
 }
 
 void TipsNotificationClient::GetPendingRequest(
@@ -261,23 +263,38 @@ void TipsNotificationClient::OnPendingRequestFound(
 
   MaybeLogDismissedNotification();
   interacted_type_ = std::nullopt;
+
+  if (CanSendReactivation()) {
+    ClearAllRequestedNotifications();
+    std::optional<TipsNotificationType> type =
+        ParseTipsNotificationType(request);
+    if (type.has_value()) {
+      MarkNotificationTypeNotSent(type.value());
+      // Increment the Reactivation canceled count.
+      int canceled_count =
+          local_state_->GetInteger(kReactivationNotificationsCanceledCount) + 1;
+      local_state_->SetInteger(kReactivationNotificationsCanceledCount,
+                               canceled_count);
+    }
+    MaybeRequestNotification(base::DoNothing());
+  }
 }
 
 void TipsNotificationClient::MaybeRequestNotification(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!permitted_ || DismissLimitReached()) {
+  if ((!permitted_ && !CanSendReactivation()) || DismissLimitReached()) {
     std::move(completion).Run();
     return;
   }
 
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
+  int sent_bitfield = local_state_->GetInteger(kTipsNotificationsSentPref);
   int enabled_bitfield = TipsNotificationsEnabledBitfield();
 
   // The types of notifications that could be sent will be evaluated in the
   // order they appear in this array.
-  std::vector<TipsNotificationType> types = TipsNotificationsTypesOrder();
+  std::vector<TipsNotificationType> types =
+      TipsNotificationsTypesOrder(CanSendReactivation());
 
   for (TipsNotificationType type : types) {
     int bit = 1 << int(type);
@@ -574,30 +591,27 @@ void TipsNotificationClient::ShowEnhancedSafeBrowsingPromo(Browser* browser) {
 void TipsNotificationClient::MarkNotificationTypeSent(
     TipsNotificationType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
+  int sent_bitfield = local_state_->GetInteger(kTipsNotificationsSentPref);
   sent_bitfield |= 1 << int(type);
-  local_state->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
-  local_state->SetInteger(kTipsNotificationsLastSent, int(type));
-  local_state->SetTime(kTipsNotificationsLastRequestedTime, base::Time::Now());
+  local_state_->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
+  local_state_->SetInteger(kTipsNotificationsLastSent, int(type));
+  local_state_->SetTime(kTipsNotificationsLastRequestedTime, base::Time::Now());
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Sent", type);
 }
 
 void TipsNotificationClient::MarkNotificationTypeNotSent(
     TipsNotificationType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
+  int sent_bitfield = local_state_->GetInteger(kTipsNotificationsSentPref);
   sent_bitfield &= ~(1 << int(type));
-  local_state->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
-  local_state->ClearPref(kTipsNotificationsLastSent);
+  local_state_->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
+  local_state_->ClearPref(kTipsNotificationsLastSent);
 }
 
 void TipsNotificationClient::MaybeLogTriggeredNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
   const PrefService::Preference* last_sent =
-      local_state->FindPreference(kTipsNotificationsLastSent);
+      local_state_->FindPreference(kTipsNotificationsLastSent);
   if (last_sent->IsDefaultValue()) {
     return;
   }
@@ -605,19 +619,18 @@ void TipsNotificationClient::MaybeLogTriggeredNotification() {
   TipsNotificationType type =
       static_cast<TipsNotificationType>(last_sent->GetValue()->GetInt());
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Triggered", type);
-  local_state->SetInteger(kTipsNotificationsLastTriggered, int(type));
-  local_state->ClearPref(kTipsNotificationsLastSent);
+  local_state_->SetInteger(kTipsNotificationsLastTriggered, int(type));
+  local_state_->ClearPref(kTipsNotificationsLastSent);
 }
 
 void TipsNotificationClient::MaybeLogDismissedNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
   if (interacted_type_.has_value()) {
-    local_state->ClearPref(kTipsNotificationsLastTriggered);
+    local_state_->ClearPref(kTipsNotificationsLastTriggered);
     return;
   }
   const PrefService::Preference* last_triggered =
-      local_state->FindPreference(kTipsNotificationsLastTriggered);
+      local_state_->FindPreference(kTipsNotificationsLastTriggered);
   if (last_triggered->IsDefaultValue()) {
     return;
   }
@@ -638,14 +651,13 @@ void TipsNotificationClient::OnGetDeliveredNotifications(
     }
   }
   // No notification was found, so it must have been dismissed.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
   int dismiss_count =
-      local_state->GetInteger(kTipsNotificationsDismissCount) + 1;
-  local_state->SetInteger(kTipsNotificationsDismissCount, dismiss_count);
+      local_state_->GetInteger(kTipsNotificationsDismissCount) + 1;
+  local_state_->SetInteger(kTipsNotificationsDismissCount, dismiss_count);
   TipsNotificationType type = static_cast<TipsNotificationType>(
-      local_state->GetInteger(kTipsNotificationsLastTriggered));
+      local_state_->GetInteger(kTipsNotificationsLastTriggered));
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Dismissed", type);
-  local_state->ClearPref(kTipsNotificationsLastTriggered);
+  local_state_->ClearPref(kTipsNotificationsLastTriggered);
 }
 
 bool TipsNotificationClient::IsPermitted() {
@@ -653,10 +665,28 @@ bool TipsNotificationClient::IsPermitted() {
   // TODO(crbug.com/325279788): use
   // GetMobileNotificationPermissionStatusForClient to determine opt-in
   // state.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  return local_state->GetDict(prefs::kAppLevelPushNotificationPermissions)
+  return local_state_->GetDict(prefs::kAppLevelPushNotificationPermissions)
       .FindBool(kTipsNotificationKey)
       .value_or(false);
+}
+
+bool TipsNotificationClient::CanSendReactivation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If the user has opted-in for Tips, or First-Run was more than 4 weeks ago,
+  // or if the feature is not enabled, Reactivation notifications should not
+  // be sent.
+  if (permitted_ || !IsFirstRunRecent(base::Days(28)) ||
+      !IsIOSReactivationNotificationsEnabled()) {
+    return false;
+  }
+
+  UNAuthorizationStatus auth_status =
+      [PushNotificationUtil getSavedPermissionSettings];
+  if (auth_status != UNAuthorizationStatusProvisional) {
+    return false;
+  }
+
+  return local_state_->GetInteger(kReactivationNotificationsCanceledCount) < 2;
 }
 
 bool TipsNotificationClient::DismissLimitReached() {
@@ -680,15 +710,13 @@ void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
 }
 
 void TipsNotificationClient::ClassifyUser() {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-
-  if (!local_state->GetUserPrefValue(kTipsNotificationsLastRequestedTime)) {
+  if (!local_state_->GetUserPrefValue(kTipsNotificationsLastRequestedTime)) {
     return;
   }
 
   base::Time now = base::Time::Now();
   base::Time last_request =
-      local_state->GetTime(kTipsNotificationsLastRequestedTime);
+      local_state_->GetTime(kTipsNotificationsLastRequestedTime);
   if (now < last_request + base::Hours(2)) {
     // Not enough time has passed to classify the user.
     return;
@@ -700,5 +728,5 @@ void TipsNotificationClient::ClassifyUser() {
   } else {
     user_type_ = TipsNotificationUserType::kActiveSeeker;
   }
-  SetUserType(user_type_);
+  SetUserType(local_state_, user_type_);
 }
