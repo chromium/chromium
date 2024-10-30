@@ -958,7 +958,7 @@ TEST_F(AttributionResolverTest, ClearDataOutsideRange_NoDelete) {
   storage()->StoreSource(impression);
 
   storage()->ClearData(now + base::Minutes(10), now + base::Minutes(20),
-                       GetMatcher(impression.common_info().source_origin()));
+                       GetMatcher(impression.common_info().reporting_origin()));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
@@ -1067,7 +1067,7 @@ TEST_F(AttributionResolverTest, ClearDataRangeBetweenEvents) {
             MaybeCreateAndStoreEventLevelReport(conversion));
 
   storage()->ClearData(start + base::Minutes(1), start + base::Minutes(10),
-                       GetMatcher(impression.common_info().source_origin()));
+                       GetMatcher(impression.common_info().reporting_origin()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1u));
 }
@@ -1088,8 +1088,8 @@ TEST_F(AttributionResolverTest, ClearDataWithMultiTouch) {
 
   // Only the first impression should overlap with this time range, but all the
   // impressions should share the origin.
-  storage()->ClearData(start, start,
-                       GetMatcher(impression1.common_info().source_origin()));
+  storage()->ClearData(
+      start, start, GetMatcher(impression1.common_info().reporting_origin()));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1));
 }
 
