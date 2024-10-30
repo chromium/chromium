@@ -20,7 +20,6 @@
 #include "components/value_store/testing_value_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
@@ -106,6 +105,9 @@ class DataItemTest : public testing::Test {
         std::make_unique<LocalValueStoreCache>(value_store_factory_);
 
     extension_ = CreateTestExtension(kPrimaryExtensionId);
+
+    key_1_.fill(0x01);
+    key_2_.fill(0x02);
   }
 
   void TearDown() override {
@@ -116,18 +118,6 @@ class DataItemTest : public testing::Test {
     ExtensionsBrowserClient::Set(nullptr);
     extensions_browser_client_.reset();
     context_.reset();
-  }
-
-  std::string GenerateKey(const std::string& password) {
-    std::unique_ptr<crypto::SymmetricKey> key =
-        crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-            crypto::SymmetricKey::AES, password, "salt", 1, 256);
-    if (!key) {
-      ADD_FAILURE() << "Failed to create symmetric key";
-      return std::string();
-    }
-
-    return key->key();
   }
 
   std::unique_ptr<DataItem> CreateDataItem(const std::string& item_id,
@@ -286,6 +276,13 @@ class DataItemTest : public testing::Test {
 
   const Extension* extension() const { return extension_.get(); }
 
+  std::string key_1() const {
+    return std::string(base::as_string_view(key_1_));
+  }
+  std::string key_2() const {
+    return std::string(base::as_string_view(key_2_));
+  }
+
  private:
   void TearDownValueStoreCache() {
     base::RunLoop run_loop;
@@ -312,11 +309,14 @@ class DataItemTest : public testing::Test {
   std::unique_ptr<ValueStoreCache> value_store_cache_;
 
   scoped_refptr<const Extension> extension_;
+
+  std::array<uint8_t, kAesKeySize> key_1_;
+  std::array<uint8_t, kAesKeySize> key_2_;
 };
 
 TEST_F(DataItemTest, OperationsOnUnregisteredItem) {
   std::unique_ptr<DataItem> item =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kNotFound,
@@ -336,7 +336,7 @@ TEST_F(DataItemTest, OperationsOnUnregisteredItem) {
 
 TEST_F(DataItemTest, OperationsWithUnknownExtension) {
   std::unique_ptr<DataItem> item =
-      CreateDataItem("data_id", "unknown", GenerateKey("key_1"));
+      CreateDataItem("data_id", "unknown", key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kUnknownExtension,
@@ -357,8 +357,8 @@ TEST_F(DataItemTest, OperationsWithUnknownExtension) {
 }
 
 TEST_F(DataItemTest, ValueStoreErrors) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
             WriteItemAndWaitForResult(item.get(), content));
@@ -373,7 +373,7 @@ TEST_F(DataItemTest, ValueStoreErrors) {
   EXPECT_EQ(OperationResult::kFailed, DeleteItemAndWaitForResult(item.get()));
 
   std::unique_ptr<DataItem> unregistered =
-      CreateDataItem("data_id_1", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id_1", extension()->id(), key_1());
   EXPECT_EQ(OperationResult::kFailed,
             RegisterItemAndWaitForResult(unregistered.get()));
 
@@ -389,7 +389,7 @@ TEST_F(DataItemTest, GetRegisteredItems) {
   EXPECT_TRUE(item_ids.empty());
 
   std::unique_ptr<DataItem> item_1 =
-      CreateDataItem("data_id_1", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id_1", extension()->id(), key_1());
 
   EXPECT_EQ(OperationResult::kSuccess,
             GetRegisteredItemIds(extension()->id(), &item_ids));
@@ -402,11 +402,11 @@ TEST_F(DataItemTest, GetRegisteredItems) {
             GetRegisteredItemIds(extension()->id(), &item_ids));
   EXPECT_EQ(std::set<std::string>({"data_id_1"}), item_ids);
 
-  std::unique_ptr<DataItem> item_2 = CreateAndRegisterDataItem(
-      "data_id_2", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item_2 =
+      CreateAndRegisterDataItem("data_id_2", extension()->id(), key_1());
 
   std::unique_ptr<DataItem> unregistered =
-      CreateDataItem("unregistered", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("unregistered", extension()->id(), key_1());
 
   EXPECT_EQ(OperationResult::kSuccess,
             GetRegisteredItemIds(extension()->id(), &item_ids));
@@ -417,7 +417,7 @@ TEST_F(DataItemTest, GetRegisteredItems) {
 
   std::unique_ptr<DataItem> secondary_extension_item =
       CreateAndRegisterDataItem("data_id_2", secondary_extension->id(),
-                                GenerateKey("key_1"));
+                                key_1());
 
   EXPECT_EQ(OperationResult::kSuccess,
             GetRegisteredItemIds(extension()->id(), &item_ids));
@@ -448,13 +448,13 @@ TEST_F(DataItemTest, GetRegisteredItems) {
 
 TEST_F(DataItemTest, DoubleRegistration) {
   std::unique_ptr<DataItem> item =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
 
   EXPECT_EQ(OperationResult::kSuccess,
             RegisterItemAndWaitForResult(item.get()));
 
   std::unique_ptr<DataItem> duplicate =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
 
   EXPECT_EQ(OperationResult::kAlreadyRegistered,
             RegisterItemAndWaitForResult(duplicate.get()));
@@ -466,8 +466,8 @@ TEST_F(DataItemTest, DoubleRegistration) {
 }
 
 TEST_F(DataItemTest, ReadWrite) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
@@ -481,27 +481,27 @@ TEST_F(DataItemTest, ReadWrite) {
 
   read_content.reset();
   std::unique_ptr<DataItem> item_copy =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
   ASSERT_EQ(OperationResult::kSuccess,
             ReadItemAndWaitForResult(item_copy.get(), &read_content));
   ASSERT_TRUE(read_content);
   EXPECT_EQ(content, *read_content);
 
   std::unique_ptr<DataItem> different_key =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_2"));
+      CreateDataItem("data_id", extension()->id(), key_2());
   EXPECT_EQ(OperationResult::kWrongKey,
             ReadItemAndWaitForResult(different_key.get(), nullptr));
 }
 
 TEST_F(DataItemTest, ExtensionsWithConflictingDataItemIds) {
-  std::unique_ptr<DataItem> first = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> first =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   scoped_refptr<const Extension> second_extension =
       CreateTestExtension(kSecondaryExtensionId);
   ASSERT_NE(extension()->id(), second_extension->id());
-  std::unique_ptr<DataItem> second = CreateAndRegisterDataItem(
-      "data_id", second_extension->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> second =
+      CreateAndRegisterDataItem("data_id", second_extension->id(), key_1());
 
   std::vector<char> first_content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
@@ -533,15 +533,15 @@ TEST_F(DataItemTest, ExtensionsWithConflictingDataItemIds) {
 
 TEST_F(DataItemTest, ReadNonRegisteredItem) {
   std::unique_ptr<DataItem> item =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
 
   EXPECT_EQ(OperationResult::kNotFound,
             ReadItemAndWaitForResult(item.get(), nullptr));
 }
 
 TEST_F(DataItemTest, ReadOldFile) {
-  std::unique_ptr<DataItem> writer = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> writer =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
@@ -549,7 +549,7 @@ TEST_F(DataItemTest, ReadOldFile) {
   writer.reset();
 
   std::unique_ptr<DataItem> reader =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
   std::unique_ptr<std::vector<char>> read_content;
   ASSERT_EQ(OperationResult::kSuccess,
             ReadItemAndWaitForResult(reader.get(), &read_content));
@@ -558,8 +558,8 @@ TEST_F(DataItemTest, ReadOldFile) {
 }
 
 TEST_F(DataItemTest, RepeatedWrite) {
-  std::unique_ptr<DataItem> writer = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> writer =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   OperationResult write_result = OperationResult::kFailed;
   std::vector<char> first_write = {'f', 'i', 'l', 'e', '_', '1'};
@@ -571,7 +571,7 @@ TEST_F(DataItemTest, RepeatedWrite) {
             WriteItemAndWaitForResult(writer.get(), second_write));
 
   std::unique_ptr<DataItem> reader =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
   std::unique_ptr<std::vector<char>> read_content;
   ASSERT_EQ(OperationResult::kSuccess,
             ReadItemAndWaitForResult(reader.get(), &read_content));
@@ -580,8 +580,8 @@ TEST_F(DataItemTest, RepeatedWrite) {
 }
 
 TEST_F(DataItemTest, ReadDeletedAndReregisteredItem) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
@@ -589,8 +589,8 @@ TEST_F(DataItemTest, ReadDeletedAndReregisteredItem) {
 
   EXPECT_EQ(OperationResult::kSuccess, DeleteItemAndWaitForResult(item.get()));
 
-  std::unique_ptr<DataItem> duplicate = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> duplicate =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::unique_ptr<std::vector<char>> read;
   ASSERT_EQ(OperationResult::kSuccess,
@@ -600,8 +600,8 @@ TEST_F(DataItemTest, ReadDeletedAndReregisteredItem) {
 }
 
 TEST_F(DataItemTest, ReadEmpty) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::unique_ptr<std::vector<char>> read_content;
   ASSERT_EQ(OperationResult::kSuccess,
@@ -616,8 +616,8 @@ TEST_F(DataItemTest, ReadEmpty) {
 }
 
 TEST_F(DataItemTest, ReadDeletedItem) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
@@ -630,8 +630,8 @@ TEST_F(DataItemTest, ReadDeletedItem) {
 }
 
 TEST_F(DataItemTest, WriteDeletedItem) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
@@ -644,22 +644,22 @@ TEST_F(DataItemTest, WriteDeletedItem) {
 }
 
 TEST_F(DataItemTest, ReadWithWrongKey) {
-  std::unique_ptr<DataItem> item = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   EXPECT_EQ(OperationResult::kSuccess,
             WriteItemAndWaitForResult(item.get(), content));
 
   std::unique_ptr<DataItem> reader =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_2"));
+      CreateDataItem("data_id", extension()->id(), key_2());
   EXPECT_EQ(OperationResult::kWrongKey,
             ReadItemAndWaitForResult(reader.get(), nullptr));
 }
 
 TEST_F(DataItemTest, ResetBeforeCallback) {
-  std::unique_ptr<DataItem> writer = CreateAndRegisterDataItem(
-      "data_id", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> writer =
+      CreateAndRegisterDataItem("data_id", extension()->id(), key_1());
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
   writer->Write(content,
@@ -667,7 +667,7 @@ TEST_F(DataItemTest, ResetBeforeCallback) {
   writer.reset();
 
   std::unique_ptr<DataItem> reader =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
   std::unique_ptr<std::vector<char>> read_content;
   ASSERT_EQ(OperationResult::kSuccess,
             ReadItemAndWaitForResult(reader.get(), &read_content));
@@ -678,7 +678,7 @@ TEST_F(DataItemTest, ResetBeforeCallback) {
   reader.reset();
 
   std::unique_ptr<DataItem> deleter =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
   deleter->Delete(base::BindOnce(&WriteCallbackNotCalled, "Reset deleter"));
   deleter.reset();
 
@@ -686,18 +686,18 @@ TEST_F(DataItemTest, ResetBeforeCallback) {
 
   // Verify item write fails now the item's been deleted.
   std::unique_ptr<DataItem> second_writer =
-      CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
+      CreateDataItem("data_id", extension()->id(), key_1());
   EXPECT_EQ(OperationResult::kNotFound,
             WriteItemAndWaitForResult(second_writer.get(), content));
 }
 
 TEST_F(DataItemTest, DeleteAllForExtension) {
-  std::unique_ptr<DataItem> item_1 = CreateAndRegisterDataItem(
-      "data_id_1", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item_1 =
+      CreateAndRegisterDataItem("data_id_1", extension()->id(), key_1());
   ASSERT_TRUE(item_1);
 
-  std::unique_ptr<DataItem> item_2 = CreateAndRegisterDataItem(
-      "data_id_2", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> item_2 =
+      CreateAndRegisterDataItem("data_id_2", extension()->id(), key_1());
   ASSERT_TRUE(item_2);
 
   DeleteAllItems(extension()->id());
@@ -707,8 +707,8 @@ TEST_F(DataItemTest, DeleteAllForExtension) {
             GetRegisteredItemIds(extension()->id(), &item_ids));
   EXPECT_TRUE(item_ids.empty());
 
-  std::unique_ptr<DataItem> new_item = CreateAndRegisterDataItem(
-      "data_id_1", extension()->id(), GenerateKey("key_1"));
+  std::unique_ptr<DataItem> new_item =
+      CreateAndRegisterDataItem("data_id_1", extension()->id(), key_1());
   ASSERT_TRUE(item_2);
 
   ASSERT_EQ(OperationResult::kSuccess,

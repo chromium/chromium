@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "extensions/browser/api/lock_screen_data/crypto.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -135,7 +136,7 @@ class DataItem {
   // They symmetric AES key that should be used to encrypt data item content
   // when the content is written to the storage, and to decrypt item content
   // when reading it from the storage.
-  const std::string crypto_key_;
+  std::array<uint8_t, kAesKeySize> crypto_key_;
 
   base::WeakPtrFactory<DataItem> weak_ptr_factory_{this};
 };

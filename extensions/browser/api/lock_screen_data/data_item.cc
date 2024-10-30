@@ -21,8 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/value_store/value_store.h"
-#include "crypto/encryptor.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/aes_cbc.h"
 #include "extensions/browser/api/lock_screen_data/crypto.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
@@ -40,50 +39,10 @@ namespace {
 // for the extension.
 const char kStoreKeyRegisteredItems[] = "registered_items";
 
-constexpr int kAesInitializationVectorLength = 16;
-
-// Encrypts |data| with AES key |raw_key|. Returns whether the encryption was
-// successful, in which case |*result| will be set to the encrypted data.
-bool EncryptData(const std::vector<char>& data,
-                 const std::string& raw_key,
-                 std::string* result) {
-  std::string initialization_vector(kAesInitializationVectorLength, ' ');
-  std::unique_ptr<crypto::SymmetricKey> key =
-      crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, raw_key);
-  if (!key)
-    return false;
-
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(key.get(), crypto::Encryptor::CBC, initialization_vector))
-    return false;
-
-  return encryptor.Encrypt(std::string_view(data.data(), data.size()), result);
-}
-
-// Decrypts |data| content using AES key |raw_key|. Returns the operation result
-// code. On success, |*result| will be set to the clear-text data.
-OperationResult DecryptData(const std::string& data,
-                            const std::string& raw_key,
-                            std::vector<char>* result) {
-  std::string initialization_vector(kAesInitializationVectorLength, ' ');
-  std::unique_ptr<crypto::SymmetricKey> key =
-      crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, raw_key);
-  if (!key)
-    return OperationResult::kInvalidKey;
-
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(key.get(), crypto::Encryptor::CBC, initialization_vector))
-    return OperationResult::kInvalidKey;
-
-  std::string decrypted;
-  if (!encryptor.Decrypt(data, &decrypted))
-    return OperationResult::kWrongKey;
-
-  *result =
-      std::vector<char>(decrypted.data(), decrypted.data() + decrypted.size());
-
-  return OperationResult::kSuccess;
-}
+constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kFixedIv{
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+};
 
 // Returns whether the value store |store| contains a registered item with ID
 // |item_id|.
@@ -175,22 +134,18 @@ void RegisterItem(OperationResult* result,
 void WriteImpl(OperationResult* result,
                const std::string item_id,
                const std::vector<char>& data,
-               const std::string& encryption_key,
+               base::span<const uint8_t> key,
                ValueStore* store) {
   if (!IsItemRegistered(store, item_id)) {
     *result = OperationResult::kNotFound;
     return;
   }
 
-  std::string encrypted;
-  if (!EncryptData(data, encryption_key, &encrypted)) {
-    *result = OperationResult::kInvalidKey;
-    return;
-  }
-
+  auto ciphertext =
+      crypto::aes_cbc::Encrypt(key, kFixedIv, base::as_byte_span(data));
   ValueStore::WriteResult write =
       store->Set(ValueStore::DEFAULTS, item_id,
-                 base::Value(base::Base64Encode(encrypted)));
+                 base::Value(base::Base64Encode(ciphertext)));
 
   *result = write.status().ok() ? OperationResult::kSuccess
                                 : OperationResult::kFailed;
@@ -203,7 +158,7 @@ void WriteImpl(OperationResult* result,
 void ReadImpl(OperationResult* result,
               std::vector<char>* data,
               const std::string& item_id,
-              const std::string& decryption_key,
+              base::span<const uint8_t> key,
               ValueStore* store) {
   if (!IsItemRegistered(store, item_id)) {
     *result = OperationResult::kNotFound;
@@ -230,7 +185,14 @@ void ReadImpl(OperationResult* result,
     return;
   }
 
-  *result = DecryptData(read_data, decryption_key, data);
+  auto plaintext = crypto::aes_cbc::Decrypt(
+      key, kFixedIv, base::as_byte_span(read_data) /*XXX*/);
+  if (plaintext.has_value()) {
+    std::copy(plaintext->begin(), plaintext->end(), std::back_inserter(*data));
+    *result = OperationResult::kSuccess;
+  } else {
+    *result = OperationResult::kWrongKey;
+  }
 }
 
 // Unregisters and deletes the item with |item_id| from the |valus_store|.
@@ -324,14 +286,13 @@ DataItem::DataItem(const std::string& id,
                    content::BrowserContext* context,
                    ValueStoreCache* value_store_cache,
                    base::SequencedTaskRunner* task_runner,
-                   const std::string& crypto_key)
+                   const std::string& key)
     : id_(id),
       extension_id_(extension_id),
       context_(context),
       value_store_cache_(value_store_cache),
-      task_runner_(task_runner),
-      crypto_key_(crypto_key) {
-  CHECK_EQ(crypto_key_.size(), kAesKeySize);
+      task_runner_(task_runner) {
+  base::span(crypto_key_).copy_from(base::as_byte_span(key));
 }
 
 DataItem::~DataItem() = default;
