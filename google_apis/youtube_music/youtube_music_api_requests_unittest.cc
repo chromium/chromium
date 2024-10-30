@@ -155,7 +155,7 @@ TEST_F(YoutubeMusicApiRequestsTest, ReportPlaybackResult) {
   EXPECT_THAT(response, NotNull());
 }
 
-TEST_F(YoutubeMusicApiRequestsTest, ClassifyError) {
+TEST_F(YoutubeMusicApiRequestsTest, ClassifyUpdateRequiredError) {
   set_response(net::HttpStatusCode::HTTP_BAD_REQUEST, kTestJson);
 
   base::RunLoop loop;
