@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
+#include "search_utils.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -165,12 +166,12 @@ TEST_F(AnnotationStorageTest, GetLastModifiedTime) {
   storage_->Insert(foo_image);
 
   auto expect_bar =
-      storage_->GetLastModifiedTime(test_directory_.AppendASCII("bar.jpg"));
-  EXPECT_THAT(expect_bar, bar_image.last_modified);
+      storage_->GetImageStatus(test_directory_.AppendASCII("bar.jpg"));
+  EXPECT_THAT(expect_bar.last_modified, bar_image.last_modified);
 
   auto expect_foo =
-      storage_->GetLastModifiedTime(test_directory_.AppendASCII("foo.png"));
-  EXPECT_THAT(expect_foo, foo_image.last_modified);
+      storage_->GetImageStatus(test_directory_.AppendASCII("foo.png"));
+  EXPECT_THAT(expect_foo.last_modified, foo_image.last_modified);
 
   task_environment_.RunUntilIdle();
 }
@@ -438,6 +439,42 @@ TEST_F(AnnotationStorageTest, GetAllFiles) {
       testing::ElementsAreArray({document_image1.path, foo_image.path}));
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(AnnotationStorageTest, MultiSource) {
+  storage_->Initialize();
+  // Initially, the image should not exist in the database.
+  EXPECT_EQ(storage_->GetImageStatus(test_directory_.AppendASCII("bar.jpg")),
+            ImageStatus());
+
+  auto time = base::Time::Now();
+  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"), time,
+                      /*file_size=*/1);
+
+  storage_->Insert(bar_image);
+
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
+              testing::ElementsAreArray({bar_image}));
+  // When receiving the ocr results, we should expect the `ocr_indexed` to be
+  // updated.
+  EXPECT_EQ(storage_->GetImageStatus(test_directory_.AppendASCII("bar.jpg")),
+            ImageStatus(time, 1, 0));
+
+  // Simulates a new result with same annotation from a different indexing
+  // source.
+  ImageInfo bar_image_updated({"test"}, test_directory_.AppendASCII("bar.jpg"),
+                              time,
+                              /*file_size=*/1);
+
+  storage_->Insert(bar_image_updated, IndexingSource::kIca);
+
+  // Both results are kept in db.
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
+              testing::ElementsAreArray({bar_image, bar_image_updated}));
+  // When receiving the ica results, we should expect the `ica_indexed` to be
+  // updated.
+  EXPECT_EQ(storage_->GetImageStatus(test_directory_.AppendASCII("bar.jpg")),
+            ImageStatus(time, 1, 1));
 }
 
 }  // namespace

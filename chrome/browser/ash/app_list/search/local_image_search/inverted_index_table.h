@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
+
 namespace base {
 
 class FilePath;
@@ -23,7 +25,10 @@ class InvertedIndexTable {
  public:
   static bool Create(SqlDatabase* db);
   static bool Drop(SqlDatabase* db);
-  static bool Insert(SqlDatabase* db, int64_t term_id, int64_t document_id);
+  static bool Insert(SqlDatabase* db,
+                     int64_t term_id,
+                     int64_t document_id,
+                     IndexingSource indexing_source);
   static bool Remove(SqlDatabase* db, const base::FilePath& file_path);
 };
 

@@ -32,7 +32,7 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr double kRelevanceThreshold = 0.79;
-constexpr int kVersionNumber = 5;
+constexpr int kVersionNumber = 6;
 
 constexpr char kSqlDatabaseUmaTag[] =
     "Apps.AppList.AnnotationStorage.SqlDatabase.Status";
@@ -152,7 +152,8 @@ void AnnotationStorage::Initialize() {
   }
 }
 
-void AnnotationStorage::Insert(const ImageInfo& image_info) {
+void AnnotationStorage::Insert(const ImageInfo& image_info,
+                               IndexingSource indexing_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Insert " << image_info.path;
 
@@ -167,18 +168,53 @@ void AnnotationStorage::Insert(const ImageInfo& image_info) {
     return;
   }
 
-  for (const auto& annotation : image_info.annotations) {
-    DVLOG(1) << annotation;
-    int64_t annotation_id;
-    if (!AnnotationsTable::InsertOrIgnore(sql_database_.get(), annotation) ||
-        !AnnotationsTable::GetTermId(sql_database_.get(), annotation,
-                                     annotation_id) ||
-        !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
-                                    document_id)) {
-      LOG(ERROR) << "Failed to insert into the db.";
-      LogErrorUma(ErrorStatus::kFailedToInsertInDb);
-      return;
-    }
+  // Inserts the annotations to the database and finally updates the document
+  // table to indicate that the annotations from ICA/OCR have been saved to db.
+  bool execution_succeed;
+  switch (indexing_source) {
+    case IndexingSource::kOcr:
+      for (const auto& annotation : image_info.annotations) {
+        DVLOG(1) << annotation;
+        int64_t annotation_id;
+        if (!AnnotationsTable::InsertOrIgnore(sql_database_.get(),
+                                              annotation) ||
+            !AnnotationsTable::GetTermId(sql_database_.get(), annotation,
+                                         annotation_id) ||
+            !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
+                                        document_id, indexing_source)) {
+          LOG(ERROR) << "Failed to insert into the db from OCR.";
+          LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+          return;
+        }
+      }
+      execution_succeed =
+          DocumentsTable::UpdateOCRStatus(sql_database_.get(), document_id);
+      break;
+    case IndexingSource::kIca:
+      // TODO(b:343320265): Update the insert to include the actual score and
+      // bounding box info when the mojom is updated.
+      for (const auto& annotation : image_info.annotations) {
+        DVLOG(1) << annotation;
+        int64_t annotation_id;
+        if (!AnnotationsTable::InsertOrIgnore(sql_database_.get(),
+                                              annotation) ||
+            !AnnotationsTable::GetTermId(sql_database_.get(), annotation,
+                                         annotation_id) ||
+            !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
+                                        document_id, indexing_source)) {
+          LOG(ERROR) << "Failed to insert into the db from OCR.";
+          LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+          return;
+        }
+      }
+      execution_succeed =
+          DocumentsTable::UpdateICAStatus(sql_database_.get(), document_id);
+      break;
+  }
+
+  if (!execution_succeed) {
+    LOG(ERROR) << "Failed to update the document table.";
+    LogErrorUma(ErrorStatus::kFailedToInsertInDb);
   }
 }
 
@@ -307,17 +343,18 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   return matched_paths;
 }
 
-const base::Time AnnotationStorage::GetLastModifiedTime(
+const ImageStatus AnnotationStorage::GetImageStatus(
     const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (image_path.empty()) {
-    return base::Time();
+    return ImageStatus();
   }
 
   static constexpr char kQuery[] =
       // clang-format off
-      "SELECT last_modified_time FROM documents "
-          "WHERE directory_path=? AND file_name=?";
+      "SELECT last_modified_time, ocr_version, ica_version "
+      "FROM documents "
+      "WHERE directory_path=? AND file_name=?";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -325,7 +362,7 @@ const base::Time AnnotationStorage::GetLastModifiedTime(
   if (!statement) {
     LOG(ERROR) << "Couldn't create the statement";
     LogErrorUma(ErrorStatus::kFailedToFindImagePath);
-    return base::Time();
+    return ImageStatus();
   }
   // Safe on ChromeOS.
   statement->BindString(0, image_path.DirName().AsUTF8Unsafe());
@@ -334,9 +371,13 @@ const base::Time AnnotationStorage::GetLastModifiedTime(
   // We only need the first row because (directory_path, file_name) is the
   // primary key of the image, which ensures the found result is unique.
   if (statement->Step()) {
-    return statement->ColumnTime(0);
+    ImageStatus image_status;
+    image_status.last_modified = statement->ColumnTime(0);
+    image_status.ocr_version = statement->ColumnInt(1);
+    image_status.ica_version = statement->ColumnInt(2);
+    return image_status;
   }
-  return base::Time();
+  return ImageStatus();
 }
 
 std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(

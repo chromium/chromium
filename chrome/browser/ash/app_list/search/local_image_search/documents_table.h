@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
+
 namespace base {
 
 class FilePath;
@@ -44,6 +46,11 @@ class DocumentsTable {
   static bool SearchByDirectory(SqlDatabase* db,
                                 const base::FilePath& directory,
                                 std::vector<base::FilePath>& matched_paths);
+
+  // Update the indexing status ,last modified time and file size of the
+  // document through `document_id`.
+  static bool UpdateOCRStatus(SqlDatabase* db, int64_t document_id);
+  static bool UpdateICAStatus(SqlDatabase* db, int64_t document_id);
 };
 
 }  // namespace app_list

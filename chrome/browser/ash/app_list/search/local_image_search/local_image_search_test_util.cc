@@ -14,6 +14,11 @@ bool operator==(const ImageInfo& i1, const ImageInfo& i2) {
          i1.last_modified == i2.last_modified && i1.file_size == i2.file_size;
 }
 
+bool operator==(const ImageStatus& i1, const ImageStatus& i2) {
+  return i1.last_modified == i2.last_modified &&
+         i1.ocr_version == i2.ocr_version && i1.ica_version == i2.ica_version;
+}
+
 bool operator==(const FileSearchResult& f1, const FileSearchResult& f2) {
   return f1.file_path == f2.file_path && f1.last_modified == f2.last_modified &&
          std::abs(f1.relevance - f2.relevance) < 0.001;

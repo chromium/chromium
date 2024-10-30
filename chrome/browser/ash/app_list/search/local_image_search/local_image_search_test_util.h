@@ -8,9 +8,12 @@
 namespace app_list {
 
 struct ImageInfo;
+struct ImageStatus;
 struct FileSearchResult;
 
 bool operator==(const ImageInfo& i1, const ImageInfo& i2);
+
+bool operator==(const ImageStatus& i1, const ImageStatus& i2);
 
 bool operator==(const FileSearchResult& f1, const FileSearchResult& f2);
 

@@ -438,12 +438,22 @@ bool ImageAnnotationWorker::ProcessNextImage() {
   }
   DCHECK(file_info);
 
-  const base::Time last_modified_time =
-      annotation_storage_->GetLastModifiedTime(image_path);
-  // Annotations are updated on a file change and have the file's last
-  // modified time. So skip inserting the image annotations if the file
-  // has not changed since the last update.
-  if (file_info->last_modified == last_modified_time) {
+  // If all conditions meet:
+  //  1. The image exists in the database and has not been modified since
+  //  the last indexing.
+  //  2. The ocr is not enabled or the ocr indexing in database is up-to-date.
+  //  3. The ica is not enabled or the ica indexing in database is up-to-date.
+  //  4. It's not in the test environment.
+  // Then an indexing is not expected and skip the process. Otherwise, clear
+  // this image from database and redo the indexing.
+  const ImageStatus image_status =
+      annotation_storage_->GetImageStatus(image_path);
+  bool ocr_up_to_date = !use_ocr_ || image_status.ocr_version == kOcrVersion;
+  bool ica_up_to_date = !use_ica_ || image_status.ica_version == kIcaVersion;
+  if (file_info->last_modified ==
+          image_status.last_modified.value_or(base::Time()) &&
+      ocr_up_to_date && ica_up_to_date &&
+      !image_processing_delay_for_test_.has_value()) {
     return false;
   }
 
@@ -571,9 +581,9 @@ void ImageAnnotationWorker::OnPerformOcr(
     }
   }
   // Always insert the `image_info` because even if there is no annotation for
-  // this image, we need to save the image last modification time so that we
+  // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
-  annotation_storage_->Insert(std::move(image_info));
+  annotation_storage_->Insert(std::move(image_info), IndexingSource::kOcr);
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
@@ -604,9 +614,9 @@ void ImageAnnotationWorker::OnPerformIca(
     }
   }
   // Always insert the `image_info` because even if there is no annotation for
-  // this image, we need to save the image last modification time so that we
+  // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
-  annotation_storage_->Insert(image_info);
+  annotation_storage_->Insert(image_info, IndexingSource::kIca);
 
   // ICA is the last in the pipeline.
   MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
@@ -653,7 +663,7 @@ void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
   const std::string annotation =
       image_info.path.BaseName().RemoveFinalExtension().value();
   image_info.annotations.insert(std::move(annotation));
-  annotation_storage_->Insert(std::move(image_info));
+  annotation_storage_->Insert(std::move(image_info), source_for_test_);
   MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
 }
 
