@@ -55,6 +55,8 @@ chromium-metrics-reviews@google.com.
       summary="Contextual Page Action: Show price tracking"/>
   <variant name="GeolocationPermissions" summary="Geolocation permissions"/>
   <variant name="LanguageDetection" summary="Language detection"/>
+  <variant name="ModelExecutionFeatureHistoryQueryIntent"
+      summary="Model Execution Feature: History Query Intent"/>
   <variant name="ModelExecutionFeatureHistorySearch"
       summary="Model Execution Feature: History Search"/>
   <variant name="ModelExecutionFeaturePromptAPI"
