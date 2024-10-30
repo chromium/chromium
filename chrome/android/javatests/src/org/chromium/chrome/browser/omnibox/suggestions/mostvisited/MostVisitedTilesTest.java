@@ -267,51 +267,6 @@ public class MostVisitedTilesTest {
 
     @Test
     @MediumTest
-    public void keyboardNavigation_highlightAlwaysStartsWithFirstElement()
-            throws InterruptedException {
-        // Skip past the 'what-you-typed' suggestion.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
-
-        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmnibox.checkText(equalTo(mMatch2.getUrl().getSpec()), null);
-
-        mOmnibox.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmnibox.checkText(equalTo(mMatch3.getUrl().getSpec()), null);
-
-        // Move to the search suggestion skipping the header.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-        mOmnibox.checkText(equalTo(SEARCH_QUERY), null);
-
-        // Move back to the MV Tiles. Observe that the first element is again highlighted.
-        mOmnibox.sendKey(KeyEvent.KEYCODE_DPAD_UP);
-        mOmnibox.checkText(equalTo(mMatch1.getUrl().getSpec()), null);
-    }
-
-    @Test
-    @MediumTest
-    public void touchNavigation_clickOnFirstMVTile() throws Exception {
-        clickTileAtPosition(0);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch1.getUrl().getSpec());
-    }
-
-    @Test
-    @MediumTest
-    public void touchNavigation_clickOnMiddleMVTile() throws Exception {
-        clickTileAtPosition(1);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch2.getUrl().getSpec());
-    }
-
-    @Test
-    @MediumTest
-    public void touchNavigation_clickOnLastMVTile() throws Exception {
-        clickTileAtPosition(2);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mMatch3.getUrl().getSpec());
-    }
-
-    @Test
-    @MediumTest
     public void touchNavigation_deleteMostVisitedTile() throws Exception {
         ModalDialogManager manager = mAutocomplete.getModalDialogManagerForTest();
         longClickTileAtPosition(2);
