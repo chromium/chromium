@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -25,20 +26,26 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/common/auth_service.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_url_generator.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace {
 
 constexpr auto kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("chromeos_scanner_drive", R"(
+    net::DefineNetworkTrafficAnnotation("chromeos_scanner", R"(
       semantics {
         sender: "ChromeOS Scanner"
         description:
-          "Uploads files created by the Scanner service to Google Drive as "
-          "Drive documents."
+          "Creates or mutates various Google entities - Docs, Sheets, "
+          "Contacts, etc. - for the user. These operations are specified by "
+          "responses from the Scanner service."
         trigger:
-          "User selecting to create a new Drive document from the Scanner UI."
+          "User selecting to create or mutate entities from the Scanner UI."
         internal {
           contacts {
             email: "e14s-eng@google.com"
@@ -50,7 +57,7 @@ constexpr auto kTrafficAnnotation =
         data:
           "Files created by the Scanner service."
         destination: GOOGLE_OWNED_SERVICE
-        last_reviewed: "2024-10-08"
+        last_reviewed: "2024-10-21"
       }
       policy {
         cookies_allowed: NO
@@ -74,17 +81,25 @@ ScannerKeyedService::ScannerKeyedService(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+    CoreAccountId account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
     const GURL& base_url = GaiaUrls::GetInstance()->google_apis_origin_url();
     GURL base_thumbnail_url(
         google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction);
 
     drive_service_ = std::make_unique<drive::DriveAPIService>(
-        identity_manager, std::move(url_loader_factory),
-        blocking_task_runner.get(), base_url, base_thumbnail_url,
+        identity_manager, url_loader_factory, blocking_task_runner.get(),
+        base_url, base_thumbnail_url,
         /*custom_user_agent=*/"", kTrafficAnnotation);
-    drive_service_->Initialize(
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+    drive_service_->Initialize(account_id);
+
+    auto auth_service = std::make_unique<google_apis::AuthService>(
+        identity_manager, account_id, url_loader_factory,
+        std::vector<std::string>{GaiaConstants::kContactsOAuth2Scope});
+    request_sender_ = std::make_unique<google_apis::RequestSender>(
+        std::move(auth_service), url_loader_factory, blocking_task_runner,
+        /*custom_user_agent=*/"", kTrafficAnnotation);
   }
 }
 
@@ -112,6 +127,10 @@ void ScannerKeyedService::FetchActionsForImage(
 
 drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {
   return drive_service_.get();
+}
+
+google_apis::RequestSender* ScannerKeyedService::GetGoogleApisRequestSender() {
+  return request_sender_.get();
 }
 
 void ScannerKeyedService::Shutdown() {}

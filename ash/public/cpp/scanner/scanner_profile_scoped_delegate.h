@@ -16,6 +16,10 @@ namespace drive {
 class DriveServiceInterface;
 }
 
+namespace google_apis {
+class RequestSender;
+}
+
 namespace ash {
 
 // Provides access to the browser. The access provided is scoped to a single
@@ -36,6 +40,10 @@ class ASH_PUBLIC_EXPORT ScannerProfileScopedDelegate {
 
   // Returns a reference to a `drive::DriveServiceInterface` to upload files.
   virtual drive::DriveServiceInterface* GetDriveService() = 0;
+
+  // Returns a reference to a `google_apis::RequestSender` to send Google API
+  // requests.
+  virtual google_apis::RequestSender* GetGoogleApisRequestSender() = 0;
 };
 
 }  // namespace ash

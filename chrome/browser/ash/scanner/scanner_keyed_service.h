@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/manta/scanner_provider.h"
+#include "google_apis/common/request_sender.h"
 
 namespace manta {
 class ScannerProvider;
@@ -56,6 +57,7 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
   drive::DriveServiceInterface* GetDriveService() override;
+  google_apis::RequestSender* GetGoogleApisRequestSender() override;
 
   // KeyedService:
   void Shutdown() override;
@@ -65,6 +67,7 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
   ScannerSystemStateProvider system_state_provider_;
 
   std::unique_ptr<drive::DriveAPIService> drive_service_;
+  std::unique_ptr<google_apis::RequestSender> request_sender_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SCANNER_SCANNER_KEYED_SERVICE_H_

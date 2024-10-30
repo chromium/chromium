@@ -10,7 +10,19 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "components/manta/scanner_provider.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+class GaiaUrlsOverriderForTesting;
+
+namespace google_apis {
+class RequestSender;
+}
+
+namespace net::test_server {
+struct HttpRequest;
+class HttpResponse;
+}  // namespace net::test_server
 
 namespace ash {
 
@@ -43,9 +55,23 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
                manta::ScannerProvider::ScannerProtoResponseCallback callback),
               (override));
   drive::DriveServiceInterface* GetDriveService() override;
+  google_apis::RequestSender* GetGoogleApisRequestSender() override;
 
  private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request);
+
   drive::FakeDriveService drive_service_;
+
+  // Initialising these members will *start an HTTP server*, which is not needed
+  // for most tests. These members are only initialised upon the first
+  // `GetGoogleDriveService` call. These members should either be all null, or
+  // all non-null.
+  std::unique_ptr<google_apis::RequestSender> request_sender_;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
+  std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
+
+  net::test_server::EmbeddedTestServer::HandleRequestCallback request_callback;
 };
 
 }  // namespace ash
