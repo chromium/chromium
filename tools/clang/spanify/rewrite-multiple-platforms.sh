@@ -100,7 +100,8 @@ if [ $BUILD_CLANG = true ]
 then
   # Save llvm-build as it is about to be overwritten (if it hasn't already been
   # saved).
-  if [ ! -d third_party/llvm-build-upstream/ ]
+  if [ ${INCREMENTAL_CLANG_BUILD} = false ] && \
+    [ ! -d third_party/llvm-build-upstream/ ]
   then
     echo "*** Saving current build ***"
 
