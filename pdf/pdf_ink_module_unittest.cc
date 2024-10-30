@@ -165,35 +165,6 @@ base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
   return message;
 }
 
-// Optional parameters that the `setAnnotationBrushMessage` may have, depending
-// on the brush type.
-struct TestAnnotationBrushMessageParams {
-  int color_r;
-  int color_g;
-  int color_b;
-};
-
-base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
-    const std::string& type,
-    double size,
-    const TestAnnotationBrushMessageParams* params) {
-  base::Value::Dict message;
-  message.Set("type", "setAnnotationBrush");
-
-  base::Value::Dict data;
-  data.Set("type", type);
-  data.Set("size", size);
-  if (params) {
-    base::Value::Dict color;
-    color.Set("r", params->color_r);
-    color.Set("g", params->color_g);
-    color.Set("b", params->color_b);
-    data.Set("color", std::move(color));
-  }
-  message.Set("data", std::move(data));
-  return message;
-}
-
 class FakeClient : public PdfInkModuleClient {
  public:
   FakeClient() = default;
