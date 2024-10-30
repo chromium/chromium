@@ -1883,9 +1883,6 @@ extern const char kReplaceSyncPromosWithSignInPromosName[];
 extern const char kReplaceSyncPromosWithSignInPromosDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kRestrictGamepadAccessName[];
-extern const char kRestrictGamepadAccessDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kRetainOmniboxOnFocusName[];
 extern const char kRetainOmniboxOnFocusDescription[];

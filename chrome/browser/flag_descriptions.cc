@@ -3314,11 +3314,6 @@ const char kResetShortcutCustomizationsName[] =
 const char kResetShortcutCustomizationsDescription[] =
     "Resests all shortcut customizations on startup.";
 
-const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
-const char kRestrictGamepadAccessDescription[] =
-    "Enables Permissions Policy and Secure Context restrictions on the Gamepad "
-    "API";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kRetainOmniboxOnFocusName[] = "Retain omnibox on focus";
 const char kRetainOmniboxOnFocusDescription[] =

@@ -7668,10 +7668,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGamepadMultitouchDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kEnableGamepadMultitouch)},
 
-    {"restrict-gamepad-access", flag_descriptions::kRestrictGamepadAccessName,
-     flag_descriptions::kRestrictGamepadAccessDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kRestrictGamepadAccess)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"sharing-desktop-screenshots",
      flag_descriptions::kSharingDesktopScreenshotsName,

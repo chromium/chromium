@@ -271,8 +271,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kPeriodicBackgroundSync)},
           {wf::EnablePushMessagingSubscriptionChange,
            raw_ref(features::kPushSubscriptionChangeEvent)},
-          {wf::EnableRestrictGamepadAccess,
-           raw_ref(features::kRestrictGamepadAccess)},
           {wf::EnableSecurePaymentConfirmation,
            raw_ref(features::kSecurePaymentConfirmation)},
           {wf::EnableSecurePaymentConfirmationDebug,

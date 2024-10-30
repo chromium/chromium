@@ -6,9 +6,6 @@
 
 namespace switches {
 
-// Enables Feature Policy and Secure Context requirements on getGamepads.
-const char kRestrictGamepadAccess[] = "restrict-gamepad-access";
-
 // Overrides the gamepad polling interval. Decreasing the interval improves
 // input latency of buttons and axes but may negatively affect performance due
 // to more CPU time spent in the input polling thread.

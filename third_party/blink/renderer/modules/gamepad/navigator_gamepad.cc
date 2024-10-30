@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 
 #include "base/auto_reset.h"
-#include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -64,8 +63,6 @@ bool HasConnectionEventListeners(LocalDOMWindow* window) {
 
 // static
 const char NavigatorGamepad::kSupplementName[] = "NavigatorGamepad";
-const char kSecureContextBlocked[] =
-    "Access to the feature \"gamepad\" requires a secure context";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"gamepad\" is disallowed by permissions policy.";
 
@@ -131,22 +128,6 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
   auto* navigator_gamepad = &NavigatorGamepad::From(navigator);
 
   ExecutionContext* context = navigator_gamepad->GetExecutionContext();
-  if (!context || !context->IsSecureContext()) {
-    if (base::FeatureList::IsEnabled(::features::kRestrictGamepadAccess)) {
-      exception_state.ThrowSecurityError(kSecureContextBlocked);
-      return HeapVector<Member<Gamepad>>();
-    } else {
-      context->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "getGamepad will now require Secure Context. "
-              "Please update your application accordingly. "
-              "For more information see "
-              "https://github.com/w3c/gamepad/pull/120"),
-          /*discard_duplicates=*/true);
-    }
-  }
 
   if (!context || !context->IsFeatureEnabled(
                       mojom::blink::PermissionsPolicyFeature::kGamepad)) {

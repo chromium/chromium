@@ -14,10 +14,6 @@
 
 namespace features {
 
-BASE_FEATURE(kRestrictGamepadAccess,
-             "RestrictGamepadAccess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables gamepad multitouch
 BASE_FEATURE(kEnableGamepadMultitouch,
              "EnableGamepadMultitouch",
