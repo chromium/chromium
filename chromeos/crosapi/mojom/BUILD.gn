@@ -18,7 +18,6 @@ mojom("mojom") {
     "bitmap.mojom",
     "browser_app_instance_registry.mojom",
     "browser_service.mojom",
-    "browser_version.mojom",
     "cec_private.mojom",
     "cert_database.mojom",
     "cert_provisioning.mojom",

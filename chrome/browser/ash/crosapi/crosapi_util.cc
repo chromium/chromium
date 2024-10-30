@@ -23,7 +23,6 @@
 #include "base/files/platform_file.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/hosted_app_util.h"
@@ -443,7 +442,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::AppWindowTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserAppInstanceRegistry>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::BrowserVersionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CecPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertProvisioning>(),

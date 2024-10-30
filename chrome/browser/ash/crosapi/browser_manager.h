@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -317,15 +316,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // called in the early stages of ash shutdown to give Lacros sufficient time
   // for a graceful exit.
   void Shutdown();
-
-  const BrowserVersionServiceAsh::Delegate* version_service_delegate() const {
-    return version_service_delegate_.get();
-  }
-  void set_version_service_delegate_for_testing(
-      std::unique_ptr<BrowserVersionServiceAsh::Delegate>
-          version_service_delegate) {
-    version_service_delegate_ = std::move(version_service_delegate);
-  }
 
   // TODO(crbug.com/40275396): Remove this once we refactored to use the
   // constructor.
@@ -655,9 +645,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
-  // Delegate handling various concerns regarding the version service.
-  std::unique_ptr<BrowserVersionServiceAsh::Delegate> version_service_delegate_;
-
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
 
@@ -680,12 +667,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
-
-  // Tracks whether BrowserManager should attempt to load a newer lacros-chrome
-  // browser version (if an update is possible and a new version is available).
-  // This helps to avoid re-trying an update multiple times should lacros-chrome
-  // fail to uprev on a reload.
-  bool should_attempt_update_ = true;
 
   // Tracks whether lacros-chrome is terminated.
   bool is_terminated_ = false;

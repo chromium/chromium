@@ -223,78 +223,6 @@ void PrepareLacrosPolicies(BrowserManager* manager) {
   }
 }
 
-// The delegate keeps track of the most recent lacros-chrome binary version
-// loaded by the BrowserLoader.
-// It is the single source of truth for what is the most up-to-date launchable
-// version of lacros-chrome. It should be queried when determining if loading a
-// more recent lacros-chrome binary should be attempted.
-class BrowserVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate,
-                                      public BrowserManagerObserver {
- public:
-  BrowserVersionServiceDelegate(
-      const ComponentUpdateService* component_update_service,
-      BrowserManager* browser_manager)
-      : component_update_service_(component_update_service) {
-    observation_.Observe(browser_manager);
-  }
-  BrowserVersionServiceDelegate(const BrowserVersionServiceDelegate&) = delete;
-  BrowserVersionServiceDelegate& operator=(
-      const BrowserVersionServiceDelegate&) = delete;
-  ~BrowserVersionServiceDelegate() override = default;
-
-  // BrowserVersionServiceAsh::Delegate:
-  base::Version GetLatestLaunchableBrowserVersion() const override {
-    // If there is a newer browser available return the version of lacros-chrome
-    // maintained by the component manager. Otherwise return the current version
-    // loaded by the manager.
-    if (IsNewerBrowserAvailable()) {
-      const auto component_version_number =
-          ash::standalone_browser::GetInstalledLacrosComponentVersion(
-              component_update_service_);
-      CHECK(component_version_number.IsValid());
-      return component_version_number;
-    }
-    return browser_version_loaded_;
-  }
-
-  bool IsNewerBrowserAvailable() const override {
-    // If the browser loader is not able to load newer stateful component builds
-    // signal there is no update available.
-    if (!BrowserLoader::WillLoadStatefulComponentBuilds()) {
-      return false;
-    }
-
-    const auto component_version_number =
-        ash::standalone_browser::GetInstalledLacrosComponentVersion(
-            component_update_service_);
-    return (!browser_version_loaded_.IsValid() &&
-            component_version_number.IsValid()) ||
-           (browser_version_loaded_.IsValid() &&
-            component_version_number.IsValid() &&
-            browser_version_loaded_ < component_version_number);
-  }
-
-  // crosapi::BrowserManagerObserver:
-  void OnLoadComplete(bool success, const base::Version& version) override {
-    browser_version_loaded_ = version;
-  }
-
- private:
-  // Version number of the most recently loaded lacros-chrome browser. This
-  // can be used for version checking and version comparisons. It is in the
-  // format of:
-  // <major_version>.<minor_version>.<build>.<patch>
-  // For example, "86.0.4240.38".
-  // Set immediately after lacros has loaded. May be invalid if BrowserLoader
-  // fails to successfully load a lacros binary.
-  base::Version browser_version_loaded_;
-
-  const raw_ptr<const ComponentUpdateService> component_update_service_;
-
-  base::ScopedObservation<BrowserManager, BrowserManagerObserver> observation_{
-      this};
-};
-
 }  // namespace
 
 // static
@@ -314,8 +242,6 @@ BrowserManager::BrowserManager(
       disabled_for_testing_(g_disabled_for_testing) {
   DCHECK(!g_instance);
   g_instance = this;
-  version_service_delegate_ =
-      std::make_unique<BrowserVersionServiceDelegate>(update_service, this);
 
   // Wait to query the flag until the user has entered the session. Enterprise
   // devices restart Chrome during login to apply flags. We don't want to run
@@ -691,45 +617,7 @@ BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
 BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
 
 void BrowserManager::Start() {
-  DCHECK_EQ(state_, State::STOPPED);
-  DCHECK(!shutdown_requested_);
-  DCHECK(!lacros_path_.empty());
-  DCHECK(lacros_selection_.has_value());
-  DCHECK(browser_util::IsLacrosAllowedToLaunch());
-
-  if (version_service_delegate_->IsNewerBrowserAvailable() &&
-      should_attempt_update_) {
-    SetState(State::MOUNTING);
-    lacros_path_ = base::FilePath();
-    lacros_selection_ = std::nullopt;
-    should_attempt_update_ = false;
-    // OnLoadComplete will call Start again.
-    browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                         weak_factory_.GetWeakPtr()));
-    return;
-  }
-  should_attempt_update_ = true;
-
-  // Always reset the |relaunch_requested_| flag when launching Lacros.
-  relaunch_requested_ = false;
-
-  SetState(State::PREPARING_FOR_LAUNCH);
-
-  // Ensures that this is the first time to initialize `crosapi_id` before
-  // calling `browser_launcher_.Launch`.
-  CHECK(!crosapi_id_.has_value());
-  CHECK(lacros_selection_.has_value());
-
-  // Lacros-chrome starts with kNormal type
-  // TODO(crbug.com/40212082): When `LacrosThreadTypeDelegate` becomes usable,
-  // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
-  // object.
-  browser_launcher_.Launch(lacros_path_, lacros_selection_.value(),
-                           base::BindOnce(&BrowserManager::OnMojoDisconnected,
-                                          weak_factory_.GetWeakPtr()),
-                           keep_alive_features_.empty(),
-                           base::BindOnce(&BrowserManager::OnLaunchComplete,
-                                          weak_factory_.GetWeakPtr()));
+  NOTREACHED();
 }
 
 void BrowserManager::OnLaunchComplete(

@@ -164,12 +164,6 @@ base::Version GetRootfsLacrosVersionMayBlock(
 // availability.
 void CacheLacrosAvailability(const policy::PolicyMap& map);
 
-// Returns the lacros ComponentInfo for a given channel.
-ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
-
-// Returns the ComponentInfo associated with the stateful lacros instance.
-ComponentInfo GetLacrosComponentInfo();
-
 // Returns the update channel associated with the given loaded lacros selection.
 version_info::Channel GetLacrosSelectionUpdateChannel(
     ash::standalone_browser::LacrosSelection selection);
