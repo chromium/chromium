@@ -672,7 +672,6 @@ source_set("unit_tests") {
     "audio_service_ash_unittest.cc",
     "browser_launcher_unittest.cc",
     "browser_loader_unittest.cc",
-    "browser_manager_unittest.cc",
     "browser_util_unittest.cc",
     "browser_version_service_ash_unittest.cc",
     "cec_private_ash_unittest.cc",

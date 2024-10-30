@@ -125,24 +125,6 @@ class BrowserUtilTest : public testing::Test {
       fake_user_manager_;
 };
 
-TEST_F(BrowserUtilTest, LacrosDisallowedByCommandLineFlag) {
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kDisallowLacros);
-  AddRegularUser("user@test.com");
-  EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
-}
-
-TEST_F(BrowserUtilTest, LacrosDisableDisallowedLacrosByCommandLineFlag) {
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kDisallowLacros);
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kDisableDisallowLacros);
-  AddRegularUser("user@test.com");
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-}
-
 TEST_F(BrowserUtilTest, BlockedForChildUser) {
   AccountId account_id = AccountId::FromUserEmail("user@test.com");
   const User* user = fake_user_manager_->AddChildUser(account_id);
@@ -152,101 +134,15 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
 }
 
-TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
-  AddRegularUser("user@managedchrome.com");
-
-  // Lacros is not allowed.
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-
-    EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-  }
-
-  // Lacros is allowed but not enabled.
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kUserChoice);
-
-    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-  }
-
-  // Lacros is allowed and enabled by flag.
-  {
-    base::test::ScopedCommandLine command_line;
-    command_line.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kUserChoice);
-
-    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  }
-
-  // Lacros cannot be enabled via policy.
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
-
-    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-  }
-}
-
 TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   AddRegularUser("user@managedchrome.com");
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
-
-  // Lacros cannot be enabled via policy.
-  EXPECT_FALSE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-}
-
-TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
-  AddRegularUser("user@test.com");
-  EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-}
-
-TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  AddRegularUser("user@test.com");
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-
-  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
-  EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(true);
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
 TEST_F(BrowserUtilTest, LacrosOnlyBrowserAllowed) {
   AddRegularUser("user@test.com");
   EXPECT_TRUE(browser_util::IsLacrosOnlyBrowserAllowed());
-}
-
-TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  AddRegularUser("user@managedchrome.com");
-
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-    EXPECT_FALSE(browser_util::IsLacrosOnlyBrowserAllowed());
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  }
-
-  {
-    ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
-    EXPECT_TRUE(browser_util::IsLacrosOnlyBrowserAllowed());
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  }
 }
 
 TEST_F(BrowserUtilTest, MetadataMissing) {
@@ -452,38 +348,6 @@ TEST_F(BrowserUtilTest, LacrosAvailabilityIgnoreGoogleEnableToUserChoice) {
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
-}
-
-// Check that the exist configurations used for the Google rollout have the
-// precisely intended side-effects.
-TEST_F(BrowserUtilTest, LacrosGoogleRolloutUserChoice) {
-  AddRegularUser("user@google.com");
-
-  // Lacros availability is set by policy to user choice.
-  ScopedLacrosAvailabilityCache cache(LacrosAvailability::kUserChoice);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  // Check that Lacros is allowed, enabled, and set to lacros-only.
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-}
-
-TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
-  AddRegularUser("user@google.com");
-
-  // Lacros availability is set by policy to only.
-  ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  // Check that Lacros is allowed, enabled, and set to lacros-only.
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
 }
 
 }  // namespace crosapi
