@@ -10,6 +10,11 @@ package manta.proto;
 message ScannerInput {
   // A user selected region of their device screen as a serialized jpeg.
   bytes image = 1;
+  // The action that the user has selected to be invoked from a previous
+  // `ScannerOutput` response. This can be unset to request the full set of
+  // actions that can be performed on the selected region with unpopulated
+  // details.
+  ScannerAction selected_action = 2;
 }
 
 message ScannerOutput {
@@ -20,6 +25,13 @@ message ScannerOutput {
 
 message ScannerObject {
   // The actions that can be performed on this object.
+  //
+  // If the `ScannerInput` did not contain a `selected_action`, this will
+  // contain the full set of actions that can be performed on the selected
+  // region with unpopulated details.
+  //
+  // If the `ScannerInput` contained a `selected_action`, this will only
+  // contain the action that was selected with populated details.
   repeated ScannerAction actions = 1;
 }
 
