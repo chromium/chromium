@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_COMMERCE_SHOPPING_UI_HANDLER_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class Browser;
 class ShoppingInsightsSidePanelUI;
 
 namespace bookmarks {
