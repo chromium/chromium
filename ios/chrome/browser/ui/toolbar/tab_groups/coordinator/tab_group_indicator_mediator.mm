@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -92,15 +93,19 @@
     if (tabGroup) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
+      BOOL shared =
+          tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService);
+      [_consumer setShared:shared];
     } else {
       [_consumer setTabGroupTitle:nil groupColor:nil];
+      [_consumer setShared:NO];
     }
   }
 }
 
 #pragma mark - TabGroupIndicatorMutator
 
-- (void)showShareKitUI {
+- (void)shareGroup {
   const TabGroup* tabGroup = [self currentTabGroup];
   if (!tabGroup || !_shareKitService) {
     return;
@@ -112,6 +117,22 @@
   config.baseViewController = self.baseViewController;
   config.applicationHandler = self.applicationHandler;
   _shareKitService->ShareGroup(config);
+}
+
+- (void)manageGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  NSString* collabID =
+      tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
+  if (!_shareKitService || !collabID) {
+    return;
+  }
+
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = self.baseViewController;
+  config.collabID = collabID;
+  config.applicationHandler = self.applicationHandler;
+  _shareKitService->ManageGroup(config);
 }
 
 - (void)showTabGroupEdition {

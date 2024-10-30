@@ -8,8 +8,11 @@
 // Mutator for actions happening in the TabGroupIndicatorView.
 @protocol TabGroupIndicatorMutator
 
-// Shows ShareKit UI.
-- (void)showShareKitUI;
+// Starts sharing the local group.
+- (void)shareGroup;
+
+// Starts managing the shared group.
+- (void)manageGroup;
 
 // Shows the tab group edit view.
 - (void)showTabGroupEdition;

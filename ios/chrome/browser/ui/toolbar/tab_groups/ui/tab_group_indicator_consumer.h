@@ -16,6 +16,9 @@
 // Sets whether the group can be shared or not.
 - (void)setShareAvailable:(BOOL)shareAvailable;
 
+// Sets whether the group is shared or not.
+- (void)setShared:(BOOL)shared;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_CONSUMER_H_
