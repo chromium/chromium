@@ -1,4 +1,4 @@
-monorail: {
+rail: {
   component: "Internals>Metrics>SamplingProfiler"
 }
 buganizer_public: {
