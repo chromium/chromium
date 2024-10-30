@@ -265,6 +265,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("paint-worklet"))                          \
   X(TRACE_DISABLED_BY_DEFAULT("power"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("process_metrics"))                        \
+  X(TRACE_DISABLED_BY_DEFAULT("system_metrics"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"))               \
   X(TRACE_DISABLED_BY_DEFAULT("sequence_manager"))                       \

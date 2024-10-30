@@ -27,6 +27,8 @@ const string kNativeHeapProfilerSourceName =
     "org.chromium.native_heap_profiler";
 const string kProcessMetricsSourceName =
     "org.chromium.process_metrics";
+const string kSystemMetricsSourceName =
+    "org.chromium.system_metrics";
 
 // Brief description of the flow: There's a per-process ProducerClient which
 // connects to the central PerfettoService and establishes a two-way connection
