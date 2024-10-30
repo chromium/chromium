@@ -26,8 +26,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ConnectionError" summary="Connection error"/>
   <variant name="Disabled" summary="Disabled"/>
   <variant name="Enrollment" summary="Enrollment"/>
-  <variant name="MachineInfoRetrievalError"
-      summary="Machine info retrieval error"/>
   <variant name="NoEnrollment" summary="No enrollment"/>
   <variant name="ServerError" summary="Server error"/>
   <variant name="StateKeysRetrievalError" summary="State keys retrieval error"/>

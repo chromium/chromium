@@ -456,8 +456,6 @@ inline constexpr char kUMAPrefixEnrollmentTokenBasedOOBEConfig[] =
 
 // Suffixes added to kUMAStateDeterminationTotalDurationByState.
 inline constexpr char kUMASuffixConnectionError[] = ".ConnectionError";
-inline constexpr char kUMASuffixMachineInfoRetrievalError[] =
-    ".MachineInfoRetrievalError";
 inline constexpr char kUMASuffixStateKeysRetrievalError[] =
     ".StateKeysRetrievalError";
 inline constexpr char kUMASuffixDisabled[] = ".Disabled";

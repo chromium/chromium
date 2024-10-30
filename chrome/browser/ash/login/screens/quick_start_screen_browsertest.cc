@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
@@ -171,17 +169,6 @@ class QuickStartBrowserTest : public OobeBaseTest {
   void TearDownOnMainThread() override {
     network_helper_.reset();
     OobeBaseTest::TearDownOnMainThread();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    OobeBaseTest::SetUpCommandLine(command_line);
-
-    // We want enrollment state determination to return "No enrollment".
-    // TODO(crbug.com/375564225) Remove `kUnifiedStateDeterminationNever` to
-    // make tests more realistic.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -441,7 +428,7 @@ class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
 class QuickStartBrowserTestWithBluetoothDisabled
     : public QuickStartBrowserTest {
  public:
-  QuickStartBrowserTestWithBluetoothDisabled() = default;
+  QuickStartBrowserTestWithBluetoothDisabled() {}
   ~QuickStartBrowserTestWithBluetoothDisabled() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1071,7 +1058,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, FullFlow) {
 
 class QuickStartLoginScreenTest : public QuickStartBrowserTest {
  public:
-  QuickStartLoginScreenTest() { login_manager_mixin_.AppendRegularUsers(1); }
+  QuickStartLoginScreenTest() : QuickStartBrowserTest() {
+    login_manager_mixin_.AppendRegularUsers(1);
+  }
 
  private:
   DeviceStateMixin device_state_{

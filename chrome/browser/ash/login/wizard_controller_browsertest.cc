@@ -22,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -1207,14 +1206,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
                        ControlFlowNoForcedReEnrollmentOnFirstBoot) {
-  // We want enrollment state determination to return "No enrollment".
-  // TODO(crbug.com/375564225) Remove `kUnifiedStateDeterminationNever` to make
-  // tests more realistic.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
-      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
-
   fake_statistics_provider_.ClearMachineStatistic(system::kActivateDateKey);
   EXPECT_NE(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());

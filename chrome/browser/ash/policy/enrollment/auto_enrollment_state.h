@@ -40,12 +40,6 @@ struct AutoEnrollmentSystemClockSyncError {
       default;
 };
 
-// Represents an error while retrieving serial number and brand code.
-struct AutoEnrollmentMachineInfoRetrievalError {
-  constexpr bool operator==(
-      const AutoEnrollmentMachineInfoRetrievalError&) const = default;
-};
-
 // Represents an error while retrieving state keys.
 struct AutoEnrollmentStateKeysRetrievalError {
   constexpr bool operator==(
@@ -85,7 +79,6 @@ struct AutoEnrollmentStateRetrievalResponseError {
 using AutoEnrollmentError =
     absl::variant<AutoEnrollmentSafeguardTimeoutError,
                   AutoEnrollmentSystemClockSyncError,
-                  AutoEnrollmentMachineInfoRetrievalError,
                   AutoEnrollmentStateKeysRetrievalError,
                   AutoEnrollmentDMServerError,
                   AutoEnrollmentStateAvailabilityResponseError,

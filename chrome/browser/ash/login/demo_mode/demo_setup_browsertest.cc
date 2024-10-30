@@ -50,7 +50,6 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -434,13 +433,6 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     command_line->AppendSwitchASCII(switches::kArcAvailability,
                                     "officially-supported");
     ASSERT_TRUE(arc::IsArcAvailable());
-
-    // We want enrollment state determination to return "No enrollment".
-    // TODO(crbug.com/375564225) Remove `kUnifiedStateDeterminationNever` to
-    // make tests more realistic.
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
   void WaitForConsolidatedConsentScreen() {

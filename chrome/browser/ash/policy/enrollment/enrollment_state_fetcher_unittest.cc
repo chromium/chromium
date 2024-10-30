@@ -379,7 +379,7 @@ TEST_F(EnrollmentStateFetcherTest, RlzBrandCodeMissing) {
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, ToState(AutoEnrollmentMachineInfoRetrievalError()));
+  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
   histograms.ExpectUniqueSample(kUMAStateDeterminationDeviceIdentifierStatus,
                                 2 /*kRlzBrandCodeMissing*/, 1);
 }
@@ -390,7 +390,7 @@ TEST_F(EnrollmentStateFetcherTest, SerialNumberMissing) {
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, ToState(AutoEnrollmentMachineInfoRetrievalError()));
+  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
   histograms.ExpectUniqueSample(kUMAStateDeterminationDeviceIdentifierStatus,
                                 1 /*kRlzBrandCodeMissing*/, 1);
 }
@@ -402,7 +402,7 @@ TEST_F(EnrollmentStateFetcherTest, RlzBrandCodeAndSerialNumberMissing) {
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, ToState(AutoEnrollmentMachineInfoRetrievalError()));
+  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
   histograms.ExpectUniqueSample(kUMAStateDeterminationDeviceIdentifierStatus,
                                 3 /*kAllMissing*/, 1);
 }
