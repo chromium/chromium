@@ -233,7 +233,7 @@ void LogQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool observed_submission) {
   // Use the same timestamp on UKM Metrics generated within this method's scope.
-  AutofillMetrics::UkmTimestampPin timestamp_pin(form_interactions_ukm_logger);
+  UkmTimestampPin timestamp_pin(form_interactions_ukm_logger);
 
   LogPredictionMetrics(form_structure, form_interactions_ukm_logger,
                        observed_submission);

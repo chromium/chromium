@@ -176,6 +176,24 @@ class FormInteractionsUkmLogger {
   base::TimeTicks pinned_timestamp_;
 };
 
+// Utility class to pin the timestamp used by the FormInteractionsUkmLogger
+// while an instance of this class is in scope. Pinned timestamps cannot be
+// nested.
+class UkmTimestampPin {
+ public:
+  UkmTimestampPin() = delete;
+
+  explicit UkmTimestampPin(autofill_metrics::FormInteractionsUkmLogger* logger);
+
+  UkmTimestampPin(const UkmTimestampPin&) = delete;
+  UkmTimestampPin& operator=(const UkmTimestampPin&) = delete;
+
+  ~UkmTimestampPin();
+
+ private:
+  const raw_ptr<autofill_metrics::FormInteractionsUkmLogger> logger_;
+};
+
 // This defines a second-to-minute-scale prioritized set of buckets for
 // recording user interaction time with forms. Pure exponential bucketing is
 // generally not appropriate for analyzing interactions at this time scale, as

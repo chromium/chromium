@@ -973,6 +973,19 @@ int64_t FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
       kAutofillEventDataBucketSpacing);
 }
 
+UkmTimestampPin::UkmTimestampPin(
+    autofill_metrics::FormInteractionsUkmLogger* logger)
+    : logger_(logger) {
+  DCHECK(logger_);
+  DCHECK(!logger_->has_pinned_timestamp());
+  logger_->set_pinned_timestamp(base::TimeTicks::Now());
+}
+
+UkmTimestampPin::~UkmTimestampPin() {
+  DCHECK(logger_->has_pinned_timestamp());
+  logger_->set_pinned_timestamp(base::TimeTicks());
+}
+
 int64_t GetSemanticBucketMinForAutofillDurationTiming(int64_t sample) {
   if (sample == 0) {
     return 0;

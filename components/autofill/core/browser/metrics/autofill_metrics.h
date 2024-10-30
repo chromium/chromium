@@ -506,25 +506,6 @@ class AutofillMetrics {
     bool cvc_ = false;
   };
 
-  // Utility class to pin the timestamp used by the FormInteractionsUkmLogger
-  // while an instance of this class is in scope. Pinned timestamps cannot be
-  // nested.
-  class UkmTimestampPin {
-   public:
-    UkmTimestampPin() = delete;
-
-    explicit UkmTimestampPin(
-        autofill_metrics::FormInteractionsUkmLogger* logger);
-
-    UkmTimestampPin(const UkmTimestampPin&) = delete;
-    UkmTimestampPin& operator=(const UkmTimestampPin&) = delete;
-
-    ~UkmTimestampPin();
-
-   private:
-    const raw_ptr<autofill_metrics::FormInteractionsUkmLogger> logger_;
-  };
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class PredictionState {
