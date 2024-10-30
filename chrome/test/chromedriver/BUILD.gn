@@ -622,10 +622,12 @@ test("chromedriver_unittests") {
 if (is_win || is_posix) {
   test("chromedriver_integrationtests") {
     sources = [
-      "devtools_client_impl_integrationtest.cc",
-      "navigation_tracker_integrationtest.cc",
       "net/test_http_server.cc",
       "net/test_http_server.h",
+      "test/devtools_client_impl_integrationtest.cc",
+      "test/integration_test.cc",
+      "test/integration_test.h",
+      "test/navigation_tracker_integrationtest.cc",
     ]
 
     data_deps = [ "//chrome:chrome" ]
