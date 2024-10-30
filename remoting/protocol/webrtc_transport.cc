@@ -33,6 +33,7 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
+#include "third_party/webrtc/api/audio/builtin_audio_processing_builder.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/opus/audio_decoder_opus.h"
@@ -41,7 +42,6 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
 #include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
-#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 #if !defined(NDEBUG)
@@ -292,7 +292,8 @@ class WebrtcTransport::PeerConnectionWrapper
         webrtc::CreateAudioDecoderFactory<webrtc::AudioDecoderOpus>();
     pcf_deps.video_encoder_factory = std::move(encoder_factory);
     pcf_deps.video_decoder_factory = webrtc::CreateBuiltinVideoDecoderFactory();
-    pcf_deps.audio_processing = webrtc::AudioProcessingBuilder().Create();
+    pcf_deps.audio_processing_builder =
+        std::make_unique<webrtc::BuiltinAudioProcessingBuilder>();
     webrtc::EnableMedia(pcf_deps);
     peer_connection_factory_ =
         webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
