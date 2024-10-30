@@ -480,9 +480,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.DETAILS_STYLING,
                 "Enables support for improved styling of HTML details element."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_HIT_TEST_IN_BLINK_ON_TOUCH_START,
-                "Hit test on touch start in blink"),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
                 BlinkFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,

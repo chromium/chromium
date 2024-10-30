@@ -123,10 +123,6 @@ class AwContents : public FindHelper::Listener,
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& jvisited_links);
   base::android::ScopedJavaLocalRef<jbyteArray> GetCertificate(JNIEnv* env);
-  void RequestNewHitTestDataAt(JNIEnv* env,
-                               jfloat x,
-                               jfloat y,
-                               jfloat touch_major);
   void UpdateLastHitTestData(JNIEnv* env);
   void OnSizeChanged(JNIEnv* env, int w, int h, int ow, int oh);
   void OnConfigurationChanged(JNIEnv* env);

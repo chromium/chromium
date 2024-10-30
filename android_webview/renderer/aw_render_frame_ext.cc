@@ -196,10 +196,6 @@ bool AwRenderFrameExt::OnAssociatedInterfaceRequestForFrame(
 }
 
 void AwRenderFrameExt::DidCreateDocumentElement() {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebViewHitTestInBlinkOnTouchStart)) {
-    return;
-  }
   render_frame()->GetWebFrame()->AddHitTestOnTouchStartCallback(
       base::BindRepeating(&AwRenderFrameExt::HandleHitTestResult,
                           base::Unretained(this)));

@@ -51,10 +51,6 @@ BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
              "WebViewForceDarkModeMatchTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebViewHitTestInBlinkOnTouchStart,
-             "WebViewHitTestInBlinkOnTouchStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature parameter for `network::features::kMaskedDomainList` that sets the
 // exclusion criteria for defining which domains are excluded from the
 // Masked Domain List for WebView.
