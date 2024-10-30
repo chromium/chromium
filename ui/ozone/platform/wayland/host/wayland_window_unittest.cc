@@ -4040,8 +4040,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
 
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
-    // `WaylandToplevelWindow::Hide()` should have already released the buffer.
-    EXPECT_EQ(mock_surface->attached_buffer(), nullptr);
+    mock_surface->ReleaseBuffer(mock_surface->attached_buffer());
   });
   window->Show(false);
 

@@ -192,15 +192,6 @@ void WaylandToplevelWindow::Hide() {
 
   if (root_surface()) {
     root_surface()->ResetZAuraSurface();
-
-    // When running under Weston, if we don't do this immediately, the window
-    // will be unable to receive mouse events after making it visible again.
-    // See https://gitlab.freedesktop.org/wayland/weston/-/issues/950.
-    if (root_surface()->buffer_id() != 0) {
-      root_surface()->AttachBuffer(nullptr);
-      root_surface()->ApplyPendingState();
-      root_surface()->Commit(false);
-    }
   }
 
   if (gtk_surface1_)
