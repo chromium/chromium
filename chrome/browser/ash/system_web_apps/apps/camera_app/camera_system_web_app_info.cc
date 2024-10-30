@@ -8,8 +8,10 @@
 #include "ash/webui/camera_app_ui/resources/strings/grit/ash_camera_app_strings.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_camera_app_resources.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -85,4 +87,9 @@ gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
 
 bool CameraSystemAppDelegate::UseSystemThemeColor() const {
   return false;
+}
+
+base::FilePath CameraSystemAppDelegate::GetLaunchDirectory(
+    const apps::AppLaunchParams& params) const {
+  return file_manager::util::GetMyFilesFolderForProfile(profile_);
 }

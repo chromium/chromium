@@ -498,39 +498,6 @@ ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
   MaybeTriggerSurvey();
 }
 
-void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  content::WebContents* web_contents = web_ui_->GetWebContents();
-
-  auto my_files_folder_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile);
-
-  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
-  if (!swa_manager) {
-    return;
-  }
-
-  std::optional<webapps::AppId> app_id =
-      swa_manager->GetAppIdForSystemApp(ash::SystemWebAppType::CAMERA);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  // The launch directory is passed here rather than
-  // `SystemWebAppDelegate::LaunchAndNavigateSystemWebApp()` to handle the case
-  // of the app being opened to handle an Android intent, i.e. when it's shown
-  // as a dialog via `CameraAppDialog`.
-  web_app::WebAppLaunchParams launch_params;
-  launch_params.started_new_navigation = true;
-  launch_params.app_id = *app_id;
-  launch_params.target_url = GURL(ash::kChromeUICameraAppMainURL);
-  launch_params.dir = my_files_folder_path;
-  auto* helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
-  if (helper) {
-    helper->EnsureLaunchQueue().Enqueue(std::move(launch_params));
-  }
-}
-
 void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   // Add strings that can be pulled in.

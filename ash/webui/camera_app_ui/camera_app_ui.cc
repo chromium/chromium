@@ -271,8 +271,6 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   allowlist->RegisterAutoGrantedPermission(host_origin,
                                            ContentSettingsType::IDLE_DETECTION);
 
-  delegate_->SetLaunchDirectory();
-
   window()->SetProperty(kMinimizeOnBackKey, false);
 
   // Set up the data source.
