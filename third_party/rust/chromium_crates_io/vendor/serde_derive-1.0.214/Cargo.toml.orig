@@ -1,6 +1,6 @@
 [package]
 name = "serde_derive"
-version = "1.0.213"
+version = "1.0.214"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc"]
 description = "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
