@@ -2233,9 +2233,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
-// https://crbug.com/708445: When the Canvas2DLayerBridge hibernates or wakes up
-// from hibernation, the compositing reasons for the canvas element may change.
-// In these cases, the element should request a compositing update.
+// https://crbug.com/708445: When the canvas hibernates or wakes up from
+// hibernation, the compositing reasons for the canvas element may change. In
+// these cases, the element should request a compositing update.
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        ElementRequestsCompositingUpdateOnHibernateAndWakeUp) {
   CreateContext(kNonOpaque);
