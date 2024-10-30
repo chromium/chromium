@@ -102,6 +102,11 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
     }
 
     @Override
+    public void areNotificationsEnabled(Callback<Boolean> callback) {
+        callback.onResult(mNotificationsEnabled);
+    }
+
+    @Override
     public void cancel(int id) {
         cancel(/* tag= */ null, id);
     }

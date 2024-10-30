@@ -43,6 +43,14 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
+    public void areNotificationsEnabled(Callback<Boolean> callback) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("NotificationManagerProxyImpl.areNotificationsEnabled")) {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> areNotificationsEnabled());
+        }
+    }
+
+    @Override
     public void cancel(int id) {
         try (TraceEvent e = TraceEvent.scoped("NotificationManagerProxyImpl.cancel(id)")) {
             mNotificationManager.cancel(id);

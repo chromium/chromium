@@ -19,13 +19,6 @@ import org.chromium.base.Callback;
 public interface AsyncNotificationManagerProxy extends BaseNotificationManagerProxy {
     /**
      * @see <a
-     *     href="https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()">
-     *     https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()</a>
-     */
-    void areNotificationsEnabled(Callback<Boolean> callback);
-
-    /**
-     * @see <a
      *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel(java.lang.String)">
      *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel(java.lang.String)</a>
      */

@@ -20,6 +20,13 @@ import java.util.function.Function;
 public interface BaseNotificationManagerProxy {
     /**
      * @see <a
+     *     href="https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()">
+     *     https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()</a>
+     */
+    void areNotificationsEnabled(Callback<Boolean> callback);
+
+    /**
+     * @see <a
      *     href="https://developer.android.com/reference/android/app/NotificationManager#cancel(int)">
      *     https://developer.android.com/reference/android/app/NotificationManager#cancel(int)</a>
      */
