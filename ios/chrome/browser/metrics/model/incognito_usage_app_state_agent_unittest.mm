@@ -41,7 +41,7 @@ class IncognitoUsageAppStateAgentTest : public PlatformTest {
 
     scene_state2_ = [[SceneState alloc] initWithAppState:nil];
     scene_state2_.incognitoContentVisible = NO;
-    scene_state1_.activationLevel = SceneActivationLevelBackground;
+    scene_state2_.activationLevel = SceneActivationLevelBackground;
 
     app_state_.connectedScenes = @[ scene_state1_, scene_state2_ ];
     [incognito_agent_ setAppState:app_state_];
