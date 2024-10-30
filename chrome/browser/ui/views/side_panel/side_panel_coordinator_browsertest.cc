@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -259,11 +258,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
       contextual_registries_;
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
- public:
-  MOCK_METHOD(void, OnSidePanelDidClose, (), (override));
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
@@ -509,72 +503,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
             SidePanel::HorizontalAlignment::kLeft);
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
-                       DontNotifySidePanelObserverOfChangingContent) {
-  Init();
-  MockSidePanelViewStateObserver view_state_observer;
-  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(0);
-
-  coordinator()->AddSidePanelViewStateObserver(&view_state_observer);
-
-  coordinator()->Show(SidePanelEntry::Id::kReadingList);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  // Changing the side panel entry after it is opened, should not notify
-  // observers.
-  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->RemoveSidePanelViewStateObserver(&view_state_observer);
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
-  Init();
-  coordinator()->DisableAnimationsForTesting();
-
-  MockSidePanelViewStateObserver view_state_observer;
-  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(2);
-
-  coordinator()->AddSidePanelViewStateObserver(&view_state_observer);
-
-  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  coordinator()->Close();
-  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  coordinator()->Close();
-  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->RemoveSidePanelViewStateObserver(&view_state_observer);
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
-                       RemovingObserverDoesNotIncrementCount) {
-  Init();
-  coordinator()->DisableAnimationsForTesting();
-
-  MockSidePanelViewStateObserver view_state_observer;
-  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(1);
-  coordinator()->AddSidePanelViewStateObserver(&view_state_observer);
-  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->Close();
-  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-
-  coordinator()->RemoveSidePanelViewStateObserver(&view_state_observer);
-
-  coordinator()->Close();
-  EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-}
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        SidePanelToggleWithEntriesTest) {

@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_icon_image.h"
 

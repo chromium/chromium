@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "ui/actions/actions.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -119,10 +118,6 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   }
 
   SidePanelEntry* GetLoadingEntryForTesting() const;
-
-  void AddSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
-
-  void RemoveSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
 
   void Close(bool suppress_animations);
 
@@ -310,34 +305,11 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       extensions_model_observation_{this};
 
-  base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
-
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       pinned_model_observation_{this};
 
   base::RepeatingCallbackList<void()> shown_callback_list_;
 };
-
-namespace base {
-
-// Since SidePanelCoordinator defines custom method names to add and remove
-// observers, we need define a new trait customization to use
-// `base::ScopedObservation` and `base::ScopedMultiSourceObservation`.
-// See `base/scoped_observation_traits.h` for more details.
-template <>
-struct ScopedObservationTraits<SidePanelCoordinator,
-                               SidePanelViewStateObserver> {
-  static void AddObserver(SidePanelCoordinator* source,
-                          SidePanelViewStateObserver* observer) {
-    source->AddSidePanelViewStateObserver(observer);
-  }
-  static void RemoveObserver(SidePanelCoordinator* source,
-                             SidePanelViewStateObserver* observer) {
-    source->RemoveSidePanelViewStateObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_

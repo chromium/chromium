@@ -314,16 +314,6 @@ void SidePanelCoordinator::Show(
   Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
 }
 
-void SidePanelCoordinator::AddSidePanelViewStateObserver(
-    SidePanelViewStateObserver* observer) {
-  view_state_observers_.AddObserver(observer);
-}
-
-void SidePanelCoordinator::RemoveSidePanelViewStateObserver(
-    SidePanelViewStateObserver* observer) {
-  view_state_observers_.RemoveObserver(observer);
-}
-
 void SidePanelCoordinator::Close() {
   Close(/*suppress_animations=*/false);
 }
@@ -1095,9 +1085,6 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
     content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }
   SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
-
-  view_state_observers_.Notify(
-      &SidePanelViewStateObserver::OnSidePanelDidClose);
 }
 
 void SidePanelCoordinator::OnActionsChanged() {

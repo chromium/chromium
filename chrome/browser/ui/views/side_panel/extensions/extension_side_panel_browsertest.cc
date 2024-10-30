@@ -23,11 +23,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -261,6 +261,13 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     EXPECT_EQ(visible, is_visible);
   }
 
+  void WaitForSidePanelClose() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return browser()->GetBrowserView().unified_side_panel()->state() ==
+             SidePanel::State::kClosed;
+    }));
+  }
+
   extensions::ExtensionContextMenuModel* GetContextMenuForExtension(
       const ExtensionId& extension_id) {
     return static_cast<extensions::ExtensionContextMenuModel*>(
@@ -405,11 +412,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // Reset the `default_path_listener`.
   default_path_listener.Reset();
 
-  SidePanelWaiter side_panel_waiter(side_panel_coordinator());
-
   // Close and reopen the side panel. The extension's view should be recreated.
   side_panel_coordinator()->Close();
-  side_panel_waiter.WaitForSidePanelClose();
+  WaitForSidePanelClose();
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   side_panel_coordinator()->Show(extension_key);
 
@@ -419,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // Now unload the extension. The key should no longer exist in the global
   // registry and the side panel should close as a result.
   UnloadExtension(extension->id());
-  side_panel_waiter.WaitForSidePanelClose();
+  WaitForSidePanelClose();
   EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
 }
@@ -585,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Enabled) {
     RunSetOptions(*extension, /*tab_id=*/std::nullopt, /*path=*/std::nullopt,
                   /*enabled=*/false);
     waiter.WaitForDeregistration();
-    SidePanelWaiter(side_panel_coordinator()).WaitForSidePanelClose();
+    WaitForSidePanelClose();
   }
 
   EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
@@ -1034,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 
   // Unloading the extension at this point should not crash the browser.
   UnloadExtension(extension->id());
-  SidePanelWaiter(side_panel_coordinator()).WaitForSidePanelClose();
+  WaitForSidePanelClose();
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
 }
 
@@ -1188,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // registry and the side panel should close as a result and the close side
   // panel button should not be visible.
   UnloadExtension(extension->id());
-  SidePanelWaiter(side_panel_coordinator()).WaitForSidePanelClose();
+  WaitForSidePanelClose();
   EXPECT_FALSE(global_registry()->GetEntryForKey(extension_key));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   WaitForSidePanelToolbarCloseButtonVisibility(false);
@@ -1881,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(
     // Clicking on the menu item again should close the side panel.
     menu->ExecuteCommand(
         extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
-    SidePanelWaiter(side_panel_coordinator()).WaitForSidePanelClose();
+    WaitForSidePanelClose();
     EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
         GetKey(side_panel_extension->id())));
   }
@@ -1924,7 +1929,7 @@ IN_PROC_BROWSER_TEST_F(
     // Clicking on the menu item again should close the side panel.
     menu->ExecuteCommand(
         extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
-    SidePanelWaiter(side_panel_coordinator()).WaitForSidePanelClose();
+    WaitForSidePanelClose();
     EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
         GetKey(side_panel_extension->id())));
   }
