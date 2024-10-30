@@ -11,10 +11,14 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,8 +50,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using testing::AllOf;
 using testing::Contains;
+using testing::Ge;
 using testing::IsSupersetOf;
+using testing::Le;
 using testing::Not;
 
 namespace {
@@ -774,6 +781,170 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
               Not(Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
 }
+
+// "Open Link in Profile" functionality is not available on ChromeOS Ash where
+// there is only one profile.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class ContextMenuFencedFrameMutilpleProfilesTest
+    : public ContextMenuFencedFrameTest {
+ public:
+  ContextMenuFencedFrameMutilpleProfilesTest() = default;
+  ~ContextMenuFencedFrameMutilpleProfilesTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ContextMenuFencedFrameTest::SetUpOnMainThread();
+
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    Profile& secondary_profile = profiles::testing::CreateProfileSync(
+        profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+    CreateBrowser(&secondary_profile);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameMutilpleProfilesTest,
+                       OpenLinkInProfileEntryIsDisabledAfterNetworkCutoff) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate fenced frame to a page with an anchor element.
+  GURL fenced_frame_url(embedded_https_test_server().GetURL(
+      "a.test", "/download-anchor-same-origin.html"));
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(fenced_frame_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Get the coordinate of the anchor element inside the fenced frame.
+  const gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // No sub-menu is shown because there is only on other active profile.
+  ASSERT_THAT(menu_observer.GetCapturedCommandIds(),
+              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
+  // "Open Link as User ..." should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  content::test::SimulateClickInFencedFrameTree(
+      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // No sub-menu is shown.
+  ASSERT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
+  // "Open Link in Profile" should be disabled in the context menu after fenced
+  // frame has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+              Not(Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                                 Le(IDC_OPEN_LINK_IN_PROFILE_LAST)))));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameMutilpleProfilesTest,
+    OpenLinkInProfileEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate the nested iframe to a page with an anchor element.
+  GURL nested_iframe_url(embedded_https_test_server().GetURL(
+      "a.test", "/download-anchor-same-origin.html"));
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrameWithNestedIframe(nested_iframe_url);
+  content::RenderFrameHost* nested_iframe_rfh =
+      content::ChildFrameAt(fenced_frame_rfh, 0);
+  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
+  // ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+  content::WaitForHitTestData(nested_iframe_rfh);
+
+  // Get the coordinate of the anchor element inside the nested iframe.
+  gfx::PointF anchor_element =
+      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
+
+  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+  // fenced frame, the anchor element needs to be offset by the top left
+  // coordinates of the nested iframe relative to the fenced frame.
+  const gfx::PointF iframe_offset =
+      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                          "child-0");
+  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
+
+  // Open a context menu by right clicking on the anchor element.
+  ContextMenuWaiter menu_observer;
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // No sub-menu is shown because there is only on other active profile.
+  ASSERT_THAT(menu_observer.GetCapturedCommandIds(),
+              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
+  // "Open Link as User ..." should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  content::test::SimulateClickInFencedFrameTree(
+      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // No sub-menu is shown.
+  ASSERT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
+  // "Open Link in Profile" should be disabled in the context menu after fenced
+  // frame has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+              Not(Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                                 Le(IDC_OPEN_LINK_IN_PROFILE_LAST)))));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ContextMenuLinkPreviewFencedFrameTest
     : public ContextMenuFencedFrameTest {
