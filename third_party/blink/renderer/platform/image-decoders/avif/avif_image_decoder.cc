@@ -756,14 +756,9 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~AVIF_STRICT_PIXI_REQUIRED;
 
-    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
-      if (aux_image_ == cc::AuxImage::kGainmap) {
-        decoder_->enableParsingGainMapMetadata = AVIF_TRUE;
-        decoder_->enableDecodingGainMap = AVIF_TRUE;
-        decoder_->ignoreColorAndAlpha = AVIF_TRUE;
-      } else {
-        decoder_->enableParsingGainMapMetadata = AVIF_TRUE;
-      }
+    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages) &&
+        aux_image_ == cc::AuxImage::kGainmap) {
+      decoder_->imageContentToDecode = AVIF_IMAGE_CONTENT_GAIN_MAP;
     }
 
     avif_io_.destroy = nullptr;
@@ -1209,10 +1204,10 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
     return false;
   }
-  if (!decoder_->gainMapPresent) {
+  // Ensure that parsing succeeded.
+  if (!IsDecodedSizeAvailable()) {
     return false;
   }
-
   if (!decoder_->image->gainMap) {
     DVLOG(1) << "Missing gain map";
     return false;
