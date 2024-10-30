@@ -53,7 +53,7 @@
 - (BOOL)blockOtherScenesIfPossible;
 
 // Stops the `blockOtherScenesIfPossible`.
-- (void)unblockOtherScenesIfPossible;
+- (void)unblockOtherScenes;
 
 @end
 

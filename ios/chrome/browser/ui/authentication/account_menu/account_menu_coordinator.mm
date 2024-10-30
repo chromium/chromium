@@ -177,7 +177,7 @@
   _applicationHandler = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
-  [self unblockOtherScenesIfPossible];
+  [self unblockOtherScenes];
   [super stop];
 }
 
@@ -219,7 +219,6 @@
        closeSettingsOnAddAccount:NO];
   _manageAccountsCoordinator.delegate = self;
   _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
-  _manageAccountsCoordinator.delegate = self;
   [_manageAccountsCoordinator start];
 }
 
@@ -315,7 +314,7 @@
   return YES;
 }
 
-- (void)unblockOtherScenesIfPossible {
+- (void)unblockOtherScenes {
   _UIBlocker.reset();
 }
 

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -296,7 +297,7 @@ TEST_F(AccountMenuMediatorTest, TestError) {
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-out fail.
 TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
-  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
+  // Given that the method  `triggerSignoutWithTargetRect:completion` creates a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
 
@@ -322,7 +323,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[]
                           gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
-  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
+  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_ switchingStopped]);
   // Simulate a sign-out failure
   onSignoutSuccess(false);
@@ -372,7 +373,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // Testing the sign-in callback.
   // The delegate should not receive any message. The mediator directly sign the
   // user back in the previous account.
-  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
+  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[]
@@ -432,7 +433,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   }
   VerifyMock();
 
-  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
+  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect(
       [delegate_ triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
@@ -466,46 +467,57 @@ TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
 
 // Tests the effect of didTapAddAccount.
 TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
-  OCMExpect([delegate_ didTapAddAccountWithCompletion:[OCMArg any]]);
+  __block ShowSigninCommandCompletionCallback completion = nil;
+  OCMExpect([delegate_
+      didTapAddAccountWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
+        completion = value;
+        return true;
+      }]]);
   [mediator_ didTapAddAccount];
+  OCMExpect([consumer_ switchingStopped]);
+  OCMExpect([consumer_
+      updateAccountListWithGaiaIDsToAdd:@[]
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+  completion(SigninCoordinatorResult::SigninCoordinatorResultInterrupted, nil);
 }
 
 // Tests the effect of signOutFromTargetRect.
 TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
-  __block void (^callback)(BOOL) = nil;
+  __block void (^completion)(BOOL) = nil;
   OCMExpect([delegate_
       signOutFromTargetRect:rect
                   forSwitch:NO
                  completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   callback = value;
+                   completion = value;
                    return true;
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   [mediator_ signOutFromTargetRect:rect];
-  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
+  OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
-  callback(YES);
+  completion(YES);
 }
 
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
 TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
-  __block void (^callback)(BOOL) = nil;
+  __block void (^completion)(BOOL) = nil;
   OCMExpect([delegate_
       signOutFromTargetRect:rect
                   forSwitch:NO
                  completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                   callback = value;
+                   completion = value;
                    return true;
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
   [mediator_ signOutFromTargetRect:rect];
   [mediator_ disconnect];
-  OCMExpect([delegate_ unblockOtherScenesIfPossible]);
-  callback(NO);
+  OCMExpect([delegate_ unblockOtherScenes]);
+  completion(NO);
 }
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.

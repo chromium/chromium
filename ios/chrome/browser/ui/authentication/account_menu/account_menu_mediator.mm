@@ -373,7 +373,7 @@
 
 // Callback for signout.
 - (void)signoutEndedWithSuccess:(BOOL)success {
-  [self.delegate unblockOtherScenesIfPossible];
+  [self.delegate unblockOtherScenes];
   if (success) {
     // By signing-out the user cancelled the option to signin in this menu.
     self.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
@@ -391,7 +391,7 @@
                      toIdentity:(id<SystemIdentity>)newIdentity {
   if (!signoutSuccess) {
     // User had not signed-out. Allow to interact with the UI.
-    [self.delegate unblockOtherScenesIfPossible];
+    [self.delegate unblockOtherScenes];
     _blockUserInteractions = NO;
     _accountSwitchInProgress.RunAndReset();
     [self restartUpdates];
@@ -413,7 +413,7 @@
   CHECK(_authenticationFlow);
   _authenticationFlow = nil;
   _accountSwitchInProgress.RunAndReset();
-  [self.delegate unblockOtherScenesIfPossible];
+  [self.delegate unblockOtherScenes];
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
