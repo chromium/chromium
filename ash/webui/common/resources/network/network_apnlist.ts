@@ -5,8 +5,8 @@
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
-import '//resources/ash/common/i18n_behavior.js';
-import '//resources/ash/common/network/onc_mojo.js';
+import '../i18n_behavior.js';
+import './onc_mojo.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './network_property_list_mojo.js';
 import './network_shared.css.js';

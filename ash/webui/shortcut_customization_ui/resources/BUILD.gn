@@ -85,8 +85,16 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  ts_path_mappings =
+      [ "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js|" +
+        rebase_path("${root_gen_dir}/mojo/public/js/mojo_bindings_lite.js",
+                    target_gen_dir) ]
+
   webui_context_type = "trusted"
-  ts_extra_deps = [ "//ash/webui/common/resources:copy_checked_in_dts_files" ]
+  ts_extra_deps = [
+    "//ash/webui/common/resources:copy_checked_in_dts_files",
+    "//mojo/public/js:bindings_lite",
+  ]
 
   grit_output_dir = "$root_gen_dir/ash/webui"
 }

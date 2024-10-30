@@ -32,9 +32,14 @@ build_webui("build") {
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/chromeos/supervision:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
+  ts_path_mappings = [ "/supervision/*|" + rebase_path(
+                           "${root_gen_dir}/chrome/browser/resources/chromeos/supervision/tsc/*",
+                           target_gen_dir) ]
 
   webui_context_type = "trusted"
 }

@@ -309,6 +309,11 @@ webui_ts_library("build_ts") {
         rebase_path(
             "$root_gen_dir/ash/webui/common/resources/preprocessed/network/*",
             target_gen_dir) ]
+  if (is_chrome_branded) {
+    path_mappings += [ "chrome://resources/ash/common/internal/ash_internal_icons.html.js|" + rebase_path(
+                           "$root_gen_dir/ash/webui/common/resources/preprocessed/internal/ash_internal_icons.html.d.ts",
+                           target_gen_dir) ]
+  }
 }
 
 generate_grd("build_html_css_wrapper_files_grdp") {

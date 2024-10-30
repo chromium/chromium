@@ -36,6 +36,12 @@ build_webui("build") {
   ]
 
   ts_path_mappings = [
+    "chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js|" + rebase_path(
+            "//chrome/browser/resources/chromeos/gaia_action_buttons/gaia_action_buttons.js",
+            target_gen_dir),
+    "chrome://chrome-signin/account_manager_shared.css.js|" + rebase_path(
+            "${root_gen_dir}/chrome/browser/resources/chromeos/account_manager/account_manager_shared.css.js",
+            target_gen_dir),
     "chrome://chrome-signin/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir),

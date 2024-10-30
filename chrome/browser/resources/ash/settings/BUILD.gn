@@ -602,6 +602,12 @@ build_webui("build") {
     "/shared/*|" + rebase_path("$nearby_share_tsc_dir/*", target_gen_dir),
   ]
 
+  if (is_chrome_branded) {
+    ts_path_mappings += [ "/nearby/nearby-share-internal-icons.m.js|" + rebase_path(
+                              "//chrome/browser/nearby_sharing/internal/icons/nearby-share-internal-icons.m.js",
+                              target_gen_dir) ]
+  }
+
   extra_grdp_deps = [
     "//chrome/browser/resources/chromeos/nearby_share/shared:build_json_grdp",
     "//third_party/liblouis:build_grdp",
