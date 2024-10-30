@@ -12,8 +12,17 @@
     ꙮ<tspan dx="-10 20" dy="6 -10">ꙮꙮ</tspan>
   </text>
 
+  <!-- RTL & text-anchor -->
   <circle cx="80" cy="580" r="3" fill="rgba(255,0,0,0.8)"></circle>
   <text x="80" y="580" direction="rtl">RTL text</text>
   <circle cx="120" cy="580" r="3" fill="rgba(255,0,0,0.8)"></circle>
   <text x="120" y="580" text-anchor="end">LTR end-anchoring</text>
+
+  <!-- textLength -->
+  <circle cx="160" cy="20" r="3" fill="rgba(255,0,0,0.8)"></circle>
+  <text x="160" y="20">My text <tspan textLength="100">text</tspan> text.</text>
+  <circle cx="200" cy="20" r="3" fill="rgba(255,0,0,0.8)"></circle>
+  <text x="200" y="20">My
+  <tspan textLength="100" lengthAdjust="spacingAndGlyphs">text</tspan>
+  <tspan textLength="30" lengthAdjust="spacingAndGlyphs">text</tspan> text.</text>
 </svg>
