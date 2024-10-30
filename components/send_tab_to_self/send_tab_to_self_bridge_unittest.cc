@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
@@ -931,6 +932,13 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
 
 #if BUILDFLAG(IS_IOS)
 TEST_F(SendTabToSelfBridgeTest, WriteToLastTabReceivedPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
+        {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
+          "true"}}}},
+      {});
+
   InitializeBridge();
 
   // Add two remote entries.
