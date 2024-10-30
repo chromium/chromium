@@ -36,7 +36,7 @@ import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_inter
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
 import type {KeyCombination} from './facegaze_constants.js';
-import {AssignedKeyCombo, ConflictingGestures, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils} from './facegaze_constants.js';
+import {AssignedKeyCombo, ComplexActions, ConflictingGestures, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils} from './facegaze_constants.js';
 import type {FaceGazeSubpageBrowserProxy} from './facegaze_subpage_browser_proxy.js';
 import {FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
@@ -393,6 +393,14 @@ export class FaceGazeAddActionDialogElement extends
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
     return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
+  }
+
+  private getComplexActionDisplayText_(action: MacroName|null): string|null {
+    if (!action || !ComplexActions[action]) {
+      return null;
+    }
+
+    return this.i18n(ComplexActions[action]);
   }
 
   private getWarningDisplayText_(gesture: FacialGesture|null): string|null {

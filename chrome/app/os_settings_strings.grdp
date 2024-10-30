@@ -1431,7 +1431,7 @@
     Custom key combination: <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes how users can scroll on their computer using their face when in scroll mode.">
-    Once you start scroll mode, move your head in the direction you'd like to scroll
+    Use the gesture to enter scroll mode, then move your head in the direction you'd like to scroll. Use the gesture again to exit scroll mode.
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_LONG_CLICK_LEFT" desc="This text describes how users can drag and drop on their computer using their face to hold down or release the left mouse button.">
     Use the gesture, then move your head to show where you'd like to drop the item. Use the gesture again to drop it.

@@ -167,6 +167,11 @@
     color: var(--cros-sys-on_surface);
   }
 
+  #complexActionContainer {
+    display: flex;
+    gap: 8px;
+  }
+
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
@@ -205,6 +210,15 @@
         $i18n{next}
       </cr-button>
     </div>
+    <template is="dom-if"
+        if="[[getComplexActionDisplayText_(selectedAction_)]]" restamp>
+      <div id="complexActionContainer" tabindex="-1" slot="footer">
+        <iron-icon icon="cr:info-outline"></iron-icon>
+        <div id="complexActionText">
+          [[getComplexActionDisplayText_(selectedAction_)]]
+        </div>
+      </div>
+    </template>
   </template>
 
   <template is="dom-if" if="[[showCustomKeyboard_]]"

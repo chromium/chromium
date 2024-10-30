@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, AssignedKeyCombo, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, ComplexActions, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
@@ -102,6 +102,11 @@ suite('<facegaze-actions-add-dialog>', () => {
   function assertNullActionsList(): void {
     const actionList = getActionsList();
     assertNull(actionList);
+  }
+
+  function setActionsListSelection(macroName: MacroName) {
+    const actionList = assertActionsList();
+    actionList.selectedItem = macroName as Object;
   }
 
   function setActionsListSelectionToMouseClick() {
@@ -263,6 +268,13 @@ suite('<facegaze-actions-add-dialog>', () => {
         faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLElement>(
             '#warningContainer');
     return container;
+  }
+
+  function getComplexActionContainer(): HTMLElement|null {
+    const container: HTMLElement|null =
+        faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#complexActionContainer');
+    return container
   }
 
   function getThresholdPreviousButton(): CrButtonElement {
@@ -1086,5 +1098,42 @@ suite('<facegaze-actions-add-dialog>', () => {
     // Ensure that only the gesture conflict warning is visible.
     assertTrue(container.innerText.includes(gestureConflictsWarningPart));
     assertFalse(container.innerText.includes(gestureAlreadyAssignedWarning));
+  });
+
+  test('complex action text', async () => {
+    await initPage();
+    let container = getComplexActionContainer();
+    assertFalse(!!container);
+
+    for (const action of Object.keys(ComplexActions)) {
+      // JavaScript will convert integer keys into strings, so we need to cast
+      // `action` back to an integer (or more specifically, a MacroName);
+      setActionsListSelection(parseInt(action));
+      await flushTasks();
+
+      container = getComplexActionContainer();
+      assertTrue(!!container);
+      assertTrue(isVisible(container));
+      assertTrue(container.innerText.includes('Use the gesture'));
+    }
+  });
+
+  test('no complex action text', async () => {
+    await initPage();
+    let container = getComplexActionContainer();
+    assertFalse(!!container);
+
+    const macros = [
+      MacroName.MOUSE_CLICK_LEFT,
+      MacroName.MOUSE_CLICK_RIGHT,
+      MacroName.MOUSE_CLICK_LEFT_DOUBLE,
+    ];
+
+    for (const macro of macros) {
+      setActionsListSelection(macro);
+      await flushTasks();
+      container = getComplexActionContainer();
+      assertFalse(!!container);
+    }
   });
 });

@@ -48,6 +48,13 @@ export const FaceGazeLocationDependentActions: MacroName[] = [
   MacroName.TOGGLE_SCROLL_MODE,
 ];
 
+// A map of actions to their informational text ID, which further describes
+// their behavior to the user.
+export const ComplexActions: Partial<Record<MacroName, string>> = {
+  [MacroName.MOUSE_LONG_CLICK_LEFT]: 'faceGazeMacroSubLabelLongClickLeft',
+  [MacroName.TOGGLE_SCROLL_MODE]: 'faceGazeMacroSubLabelToggleScrollMode',
+};
+
 // All possible facial gestures.
 // Values are extracted here for ease of use.
 export const FaceGazeGestures = Object.values(FacialGesture);
