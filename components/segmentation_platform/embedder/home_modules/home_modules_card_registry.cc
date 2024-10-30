@@ -11,6 +11,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
@@ -24,6 +25,11 @@
 #endif
 
 namespace segmentation_platform::home_modules {
+
+#if BUILDFLAG(IS_ANDROID)
+const char kDefaultBrowserPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.default_browser_promo_counter";
+#endif
 
 namespace {
 
@@ -155,6 +161,10 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       kLensEphemeralModuleTranslateVariationInteractedPref, false);
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kDefaultBrowserPromoImpressionCounterPref, 0);
+#endif
 }
 
 // static
@@ -209,6 +219,15 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
     int freshness_impression_count =
         profile_prefs_->GetInteger(kLensEphemeralModuleImpressionCounterPref);
     profile_prefs_->SetInteger(kLensEphemeralModuleImpressionCounterPref,
+                               freshness_impression_count + 1);
+  }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
+    int freshness_impression_count =
+        profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
+    profile_prefs_->SetInteger(kDefaultBrowserPromoImpressionCounterPref,
                                freshness_impression_count + 1);
   }
 #endif
@@ -276,6 +295,14 @@ void HomeModulesCardRegistry::CreateAllCards() {
   if (SendTabNotificationPromo::IsEnabled(send_tab_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<SendTabNotificationPromo>(send_tab_promo_count));
+  }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  int default_browser_promo_count =
+      profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
+  if (DefaultBrowserPromo::IsEnabled(default_browser_promo_count)) {
+    all_cards_by_priority_.push_back(std::make_unique<DefaultBrowserPromo>());
   }
 #endif
   InitializeAfterAddingCards();

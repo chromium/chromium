@@ -226,10 +226,11 @@ BASE_FEATURE(kSegmentationSurveyPage,
 constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
     &kSegmentationSurveyPage, "survey_internals_page", /*default_value=*/true};
 
-#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kEducationalTipModule,
              "EducationalTipModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
+constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
+    &kEducationalTipModule, "max_default_browser_card_impressions",
+    /*default_value=*/4};
 
 }  // namespace segmentation_platform::features

@@ -27,6 +27,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
@@ -152,6 +153,11 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
     default;
+
+void SegmentationPlatformServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
+}
 
 KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -16,6 +16,11 @@
 
 namespace segmentation_platform::home_modules {
 
+#if BUILDFLAG(IS_ANDROID)
+// Immpression counter for each card.
+extern const char kDefaultBrowserPromoImpressionCounterPref[];
+#endif
+
 // Registry that manages all ephemeral cards in mobile home modules.
 class HomeModulesCardRegistry : public base::SupportsUserData::Data {
  public:

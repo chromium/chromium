@@ -143,11 +143,12 @@ int GetTipsEphemeralCardModuleMaxImpressionCount();
 BASE_DECLARE_FEATURE(kSegmentationSurveyPage);
 extern const base::FeatureParam<bool> kSegmentationSurveyInternalsPage;
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature flag for enabling the Educational tip module in the magic stack on
-// clank.
+// Feature flag for enabling the Educational tip module in the home modules on
+// chrome android.
 BASE_DECLARE_FEATURE(kEducationalTipModule);
-#endif  // BUILDFLAG(IS_ANDROID)
+// The maximum number of times the default browser promo card can be visible to
+// the user.
+extern const base::FeatureParam<int> kMaxDefaultBrowserCardImpressions;
 
 }  // namespace segmentation_platform::features
 

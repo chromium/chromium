@@ -37,6 +37,17 @@ inline constexpr char kDidNotUsePasswordAutofill[] =
 inline constexpr char kSendTabInfobarReceivedInLastSession[] =
     "send_tab_infobar_received_in_last_session";
 
+// Input Context keys for emphemeral android modules.
+const char kIsDefaultBrowserChrome[] = "is_default_browser_chrome";
+const char kHasDefaultBrowserPromoReachedLimitInRoleManager[] =
+    "has_default_browser_promo_reached_limit_in_role_manager";
+const char kHaveTabGroups[] = "have_tab_groups";
+const char kNumberOfTabs[] = "number_of_tabs";
+const char kHaveSyncedTabGroups[] = "have_synced_tab_groups";
+const char kHaveClearedBrowsingDataInThirtyDays[] =
+    "have_cleared_browsing_data_in_thirty_days";
+const char kHaveUsedIncognito[] = "have_used_incognito";
+
 // Placeholder output label for segmentation model executor.
 inline constexpr char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
 
@@ -68,6 +79,9 @@ inline constexpr auto kLensEphemeralModuleVariationLabels =
         kLensEphemeralModuleShopVariation,
         kLensEphemeralModuleTranslateVariation,
     });
+
+// Labels for emphemeral android modules.
+const char kDefaultBrowserPromo[] = "default_browser_promo";
 
 // Commandline ASCII Switch key to indicate that the test module backend ranker
 // should be used.
