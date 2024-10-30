@@ -64,6 +64,9 @@ const char kPeopleApiReadOnlyOAuth2Scope[] =
 const char kPeopleApiReadWriteOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readwrite";
 
+// OAuth2 scope for read-write access to contacts.
+const char kContactsOAuth2Scope[] = "https://www.googleapis.com/auth/contacts";
+
 // OAuth2 scope for access to the people API person's locale preferences
 // (read-only).
 const char kProfileLanguageReadOnlyOAuth2Scope[] =

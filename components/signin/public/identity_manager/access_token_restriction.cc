@@ -138,6 +138,7 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       GaiaConstants::kNearbyShareOAuth2Scope,
       GaiaConstants::kNearbyPresenceOAuth2Scope,
       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
+      GaiaConstants::kContactsOAuth2Scope,
       GaiaConstants::kPhotosOAuth2Scope,
       GaiaConstants::kTachyonOAuthScope,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

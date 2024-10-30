@@ -18,6 +18,8 @@ namespace google_apis::people {
 
 struct Person;
 
+// Requires `GaiaConstants::kContactsOAuth2Scope`.
+//
 // From the People API reference:
 //
 // Create a new contact and return the person resource for that contact.
