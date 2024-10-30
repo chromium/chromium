@@ -514,6 +514,11 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       video_frame_init_data.frame_or_buffer = std::move(buffer);
     }
   }
+  if (auto* video_frame = absl::get_if<scoped_refptr<media::VideoFrame>>(
+          &video_frame_init_data.frame_or_buffer)) {
+    (*video_frame)
+        ->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
+  }
   CHECK(absl::holds_alternative<scoped_refptr<media::VideoFrame>>(
             video_frame_init_data.frame_or_buffer) ||
         absl::holds_alternative<std::unique_ptr<gfx::GpuMemoryBuffer>>(
@@ -633,6 +638,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     LOG(ERROR) << "Can't wrap GpuMemoryBuffer as VideoFrame";
     return false;
   }
+  frame->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
 
   frame->metadata().allow_overlay = true;
   frame->metadata().read_lock_fences_enabled = true;

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_buffer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -1205,6 +1206,18 @@ VideoColorSpace* VideoFrame::colorSpace() {
         MakeGarbageCollected<VideoColorSpace>(local_frame->ColorSpace());
   }
   return color_space_.Get();
+}
+
+VideoFrameMetadata* VideoFrame::metadata(ExceptionState& exception_state) {
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "VideoFrame is closed.");
+    return nullptr;
+  }
+
+  NOTIMPLEMENTED();
+  return VideoFrameMetadata::Create();
 }
 
 uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,

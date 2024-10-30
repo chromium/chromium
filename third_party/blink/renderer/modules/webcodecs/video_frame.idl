@@ -49,6 +49,12 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   // Color space of the data produced by copyTo().
   readonly attribute VideoColorSpace colorSpace;
 
+  // The VideoFrameMetadata associated with this frame. Possible members are
+  // recorded in https://www.w3.org/TR/webcodecs-video-frame-metadata-registry/.
+  // By design, all VideoFrameMetadata properties are serializable.
+  [RaisesException, RuntimeEnabled="VideoFrameMetadataBackgroundBlur"]
+  VideoFrameMetadata metadata();
+
   // Returns the minimum size (in bytes) of a buffer that copyTo() could
   // copy this frame into with the given options.
   [RaisesException] unsigned long allocationSize(

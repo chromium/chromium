@@ -47,6 +47,7 @@ class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
 class VideoFrameLayout;
+class VideoFrameMetadata;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -97,6 +98,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t displayHeight() const;
 
   VideoColorSpace* colorSpace();
+
+  VideoFrameMetadata* metadata(ExceptionState&);
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
