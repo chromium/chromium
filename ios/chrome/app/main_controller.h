@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 
 @class AppState;
@@ -20,7 +19,7 @@
 //
 // By design, it has no public API of its own. Anything interacting with
 // MainController should be doing so through a specific protocol.
-@interface MainController : NSObject <StartupInformation, AppStateObserver>
+@interface MainController : NSObject <StartupInformation>
 
 // Contains information about the application state, for example whether the
 // safe mode is activated.

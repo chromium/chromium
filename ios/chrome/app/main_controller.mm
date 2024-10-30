@@ -39,6 +39,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_storage_metrics.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent.h"
@@ -52,6 +53,7 @@
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/profile/profile_controller.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
@@ -267,8 +269,10 @@ void BeginMemoryExperimentationAfterDelay() {
 
 }  // namespace
 
-@interface MainController () <BlockingSceneCommands,
+@interface MainController () <AppStateObserver,
+                              BlockingSceneCommands,
                               PrefObserverDelegate,
+                              ProfileStateObserver,
                               SceneStateObserver> {
   // The object that drives the Chrome startup/shutdown logic.
   std::unique_ptr<IOSChromeMain> _chromeMain;
@@ -276,6 +280,9 @@ void BeginMemoryExperimentationAfterDelay() {
   // True if the current session began from a cold start. False if the app has
   // entered the background at least once since start up.
   BOOL _isColdStart;
+
+  // True if the launch metrics have already been recorded.
+  BOOL _launchMetricsRecorded;
 
   // An object to record metrics related to the user's first action.
   std::unique_ptr<FirstUserActionRecorder> _firstUserActionRecorder;
@@ -629,6 +636,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   ProfileController* controller =
       [[ProfileController alloc] initWithAppState:self.appState];
+  [controller.state addObserver:self];
   controller.state.profile = profile;
   auto insertion_result = _profileControllers.insert(
       std::make_pair(profile->GetProfileName(), controller));
@@ -734,11 +742,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
     case AppInitStage::kChoiceScreen:
       break;
     case AppInitStage::kFinal:
-      // In a multi-window environment we have the correct number of
-      // connectedScenes only at this stage.
-      [MetricsMediator
-          logLaunchMetricsWithStartupInformation:self
-                                 connectedScenes:self.appState.connectedScenes];
       break;
   }
 }
@@ -749,6 +752,17 @@ SEQUENCE_CHECKER(_sequenceChecker);
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   [self.appState addAgent:[[CredentialProviderMigratorAppAgent alloc] init]];
 #endif
+}
+
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kFinal) {
+    [profileState removeObserver:self];
+    [self recordLaunchMetrics];
+  }
 }
 
 #pragma mark - SceneStateObserver
@@ -1492,6 +1506,35 @@ SEQUENCE_CHECKER(_sequenceChecker);
   }
 }
 #endif
+
+// Records launch metrics when the application and all initial profiles have
+// been fully initialised.
+- (void)recordLaunchMetrics {
+  // Only record the metrics once, not after dynamically loading a new profile
+  // late (e.g. switching profile for a scene or opening a scene with another
+  // profile).
+  if (_launchMetricsRecorded) {
+    return;
+  }
+
+  // Check that all profiles have been fully initialized before recording the
+  // metrics (since before that, the tabs may have not been loaded yet and thus
+  // the metrics can't be properly recorded).
+  NSArray<SceneState*>* connectedScenes = self.appState.connectedScenes;
+  for (SceneState* sceneState in connectedScenes) {
+    if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+      return;
+    }
+  }
+
+  // As all profiles have been fully initialised, the number of tabs and of
+  // connected scenes is now correct and can be reported.
+  [MetricsMediator logLaunchMetricsWithStartupInformation:self
+                                          connectedScenes:connectedScenes];
+
+  // Avoid reporting the metrics again.
+  _launchMetricsRecorded = YES;
+}
 
 #pragma mark - BlockingSceneCommands
 
