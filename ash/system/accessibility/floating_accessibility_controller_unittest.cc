@@ -148,6 +148,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                : gfx::Rect(-kMenuViewBoundsBuffer, -kMenuViewBoundsBuffer);
   }
 
+  float GetMenuOpacity() {
+    return controller()->bubble_view()->layer()->opacity();
+  }
+
   void Show() { accessibility_controller()->ShowFloatingMenuIfEnabled(); }
 
   void SetUpVisibleMenu() {
@@ -765,6 +769,14 @@ TEST_F(FloatingAccessibilityControllerTest,
 
   bubble_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+}
+
+TEST_F(FloatingAccessibilityControllerTest, CheckOpacity) {
+  SetUpVisibleMenu();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+
+  controller()->FocusOnMenu();
+  EXPECT_EQ(GetMenuOpacity(), 1.0f);
 }
 
 }  // namespace ash

@@ -108,6 +108,7 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   bubble_view_->SetCanActivate(false);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
+  UpdateOpacity();
 
   menu_view_->Initialize();
 
@@ -203,6 +204,14 @@ void FloatingAccessibilityController::OnLayoutChanged() {
   SetMenuPosition(position_);
 }
 
+void FloatingAccessibilityController::OnFocused() {
+  UpdateOpacity();
+}
+
+void FloatingAccessibilityController::OnBlurred() {
+  UpdateOpacity();
+}
+
 void FloatingAccessibilityController::OnDetailedMenuClosed() {
   detailed_menu_controller_.reset();
 
@@ -232,6 +241,14 @@ std::u16string FloatingAccessibilityController::GetAccessibleNameForBubble() {
 void FloatingAccessibilityController::HideBubble(
     const TrayBubbleView* bubble_view) {}
 
+void FloatingAccessibilityController::OnMouseEnteredView() {
+  UpdateOpacity();
+}
+
+void FloatingAccessibilityController::OnMouseExitedView() {
+  UpdateOpacity();
+}
+
 void FloatingAccessibilityController::OnLocaleChanged() {
   // Layout update is needed when language changes between LTR and RTL, if the
   // position is the system default.
@@ -253,6 +270,13 @@ void FloatingAccessibilityController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   SetMenuPosition(position_);
+}
+
+void FloatingAccessibilityController::UpdateOpacity() {
+  const bool focus_in_children =
+      bubble_view_->Contains(bubble_view_->GetFocusManager()->GetFocusedView());
+  const bool is_opaque = bubble_view_->IsMouseHovered() || focus_in_children;
+  bubble_view_->layer()->SetOpacity(is_opaque ? 1.0f : 0.65f);
 }
 
 }  // namespace ash

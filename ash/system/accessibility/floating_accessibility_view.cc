@@ -309,6 +309,13 @@ void FloatingAccessibilityView::OnViewVisibilityChanged(
   delegate_->OnLayoutChanged();
 }
 
+void FloatingAccessibilityView::OnViewFocused(views::View* view) {
+  delegate_->OnFocused();
+}
+void FloatingAccessibilityView::OnViewBlurred(views::View* view) {
+  delegate_->OnBlurred();
+}
+
 void FloatingAccessibilityView::OnFocusLeavingSystemTray(bool reverse) {}
 
 void FloatingAccessibilityView::OnImeMenuTrayBubbleShown() {
