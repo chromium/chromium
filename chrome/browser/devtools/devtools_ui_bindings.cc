@@ -1639,7 +1639,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
         "userTier",
         features::kDevToolsExplainThisResourceDogfoodUserTier.GetName(
             features::kDevToolsExplainThisResourceDogfoodUserTier.Get()));
-    response_dict.Set("devToolsExplainThisResourceDogfood",
+    response_dict.Set("devToolsAiAssistanceNetworkAgent",
                       std::move(explain_this_resource_dogfood_dict));
   }
 
@@ -1679,7 +1679,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
         features::kDevToolsAiAssistancePerformanceAgentDogfoodUserTier.GetName(
             features::kDevToolsAiAssistancePerformanceAgentDogfoodUserTier
                 .Get()));
-    response_dict.Set("devToolsAiAssistancePerformanceAgentDogfood",
+    response_dict.Set("devToolsAiAssistancePerformanceAgent",
                       std::move(ai_assistance_performance_agent_dogfood_dict));
   }
 
@@ -1715,7 +1715,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
         "userTier",
         features::kDevToolsAiAssistanceFileAgentDogfoodUserTier.GetName(
             features::kDevToolsAiAssistanceFileAgentDogfoodUserTier.Get()));
-    response_dict.Set("devToolsAiAssistanceFileAgentDogfood",
+    response_dict.Set("devToolsAiAssistanceFileAgent",
                       std::move(ai_assistance_file_agent_dogfood_dict));
   }
 
