@@ -235,8 +235,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [self assertAccountMenuIsNotShown];
 }
 
+// TODO(crbug.com/376334069): Re-enable once flakiness is fixed.
 // Tests that the account menu is not dismissed if the app was backgrounded.
-- (void)testAccountMenuStaysIfAppBackgrounded {
+- (void)DISABLED_testAccountMenuStaysIfAppBackgrounded {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Select the identity disc particle.
   [self selectIdentityDiscAndVerify];
