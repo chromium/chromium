@@ -32,9 +32,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -78,8 +80,6 @@ IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)),
       command_helper_(std::move(command_helper)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-
   CHECK(web_contents_ != nullptr);
   CHECK(optional_profile_keep_alive_ == nullptr ||
         &profile() == optional_profile_keep_alive_->profile());
@@ -95,9 +95,7 @@ IsolatedWebAppApplyUpdateCommand::~IsolatedWebAppApplyUpdateCommand() = default;
 
 void IsolatedWebAppApplyUpdateCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
-  url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
 
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RunChainedWeakCallbacks(
@@ -106,17 +104,12 @@ void IsolatedWebAppApplyUpdateCommand::StartWithLock(
       &IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures,
       &IsolatedWebAppApplyUpdateCommand::HandleKeyRotationIfNecessary,
       &IsolatedWebAppApplyUpdateCommand::CreateStoragePartition,
-      &IsolatedWebAppApplyUpdateCommand::LoadInstallUrl,
-      &IsolatedWebAppApplyUpdateCommand::CheckInstallabilityAndRetrieveManifest,
-      &IsolatedWebAppApplyUpdateCommand::ValidateManifestAndCreateInstallInfo,
-      &IsolatedWebAppApplyUpdateCommand::RetrieveIconsAndPopulateInstallInfo,
-      &IsolatedWebAppApplyUpdateCommand::Finalize);
+      &IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo,
+      &IsolatedWebAppApplyUpdateCommand::FinalizeUpdate);
 }
 
 void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
     base::OnceClosure next_step_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   ASSIGN_OR_RETURN(
       const WebApp& iwa,
       GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
@@ -141,21 +134,25 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
 
 void IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures(
     base::OnceClosure next_step_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   command_helper_->CheckTrustAndSignatures(
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
       &profile(),
       base::BindOnce(
-          &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
+          &IsolatedWebAppApplyUpdateCommand::OnTrustAndSignaturesChecked,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));
+}
+
+void IsolatedWebAppApplyUpdateCommand::OnTrustAndSignaturesChecked(
+    base::OnceClosure next_step_callback,
+    TrustCheckResult trust_check_result) {
+  RETURN_IF_ERROR(trust_check_result,
+                  [&](const std::string& error) { ReportFailure(error); });
+  std::move(next_step_callback).Run();
 }
 
 void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationIfNecessary(
     base::OnceClosure next_step_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   CHECK_GE(pending_update_info().version, isolation_data().version());
   if (pending_update_info().version > isolation_data().version()) {
     // Updates to higher version are always fine.
@@ -183,70 +180,43 @@ void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationIfNecessary(
 
 void IsolatedWebAppApplyUpdateCommand::CreateStoragePartition(
     base::OnceClosure next_step_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   command_helper_->CreateStoragePartitionIfNotPresent(profile());
   std::move(next_step_callback).Run();
 }
 
-void IsolatedWebAppApplyUpdateCommand::LoadInstallUrl(
-    base::OnceClosure next_step_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  command_helper_->LoadInstallUrl(
+void IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo(
+    base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
+        next_step_callback) {
+  prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
+      profile(),
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
-      *web_contents_, *url_loader_,
-      base::BindOnce(
-          &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
-          weak_factory_.GetWeakPtr(), std::move(next_step_callback)));
+      pending_update_info().version, *web_contents_, *command_helper_,
+      lock_->web_contents_manager().CreateUrlLoader(),
+      std::move(next_step_callback));
 }
 
-void IsolatedWebAppApplyUpdateCommand::CheckInstallabilityAndRetrieveManifest(
-    base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  command_helper_->CheckInstallabilityAndRetrieveManifest(
-      *web_contents_,
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<
-                         blink::mojom::ManifestPtr>,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(next_step_callback)));
-}
+void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
+    PrepareInstallInfoJob::InstallInfoOrFailure result) {
+  prepare_install_info_job_.reset();
 
-void IsolatedWebAppApplyUpdateCommand::ValidateManifestAndCreateInstallInfo(
-    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-    blink::mojom::ManifestPtr manifest) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::expected<WebAppInstallInfo, std::string> install_info =
-      command_helper_->ValidateManifestAndCreateInstallInfo(
-          pending_update_info().version, *manifest);
-  RunNextStepOnSuccess(std::move(next_step_callback), std::move(install_info));
-}
+  ASSIGN_OR_RETURN(
+      WebAppInstallInfo install_info, std::move(result),
+      [&](const auto& failure) { ReportFailure(failure.message); });
 
-void IsolatedWebAppApplyUpdateCommand::RetrieveIconsAndPopulateInstallInfo(
-    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-    WebAppInstallInfo install_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  GetMutableDebugValue().Set("actual_version",
+                             install_info.isolated_web_app_version.GetString());
   GetMutableDebugValue().Set("app_title", install_info.title);
 
-  command_helper_->RetrieveIconsAndPopulateInstallInfo(
-      std::move(install_info), *web_contents_,
-      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<
-                         WebAppInstallInfo>,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(next_step_callback)));
-}
-
-void IsolatedWebAppApplyUpdateCommand::Finalize(WebAppInstallInfo info) {
   lock_->install_finalizer().FinalizeUpdate(
-      info, base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnFinalized,
-                           weak_factory_.GetWeakPtr()));
+      install_info,
+      base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnFinalized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppApplyUpdateCommand::OnFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode update_result_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(app_id, url_info_.app_id());
 
   if (update_result_code ==
@@ -259,8 +229,6 @@ void IsolatedWebAppApplyUpdateCommand::OnFinalized(
 }
 
 void IsolatedWebAppApplyUpdateCommand::ReportFailure(std::string_view message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   IsolatedWebAppApplyUpdateCommandError error{.message = std::string(message)};
   GetMutableDebugValue().Set("result", "error: " + error.message);
 
@@ -303,8 +271,6 @@ void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
 }
 
 void IsolatedWebAppApplyUpdateCommand::ReportSuccess() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   GetMutableDebugValue().Set("result", "success");
   CompleteAndSelfDestruct(CommandResult::kSuccess, base::ok());
 }

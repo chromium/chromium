@@ -322,6 +322,10 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
+  auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
+      url_info_.origin().GetURL().Resolve(kIconPath));
+  icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
+
   auto result = PrepareAndStoreUpdateInfo(update_version_);
   EXPECT_THAT(result, IsErrorWithMessage(
                           HasSubstr("Installed app is already on version")));
@@ -344,6 +348,10 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
+
+  auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
+      url_info_.origin().GetURL().Resolve(kIconPath));
+  icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
   auto result = PrepareAndStoreUpdateInfo(/*expected_version=*/std::nullopt);
   EXPECT_THAT(result, IsErrorWithMessage(
