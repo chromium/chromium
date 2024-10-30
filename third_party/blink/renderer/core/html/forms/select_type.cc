@@ -105,6 +105,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
   explicit PopoverElementForAppearanceBase(Document& document)
       : HTMLDivElement(document) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+    SetHasCustomStyleCallbacks();
   }
 
   void ShowPopoverInternal(Element* invoker,
@@ -186,6 +187,16 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       select->DecrementImplicitlyAnchoredElementCount();
     }
     HTMLDivElement::RemovedFrom(container);
+  }
+
+  void DidRecalcStyle(const StyleRecalcChange change) override {
+    HTMLDivElement::DidRecalcStyle(change);
+    if (auto* style = GetComputedStyle()) {
+      if (style->EffectiveAppearance() == ControlPart::kBaseSelectPart) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kSelectElementPickerAppearanceBaseSelect);
+      }
+    }
   }
 
  private:
@@ -921,6 +932,10 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
       // instead of the <select> itself.
       select_->GetShadowRoot()->SetDelegatesFocus(is_appearance_base_select &&
                                                   SlottedButton());
+    }
+    if (is_appearance_base_select) {
+      UseCounter::Count(select_->GetDocument(),
+                        WebFeature::kSelectElementAppearanceBaseSelect);
     }
   }
 

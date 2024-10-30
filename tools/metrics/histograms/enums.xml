@@ -10778,6 +10778,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5130" label="MediaQueryRangeSyntax"/>
   <int value="5131" label="ParseHTMLSafe"/>
   <int value="5132" label="SetHTMLSafe"/>
+  <int value="5133" label="SelectElementAppearanceBaseSelect"/>
+  <int value="5134" label="SelectElementPickerAppearanceBaseSelect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
