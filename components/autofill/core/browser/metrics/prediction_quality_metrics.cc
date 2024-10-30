@@ -378,34 +378,32 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
 namespace {
 
 const char* GetQualityMetricPredictionSource(
-    AutofillMetrics::QualityMetricPredictionSource source) {
+    QualityMetricPredictionSource source) {
   switch (source) {
-    case AutofillMetrics::PREDICTION_SOURCE_UNKNOWN:
+    case PREDICTION_SOURCE_UNKNOWN:
       NOTREACHED_IN_MIGRATION();
       return "Unknown";
-
-    case AutofillMetrics::PREDICTION_SOURCE_HEURISTIC:
+    case PREDICTION_SOURCE_HEURISTIC:
       return "Heuristic";
-    case AutofillMetrics::PREDICTION_SOURCE_SERVER:
+    case PREDICTION_SOURCE_SERVER:
       return "Server";
-    case AutofillMetrics::PREDICTION_SOURCE_OVERALL:
+    case PREDICTION_SOURCE_OVERALL:
       return "Overall";
-    case AutofillMetrics::PREDICTION_SOURCE_ML_PREDICTIONS:
+    case PREDICTION_SOURCE_ML_PREDICTIONS:
       return "ML";
   }
 }
 
-const char* GetQualityMetricTypeSuffix(
-    AutofillMetrics::QualityMetricType metric_type) {
+const char* GetQualityMetricTypeSuffix(QualityMetricType metric_type) {
   switch (metric_type) {
     default:
       NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
-    case AutofillMetrics::TYPE_SUBMISSION:
+    case TYPE_SUBMISSION:
       return "";
-    case AutofillMetrics::TYPE_NO_SUBMISSION:
+    case TYPE_NO_SUBMISSION:
       return ".NoSubmission";
-    case AutofillMetrics::TYPE_AUTOCOMPLETE_BASED:
+    case TYPE_AUTOCOMPLETE_BASED:
       return ".BasedOnAutocomplete";
   }
 }
@@ -618,12 +616,12 @@ void LogPredictionQualityMetricsForCommonFields(
 // also incorporates the possible and predicted types for |field|. A suffix may
 // be appended to the metric name, depending on |metric_type|.
 void LogPredictionQualityMetrics(
-    AutofillMetrics::QualityMetricPredictionSource prediction_source,
+    QualityMetricPredictionSource prediction_source,
     FieldType predicted_type,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type,
+    QualityMetricType metric_type,
     bool log_rationalization_metrics) {
   // Generate histogram names.
   const char* source = GetQualityMetricPredictionSource(prediction_source);
@@ -636,7 +634,7 @@ void LogPredictionQualityMetrics(
       base::StrCat({kByFieldTypeFieldPredictionMetricPrefix, source, suffix});
 
   const FieldTypeSet& possible_types =
-      metric_type == AutofillMetrics::TYPE_AUTOCOMPLETE_BASED
+      metric_type == TYPE_AUTOCOMPLETE_BASED
           ? FieldTypeSet{AutofillType(field.html_type()).GetStorableType()}
           : field.possible_types();
 
@@ -690,12 +688,12 @@ void LogHeuristicPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type) {
+    QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
-      AutofillMetrics::PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
+      PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
       form_interactions_ukm_logger, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
-  if (metric_type == AutofillMetrics::QualityMetricType::TYPE_SUBMISSION) {
+  if (metric_type == TYPE_SUBMISSION) {
     LogHeuristicPredictionQualityPerLabelSourceMetric(field);
   }
 }
@@ -712,10 +710,10 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
       GetActualFieldType(field.possible_types(), predicted_type);
   if (actual_type != UNKNOWN_TYPE && actual_type != EMPTY_TYPE) {
     base::UmaHistogramBoolean(
-        base::StrCat({kAggregateFieldPredictionMetricPrefix,
-                      GetQualityMetricPredictionSource(
-                          AutofillMetrics::PREDICTION_SOURCE_HEURISTIC),
-                      ".", LabelSourceToString(field.label_source())}),
+        base::StrCat(
+            {kAggregateFieldPredictionMetricPrefix,
+             GetQualityMetricPredictionSource(PREDICTION_SOURCE_HEURISTIC), ".",
+             LabelSourceToString(field.label_source())}),
         predicted_type == actual_type);
   }
 }
@@ -724,9 +722,9 @@ void LogMlPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type) {
+    QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
-      AutofillMetrics::PREDICTION_SOURCE_ML_PREDICTIONS,
+      PREDICTION_SOURCE_ML_PREDICTIONS,
       field.heuristic_type(HeuristicSource::kMachineLearning),
       form_interactions_ukm_logger, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
@@ -737,10 +735,10 @@ void LogServerPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type) {
-  LogPredictionQualityMetrics(AutofillMetrics::PREDICTION_SOURCE_SERVER,
-                              field.server_type(), form_interactions_ukm_logger,
-                              form, field, metric_type,
+    QualityMetricType metric_type) {
+  LogPredictionQualityMetrics(PREDICTION_SOURCE_SERVER, field.server_type(),
+                              form_interactions_ukm_logger, form, field,
+                              metric_type,
                               /*log_rationalization_metrics=*/false);
 }
 
@@ -749,12 +747,11 @@ void LogOverallPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type) {
-  LogPredictionQualityMetrics(AutofillMetrics::PREDICTION_SOURCE_OVERALL,
-                              field.Type().GetStorableType(),
-                              form_interactions_ukm_logger, form, field,
-                              metric_type,
-                              /*log_rationalization_metrics=*/true);
+    QualityMetricType metric_type) {
+  LogPredictionQualityMetrics(
+      PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
+      form_interactions_ukm_logger, form, field, metric_type,
+      /*log_rationalization_metrics=*/true);
 }
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field) {

@@ -14,13 +14,12 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill::autofill_metrics {
-
-class FormInteractionsUkmLogger;
 
 enum class FilledFieldTypeMetric {
   kClassifiedWithRecognizedAutocomplete = 0,
@@ -92,7 +91,8 @@ class FormEventLoggerBase {
 
   void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
 
-  AutofillMetrics::FormEventSet GetFormEvents(FormGlobalId form_global_id);
+  FormInteractionsUkmLogger::FormEventSet GetFormEvents(
+      FormGlobalId form_global_id);
 
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
@@ -248,7 +248,8 @@ class FormEventLoggerBase {
   DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;
 
   // A map of the form's global id and its form events.
-  std::map<FormGlobalId, AutofillMetrics::FormEventSet> form_events_set_;
+  std::map<FormGlobalId, FormInteractionsUkmLogger::FormEventSet>
+      form_events_set_;
 
   // Weak reference.
   raw_ptr<autofill_metrics::FormInteractionsUkmLogger>

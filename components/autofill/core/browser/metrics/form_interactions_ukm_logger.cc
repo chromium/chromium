@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -18,8 +19,6 @@
 namespace autofill::autofill_metrics {
 
 namespace {
-
-using AutofillStatus = AutofillMetrics::AutofillStatus;
 
 // Exponential bucket spacing for UKM event data.
 constexpr double kAutofillEventDataBucketSpacing = 2.0;
@@ -150,7 +149,7 @@ void FormInteractionsUkmLogger::LogTextFieldDidChange(
 void FormInteractionsUkmLogger::LogFieldFillStatus(
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type) {
+    QualityMetricType metric_type) {
   if (!CanLog()) {
     return;
   }
@@ -173,8 +172,8 @@ void FormInteractionsUkmLogger::LogFieldType(
     base::TimeTicks form_parsed_timestamp,
     FormSignature form_signature,
     FieldSignature field_signature,
-    AutofillMetrics::QualityMetricPredictionSource prediction_source,
-    AutofillMetrics::QualityMetricType metric_type,
+    QualityMetricPredictionSource prediction_source,
+    QualityMetricType metric_type,
     FieldType predicted_type,
     FieldType actual_type) {
   if (!CanLog()) {
@@ -292,10 +291,9 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   bool had_server_type = false;
   bool had_rationalization_event = false;
 
-  DenseSet<AutofillMetrics::AutofillStatus> autofill_status_vector;
-  auto SetStatusVector = [&autofill_status_vector](
-                             AutofillMetrics::AutofillStatus status,
-                             bool value) {
+  DenseSet<AutofillStatus> autofill_status_vector;
+  auto SetStatusVector = [&autofill_status_vector](AutofillStatus status,
+                                                   bool value) {
     DCHECK(!autofill_status_vector.contains(status));
     if (value) {
       autofill_status_vector.insert(status);
@@ -534,7 +532,7 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
 
 void FormInteractionsUkmLogger::LogAutofillFormSummaryAtFormRemove(
     const FormStructure& form_structure,
-    AutofillMetrics::FormEventSet form_events,
+    FormEventSet form_events,
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks form_submitted_timestamp) {
   if (!CanLog()) {
@@ -687,7 +685,7 @@ void FormInteractionsUkmLogger::
 
 void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
     const FormStructure& form_structure,
-    AutofillMetrics::FormEventSet form_events,
+    FormEventSet form_events,
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks form_submitted_timestamp) {
   if (!CanLog()) {

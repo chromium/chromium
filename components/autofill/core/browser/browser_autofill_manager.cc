@@ -3524,7 +3524,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   // Log FormSummary UKM event.
   if (should_upload_ukm) {
-    AutofillMetrics::FormEventSet form_events;
+    autofill_metrics::FormInteractionsUkmLogger::FormEventSet form_events;
     form_events.insert_all(metrics_->address_form_event_logger.GetFormEvents(
         form_structure.global_id()));
     form_events.insert_all(

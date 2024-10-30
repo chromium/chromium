@@ -111,7 +111,7 @@ namespace {
 using mojom::SubmissionSource;
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
-using AutofillStatus = AutofillMetrics::AutofillStatus;
+using AutofillStatus = FormInteractionsUkmLogger::AutofillStatus;
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
@@ -6335,7 +6335,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     ASSERT_EQ(1u, form_entries.size());
     using UFST = UkmFormSummaryType;
     const auto* const entry = form_entries[0].get();
-    AutofillMetrics::FormEventSet form_events = {
+    FormInteractionsUkmLogger::FormEventSet form_events = {
         FORM_EVENT_DID_PARSE_FORM,
         FORM_EVENT_INTERACTED_ONCE,
         FORM_EVENT_LOCAL_SUGGESTION_FILLED,
@@ -6574,7 +6574,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
   const auto* const entry = form_entries[0].get();
-  AutofillMetrics::FormEventSet form_events = {};
+  FormInteractionsUkmLogger::FormEventSet form_events = {};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
        AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -6705,7 +6705,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
   const auto* const entry = form_entries[0].get();
-  AutofillMetrics::FormEventSet form_events = {FORM_EVENT_DID_PARSE_FORM};
+  FormInteractionsUkmLogger::FormEventSet form_events = {
+      FORM_EVENT_DID_PARSE_FORM};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
        AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -6925,7 +6926,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
   const auto* const form_entry = form_entries[0].get();
-  AutofillMetrics::FormEventSet form_events = {FORM_EVENT_DID_PARSE_FORM};
+  FormInteractionsUkmLogger::FormEventSet form_events = {
+      FORM_EVENT_DID_PARSE_FORM};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
        AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -7045,7 +7047,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
   const auto* const form_entry = form_entries[0].get();
-  AutofillMetrics::FormEventSet form_events = {FORM_EVENT_DID_PARSE_FORM};
+  FormInteractionsUkmLogger::FormEventSet form_events = {
+      FORM_EVENT_DID_PARSE_FORM};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
        AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -7697,8 +7700,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
   // No typing on field 5.
 
-  autofill_metrics::FormInteractionsUkmLogger logger(autofill_client_.get(),
-                                                     &test_ukm_recorder());
+  FormInteractionsUkmLogger logger(autofill_client_.get(),
+                                   &test_ukm_recorder());
   logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(form_structure);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(

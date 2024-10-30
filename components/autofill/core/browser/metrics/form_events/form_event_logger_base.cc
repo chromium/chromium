@@ -588,7 +588,7 @@ void FormEventLoggerBase::UpdateFlowId() {
   flow_id_ = client_->GetCurrentFormInteractionsFlowId();
 }
 
-AutofillMetrics::FormEventSet FormEventLoggerBase::GetFormEvents(
+FormInteractionsUkmLogger::FormEventSet FormEventLoggerBase::GetFormEvents(
     FormGlobalId form_global_id) {
   return form_events_set_[form_global_id];
 }

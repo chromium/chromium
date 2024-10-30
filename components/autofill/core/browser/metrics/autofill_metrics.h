@@ -224,34 +224,6 @@ class AutofillMetrics {
     kMaxValue = kDismissedByUserAcceptanceNoServerRequestNeeded,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum QualityMetricPredictionSource {
-    // Not used. The prediction source is unknown.
-    PREDICTION_SOURCE_UNKNOWN = 0,
-    // Local heuristic field-type prediction.
-    PREDICTION_SOURCE_HEURISTIC = 1,
-    // Crowd-sourced server field type prediction.
-    PREDICTION_SOURCE_SERVER = 2,
-    // Overall field-type prediction seen by user.
-    PREDICTION_SOURCE_OVERALL = 3,
-    // ML based field-type predictions. Only reported separately if the ML model
-    // is evaluated in shadow mode (i.e. it is not the active heuristic).
-    PREDICTION_SOURCE_ML_PREDICTIONS = 4,
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum QualityMetricType {
-    // Logged based on user's submitted data.
-    TYPE_SUBMISSION = 0,
-    // Logged based on user's entered data.
-    TYPE_NO_SUBMISSION = 1,
-    // Logged based on the value of autocomplete attr.
-    TYPE_AUTOCOMPLETE_BASED = 2,
-    NUM_QUALITY_METRIC_TYPES,
-  };
-
   // Each of these is logged at most once per query to the server, which in turn
   // occurs at most once per page load.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -487,50 +459,6 @@ class AutofillMetrics {
     kPassword = 4,
     kMaxValue = kPassword
   };
-
-  // The autofill statuses of a field that are recorded into UKM to help us
-  // understand the autofill performance and user behaviors.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class AutofillStatus {
-    kIsFocusable = 0,
-    // kWasFocusedByTapOrClick indicates that autofill was queried to
-    // potentially show a suggestions (a focus-by-tab-key or focus-on-pageload
-    // is insufficient).
-    kWasFocusedByTapOrClick = 1,
-    kWasAutofillTriggered = 2,
-    // Note that this is set before checking the iframe security policy.
-    // This value is true even when the filling was prevented because of the
-    // cross iframe autofill security policy.
-    kWasAutofilledBeforeSecurityPolicy = 3,
-    kWasRefill = 4,
-    // The below suggestion statuses are set only when kWasFocused is set.
-    kSuggestionWasAvailable = 5,
-    kSuggestionWasShown = 6,
-    kSuggestionWasAccepted = 7,
-    kUserTypedIntoField = 8,
-    kFilledValueWasModified = 9,
-    kHadValueBeforeFilling = 10,
-    kHadTypedOrFilledValueAtSubmission = 11,
-    kIsInSubFrame = 12,
-    kFillingPreventedByIframeSecurityPolicy = 13,
-    // The field was sent to the renderer for autofilling. Note that this is
-    // still true if the user later edited the autofilled value.
-    kWasAutofilledAfterSecurityPolicy = 14,
-    kWasFocused = 15,
-    kMaxValue = kWasFocused
-  };
-
-  struct FormEventSetTraits {
-    static constexpr autofill_metrics::FormEvent kMinValue =
-        autofill_metrics::FormEvent(0);
-    static constexpr autofill_metrics::FormEvent kMaxValue =
-        autofill_metrics::NUM_FORM_EVENTS;
-    static constexpr bool kPacked = false;
-  };
-
-  using FormEventSet =
-      DenseSet<autofill_metrics::FormEvent, FormEventSetTraits>;
 
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {

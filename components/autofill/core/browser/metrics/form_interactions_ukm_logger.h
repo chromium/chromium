@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -24,6 +25,47 @@ namespace autofill::autofill_metrics {
 // Utility to log URL keyed form interaction events.
 class FormInteractionsUkmLogger {
  public:
+  // The autofill statuses of a field that are recorded into UKM to help us
+  // understand the autofill performance and user behaviors.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AutofillStatus {
+    kIsFocusable = 0,
+    // kWasFocusedByTapOrClick indicates that autofill was queried to
+    // potentially show a suggestions (a focus-by-tab-key or focus-on-pageload
+    // is insufficient).
+    kWasFocusedByTapOrClick = 1,
+    kWasAutofillTriggered = 2,
+    // Note that this is set before checking the iframe security policy.
+    // This value is true even when the filling was prevented because of the
+    // cross iframe autofill security policy.
+    kWasAutofilledBeforeSecurityPolicy = 3,
+    kWasRefill = 4,
+    // The below suggestion statuses are set only when kWasFocused is set.
+    kSuggestionWasAvailable = 5,
+    kSuggestionWasShown = 6,
+    kSuggestionWasAccepted = 7,
+    kUserTypedIntoField = 8,
+    kFilledValueWasModified = 9,
+    kHadValueBeforeFilling = 10,
+    kHadTypedOrFilledValueAtSubmission = 11,
+    kIsInSubFrame = 12,
+    kFillingPreventedByIframeSecurityPolicy = 13,
+    // The field was sent to the renderer for autofilling. Note that this is
+    // still true if the user later edited the autofilled value.
+    kWasAutofilledAfterSecurityPolicy = 14,
+    kWasFocused = 15,
+    kMaxValue = kWasFocused
+  };
+
+  struct FormEventSetTraits {
+    static constexpr FormEvent kMinValue = FormEvent(0);
+    static constexpr FormEvent kMaxValue = NUM_FORM_EVENTS;
+    static constexpr bool kPacked = false;
+  };
+  using FormEventSet =
+      DenseSet<autofill_metrics::FormEvent, FormEventSetTraits>;
+
   FormInteractionsUkmLogger(AutofillClient* autofill_client,
                             ukm::UkmRecorder* ukm_recorder);
 
@@ -62,29 +104,28 @@ class FormInteractionsUkmLogger {
                                             const AutofillField& field);
   void LogFieldFillStatus(const FormStructure& form,
                           const AutofillField& field,
-                          AutofillMetrics::QualityMetricType metric_type);
-  void LogFieldType(
-      base::TimeTicks form_parsed_timestamp,
-      FormSignature form_signature,
-      FieldSignature field_signature,
-      AutofillMetrics::QualityMetricPredictionSource prediction_source,
-      AutofillMetrics::QualityMetricType metric_type,
-      FieldType predicted_type,
-      FieldType actual_type);
+                          QualityMetricType metric_type);
+  void LogFieldType(base::TimeTicks form_parsed_timestamp,
+                    FormSignature form_signature,
+                    FieldSignature field_signature,
+                    QualityMetricPredictionSource prediction_source,
+                    QualityMetricType metric_type,
+                    FieldType predicted_type,
+                    FieldType actual_type);
   void LogAutofillFieldInfoAtFormRemove(
       const FormStructure& form,
       const AutofillField& field,
       AutofillMetrics::AutocompleteState autocomplete_state);
   void LogAutofillFormSummaryAtFormRemove(
       const FormStructure& form_structure,
-      AutofillMetrics::FormEventSet form_events,
+      FormEventSet form_events,
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks form_submitted_timestamp);
   void LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
       const FormStructure& form_structure);
   void LogFocusedComplexFormAtFormRemove(
       const FormStructure& form_structure,
-      AutofillMetrics::FormEventSet form_events,
+      FormEventSet form_events,
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks form_submitted_timestamp);
   void LogKeyMetrics(const DenseSet<FormTypeNameForLogging>& form_types,

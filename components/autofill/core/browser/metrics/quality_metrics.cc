@@ -164,9 +164,8 @@ void LogPredictionMetrics(
     const FormStructure& form,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool observed_submission) {
-  const AutofillMetrics::QualityMetricType metric_type =
-      observed_submission ? AutofillMetrics::TYPE_SUBMISSION
-                          : AutofillMetrics::TYPE_NO_SUBMISSION;
+  const QualityMetricType metric_type =
+      observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
     LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger, form,
                                          *field, metric_type);
@@ -194,9 +193,8 @@ void LogFillingMetrics(
     const FormStructure& form,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     bool observed_submission) {
-  const AutofillMetrics::QualityMetricType metric_type =
-      observed_submission ? AutofillMetrics::TYPE_SUBMISSION
-                          : AutofillMetrics::TYPE_NO_SUBMISSION;
+  const QualityMetricType metric_type =
+      observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
     form_interactions_ukm_logger->LogFieldFillStatus(form, *field, metric_type);
   }
@@ -254,8 +252,7 @@ void LogQualityMetrics(
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  const AutofillMetrics::QualityMetricType metric_type =
-      AutofillMetrics::TYPE_AUTOCOMPLETE_BASED;
+  const QualityMetricType metric_type = TYPE_AUTOCOMPLETE_BASED;
   for (const auto& field : form_structure) {
     if (field->html_type() != HtmlFieldType::kUnspecified &&
         field->html_type() != HtmlFieldType::kUnrecognized) {

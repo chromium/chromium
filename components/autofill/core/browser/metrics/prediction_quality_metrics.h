@@ -7,7 +7,6 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
 
@@ -103,6 +102,34 @@ enum FieldTypeQualityMetric {
   NUM_FIELD_TYPE_QUALITY_METRICS
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum QualityMetricPredictionSource {
+  // Not used. The prediction source is unknown.
+  PREDICTION_SOURCE_UNKNOWN = 0,
+  // Local heuristic field-type prediction.
+  PREDICTION_SOURCE_HEURISTIC = 1,
+  // Crowd-sourced server field type prediction.
+  PREDICTION_SOURCE_SERVER = 2,
+  // Overall field-type prediction seen by user.
+  PREDICTION_SOURCE_OVERALL = 3,
+  // ML based field-type predictions. Only reported separately if the ML model
+  // is evaluated in shadow mode (i.e. it is not the active heuristic).
+  PREDICTION_SOURCE_ML_PREDICTIONS = 4,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum QualityMetricType {
+  // Logged based on user's submitted data.
+  TYPE_SUBMISSION = 0,
+  // Logged based on user's entered data.
+  TYPE_NO_SUBMISSION = 1,
+  // Logged based on the value of autocomplete attr.
+  TYPE_AUTOCOMPLETE_BASED = 2,
+  NUM_QUALITY_METRIC_TYPES,
+};
+
 // Defines email prediction confusion matrix enums used by UMA records.
 // Entries should not be renumbered and numeric values should never be reused.
 // Please update "EmailPredictionConfusionMatrix" in
@@ -144,7 +171,7 @@ void LogHeuristicPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type);
+    QualityMetricType metric_type);
 
 void LogHeuristicPredictionQualityPerLabelSourceMetric(
     const AutofillField& field);
@@ -153,19 +180,19 @@ void LogMlPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type);
+    QualityMetricType metric_type);
 
 void LogServerPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type);
+    QualityMetricType metric_type);
 
 void LogOverallPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::QualityMetricType metric_type);
+    QualityMetricType metric_type);
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field);
 
