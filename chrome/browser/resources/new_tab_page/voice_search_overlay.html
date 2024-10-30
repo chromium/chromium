@@ -1,7 +1,7 @@
 <dialog id="dialog" @close="${this.onOverlayClose_}"
     @click="${this.onOverlayClick_}" @keydown="${this.onOverlayKeydown_}">
   <div id="content" tabindex="-1">
-    <iron-selector id="texts" selected="${this.getText_()}"
+    <cr-page-selector id="texts" selected="${this.getText_()}" show-all
         attr-for-selected="text" fallback-selection="none" aria-live="polite"
         selected-attribute="visible" class="display-stack">
       <div text="none"></div>
@@ -46,7 +46,7 @@
           </a>
         </cr-page-selector>
       </div>
-    </iron-selector>
+    </cr-page-selector>
     <div id="micContainer" class="${this.getMicClass_()} display-stack">
       <div id="micVolume"
           .style="--mic-volume-level: ${this.micVolumeLevel_};

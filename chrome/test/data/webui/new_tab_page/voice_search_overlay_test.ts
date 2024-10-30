@@ -317,6 +317,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Act.
     callback();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(
