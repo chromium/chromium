@@ -925,6 +925,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // A list of hosts to be excluded from the LCPPFontURLPredictor feature.
 // Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
 // gets this value only once.
+// Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
+// gets this value only once to construct static local instance.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kLCPPFontURLPredictorExcludedHosts;
 
@@ -1216,8 +1218,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHolding);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPartialLowEndModeExcludeCanvasFontCache;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPartialLowEndModeExcludeCanvasFontCache);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPartitionVisitedLinkDatabase);
@@ -1367,12 +1370,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 #if BUILDFLAG(IS_WIN)
 // Enables prewarming the default font families.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrewarmDefaultFontFamilies);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmStandard;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmFixed;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmSerif;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmSansSerif;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmCursive;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool> kPrewarmFantasy;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmStandard);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmFixed);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmSerif);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmSansSerif);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmCursive);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmFantasy);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
@@ -1684,10 +1687,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
 
 // TODO(crbug/1431792): Speculatively warm-up service worker.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerWarmUp);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSpeculativeServiceWorkerWarmUpMaxCount;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpDuration;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kSpeculativeServiceWorkerWarmUpMaxCount);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kSpeculativeServiceWorkerWarmUpDuration);
+// Note: Following 3 bool params are declared without BASE_DECLARE_FEATURE_PARAM
+// because the production code checks these values only once per param to
+// initialize static local variables.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpOnPointerover;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
@@ -1699,8 +1707,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerStorageSuppressPostTask);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostRenderProcessForLoading);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kBoostRenderProcessForLoadingTargetUrls;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kBoostRenderProcessForLoadingTargetUrls);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

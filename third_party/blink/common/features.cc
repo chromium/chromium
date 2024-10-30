@@ -1910,9 +1910,11 @@ BASE_FEATURE(kParkableImagesToDisk,
 // A parameter to exclude or not exclude CanvasFontCache from
 // PartialLowModeOnMidRangeDevices. This is used to see how
 // CanvasFontCache affects graphics smoothness and renderer memory usage.
-const base::FeatureParam<bool> kPartialLowEndModeExcludeCanvasFontCache{
-    &base::features::kPartialLowEndModeOnMidRangeDevices,
-    "exclude-canvas-font-cache", false};
+BASE_FEATURE_PARAM(bool,
+                   kPartialLowEndModeExcludeCanvasFontCache,
+                   &base::features::kPartialLowEndModeOnMidRangeDevices,
+                   "exclude-canvas-font-cache",
+                   false);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, this flag partitions the :visited link hashtable by <link url,
@@ -2519,14 +2521,18 @@ BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
 
 // kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
 // count.
-const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_max_count", 10};
+BASE_FEATURE_PARAM(int,
+                   kSpeculativeServiceWorkerWarmUpMaxCount,
+                   &kSpeculativeServiceWorkerWarmUp,
+                   "sw_warm_up_max_count",
+                   10);
 
 // Duration to keep worker warmed-up.
-const base::FeatureParam<base::TimeDelta>
-    kSpeculativeServiceWorkerWarmUpDuration{&kSpeculativeServiceWorkerWarmUp,
-                                            "sw_warm_up_duration",
-                                            base::Minutes(10)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSpeculativeServiceWorkerWarmUpDuration,
+                   &kSpeculativeServiceWorkerWarmUp,
+                   "sw_warm_up_duration",
+                   base::Minutes(10));
 
 // Warms up service workers when a pointerover event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
@@ -2556,8 +2562,11 @@ BASE_FEATURE(kBoostRenderProcessForLoading,
 // An empty json array means that this feature is applied unconditionally. If
 // specified, it means that the specified URLs will be the target of the new
 // behavior.
-const base::FeatureParam<std::string> kBoostRenderProcessForLoadingTargetUrls{
-    &kBoostRenderProcessForLoading, "target_urls", "[]"};
+BASE_FEATURE_PARAM(std::string,
+                   kBoostRenderProcessForLoadingTargetUrls,
+                   &kBoostRenderProcessForLoading,
+                   "target_urls",
+                   "[]");
 
 // If true is specified, kBoostRenderProcessForLoading feature also prioritizes
 // the renderer process that is used for prerendering. This is a part of an
