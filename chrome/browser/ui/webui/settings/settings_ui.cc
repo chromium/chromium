@@ -26,6 +26,7 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -582,8 +583,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
   // AI
-  auto* optimization_guide_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   const bool ai_settings_refresh_enabled = base::FeatureList::IsEnabled(
       optimization_guide::features::kAiSettingsPageRefresh);
 
@@ -593,13 +592,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         TabOrganizationUtils::GetInstance()->IsEnabled(profile);
     const bool wallpaper_search_enabled =
         customize_chrome::IsWallpaperSearchEnabledForProfile(profile);
-    // TODO(crbug.com/363968675): This should probably be calling
-    // `history_embeddings::IsHistoryEmbeddingsEnabledForProfile`, but we're
-    // not sure it has the correct behavior and it's safer to keep the
-    // pre-Synapse behavior while we investigate.
     const bool history_search_enabled =
-        optimization_guide_service->IsSettingVisible(
-            optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+        history_embeddings::IsHistoryEmbeddingsSettingVisible(profile);
     const bool compare_enabled = commerce::CanFetchProductSpecificationsData(
         shopping_service->GetAccountChecker());
 
@@ -629,6 +623,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     bool optimization_guide_feature_visible[5] = {false, false, false, false,
                                                   false};
 
+    auto* optimization_guide_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
     for (size_t i = 0; i < 4; i++) {
       const bool visible = optimization_guide_service &&
                            optimization_guide_service->IsSettingVisible(
