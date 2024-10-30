@@ -210,7 +210,7 @@ ParseAggregationCoordinator(const base::Value::Dict& dict) {
     return base::unexpected(ParseError());
   }
   auto aggregation_coordinator_origin =
-      SuitableOrigin::Create(*aggregation_coordinator);
+      SuitableOrigin::Create(*std::move(aggregation_coordinator));
   CHECK(aggregation_coordinator_origin.has_value());
   return *std::move(aggregation_coordinator_origin);
 }
