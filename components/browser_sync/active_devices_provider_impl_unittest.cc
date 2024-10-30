@@ -39,10 +39,11 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
     const std::string& name,
     const std::string& fcm_registration_token,
     const DataTypeSet& interested_data_types,
-    base::Time last_updated_timestamp) {
+    base::Time last_updated_timestamp,
+    const std::string& chrome_version) {
   return std::make_unique<syncer::DeviceInfo>(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), name,
-      "chrome_version", "user_agent", sync_pb::SyncEnums::TYPE_UNSET,
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), name, chrome_version,
+      "user_agent", sync_pb::SyncEnums::TYPE_UNSET,
       syncer::DeviceInfo::OsType::kUnknown,
       syncer::DeviceInfo::FormFactor::kUnknown, "device_id",
       "manufacturer_name", "model_name", "full_hardware_class",
@@ -72,9 +73,19 @@ class ActiveDevicesProviderImplTest : public testing::Test {
                  const std::string& fcm_registration_token,
                  const DataTypeSet& interested_data_types,
                  base::Time last_updated_timestamp) {
-    device_list_.push_back(CreateFakeDeviceInfo(name, fcm_registration_token,
-                                                interested_data_types,
-                                                last_updated_timestamp));
+    device_list_.push_back(CreateFakeDeviceInfo(
+        name, fcm_registration_token, interested_data_types,
+        last_updated_timestamp, "chrome_version"));
+    fake_device_info_tracker_.Add(device_list_.back().get());
+  }
+
+  void AddDeviceWithoutChromeVersion(const std::string& name,
+                                     const std::string& fcm_registration_token,
+                                     const DataTypeSet& interested_data_types,
+                                     base::Time last_updated_timestamp) {
+    device_list_.push_back(CreateFakeDeviceInfo(
+        name, fcm_registration_token, interested_data_types,
+        last_updated_timestamp, /*chrome_version=*/""));
     fake_device_info_tracker_.Add(device_list_.back().get());
   }
 
@@ -120,6 +131,33 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldFilterInactiveDevices) {
   EXPECT_TRUE(
       result_local_guid.IsSingleClientWithStandaloneInvalidationsForTypes(
           {syncer::BOOKMARKS}));
+}
+
+TEST_F(ActiveDevicesProviderImplTest, ShouldKeepDevicesWithoutChromeVersion) {
+  // Add two old devices, one with chrome version and one without.
+  AddDeviceWithoutChromeVersion("device_without_chrome_version",
+                                /*fcm_registration_token=*/"token_1",
+                                DefaultInterestedDataTypes(),
+                                clock_.Now() - base::Days(100));
+  AddDevice("device_inactive", /*fcm_registration_token=*/"token_2",
+            DefaultInterestedDataTypes(), clock_.Now() - base::Days(100));
+
+  // The device without chrome version should be considered always active even
+  // though the device is outside the pulse interval.
+  const ActiveDevicesInvalidationInfo active_devices_invalidation_info =
+      active_devices_provider_.CalculateInvalidationInfo(
+          /*local_cache_guid=*/std::string());
+  EXPECT_FALSE(active_devices_invalidation_info.IsSingleClientForTypes(
+      {syncer::BOOKMARKS}));
+  EXPECT_THAT(active_devices_invalidation_info.all_fcm_registration_tokens(),
+              Contains("token_1"));
+  EXPECT_FALSE(active_devices_invalidation_info
+                   .IsSingleClientWithStandaloneInvalidationsForTypes(
+                       {syncer::BOOKMARKS}));
+  EXPECT_THAT(
+      active_devices_invalidation_info
+          .GetFcmRegistrationTokensForInterestedClients({syncer::BOOKMARKS}),
+      Contains("token_1"));
 }
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldReturnIfSingleDeviceByDataType) {

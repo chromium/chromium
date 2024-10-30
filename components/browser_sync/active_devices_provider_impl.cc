@@ -147,9 +147,13 @@ ActiveDevicesProviderImpl::GetActiveDevicesSortedByUpdateTime() const {
     const base::Time expected_expiration_time =
         device->last_updated_timestamp() + device->pulse_interval() +
         kSyncActiveDeviceMargin;
-    // If the device's expiration time hasn't been reached, then
-    // it is considered active device.
-    return expected_expiration_time <= clock_->Now();
+    // If the device's expiration time hasn't been reached, then it is
+    // considered active device. Devices without chrome version are always
+    // considered active. Note that all devices still have 56 days expiration
+    // time (see DeviceInfoSyncBridge) and stale devices won't stay around
+    // indefinitely .
+    return !device->chrome_version().empty() &&
+           expected_expiration_time <= clock_->Now();
   });
 
   base::ranges::sort(device_infos, [](const syncer::DeviceInfo* left_device,
