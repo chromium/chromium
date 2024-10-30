@@ -221,6 +221,24 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
                   ERR_NAME_NOT_RESOLVED))));
 }
 
+TEST_F(DnsResponseResultExtractorTest, ExtractsNodataAResponsesWithoutTtl) {
+  constexpr char kName[] = "address.test";
+
+  // Response without a TTL-containing SOA record.
+  DnsResponse response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeA, /*answers=*/{});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::A,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  // Expect empty result because not cacheable.
+  ASSERT_TRUE(results.has_value());
+  EXPECT_THAT(results.value(), IsEmpty());
+}
+
 TEST_F(DnsResponseResultExtractorTest, RejectsMalformedARecord) {
   constexpr char kName[] = "address.test";
 
@@ -1489,6 +1507,24 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
                   /*expiration_matcher=*/Eq(tick_clock_.NowTicks() + kTtl),
                   /*timed_expiration_matcher=*/Eq(clock_.Now() + kTtl),
                   ERR_NAME_NOT_RESOLVED))));
+}
+
+TEST_F(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponsesWithoutTtl) {
+  constexpr char kName[] = "https.test";
+
+  // Response without a TTL-containing SOA record.
+  DnsResponse response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeHttps, /*answers=*/{});
+  DnsResponseResultExtractor extractor(response, clock_, tick_clock_);
+
+  ResultsOrError results =
+      extractor.ExtractDnsResults(DnsQueryType::HTTPS,
+                                  /*original_domain_name=*/kName,
+                                  /*request_port=*/0);
+
+  // Expect empty result because not cacheable.
+  ASSERT_TRUE(results.has_value());
+  EXPECT_THAT(results.value(), IsEmpty());
 }
 
 TEST_F(DnsResponseResultExtractorTest, RejectsMalformedHttpsRecord) {
