@@ -158,11 +158,6 @@ BASE_FEATURE(kCrOSEnableUSMUserService,
              "CrOSEnableUSMUserService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables flash component updates on Chrome OS.
-BASE_FEATURE(kCrosCompUpdates,
-             "CrosCompUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, "Crostini", base::FEATURE_DISABLED_BY_DEFAULT);
 
