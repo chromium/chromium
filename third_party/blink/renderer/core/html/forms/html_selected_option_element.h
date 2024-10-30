@@ -21,6 +21,10 @@ class HTMLSelectedOptionElement : public HTMLElement {
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
+
+ private:
+  // When this is true, cloning is disabled.
+  bool disabled_ = false;
 };
 
 }  // namespace blink

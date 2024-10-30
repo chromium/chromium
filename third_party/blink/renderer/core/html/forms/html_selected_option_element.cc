@@ -17,6 +17,10 @@ HTMLSelectedOptionElement::HTMLSelectedOptionElement(Document& document)
 
 void HTMLSelectedOptionElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
+  if (disabled_) {
+    return;
+  }
+
   MutationEventSuppressionScope dont_fire_mutation_events(GetDocument());
 
   VectorOf<Node> nodes;
@@ -37,13 +41,21 @@ Node::InsertionNotificationRequest HTMLSelectedOptionElement::InsertedInto(
   // just got inserted into a <select> and there are no other <select>s in
   // between.
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
+  disabled_ = false;
   bool passed_insertion_point = false;
+  HTMLSelectElement* first_ancestor_select = nullptr;
   for (auto* ancestor = parentNode(); ancestor;
        ancestor = ancestor->parentNode()) {
     if (ancestor == insertion_point) {
       passed_insertion_point = true;
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+      if (first_ancestor_select) {
+        // If there are multiple ancestor selects, then cloning can lead to
+        // infinite loops, so disable this element.
+        disabled_ = true;
+      }
+      first_ancestor_select = select;
       if (passed_insertion_point) {
         select->SelectedOptionElementInserted(this);
       }
@@ -61,6 +73,7 @@ void HTMLSelectedOptionElement::RemovedFrom(ContainerNode& container) {
       select->SelectedOptionElementRemoved(this);
     }
   }
+  disabled_ = false;
 }
 
 }  // namespace blink
