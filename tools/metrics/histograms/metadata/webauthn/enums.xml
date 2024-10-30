@@ -168,6 +168,29 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="User recovered from an iCloud Keychain recovery key"/>
 </enum>
 
+<enum name="WebAuthenticationEnclaveRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Supported Algorithm"/>
+  <int value="2" label="Duplicate"/>
+  <int value="3" label="Incorrect PIN"/>
+  <int value="4" label="PIN Locked"/>
+  <int value="5" label="PIN Outdated"/>
+  <int value="6" label="Recovery Key Store Downgrade"/>
+  <int value="7" label="Failed Transaction"/>
+  <int value="8" label="Other Error"/>
+</enum>
+
+<enum name="WebAuthenticationEnclaveTransactionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Client Error"/>
+  <int value="2" label="Missing Public Key Error"/>
+  <int value="3" label="Service Failed To Verify Signature"/>
+  <int value="4" label="Handshake Failed"/>
+  <int value="5" label="Decryption Of Server Response Failed"/>
+  <int value="6" label="Failed To Parse Server Response"/>
+  <int value="7" label="Other Error"/>
+</enum>
+
 <enum name="WebAuthenticationFidoTransport">
   <int value="0" label="USB HID"/>
   <int value="1" label="Near Field Communication"/>

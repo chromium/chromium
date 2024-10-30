@@ -22,6 +22,22 @@ class Value;
 
 namespace device::enclave {
 
+// This is used for metrics and must be kept in sync with the corresponding
+// entry in tools/metrics/histograms/metadata/webauthn/enums.xml.
+// Entries should not be renumbered or reused.
+enum class EnclaveTransactionResult {
+  kSuccess = 0,
+  kUnknownClient = 1,
+  kMissingKey = 2,
+  kSignatureVerificationFailed = 3,
+  kHandshakeFailed = 4,
+  kDecryptionFailed = 5,
+  kParseFailure = 6,
+  kOtherError = 7,
+
+  kMaxValue = kOtherError,
+};
+
 enum class TransactError {
   // The first group of error codes represent values received from the service
   // for whole message failures, which means no individual requests within the

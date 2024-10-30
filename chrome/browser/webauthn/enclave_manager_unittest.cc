@@ -29,6 +29,7 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
@@ -542,9 +543,13 @@ TEST_F(EnclaveManagerTest, Basic) {
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
 
+  base::HistogramTester histogram_tester;
   DoCreate(/*claimed_pin=*/nullptr, /*out_specifics=*/nullptr);
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr,
               GetAssertionResponseExpectation());
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.EnclaveTransactionResult",
+      device::enclave::EnclaveTransactionResult::kSuccess, 2);
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
@@ -1821,6 +1826,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
 // Test that signing with a key that is unknown to the service unregisters
 // the local client.
 TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
+  base::HistogramTester histogram_tester;
   security_domain_service_->pretend_there_are_members();
   NoArgFuture loaded_future;
   manager_.Load(loaded_future.GetCallback());
@@ -1905,6 +1911,9 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
   run_loop.Run();
 
   EXPECT_FALSE(manager_.is_registered());
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.EnclaveTransactionResult",
+      device::enclave::EnclaveTransactionResult::kMissingKey, 1);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -206,6 +206,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.EnclaveRequestResult.{RequestType}"
+    enum="WebAuthenticationEnclaveRequestResult" expires_after="2025-06-30">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result when the Enclave Authenticator client receives a response
+    from the service for a {RequestType} request.
+  </summary>
+  <token key="RequestType">
+    <variant name="DeferredUvKeySubmission"
+        summary="deferred UV key submission"/>
+    <variant name="GetAssertion" summary="Get Assertion"/>
+    <variant name="MakeCredential" summary="Make Credential"/>
+  </token>
+</histogram>
+
+<histogram name="WebAuthentication.EnclaveTransactionResult"
+    enum="WebAuthenticationEnclaveTransactionResult" expires_after="2025-06-30">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records when a transaction with the enclave is completed. This records the
+    result of the overall transaction; the success or failure of individual
+    requests within the transaction are not recorded here. This does not record
+    failures due to client-side errors. It does record for errors received from
+    the service, invalid responses from the service, or success.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.GetAssertion.Result"
     enum="WebAuthenticationCredentialRequestResult" expires_after="2025-04-13">
   <owner>nsatragno@chromium.org</owner>

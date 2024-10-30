@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
@@ -25,6 +26,11 @@
 namespace device::enclave {
 
 namespace {
+
+void RecordTransactionResult(EnclaveTransactionResult result) {
+  base::UmaHistogramEnumeration("WebAuthentication.EnclaveTransactionResult",
+                                result);
+}
 
 struct Transaction : base::RefCounted<Transaction> {
   Transaction(
@@ -61,6 +67,7 @@ struct Transaction : base::RefCounted<Transaction> {
               std::optional<std::vector<uint8_t>> data) {
     if (!done_handshake_) {
       if (!CompleteHandshake(status, data)) {
+        RecordTransactionResult(EnclaveTransactionResult::kHandshakeFailed);
         std::move(callback_).Run(
             base::unexpected(TransactError::kHandshakeFailed));
         // client_ holds a RepeatingCallback that has a reference to this
@@ -78,6 +85,7 @@ struct Transaction : base::RefCounted<Transaction> {
         std::vector<uint8_t> plaintext;
         if (!crypter_->Decrypt(*data, &plaintext)) {
           FIDO_LOG(ERROR) << "Failed to decrypt enclave response";
+          RecordTransactionResult(EnclaveTransactionResult::kDecryptionFailed);
           std::move(callback_).Run(base::unexpected(TransactError::kOther));
           break;
         }
@@ -85,12 +93,14 @@ struct Transaction : base::RefCounted<Transaction> {
         std::optional<cbor::Value> response = cbor::Reader::Read(plaintext);
         if (!response) {
           FIDO_LOG(ERROR) << "Failed to parse enclave response";
+          RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
           std::move(callback_).Run(base::unexpected(TransactError::kOther));
           break;
         }
 
         FIDO_LOG(EVENT) << "-> " << cbor::DiagnosticWriter::Write(*response);
         if (!response->is_map()) {
+          RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
           std::move(callback_).Run(base::unexpected(TransactError::kOther));
           break;
         }
@@ -104,23 +114,35 @@ struct Transaction : base::RefCounted<Transaction> {
           if (err_it != map.end() && err_it->second.is_integer()) {
             int code = err_it->second.GetInteger();
             if (code == static_cast<int>(TransactError::kUnknownClient)) {
+              RecordTransactionResult(EnclaveTransactionResult::kUnknownClient);
               std::move(callback_).Run(
                   base::unexpected(TransactError::kUnknownClient));
               break;
             }
             if (code == static_cast<int>(TransactError::kMissingKey)) {
+              RecordTransactionResult(EnclaveTransactionResult::kMissingKey);
               std::move(callback_).Run(
                   base::unexpected(TransactError::kMissingKey));
+              break;
+            }
+            if (code ==
+                static_cast<int>(TransactError::kSignatureVerificationFailed)) {
+              RecordTransactionResult(
+                  EnclaveTransactionResult::kSignatureVerificationFailed);
+              std::move(callback_).Run(base::unexpected(
+                  TransactError::kSignatureVerificationFailed));
               break;
             }
             // Any other code deliberately falls through to
             // kUnknownServiceError.
           }
+          RecordTransactionResult(EnclaveTransactionResult::kOtherError);
           std::move(callback_).Run(
               base::unexpected(TransactError::kUnknownServiceError));
           break;
         }
 
+        RecordTransactionResult(EnclaveTransactionResult::kSuccess);
         std::move(callback_).Run(base::ok(ok_it->second.Clone()));
       } while (false);
 
