@@ -179,14 +179,18 @@ public class CronetLibraryLoader {
                         flags != null ? flags : Flags.newBuilder().build(),
                         applicationContext.getPackageName(),
                         ImplVersion.getCronetVersion());
+        // Stop the timer immediately *before* we unblock the thread that may be waiting on us. This
+        // matters more than you may think, because in the (likely) case the waiting thread is
+        // higher priority than us, we may get preempted as soon as we unblock, adding misleading
+        // delays to the timer. See https://crbug.com/346546533.
+        sInitializedInfo.httpFlagsLatencyMillis =
+                (int) (SystemClock.uptimeMillis() - httpFlagsLoadingStartUptimeMillis);
         sHttpFlagsLoaded.open();
         ResolvedFlags.Value logMe = sHttpFlags.flags().get(LOG_FLAG_NAME);
         if (logMe != null) {
             Log.i(TAG, "HTTP flags log line: %s", logMe.getStringValue());
         }
         populateCronetInitializedHttpFlagNamesValues();
-        sInitializedInfo.httpFlagsLatencyMillis =
-                (int) (SystemClock.uptimeMillis() - httpFlagsLoadingStartUptimeMillis);
 
         NetworkChangeNotifier.init();
         // Registers to always receive network notifications. Note
