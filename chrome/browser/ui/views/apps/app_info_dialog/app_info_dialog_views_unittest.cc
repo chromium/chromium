@@ -34,8 +34,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/app/arc_app_constants.h"
-// TODO(crbug.com/376071296): check whether this `nogncheck` is needed.
-#include "ash/public/cpp/shelf_model.h"  // nogncheck
+#include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
