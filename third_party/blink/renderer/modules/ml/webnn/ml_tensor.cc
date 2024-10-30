@@ -236,7 +236,7 @@ void MLTensor::OnDidReadTensorByob(
   // because this method is called in a task which runs on same thread where
   // script executes, so script can't observe a partially written state (unless
   // `dst_data` is a SharedArrayBuffer).
-  dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
+  dst_data->ByteSpanMaybeShared().copy_prefix_from(result->get_buffer());
   resolver->Resolve();
 
   RecordReadTensorTime(std::move(read_tensor_timer));
@@ -267,7 +267,7 @@ void MLTensor::OnDidReadTensorByobView(
   // because this method is called in a task which runs on same thread where
   // script executes, so script can't observe a partially written state (unless
   // `dst_data` is a SharedArrayBuffer).
-  dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
+  dst_data->ByteSpanMaybeShared().copy_prefix_from(result->get_buffer());
   resolver->Resolve();
 
   RecordReadTensorTime(std::move(read_tensor_timer));
