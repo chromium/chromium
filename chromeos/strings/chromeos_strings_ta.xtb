@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">அனுமதிக்கப்பட்ட அதிகபட்ச முயற்சிகளைக் கடந்துவிட்டீர்கள்.</translation>
 <translation id="1908234395526491708">UDP கோரிக்கையை அனுப்ப முடியவில்லை</translation>
 <translation id="1908394185991500139">இடது அம்புக்குறி ஐகான்</translation>
+<translation id="1914144885717544695">வெள்ளிக்கிழமை அன்று</translation>
 <translation id="1923388006036088459">ஆக்ஸண்ட் வண்ணங்கள்</translation>
 <translation id="1945403655450283000">ரெக்கார்டர்</translation>
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">மிதக்கும் நினைவுகள்</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">இன்று</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> படங்கள்</translation>
 <translation id="2154460308960858308">தேடலை அழிக்கும்</translation>
 <translation id="2157660087437850958">ஈமோஜி தேர்வுக் கருவி ஐகான்</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">வெள்ளை</translation>
 <translation id="2715723665057727940">ஆறு</translation>
 <translation id="2717139507051041123">அடர் வண்ணப் பயன்முறையை இயக்கும்</translation>
+<translation id="2726755229438917165">திங்கட்கிழமை அன்று</translation>
 <translation id="2728460467788544679">இதுவரையிலான பிரிண்ட் பணிகள் அனைத்தையும் அழிக்கவா?</translation>
 <translation id="2731700343119398978">காத்திருக்கவும்...</translation>
 <translation id="2740531572673183784">சரி</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">எண்ட்பாயிண்ட்</translation>
 <translation id="3060579846059757016">அவுட்லைன்கள்</translation>
 <translation id="3061850252076394168">பேசும் திரையை இயக்கும்</translation>
+<translation id="3066772729299747758">செவ்வாய்க்கிழமை அன்று</translation>
 <translation id="3069085583900247081">சோதனை தோல்வியடைந்தது</translation>
 <translation id="3078740164268491126">அட்டவணை</translation>
 <translation id="3081652522083185657">லைட்</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">சுஷி</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">எர்த் ஃப்ளோ வால்பேப்பர்</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> பின்னணியில் <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">பிரத்தியேகமானவை</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">கூடுதல் தளவமைப்பு விருப்பங்களுக்கு மவுஸ் பாயிண்ட்டரை மேலே கொண்டு செல்லவும்</translation>
 <translation id="4130750466177569591">நான் ஏற்கிறேன்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
+<translation id="4137700675046373159">சனிக்கிழமை அன்று</translation>
 <translation id="4143226836069425823">மாற்ற கீபோர்டில் வேறொரு பட்டன் மீது தட்டவும்</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">ஞாயிற்றுக்கிழமை அன்று</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4251839292699800785">ஸ்டைலான அலுவலகம்</translation>
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">அறியப்படாத வைஃபை பாதுகாப்பு நெறிமுறை</translation>
 <translation id="6535178685492749208">ஆஃப்லைனில் உள்ளீர்கள். உங்களின் கருத்து பின்னர் அனுப்பப்படும்.</translation>
 <translation id="6543412779435705598">டாக்கோஸ்</translation>
+<translation id="6550369542114086980">வியாழக்கிழமை அன்று</translation>
 <translation id="6551839203326557324">ஆப்பிள்கள்</translation>
 <translation id="65526652485742171">உறுதிசெய்வதற்கான பட்டன் இப்போது இயக்கப்பட்டுள்ளது</translation>
 <translation id="6557784757915238407">இந்த APN <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">பிரத்தியேகமாக்கு</translation>
 <translation id="7182063559013288142">உடனடி ஹாட்ஸ்பாட்</translation>
 <translation id="7184043045742675738">பட்டனைப் பிரத்தியேகமாக்க ஏதேனும் ஒரு பட்டன் மீது கிளிக் செய்யவும். மவுஸ் அல்லது அம்புக்குறி பட்டன்களைப் பயன்படுத்தி பட்டனை இடமாற்றவும்.</translation>
+<translation id="7187669805838282391">புதன்கிழமை அன்று</translation>
 <translation id="7206979415662233817">சேவை விதிமுறைகள்</translation>
 <translation id="7210635925306941239">சியான்</translation>
 <translation id="7212547870105584639">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">உள்ளமைந்த டச்பேட்</translation>
 <translation id="7397270852490618635">லைட் தீமினை முடக்குதல்</translation>
 <translation id="7401543881546089382">ஷார்ட்கட்டை அகற்றவும்</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> புதுப்பிக்கப்படத் தயாராக உள்ளது</translation>
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="7425037327577270384">எனக்கு எழுத உதவு</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">பேசுபவர்களைக் கண்டறியவும் லேபிளிடவும் ரெக்கார்டரை அனுமதிக்க வேண்டுமா?</translation>
 <translation id="7501957181231305652">அல்லது</translation>
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
+<translation id="7503342217608032738">சாதனத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="7507061649493508884">பிரகாசமான <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">கீழ்ப்புறம்</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">கலை</translation>
 <translation id="7550715992156305117">பிழை கண்டறிதலுக்கான வழக்கங்கள்</translation>
 <translation id="7551123448725492271">சாதனம் ஒரு ஆடியோ சாதனம்.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> சாதனத்தை எப்போது பயன்படுத்தலாம் என்பதை <ph name="MANAGER" /> நிர்வாகி அமைத்துள்ளார்.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />நீங்கள் இந்தச் சாதனத்தை மீண்டும் <ph name="DAY" /> <ph name="TIME" />க்குப் பயன்படுத்தலாம்.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">ஸ்கிரீன்ஷாட்டின் மாதிரிக்காட்சி</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ஆப்ஸ் தானாகத் தொடங்கப்பட்டது}other{# ஆப்ஸ் தானாகத் தொடங்கப்பட்டன}}</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
 <translation id="8004582292198964060">உலாவி</translation>
+<translation id="8010765388850538088">ஜெனரேட்டிவ் AI குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="8017679124341497925">ஷார்ட்கட் திருத்தப்பட்டது</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
 <translation id="8028993641010258682">அளவு</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">மைக்ரோஃபோனை ஒலியடக்கும்</translation>
 <translation id="8054112564438735763">வெளிரிய பழுப்பு</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> பின்னணியில் <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN இணைக்கப்பட்டது.</translation>
 <translation id="8067208048261192356">பழுப்பு</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ஐ நீக்கும்</translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">சேவை வழங்கும் நிறுவனத்தின் நெட்வொர்க்குடன் இணைக்க இந்த விருப்பத்தை இயக்க வேண்டியிருக்கலாம். விவரங்களுக்கு சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" />க்கான நிலைபொருளின் <ph name="VERSION" /> பதிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும். உங்கள் கம்ப்யூட்டர் சில முறை மறுபடி தொடங்கப்படலாம். இது வழக்கமானதே.</translation>
 <translation id="8593058461203131755">மீடியாவை இடைநிறுத்துவதற்கான ஐகான்</translation>
 <translation id="8620617069779373398">ரோமிங் நிலை</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />க்கான கூடுதல் செயல்கள்</translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9188992814426075118">உங்கள் வால்பேப்பருக்கு ஏற்றவாறு கீபோர்டு வண்ணம் தானாகவே மாறும்</translation>
 <translation id="9189000703457422362">தானாகக் கண்டறியப்பட்ட APNகளைப் பயன்படுத்தி இந்த நெட்வொர்க் உடன் இணைக்க முடியவில்லை. கூடுதல் தகவலுக்கு உங்கள் மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">தேர்ந்தெடுக்கப்பட்ட ஜாய்ஸ்டிக் பட்டன்கள்: <ph name="KEYS" />. கன்ட்ரோலை மாற்ற பட்டன் மீது தட்டவும்.</translation>
 <translation id="9204237731135241582">Android ஆப்ஸில் இருந்து கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>

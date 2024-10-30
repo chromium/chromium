@@ -1702,7 +1702,7 @@
 <translation id="2186206192313702726">Google लेन्स</translation>
 <translation id="2186711480981247270">अर्को डिभाइसबाट पेज सेयर गरिएको छ</translation>
 <translation id="2187569197737151508">यसलाई पुनः अन गर्न esc ५ पटक थिच्नुहोस्</translation>
-<translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य यन्त्रमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य डिभाइसमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्भर सर्टिफिकेट आयात त्रुटि</translation>
 <translation id="2187906491731510095">विस्तारहरू अद्यावधिक गरिए</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> खोल्नुहोस्</translation>
@@ -9857,7 +9857,7 @@
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> ले तपाईंको सत्र व्यवस्थापन गर्नुहुन्छ। एड्मिनहरू तपाईंको प्रोफाइल मेटाउन सक्छन्। साथै, उनीहरू तपाईंको नेटवर्क ट्राफिकको निरीक्षण गर्न पनि सक्छन्।</translation>
 <translation id="8081989000209387414">ADB डिबग प्रक्रिया असक्षम पार्ने हो?</translation>
-<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउने हो?</translation>
+<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग कनेक्ट गर्ने हो?</translation>
 <translation id="8082132721957920509">तपाईंको कार्ड सेभ गरिएको छ</translation>
 <translation id="8082390128630131497">ADB डिबग प्रक्रिया असक्षम पार्नुले <ph name="DEVICE_TYPE" /> का सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजाने छ। प्रयोगकर्ताका सबै खाता र स्थानीय डेटा मेटाइने छन्।</translation>
 <translation id="8084114998886531721">सुरक्षित गरिएको पासवर्ड</translation>
@@ -10843,7 +10843,7 @@
 <translation id="8781834595282316166">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="8781980678064919987">लिड बन्द गरिएको बेला बन्द गर्नुहोस्</translation>
 <translation id="8782565991310229362">कियस्क एप्लिकेसन लन्च रद्द गरियो।</translation>
-<translation id="8783834180813871000">ब्लुटुथ प्रयोग गरी जोडा बनाउने कोड टाइप गर्नुहोस्, त्यसपछि Return वा Enter थिच्नुहोस्।</translation>
+<translation id="8783834180813871000">ब्लुटुथ प्रयोग गरी कनेक्ट गर्ने कोड टाइप गर्नुहोस्, त्यसपछि Return वा Enter थिच्नुहोस्।</translation>
 <translation id="8783955532752528811">सुविधाहरूमा सान्दर्भिक मद्दत</translation>
 <translation id="8784626084144195648">भाँडोको औसत</translation>
 <translation id="8785622406424941542">स्टाइलस</translation>
@@ -11283,7 +11283,7 @@
 <translation id="9088858349441302494"><ph name="VALUE" /> ले व्यवस्थापन गर्छ</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>
 <translation id="9089959054554410481">टचप्याडमा स्क्रोल गर्ने दिशा परिवर्तन गर्नुहोस्</translation>
-<translation id="9090044809052745245">अन्य यन्त्रमा देखिने तपाईंको डिभाइसको नाम</translation>
+<translation id="9090044809052745245">अन्य डिभाइसमा देखिने तपाईंको डिभाइसको नाम</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{फाइल सारेर <ph name="CLOUD_PROVIDER" /> मा लैजान सकिएन}other{फाइलहरू सारेर <ph name="CLOUD_PROVIDER" /> मा लैजान सकिएन}}</translation>
 <translation id="9093470422440389061">WiFi को पर्फर्मेन्ससम्बन्धी मेट्रिक्स</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>

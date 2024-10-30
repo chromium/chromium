@@ -214,7 +214,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1358223345833465883">Hakukone Chromiumissa</translation>
 <translation id="1359836962251219822">Keittiö ja ruokailutilat</translation>
 <translation id="1360955481084547712">Avaa uusi incognito-ikkuna selataksesi yksityisesti</translation>
-<translation id="1361528602584216624">Pix-kohtainen rajoitus: R$ <ph name="TRANSACTION_LIMIT" /></translation>
+<translation id="1361528602584216624">Pix-kohtainen rajoitus R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Maksun suorittamiseen käytettävissä olevat maksutavat on avattu koko näytön kokoisena.</translation>
 <translation id="1363028406613469049">Raita</translation>
 <translation id="1364822246244961190">Tämä käytäntö on estetty, sen arvo jätetään huomiotta.</translation>

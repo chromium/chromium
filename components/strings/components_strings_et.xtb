@@ -214,7 +214,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1358223345833465883">Teie otsingumootor Chromiumis</translation>
 <translation id="1359836962251219822">Kööginõud ja söögiriistad</translation>
 <translation id="1360955481084547712">Privaatselt sirvimiseks avage uus inkognito aken</translation>
-<translation id="1361528602584216624">Pixi limiit: <ph name="TRANSACTION_LIMIT" /> R$</translation>
+<translation id="1361528602584216624">Limiit Pixi kohta <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Saadaolevad makseviisid, mida saab maksmise jätkamiseks valida, on avatud täiskõrgusel.</translation>
 <translation id="1363028406613469049">Rada</translation>
 <translation id="1364822246244961190">See reegel on blokeeritud, selle väärtust eiratakse.</translation>

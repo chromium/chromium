@@ -214,7 +214,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1358223345833465883">Tu buscador en Chromium</translation>
 <translation id="1359836962251219822">Cocinas y comedores</translation>
 <translation id="1360955481084547712">Abre una nueva ventana de Incógnito para navegar en privado</translation>
-<translation id="1361528602584216624">Límite para Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
+<translation id="1361528602584216624">Límite para Pix <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Los métodos de pago que puedes seleccionar para completar el pago están abiertos a altura completa.</translation>
 <translation id="1363028406613469049">Seguir</translation>
 <translation id="1364822246244961190">Esta política está bloqueada, su valor será ignorado.</translation>
