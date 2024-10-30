@@ -194,6 +194,10 @@ drive::DriveServiceInterface* ScannerSession::GetDriveService() {
   return delegate_->GetDriveService();
 }
 
+google_apis::RequestSender* ScannerSession::GetGoogleApisRequestSender() {
+  return delegate_->GetGoogleApisRequestSender();
+}
+
 void ScannerSession::SetClipboard(std::unique_ptr<ui::ClipboardData> data) {
   CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
       .WriteClipboardData(std::move(data));

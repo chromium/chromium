@@ -49,6 +49,7 @@ class ASH_EXPORT ScannerSession : public ScannerCommandDelegate {
   void OpenUrl(const GURL& url) override;
   drive::DriveServiceInterface* GetDriveService() override;
   void SetClipboard(std::unique_ptr<ui::ClipboardData> data) override;
+  google_apis::RequestSender* GetGoogleApisRequestSender() override;
 
  private:
   void OnActionsReturned(FetchActionsCallback callback,

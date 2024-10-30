@@ -41,6 +41,10 @@ class TestScannerCommandDelegate : public ScannerCommandDelegate {
  public:
   MOCK_METHOD(void, OpenUrl, (const GURL& url), (override));
   MOCK_METHOD(drive::DriveServiceInterface*, GetDriveService, (), (override));
+  MOCK_METHOD(google_apis::RequestSender*,
+              GetGoogleApisRequestSender,
+              (),
+              (override));
   MOCK_METHOD(void,
               SetClipboard,
               (std::unique_ptr<ui::ClipboardData> data),
