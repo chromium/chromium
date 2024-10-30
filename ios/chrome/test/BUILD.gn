@@ -464,6 +464,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:unit_tests",
     "//ios/chrome/browser/ui/settings/password/reauthentication:unit_tests",
     "//ios/chrome/browser/ui/settings/privacy:unit_tests",
+    "//ios/chrome/browser/ui/settings/privacy/incognito:unit_tests",
     "//ios/chrome/browser/ui/settings/privacy/lockdown_mode:unit_tests",
     "//ios/chrome/browser/ui/settings/privacy/privacy_guide:unit_tests",
     "//ios/chrome/browser/ui/settings/safety_check:unit_tests",

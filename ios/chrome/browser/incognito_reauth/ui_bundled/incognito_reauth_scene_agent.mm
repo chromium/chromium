@@ -66,7 +66,16 @@
 #pragma mark - class public
 
 + (void)registerLocalState:(PrefRegistrySimple*)registry {
+  // TODO(crbug.com/370804664): Consider merging both Incognito soft lock and
+  // authentication prefs into a state pref instead of two boolean prefs after
+  // completing the soft lock experiment.
   registry->RegisterBooleanPref(prefs::kIncognitoAuthenticationSetting, false);
+  // TODO(crbug.com/370804664): Guard pref behind a flag. Currently doing so
+  // causes crashes due to unregistered pref. Needs futher investigation.
+  // This pref reflects enabling Incognito Soft Lock by default for the
+  // experiment to see user engagement and whether they prefer to keep it on,
+  // upgrade to biometric authentication, or turn it off.
+  registry->RegisterBooleanPref(prefs::kIncognitoSoftLockSetting, true);
   registry->RegisterTimePref(prefs::kLastBackgroundedTime, base::Time());
 }
 

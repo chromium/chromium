@@ -572,6 +572,10 @@ inline constexpr char kPushNotificationAuthorizationStatus[] =
 inline constexpr char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";
 
+// Bool used for the incognito soft lock setting.
+inline constexpr char kIncognitoSoftLockSetting[] =
+    "ios.settings.incognito_soft_lock_enabled";
+
 // Timestamp tracking the time in which Chrome was last backgrounded for the
 // purposes of locking incognito content.
 inline constexpr char kLastBackgroundedTime[] = "ios.last_backgrounded_time";
