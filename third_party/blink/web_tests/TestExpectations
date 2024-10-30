@@ -2620,8 +2620,8 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15 ] external/wpt/html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.pattern.html [ Failure ]
-[ Mac15 ] external/wpt/html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.pattern.w.html [ Failure ]
+crbug.com/376394522 [ Mac15 ] external/wpt/html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.pattern.html [ Failure ]
+crbug.com/376394522 [ Mac15 ] external/wpt/html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.pattern.w.html [ Failure ]
 crbug.com/376091890 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-answer.html [ Timeout ]
 crbug.com/376091890 [ Mac13 ] external/wpt/webrtc/RollbackEvents.https.html [ Timeout ]
 crbug.com/376126804 [ Mac15 ] external/wpt/html/canvas/element/compositing/2d.composite.grid.no_filter.shadow.pattern.html [ Failure ]
