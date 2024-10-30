@@ -706,6 +706,12 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithNonAppUrl) {
                                      /*target_window_is_cross_origin=*/false,
                                      /*is_user_initiated=*/true,
                                      /*user_tapped_recently=*/true));
+  EXPECT_TRUE(TestShouldAllowRequest(@"marketplace-kit://test",
+                                     /*target_frame_is_main=*/false,
+                                     /*target_frame_is_cross_origin=*/false,
+                                     /*target_window_is_cross_origin=*/false,
+                                     /*is_user_initiated=*/true,
+                                     /*user_tapped_recently=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 

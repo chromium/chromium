@@ -397,7 +397,10 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       web::GetWebClient()->IsAppSpecificURL(requestURL) ||
       requestURL.SchemeIs(url::kFileScheme) ||
       requestURL.SchemeIs(url::kAboutScheme) ||
-      requestURL.SchemeIs(url::kBlobScheme);
+      requestURL.SchemeIs(url::kBlobScheme) ||
+      (requestURL.SchemeIs(web::kMarketplaceKitScheme) &&
+       base::FeatureList::IsEnabled(
+           web::features::kWebKitHandlesMarketplaceKitLinks));
 
   _shouldPerformDownload = NO;
   _shouldPerformDownload = action.shouldPerformDownload;

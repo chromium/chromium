@@ -93,7 +93,8 @@ bool AppLauncherTabHelper::IsAppUrl(const GURL& url) {
   return !(web::UrlHasWebScheme(url) ||
            web::GetWebClient()->IsAppSpecificURL(url) ||
            url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kAboutScheme) ||
-           url.SchemeIs(url::kBlobScheme));
+           url.SchemeIs(url::kBlobScheme) ||
+           url.SchemeIs(web::kMarketplaceKitScheme));
 }
 
 void AppLauncherTabHelper::SetDelegate(AppLauncherTabHelperDelegate* delegate) {
