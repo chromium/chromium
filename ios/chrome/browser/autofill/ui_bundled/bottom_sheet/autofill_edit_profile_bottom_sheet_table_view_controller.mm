@@ -132,7 +132,6 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
   presentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.selectedDetentIdentifier =
