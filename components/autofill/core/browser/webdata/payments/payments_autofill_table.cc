@@ -964,9 +964,14 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
     card->set_product_terms_url(GURL(s.ColumnString(index++)));
-    card->set_card_info_retrieval_enrollment_state(
-        static_cast<CreditCard::CardInfoRetrievalEnrollmentState>(
-            s.ColumnInt(index++)));
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableCardInfoRuntimeRetrieval)) {
+      card->set_card_info_retrieval_enrollment_state(
+          static_cast<CreditCard::CardInfoRetrievalEnrollmentState>(
+              s.ColumnInt(index++)));
+    } else {
+      index++;
+    }
     // Add CVC to the the `card` if the CVC storage flag is enabled.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCvcStorageAndFilling)) {
