@@ -5,18 +5,24 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_INCOGNITO_INCOGNITO_LOCK_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_INCOGNITO_INCOGNITO_LOCK_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_consumer.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol IncognitoLockViewControllerPresentationDelegate;
+@protocol IncognitoLockMutator;
 
 // View controller to manage the Incognito Lock setting.
 @interface IncognitoLockViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol>
+    : SettingsRootTableViewController <IncognitoLockConsumer,
+                                       SettingsControllerProtocol>
 
 // Presentation delegate.
 @property(nonatomic, weak) id<IncognitoLockViewControllerPresentationDelegate>
     presentationDelegate;
+
+// Mutator to apply all user changes on the view.
+@property(nonatomic, weak) id<IncognitoLockMutator> mutator;
 
 @end
 

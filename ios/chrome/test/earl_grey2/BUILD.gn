@@ -154,6 +154,7 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings/password/password_sharing:eg2_tests",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy:eg2_tests",
+    "//ios/chrome/browser/ui/settings/privacy/incognito:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy/lockdown_mode:eg2_tests",
     "//ios/chrome/browser/ui/settings/privacy/privacy_guide:eg2_tests",
     "//ios/chrome/browser/ui/settings/safety_check:eg2_tests",

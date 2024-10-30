@@ -24,3 +24,12 @@ NSString* const kSettingsSafeBrowsingNoProtectionCellId =
     @"kSettingsSafeBrowsingNoProtectionCellId";
 
 NSString* const kSettingsIncognitoLockCellId = @"kSettingsIncognitoLockCellId";
+
+NSString* const kSettingsIncognitoLockDoNotHideCellId =
+    @"kSettingsIncognitoLockDoNotHideCellId";
+
+NSString* const kSettingsIncognitoLockHideWithSoftLockCellId =
+    @"kSettingsIncognitoLockHideWithSoftLockCellId";
+
+NSString* const kSettingsIncognitoLockHideWithReauthCellId =
+    @"kSettingsIncognitoLockHideWithReauthCellId";

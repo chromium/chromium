@@ -75,6 +75,7 @@
       _incognitoSoftLockPref.value = false;
       break;
   }
+  [self updateConsumer];
 }
 
 #pragma mark - BooleanObserver
