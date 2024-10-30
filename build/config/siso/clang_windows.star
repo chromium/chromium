@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for clang-cl/windows."""
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
@@ -38,8 +39,10 @@ def __step_config(ctx, step_config):
             largePlatform[k] = v
 
         # no "action_large" Windows worker pool
+        windowsWorker = True
         if reproxy_config["platform"]["OSFamily"] != "Windows":
             largePlatform["label:action_large"] = "1"
+            windowsWorker = False
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
             "clang-cl_large": largePlatform,
@@ -68,6 +71,12 @@ def __step_config(ctx, step_config):
         input_root_absolute_path = gn_logs.read(ctx).get("clang_need_input_root_absolute_path") == "true"
         canonicalize_dir = not input_root_absolute_path
 
+        timeout = "2m"
+        if gn.args(ctx).get("use_reclient") == "false" and windowsWorker:
+            # use longer timeout for siso native
+            # it takes long time for input fetch (many files in sysroot etc)
+            timeout = "4m"
+
         step_config["rules"].extend([
             {
                 "name": "clang-cl/cxx",
@@ -82,7 +91,7 @@ def __step_config(ctx, step_config):
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
                 "remote_wrapper": remote_wrapper,
-                "timeout": "2m",
+                "timeout": timeout,
             },
             {
                 "name": "clang-cl/cc",
@@ -97,7 +106,7 @@ def __step_config(ctx, step_config):
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
                 "remote_wrapper": remote_wrapper,
-                "timeout": "2m",
+                "timeout": timeout,
             },
             {
                 "name": "clang-coverage/cxx",
@@ -113,7 +122,7 @@ def __step_config(ctx, step_config):
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
                 "remote_wrapper": remote_wrapper,
-                "timeout": "2m",
+                "timeout": timeout,
             },
             {
                 "name": "clang-coverage/cc",
@@ -129,7 +138,7 @@ def __step_config(ctx, step_config):
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
                 "remote_wrapper": remote_wrapper,
-                "timeout": "2m",
+                "timeout": timeout,
             },
         ])
     return step_config
