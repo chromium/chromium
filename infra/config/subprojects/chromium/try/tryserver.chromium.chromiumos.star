@@ -120,8 +120,6 @@ try_.orchestrator_builder(
     compilator = "chromeos-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
-    # TODO(omg/77315): Remove conccurent build limit.
-    max_concurrent_builds = 10,
     tryjob = try_.job(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
         equivalent_builder_percentage = 100,
@@ -158,8 +156,6 @@ try_.orchestrator_builder(
     compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
-    # TODO(omg/77315): Remove conccurent build limit.
-    max_concurrent_builds = 10,
     tryjob = try_.job(
         omit_from_luci_cv = True,
     ),
@@ -254,8 +250,6 @@ try_.builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
-    # TODO(omg/77315): Remove conccurent build limit.
-    max_concurrent_builds = 10,
     tryjob = try_.job(),
 )
 
@@ -298,8 +292,6 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO(omg/77315): Remove conccurent build limit.
-    max_concurrent_builds = 10,
     siso_enabled = True,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -357,8 +349,6 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
-    # TODO(omg/77315): Remove conccurent build limit.
-    max_concurrent_builds = 10,
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
