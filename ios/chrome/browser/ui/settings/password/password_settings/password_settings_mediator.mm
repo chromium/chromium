@@ -45,10 +45,12 @@ namespace {
 constexpr const char* kBulkMovePasswordsToAccountButtonClickedUserAction =
     "Mobile.PasswordsSettings.BulkSavePasswordsToAccountButtonClicked";
 
-// Returns true if the credential passed is not stored in the account store.
-bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
-  return !credential.stored_in.contains(
-      password_manager::PasswordForm::Store::kAccountStore);
+// Returns true if the credential passed is a password (not a passkey) and not
+// stored in the account store.
+bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
+  return credential.passkey_credential_id.empty() &&
+         !credential.stored_in.contains(
+             password_manager::PasswordForm::Store::kAccountStore);
 }
 
 }  // namespace
@@ -385,34 +387,28 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
 // Returns the amount of local passwords.
 - (int)computeLocalPasswordsCount {
-  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
-      _savedPasswordsPresenter->GetAffiliatedGroups();
-
-  // Count passwords that don't appear in the account store.
   int passwordsCount = 0;
-  for (password_manager::AffiliatedGroup group : affiliatedGroups) {
+  for (password_manager::AffiliatedGroup group :
+       _savedPasswordsPresenter->GetAffiliatedGroups()) {
     passwordsCount += base::ranges::count_if(group.GetCredentials().begin(),
                                              group.GetCredentials().end(),
-                                             IsCredentialNotInAccountStore);
+                                             IsCredentialLocalPassword);
   }
-
   return passwordsCount;
 }
 
 // Returns the list of distinct domains present in the local passwords. If they
 // are in different affiliated groups, they are presumed to be distinct.
 - (NSMutableArray<NSString*>*)computeDistinctDomainsFromLocalPasswords {
-  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
-      _savedPasswordsPresenter->GetAffiliatedGroups();
-
   // Add distinct domains for which there exists a password that doesn't appear
   // in the account store.
   NSMutableArray<NSString*>* distinctDomains = [NSMutableArray array];
 
-  for (const password_manager::AffiliatedGroup& group : affiliatedGroups) {
+  for (const password_manager::AffiliatedGroup& group :
+       _savedPasswordsPresenter->GetAffiliatedGroups()) {
     auto credential = base::ranges::find_if(group.GetCredentials().begin(),
                                             group.GetCredentials().end(),
-                                            IsCredentialNotInAccountStore);
+                                            IsCredentialLocalPassword);
 
     // If a credential exists in this group that is in the profile store, append
     // the group's display name to the distinct domains.

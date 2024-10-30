@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 
+#import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -17,6 +18,8 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/webauthn/core/browser/passkey_sync_bridge.h"
+#import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -25,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +39,7 @@
 
 namespace {
 
+using ::password_manager::PasswordForm;
 using ::password_manager::SavedPasswordsPresenter;
 using ::password_manager::TestPasswordStore;
 using ::testing::_;
@@ -136,8 +141,16 @@ class PasswordSettingsMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSPasskeyModelFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<webauthn::TestPasskeyModel>();
+            }));
     profile_ = std::move(builder).Build();
 
+    passkey_model_ = static_cast<webauthn::TestPasskeyModel*>(
+        IOSPasskeyModelFactory::GetForProfile(profile_.get()));
     profile_store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
             IOSChromeProfilePasswordStoreFactory::GetForProfile(
@@ -166,9 +179,37 @@ class PasswordSettingsMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
   }
 
+  void AddPassword(std::string url,
+                   std::u16string password,
+                   PasswordForm::Store store) {
+    auto form = std::make_unique<PasswordForm>();
+    form->username_value = u"user@gmail.com";
+    form->password_value = password;
+    form->url = GURL(url);
+    form->signon_realm = "https://www.example.com/";
+    form->in_store = store;
+
+    base::RunLoop run_loop;
+    profile_store_->AddLogin(*form, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void AddPasskey() {
+    sync_pb::WebauthnCredentialSpecifics passkey;
+    passkey.set_sync_id(base::RandBytesAsString(16));
+    passkey.set_credential_id(base::RandBytesAsString(16));
+    passkey.set_rp_id("abc1.com");
+    passkey.set_user_id({1, 2, 3, 4});
+    passkey.set_user_name("passkey_username");
+    passkey.set_user_display_name("passkey_display_name");
+
+    passkey_model_->AddNewPasskeyForTesting(passkey);
+  }
+
   web::WebTaskEnvironment task_env_;
   SyncServiceForPasswordTests sync_service_;
   affiliations::FakeAffiliationService affiliation_service_;
+  raw_ptr<webauthn::TestPasskeyModel> passkey_model_;
   scoped_refptr<TestPasswordStore> profile_store_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -305,4 +346,28 @@ TEST_F(PasswordSettingsMediatorTest,
 
   CreateMediator();
   [[consumer_ reject] setupChangeGPMPinButton];
+}
+
+// Tests that passwords already in account store and passkeys are not counted
+// towards the local passwords count.
+TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
+  CreateMediator();
+
+  AddPassword("https://www.example.com/1", u"password1",
+              PasswordForm::Store::kNotSet);
+  [[consumer_ verify] setLocalPasswordsCount:1 withUserEligibility:NO];
+  AddPassword("https://www.example.com/2", u"password2",
+              PasswordForm::Store::kProfileStore);
+  [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+
+  // Count should not be increased for an account store password.
+  AddPassword("https://www.example.com/3", u"password3",
+              PasswordForm::Store::kAccountStore);
+  [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
+    // Count should not be increased for a passkey.
+    AddPasskey();
+    [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+  }
 }
