@@ -1463,9 +1463,8 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
     return nullptr;
   }
 
-  did_fail_to_create_resource_provider_ = true;
-
   if (!IsValidImageSize(Size())) {
+    did_fail_to_create_resource_provider_ = true;
     if (!Size().IsEmpty() && context_) {
       context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
     }
@@ -1493,7 +1492,6 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   SetPreferred2DRasterMode(hint);
   canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
 
-  did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
 
   if (context_) {
