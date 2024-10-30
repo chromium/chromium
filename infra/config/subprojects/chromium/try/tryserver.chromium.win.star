@@ -133,6 +133,8 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
@@ -168,6 +170,8 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -217,6 +221,8 @@ try_.builder(
     cores = 16,
     ssd = True,
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
@@ -439,6 +445,8 @@ try_.builder(
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe

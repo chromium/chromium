@@ -361,6 +361,8 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     tryjob = try_.job(),
 )
 
@@ -417,6 +419,8 @@ try_.orchestrator_builder(
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -569,6 +573,8 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     siso_remote_linking = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -697,6 +703,8 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
@@ -794,6 +802,8 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,

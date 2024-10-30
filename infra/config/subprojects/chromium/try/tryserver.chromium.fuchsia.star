@@ -77,6 +77,8 @@ try_.builder(
     ),
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -209,6 +211,8 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )

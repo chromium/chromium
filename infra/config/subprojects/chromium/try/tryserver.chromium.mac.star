@@ -189,6 +189,8 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -446,6 +448,8 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
@@ -604,6 +608,8 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    # TODO(omg/77315): Remove conccurent build limit.
+    max_concurrent_builds = 10,
     tryjob = try_.job(),
     use_clang_coverage = True,
     xcode = xcode.xcode_default,
