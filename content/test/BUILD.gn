@@ -3594,6 +3594,7 @@ if (enable_nocompile_tests) {
     sources = [
       "../browser/browser_task_traits_nocompile.nc",
       "../browser/browser_thread_nocompile.nc",
+      "../browser/web_exposed_isolation_info_nocompile.nc",
     ]
 
     deps = [ "//content/public/browser" ]
