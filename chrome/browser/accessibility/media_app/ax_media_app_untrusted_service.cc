@@ -38,6 +38,7 @@
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
@@ -48,6 +49,7 @@
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
@@ -134,21 +136,21 @@ void AXMediaAppUntrustedService::OnOCRServiceInitialized(bool is_successful) {
     // content.
     ocr_status_ = OcrStatus::kInitializationFailed;
     ShowOcrServiceFailedToInitializeMessage();
-    return;
-  }
-  // The OCR Service might have been initialized before, since accessibility
-  // could have been turned off temporarily and then back on. During such
-  // events, we release the memory used by the Service, but do not change
-  // `ocr_status_`.
-  if (ocr_status_ == OcrStatus::kUninitialized) {
-    ocr_status_ = OcrStatus::kInProgressWithNoTextExtractedYet;
+  } else {
+    // The OCR Service might have been initialized before, since accessibility
+    // could have been turned off temporarily and then back on. During such
+    // events, we release the memory used by the Service, but do not change
+    // `ocr_status_`.
+    if (ocr_status_ == OcrStatus::kUninitialized) {
+      ocr_status_ = OcrStatus::kInProgressWithNoTextExtractedYet;
+    }
   }
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     media_app_->OcrServiceEnabledChanged(is_successful);
   }
-  if (!dirty_page_ids_.empty()) {
+  if (is_successful && !dirty_page_ids_.empty()) {
     OcrNextDirtyPageIfAny();
   }
 }
@@ -274,8 +276,8 @@ void AXMediaAppUntrustedService::PerformAction(
         CHECK_IS_TEST();
       }
 
-      // that the user starts navigating content and the most recent time that
-      // the user navigates it as well.
+      // Record the time that the user starts navigating content and the most
+      // recent time that the user navigates it as well.
       if (start_reading_time_.is_null()) {
         start_reading_time_ = base::TimeTicks::Now();
         latest_reading_time_ = start_reading_time_;
@@ -355,17 +357,26 @@ void AXMediaAppUntrustedService::PerformAction(
     case ax::mojom::Action::kScrollToPoint:
       NOTIMPLEMENTED();
       return;
-      // Used only on Android.
+      // `ax::mojom::Action::kScrollToPositionAtRowColumn` is used only on
+      // Android.
     case ax::mojom::Action::kScrollToPositionAtRowColumn:
     case ax::mojom::Action::kSetAccessibilityFocus:
     case ax::mojom::Action::kSetScrollOffset:
+      NOTIMPLEMENTED();
+      return;
     case ax::mojom::Action::kSetSelection:
+      // TODO(nektar): Implement for Select-to-Speak to work.
+      return;
     case ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint:
     case ax::mojom::Action::kSetValue:
     case ax::mojom::Action::kShowContextMenu:
     case ax::mojom::Action::kStitchChildTree:
     case ax::mojom::Action::kCustomAction:
+      NOTIMPLEMENTED();
+      return;
     case ax::mojom::Action::kHitTest:
+      // TODO(nektar): Implement for Select-to-Speak to work.
+      return;
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:
     case ax::mojom::Action::kGetTextLocation:
@@ -753,8 +764,12 @@ void AXMediaAppUntrustedService::SendAXTreeToAccessibilityService(
   DCHECK(event_router);
   const gfx::Point& mouse_location =
       aura::Env::GetInstance()->last_mouse_location();
-  event_router->DispatchAccessibilityEvents(manager.GetTreeID(), {update},
-                                            mouse_location, {});
+  // An `ax::mojom::Event::kLayoutComplete` should be raised in order for
+  // Select-to-Speak to recognize that this is an OCRed PDF.
+  ui::AXEvent layout_complete_event(manager.GetRoot()->id(),
+                                    ax::mojom::Event::kLayoutComplete);
+  event_router->DispatchAccessibilityEvents(
+      manager.GetTreeID(), {update}, mouse_location, {layout_complete_event});
 #endif  // defined(USE_AURA)
 }
 
@@ -881,6 +896,11 @@ void AXMediaAppUntrustedService::ShowDocumentTree() {
                                       true);
   document_root_data.AddBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  // Select-to-Speak expects that the root node of the PDF document will have a
+  // URL attribute that ends in ".pdf". In this case, the PDF might come from
+  // any local location, not only from the Web, so we add a fake URL.
+  document_root_data.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                        "fakepdfurl.pdf");
   // Text direction is set individually by each page element via the OCR
   // Service, so no need to set it here.
 

@@ -199,8 +199,8 @@ class AXMediaAppUntrustedService
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observes whether spoken feedback is enabled in Ash.
   base::CallbackListSubscription accessibility_status_subscription_;
-#else
-  //  Observes the presence of any accessibility service in LaCrOS.
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Observes the presence of any accessibility service in LaCrOS.
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
