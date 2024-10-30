@@ -12,11 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -88,8 +86,6 @@ class ActiveDevicesProviderImplTest : public testing::Test {
 };
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldFilterInactiveDevices) {
-  base::test::ScopedFeatureList feature_override(
-      switches::kSyncFilterOutInactiveDevicesForSingleClient);
   AddDevice("local_device_pulse_interval",
             /*fcm_registration_token=*/"token_1", DefaultInterestedDataTypes(),
             clock_.Now() - base::Minutes(kPulseIntervalMinutes + 1));
@@ -279,8 +275,6 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldInvokeCallback) {
 }
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldReturnActiveFCMRegistrationTokens) {
-  base::test::ScopedFeatureList feature_override(
-      switches::kSyncFilterOutInactiveDevicesForSingleClient);
   AddDevice("device_1", "fcm_token_1", DefaultInterestedDataTypes(),
             clock_.Now() - base::Minutes(1));
   AddDevice("device_2", "fcm_token_2", DefaultInterestedDataTypes(),
@@ -309,8 +303,7 @@ TEST_F(ActiveDevicesProviderImplTest, ShouldReturnActiveFCMRegistrationTokens) {
 
 TEST_F(ActiveDevicesProviderImplTest, ShouldReturnEmptyListWhenTooManyDevices) {
   // Create many devices to exceed the limit of the list.
-  const size_t kActiveDevicesNumber =
-      switches::kSyncFCMRegistrationTokensListMaxSize.Get() + 1;
+  const size_t kActiveDevicesNumber = 10;
 
   for (size_t i = 0; i < kActiveDevicesNumber; ++i) {
     const std::string device_name = "device_" + base::NumberToString(i);

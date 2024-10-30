@@ -9,14 +9,6 @@
 
 namespace switches {
 
-BASE_FEATURE(kSyncUseFCMRegistrationTokensList,
-             "SyncUseFCMRegistrationTokensList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSyncFilterOutInactiveDevicesForSingleClient,
-             "SyncFilterOutInactiveDevicesForSingleClient",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMigrateSyncingUserToSignedIn,
              "MigrateSyncingUserToSignedIn",
 #if BUILDFLAG(IS_IOS)
