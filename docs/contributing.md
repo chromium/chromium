@@ -227,10 +227,14 @@ feature A change is the parent of the feature B change.  If A
 introduces a new file which B changes, the review for B will only show
 the diff from A.
 
-## Code review
+## Code review {#code-review}
 
-Code reviews are covered in more detail on the [code review
-policies][code-reviews] page.
+This section describes the mechanics and process of code reviews. See also:
+- [Code review policies](code_reviews.md) page for committer, OWNERS, and other
+rules
+- [Code of conduct](../CODE_OF_CONDUCT.md)
+- [Respectful Changes](cl_respect.md)
+- [Respectful Code Reviews](cr_respect.md)
 
 ### Finding a reviewer
 

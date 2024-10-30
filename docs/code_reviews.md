@@ -3,9 +3,14 @@
 Code reviews are a central part of developing high-quality code for Chromium.
 All change lists (CLs) must be reviewed.
 
-The general patch, upload, and land process is covered in more detail in the
-[contributing code](contributing.md) page. To learn about the code review changes
-and OWNERS policy changes launched on March 24, 2021, see
+This page documents policy rules regarding code changes.
+
+See also:
+- The general patch, upload, and land process in [contributing code](contributing.md#code-review)
+- [Code of conduct](../CODE_OF_CONDUCT.md)
+- [Respectful Changes](cl_respect.md)
+- [Respectful Code Reviews](cr_respect.md)
+- The code review changes and OWNERS policy changes launched on March 24, 2021, see
 [Mandatory Code Review and Native OWNERS](code_review_owners.md).
 
 # Code review policies
