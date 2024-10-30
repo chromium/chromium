@@ -39,7 +39,7 @@ namespace {
 
 #if BUILDFLAG(IS_MAC)
 // The minimum size of a download to attempt it at background priority.
-constexpr int64_t kBackgroundDownloadSizeThreshold = 10000000; /*10 MB*/
+constexpr int64_t kBackgroundDownloadSizeThreshold = 10'000'000;  // 10 MB.
 #endif
 
 bool CanDoBackgroundDownload(scoped_refptr<const UpdateContext> update_context,
