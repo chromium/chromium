@@ -85,22 +85,6 @@ struct ComponentInfo {
   const char* const crx_id;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// This enum corresponds to LacrosMigrationStatus* in histograms.xml
-// and enums.xml.
-enum class MigrationStatus {
-  kLacrosNotEnabled = 0,  // Lacros is not enabled.
-  kUncompleted = 1,  // Lacros is enabled but migration has not been completed.
-  kSkippedForNewUser = 2,  // Migration is skipped for new users.
-  kCopyCompleted = 3,      // Migration was completed with `CopyMigratior`.
-  kMoveCompleted = 4,      // Migration was completed with `MoveMigrator`.
-  kMaxAttemptReached = 5,  // Migration failed or skipped more than
-                           // `kMaxMigrationAttemptCount` times.
-  kMaxValue = kMaxAttemptReached,
-};
-
 // The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
 // policy.
 inline constexpr const char

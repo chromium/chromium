@@ -1336,20 +1336,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="11" label="Policy forced, only Lacros browser"/>
 </enum>
 
-<enum name="LacrosMigrationStatus">
-  <int value="0" label="Lacros not enabled"/>
-  <int value="1" label="Uncompleted"/>
-  <int value="2" label="Skipped for new user">
-    Migration was skipped but marked as completed because new users don't
-    require migration.
-  </int>
-  <int value="3" label="Completed via copy"/>
-  <int value="4" label="Completed via move"/>
-  <int value="5" label="Reached its retry limit">
-    Migration failed or skipped more than the number of attempts allowed.
-  </int>
-</enum>
-
 <enum name="LobsterState">
   <int value="0" label="Shown Opportunity"/>
   <int value="1" label="Blocked"/>

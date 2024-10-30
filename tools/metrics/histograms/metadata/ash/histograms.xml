@@ -5194,43 +5194,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.LacrosMigrationStatus2" enum="LacrosMigrationStatus"
-    expires_after="2025-02-01">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    Migration status from Ash to Lacros. It shows whether the user has migrated
-    from Ash to Lacros and if they did with which migration mode.
-
-    The same as &quot;Ash.LacrosMigrationStatus&quot; but further splits
-    'Uncompleted' into 'Uncompleted' and 'MaxAttemptReached'. Uncompleted means
-    the user hasn't completed migration but has not reached its retry limit,
-    meaning the migration will be attempted at the next chance. Meanwhile
-    MaxAttemptReached means it failed more than the number of times allowed and
-    won't be attempted again.
-
-    This metric gets emitted once when a new session is started.
-  </summary>
-</histogram>
-
-<histogram name="Ash.LacrosMigrationStatus2.Daily" enum="LacrosMigrationStatus"
-    expires_after="2025-02-01">
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    Migration status from Ash to Lacros. It shows whether the user has migrated
-    from Ash to Lacros and if they did with which migration mode.
-
-    The same as &quot;Ash.LacrosMigrationStatus2&quot; but it is emitted at
-    least once a day. Uncompleted means the user hasn't completed migration but
-    has not reached its retry limit, meaning the migration will be attempted at
-    the next chance. Meanwhile MaxAttemptReached means it failed more than the
-    number of times allowed and won't be attempted again.
-
-    This metric gets emitted at least once a day.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Lobster.State" enum="LobsterState"
     expires_after="2025-10-20">
   <owner>hdchuong@google.com</owner>
