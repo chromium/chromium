@@ -92,7 +92,6 @@
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/startup_data.h"
-#include "chrome/browser/tracing/trace_event_system_stats_monitor.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -907,11 +906,6 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
 
   sampling_profiler::ThreadProfiler::SetMainThreadTaskRunner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-
-  // TODO(sebmarchand): Allow this to be created earlier if startup tracing is
-  // enabled.
-  trace_event_system_stats_monitor_ =
-      std::make_unique<tracing::TraceEventSystemStatsMonitor>();
 
   // device_event_log must be initialized after the message loop. Calls to
   // {DEVICE}_LOG prior to here will only be logged with VLOG. Some

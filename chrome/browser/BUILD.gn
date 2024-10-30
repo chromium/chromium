@@ -1609,8 +1609,6 @@ static_library("browser") {
     "tracing/chrome_background_tracing_metrics_provider.h",
     "tracing/chrome_tracing_delegate.cc",
     "tracing/chrome_tracing_delegate.h",
-    "tracing/trace_event_system_stats_monitor.cc",
-    "tracing/trace_event_system_stats_monitor.h",
     "transition_manager/full_browser_transition_manager.cc",
     "transition_manager/full_browser_transition_manager.h",
     "translate/chrome_translate_client.cc",
