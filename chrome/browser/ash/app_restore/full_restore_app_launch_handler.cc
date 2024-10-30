@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
@@ -179,21 +178,6 @@ void FullRestoreAppLaunchHandler::OnGotSession(Profile* session_profile,
     browser_window_count_ = window_count;
 }
 
-void FullRestoreAppLaunchHandler::OnMojoDisconnected() {
-  observation_.Reset();
-}
-
-void FullRestoreAppLaunchHandler::OnStateChanged() {
-  if (crosapi::BrowserManager::Get()->IsRunning()) {
-    observation_.Reset();
-    if (!floating_workspace_util::ShouldHandleRestartRestore()) {
-      VLOG(1) << "Full restore opens Lacros";
-      crosapi::BrowserManager::Get()->OpenForFullRestore(
-          /*skip_crash_restore=*/IsLastSessionExitTypeCrashed());
-    }
-  }
-}
-
 void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
   ::full_restore::AddChromeBrowserLaunchInfoForTesting(profile()->GetPath());
   UserSessionManager::GetInstance()->LaunchBrowser(profile());
@@ -268,8 +252,6 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
     arc_task_handler->GetFullRestoreArcAppQueueRestoreHandler()->RestoreArcApps(
         this);
   }
-
-  MaybeRestoreLacros();
 
   LaunchApps();
 
@@ -357,34 +339,6 @@ void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
 
   UserSessionManager::GetInstance()->PerformPostBrowserLaunchOOBEActions(
       profile());
-}
-
-void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
-  if (!crosapi::browser_util::IsLacrosEnabled() ||
-      !::full_restore::features::IsFullRestoreForLacrosEnabled()) {
-    return;
-  }
-
-  // TODO(crbug.com/40194081):
-  // 1. Modify the restore conditions, e.g. check web apps ready, etc.
-  // 2. Handle the migration scenario, e.g. from flag disable to enable.
-  // 3. Add metrics to check whether the Lacros is restored successfully.
-  if (!base::Contains(restore_data()->app_id_to_launch_list(),
-                      app_constants::kLacrosAppId)) {
-    return;
-  }
-
-  restore_data()->RemoveApp(app_constants::kLacrosAppId);
-
-  if (crosapi::BrowserManager::Get()->IsRunning()) {
-    VLOG(1) << "Full restore opens Lacros";
-    crosapi::BrowserManager::Get()->OpenForFullRestore(
-        /*skip_crash_restore=*/IsLastSessionExitTypeCrashed());
-    return;
-  }
-
-  if (!crosapi::BrowserManager::Get()->IsTerminated())
-    observation_.Observe(crosapi::BrowserManager::Get());
 }
 
 void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
