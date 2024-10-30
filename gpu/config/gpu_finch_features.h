@@ -62,6 +62,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(
 #endif
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
+GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphitePrecompilation);
 GPU_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnSkipValidation;
 GPU_EXPORT extern const base::FeatureParam<bool>
@@ -114,6 +115,8 @@ GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);
+GPU_EXPORT bool IsSkiaGraphitePrecompilationEnabled(
+    const base::CommandLine* command_line);
 GPU_EXPORT bool EnablePurgeGpuImageDecodeCache();
 GPU_EXPORT bool EnablePruneOldTransferCacheEntries();
 GPU_EXPORT bool IsCanvasOopRasterizationEnabled();

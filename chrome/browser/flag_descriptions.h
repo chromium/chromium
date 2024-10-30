@@ -2024,6 +2024,9 @@ extern const char kSiteIsolationOptOutChoiceOptOut[];
 extern const char kSkiaGraphiteName[];
 extern const char kSkiaGraphiteDescription[];
 
+extern const char kSkiaGraphitePrecompilationName[];
+extern const char kSkiaGraphitePrecompilationDescription[];
+
 extern const char kBackdropFilterMirrorEdgeName[];
 extern const char kBackdropFilterMirrorEdgeDescription[];
 

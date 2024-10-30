@@ -3551,6 +3551,15 @@ const char kSkiaGraphiteDescription[] =
     "be overridden with command line flags for testing on non-official "
     "developer builds. See --skia-graphite-backend flag in gpu_switches.h.";
 
+const char kSkiaGraphitePrecompilationName[] = "Skia Graphite Precompilation";
+const char kSkiaGraphitePrecompilationDescription[] =
+    "Enable Skia Graphite Precompilation. This is only relevant when Graphite "
+    "is enabled "
+    "but can then be overridden via the "
+    "--enable-skia-graphite-precompilation and "
+    "--disable-skia-graphite-precompilation "
+    "command line flags";
+
 const char kBackdropFilterMirrorEdgeName[] = "Backdrop Filter Mirror Edge";
 const char kBackdropFilterMirrorEdgeDescription[] =
     "When sampling being the backdrop edge for backdrop-filter, samples "

@@ -8156,6 +8156,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "skia-graphite-precompilation",
+    "owners": [ "robertphillips@google.com", "michaelludwig@google.com", "chrome-skia-graphite@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir@chromium.org" ],
     "expiry_milestone": 131

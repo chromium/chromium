@@ -148,6 +148,13 @@ const char kSkiaGraphiteBackendMetal[] = "metal";
 const char kDisableSkiaGraphite[] = "disable-skia-graphite";
 const char kEnableSkiaGraphite[] = "enable-skia-graphite";
 
+// Force disabling/enabling Skia Graphite's Pipeline Precompilation. Disabling
+// will take precedence over enabling if both are specified.
+const char kDisableSkiaGraphitePrecompilation[] =
+    "disable-skia-graphite-precompilation";
+const char kEnableSkiaGraphitePrecompilation[] =
+    "enable-skia-graphite-precompilation";
+
 const char kShaderCachePath[] = "shader-cache-path";
 
 // Try to use a redistributable DirectML.dll. Used for testing WebNN

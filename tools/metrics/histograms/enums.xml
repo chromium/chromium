@@ -19468,6 +19468,7 @@ from previous Chrome versions.
   <int value="-281844827" label="AutofillCreditCardAblationExperiment:enabled"/>
   <int value="-280129257" label="MacLoopbackAudioForScreenShare:enabled"/>
   <int value="-280064896" label="HelpAppAppsDiscovery:disabled"/>
+  <int value="-279940662" label="SkiaGraphitePrecompilation:disabled"/>
   <int value="-279920685" label="affiliation-based-matching:enabled"/>
   <int value="-279549620" label="HttpsFirstModeIncognitoNewSettings:enabled"/>
   <int value="-279493876" label="WebVRExperimentalRendering:enabled"/>
@@ -21151,6 +21152,7 @@ from previous Chrome versions.
   <int value="395148768" label="AutofillFillIbanFields:disabled"/>
   <int value="397275669" label="QuickCommands:disabled"/>
   <int value="398903399" label="GenericSensorExtraClasses:disabled"/>
+  <int value="399015470" label="SkiaGraphitePrecompilation:enabled"/>
   <int value="399039205" label="enable-webrtc-hw-vp9-encoding"/>
   <int value="399177140" label="FillingPasswordsFromAnyOrigin:enabled"/>
   <int value="399398207"

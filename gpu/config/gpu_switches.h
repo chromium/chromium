@@ -53,6 +53,8 @@ GPU_EXPORT extern const char kSkiaGraphiteBackendMetal[];
 GPU_EXPORT extern const char kShaderCachePath[];
 GPU_EXPORT extern const char kDisableSkiaGraphite[];
 GPU_EXPORT extern const char kEnableSkiaGraphite[];
+GPU_EXPORT extern const char kDisableSkiaGraphitePrecompilation[];
+GPU_EXPORT extern const char kEnableSkiaGraphitePrecompilation[];
 GPU_EXPORT extern const char kUseRedistributableDirectML[];
 GPU_EXPORT extern const char kEnableGpuMainTimeKeeperMetrics[];
 

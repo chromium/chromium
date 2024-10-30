@@ -9329,6 +9329,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSkiaGraphiteDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSkiaGraphite)},
 
+    {"skia-graphite-precompilation",
+     flag_descriptions::kSkiaGraphitePrecompilationName,
+     flag_descriptions::kSkiaGraphitePrecompilationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kSkiaGraphitePrecompilation)},
+
     {"enable-tab-audio-muting", flag_descriptions::kTabAudioMutingName,
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},

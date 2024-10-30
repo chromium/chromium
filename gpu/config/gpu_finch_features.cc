@@ -343,6 +343,15 @@ BASE_FEATURE(kSkiaGraphite,
              base::FEATURE_DISABLED_BY_DEFAULT
 );
 
+// Enable Skia Graphite's Pipeline precompilation feature.
+// Note: This is only meaningful when Skia Graphite is enabled but can then also
+// be overridden by
+// --enable-skia-graphite-precompilation and
+// --disable-skia-graphite-precompilation.
+BASE_FEATURE(kSkiaGraphitePrecompilation,
+             "SkiaGraphitePrecompilation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kConditionallySkipGpuChannelFlush,
              "ConditionallySkipGpuChannelFlush",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -648,6 +657,27 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   }
 
   return base::FeatureList::IsEnabled(features::kSkiaGraphite);
+}
+
+bool IsSkiaGraphitePrecompilationEnabled(
+    const base::CommandLine* command_line) {
+  if (!IsSkiaGraphiteEnabled(command_line)) {
+    return false;
+  }
+
+  // Force disabling Graphite Precompilation if
+  // --disable-skia-graphite-precompilation flag is specified.
+  if (command_line->HasSwitch(switches::kDisableSkiaGraphitePrecompilation)) {
+    return false;
+  }
+
+  // Force Graphite Precompilation on if --enable-skia-graphite-precompilation
+  // flag is specified.
+  if (command_line->HasSwitch(switches::kEnableSkiaGraphitePrecompilation)) {
+    return true;
+  }
+
+  return base::FeatureList::IsEnabled(features::kSkiaGraphitePrecompilation);
 }
 
 // Set up such that service side purge depends on the client side purge feature
