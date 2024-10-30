@@ -10,6 +10,7 @@ error: Failed getting cookie attribute: Version
     }
     entries : [
         {
+            _connectionId : <string>
             _initiator : <object>
             _priority : <string>
             _resourceType : "document"
@@ -111,6 +112,7 @@ error: Failed getting cookie attribute: Version
             timings : <object>
         }
         {
+            _connectionId : <string>
             _initiator : <object>
             _priority : <string>
             _resourceType : "xhr"
