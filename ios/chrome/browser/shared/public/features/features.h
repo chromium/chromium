@@ -824,9 +824,6 @@ extern const char kIOSTipsNotificationsDismissLimitParam[];
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 
-// Feature flag to disable fullscreen scrolling logic.
-BASE_DECLARE_FEATURE(kDisableFullscreenScrolling);
-
 // Convenience method for determining if Pinned Tabs is enabled.
 // The Pinned Tabs feature is fully enabled on iPhone and disabled on iPad.
 bool IsPinnedTabsEnabled();

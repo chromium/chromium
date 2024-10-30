@@ -282,10 +282,6 @@ extern const char kBlueDotOnToolsMenuButtonDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
-// Title and description for the flag to disable the fullscreen scrolling logic.
-extern const char kDisableFullscreenScrollingName[];
-extern const char kDisableFullscreenScrollingDescription[];
-
 // Title and description for the flag to enable the opening of PDF files in
 // Chrome.
 extern const char kDownloadedPDFOpeningName[];

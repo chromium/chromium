@@ -963,10 +963,6 @@ bool IsIOSTipsNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotifications);
 }
 
-BASE_FEATURE(kDisableFullscreenScrolling,
-             "DisableFullscreenScrolling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsPinnedTabsEnabled() {
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }

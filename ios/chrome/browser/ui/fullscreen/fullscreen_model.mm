@@ -222,9 +222,6 @@ CGFloat FullscreenModel::GetYContentOffset() const {
 }
 
 void FullscreenModel::SetScrollViewIsScrolling(bool scrolling) {
-  if (base::FeatureList::IsEnabled(kDisableFullscreenScrolling)) {
-    return;
-  }
   if (scrolling_ == scrolling)
     return;
   scrolling_ = scrolling;
@@ -258,9 +255,6 @@ bool FullscreenModel::IsScrollViewZooming() const {
 }
 
 void FullscreenModel::SetScrollViewIsDragging(bool dragging) {
-  if (base::FeatureList::IsEnabled(kDisableFullscreenScrolling)) {
-    return;
-  }
   if (dragging_ == dragging)
     return;
   dragging_ = dragging;

@@ -91,7 +91,6 @@ void WaitforPDFExtensionView() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
-  config.features_disabled.push_back(kDisableFullscreenScrolling);
   return config;
 }
 
@@ -451,7 +450,6 @@ void WaitforPDFExtensionView() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
-  config.features_disabled.push_back(kDisableFullscreenScrolling);
   return config;
 }
 

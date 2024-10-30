@@ -344,11 +344,6 @@ const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "
     "the time specified by this flag.";
 
-const char kDisableFullscreenScrollingName[] = "Disable fullscreen scrolling";
-const char kDisableFullscreenScrollingDescription[] =
-    "When this flag is enabled and a user scroll a web page, toolbars will "
-    "stay extanded and the user will not enter in fullscreen mode.";
-
 const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
 const char kDownloadedPDFOpeningDescription[] =
     "Enables the direct opening of downloaded PDF files in Chrome";
