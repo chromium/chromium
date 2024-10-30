@@ -14996,6 +14996,8 @@ from previous Chrome versions.
   <int value="-2086191354" label="TabReorganization:disabled"/>
   <int value="-2085842174" label="SupportF11AndF12KeyShortcuts:enabled"/>
   <int value="-2085212970" label="FastPairHID:enabled"/>
+  <int value="-2085198282"
+      label="SeparateLocalAndAccountSearchEngines:disabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
@@ -22625,6 +22627,7 @@ from previous Chrome versions.
       label="EnableKeyboardBacklightControlInSettings:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
+  <int value="1016132283" label="SeparateLocalAndAccountSearchEngines:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
   <int value="1017523412" label="ExtensionsMenuAccessControl:disabled"/>
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>

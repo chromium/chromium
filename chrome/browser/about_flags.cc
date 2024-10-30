@@ -11786,6 +11786,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPartitionedPopinsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kPartitionedPopins)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"separate-local-and-account-search-engines",
+     flag_descriptions::kSeparateLocalAndAccountSearchEnginesName,
+     flag_descriptions::kSeparateLocalAndAccountSearchEnginesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(syncer::kSeparateLocalAndAccountSearchEngines)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

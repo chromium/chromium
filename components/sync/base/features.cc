@@ -103,6 +103,10 @@ BASE_FEATURE(kTabGroupsSaveNudgeDelay,
              "TabGroupsSaveNudgeDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSeparateLocalAndAccountSearchEngines,
+             "SeparateLocalAndAccountSearchEngines",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
              "ReplaceSyncPromosWithSignInPromos",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

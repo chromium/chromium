@@ -7939,6 +7939,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "separate-local-and-account-search-engines",
+    "owners": [
+      "ankushkush@google.com",
+      "chrome-sync-dev@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "separate-local-and-account-themes",
     "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 135

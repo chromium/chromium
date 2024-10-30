@@ -917,12 +917,21 @@ const char kSeparateWebAppShortcutBadgeIconDescription[] =
     "The shortcut app badge is painted in the UI instead of being part of the "
     "shortcut app icon, and more effects are added for the icon.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kSeparateLocalAndAccountSearchEnginesName[] =
+    "Separate local and account search engines";
+const char kSeparateLocalAndAccountSearchEnginesDescription[] =
+    "Keeps the local and the account search engines separate. If the user "
+    "signs out or sync is turned off, the account search engines are removed "
+    "while the pre-existing/local search engines are left behind.";
+
 const char kSeparateLocalAndAccountThemesName[] =
     "Separate local and account themes";
 const char kSeparateLocalAndAccountThemesDescription[] =
     "Keeps the local and the account theme separate. If the user signs out or "
     "sync is turned off, only the account theme is removed and the "
     "pre-existing local theme is restored.";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 const char kCameraMicEffectsName[] = "Camera and Mic Effects";

@@ -105,6 +105,9 @@ BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 // Wrapper flag to control the nudge delay of the #tab-groups-save feature.
 BASE_DECLARE_FEATURE(kTabGroupsSaveNudgeDelay);
 
+// If enabled, keeps local and account search engines separate.
+BASE_DECLARE_FEATURE(kSeparateLocalAndAccountSearchEngines);
+
 // If provided, changes the amount of time before we send messages to the sync
 // service.
 inline constexpr base::FeatureParam<base::TimeDelta>
