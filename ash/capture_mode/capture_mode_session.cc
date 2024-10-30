@@ -3249,8 +3249,7 @@ void CaptureModeSession::InitInternal() {
   capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
   MaybeCreateUserNudge();
 
-  if (features::IsScannerEnabled() &&
-      active_behavior_->ShouldRegionOverlayBeAllowed()) {
+  if (active_behavior_->ShouldRegionOverlayBeAllowed()) {
     capture_region_overlay_controller_ =
         std::make_unique<CaptureRegionOverlayController>();
   }

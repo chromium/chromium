@@ -75,15 +75,9 @@ FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
       scanner_controller.delegate_for_testing()->GetProfileScopedDelegate());
 }
 
-// TODO(crbug.com/374831944): Move non-search specific tests to ScannerTest.
 class SunfishTest : public AshTestBase {
  public:
-  SunfishTest() {
-    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
-                                          {features::kSunfishFeature,
-                                           features::kScannerUpdate},
-                                          /*disabled_features=*/{});
-  }
+  SunfishTest() = default;
   SunfishTest(const SunfishTest&) = delete;
   SunfishTest& operator=(const SunfishTest&) = delete;
   ~SunfishTest() override = default;
@@ -99,7 +93,7 @@ class SunfishTest : public AshTestBase {
   // Calling the factory constructor is enough to set it up.
   TestAshWebViewFactory test_web_view_factory_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
 };
 
 // Tests that the accelerator starts capture mode in a new behavior.

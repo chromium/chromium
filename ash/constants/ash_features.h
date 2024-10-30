@@ -1524,6 +1524,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool UseMixedFileLauncherContinueSection();
 
+COMPONENT_EXPORT(ASH_CONSTANTS) bool CanStartSunfishSession();
+
 // Keep alphabetized.
 
 }  // namespace ash::features

@@ -93,7 +93,12 @@ class DefaultBehavior : public CaptureModeBehavior {
   }
   void DetachFromSession() override {}
 
-  bool ShouldRegionOverlayBeAllowed() const override { return true; }
+  bool ShouldRegionOverlayBeAllowed() const override {
+    // TODO(crbug.com/376103983): Verify `CaptureRegionOverlayController` works
+    // correctly. It is always created in Sunfish session to paint the region
+    // selection UI, but should only support text overlay if Scanner is enabled.
+    return features::CanStartSunfishSession();
+  }
   bool CanPaintRegionOverlay() const override {
     auto* controller = CaptureModeController::Get();
     return controller->type() == CaptureModeType::kImage &&
@@ -324,7 +329,9 @@ class SunfishBehavior : public CaptureModeBehavior {
       scanner_controller->OnSessionUIClosed();
     }
   }
-  bool ShouldRegionOverlayBeAllowed() const override { return true; }
+  bool ShouldRegionOverlayBeAllowed() const override {
+    return features::CanStartSunfishSession();
+  }
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture() const override { return true; }

@@ -500,7 +500,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
       CHECK(features::IsGameDashboardEnabled());
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      CHECK(features::IsScannerEnabled());
+      DCHECK(features::CanStartSunfishSession());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -720,7 +720,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 }
 
 void CaptureModeController::StartSunfishSession() {
-  DCHECK(features::IsScannerEnabled());
+  DCHECK(features::CanStartSunfishSession());
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
 }
 

@@ -5072,4 +5072,11 @@ bool UseMixedFileLauncherContinueSection() {
               "mix_local_and_drive", false));
 }
 
+bool CanStartSunfishSession() {
+  // Returns true if sunfish session can be started, which is true if either the
+  // the Sunfish or Scanner feature flag is enabled. Note Scanner operations
+  // will only be available if the secret key is matched.
+  return IsSunfishFeatureEnabled() || IsScannerEnabled();
+}
+
 }  // namespace ash::features
