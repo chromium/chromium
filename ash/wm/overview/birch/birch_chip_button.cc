@@ -484,7 +484,7 @@ void BirchChipButton::OnCoralAddonClicked() {
   if (!tab_app_selection_widget_->IsVisible()) {
     tab_app_selection_widget_->Show();
   } else {
-    tab_app_selection_widget_->Hide();
+    tab_app_selection_widget_->SlideOut();
   }
 }
 

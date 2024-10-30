@@ -14,6 +14,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/wm/coral/coral_test_util.h"
+#include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,6 +62,10 @@ class CoralPixelDiffTest : public AshTestBase {
 };
 
 TEST_F(CoralPixelDiffTest, CoralSelectorView) {
+  // Mark the privacy nudge as shown otherwise it will occlude parts of the
+  // selector.
+  BirchPrivacyNudgeController::DidShowContextMenu();
+
   UpdateDisplay("1600x1000");
 
   TabAppSelectionHost* menu = ShowAndGetSelectorMenu(GetEventGenerator());

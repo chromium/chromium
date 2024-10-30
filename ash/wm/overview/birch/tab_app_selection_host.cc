@@ -16,15 +16,22 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
+
+// Pre target event handler that handles closing the widget if a mouse or touch
+// press event is seen outside the coral chip bounds.
 class TabAppSelectionHost::SelectionHostHider : public ui::EventHandler {
  public:
   explicit SelectionHostHider(TabAppSelectionHost* owner) : owner_(owner) {
@@ -47,10 +54,10 @@ class TabAppSelectionHost::SelectionHostHider : public ui::EventHandler {
       wm::ConvertPointToScreen(
           static_cast<aura::Window*>(event->target())->GetRootWindow(),
           &event_screen_point);
-      // Unless the event is on the host widget, hide it and stop the event from
-      // propagating.
+      // Unless the event is on the host widget, slide it out and stop the event
+      // from propagating.
       if (!owner_->GetWindowBoundsInScreen().Contains(event_screen_point)) {
-        owner_->Hide();
+        owner_->SlideOut();
         event->SetHandled();
         event->StopPropagation();
       }
@@ -69,6 +76,7 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
       owner_(coral_chip),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
+  aura::Window* parent = coral_chip->GetWidget()->GetNativeWindow()->parent();
   using InitParams = views::Widget::InitParams;
   InitParams params(InitParams::CLIENT_OWNS_WIDGET, InitParams::TYPE_MENU);
   params.accept_events = true;
@@ -78,14 +86,20 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.parent = parent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
 
   Init(std::move(params));
+  SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
   SetContentsView(std::make_unique<TabAppSelectionView>(
       static_cast<BirchCoralItem*>(coral_chip->GetItem())->group_id()));
   widget_delegate()->set_desired_bounds_delegate(base::BindRepeating(
       &TabAppSelectionHost::GetDesiredBoundsInScreen, base::Unretained(this)));
   SetBounds(GetDesiredBoundsInScreen());
+
+  // Stack the widget below the coral chip so it slides under the chip.
+  parent->StackChildBelow(GetNativeWindow(),
+                          coral_chip->GetWidget()->GetNativeWindow());
 }
 
 TabAppSelectionHost::~TabAppSelectionHost() = default;
@@ -106,6 +120,36 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
       ->ProcessKeyEvent(event);
 }
 
+void TabAppSelectionHost::SlideOut() {
+  const gfx::Rect chip_bounds = owner_->GetBoundsInScreen();
+  const gfx::Rect selection_bounds = GetWindowBoundsInScreen();
+  ui::Layer* layer = GetLayer();
+
+  auto on_animation_end = base::BindRepeating(
+      [](base::WeakPtr<views::Widget> self) {
+        if (self) {
+          self->GetLayer()->SetTransform(gfx::Transform());
+          self->GetLayer()->SetClipRect(gfx::Rect());
+          self->Hide();
+        }
+      },
+      GetWeakPtr());
+
+  // Slide the widget into the coral chip. We apply a clip as well since the
+  // contents view is almost always taller than the coral chip.
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(on_animation_end)
+      .OnAborted(on_animation_end)
+      .Once()
+      .SetDuration(kAnimationDuration)
+      .SetTransform(layer, gfx::Transform::MakeTranslation(
+                               0, chip_bounds.y() - selection_bounds.y()))
+      .SetClipRect(layer,
+                   gfx::Rect(selection_bounds.width(), chip_bounds.height()));
+}
+
 void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
   views::Widget::OnNativeWidgetVisibilityChanged(visible);
   views::AsViewClass<IconButton>(owner_->addon_view())
@@ -119,6 +163,35 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
     base::UmaHistogramBoolean("Ash.Birch.Coral.ClusterExpanded", true);
     GetContentsView()->GetViewAccessibility().NotifyEvent(
         ax::mojom::Event::kMenuStart);
+
+    auto on_animation_end = base::BindRepeating(
+        [](base::WeakPtr<views::Widget> self) {
+          if (self) {
+            self->GetLayer()->SetTransform(gfx::Transform());
+            self->GetLayer()->SetClipRect(gfx::Rect());
+          }
+        },
+        GetWeakPtr());
+
+    // Slide the widget out of the coral chip. We apply a clip as well since the
+    // contents view is almost always taller than the coral chip.
+    const gfx::Rect chip_bounds = owner_->GetBoundsInScreen();
+    const gfx::Rect selection_bounds = GetWindowBoundsInScreen();
+    ui::Layer* layer = GetLayer();
+    layer->SetTransform(gfx::Transform::MakeTranslation(
+        0, chip_bounds.y() - selection_bounds.y()));
+    layer->SetClipRect(
+        gfx::Rect(selection_bounds.width(), chip_bounds.height()));
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(on_animation_end)
+        .OnAborted(on_animation_end)
+        .Once()
+        .SetDuration(kAnimationDuration)
+        .SetTransform(layer, gfx::Transform())
+        .SetClipRect(layer, gfx::Rect(selection_bounds.width(),
+                                      selection_bounds.height()));
   } else {
     views::AsViewClass<TabAppSelectionView>(GetContentsView())
         ->ClearSelection();

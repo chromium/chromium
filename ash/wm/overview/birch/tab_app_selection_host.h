@@ -11,6 +11,8 @@ namespace ash {
 class BirchChipButton;
 class ScopedA11yOverrideWindowSetter;
 
+// The host which contains the TabAppSelectionView. This widget slides in when
+// shown.
 class TabAppSelectionHost : public views::Widget {
  public:
   explicit TabAppSelectionHost(BirchChipButton* coral_chip);
@@ -19,6 +21,9 @@ class TabAppSelectionHost : public views::Widget {
   ~TabAppSelectionHost() override;
 
   void ProcessKeyEvent(ui::KeyEvent* event);
+
+  // Slides the widget under `owner_` before hiding it.
+  void SlideOut();
 
   // views::Widget:
   void OnNativeWidgetVisibilityChanged(bool visible) override;
