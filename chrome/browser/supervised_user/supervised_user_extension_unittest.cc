@@ -244,6 +244,9 @@ class SupervisedUserExtensionTest
       disabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     }
 

@@ -102,6 +102,9 @@ class SupervisionExtensionTestBase
       disabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
 #else
     // For ChromeOS, the parental controls should always apply to extensions
     // and this case should not be reached. See the instantiation of the test suite.

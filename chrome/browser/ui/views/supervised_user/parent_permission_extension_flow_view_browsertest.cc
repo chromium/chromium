@@ -283,53 +283,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
                                     2);
 }
 
-// Tests that the Parent Permission Dialog doesn't appear at all when the parent
-// has disabled the "Permissions for sites, apps and extensions" toggle, and the
-// supervised user sees the Extension Install Blocked By Parent error dialog
-// instead.
-IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
-                       ParentBlockedExtensionEnable) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(browser()->profile()->IsChild());
-
-  EXPECT_TRUE(extension_registry()->disabled_extensions().Contains(
-      test_extension()->id()));
-
-  // Simulate the parent disabling the "Permissions for sites, apps and
-  // extensions" toggle.
-  supervised_user_test_util::
-      SetSupervisedUserExtensionsMayRequestPermissionsPref(browser()->profile(),
-                                                           false);
-
-  extensions::ScopedTestDialogAutoConfirm auto_confirm(
-      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-
-  ExtensionEnableFlowTestDelegate delegate;
-  ExtensionEnableFlow enable_flow(browser()->profile(), test_extension()->id(),
-                                  &delegate);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  enable_flow.StartForWebContents(web_contents);
-  delegate.Wait();
-
-  ASSERT_TRUE(delegate.result());
-  EXPECT_EQ(ExtensionEnableFlowTestDelegate::ABORTED, *delegate.result());
-
-  // The extension should remain disabled.
-  EXPECT_TRUE(extension_registry()->disabled_extensions().Contains(
-      test_extension()->id()));
-
-  // Proof that the Parent Permission Dialog didn't launch.
-  histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
-                                        kParentPermissionDialogHistogramName,
-                                    0);
-
-  // Proof that the Extension Install Blocked By Parent Dialog launched.
-  histogram_tester.ExpectUniqueSample(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
-      1);
-}
 
 class ExtensionManagementApiTestSupervised
     : public ExtensionEnableFlowTestSupervised {
@@ -485,48 +438,4 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
-                       PRE_ParentBlockedExtensionEnable) {
-  ASSERT_FALSE(browser()->profile()->IsChild());
-}
-
-// Tests that the Parent Permission Dialog doesn't appear at all when the parent
-// has disabled the "Permissions for sites, apps and extensions" toggle, and the
-// supervised user sees the Extension Install Blocked By Parent error dialog
-// instead.
-IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
-                       ParentBlockedExtensionEnable) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(browser()->profile()->IsChild());
-
-  // Simulate the parent disabling the "Permissions for sites, apps and
-  // extensions" toggle.
-  supervised_user_test_util::
-      SetSupervisedUserExtensionsMayRequestPermissionsPref(browser()->profile(),
-                                                           false);
-
-  extensions::ScopedTestDialogAutoConfirm auto_confirm(
-      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-
-  std::string error;
-  EXPECT_TRUE(RunManagementSubtest(
-      "supervised_user_parent_disabled_permission_for_enable.html", &error))
-      << error;
-
-  // The extension should still be disabled.
-  EXPECT_TRUE(extension_registry()->disabled_extensions().Contains(
-      disabled_extension_id_));
-
-  // Proof that the Parent Permission Dialog didn't launch.
-  histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
-                                        kParentPermissionDialogHistogramName,
-                                    0);
-
-  // Proof that the Extension Install Blocked By Parent Dialog launched instead.
-  histogram_tester.ExpectUniqueSample(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
-      1);
 }

@@ -53,23 +53,17 @@ bool IsLocalWebApprovalsEnabled() {
 
 BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
              "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
-#if BUILDFLAG(IS_CHROMEOS)
-             // TODO(b/344580484): Cleanup the feature after at least 2
-             // milestones from full release, i.e. on M131.
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 BASE_FEATURE(kUpdatedSupervisedUserExtensionApprovalStrings,
              "UpdatedSupervisedUserExtensionApprovalStrings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

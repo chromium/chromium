@@ -1394,7 +1394,7 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
     enabled_features.push_back(
         supervised_user::
             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     if (GetExtensionManagementFamilyLinkSwitch() ==
         ExtensionManagementFamilyLinkSwitch::kManagedByExtensionsSwitch) {
       enabled_features.push_back(
@@ -1406,6 +1406,15 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
           supervised_user::
               kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
     }
+  } else {
+    disabled_features.push_back(
+        supervised_user::
+            kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    disabled_features.push_back(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   }
   feature_list.InitWithFeatures(enabled_features, disabled_features);
 

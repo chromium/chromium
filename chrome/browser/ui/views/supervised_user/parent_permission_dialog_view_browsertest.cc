@@ -582,18 +582,22 @@ class ParentPermissionInputSectionLabelTest
  public:
   ParentPermissionInputSectionLabelTest() {
     std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam() == ExtensionsManagingToggle::kExtensions) {
       enabled_features.push_back(
           supervised_user::
               kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
       enabled_features.push_back(
           supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings);
+    } else {
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
     }
     enabled_features.push_back(
         supervised_user::
             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
