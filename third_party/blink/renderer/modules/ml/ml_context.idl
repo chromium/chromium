@@ -302,9 +302,6 @@ typedef record<DOMString, MLTensor> MLNamedTensors;
     RaisesException
   ] Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
 
-  // TODO(crbug.com/40278771): consider moving arguments into a dictonary
-  // per W3C recommendations:
-  // https://w3ctag.github.io/design-principles/#prefer-dictionaries
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
@@ -315,7 +312,7 @@ typedef record<DOMString, MLTensor> MLNamedTensors;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeTensor(MLTensor dstTensor, ArrayBuffer srcData);
+  ] void writeTensor(MLTensor dstTensor, [AllowShared] ArrayBuffer srcData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
