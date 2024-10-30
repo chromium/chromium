@@ -31,6 +31,11 @@ const CGFloat kDialogFixedItemsHeight = 280;
 // scale more accurately on larger and smaller screens.
 const CGFloat kAnimationHeightPercent = 0.70;
 
+// Pause button right padding.
+const CGFloat kPauseButtonRightPadding = 12;
+// Pause button bottom padding.
+const CGFloat kPauseButtonBottomPadding = 14;
+
 }  // namespace
 
 @implementation LensOverlayConsentViewController {
@@ -125,10 +130,10 @@ const CGFloat kAnimationHeightPercent = 0.70;
   [NSLayoutConstraint activateConstraints:@[
     [_animationPlayerButton.rightAnchor
         constraintEqualToAnchor:_animationView.rightAnchor
-                       constant:-20],
+                       constant:-kPauseButtonRightPadding],
     [_animationPlayerButton.bottomAnchor
         constraintEqualToAnchor:_animationView.bottomAnchor
-                       constant:-20]
+                       constant:-kPauseButtonBottomPadding]
   ]];
 
   // Title/description labels.
