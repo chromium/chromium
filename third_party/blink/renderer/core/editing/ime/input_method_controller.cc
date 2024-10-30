@@ -1470,6 +1470,9 @@ void InputMethodController::ExtendSelectionAndDelete(int before, int after) {
     if (before == 0)
       break;
     ++before;
+    // TODO(editing-dev): The use of UpdateStyleAndLayout
+    // needs to be audited.  see http://crbug.com/590369 for more details.
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   } while (
       GetFrame().Selection().ComputeVisibleSelectionInDOMTree().Start() ==
           GetFrame().Selection().ComputeVisibleSelectionInDOMTree().End() &&
