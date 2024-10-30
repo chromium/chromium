@@ -181,8 +181,6 @@ consoles.console_view(
     short_name = short_name,
 ) for name, category, short_name in (
     ("fuchsia-arm64-rel-ready", "p/chrome|arm64", "rel-ready"),
-    ("fuchsia-arm64", "p/chrome|official", "arm"),
-    ("fuchsia-arm64-chromium-branded", "p/chrome|official", "chromium-arm"),
     ("fuchsia-arm64-nest-sd", "p/chrome|official", "nest-arm"),
     ("fuchsia-ava-nelson", "hardware|ava", "nsn"),
     ("fuchsia-builder-perf-arm64", "p/chrome|arm64", "perf-arm"),
@@ -201,7 +199,6 @@ consoles.console_view(
     ("fuchsia-perf-nsn", "hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "hardware|perf", "sher"),
     ("fuchsia-x64", "p/chrome|official", "x64"),
-    ("fuchsia-x64-chromium-branded", "p/chrome|official", "chromium-x64"),
     ("fuchsia-x64-nest-sd", "p/chrome|official", "nest-x64"),
 )]
 
