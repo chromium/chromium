@@ -47,11 +47,7 @@ public class SensitiveContentClientUnitTest {
     public void setUp() {
         mViewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mFirstContainerView);
         mSecondViewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mThirdContainerView);
-        when(mWebContents.getViewAndroidDelegate())
-                .thenAnswer(
-                        invocation -> {
-                            return mViewAndroidDelegate;
-                        });
+        when(mWebContents.getViewAndroidDelegate()).thenAnswer(invocation -> mViewAndroidDelegate);
         mClient = new SensitiveContentClient(mWebContents, mContentSensitivitySetter);
         mClient.addObserver(mObserver);
     }
@@ -78,10 +74,7 @@ public class SensitiveContentClientUnitTest {
     @Test
     public void updateViewAndroidDelegate() {
         when(mWebContents.getViewAndroidDelegate())
-                .thenAnswer(
-                        invocation -> {
-                            return mSecondViewAndroidDelegate;
-                        });
+                .thenAnswer(invocation -> mSecondViewAndroidDelegate);
 
         mClient.setContentSensitivity(/* contentIsSensitive= */ true);
         verify(mContentSensitivitySetter).setContentSensitivity(mThirdContainerView, true);
