@@ -116,6 +116,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     watcher_ = std::make_unique<content::TitleWatcher>(
         browser()->tab_strip_model()->GetActiveWebContents(), u"PASS");
     watcher_->AlsoWaitForTitle(u"FAIL");
+    host_resolver()->AddRule("a.test", "127.0.0.1");
   }
 
   void AlsoWaitForTitle(const std::u16string& title) {
@@ -444,14 +445,12 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_SSLConnectionLimit) {
 #endif
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  net::SpawnedTestServer wss_server(
-      net::SpawnedTestServer::TYPE_WSS,
-      SSLOptions(SSLOptions::CERT_COMMON_NAME_IS_DOMAIN),
-      net::GetWebSocketTestDataDirectory());
-  // This test sets HSTS on localhost. To avoid being redirected to https, start
+  net::SpawnedTestServer wss_server(net::SpawnedTestServer::TYPE_WSS,
+                                    SSLOptions(SSLOptions::CERT_TEST_NAMES),
+                                    net::GetWebSocketTestDataDirectory());
+  // This test sets HSTS on a.test. To avoid being redirected to https, start
   // the http server on 127.0.0.1 instead.
   net::EmbeddedTestServer http_server;
   http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -459,17 +458,20 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(wss_server.StartInBackground());
 
-  // Set HSTS on localhost.
+  // Navigate to a page that will set HSTS on |test_server_hostname|.
+  std::string test_server_hostname = "a.test";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), u"SET");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server.GetURL("/websocket/set-hsts.html")));
+      browser(),
+      https_server.GetURL(test_server_hostname, "/websocket/set-hsts.html")));
   const std::u16string result = title_watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "SET"));
 
-  // Verify that it applies to WebSockets.
+  // Verify that HSTS applies to WebSockets.
   ASSERT_TRUE(wss_server.BlockUntilStarted());
-  GURL wss_url = wss_server.GetURL("echo-with-no-extension");
+  GURL wss_url =
+      wss_server.GetURL(test_server_hostname, "echo-with-no-extension");
   std::string scheme("ws");
   GURL::Replacements scheme_replacement;
   scheme_replacement.SetSchemeStr(scheme);

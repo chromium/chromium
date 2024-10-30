@@ -571,21 +571,23 @@ TEST_F(WebSocketEndToEndTest, TruncatedResponse) {
 // Regression test for crbug.com/455215 "HSTS not applied to WebSocket"
 TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
   EmbeddedTestServer https_server(net::EmbeddedTestServer::Type::TYPE_HTTPS);
-  https_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  std::string test_server_hostname = "a.test";
+  https_server.SetCertHostnames({test_server_hostname});
   https_server.ServeFilesFromSourceDirectory("net/data/url_request_unittest");
 
   SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_COMMON_NAME_IS_DOMAIN);
+      SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS, ssl_options,
                                GetWebSocketTestDataDirectory());
 
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(wss_server.Start());
   InitialiseContext();
+
   // Set HSTS via https:
   TestDelegate delegate;
-  GURL https_page = https_server.GetURL("/hsts-headers.html");
+  GURL https_page =
+      https_server.GetURL(test_server_hostname, "/hsts-headers.html");
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
       https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
@@ -594,31 +596,32 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
 
   // Check HSTS with ws:
   // Change the scheme from wss: to ws: to verify that it is switched back.
-  GURL ws_url = ReplaceUrlScheme(wss_server.GetURL(kEchoServer), "ws");
+  GURL ws_url = ReplaceUrlScheme(
+      wss_server.GetURL(test_server_hostname, kEchoServer), "ws");
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 
 TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
   EmbeddedTestServer https_server(net::EmbeddedTestServer::Type::TYPE_HTTPS);
-  https_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  std::string test_server_hostname = "a.test";
+  https_server.SetCertHostnames({test_server_hostname});
   https_server.ServeFilesFromSourceDirectory("net/data/url_request_unittest");
 
   SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_COMMON_NAME_IS_DOMAIN);
+      SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS, ssl_options,
                                GetWebSocketTestDataDirectory());
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(wss_server.Start());
   InitialiseContext();
   // Set HSTS via wss:
-  GURL wss_url = wss_server.GetURL("set-hsts");
+  GURL wss_url = wss_server.GetURL(test_server_hostname, "set-hsts");
   EXPECT_TRUE(ConnectAndWait(wss_url));
 
   // Verify via http:
   TestDelegate delegate;
-  GURL http_page =
-      ReplaceUrlScheme(https_server.GetURL("/simple.html"), "http");
+  GURL http_page = ReplaceUrlScheme(
+      https_server.GetURL(test_server_hostname, "/simple.html"), "http");
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
       http_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
@@ -628,18 +631,20 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
 }
 
 TEST_F(WebSocketEndToEndTest, HstsWebSocketToWebSocket) {
+  std::string test_server_hostname = "a.test";
   SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_COMMON_NAME_IS_DOMAIN);
+      SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS, ssl_options,
                                GetWebSocketTestDataDirectory());
   ASSERT_TRUE(wss_server.Start());
   InitialiseContext();
   // Set HSTS via wss:
-  GURL wss_url = wss_server.GetURL("set-hsts");
+  GURL wss_url = wss_server.GetURL(test_server_hostname, "set-hsts");
   EXPECT_TRUE(ConnectAndWait(wss_url));
 
-  // Verify via wss:
-  GURL ws_url = ReplaceUrlScheme(wss_server.GetURL(kEchoServer), "ws");
+  // Verify via ws:
+  GURL ws_url = ReplaceUrlScheme(
+      wss_server.GetURL(test_server_hostname, kEchoServer), "ws");
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 

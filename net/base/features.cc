@@ -621,4 +621,8 @@ BASE_FEATURE(kCookieDomainFieldIsValid,
              "CookieDomainFieldIsValid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIgnoreHSTSForLocalhost,
+             "IgnoreHSTSForLocalhost",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

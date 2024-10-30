@@ -6126,22 +6126,26 @@ TEST_F(URLRequestTestHTTP, ResponseHeadersTest) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(URLRequestTestHTTP, ProcessSTS) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  std::string test_server_hostname = "a.test";
+  https_test_server.SetCertHostnames({test_server_hostname});
   https_test_server.ServeFilesFromSourceDirectory(
       base::FilePath(kTestFilePath));
   ASSERT_TRUE(https_test_server.Start());
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule(test_server_hostname,
+                                  https_test_server.GetIPLiteralString());
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
   TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hsts-headers.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      https_test_server.GetURL(test_server_hostname, "/hsts-headers.html"),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   d.RunUntilComplete();
 
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
+  TransportSecurityState* security_state = context->transport_security_state();
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(
@@ -6180,6 +6184,58 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
   TransportSecurityState::STSState sts_state;
   EXPECT_FALSE(
       security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
+}
+
+TEST_F(URLRequestTestHTTP, STSNotProcessedOnLocalhost) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kIgnoreHSTSForLocalhost);
+  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_test_server.ServeFilesFromSourceDirectory(
+      base::FilePath(kTestFilePath));
+  ASSERT_TRUE(https_test_server.Start());
+  // Make sure this test fails if the test server is changed to not
+  // use `localhost` as the hostname for CERT_COMMON_NAME_IS_DOMAIN.
+  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").host()));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
+      https_test_server.GetURL("/hsts-headers.html"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->Start();
+  d.RunUntilComplete();
+  TransportSecurityState* security_state =
+      default_context().transport_security_state();
+  TransportSecurityState::STSState sts_state;
+  EXPECT_FALSE(security_state->GetDynamicSTSState("localhost", &sts_state));
+}
+
+TEST_F(URLRequestTestHTTP, STSProcessedOnLocalhostWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kIgnoreHSTSForLocalhost);
+  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_test_server.ServeFilesFromSourceDirectory(
+      base::FilePath(kTestFilePath));
+  ASSERT_TRUE(https_test_server.Start());
+  // Make sure this test fails if the test server is changed to not
+  // use `localhost` as the hostname for CERT_COMMON_NAME_IS_DOMAIN.
+  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").host()));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
+      https_test_server.GetURL("/hsts-headers.html"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->Start();
+  d.RunUntilComplete();
+  TransportSecurityState* security_state =
+      default_context().transport_security_state();
+  TransportSecurityState::STSState sts_state;
+  EXPECT_TRUE(security_state->GetDynamicSTSState("localhost", &sts_state));
 }
 
 TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
@@ -6237,24 +6293,29 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
 
 TEST_F(URLRequestTestHTTP, ProcessSTSOnce) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  std::string test_server_hostname = "a.test";
+  https_test_server.SetCertHostnames({test_server_hostname});
   https_test_server.ServeFilesFromSourceDirectory(
       base::FilePath(kTestFilePath));
   ASSERT_TRUE(https_test_server.Start());
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule(test_server_hostname,
+                                  https_test_server.GetIPLiteralString());
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
 
   TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hsts-multiple-headers.html"), DEFAULT_PRIORITY,
-      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      https_test_server.GetURL(test_server_hostname,
+                               "/hsts-multiple-headers.html"),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   d.RunUntilComplete();
 
   // We should have set parameters from the first header, not the second.
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
+  TransportSecurityState* security_state = context->transport_security_state();
   TransportSecurityState::STSState sts_state;
   EXPECT_TRUE(
       security_state->GetDynamicSTSState(test_server_hostname, &sts_state));

@@ -40,6 +40,7 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/url_util.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/dns_names_util.h"
@@ -284,10 +285,16 @@ SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
       NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
       [&] { return NetLogUpgradeToSSLParam(host); });
   STSState sts_state;
+  // Check the dynamic list first (removing the entry if expired).
   if (GetDynamicSTSState(host, &sts_state)) {
-    if (sts_state.ShouldUpgradeToSSL()) {
-      // If the static state also requires an upgrade, the dynamic state didn't
-      // need to be used in the decision.
+    // [*.]localhost hosts now ignore Strict-Transport-Security response
+    // headers, but an entry may have been stored before this restriction
+    // was introduced (crbug.com/41251622).
+    if (sts_state.ShouldUpgradeToSSL() &&
+        !(net::IsLocalHostname(host) &&
+          base::FeatureList::IsEnabled(features::kIgnoreHSTSForLocalhost))) {
+      // If the static state also requires an upgrade, the dynamic state
+      // didn't need to be used in the decision.
       STSState static_sts_state;
       if (GetStaticSTSState(host, &static_sts_state) &&
           static_sts_state.ShouldUpgradeToSSL()) {

@@ -1157,6 +1157,12 @@ void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   if (request_info_.url.HostIsIPAddress())
     return;
 
+  // Don't accept HSTS headers for localhost. (crbug.com/41251622)
+  if (net::IsLocalHostname(request_info_.url.host()) &&
+      base::FeatureList::IsEnabled(features::kIgnoreHSTSForLocalhost)) {
+    return;
+  }
+
   // http://tools.ietf.org/html/draft-ietf-websec-strict-transport-sec:
   //
   //   If a UA receives more than one STS header field in a HTTP response

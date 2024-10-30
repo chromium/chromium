@@ -7088,6 +7088,12 @@ TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest, HeaderClient) {
 
 TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
        HSTSRedirectClearsCookie) {
+  constexpr char kMockHSTSHost[] = "hsts.test";
+  net::MockHostResolverBase::RuleResolver rules;
+  rules.AddRule(kMockHSTSHost, "127.0.0.1");
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<net::MockHostResolverFactory>(std::move(rules)));
+
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -7107,12 +7113,12 @@ TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
   {
     base::RunLoop run_loop;
     network_context->AddHSTS(
-        "hsts.localhost", base::Time::Now() + base::Days(1000),
+        kMockHSTSHost, base::Time::Now() + base::Days(1000),
         false /*include_subdomains*/, run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  GURL https_url = https_server.GetURL("hsts.localhost", "/defaultresponse");
+  GURL https_url = https_server.GetURL(kMockHSTSHost, "/defaultresponse");
   GURL::Replacements replacements;
   replacements.SetSchemeStr("http");
   GURL hsts_redirect_url = https_url.ReplaceComponents(replacements);
