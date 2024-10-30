@@ -39,7 +39,7 @@ class AIManagerKeyedService : public KeyedService,
   void CreateAssistantForCloning(
       base::PassKey<AIAssistant> pass_key,
       blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      AIContextBoundObjectSet* context_bound_object_set,
+      AIContextBoundObjectSet& context_bound_object_set,
       const AIAssistant::Context& context,
       mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote);
 
@@ -107,7 +107,7 @@ class AIManagerKeyedService : public KeyedService,
   // `ReceiverContext`.
   void CreateAssistantInternal(
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
-      AIContextBoundObjectSet* context_bound_object_set,
+      AIContextBoundObjectSet& context_bound_object_set,
       base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
       const std::optional<const AIAssistant::Context>& context = std::nullopt,
       const std::optional<AIContextBoundObjectSet::ReceiverContext>

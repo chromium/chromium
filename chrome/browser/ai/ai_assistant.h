@@ -93,7 +93,7 @@ class AIAssistant : public AIContextBoundObject,
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       base::WeakPtr<content::BrowserContext> browser_context,
       mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
-      AIContextBoundObjectSet* session_set,
+      AIContextBoundObjectSet& session_set,
       const std::optional<const Context>& context = std::nullopt);
   AIAssistant(const AIAssistant&) = delete;
   AIAssistant& operator=(const AIAssistant&) = delete;
@@ -157,9 +157,9 @@ class AIAssistant : public AIContextBoundObject,
   base::WeakPtr<content::BrowserContext> browser_context_;
   // Holds all the input and output from the previous prompt.
   std::unique_ptr<Context> context_;
-  // It's safe to store a `raw_ptr` here since `this` is owned by
+  // It's safe to store a `raw_ref` here since `this` is owned by
   // `context_bound_object_set_`.
-  const raw_ptr<AIContextBoundObjectSet> context_bound_object_set_;
+  base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
 
   mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote_;
   mojo::Receiver<blink::mojom::AIAssistant> receiver_;

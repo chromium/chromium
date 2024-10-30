@@ -156,7 +156,7 @@ AIAssistant::AIAssistant(
         session,
     base::WeakPtr<content::BrowserContext> browser_context,
     mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
-    AIContextBoundObjectSet* context_bound_object_set,
+    AIContextBoundObjectSet& context_bound_object_set,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
       browser_context_(browser_context),
@@ -334,7 +334,7 @@ void AIAssistant::Fork(
           base::PassKey<AIAssistant>(),
           blink::mojom::AIAssistantSamplingParams::New(
               sampling_param.top_k, sampling_param.temperature),
-          context_bound_object_set_, *context_, std::move(client_remote));
+          context_bound_object_set_.get(), *context_, std::move(client_remote));
 }
 
 void AIAssistant::Destroy() {

@@ -240,7 +240,7 @@ void AIManagerKeyedService::CanCreateAssistant(
 
 void AIManagerKeyedService::CreateAssistantInternal(
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
-    AIContextBoundObjectSet* context_bound_object_set,
+    AIContextBoundObjectSet& context_bound_object_set,
     base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
     const std::optional<const AIAssistant::Context>& context,
     const std::optional<AIContextBoundObjectSet::ReceiverContext>
@@ -250,7 +250,7 @@ void AIManagerKeyedService::CreateAssistantInternal(
       browser_context_.get(), sampling_params,
       base::BindOnce(
           [](base::WeakPtr<content::BrowserContext> browser_context,
-             AIContextBoundObjectSet* context_bound_object_set,
+             AIContextBoundObjectSet& context_bound_object_set,
              const std::optional<const AIAssistant::Context>& context,
              base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
              std::unique_ptr<
@@ -266,8 +266,8 @@ void AIManagerKeyedService::CreateAssistantInternal(
                 std::move(session), browser_context, std::move(pending_remote),
                 context_bound_object_set, context));
           },
-          browser_context_->GetWeakPtr(), context_bound_object_set, context,
-          std::move(callback)));
+          browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
+          context, std::move(callback)));
   task->Run();
   if (task->observing_availability()) {
     CHECK(receiver_context.has_value());
@@ -290,11 +290,12 @@ void AIManagerKeyedService::CreateAssistant(
       receivers_.current_context();
   AIContextBoundObjectSet* context_bound_object_set =
       AIContextBoundObjectSet::GetFromContext(receiver_context);
+  CHECK(context_bound_object_set);
 
   auto create_assistant_callback = base::BindOnce(
       [](mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
              client,
-         AIContextBoundObjectSet* context_bound_object_set,
+         AIContextBoundObjectSet& context_bound_object_set,
          blink::mojom::AIAssistantCreateOptionsPtr options,
          std::unique_ptr<AIAssistant> assistant) {
         mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
@@ -332,14 +333,15 @@ void AIManagerKeyedService::CreateAssistant(
                                   assistant->GetAssistantInfo());
         }
 
-        context_bound_object_set->AddContextBoundObject(std::move(assistant));
+        context_bound_object_set.AddContextBoundObject(std::move(assistant));
       },
-      std::move(client), context_bound_object_set, std::move(options));
+      std::move(client), std::ref(*context_bound_object_set),
+      std::move(options));
 
   // When creating a new assistant, the `context` will be set to `nullopt` since
   // it should start fresh. The `receiver_context` needs to be provided to store
   // the `CreateAssistantOnDeviceSessionTask` when it's pending.
-  CreateAssistantInternal(sampling_params, context_bound_object_set,
+  CreateAssistantInternal(sampling_params, *context_bound_object_set,
                           std::move(create_assistant_callback),
                           /*context=*/std::nullopt, receiver_context);
 }
@@ -453,11 +455,11 @@ void AIManagerKeyedService::CanCreateSession(
 void AIManagerKeyedService::CreateAssistantForCloning(
     base::PassKey<AIAssistant> pass_key,
     blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-    AIContextBoundObjectSet* context_bound_object_set,
+    AIContextBoundObjectSet& context_bound_object_set,
     const AIAssistant::Context& context,
     mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
   auto create_assistant_callback = base::BindOnce(
-      [](AIContextBoundObjectSet* context_bound_object_set,
+      [](AIContextBoundObjectSet& context_bound_object_set,
          mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
              client_remote,
          std::unique_ptr<AIAssistant> assistant) {
@@ -470,9 +472,9 @@ void AIManagerKeyedService::CreateAssistantForCloning(
 
         client_remote->OnResult(assistant->TakePendingRemote(),
                                 assistant->GetAssistantInfo());
-        context_bound_object_set->AddContextBoundObject(std::move(assistant));
+        context_bound_object_set.AddContextBoundObject(std::move(assistant));
       },
-      context_bound_object_set, std::move(client_remote));
+      std::ref(context_bound_object_set), std::move(client_remote));
   // When cloning an existing assistant, the `context` from the source of clone
   // should be provided. The `receiver_context` can be left as `std::nullopt`
   // since the on-device model must be available before the existing assistant
