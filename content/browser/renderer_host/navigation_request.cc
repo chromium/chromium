@@ -9173,6 +9173,9 @@ void NavigationRequest::SetSourceSiteInstanceToInitiatorIfNeeded() {
   if (source_site_instance_ || !RequiresInitiatorBasedSourceSiteInstance())
     return;
 
+  // TODO(crbug.com/349972037): Reconsider source SiteInstance usage. E.g. if
+  // the initiator is sandboxed, the source SiteInstance we get here isn't and
+  // they don't technically match.
   const auto tuple =
       common_params_->initiator_origin->GetTupleOrPrecursorTupleIfOpaque();
   source_site_instance_ = static_cast<SiteInstanceImpl*>(
