@@ -35,6 +35,8 @@ design can be found at [policy_design.md](./policy_design.md).**
         future extensions or use cases.
     -   Negative policies (*Disable*, *Disallow*) are verboten because setting
         something to "true" to disable it confuses people.
+    - If the policy name has an acronym, only the first letter should be upper
+    camel case. For example, you should use "Api" and not "API".
 2.  Declare the policy in the [policies.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
     -   This file contains the policy names and their ids.
 3.  If you need to add a new policy group, create a directory with the name of
@@ -109,9 +111,11 @@ design can be found at [policy_design.md](./policy_design.md).**
             register the prefs with **Profile Prefs** if possible, because
             this gives admin more flexibility of policy setup.
         2.  Most policies can be mapped to prefs with `kSimplePolicyMap` in
-            [configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc?type=cs&q=kSimplePolicyMap&g=0&l=150).
-            If the policy needs additional verification or processing, please
+            [configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc?type=cs&q=kSimplePolicyMap&g=0&l=150). If the policy needs additional verification or processing, please
             implement a `ConfigurationPolicyHandler` to do so.
+            - If you are adding support for a GenAI policy (i.e. marking it as
+            `supported_on`), please also update the `gen_ai_default_policies`
+            [list](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/policy/configuration_policy_handler_list_factory.cc;l=3213?q=kSimplePolicyMap&ss=chromium).
         3.  Test the mapping by adding PolicyName.json  under
             [policy/test/data/pref_mapping](https://cs.chromium.org/chromium/src/components/policy/test/data/pref_mapping) (see [instructions](https://cs.chromium.org/chromium/src/docs/enterprise/policy_pref_mapping_test.md)).
         4.  iOS platform has its own
