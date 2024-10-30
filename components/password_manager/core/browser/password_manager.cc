@@ -1057,7 +1057,8 @@ void PasswordManager::UpdateStateOnUserInput(
   }
 
   if (!util::CanFieldBeConsideredAsSingleUsername(
-          field.name_attribute(), field.id_attribute(), field.label()) ||
+          field.name_attribute(), field.id_attribute(), field.label(),
+          field.form_control_type()) ||
       !util::CanValueBeConsideredAsSingleUsername(field.value())) {
     return;
   }

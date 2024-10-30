@@ -2960,6 +2960,16 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
               },
       },
       {
+          .description_for_logging = "Field with HTML type=search",
+          .fields =
+              {
+                  {.role = ElementRole::NONE,
+                   .name = u"mysterious_field",
+                   .form_control_type = FormControlType::kInputSearch,
+                   .predicted_type = autofill::SINGLE_USERNAME},
+              },
+      },
+      {
           .description_for_logging = "Nameless field",
           .fields =
               {

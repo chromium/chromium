@@ -871,9 +871,12 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
   std::u16string id_attribute = element.GetIdAttribute().Utf16();
   static base::NoDestructor<WebString> kLabel("label");
   std::u16string label_attribute = element.GetAttribute(*kLabel).Utf16();
+  autofill::mojom::FormControlType type_attribute =
+      form_util::ToAutofillFormControlType(
+          element.FormControlTypeForAutofill());
 
   if (!password_manager::util::CanFieldBeConsideredAsSingleUsername(
-          name_attribute, id_attribute, label_attribute) ||
+          name_attribute, id_attribute, label_attribute, type_attribute) ||
       !password_manager::util::CanValueBeConsideredAsSingleUsername(
           element_value)) {
     return;
