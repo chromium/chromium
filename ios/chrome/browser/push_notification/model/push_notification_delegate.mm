@@ -21,6 +21,9 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
@@ -38,6 +41,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -139,7 +143,9 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 }  // anonymous namespace
 
-@interface PushNotificationDelegate () <AppStateObserver>
+@interface PushNotificationDelegate () <AppStateObserver,
+                                        ProfileStateObserver,
+                                        SceneStateObserver>
 @end
 
 @implementation PushNotificationDelegate {
@@ -304,24 +310,51 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 #pragma mark - AppStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (appState.initStage < AppInitStage::kFinal) {
+- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
+  [sceneState addObserver:self];
+  [self sceneState:sceneState
+      transitionedToActivationLevel:sceneState.activationLevel];
+}
+
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage < ProfileInitStage::kFinal) {
     return;
   }
-  SceneState* sceneState = appState.foregroundActiveScene;
-  if (sceneState == nil) {
+
+  for (SceneState* sceneState in profileState.connectedScenes) {
+    if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+      continue;
+    }
+
+    [self appDidEnterForeground:sceneState];
+  }
+
+  [profileState removeObserver:self];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level < SceneActivationLevelForegroundActive) {
     return;
   }
+
+  if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+    [sceneState.profileState addObserver:self];
+    return;
+  }
+
   [self appDidEnterForeground:sceneState];
 }
 
-- (void)appState:(AppState*)appState
-    sceneDidBecomeActive:(SceneState*)sceneState {
-  if (appState.initStage < AppInitStage::kFinal) {
-    return;
-  }
-  [self appDidEnterForeground:sceneState];
+- (void)sceneState:(SceneState*)sceneState
+    profileStateConnected:(ProfileState*)profileState {
+  [profileState addObserver:self];
 }
 
 #pragma mark - Private
@@ -400,8 +433,12 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 // Returns YES if there is a foreground active scene for any profile.
 - (BOOL)isSceneLevelForegroundActive {
-  for (SceneState* scene in _appState.connectedScenes) {
-    if (scene.activationLevel < SceneActivationLevelForegroundActive) {
+  for (SceneState* sceneState in _appState.connectedScenes) {
+    if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+      continue;
+    }
+
+    if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {
       continue;
     }
 
