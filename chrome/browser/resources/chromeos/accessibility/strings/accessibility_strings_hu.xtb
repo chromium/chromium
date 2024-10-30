@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">Méret: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> billentyűkombináció</translation>
 <translation id="1923956950274750765">Középorchidea</translation>
+<translation id="1926147969119007125">Arcalapú vezérlés szüneteltetése</translation>
 <translation id="1928932365747995741">Nincs előző szerkeszthető szövegmező</translation>
 <translation id="1964135212174907577">Következő objektum</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">Ugrás a következő fókuszálható elemre</translation>
 <translation id="2756452585631602151">Adjon meg egy egyéni címkét</translation>
 <translation id="2766299274563946262">Nincs több cella balra</translation>
+<translation id="2770947749427257887">Belépés a görgetési módba</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Egy ujjal jobbról balra csúsztatva pedig az előző elemre léphet. Próbálja ki most.</translation>
 <translation id="280499067616661124">ChromeVox-keresés az oldalon</translation>
@@ -339,6 +341,7 @@
 <translation id="311015743332597320">Csúsztasson négy ujjal jobbra</translation>
 <translation id="3112457281078985179">A ChromeVox be- vagy kikapcsolásához használja a Control + Alt + Z billentyűparancsot.</translation>
 <translation id="3115800313647508384">Kikapcsolja a képernyőt?</translation>
+<translation id="3127625407966660979">A diktálás aktív</translation>
 <translation id="3131002934070407451">Számok olvasása:</translation>
 <translation id="3134461040845705080">csak olv</translation>
 <translation id="3137663468179739624">Olajzöld</translation>
@@ -402,6 +405,7 @@
 <translation id="3466530247399808663">Érvénytelen billentyű lenyomása</translation>
 <translation id="3468959318854349468">Nincs cím</translation>
 <translation id="3469413619751135069">Halványzöld</translation>
+<translation id="3473744269398144689">Diktálás indítása</translation>
 <translation id="3490765818161916458">Lista/rács</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{szögletes berekesztő zárójel}other{# szögletes berekesztő zárójel}}</translation>
 <translation id="3494946239022273294">menüelem</translation>
@@ -658,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Befejezés</translation>
 <translation id="5290220123487191192">Kezdjük néhány gyakran használt kézmozdulattal. Ha odaér az aktiválni kívánt elemhez, koppintson duplán a képernyőre egy ujjal. A folytatáshoz koppintson most duplán.</translation>
+<translation id="5291860916305032607">Arcalapú vezérlés folytatása</translation>
 <translation id="5302089807023311274">Bibliográfiai hivatkozás</translation>
 <translation id="530391007967514163">Próbáljon címsor szerint ugrani az alábbi szövegben való navigációhoz.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" /> lap</translation>
@@ -683,6 +688,7 @@
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Modális riasztás</translation>
+<translation id="5406272775687194041">Húzás indítása</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{pontosvessző}other{# pontosvessző}}</translation>
 <translation id="5420259671171615858">Keresés a menükben</translation>
 <translation id="5435274640623994081">Hangjelzés naplózásának engedélyezése</translation>
@@ -750,6 +756,7 @@
 <translation id="5824976764713185207">Oldal automatikus felolvasása a betöltés befejezése után</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. sor, <ph name="COL" />. oszlop</translation>
 <translation id="5833044594931167190">Nincsenek ARIA-területek</translation>
+<translation id="584044465500042213">Kilépés a görgetési módból</translation>
 <translation id="5842625257683688671">Nincs következő ábra</translation>
 <translation id="5847883414085148048">Ajánlás</translation>
 <translation id="5850707923114094062">Pásztázás hátrafelé</translation>
@@ -952,6 +959,7 @@
 <translation id="7285387653379749618">Táblázatok</translation>
 <translation id="7289186959554153431">3-as címsor</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Húzás befejezése</translation>
 <translation id="7308519659008003150">Nincs előző űrlapmező</translation>
 <translation id="731121099745151312">faelem</translation>
 <translation id="7313717760367325059">súgó</translation>
@@ -1157,6 +1165,7 @@
 <translation id="8775203254697638994">Időnként legördülő listából kell kiválasztania a kívánt elemet. Ehhez elsőként bontsa ki a listát a Keresés + Szóköz billentyűparanccsal. Ezután a felfelé és lefelé nyíllal válassza ki a kívánt elemet. Végül csukja össze a listát a Keresés + Szóköz billentyűparanccsal.</translation>
 <translation id="8779057862865475116">Nincs előző link</translation>
 <translation id="8796411681063377102">Következő 3. szintű fejléc</translation>
+<translation id="8821891849214789910">Diktálás leállítása</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" />/<ph name="CURRENTPAGE" />. oldal</translation>
 <translation id="8825828890761629845">szlghird</translation>
 <translation id="8851136666856101339">fő</translation>

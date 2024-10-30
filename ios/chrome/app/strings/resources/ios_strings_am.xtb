@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">ዘግተው ወጥተዋል። በመለያዎ ውስጥ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎችንም ለመጠቀም በመለያ መልሰው ይግቡ።</translation>
 <translation id="1054745118061919935">በመቀጠል፣ በ<ph name="BEGIN_LINK" />የአገልግሎት ውል<ph name="END_LINK" /> ይስማማሉ።</translation>
 <translation id="10614374240317010">በጭራሽ አልተቀመጠም</translation>
+<translation id="1062138828266376352">የእርስዎ ፒን አልተለወጠም። የበይነመረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ</translation>
 <translation id="1066060668811609597">ስምረትን ያቀናብሩ</translation>
 <translation id="1076421457278169141">ኮድ ተቃኝቷል</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ትር}one{{count} ትር}other{{count} ትሮች}}</translation>
@@ -676,6 +677,7 @@
 <translation id="421070604241073551">ሲበራ ውሂብ በGoogle መለያዎ ውስጥ ይቀመጣል። ሲጠፋ፣ ውሂብ ወደዚህ መሣሪያ ብቻ ይቀመጣል።</translation>
 <translation id="4224534474590365556">99+ ገቢር ያልሆኑ ትሮች ይዘጉ?</translation>
 <translation id="422474357428465195">የእርስዎን ደህንነትን ስጋት ውስጥ ሊያስገቡ የሚችሉ በርካታ የይለፍ ቃል ችግሮች አሉብዎት።</translation>
+<translation id="422477017457571619">ወደ Google በሚላከው የእርስዎ የአሰሳ ውሂብ ላይ ተመስርቶ አደገኛ ከሆኑ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች የሚደረግ የእውነተኛ ጊዜ በሰው ሠራሽ አስተውሎት የተጎላበተ ጥበቃ</translation>
 <translation id="4231395118547300571">የደህንነት ፍተሻ ማሳወቂያዎች በርተዋል</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ነባሪ የአሳሽ መተግበሪያ<ph name="END_BOLD" />ን መታ ያድርጉ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
@@ -1350,10 +1352,12 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7218491361283758048">ዚፕ ኮድ</translation>
 <translation id="7221173315674413369">ምን አዲስ ነገር አለ ውስጥ አዳዲስ ባህሪያት እና ጠቃሚ ምክሮችን ያስሱ</translation>
 <translation id="722339453342442311">አሁን ፈትሽ</translation>
+<translation id="7227235818314667565">ማጋራትን ያቀናብሩ</translation>
 <translation id="7233006041370588369">የሚሞላ የይለፍ ቃል ይምረጡ።</translation>
 <translation id="7241135764990439166">ማንነት የማያሳውቅ ሁነታ አይገኝም</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />የፍለጋ ታሪክ<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />ሌሎች የእንቅስቃሴ ቅፆች<ph name="END_LINK" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ።</translation>
 <translation id="7253951228444156601">የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
+<translation id="7261217796641151584">ቡድንን አጋራ</translation>
 <translation id="7271220006028561438">የራስ ሰር የይለፍ ቁልፍ ማላቆችን ፍቀድ</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="7293429513719260019">ቋንቋ ይምረጡ</translation>

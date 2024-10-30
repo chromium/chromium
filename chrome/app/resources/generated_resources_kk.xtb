@@ -428,6 +428,7 @@
 <translation id="1291421198328146277">Қайта орнату пернелері</translation>
 <translation id="1292849930724124745">Аккаунтта қалу үшін смарт картаны салыңыз</translation>
 <translation id="1293264513303784526">USB-C құрылғысы (сол жақ ұяшық)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" қимылы "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" және "<ph name="CONFLICTING_GESTURE_THREE" />" қимылдарына қайшы келуі мүмкін. Басқа қимыл таңдаған дұрыс.</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1294807885394205587">Бұл бірнеше минутқа созылуы мүмкін. Контейнер басқарушысы іске қосылуда.</translation>
 <translation id="12951065153783848">Аккаунтыңызды ұйымыңыз басқарады.</translation>
@@ -2610,6 +2611,7 @@
 <translation id="2806372837663997957">Бөліскіңіз келген құрылғы қабылдамады.</translation>
 <translation id="2806891468525657116">Таңбаша бұрыннан бар</translation>
 <translation id="2807517655263062534">Сіз жүктеп алатын файлдар осында шығады</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" қимылы "<ph name="CONFLICTING_GESTURE_ONE" />" және "<ph name="CONFLICTING_GESTURE_TWO" />" қимылдарына қайшы келуі мүмкін. Басқа қимыл таңдаған дұрыс.</translation>
 <translation id="2811205483104563968">Аккаунттар</translation>
 <translation id="2812049959647166806">Thunderbolt қолданылмайды</translation>
 <translation id="2812171980080389735">Лезде қосыла алуыңыз үшін сақталған желілер мен құпия сөздер</translation>
@@ -4340,6 +4342,7 @@
 <translation id="404894744863342743">Жүктеп алынған файлды пайдаланып болғаннан кейін, осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайтындай етіп жойыңыз.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# контакт қолжетімсіз. Nearby Share функциясын пайдалану үшін оның Google аккаунтымен байланыстырылған электрондық мекенжайын контактілерге қосыңыз.}other{# контакт қолжетімсіз. Nearby Share функциясын пайдалану үшін олардың Google аккаунттарымен байланыстырылған электрондық мекенжайларын контактілеріңізге қосыңыз.}}</translation>
 <translation id="4050225813016893843">Аутентификация әдісі</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" қимылы "<ph name="CONFLICTING_GESTURE" />" қимылына қайшы келуі мүмкін. Басқа қимыл таңдаған дұрыс.</translation>
 <translation id="4050534976465737778">Екі құрылғының да құлпы ашық, бір-біріне жақын және Bluetooth функциялары қосулы екеніне көз жеткізіңіз. Егер контактілеріңізде жоқ Chromebook құрылғысымен бөлісетін болсаңыз, Nearby көрсетілу параметрінің қосулы екеніне көз жеткізіңіз. Ол үшін күй аумағын ашып, Nearby көрсетілу параметрін қосыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Соңғы пайдаланылған енгізу әдісіне ауысу үшін <ph name="KEY_CODES" /> пернелерін басыңыз.</translation>
 <translation id="4051177682900543628">іздеу + оң бағыт пернесі</translation>

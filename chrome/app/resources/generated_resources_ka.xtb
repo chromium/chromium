@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">ღამის განათება ავტომატურად ჩაირთვება მზის ჩასვლისას</translation>
 <translation id="1288300545283011870">მეტყველების პარამეტრები</translation>
 <translation id="1289619947962767206">ეს ვარიანტი მხარდაჭერილი აღარ არის. ჩანართის პრეზენტირებისთვის გამოიყენეთ <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">უკვე მინიჭებული ჟესტის არჩევით ის ამოიშლება ორიგინალი მოქმედებიდან.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" />-ის მომსახურების პირობები</translation>
 <translation id="1291421198328146277">კლავიშების გადაყენება</translation>
 <translation id="1292849930724124745">სისტემაში შესულ მდგომარეობაში დასარჩენად ჩასვით სმარტ-ბარათი</translation>
@@ -6744,6 +6745,7 @@
 <translation id="5832970156002835240">ყველა საიტზე დაშვება</translation>
 <translation id="5833397272224757657">პერსონალიზებისთვის იყენებს თქვენ მიერ მონახულებული ვებსაიტების კონტენტს, ასევე ბრაუზერის აქტივობასა და მასთან ინტერაქციას</translation>
 <translation id="5833726373896279253">ამ პარამეტრების შეცვლა მხოლოდ მფლობელს შეუძლია.</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">საიტებისთვის JavaScript-ის გამოყენების აკრძალვა</translation>
 <translation id="583431638776747">საიტი მიუწვდომელი იყო</translation>
 <translation id="5834581999798853053">დარჩენილია დაახლოებით <ph name="TIME" /> წუთი</translation>

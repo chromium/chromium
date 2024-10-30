@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော <ph name="NUM_YEARS_ONE" /> လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_YEARS_MANY" /> လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
-<translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု ရွေးစရာများ</translation>
 <translation id="1293272072740285747">တဘ်များကို နောက်မှထည့်ရန် ဤအုပ်စုကို ဆက်ထားနိုင်သည်။ သို့မဟုတ် ၎င်းကို သင်မလိုအပ်တော့ပါက ဖျက်နိုင်သည်။
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">ပြန်ကြည့်ရန်</translation>
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
-<translation id="5082793167783849073">အဖွဲ့ဖွဲ့ခြင်းဖြင့် စာမျက်နှာများကို အမြန်နှိုင်းယှဉ်ပါ။ စတင်ရန် လင့်ခ်ကို ထိပြီး ဖိထားပါ။</translation>
 <translation id="5094423602314093681">တဘ်(များ)ဖယ်ရှားပြီး အုပ်စုကို ဖျက်မလား။</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်}}</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ဤဆိုင် ပိတ်ရသည့်အကြောင်း</translation>
 <translation id="9111228330448174435">တဘ်အုပ်စုအသစ် ပြုလုပ်ရာတွင် ဒိုင်ယာလော့ဂ် ပြပါ</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု၊ <ph name="COLOR_NAME" /> အတွက် တဘ်အုပ်စု လုပ်ဆောင်ချက် မီနူးကို ဖွင့်ရန်။</translation>
-<translation id="9150694013019234766">မျက်နှာပြင်အောက်ခြေနားရှိ သင်၏ တဘ်အုပ်စုအတွင်း တဘ်တစ်ခုမှတစ်ခုသို့ ပြောင်းပါ</translation>
 <translation id="9169594135889675189">တဘ်အသစ်ကို အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="9216898458513705996">တဘ်များကို ဤစက်တွင် ဆက်ဖွင့်ထားမည်ဖြစ်သော်လည်း <ph name="USER_EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသည့် စက်အားလုံးတွင် အုပ်စုကို ဖျက်လိုက်ပါမည်</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>

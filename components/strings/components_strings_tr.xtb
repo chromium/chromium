@@ -2268,6 +2268,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5087286274860437796">Sunucu sertifikası şu anda geçerli değil.</translation>
 <translation id="5087580092889165836">Kart ekle</translation>
 <translation id="5088142053160410913">Operatöre mesaj</translation>
+<translation id="5089791650329866127">Bu özellik, otomatik doldurma özelliğiyle kaydettiğiniz bilgileri (ör. adresiniz) kullanır</translation>
 <translation id="5090647584136241764">Sizin için önemli olan ayrıntıları kolayca karşılaştırmak için benzer ürünler içeren sekmeler ekleyin</translation>
 <translation id="5093232627742069661">Z katlama</translation>
 <translation id="5094747076828555589">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı; Chromium, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
@@ -4542,6 +4543,7 @@ Ek ayrıntılar:
 <translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> üzerinde arama yapmak için @ yazın</translation>
 <translation id="9213433120051936369">Görünümü özelleştir</translation>
 <translation id="9215416866750762878">Bir uygulama, Chrome'un bu siteye güvenli bir şekilde bağlanmasını engelliyor</translation>
+<translation id="921738974253889319">Bu özellik, otomatik doldurma özelliğiyle kaydettiğiniz bilgileri (ör. adresiniz) kullanır. Söz konusu verileri bu sayfada inceleyip yönetebilirsiniz.</translation>
 <translation id="92178312226016010">Bu ürünü takip ediyorsunuz.</translation>
 <translation id="9218430445555521422">Varsayılan olarak ayarla</translation>
 <translation id="9219103736887031265">Resimler</translation>

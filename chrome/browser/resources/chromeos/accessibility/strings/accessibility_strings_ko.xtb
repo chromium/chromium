@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">크기: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" />코드</translation>
 <translation id="1923956950274750765">미디엄 오키드</translation>
+<translation id="1926147969119007125">페이스 컨트롤 일시중지</translation>
 <translation id="1928932365747995741">이전 수정 가능한 텍스트 입력란이 없습니다</translation>
 <translation id="1964135212174907577">다음 객체</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">다음 초점 가능 항목으로 이동</translation>
 <translation id="2756452585631602151">맞춤 라벨을 입력하세요.</translation>
 <translation id="2766299274563946262">왼쪽에 셀이 없습니다</translation>
+<translation id="2770947749427257887">스크롤 모드 시작</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{#개 이상}other{#개 이상}}</translation>
 <translation id="2792200646155001340">또한 한 손가락을 오른쪽에서 왼쪽으로 스와이프하여 이전 항목으로 이동할 수 있습니다. 지금 해 보세요.</translation>
 <translation id="280499067616661124">ChromeVox 페이지에서 찾기</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">잘못된 키 누름</translation>
 <translation id="3468959318854349468">제목 없음</translation>
 <translation id="3469413619751135069">페일 그린</translation>
+<translation id="3473744269398144689">음성기록 시작</translation>
 <translation id="3490765818161916458">목록 그리드</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{오른쪽 꺾음 괄호}other{오른쪽 꺾음 괄호 #개}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">종료</translation>
 <translation id="5290220123487191192">평소 사용할 몇 가지 동작부터 시작해 보겠습니다. 활성화할 항목에 도달하면 한 손가락으로 화면을 두 번 탭하세요. 계속하려면 지금 두 번 탭하세요.</translation>
+<translation id="5291860916305032607">페이스 컨트롤 재개</translation>
 <translation id="5302089807023311274">참고문헌 참조</translation>
 <translation id="530391007967514163">제목 간에 점프하여 아래 텍스트를 탐색해 보세요.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, 탭</translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5402367795255837559">점자</translation>
 <translation id="5402791055281059602">모달 알림</translation>
+<translation id="5406272775687194041">드래그 앤 드롭 시작</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{세미콜론}other{세미콜론 #개}}</translation>
 <translation id="5420259671171615858">메뉴 검색</translation>
 <translation id="5435274640623994081">이어콘 로깅 사용</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">로드가 끝나면 자동으로 페이지를 읽습니다.</translation>
 <translation id="5826479389509458994"><ph name="ROW" />행 <ph name="COL" />열</translation>
 <translation id="5833044594931167190">ARIA 랜드마크가 없습니다</translation>
+<translation id="584044465500042213">스크롤 모드 종료</translation>
 <translation id="5842625257683688671">다음 그래픽이 없습니다</translation>
 <translation id="5847883414085148048">헌정사</translation>
 <translation id="5850707923114094062">뒤로 이동합니다.</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">표</translation>
 <translation id="7289186959554153431">제목 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />(<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">드래그 앤 드롭 종료</translation>
 <translation id="7308519659008003150">이전 양식 입력란이 없습니다</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">도움말</translation>
@@ -1158,6 +1165,7 @@
 <translation id="8775203254697638994">드롭다운 목록에서 항목을 선택해야 하는 경우가 있습니다. 그러려면 먼저 검색 키 + 스페이스바를 눌러 목록을 펼칩니다. 그런 다음 위쪽 화살표 키와 아래쪽 화살표 키를 눌러 항목을 선택합니다. 마지막으로 검색 키 + 스페이스바를 눌러 목록을 접습니다.</translation>
 <translation id="8779057862865475116">이전 링크가 없습니다</translation>
 <translation id="8796411681063377102">다음 수준 3 제목</translation>
+<translation id="8821891849214789910">음성기록 중지</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" />페이지 중 <ph name="CURRENTPAGE" />페이지</translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">main</translation>

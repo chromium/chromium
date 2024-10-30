@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жыл мурун түзүлдү}other{<ph name="NUM_YEARS_MANY" /> жыл мурун түзүлдү}}</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1197088940767939838">Кызгылт сары</translation>
-<translation id="125153950246128346">Башка өтмөктү көрүү үчүн таптап коюңуз</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобунун параметрлери</translation>
 <translation id="1293272072740285747">Кийинчерээк өтмөктөрдү кошуу үчүн бул топту калтырып, эгер кереги жок болуп калса, өчүрүңүз.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Карап көрүү</translation>
 <translation id="5073204694187207510">Толук экран торчосун жашыруу</translation>
 <translation id="5076161749301278626">Дүкөн жөнүндө жазылган сын-пикирлерди көрөсүзбү?</translation>
-<translation id="5082793167783849073">Барактарды топко бириктирип, тез салыштырып чыгыңыз. Баштоо үчүн, шилтемени коё бербей басып туруңуз.</translation>
 <translation id="5094423602314093681">Өтмөк(-төр) алынып салынып, топ өчүрүлсүнбү?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> өтмөк кошулду}other{<ph name="MANY_ADDED" /> өтмөк кошулду}}</translation>
 <translation id="5161254044473106830">Аталышы керек</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Бул дүкөн тууралуу маалымат жабык</translation>
 <translation id="9111228330448174435">Жаңы өтмөктөр тобун түзүү диалогун көрүү</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> түсүндөгү <ph name="TITLE_OF_GROUP" /> өтмөктөр тобу үчүн өтмөктөр тобунун аракет менюсун ачыңыз.</translation>
-<translation id="9150694013019234766">Экраныңыздын ылдый жагында жайгашкан өтмөктөрдүн тобунан өтмөктөрүңүздү которуштуруңуз</translation>
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>
 <translation id="9216898458513705996">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}}</translation>

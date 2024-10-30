@@ -1147,6 +1147,7 @@
 <translation id="4902797682482387055">ଫୋକସ କରିବାକୁ ଥିବା ପ୍ରସ୍ତାବିତ ଟାସ୍କ</translation>
 <translation id="490375751687810070">ଭୂଲମ୍ଵ</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ</translation>
+<translation id="4911191962826748981">ଏହା ପରୀକ୍ଷାମୂଳକ AI ଫିଚର ଅଟେ ଏବଂ ଏହା ସର୍ବଦା ସଠିକ ଭାବେ କାମ କରିବ ନାହିଁ।</translation>
 <translation id="491504982845934899">ଡିଭାଇସ ସେଟଅପ କରିବା ପରେ <ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
 <translation id="4918086044614829423">ସ୍ୱୀକାର କରନ୍ତୁ</translation>
@@ -2008,6 +2009,7 @@
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7807067443225230855">ସର୍ଚ୍ଚ ଓ ଆସିଷ୍ଟାଣ୍ଟ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ଓ <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">ଥମ୍ବସ ଅପ 'ଆପଣ ଏହି ପରାମର୍ଶକୁ ପସନ୍ଦ କରନ୍ତି' ବୋଲି ମତାମତ ଦାଖଲ କରିବ</translation>
 <translation id="7825412704590278437">ଆଗାମୀ କେଲେଣ୍ଡର ଇଭେଣ୍ଟ ଠାରୁ</translation>
 <translation id="7829386189513694949">ଶକ୍ତିଶାଳୀ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="7830453190047749513">ଆପଣ ଆପଣଙ୍କ <ph name="PERIPHERAL_NAME" /> ପାଇଁ ବଟନ କାର୍ଯ୍ୟ, କର୍ସର ସ୍ପିଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ପର୍ସନାଲାଇଜ କରିପାରିବେ</translation>
@@ -2162,6 +2164,7 @@
 <translation id="830868413617744215">ବେଟା</translation>
 <translation id="8314772463905284467">Caps Lock ଚାଲୁ ଅଛି</translation>
 <translation id="8315514906653279104">ଚାଲୁ କରାଯାଉଛି...</translation>
+<translation id="8319634750346253957">ଥମ୍ବସ ଡାଉନ 'ଆପଣ ଏହି ପରାମର୍ଶକୁ ନାପସନ୍ଦ କରନ୍ତି' ବୋଲି ମତାମତ ଦାଖଲ କରିବ</translation>
 <translation id="8331351032546853669">ଡାଉନଲୋଡ ବାକି ଅଛି</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

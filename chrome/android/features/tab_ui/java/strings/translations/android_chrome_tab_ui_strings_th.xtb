@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{สร้างเมื่อ <ph name="NUM_YEARS_ONE" /> ปีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_YEARS_MANY" /> ปีที่ผ่านมา}}</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1197088940767939838">สีส้ม</translation>
-<translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1273910660700874265">ตัวเลือกกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือลบออกหากคุณไม่ต้องการแล้ว
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">ดู</translation>
 <translation id="5073204694187207510">ซ่อนตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="5076161749301278626">ดูรีวิวร้านค้าไหม</translation>
-<translation id="5082793167783849073">เปรียบเทียบหน้าต่างๆ อย่างรวดเร็วด้วยการสร้างกลุ่ม แตะลิงก์ค้างไว้เพื่อเริ่มต้น</translation>
 <translation id="5094423602314093681">นําแท็บออกและลบกลุ่มใช่ไหม</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{เพิ่มแล้ว <ph name="ONE_ADDED" /> แท็บ}other{เพิ่มแล้ว <ph name="MANY_ADDED" /> แท็บ}}</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ปิดข้อมูลเกี่ยวกับร้านนี้แล้ว</translation>
 <translation id="9111228330448174435">แสดงกล่องโต้ตอบเมื่อสร้างกลุ่มแท็บใหม่</translation>
 <translation id="9114502155681725011">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" สี<ph name="COLOR_NAME" /></translation>
-<translation id="9150694013019234766">สลับไปมาระหว่างแท็บในกลุ่มแท็บบริเวณด้านล่างของหน้าจอ</translation>
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
 <translation id="9216898458513705996">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>

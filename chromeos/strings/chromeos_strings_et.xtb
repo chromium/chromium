@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">rohkem</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3321030238473337787">Esituskiirus</translation>
+<translation id="3327613592010997943">Seda seadet saab uuesti kasutada <ph name="DAY" /> kell <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">seaded</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Portaali olek</translation>
 <translation id="5763838252932650682">Rakenduse <ph name="APP_NAME" /> taaskäivitamine ja värskendamine</translation>
 <translation id="576835345334454681">Ekraanikuva ereduse suurendamine</translation>
+<translation id="5775340474232476653">Õpetaja lõpetas tunni</translation>
 <translation id="5779818640587041940">Hoidke salvestamise ajal ekraan sees</translation>
 <translation id="57838592816432529">Vaigista</translation>
 <translation id="5784136236926853061">Pikk HTTP latentsusaeg</translation>
@@ -1356,6 +1358,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="757747079855995705">kivist</translation>
 <translation id="7590883480672980941">Sisendi seaded</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> on jäänud</translation>
+<translation id="7600430297804876776">Administraator <ph name="MANAGER" /> on määranud, millal seadet <ph name="DEVICE_TYPE" /> kasutada saab.</translation>
 <translation id="7613724632293948900">Ümberpaigutamine hiire või nooleklahvidega.</translation>
 <translation id="7618774594543487847">Neutraalne</translation>
 <translation id="7620771111601174153">Lisateavet leiate abikeskusest</translation>
@@ -1461,6 +1464,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8088963492174775412">Vajutage salvestamiseks</translation>
 <translation id="8094062939584182041">Luban Google'il endale selle teema kohta meile saata</translation>
 <translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
+<translation id="8110942816572072814">Õpetaja lukustas ekraanikuva</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Kinnita</translation>

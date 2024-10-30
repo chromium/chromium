@@ -422,6 +422,7 @@
 <translation id="1288037062697528143">रात्रि प्रकाश सूर्यास्तको बेला स्वतः अन हुने छ</translation>
 <translation id="1288300545283011870">बोलीका गुणहरू</translation>
 <translation id="1289619947962767206">यो विकल्प अब उप्रान्त उपलब्ध छैन। कुनै ट्याब देखाउन <ph name="GOOGLE_MEET" /> प्रयोग गर्नुहोस्।</translation>
+<translation id="1291057703584594733">तपाईंले असाइन गरिसकिएको जेस्चर चयन गर्नुभयो भने उक्त जेस्चर त्यसको मूल कारबाहीबाट हटाइने छ।</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> का सेवाका सर्तहरू</translation>
 <translation id="1291421198328146277">की रिसेट गर्नुहोस्</translation>
 <translation id="1292849930724124745">साइन इन रहिरहन स्मार्ट कार्ड इन्सर्ट गर्नुहोस्</translation>
@@ -1704,7 +1705,7 @@
 <translation id="2186206192313702726">Google लेन्स</translation>
 <translation id="2186711480981247270">अर्को डिभाइसबाट पेज सेयर गरिएको छ</translation>
 <translation id="2187569197737151508">यसलाई पुनः अन गर्न esc ५ पटक थिच्नुहोस्</translation>
-<translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य यन्त्रमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य डिभाइसमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्भर सर्टिफिकेट आयात त्रुटि</translation>
 <translation id="2187906491731510095">विस्तारहरू अद्यावधिक गरिए</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> खोल्नुहोस्</translation>
@@ -6730,6 +6731,7 @@
 <translation id="5832970156002835240">सबै साइटमा अनुमति दिनुहोस्</translation>
 <translation id="5833397272224757657">यसले वैयक्तीकरण गर्ने प्रयोजनका लागि तपाईं जाने साइटका सामग्रीका साथै ब्राउजरसम्बन्धी क्रियाकलाप तथा अन्तर्क्रियाहरूको प्रयोग गर्छ</translation>
 <translation id="5833726373896279253">यी सेटिङहरूलाई केवल मालिकले मात्र संशोधन गर्न सक्छ:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">साइटहरूलाई JavaScript प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="583431638776747">साइट उपलब्ध थिएन</translation>
 <translation id="5834581999798853053">करीव <ph name="TIME" /> मिनेट बाँकी</translation>
@@ -9843,7 +9845,7 @@
 <translation id="8080028325999236607">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081989000209387414">ADB डिबग प्रक्रिया असक्षम पार्ने हो?</translation>
-<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउने हो?</translation>
+<translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग कनेक्ट गर्ने हो?</translation>
 <translation id="8082132721957920509">तपाईंको कार्ड सेभ गरिएको छ</translation>
 <translation id="8082390128630131497">ADB डिबग प्रक्रिया असक्षम पार्नुले <ph name="DEVICE_TYPE" /> का सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजाने छ। प्रयोगकर्ताका सबै खाता र स्थानीय डेटा मेटाइने छन्।</translation>
 <translation id="8084114998886531721">सुरक्षित गरिएको पासवर्ड</translation>
@@ -10828,7 +10830,7 @@
 <translation id="8781834595282316166">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="8781980678064919987">लिड बन्द गरिएको बेला बन्द गर्नुहोस्</translation>
 <translation id="8782565991310229362">कियस्क एप्लिकेसन लन्च रद्द गरियो।</translation>
-<translation id="8783834180813871000">ब्लुटुथ प्रयोग गरी जोडा बनाउने कोड टाइप गर्नुहोस्, त्यसपछि Return वा Enter थिच्नुहोस्।</translation>
+<translation id="8783834180813871000">ब्लुटुथ प्रयोग गरी कनेक्ट गर्ने कोड टाइप गर्नुहोस्, त्यसपछि Return वा Enter थिच्नुहोस्।</translation>
 <translation id="8783955532752528811">सुविधाहरूमा सान्दर्भिक मद्दत</translation>
 <translation id="8784626084144195648">भाँडोको औसत</translation>
 <translation id="8785622406424941542">स्टाइलस</translation>
@@ -11270,7 +11272,7 @@
 <translation id="9088858349441302494"><ph name="VALUE" /> ले व्यवस्थापन गर्छ</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>
 <translation id="9089959054554410481">टचप्याडमा स्क्रोल गर्ने दिशा परिवर्तन गर्नुहोस्</translation>
-<translation id="9090044809052745245">अन्य यन्त्रमा देखिने तपाईंको डिभाइसको नाम</translation>
+<translation id="9090044809052745245">अन्य डिभाइसमा देखिने तपाईंको डिभाइसको नाम</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{फाइल सारेर <ph name="CLOUD_PROVIDER" /> मा लैजान सकिएन}other{फाइलहरू सारेर <ph name="CLOUD_PROVIDER" /> मा लैजान सकिएन}}</translation>
 <translation id="9093470422440389061">WiFi को पर्फर्मेन्ससम्बन्धी मेट्रिक्स</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>

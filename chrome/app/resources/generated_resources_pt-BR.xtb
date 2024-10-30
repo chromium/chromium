@@ -429,6 +429,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1291421198328146277">Redefinir teclas</translation>
 <translation id="1292849930724124745">Insira o cartão inteligente para manter a conta conectada</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (porta da esquerda)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" pode se sobrepor a "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" e "<ph name="CONFLICTING_GESTURE_THREE" />". Se possível, tente escolher outro gesto.</translation>
 <translation id="1293556467332435079">Arquivos</translation>
 <translation id="1294807885394205587">O processo pode levar alguns minutos. Iniciando o administrador de contêiner.</translation>
 <translation id="12951065153783848">Sua organização gerencia sua conta</translation>
@@ -2629,6 +2630,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2806372837663997957">O dispositivo não aceitou o compartilhamento</translation>
 <translation id="2806891468525657116">O atalho já existe</translation>
 <translation id="2807517655263062534">Os arquivos baixados aparecem aqui</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" pode se sobrepor a "<ph name="CONFLICTING_GESTURE_ONE" />" e "<ph name="CONFLICTING_GESTURE_TWO" />". Se possível, tente escolher outro gesto.</translation>
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é compatível</translation>
 <translation id="2812171980080389735">Redes e senhas salvas para você se conectar instantaneamente</translation>
@@ -4365,6 +4367,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="404894744863342743">Depois que você terminar de usar o arquivo baixado, ele poderá ser excluído para que outras pessoas que usam este dispositivo não saibam suas senhas.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o "Compartilhar por proximidade" com esses contatos, adicione os endereços de e-mail associados à Conta do Google deles.}}</translation>
 <translation id="4050225813016893843">Método de autenticação</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" pode se sobrepor a "<ph name="CONFLICTING_GESTURE" />". Se possível, tente escolher outro gesto.</translation>
 <translation id="4050534976465737778">Confirme se os dois dispositivos estão desbloqueados, perto um do outro e com o Bluetooth ativado. Se você estiver compartilhando com um Chromebook que não está nos seus contatos, ative a visibilidade do Compartilhar por proximidade na área de status. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Para trocar para o último método de entrada usado, pressione <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">pesquisar + seta para a direita</translation>

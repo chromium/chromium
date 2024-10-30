@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Створено <ph name="NUM_YEARS_ONE" /> рік тому}one{Створено <ph name="NUM_YEARS_MANY" /> рік тому}few{Створено <ph name="NUM_YEARS_MANY" /> роки тому}many{Створено <ph name="NUM_YEARS_MANY" /> років тому}other{Створено <ph name="NUM_YEARS_MANY" /> року тому}}</translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1197088940767939838">Оранжевий</translation>
-<translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
 <translation id="1273910660700874265">Дії з групою вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1293272072740285747">Збережіть цю групу, щоб додавати вкладки пізніше, або видаліть, якщо вона вам більше не потрібна.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Переглянути</translation>
 <translation id="5073204694187207510">Сховати повноекранну сітку</translation>
 <translation id="5076161749301278626">Показати відгуки про магазин?</translation>
-<translation id="5082793167783849073">Швидко порівнюйте сторінки, створивши групу. Щоб почати, натисніть і втримуйте посилання.</translation>
 <translation id="5094423602314093681">Вилучити вкладки й видалити групу?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> вкладку додано}one{<ph name="MANY_ADDED" /> вкладку додано}few{<ph name="MANY_ADDED" /> вкладки додано}many{<ph name="MANY_ADDED" /> вкладок додано}other{<ph name="MANY_ADDED" /> вкладки додано}}</translation>
 <translation id="5161254044473106830">Введіть назву</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Інформацію про цей магазин закрито</translation>
 <translation id="9111228330448174435">Показувати вікно створення нової групи вкладок</translation>
 <translation id="9114502155681725011">Відкрити меню дій для групи вкладок "<ph name="TITLE_OF_GROUP" />", колір: <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Переходьте між вкладками в групі вкладок унизу екрана</translation>
 <translation id="9169594135889675189">Додати нову вкладку в групу</translation>
 <translation id="9216898458513705996">Вкладки залишатимуться відкритими на цьому пристрої, однак групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Розгорнути групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>

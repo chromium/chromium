@@ -606,6 +606,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3902562446536395999">Se sortează de la A la Z</translation>
 <translation id="3908308510347173149">Actualizează <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Se sortează de la Z la A</translation>
+<translation id="3918415141610210050">Filă</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> este activă</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combină datele</translation>
@@ -692,6 +693,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="433213510553688132">Urmărești...</translation>
 <translation id="4335835283689002019">Navigarea sigură este dezactivată</translation>
 <translation id="4351244548802238354">Închide caseta de dialog</translation>
+<translation id="4352287748243729941">Folosești parola <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Poți să revii la o pagină importantă adăugând un marcaj</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Siguranța pe scurt</translation>
@@ -851,6 +853,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5010886807652684893">Afișare vizuală</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> dorește să se conecteze</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> și <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> par să fie asociate. Asigură-te că <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> este de încredere înainte să folosești parola.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Ultimele 15 minute</translation>
 <translation id="5032430150487044192">Nu s-a putut crea codul QR</translation>
@@ -904,6 +907,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5304593522240415983">Acest câmp trebuie completat</translation>
 <translation id="5306014156308790439">Butonul Adaugă la colecție este dezactivat</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
+<translation id="5310963254742922113">Parola a fost folosită.</translation>
 <translation id="5316947901395241499">Salvarea parolelor a fost dezactivată de administrator</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5319359161174645648">Google recomandă Chrome</translation>
@@ -1312,7 +1316,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7085332316435785646">Alege dacă se include istoricul Chrome pentru experiențe mai personalizate în serviciile Google</translation>
 <translation id="7088681679121566888">Chrome este actualizat</translation>
 <translation id="7094933634769755999">Incorect</translation>
-<translation id="7105047059074518658">Conectează-te pentru a naviga mai ușor pe diferite dispozitive</translation>
 <translation id="7106762743910369165">Browserul este gestionat de organizația ta</translation>
 <translation id="7111394291981742152">Chrome îți oferă control îmbunătățit asupra anunțurilor pe care le vezi și limitează informațiile pe care site-urile le pot afla despre tine când îți afișează anunțuri personalizate</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permisiunile au fost examinate pentru un site}few{Permisiunile au fost examinate pentru # site-uri}other{Permisiunile au fost examinate pentru # de site-uri}}</translation>

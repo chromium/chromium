@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">ተጨማሪ</translation>
 <translation id="3310640316857623290">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በጉልህ ይበልጣል</translation>
 <translation id="3321030238473337787">የመልሶ ማጫወት ፍጥነት</translation>
+<translation id="3327613592010997943"><ph name="DAY" /> <ph name="TIME" /> ላይ ይህን መሣሪያ እንደገና መጠቀም ይችላሉ።</translation>
 <translation id="3328783797891415197">ሙከራ በማሄድ ላይ</translation>
 <translation id="3340011300870565703">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የቀኝ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
 <translation id="3340978935015468852">ቅንብሮች</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">ግራጫ</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5600027863942488546">የ<ph name="KEY_NAME" /> ቁልፍ ተሞክሯል</translation>
+<translation id="5606865426897221650">ትር</translation>
 <translation id="5613201299517339763">ዘግተው እንዲወጡ ተደርገዋል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5630438231335788050">ባውሃስ</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">የመተላለፊያ ሁኔታ</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />ን እንደገና በመጀመር እና በማዘመን ላይ</translation>
 <translation id="576835345334454681">የማሳያ ብሩህነት መጨመሪያ</translation>
+<translation id="5775340474232476653">መምህርዎ ክፍሉ እንዲያበቃ አድርገዋል</translation>
 <translation id="5779818640587041940">በሚቀዱበት ጊዜ ማያ ገጹን እንደበራ ያቆዩ</translation>
 <translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5784136236926853061">ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">ድንጋይ</translation>
 <translation id="7590883480672980941">የግቤት ቅንብሮች</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>
+<translation id="7600430297804876776">የ<ph name="MANAGER" /> አስተዳዳሪው <ph name="DEVICE_TYPE" /> መቼ ጥቅም ላይ መዋል እንደሚችል አቀናብረዋል።</translation>
 <translation id="7613724632293948900">በመዳፊት ወይም በቀስት ቁልፎች እንደገና ያስቀምጡ።</translation>
 <translation id="7618774594543487847">ገለልተኛ</translation>
 <translation id="7620771111601174153">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">ለመቅዳት ይጫኑ</translation>
 <translation id="8094062939584182041">Google ስለዚህ ችግር ኢሜይል እንዲልክልዎ ይፍቀዱለት</translation>
 <translation id="8104083085214006426">ክፍት እና ደህንነቱ ያልተጠበቀ አውታረ መረብ እየተጠቀሙ ነው</translation>
+<translation id="8110942816572072814">መምህርዎ ማያ ገፅዎን ቆልፈውታል</translation>
 <translation id="811820734797650957">(Android) አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_YEARS_ONE" /> година}other{Създадено преди <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1197088940767939838">оранжево</translation>
-<translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1273910660700874265">Опции за групата раздели „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="1293272072740285747">Запазете тази група, за да добавяте раздели по-късно, или я изтрийте, ако вече не ви е нужна.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Преглед</translation>
 <translation id="5073204694187207510">Скриване на решетката на цял екран</translation>
 <translation id="5076161749301278626">Искате ли да видите отзивите за магазина?</translation>
-<translation id="5082793167783849073">Сравнявайте бързо страници, като създадете група. За да започнете, докоснете и задръжте дадена връзка.</translation>
 <translation id="5094423602314093681">Искате ли да премахнете разделите и да изтриете групата?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел}other{Добавихте <ph name="MANY_ADDED" /> раздела}}</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Информацията за този магазин е затворена</translation>
 <translation id="9111228330448174435">Показване на диалогов прозорец при създаване на нова група раздели</translation>
 <translation id="9114502155681725011">Отваряне на менюто с действия за групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят</translation>
-<translation id="9150694013019234766">Превключвайте между разделите в групата в долната част на екрана</translation>
 <translation id="9169594135889675189">Добавяне на нов раздел към групата</translation>
 <translation id="9216898458513705996">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита от всички устройства, на които сте влезли в профила <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>

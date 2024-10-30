@@ -8870,6 +8870,21 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7680437377926096177">在用户关闭最后一个窗口时不显示让用户确认退出登录的对话框。</translation>
 <translation id="7683777542468165012">动态政策刷新</translation>
+<translation id="7685309118897567488">此政策允许管理员指定企业搜索聚合器。当用户在地址栏中输入特定关键字时，该聚合器会在地址栏中提供搜索建议和结果。用户只需在地址栏中输入 <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 字段中指定的关键字（可以带 @ 前缀，例如 <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />，也可以不带 @ 前缀），然后按空格键或 Tab 键，即可发起搜索。
+
+以下字段是必填字段：<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />、<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />、<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />、<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />。
+
+<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 字段对应于在地址栏中向用户显示的搜索引擎名称。
+
+<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 字段对应于用户输入的用于触发搜索的关键字。快捷字词可以包含纯文字和字符，但不得包含空格，也不得以 @ 符号开头。快捷字词必须是唯一的。
+
+<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 字段用于指定要在其中进行搜索的网址。输入搜索引擎结果页面的网址，然后使用 <ph name="SEARCH_TERM_MARKER" /> 代替搜索查询。
+
+<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 字段用于指定提供搜索建议的网址。如果 <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 包含 <ph name="SEARCH_TERM_MARKER" />，Chrome 会向该网址发送 GET 请求，并将 <ph name="SEARCH_TERM_MARKER" /> 替换为用户的搜索查询，从而获取搜索建议。否则，Chrome 将发出 POST 请求，并通过键名为 <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" /> 的 POST 参数传递用户的搜索查询。
+
+<ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> 字段用于指定将在搜索建议中使用的图片的网址。如果此字段未设置，Chrome 将使用默认图标。建议使用网站图标（示例：<ph name="ICON_URL_EXAMPLE" />）。在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例或已在 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />中注册的实例。
+
+在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />中注册的实例。</translation>
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 
           如果未设置此政策，系统将对所有网站使用默认渲染程序。（<ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> 政策可用于配置默认渲染程序。）</translation>

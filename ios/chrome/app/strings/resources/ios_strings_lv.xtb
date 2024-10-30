@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Jūs izrakstījāties. Pierakstieties vēlreiz, lai izmantotu grāmatzīmes, paroles un citu saturu savā kontā.</translation>
 <translation id="1054745118061919935">Turpinot jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Netiek saglabātas</translation>
+<translation id="1062138828266376352">PIN netika mainīts. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="1066060668811609597">Sinhronizācijas pārvaldība</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} cilne}zero{{count} cilņu}one{{count} cilne}other{{count} cilnes}}</translation>
@@ -676,6 +677,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="421070604241073551">Ja šis iestatījums ir ieslēgts, dati tiek saglabāti jūsu Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē.</translation>
 <translation id="4224534474590365556">Vai aizvērt 99+ neaktīvās cilnes?</translation>
 <translation id="422474357428465195">Jums ir vairākas ar parolēm saistītas problēmas, kas var apdraudēt jūsu drošību.</translation>
+<translation id="422477017457571619">MI nodrošināta reāllaika aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem, kura tiek panākta, sūtot jūsu pārlūkošanas datus uzņēmumam Google.</translation>
 <translation id="4231395118547300571">Drošības pārbaudes paziņojumi ir ieslēgti.</translation>
 <translation id="4237377247299956313">Pieskarieties vienumam <ph name="BEGIN_BOLD" />Noklusējuma pārlūka lietotne<ph name="END_BOLD" />.</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
@@ -843,6 +845,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="496392417432935267">Atvērts citā logā</translation>
 <translation id="4971735654804503942">Ātrāka, aktīva aizsardzība pret bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem. Jūs saņemat brīdinājumus par paroļu pārkāpumiem. Pārlūkošanas dati ir jāsūta uzņēmumam Google.</translation>
 <translation id="4979397965658815378">Pierakstieties Google kontā, lai izmantotu savas grāmatzīmes, paroles, vēsturi un citus Chrome datus visās jūsu ierīcēs.</translation>
+<translation id="498624032394115435">Ikviens, kam ir saite, var rediģēt visas cilnes.</translation>
 <translation id="4989065233040279145">Izvēlieties faila <ph name="FILENAME" /> saglabāšanas vietu</translation>
 <translation id="4992255726304765516">Ciļņu grupas krāsa: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
@@ -1349,10 +1352,12 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7218491361283758048">Pasta indekss</translation>
 <translation id="7221173315674413369">Izpētiet jaunas funkcijas un padomus sadaļā “Jaunumi”</translation>
 <translation id="722339453342442311">Pārbaudīt tūlīt</translation>
+<translation id="7227235818314667565">Pārvaldīt kopīgošanu</translation>
 <translation id="7233006041370588369">Atlasiet paroli, ko aizpildīt.</translation>
 <translation id="7241135764990439166">Inkognito režīms nav pieejams</translation>
 <translation id="7248046129087111453">Jūsu Google kontā var tikt saglabāta <ph name="BEGIN_LINK" />meklēšanas vēsture<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />cita veida darbības<ph name="END_LINK" />.</translation>
 <translation id="7253951228444156601">Notiek paroļu pārbaude…</translation>
+<translation id="7261217796641151584">Kopīgot grupu</translation>
 <translation id="7271220006028561438">Atļauja jaunināt automātiskās piekļuves atslēgas</translation>
 <translation id="7272437679830969316">Nevar apstiprināt jūsu identitāti. Parole nav nokopēta.</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>

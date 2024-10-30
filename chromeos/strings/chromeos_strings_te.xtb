@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3321030238473337787">ప్లేబ్యాక్ వేగం</translation>
+<translation id="3327613592010997943">మీరు ఈ పరికరాన్ని తిరిగి <ph name="DAY" /> నాడు <ph name="TIME" />‌కు ఉపయోగించగలరు.</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3340978935015468852">సెట్టింగ్‌లు</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />‌ను రీస్టార్ట్ చేసి, అప్‌డేట్ చేయడం</translation>
 <translation id="576835345334454681">డిస్‌ప్లే బ్రైట్‌నెస్‌ను పెంచండి</translation>
+<translation id="5775340474232476653">మీ టీచర్ క్లాస్‌ను ముగించారు</translation>
 <translation id="5779818640587041940">రికార్డింగ్ చేస్తున్నప్పుడు స్క్రీన్ ఆన్‌లో ఉంచండి</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">రాయి</translation>
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
+<translation id="7600430297804876776">ఈ <ph name="DEVICE_TYPE" />‌ను ఎప్పుడు ఉపయోగించవచ్చో <ph name="MANAGER" /> అడ్మినిస్ట్రేటర్ సెట్ చేశారు.</translation>
 <translation id="7613724632293948900">మౌస్ లేదా బాణం కీలతో స్థానాన్ని మార్చండి.</translation>
 <translation id="7618774594543487847">తటస్థం</translation>
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">రికార్డ్ చేయడానికి నొక్కండి</translation>
 <translation id="8094062939584182041">ఈ సమస్యకు గురించి మీకు ఈమెయిల్ చేయడానికి Googleకు అనుమతినివ్వండి</translation>
 <translation id="8104083085214006426">మీరు ఓపెన్, అసురక్షిత నెట్‌వర్క్‌ను ఉపయోగిస్తున్నారు</translation>
+<translation id="8110942816572072814">మీ టీచర్ మీ స్క్రీన్‌ను లాక్ చేశారు</translation>
 <translation id="811820734797650957">(Android) గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>

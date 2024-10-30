@@ -430,6 +430,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1291421198328146277">Atiestatīt taustiņus</translation>
 <translation id="1292849930724124745">Lai jūs netiktu izrakstīts, ievietojiet viedkarti</translation>
 <translation id="1293264513303784526">USB-C ierīce (pieslēgvieta pa kreisi)</translation>
+<translation id="1293360286536751243">Žests “<ph name="MAIN_GESTURE" />” var pārklāties ar žestiem “<ph name="CONFLICTING_GESTURE_ONE" />”, “<ph name="CONFLICTING_GESTURE_TWO" />” un “<ph name="CONFLICTING_GESTURE_THREE" />”. Ja iespējams, mēģiniet izvēlēties citu žestu.</translation>
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1294807885394205587">Šis process var ilgt dažas minūtes. Notiek konteineru pārvaldnieka startēšana.</translation>
 <translation id="12951065153783848">Jūsu organizācija pārvalda jūsu kontu</translation>
@@ -2615,6 +2616,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2806372837663997957">Ierīce, ar kuru mēģinājāt kopīgot saturu, to nepieņēma.</translation>
 <translation id="2806891468525657116">Saīsne jau pastāv</translation>
 <translation id="2807517655263062534">Šeit ir redzami lejupielādētie faili.</translation>
+<translation id="2808985063107661499">Žests “<ph name="MAIN_GESTURE" />” var pārklāties ar žestiem “<ph name="CONFLICTING_GESTURE_ONE" />” un “<ph name="CONFLICTING_GESTURE_TWO" />”. Ja iespējams, mēģiniet izvēlēties citu žestu.</translation>
 <translation id="2811205483104563968">Konti</translation>
 <translation id="2812049959647166806">Thunderbolt savienojums netiek atbalstīts</translation>
 <translation id="2812171980080389735">Saglabāti tīkli un paroles tūlītējai savienojuma izveidei</translation>
@@ -4345,6 +4347,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="404894744863342743">Kad esat beidzis izmantot lejupielādēto failu, dzēsiet to, lai citi šīs ierīces lietotāji nevarētu redzēt jūsu paroles.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktpersona nav pieejama. Lai ar šo kontaktpersonu izmantotu funkciju Kopīgošana tuvumā, pievienojiet kontaktpersonu sarakstam šīs personas e-pasta adresi, kas saistīta ar tās Google kontu.}zero{# kontaktpersonas nav pieejamas. Lai ar šīm kontaktpersonām izmantotu funkciju Kopīgošana tuvumā, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}one{# kontaktpersona nav pieejama. Lai ar šīm kontaktpersonām izmantotu funkciju Kopīgošana tuvumā, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}other{# kontaktpersonas nav pieejamas. Lai ar šīm kontaktpersonām izmantotu funkciju Kopīgošana tuvumā, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}}</translation>
 <translation id="4050225813016893843">Autentifikācijas metode</translation>
+<translation id="4050379682069019014">Žests “<ph name="MAIN_GESTURE" />” var pārklāties ar žestu “<ph name="CONFLICTING_GESTURE" />”. Ja iespējams, mēģiniet izvēlēties citu žestu.</translation>
 <translation id="4050534976465737778">Abām ierīcēm ir jābūt atbloķētām un jāatrodas blakus, turklāt tajās jābūt ieslēgtai tehnoloģijai Bluetooth. Ja veicat kopīgošanu ar Chromebook datoru, kas nav iekļauts jūsu kontaktpersonu sarakstā, datorā ir jāieslēdz funkcijas “Tuvumā” redzamība (atveriet statusa apgabalu un pēc tam ieslēdziet iestatījumu “Tuvumā: redzamība”). <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Lai pārietu pie pēdējās izmantotās ievades metodes, nospiediet <ph name="KEY_CODES" />.</translation>
 <translation id="4051177682900543628">meklēšanas taustiņš+labā bultiņa</translation>

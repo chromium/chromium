@@ -843,6 +843,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="496392417432935267">Aberto em outro lugar</translation>
 <translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
 <translation id="4979397965658815378">Faça login com sua Conta do Google para ter seus favoritos, senhas, histórico e outras configurações em todos os seus dispositivos</translation>
+<translation id="498624032394115435">Qualquer pessoa com o link pode editar todas as guias.</translation>
 <translation id="4989065233040279145">Escolha um local para salvar <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Cor do grupo de guias <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar senha</translation>
@@ -1349,10 +1350,12 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7218491361283758048">CEP</translation>
 <translation id="7221173315674413369">Conheça os novos recursos e dicas em "Novidades"</translation>
 <translation id="722339453342442311">Verificar agora</translation>
+<translation id="7227235818314667565">Gerenciar compartilhamento</translation>
 <translation id="7233006041370588369">Selecione uma senha para preencher.</translation>
 <translation id="7241135764990439166">O modo de navegação anônima está indisponível</translation>
 <translation id="7248046129087111453">O <ph name="BEGIN_LINK" />histórico de pesquisa<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser salvos na sua Conta do Google.</translation>
 <translation id="7253951228444156601">Verificando senhas…</translation>
+<translation id="7261217796641151584">Compartilhar grupo</translation>
 <translation id="7271220006028561438">Permitir upgrades automáticos para chaves de acesso</translation>
 <translation id="7272437679830969316">Não é possível confirmar sua identidade. Senha não copiada.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>

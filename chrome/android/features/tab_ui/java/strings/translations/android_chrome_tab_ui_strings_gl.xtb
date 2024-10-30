@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creouse hai <ph name="NUM_YEARS_ONE" /> ano}other{Creouse hai <ph name="NUM_YEARS_MANY" /> anos}}</translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1197088940767939838">Laranxa</translation>
-<translation id="125153950246128346">Toca para ver outra pestana</translation>
 <translation id="1273910660700874265">Opcións do grupo de pestanas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.
 
@@ -96,7 +95,6 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5073204694187207510">Ocultar grade en pantalla completa</translation>
 <translation id="5076161749301278626">Queres ver recensións da tenda?</translation>
-<translation id="5082793167783849073">Crea un grupo para comparar rapidamente varias páxinas. Para comezar, mantén premida unha ligazón.</translation>
 <translation id="5094423602314093681">Queres quitar as pestanas e eliminar o grupo?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida}other{<ph name="MANY_ADDED" /> pestanas engadidas}}</translation>
 <translation id="5161254044473106830">Título obrigatorio</translation>
@@ -196,7 +194,6 @@ Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="T
 <translation id="9090098097337832354">A folla de información sobre esta tenda está pechada</translation>
 <translation id="9111228330448174435">Mostrar o cadro de diálogo sobre a creación dun novo grupo de pestanas</translation>
 <translation id="9114502155681725011">Abrir o menú de accións do grupo de pestanas <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Cambia dunha pestana a outra no grupo de pestanas da parte inferior da pantalla</translation>
 <translation id="9169594135889675189">Engadir nova pestana ao grupo</translation>
 <translation id="9216898458513705996">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de todos os dispositivos nos que teñas a sesión iniciada con <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desprega o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Desprega o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>

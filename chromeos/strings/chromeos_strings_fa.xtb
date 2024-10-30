@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
 <translation id="3321030238473337787">سرعت بازپخش</translation>
+<translation id="3327613592010997943"><ph name="DAY" /> ساعت <ph name="TIME" /> می‌توانید دوباره از این دستگاه استفاده کنید.</translation>
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">وضعیت درگاه</translation>
 <translation id="5763838252932650682">درحال بازراه‌اندازی و به‌روزرسانی <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">افزایش روشنایی نمایشگر</translation>
+<translation id="5775340474232476653">معلم شما کلاس را تمام کرد</translation>
 <translation id="5779818640587041940">روشن ماندن صفحه‌نمایش درحین ضبط</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
 <translation id="5784136236926853061">‏تأخیر زیاد HTTP</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">سنگ</translation>
 <translation id="7590883480672980941">تنظیمات ورودی</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>
+<translation id="7600430297804876776">سرپرست <ph name="MANAGER" /> زمان‌هایی را که می‌توان از این <ph name="DEVICE_TYPE" /> استفاده کرد تنظیم کرده است.</translation>
 <translation id="7613724632293948900">موقعیت را با موشواره یا کلیدهای جهت‌نما تغییر دهید.</translation>
 <translation id="7618774594543487847">خنثی</translation>
 <translation id="7620771111601174153">اطلاعات بیشتر در «مرکز راهنمایی»</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">برای ضبط کردن، فشار دهید</translation>
 <translation id="8094062939584182041">‏اجازه دادن به Google برای ارسال ایمیل درباره این مشکل</translation>
 <translation id="8104083085214006426">از شبکه‌ای باز و ناامن استفاده می‌کنید</translation>
+<translation id="8110942816572072814">معلم شما صفحه‌نمایش را قفل کرده است</translation>
 <translation id="811820734797650957">‏(Android) دروازه را می‌توان پینگ کرد</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8131740175452115882">تأیید</translation>

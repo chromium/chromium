@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">थप</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्यधिक मात्रामा बढी छ</translation>
 <translation id="3321030238473337787">प्लेब्याकको गति</translation>
+<translation id="3327613592010997943">तपाईं यो डिभाइस <ph name="DAY" /> <ph name="TIME" /> बजे फेरि प्रयोग गर्न सक्नु हुने छ।</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="3340978935015468852">सेटिङहरू</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> रिस्टार्ट र अपडेट गरिँदै छ</translation>
 <translation id="576835345334454681">डिस्प्लेको चमक बढाउने की</translation>
+<translation id="5775340474232476653">तपाईंका शिक्षक वा शिक्षिकाले कक्षा अन्त्य गर्नुभएको छ</translation>
 <translation id="5779818640587041940">रेकर्ड गरिरहेका बेला स्क्रिन अन राखिराख्नुहोस्</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5784136236926853061">HTTP को विलम्बता धेरै छ</translation>
@@ -1356,6 +1358,7 @@
 <translation id="757747079855995705">ढुङ्गा</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाँकी</translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> का एड्मिनले यो <ph name="DEVICE_TYPE" /> प्रयोग गर्न सकिने समय तय गर्नुभएको छ।</translation>
 <translation id="7613724632293948900">माउस वा एरो कीहरू प्रयोग गरेर यताउता सार्नुहोस्।</translation>
 <translation id="7618774594543487847">तटस्थ</translation>
 <translation id="7620771111601174153">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
@@ -1461,6 +1464,7 @@
 <translation id="8088963492174775412">रेकर्ड गर्न थिच्नुहोस्</translation>
 <translation id="8094062939584182041">Google लाई तपाईंलाई यो समस्याका बारेमा इमेल पठाउने अनुमति दिनुहोस्</translation>
 <translation id="8104083085214006426">तपाईं खुला र असुरक्षित नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
+<translation id="8110942816572072814">तपाईंका शिक्षक वा शिक्षिकाले तपाईंको स्क्रिन लक गरिदिनुभएको छ</translation>
 <translation id="811820734797650957">(Android) गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>

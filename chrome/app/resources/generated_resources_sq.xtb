@@ -423,6 +423,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1291421198328146277">Rivendos tastet</translation>
 <translation id="1292849930724124745">Fut kartën smart për të qëndruar i identifikuar</translation>
 <translation id="1293264513303784526">Pajisja USB-C (porta majtas)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" mund të ketë mbivendosje me "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" dhe "<ph name="CONFLICTING_GESTURE_THREE" />". Nëse është e mundur, provo të zgjedhësh një gjest tjetër.</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1294807885394205587">Ky proces mund të zgjasë disa minuta. Po fillon menaxheri i kontejnerit.</translation>
 <translation id="12951065153783848">Organizata jote e menaxhon llogarinë tënde</translation>
@@ -2592,6 +2593,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2806372837663997957">Pajisja me të cilën po përpiqesh të ndash nuk pranoi</translation>
 <translation id="2806891468525657116">Shkurtorja ekziston tashmë</translation>
 <translation id="2807517655263062534">Skedarët që shkarkon shfaqen këtu</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" mund të ketë mbivendosje me "<ph name="CONFLICTING_GESTURE_ONE" />" dhe "<ph name="CONFLICTING_GESTURE_TWO" />". Nëse është e mundur, provo të zgjedhësh një gjest tjetër.</translation>
 <translation id="2811205483104563968">Llogaritë</translation>
 <translation id="2812049959647166806">Thunderbolt nuk mbështetet</translation>
 <translation id="2812171980080389735">Ruaj rrjetet dhe fjalëkalimet që të mund të lidhesh në çast</translation>
@@ -4312,6 +4314,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="404894744863342743">Pasi të mbarosh me përdorimin e skedarit të shkarkuar, fshije atë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nuk ofrohet. Për të përdorur "Ndarjen në afërsi" me të, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tij të Google".}other{# kontakte nuk ofrohen. Për të përdorur "Ndarjen në afërsi" me ta, shto te kontaktet e tua adresën e email-it të lidhur me "Llogaritë e tyre të Google".}}</translation>
 <translation id="4050225813016893843">Metoda e vërtetimit</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" mund të ketë mbivendosje me "<ph name="CONFLICTING_GESTURE" />". Nëse është e mundur, provo të zgjedhësh një gjest tjetër.</translation>
 <translation id="4050534976465737778">Sigurohu që të dyja pajisjet të jenë të shkyçura, pranë njëra-tjetrës, si dhe ta kenë të aktivizuar Bluetooth-in. Nëse po ndan me një Chromebook që nuk është në kontaktet e tua, sigurohu që ta ketë të aktivizuar dukshmërinë e "Ndarjes në afërsi" (hap zonën e statusit, më pas zgjidh dukshmërinë "Në afërsi"). <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Për të kaluar te metoda e hyrjes e përdorur për herë të fundit, shtyp <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">kërko + shigjeta djathtas</translation>

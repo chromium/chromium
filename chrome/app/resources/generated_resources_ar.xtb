@@ -428,6 +428,7 @@
 <translation id="1288037062697528143">سيتم تشغيل الإضاءة الليلية تلقائيًا عند غروب الشمس.</translation>
 <translation id="1288300545283011870">خصائص الكلام</translation>
 <translation id="1289619947962767206">لم يَعُد هذا الخيار متوفرًا. ولعرض علامة تبويب، استخدِم <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">سيؤدي اختيار إيماءة سبق أن تم تخصيصها إلى إزالتها من الإجراء الأصلي.</translation>
 <translation id="1291119821938122630">بنود خدمة <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">إعادة ضبط المفاتيح</translation>
 <translation id="1292849930724124745">أدخِل بطاقة ذكية لتظل مسجلاً الدخول</translation>
@@ -6747,6 +6748,7 @@
 <translation id="5832970156002835240">السماح باستخدام الإضافة على جميع المواقع الإلكترونية</translation>
 <translation id="5833397272224757657">يتم استخدام المحتوى على المواقع الإلكترونية التي تزورها، بالإضافة إلى نشاط المتصفِّح وتفاعلاته للتخصيص.</translation>
 <translation id="5833726373896279253">يمكن للمالك فقط تعديل هذه الإعدادات:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">‏عدم السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
 <translation id="583431638776747">لم يكن الموقع الإلكتروني متاحًا.</translation>
 <translation id="5834581999798853053">تتبقى <ph name="TIME" /> دقيقة تقريبًا</translation>

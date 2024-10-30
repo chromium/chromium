@@ -424,6 +424,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1288037062697528143">La luz nocturna se activará automáticamente al anochecer</translation>
 <translation id="1288300545283011870">Propiedades de voz</translation>
 <translation id="1289619947962767206">Esta opción ya no está disponible. Para presentar una pestaña, usa <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Si seleccionas un gesto ya asignado, se eliminará de su acción original.</translation>
 <translation id="1291119821938122630">Términos del Servicio de <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Restablecer teclas</translation>
 <translation id="1292849930724124745">Introduce la tarjeta inteligente para mantener la sesión iniciada</translation>
@@ -6742,6 +6743,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5832970156002835240">Permitir en todos los sitios</translation>
 <translation id="5833397272224757657">Utiliza el contenido de los sitios que visitas, así como las interacciones y la actividad del navegador, para ofrecer una experiencia personalizada</translation>
 <translation id="5833726373896279253">Esta configuración solo puede modificarla el propietario:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">No permitir que los sitios usen JavaScript</translation>
 <translation id="583431638776747">El sitio no estaba disponible</translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>

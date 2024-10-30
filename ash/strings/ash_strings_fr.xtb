@@ -631,6 +631,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3208321278970793882">Application</translation>
 <translation id="3213571860604332401">Enregistrer le lien dans les favoris</translation>
 <translation id="3217205077783620295">Le son est activé et peut être coupé lorsque vous cliquez sur le bouton de volume.</translation>
+<translation id="3218561536255328229">Appuyez cinq fois sur Échap pour activer le pavé tactile</translation>
 <translation id="3226991577105957773">+ <ph name="COUNT" /> autres</translation>
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3233611303007751344">Économiseur de batterie désactivé</translation>
@@ -1147,6 +1148,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4902797682482387055">Tâche suggérée sur laquelle se concentrer</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Niveau de la batterie : <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="4911191962826748981">Il s'agit d'une fonctionnalité d'IA expérimentale qui n'est pas infaillible.</translation>
 <translation id="491504982845934899">Activer <ph name="NETWORK_NAME" /> après la configuration de l'appareil</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4918086044614829423">Accepter</translation>
@@ -2010,6 +2012,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7807067443225230855">Recherche et Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">"J'aime" indique que cette suggestion vous convient</translation>
 <translation id="7825412704590278437">Source : événement d'agenda à venir</translation>
 <translation id="7829386189513694949">Signal de forte intensité</translation>
 <translation id="7830453190047749513">Vous pouvez personnaliser les actions des boutons, la vitesse du curseur et plus encore pour votre <ph name="PERIPHERAL_NAME" /></translation>
@@ -2164,6 +2167,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="830868413617744215">Bêta</translation>
 <translation id="8314772463905284467">Touche Verr Maj activée</translation>
 <translation id="8315514906653279104">Activation…</translation>
+<translation id="8319634750346253957">"Je n'aime pas" indique que cette suggestion ne vous convient pas</translation>
 <translation id="8331351032546853669">Téléchargement en attente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

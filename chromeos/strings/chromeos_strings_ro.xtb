@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">mai multe</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3321030238473337787">Viteza de redare</translation>
+<translation id="3327613592010997943">Vei putea folosi din nou dispozitivul <ph name="DAY" /> la <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">setări</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">gri</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5600027863942488546">A fost testată tasta <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Te-ai deconectat</translation>
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Starea portalului</translation>
 <translation id="5763838252932650682">Se repornește și se actualizează <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Creșterea luminozității ecranului</translation>
+<translation id="5775340474232476653">Profesorul a încheiat cursul</translation>
 <translation id="5779818640587041940">Menține ecranul activat în timpul înregistrării</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
 <translation id="5784136236926853061">Latență mare a solicitărilor HTTP</translation>
@@ -1356,6 +1359,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="757747079855995705">piatră</translation>
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
 <translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Administratorul <ph name="MANAGER" /> a setat când se poate folosi acest <ph name="DEVICE_TYPE" /></translation>
 <translation id="7613724632293948900">Repoziționează folosind mouse-ul sau tastele săgeată.</translation>
 <translation id="7618774594543487847">Neutru</translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
@@ -1461,6 +1465,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8088963492174775412">Apasă pentru a înregistra</translation>
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
+<translation id="8110942816572072814">Profesorul ți-a blocat ecranul</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmați</translation>

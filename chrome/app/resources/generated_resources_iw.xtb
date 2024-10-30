@@ -426,10 +426,12 @@
 <translation id="1288037062697528143">תאורת הלילה תידלק באופן אוטומטי בשעת השקיעה</translation>
 <translation id="1288300545283011870">תכונות דיבור</translation>
 <translation id="1289619947962767206">האפשרות הזו לא נתמכת יותר. כדי להציג כרטיסייה יש להשתמש ב-<ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">אם בוחרים בתנועה שכבר הוקצתה, היא תוסר מהפעולה המקורית.</translation>
 <translation id="1291119821938122630">התנאים וההגבלות של <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">איפוס המקשים</translation>
 <translation id="1292849930724124745">יש להכניס את הכרטיס החכם כדי להישאר מחוברים לחשבון</translation>
 <translation id="1293264513303784526">‏מכשיר עם יציאת USB-C (יציאה שמאלית)</translation>
+<translation id="1293360286536751243">יכול להיות שהתנועה '<ph name="MAIN_GESTURE" />' חופפת לתנועות '<ph name="CONFLICTING_GESTURE_ONE" />', '<ph name="CONFLICTING_GESTURE_TWO" />' ו'<ph name="CONFLICTING_GESTURE_THREE" />'. אם אפשר, כדאי לבחור תנועה אחרת.</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1294807885394205587">התהליך הזה עשוי להימשך מספר דקות. המערכת מפעילה את מנהל המאגר.</translation>
 <translation id="12951065153783848">החשבון שלך מנוהל על ידי הארגון</translation>
@@ -2625,6 +2627,7 @@
 <translation id="2806372837663997957">המכשיר שעמו ניסית לשתף לא אישר</translation>
 <translation id="2806891468525657116">קיצור הדרך כבר קיים</translation>
 <translation id="2807517655263062534">קבצים שמורידים יופיעו כאן</translation>
+<translation id="2808985063107661499">יכול להיות שהתנועה '<ph name="MAIN_GESTURE" />' חופפת לתנועות '<ph name="CONFLICTING_GESTURE_ONE" />' ו'<ph name="CONFLICTING_GESTURE_TWO" />'. אם אפשר, כדאי לבחור תנועה אחרת.</translation>
 <translation id="2811205483104563968">חשבונות</translation>
 <translation id="2812049959647166806">‏Thunderbolt אינו נתמך</translation>
 <translation id="2812171980080389735">הרשתות והסיסמאות נשמרות כדי שניתן יהיה להתחבר אליהן באופן מיידי</translation>
@@ -4357,6 +4360,7 @@
 <translation id="404894744863342743">כשמסיימים להשתמש בקובץ שהורד צריך למחוק אותו, כדי שאנשים אחרים שמשתמשים במכשיר לא יוכלו לראות את הסיסמאות שבו.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{‏איש קשר אחד לא זמין. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.}one{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}two{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}other{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}}</translation>
 <translation id="4050225813016893843">שיטת אימות</translation>
+<translation id="4050379682069019014">יכול להיות שהתנועה '<ph name="MAIN_GESTURE" />' חופפת לתנועה '<ph name="CONFLICTING_GESTURE" />'. אם אפשר, כדאי לבחור תנועה אחרת.</translation>
 <translation id="4050534976465737778">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook שאינו רשום באנשי הקשר שלך, יש לוודא שהופעלו הרשאות הגישה בקרבת מקום (יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה בקרבת מקום). <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">כדי לעבור לשיטת הקלט שבה נעשה שימוש לאחרונה, לוחצים על <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">חיפוש + חץ ימינה</translation>
@@ -6745,6 +6749,7 @@
 <translation id="5832970156002835240">להרשות בכל האתרים</translation>
 <translation id="5833397272224757657">התוכן מאתרים שנכנסת אליהם, פעילות הדפדפן והאינטראקציות שלך ישמשו לצורך התאמה אישית</translation>
 <translation id="5833726373896279253">רק הבעלים יכולים לשנות את ההגדרות האלה:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">‏לא לאפשר לאתרים להשתמש ב-JavaScript</translation>
 <translation id="583431638776747">האתר לא היה זמין</translation>
 <translation id="5834581999798853053">נותרו בערך <ph name="TIME" /> דקות</translation>

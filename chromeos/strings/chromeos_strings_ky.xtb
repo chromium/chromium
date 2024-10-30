@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">дагы</translation>
 <translation id="3310640316857623290">DNS күтүү убакыты уруксат берилген босогодон бир кыйла жогору</translation>
 <translation id="3321030238473337787">Ойнотуу ылдамдыгы</translation>
+<translation id="3327613592010997943">Бул түзмөктү <ph name="DAY" /> саат <ph name="TIME" /> кайра колдоно аласың.</translation>
 <translation id="3328783797891415197">Сыноо аткарылууда</translation>
 <translation id="3340011300870565703">Түзмөктүн оң кулакчынынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">жөндөөлөр</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Порталдын абалы</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> колдонмосун өчүрүп күйгүзүү жана жаңыртуу</translation>
 <translation id="576835345334454681">Дисплейдин жарыктыгын көбөйтүү</translation>
+<translation id="5775340474232476653">Мугалим сабакты бүтүрдү</translation>
 <translation id="5779818640587041940">Жаздырып жатканда экранды күйүк калтырыңыз</translation>
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5784136236926853061">HTTP күтүү убакыты жогору</translation>
@@ -1356,6 +1358,7 @@
 <translation id="757747079855995705">таш</translation>
 <translation id="7590883480672980941">Киргизүү параметрлери</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> калды</translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> администратору ушул <ph name="DEVICE_TYPE" /> түзмөгүн колдонууга боло турган убакытты көрсөттү.</translation>
 <translation id="7613724632293948900">Чычкан же жебе баскычтары менен жылдырыңыз.</translation>
 <translation id="7618774594543487847">Нейтралдуу</translation>
 <translation id="7620771111601174153">Жардам борборуна өтүп, кененирээк маалымат алыңыз</translation>
@@ -1461,6 +1464,7 @@
 <translation id="8088963492174775412">Жаздыруу үчүн басыңыз</translation>
 <translation id="8094062939584182041">Google'га бул маселе жөнүндө сизге электрондук кат жөнөтүүгө уруксат берүү</translation>
 <translation id="8104083085214006426">Ачык жана кооптуу тармакты колдонуп жатасыз</translation>
+<translation id="8110942816572072814">Мугалим экранды кулпулап койду</translation>
 <translation id="811820734797650957">(Android) Шлюздун байланышын текшерүүгө болот</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Ырастоо</translation>

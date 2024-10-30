@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">വലുപ്പം <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> കോർഡ്</translation>
 <translation id="1923956950274750765">മീഡിയം ഓർക്കിഡ്</translation>
+<translation id="1926147969119007125">ഫെയ്സ് കൺട്രോൾ താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1928932365747995741">എഡിറ്റ് ചെയ്യാൻ കഴിയുന്ന മുൻ ടെക്സ്റ്റ് ഫീൽഡ് ഒന്നുമില്ല</translation>
 <translation id="1964135212174907577">അടുത്ത ഒബ്‌ജക്റ്റ്</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">ഫോക്കസ് ചെയ്യാനാകുന്ന അടുത്ത ഇനത്തിലേക്ക് പോകുക</translation>
 <translation id="2756452585631602151">ഇഷ്ടാനുസൃത ലേബൽ നൽകുക</translation>
 <translation id="2766299274563946262">ഇടതുഭാഗത്ത് കളമൊന്നുമില്ല</translation>
+<translation id="2770947749427257887">സ്ക്രോൾ മോഡിലേക്ക് പ്രവേശിക്കുക</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ഒരു വിരൽ വലത്തുനിന്ന് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്ത് മുമ്പത്തെ ഇനത്തിലേക്ക് നീങ്ങാനും നിങ്ങൾക്ക് കഴിയും. ഇപ്പോൾ ശ്രമിക്കുക.</translation>
 <translation id="280499067616661124">ChromeVox പേജിൽ കണ്ടെത്തുക</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">അസാധുവായ കീ അമർത്തി</translation>
 <translation id="3468959318854349468">പേരില്ല</translation>
 <translation id="3469413619751135069">മങ്ങിയ പച്ചനിറം</translation>
+<translation id="3473744269398144689">കേട്ടെഴുത്ത് ആരംഭിക്കുക</translation>
 <translation id="3490765818161916458">ലിസ്‌റ്റ് ഗ്രിഡ്</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{വലത് ബ്രാക്കറ്റ്}other{# വലത് ബ്രാക്കറ്റുകൾ}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>
 <translation id="5290220123487191192">പതിവായി ഉപയോഗിക്കേണ്ട കുറച്ച് ജെസ്ച്ചറുകളെ കുറിച്ച് പഠിച്ച് തുടങ്ങാം. നിങ്ങൾക്ക് സജീവമാക്കേണ്ട ഇനത്തിൽ എത്തിയെങ്കിൽ, ഒരു വിരൽ ഉപയോഗിച്ച് സ്ക്രീനിൽ ഡബിൾ ടാപ്പ് ചെയ്യുക. തുടരാൻ, ഇപ്പോൾ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="5291860916305032607">ഫെയ്സ് കൺട്രോൾ പുനരാരംഭിക്കുക</translation>
 <translation id="5302089807023311274">ഗ്രന്ഥസൂചി റെഫറൻസ്</translation>
 <translation id="530391007967514163">ചുവടെയുള്ള ടെക്‌സ്റ്റിലേക്ക് പോകാൻ തലക്കെട്ട് അനുസരിച്ചുള്ള ഒഴിവാക്കൽ പരീക്ഷിക്കുക.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ടാബ്</translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="5402367795255837559">ബ്രെയ്‌ലി</translation>
 <translation id="5402791055281059602">ഒരു മോഡൽ അലേർട്ട്</translation>
+<translation id="5406272775687194041">വലിച്ചിടൽ ആരംഭിക്കുക</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{അർദ്ധവിരാമം}other{# അർദ്ധവിരാമങ്ങൾ}}</translation>
 <translation id="5420259671171615858">മെനുകൾ തിരയുക</translation>
 <translation id="5435274640623994081">ഇയർകോൺ ലോഗിംഗ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">പേജ് പൂർണ്ണമായി ലോഡ് ചെയ്‌ത ശേഷം അത് സ്വയമേവ വായിക്കുക</translation>
 <translation id="5826479389509458994">വരി <ph name="ROW" /> നിര <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA ലാൻഡ്‌മാർക്കുകൾ ഒന്നുമില്ല</translation>
+<translation id="584044465500042213">സ്ക്രോൾ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="5842625257683688671">അടുത്ത ഗ്രാഫിക് ഒന്നുമില്ല</translation>
 <translation id="5847883414085148048">സമർപ്പണം</translation>
 <translation id="5850707923114094062">പിന്നിലേക്ക് പാൻ ചെയ്യുക</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">പട്ടികകൾ</translation>
 <translation id="7289186959554153431">ശീർഷകം 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">വലിച്ചിടൽ അവസാനിപ്പിക്കുക</translation>
 <translation id="7308519659008003150">മുൻ ഫോം ഫീൽഡ് ഒന്നുമില്ല</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">സഹായിക്കുക</translation>
@@ -1158,6 +1165,7 @@
 <translation id="8775203254697638994">ഡ്രോപ്പ് ഡൗൺ ലിസ്റ്റിൽ നിന്ന് ഒരിനം തിരഞ്ഞെടുക്കേണ്ട സാഹചര്യങ്ങളുണ്ടാകും. അതിന്, ആദ്യം തിരയൽ + സ്‌പെയ്‌സ് അമർത്തി ലിസ്റ്റ് വികസിപ്പിക്കുക. തുടർന്ന് ഒരിനം തിരഞ്ഞെടുക്കാൻ മുകളിലേക്കും താഴേക്കുമുള്ള അമ്പടയാള കീകൾ ഉപയോഗിക്കുക. അവസാനം, ലിസ്റ്റ് ചുരുക്കാൻ തിരയൽ + സ്‌പെയ്‌സ് അമർത്തുക.</translation>
 <translation id="8779057862865475116">മുൻ ലിങ്ക് ഒന്നുമില്ല</translation>
 <translation id="8796411681063377102">അടുത്ത നില 3 ശീർഷകം</translation>
+<translation id="8821891849214789910">കേട്ടെഴുത്ത് നിർത്തുക</translation>
 <translation id="8823311177246872527">ആകെയുള്ള <ph name="TOTALPAGES" /> പേജുകളിൽ <ph name="CURRENTPAGE" />-ാമത്തെ പേജ്</translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">main</translation>

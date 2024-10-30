@@ -429,6 +429,7 @@
 <translation id="1291421198328146277">'কী' রিসেট করুন</translation>
 <translation id="1292849930724124745">সাইন-ইন করে থাকতে স্মার্ট কার্ড প্রবেশ করান</translation>
 <translation id="1293264513303784526">USB-C ডিভাইস (বাঁ পোর্ট)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" এবং "<ph name="CONFLICTING_GESTURE_THREE" />"-এর সাথে ওভারল্যাপ হতে পারে। সম্ভব হলে, আলাদা জেসচার বেছে নেওয়ার চেষ্টা করুন।</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">এই প্রক্রিয়া সম্পূর্ণ করতে কয়েক মিনিট সময় লাগতে পারে। কন্টেনার ম্যানেজার শুরু করা হচ্ছে।</translation>
 <translation id="12951065153783848">আপনার প্রতিষ্ঠান আপনার অ্যাকাউন্ট ম্যানেজ করে</translation>
@@ -615,6 +616,7 @@
 <translation id="1436671784520050284">সেট-আপ চালিয়ে যান</translation>
 <translation id="1436784010935106834">সরানো হয়েছে</translation>
 <translation id="1437986450143295708">সমস্যাটির বিবরণ দিন</translation>
+<translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> অ্যাকশন সরান</translation>
 <translation id="1439671507542716852">দীর্ঘ মেয়াদী সহায়তা</translation>
 <translation id="1440090277117135316">স্কুলে নথিভুক্ত করা হয়ে গেছে</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />টি নির্বাচিত হয়েছে</translation>
@@ -981,6 +983,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> যোগ করা যায়নি</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
 <translation id="1678849866171627536">স্ক্যান করা যায়নি। এই ফাইলটি ভাইরাস বা ম্যালওয়্যার হতে পারে।</translation>
+<translation id="1678919064276516737">আপনার লেখা ইমেল আইডি ও পিন মিলছে না</translation>
 <translation id="1679068421605151609">ডেভেলপার টুল</translation>
 <translation id="1679810534535368772">আপনি কি বেরিয়ে আসতে চান?</translation>
 <translation id="167983332380191032">ম্যানেজমেন্ট পরিষেবা HTTP সমস্যা পাঠিয়েছে।</translation>
@@ -1435,6 +1438,7 @@
 <translation id="1981434377190976112">সমস্ত ওয়েবসাইটে আপনার ডেটা পড়তে পারে</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} ও {field_2}}one{{field_1}, {field_2} ও {field_3}}other{{field_1}, {field_2} ও {field_3}}}</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
+<translation id="198507684520034826">সহায়তা</translation>
 <translation id="1986836014090708999">উন্নত লোকেশন সেটিংস</translation>
 <translation id="1987317783729300807">অ্যাকাউন্টসমূহ</translation>
 <translation id="1987574314042117472">জনপ্রিয় অ্যাপ বেছে নিয়ে ইনস্টল করুন</translation>
@@ -2627,6 +2631,7 @@
 <translation id="2806372837663997957">আপনি যে ডিভাইসের সাথে শেয়ার করার চেষ্টা করছেন সেটিতে এই অনুরোধ গ্রহণ করা হয়নি</translation>
 <translation id="2806891468525657116">শর্টকাটটি আগে থেকেই আছে</translation>
 <translation id="2807517655263062534">ডাউনলোড করা ফাইল এখানে দেখা যাবে</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" ও "<ph name="CONFLICTING_GESTURE_TWO" />"-এর সাথে ওভারল্যাপ হতে পারে। সম্ভব হলে, আলাদা জেসচার বেছে নেওয়ার চেষ্টা করুন।</translation>
 <translation id="2811205483104563968">অ্যাকাউন্ট</translation>
 <translation id="2812049959647166806">Thunderbolt কাজ করে না</translation>
 <translation id="2812171980080389735">সেভ করা নেটওয়ার্ক এবং পাসওয়ার্ড, যাতে আপনি ঝটপট কানেক্ট করতে পারেন</translation>
@@ -2932,6 +2937,7 @@
 <translation id="3029466929721441205">শেল্ফে স্টাইলাস টুল দেখুন</translation>
 <translation id="3029808567601324798">লক করার সময়</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে আজই আপডেট ডাউনলোড করতে বলছে। ইন্টারনেটে কানেক্ট করলে, এই আপডেট অটোমেটিক ডাউনলোড হয়ে যাবে।}one{নির্ধারিত সময়সীমা শেষ হওয়ার আগেই <ph name="MANAGER" /> আপনাকে আপডেট ডাউনলোড করতে বলছে। ইন্টারনেটে কানেক্ট করলে, এই আপডেট অটোমেটিক ডাউনলোড হয়ে যাবে।}other{নির্ধারিত সময়সীমা শেষ হওয়ার আগেই <ph name="MANAGER" /> আপনাকে আপডেট ডাউনলোড করতে বলছে। ইন্টারনেটে কানেক্ট করলে, এই আপডেট অটোমেটিক ডাউনলোড হয়ে যাবে।}}</translation>
+<translation id="3030772324014024606">এডিট করুন</translation>
 <translation id="3030967311408872958">সূর্যাস্ত থেকে সূর্যোদয়</translation>
 <translation id="3031417829280473749">এজেন্ট X</translation>
 <translation id="3031532026314193077">ডানদিকের বোতামে ক্লিক করার জন্য টাচপ্যাড ও কীবোর্ড ব্যবহার করুন</translation>
@@ -4037,6 +4043,7 @@
 <translation id="3824621460022590830">ডিভাইস এনরোলমেন্ট টোকেনটি সঠিক নয়। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">অন্যান্য ডিভাইস থেকে 'ট্যাব' দেখতে সাইন-ইন করুন</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{এই ধরনের ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}one{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}other{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">দেখুন</translation>
 <translation id="3825635794653163640">অ্যাপ সংক্রান্ত সতর্কতার জন্য অ্যাপ আইকনে ডট দেখান</translation>
 <translation id="3826071569074535339">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3826086052025847742">ChromeOS Flex লগ</translation>
@@ -4148,6 +4155,7 @@
 <translation id="3905761538810670789">অ্যাপ্লিকেশান মেরামত করুন</translation>
 <translation id="3908288065506437185">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="3908501907586732282">এক্সটেনশন চালু করুন</translation>
+<translation id="3909456989251621103">আপনি সার্ভার সার্টিফিকেট মুছে দিলে, সার্ভার শনাক্ত করার জন্য Chrome আর এটি ব্যবহার করবে না।</translation>
 <translation id="3909701002594999354">সব নিয়ন্ত্রণ দেখুন</translation>
 <translation id="3909791450649380159">কা&amp;ট করুন</translation>
 <translation id="39103738135459590">অ্যাক্টিভেশন কোড</translation>
@@ -4358,6 +4366,7 @@
 <translation id="404894744863342743">আপনি ডাউনলোড করা ফাইলটি ব্যবহার করার পরে, এটি মুছুন যাতে অন্য যারা এই ডিভাইসটি ব্যবহার করে তারা আপনার পাসওয়ার্ড দেখতে না পারে।</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{#টি পরিচিতি উপলভ্য নেই। তার সাথে 'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, তার Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডি আপনার পরিচিতিতে যোগ করুন।}one{#টি পরিচিতি উপলভ্য নেই। তাদের সাথে 'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডিগুলি আপনার পরিচিতিতে যোগ করুন।}other{#টি পরিচিতি উপলভ্য নেই। তাদের সাথে 'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডিগুলি আপনার পরিচিতিতে যোগ করুন।}}</translation>
 <translation id="4050225813016893843">যাচাইকরণের পদ্ধতি</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE" />"-এর সাথে ওভারল্যাপ হতে পারে। সম্ভব হলে, আলাদা জেসচার বেছে নেওয়ার চেষ্টা করুন।</translation>
 <translation id="4050534976465737778">এটি নিশ্চিত করুন যেন উভয় ডিভাইস আনলক থাকে ও পরস্পরের কাছাকাছি থাকে এবং তার সাথে যেন ব্লুটুথও চালু করা থাকে। যদি আপনি এমন কোনও Chromebook-এর সাথে ফাইল শেয়ার করেন যেটি আপনার পরিচিতিতে নেই, তাহলে এটি নিশ্চিত করে নিন ডিভাইসে নিয়ারবাই শেয়ার ফিচার যেন চালু করা থাকে ('স্ট্যাটাস এরিয়া' বিকল্প খুলুন, তারপরে 'নিয়ারবাই শেয়ার' ফিচার চালু করুন)। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">শেষ ব্যবহৃত ইনপুট পদ্ধতিতে পরিবর্তন করতে, <ph name="KEY_CODES" />প্রেস করুন</translation>
 <translation id="4051177682900543628">search + right arrow</translation>
@@ -5065,6 +5074,7 @@
 <translation id="4581774856936278355">Linux ফিরিয়ে আনার সময় সমস্যা হয়েছে</translation>
 <translation id="4582297591746054421">আপনার কপি করা টেক্সটের ফর্ম্যাটিং বজায় রাখার মতো ফিচারের জন্য সাইট সাধারণত ক্লিপবোর্ড পড়ে নেয়</translation>
 <translation id="4582563038311694664">সব সেটিংস রিসেট করুন</translation>
+<translation id="4584770411839426377">উইন্ডো</translation>
 <translation id="4585793705637313973">পৃষ্ঠা সম্পাদনা করুন</translation>
 <translation id="4586275095964870617">অন্য ব্রাউজারে <ph name="URL" /> খোলা যায়নি। আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="4587589328781138893">সাইট</translation>
@@ -5457,6 +5467,7 @@
 <translation id="4872192066608821120">পাসওয়ার্ড ইমপোর্ট করার জন্য, CSV ফাইল বেছে নিন</translation>
 <translation id="4872212987539553601">অন-ডিভাইস এনক্রিপশন সেট-আপ করা</translation>
 <translation id="4873312501243535625">মিডিয়া ফাইল পরীক্ষাকারী</translation>
+<translation id="4875690134140862902">ট্যাব</translation>
 <translation id="4876273079589074638">এই ক্র্যাশ বা সমস্যাটির বিষয়ে সার্চ করে সেটি ঠিক করতে আমাদের ইঞ্জিনিয়ারদের সাহায্য করুন। কোনও বিবরণ যত ছোটই হোক না কেন সেটি গুরুত্বপূর্ণ!</translation>
 <translation id="4876305945144899064">কোনও ব্যবহারকারীর নাম নেই</translation>
 <translation id="4876327226315760474">এর অর্থ হল, প্রত্যাশা অনুযায়ী সাইট ফিচার কাজ করছে কিন্তু ব্রাউজিং সংক্রান্ত সুরক্ষা আপনার আপ-টু-ডেট নেই।</translation>
@@ -5569,6 +5580,7 @@
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4951966678293618079">এই সাইটের জন্য কখনও পাসওয়ার্ড সেভ করবেন না</translation>
 <translation id="4953808748584563296">ডিফল্ট কমলা রঙের অবতার</translation>
+<translation id="4954652437333037880">ফাইল</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> দৃশ্যমানতা</translation>
 <translation id="4955710816792587366">আপনার পিন বেছে নিন</translation>
 <translation id="4956847150856741762">১</translation>
@@ -7829,6 +7841,7 @@
 <translation id="6635674640674343739">নেটওয়ার্ক কানেকশন সেট-আপ করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="663569763553406962">কোন কোন এক্সটেনশন, একটি সাইট দেখতে বা পরিবর্তন করতে পারবে তা দেখুন</translation>
 <translation id="6635944431854494329">সেটিংস &gt; অ্যাডভান্সড &gt; নিজে থেকে Google-এ ডায়গনস্টিক ও ব্যবহারের ডেটা পাঠান বিকল্পে গিয়ে মালিক এই ফিচারটি নিয়ন্ত্রণ করতে পারেন।</translation>
+<translation id="6636258750460740634">ইতিহাস</translation>
 <translation id="6636623428211296678">নিচে দেওয়া আরও সেটিংস দেখুন অথবা এখনই শেষ করুন</translation>
 <translation id="6639554308659482635">SQLite স্মৃতি</translation>
 <translation id="6640268266988685324">ট্যাব খুলুন</translation>

@@ -419,10 +419,12 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1288037062697528143">Das Nachtlicht wird bei Sonnenuntergang automatisch aktiviert</translation>
 <translation id="1288300545283011870">Sprecheigenschaften</translation>
 <translation id="1289619947962767206">Diese Option wird nicht mehr unterstützt. Nutze <ph name="GOOGLE_MEET" />, um einen Tab einzublenden.</translation>
+<translation id="1291057703584594733">Wenn du eine bereits zugewiesene Geste auswählst, wird die ursprüngliche Aktion überschrieben.</translation>
 <translation id="1291119821938122630">Nutzungsbedingungen von <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Tasten zurücksetzen</translation>
 <translation id="1292849930724124745">Smartcard einstecken, um angemeldet zu bleiben</translation>
 <translation id="1293264513303784526">USB-C-Gerät (Port links)</translation>
+<translation id="1293360286536751243">„<ph name="MAIN_GESTURE" />“ überschneidet sich möglicherweise mit „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“ und „<ph name="CONFLICTING_GESTURE_THREE" />“. Wähle nach Möglichkeit eine andere Geste.</translation>
 <translation id="1293556467332435079">Dateien</translation>
 <translation id="1294807885394205587">Der Vorgang kann einige Minuten dauern. Container-Manager wird gestartet.</translation>
 <translation id="12951065153783848">Das Konto wird von deiner Organisation verwaltet</translation>
@@ -609,6 +611,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1436671784520050284">Einrichtung fortsetzen</translation>
 <translation id="1436784010935106834">Entfernt</translation>
 <translation id="1437986450143295708">Beschreibe ausführlich das Problem</translation>
+<translation id="1438630805136563416">Aktion „<ph name="REMOVED_ACTION" />“ entfernt</translation>
 <translation id="1439671507542716852">Langzeitsupport</translation>
 <translation id="1440090277117135316">Registrierung bei einer Bildungseinrichtung abgeschlossen</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ausgewählt</translation>
@@ -969,6 +972,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> kann nicht hinzugefügt werden</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1678849866171627536">Fehler beim Scannen. Bei dieser Datei handelt es sich möglicherweise um einen Virus oder Malware.</translation>
+<translation id="1678919064276516737">Die E‑Mail-Adresse und die PIN, die du eingegeben hast, stimmen nicht überein</translation>
 <translation id="1679068421605151609">Entwicklertools</translation>
 <translation id="1679810534535368772">Möchtest du den Bildschirm wirklich schließen?</translation>
 <translation id="167983332380191032">Der Verwaltungsdienst hat einen HTTP-Fehler gemeldet.</translation>
@@ -1409,6 +1413,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1981434377190976112">Alle deine Daten auf allen Websites lesen</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} und {field_2}}other{{field_1}, {field_2} und {field_3}}}</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
+<translation id="198507684520034826">Hilfe</translation>
 <translation id="1986836014090708999">Erweiterte Standorteinstellungen</translation>
 <translation id="1987317783729300807">Konten</translation>
 <translation id="1987574314042117472">Beliebte Apps auswählen und herunterladen</translation>
@@ -2591,6 +2596,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2806372837663997957">Das Gerät, für das du Dateien freigeben möchtest, hat diese nicht angenommen</translation>
 <translation id="2806891468525657116">Verknüpfung ist bereits vorhanden</translation>
 <translation id="2807517655263062534">Hier werden heruntergeladene Dateien angezeigt</translation>
+<translation id="2808985063107661499">„<ph name="MAIN_GESTURE" />“ überschneidet sich möglicherweise mit „<ph name="CONFLICTING_GESTURE_ONE" />“ und „<ph name="CONFLICTING_GESTURE_TWO" />“. Wähle nach Möglichkeit eine andere Geste.</translation>
 <translation id="2811205483104563968">Konten</translation>
 <translation id="2812049959647166806">Thunderbolt wird nicht unterstützt</translation>
 <translation id="2812171980080389735">Gespeicherte Netzwerke und Passwörter, damit du schnell eine Verbindung herstellen kannst</translation>
@@ -2896,6 +2902,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Eingabestift-Tools in Ablage anzeigen</translation>
 <translation id="3029808567601324798">Zeit zum Sperren</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, heute ein Update herunterzuladen. Das Update wird automatisch heruntergeladen, sobald eine Verbindung zum Internet besteht.}other{Gemäß <ph name="MANAGER" /> ist es notwendig, vor Ablauf der Frist ein Update herunterzuladen. Das Update wird automatisch heruntergeladen, sobald eine Verbindung zum Internet besteht.}}</translation>
+<translation id="3030772324014024606">Bearbeiten</translation>
 <translation id="3030967311408872958">Sonnenuntergang bis -aufgang</translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031532026314193077">Zum Rechtsklicken Touchpad und Tastatur verwenden</translation>
@@ -3990,6 +3997,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3824621460022590830">Geräteregistrierungstoken ist ungültig. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Anmelden, um Tabs von anderen Geräten zu sehen</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Meine Auswahl für diesen Dateityp merken: <ph name="FILE_TYPES" />}other{Meine Auswahl für diese Dateitypen merken: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Ansehen</translation>
 <translation id="3825635794653163640">Punkt für App-Benachrichtigungen auf App-Symbol anzeigen</translation>
 <translation id="3826071569074535339">Dürfen Bewegungssensoren verwenden</translation>
 <translation id="3826086052025847742">ChromeOS Flex-Protokolle</translation>
@@ -4100,6 +4108,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3905761538810670789">App reparieren</translation>
 <translation id="3908288065506437185">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3908501907586732282">Erweiterung aktivieren</translation>
+<translation id="3909456989251621103">Wenn du ein Serverzertifikat löschst, verwendet Chrome es nicht mehr, um Server zu identifizieren.</translation>
 <translation id="3909701002594999354">Alle Steuerelemente anzeigen</translation>
 <translation id="3909791450649380159">&amp;Ausschneiden</translation>
 <translation id="39103738135459590">Aktivierungscode</translation>
@@ -4311,6 +4320,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="404894744863342743">Lösche die heruntergeladene Datei, wenn du fertig bist, damit andere Nutzer dieses Geräts deine Passwörter nicht sehen können.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# Kontakt ist nicht verfügbar. Wenn du Nearby Share mit ihm verwenden möchtest, musst du in deinen Kontakten die mit seinem Google-Konto verknüpfte E-Mail-Adresse hinzufügen.}other{# Kontakte sind nicht verfügbar. Wenn du Nearby Share mit ihnen verwenden möchtest, musst du in deinen Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.}}</translation>
 <translation id="4050225813016893843">Authentifizierungsmethode</translation>
+<translation id="4050379682069019014">„<ph name="MAIN_GESTURE" />“ überschneidet sich möglicherweise mit „<ph name="CONFLICTING_GESTURE" />“. Wähle nach Möglichkeit eine andere Geste.</translation>
 <translation id="4050534976465737778">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn du Inhalte mit einem Chromebook teilen möchtest, das sich nicht in deinen Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Öffne dazu den Statusbereich und schalte „Nearby-Sichtbarkeit“ ein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Wenn du zur zuletzt verwendeten Eingabemethode wechseln möchtest, drücke <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Suchtaste + rechte Pfeiltaste</translation>
@@ -5012,6 +5022,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4581774856936278355">Fehler beim Wiederherstellen von Linux</translation>
 <translation id="4582297591746054421">Websites lesen normalerweise die Zwischenablage aus, um Funktionen wie die Beibehaltung der Formatierung von Texten in der Zwischenablage umzusetzen</translation>
 <translation id="4582563038311694664">Alle Einstellungen zurücksetzen</translation>
+<translation id="4584770411839426377">Fenster</translation>
 <translation id="4585793705637313973">Seite bearbeiten</translation>
 <translation id="4586275095964870617"><ph name="URL" /> konnte nicht in einem alternativen Browser geöffnet werden. Bitte setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -5400,6 +5411,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4872192066608821120">Wähle eine CSV-Datei aus, um Passwörter zu importieren</translation>
 <translation id="4872212987539553601">On-Device-Verschlüsselung einrichten</translation>
 <translation id="4873312501243535625">Mediendatei-Prüfung</translation>
+<translation id="4875690134140862902">Tab</translation>
 <translation id="4876273079589074638">Unterstütze unsere Entwickler beim Untersuchen und Beheben dieses Absturzes. Beschreibe möglichst genau alle Schritte. Kein noch so kleines Detail ist überflüssig!</translation>
 <translation id="4876305945144899064">Kein Nutzername</translation>
 <translation id="4876327226315760474">Das bedeutet, dass die Websitefunktionen wie erwartet funktionieren sollten, der Browserschutz aber möglicherweise geringer ist.</translation>
@@ -5511,6 +5523,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4951966678293618079">Passwörter für diese Website niemals speichern</translation>
 <translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
+<translation id="4954652437333037880">Datei</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-Sichtbarkeit</translation>
 <translation id="4955710816792587366">PIN wählen</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6677,6 +6690,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5832970156002835240">Auf allen Websites zulassen</translation>
 <translation id="5833397272224757657">Inhalte von besuchten Websites sowie Browseraktivitäten und -interaktionen werden zur Personalisierung verwendet</translation>
 <translation id="5833726373896279253">Diese Einstellungen können nur vom Eigentümer geändert werden:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Websites dürfen JavaScript nicht verwenden</translation>
 <translation id="583431638776747">Website nicht verfügbar</translation>
 <translation id="5834581999798853053">Noch etwa <ph name="TIME" /> Minuten</translation>
@@ -7751,6 +7765,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6635674640674343739">Netzwerkverbindung kann nicht hergestellt werden. Prüfe deine Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="663569763553406962">Erweiterungen, die eine Website lesen oder ändern können</translation>
 <translation id="6635944431854494329">Diese Funktion kann vom Inhaber über "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" gesteuert werden.</translation>
+<translation id="6636258750460740634">Verlauf</translation>
 <translation id="6636623428211296678">Weitere Einstellungen ansehen oder jetzt beenden</translation>
 <translation id="6639554308659482635">SQLite-Speicher</translation>
 <translation id="6640268266988685324">Geöffneter Tab</translation>

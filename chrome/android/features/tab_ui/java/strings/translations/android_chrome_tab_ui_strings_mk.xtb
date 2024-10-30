@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Создадено пред <ph name="NUM_YEARS_ONE" /> година}one{Создадено пред <ph name="NUM_YEARS_MANY" /> година}other{Создадено пред <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1197088940767939838">Портокалова</translation>
-<translation id="125153950246128346">Допрете за да видите друга картичка</translation>
 <translation id="1273910660700874265">Опции за групата картички <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Задржете ја групава за да додадете картички подоцна или избришете ја ако веќе не ви треба.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Прегледајте</translation>
 <translation id="5073204694187207510">Скриј ја табелата на цел екран</translation>
 <translation id="5076161749301278626">Сакате да видите рецензии за продавницата?</translation>
-<translation id="5082793167783849073">Набрзина споредете ги страниците со правење група. За да започнете, допрете и задржете го линкот.</translation>
 <translation id="5094423602314093681">Да се отстранат картичките и да се избрише групата?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Додадени картички: <ph name="ONE_ADDED" />}one{Додадени картички: <ph name="MANY_ADDED" />}other{Додадени картички: <ph name="MANY_ADDED" />}}</translation>
 <translation id="5161254044473106830">Потребен е наслов</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Информациите за продавницава се затворени</translation>
 <translation id="9111228330448174435">Прикажувај дијалог при создавање нова група картички</translation>
 <translation id="9114502155681725011">Отворете го менито со дејства на група картички за групата картички „<ph name="TITLE_OF_GROUP" />“, боја: <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Префрлајте се од една на друга картичка во групата со картички најдолу на екранот</translation>
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>
 <translation id="9216898458513705996">Картичките ќе останат отворени на овој уред, но групата ќе се избрише од сите уреди најавени на <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>

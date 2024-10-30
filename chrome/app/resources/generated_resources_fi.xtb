@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">Yövalo käynnistyy automaattisesti, kun aurinko laskee.</translation>
 <translation id="1288300545283011870">Puheominaisuudet</translation>
 <translation id="1289619947962767206">Tätä asetusta ei enää tueta. Jos haluat jakaa välilehden, avaa <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Jos valitset aiemmin määritetyn eleen, se poistetaan alkuperäisestä toiminnosta.</translation>
 <translation id="1291119821938122630">Käyttöehdot: <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Nollaa näppäimet</translation>
 <translation id="1292849930724124745">Aseta älykortti pysyäksesi kirjautuneena</translation>
@@ -6745,6 +6746,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5832970156002835240">Salli kaikilla sivustoilla</translation>
 <translation id="5833397272224757657">Käyttää personointiin avaamiesi sivujen sisältöä, selaustoimintaa ja selainvuorovaikutusta</translation>
 <translation id="5833726373896279253">Vain omistaja voi muokata näitä asetuksia:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Älä salli sivustojen käyttää JavaScriptiä</translation>
 <translation id="583431638776747">Sivusto ei ollut käytettävissä</translation>
 <translation id="5834581999798853053">Noin <ph name="TIME" /> minuuttia jäljellä</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> jaar geleden gemaakt}other{<ph name="NUM_YEARS_MANY" /> jaar geleden gemaakt}}</translation>
 <translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1197088940767939838">Oranje</translation>
-<translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
 <translation id="1273910660700874265">Opties voor tabbladgroep <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Behoud deze groep om later tabbladen toe te voegen of verwijder de groep als je deze niet meer nodig hebt.
 
@@ -96,7 +95,6 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="5007392906805964215">Bekijken</translation>
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
-<translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
 <translation id="5094423602314093681">Tabblad(en) verwijderen en groep verwijderen?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tabblad toegevoegd}other{<ph name="MANY_ADDED" /> tabbladen toegevoegd}}</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
@@ -196,7 +194,6 @@ Als je de groep verlaat, raak je meteen de toegang tot de tabbladgroep <ph name=
 <translation id="9090098097337832354">Informatie over deze winkel gesloten</translation>
 <translation id="9111228330448174435">Dialoogvenster tonen bij het maken van een nieuwe tabbladgroep</translation>
 <translation id="9114502155681725011">Het actiemenu van de tabbladgroep openen voor de tabbladgroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Je kunt onderaan het scherm schakelen tussen tabbladen in je tabbladgroep</translation>
 <translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>
 <translation id="9216898458513705996">De tabbladen blijven geopend op dit apparaat, maar de groep wordt verwijderd van alle apparaten die zijn ingelogd bij <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>

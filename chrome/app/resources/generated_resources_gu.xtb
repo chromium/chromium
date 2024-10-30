@@ -616,6 +616,7 @@
 <translation id="1436671784520050284">સેટઅપ ચાલુ રાખો</translation>
 <translation id="1436784010935106834">દૂર કરેલું</translation>
 <translation id="1437986450143295708">સમસ્યાનું વિગતવાર વર્ણન કરો</translation>
+<translation id="1438630805136563416"><ph name="REMOVED_ACTION" />ની ક્રિયા કાઢી નાખી</translation>
 <translation id="1439671507542716852">લૉન્ગ-ટર્મ સપોર્ટ</translation>
 <translation id="1440090277117135316">સ્કૂલમાં પ્રવેશની પ્રક્રિયા પૂર્ણ થઈ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> પસંદ કરી</translation>
@@ -977,6 +978,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ને ઉમેરી શકતા નથી</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
 <translation id="1678849866171627536">સ્કૅન કરવાનું નિષ્ફળ રહ્યું. આ ફાઇલ વાયરસ અથવા માલવેર હોઈ શકે છે.</translation>
+<translation id="1678919064276516737">તમે દાખલ કરેલો ઇમેઇલ અને પિન મેળ ખાતા નથી</translation>
 <translation id="1679068421605151609">વિકાસકર્તા સાધનો</translation>
 <translation id="1679810534535368772">શું તમે ખરેખર બહાર નીકળવા માગો છો?</translation>
 <translation id="167983332380191032">મેનેજમેન્ટ સેવાએ HTTP ભૂલ મોકલી.</translation>
@@ -1422,6 +1424,7 @@
 <translation id="1981434377190976112">બધી વેબસાઇટ પર તમારો બધો ડેટા વાંચો</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} અને {field_2}}one{{field_1}, {field_2} અને {field_3}}other{{field_1}, {field_2} અને {field_3}}}</translation>
 <translation id="1984417487208496350">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
+<translation id="198507684520034826">સહાય</translation>
 <translation id="1986836014090708999">વિગતવાર લોકેશન સેટિંગ</translation>
 <translation id="1987317783729300807">એકાઉન્ટ્સ</translation>
 <translation id="1987574314042117472">લોકપ્રિય ઍપ પસંદ અને ઇન્સ્ટૉલ કરો</translation>
@@ -2918,6 +2921,7 @@
 <translation id="3029466929721441205">શેલ્ફમાં સ્ટાઇલસના સાધનો બતાવો</translation>
 <translation id="3029808567601324798">લૉક કરવાનો સમય</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે આજે અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય એ પહેલાં અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય એ પહેલાં અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}}</translation>
+<translation id="3030772324014024606">ફેરફાર કરો</translation>
 <translation id="3030967311408872958">સૂર્યોદયથી સૂર્યાસ્ત સુધી</translation>
 <translation id="3031417829280473749">એજંટ X</translation>
 <translation id="3031532026314193077">રાઇટ ક્લિક કરવા માટે ટચપૅડ અને કીબોર્ડનો ઉપયોગ કરો</translation>
@@ -4023,6 +4027,7 @@
 <translation id="3824621460022590830">ડિવાઇસની નોંધણી માટેનું ટોકન અમાન્ય છે. કૃપા કરીને તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">અન્ય ડિવાઇસમાંથી ટૅબ જોવા માટે સાઇન ઇન કરો</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}one{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}other{ફાઇલના આ પ્રકાર માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">જુઓ</translation>
 <translation id="3825635794653163640">ઍપ સંબંધી અલર્ટ માટે, ઍપના આઇકન પર ડોટ બતાવો</translation>
 <translation id="3826071569074535339">મોશન સેન્સરનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="3826086052025847742">ChromeOS Flex લૉગ</translation>
@@ -4134,6 +4139,7 @@
 <translation id="3905761538810670789">ઍપ્લિકેશન સુધારો</translation>
 <translation id="3908288065506437185">છૂપા મોડમાં ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="3908501907586732282">એક્સ્ટેંશન ચાલુ કરો</translation>
+<translation id="3909456989251621103">જો તમે સર્વરનું સર્ટિફિકેટ ડિલીટ કરશો, તો સર્વરને ઓળખવા માટે Chrome હવેથી તેનો ઉપયોગ કરશે નહીં.</translation>
 <translation id="3909701002594999354">તમામ નિયંત્રણો બતાવો</translation>
 <translation id="3909791450649380159">કા&amp;પો</translation>
 <translation id="39103738135459590">સક્રિયકરણ કોડ</translation>
@@ -5052,6 +5058,7 @@
 <translation id="4581774856936278355">Linuxની પુનઃસ્થાપના કરતી વખતે ભૂલ આવી</translation>
 <translation id="4582297591746054421">સાઇટ સામાન્ય રીતે, તમે કૉપિ કરેલી ટેક્સ્ટનું ફૉર્મેટિંગ જાળવી રાખવા જેવી સુવિધાઓ માટે તમારું ક્લિપબોર્ડ વાંચે છે</translation>
 <translation id="4582563038311694664">તમામ સેટિંગને રીસેટ કરો</translation>
+<translation id="4584770411839426377">વિન્ડો</translation>
 <translation id="4585793705637313973">પેજમાં ફેરફાર કરો</translation>
 <translation id="4586275095964870617"><ph name="URL" /> વૈકલ્પિક બ્રાઉઝરમાં ખૂલી ન શક્યું. કૃપા કરીને તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
@@ -5444,6 +5451,7 @@
 <translation id="4872192066608821120">પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો</translation>
 <translation id="4872212987539553601">ડિવાઇસ પર એન્ક્રિપ્શનનું સેટઅપ કરો</translation>
 <translation id="4873312501243535625">મીડિયા ફાઇલ તપાસનાર</translation>
+<translation id="4875690134140862902">ટૅબ</translation>
 <translation id="4876273079589074638">આ ક્રૅશની તપાસ કરવામાં અને એને ઠીક કરવામાં અમારાં એન્જિનિયરોની મદદ કરો. જો તમે કરી શકો તેમ હોય તો ચોક્કસ પગલાંની સૂચિ બનાવો. કોઈ પણ વિગત નાની નથી હોતી!</translation>
 <translation id="4876305945144899064">કોઈ વપરાશકર્તા નામ નથી</translation>
 <translation id="4876327226315760474">આનો અર્થ એ છે કે સાઇટની સુવિધાઓ અપેક્ષા મુજબ કાર્ય કરવી જોઈએ, પરંતુ તમારી પાસે બ્રાઉઝિંગ સંરક્ષણ ઓછું હોઈ શકે છે.</translation>
@@ -5556,6 +5564,7 @@
 <translation id="495170559598752135">ક્રિયાઓ</translation>
 <translation id="4951966678293618079">આ સાઇટ માટે ક્યારેય પાસવર્ડ સાચવશો નહીં</translation>
 <translation id="4953808748584563296">ડિફોલ્ટ નારંગી અવતાર</translation>
+<translation id="4954652437333037880">ફાઇલ</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> માટે દૃશ્યતા</translation>
 <translation id="4955710816792587366">તમારો પિન પસંદ કરો</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7817,6 +7826,7 @@ USB ડિવાઇસ</translation>
 <translation id="6635674640674343739">નેટવર્ક કનેક્શન સ્થાપિત કરી શકાતું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="663569763553406962">જુઓ કે કયા એક્સ્ટેન્શન કોઈ સાઇટ વાંચી કે બદલી શકે છે</translation>
 <translation id="6635944431854494329">માલિક સેટિંગ &gt; વિગતવાર &gt; Googleને ઑટોમૅટિક રીતે નિદાન અને વપરાશનો ડેટા મોકલો પર જઈને આ સુવિધાને નિયંત્રિત કરી શકે છે.</translation>
+<translation id="6636258750460740634">ઇતિહાસ</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="6639554308659482635">SQLite મેમરી</translation>
 <translation id="6640268266988685324">ટૅબ ખોલો</translation>

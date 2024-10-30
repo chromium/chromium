@@ -631,6 +631,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="3208321278970793882">Uygulama</translation>
 <translation id="3213571860604332401">Bağlantıyı yer işareti olarak kaydet</translation>
 <translation id="3217205077783620295">Ses açık, düğmeye basılırsa ses kapatılacak.</translation>
+<translation id="3218561536255328229">Dokunmatik alanı etkinleştirmek için Esc tuşuna 5 kez basın</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> öğe daha</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Pil Tasarrufu kapatıldı</translation>
@@ -1147,6 +1148,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4902797682482387055">Odaklanmanız için önerilen görev</translation>
 <translation id="490375751687810070">Dikey</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> pil</translation>
+<translation id="4911191962826748981">Bu, deneysel bir yapay zeka özelliği olduğundan her zaman düzgün çalışmayabilir.</translation>
 <translation id="491504982845934899"><ph name="NETWORK_NAME" /> ağını, cihaz kurulumundan sonra etkinleştirin</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4918086044614829423">Kabul et</translation>
@@ -2009,6 +2011,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7807067443225230855">Arama ve Asistan</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ve <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Beğenme düğmesini tıkladığınızda bu önerinin hoşunuza gittiğine dair geri bildirim gönderilir</translation>
 <translation id="7825412704590278437">Yaklaşan takvim etkinliğinden</translation>
 <translation id="7829386189513694949">Güçlü sinyal</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" /> cihazınız için düğme işlemleri, imleç hızı ve diğer özellikleri kişiselleştirebilirsiniz</translation>
@@ -2163,6 +2166,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock açık</translation>
 <translation id="8315514906653279104">Açılıyor...</translation>
+<translation id="8319634750346253957">Beğenmeme düğmesini tıkladığınızda bu önerinin hoşunuza gitmediğine dair geri bildirim gönderilir</translation>
 <translation id="8331351032546853669">İndirme işlemi beklemede</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

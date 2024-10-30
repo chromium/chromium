@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_YEARS_ONE" /> tahun lalu}other{Dibuat <ph name="NUM_YEARS_MANY" /> tahun lalu}}</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1197088940767939838">Oranye</translation>
-<translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
 <translation id="1273910660700874265">Opsi grup tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.
 
@@ -96,7 +95,6 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="5007392906805964215">Tinjau</translation>
 <translation id="5073204694187207510">Sembunyikan petak layar penuh</translation>
 <translation id="5076161749301278626">Lihat ulasan toko?</translation>
-<translation id="5082793167783849073">Bandingkan halaman secara cepat dengan membuat grup. Untuk memulai, sentuh lama link.</translation>
 <translation id="5094423602314093681">Hapus tab dan grup?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan}other{<ph name="MANY_ADDED" /> tab ditambahkan}}</translation>
 <translation id="5161254044473106830">Perlu judul</translation>
@@ -196,7 +194,6 @@ Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_G
 <translation id="9090098097337832354">Informasi tentang toko ini ditutup</translation>
 <translation id="9111228330448174435">Tampilkan dialog terkait pembuatan grup tab baru</translation>
 <translation id="9114502155681725011">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Beralih ke tab lain pada grup tab Anda di dekat bagian bawah layar</translation>
 <translation id="9169594135889675189">Tambahkan tab baru ke grup</translation>
 <translation id="9216898458513705996">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>

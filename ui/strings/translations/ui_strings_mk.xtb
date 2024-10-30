@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Вчитувањето на страницата не успеа бидејќи модулот на кориснички интерфејс на програмерот (dev_ui) не е инсталиран</translation>
 <translation id="5574202486608032840">Систем <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
+<translation id="5606865426897221650">Картичка</translation>
 <translation id="5613020302032141669">Стрелка налево</translation>
 <translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин.}one{# мин.}other{# мин.}}</translation>
@@ -224,6 +225,7 @@
 <translation id="9059834730836941392">Собери го известувањето</translation>
 <translation id="9170848237812810038">&amp;Врати</translation>
 <translation id="9195990613383871904">Утре</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Дома</translation>
 <translation id="944069440740578670">Непрочитани известувања</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Пред 1 секунда}one{Пред # секунда}other{Пред # секунди}}</translation>

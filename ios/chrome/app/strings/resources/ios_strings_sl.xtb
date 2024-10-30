@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Odjavljeni ste. Znova se prijavite, če želite uporabljati zaznamke, gesla in drugo v računu.</translation>
 <translation id="1054745118061919935">Z nadaljevanjem se strinjate s <ph name="BEGIN_LINK" />pogoji storitve<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nikoli shranjeno</translation>
+<translation id="1062138828266376352">Koda PIN ni bila spremenjena. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="1066060668811609597">Upravljanje sinhronizacije</translation>
 <translation id="1076421457278169141">Koda je bila optično prebrana</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} zavihek}one{{count} zavihek}two{{count} zavihka}few{{count} zavihki}other{{count} zavihkov}}</translation>
@@ -676,6 +677,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="421070604241073551">Če je ta možnost vklopljena, se podatki shranjujejo v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi.</translation>
 <translation id="4224534474590365556">Želite zapreti več kot 99 neaktivnih zavihkov?</translation>
 <translation id="422474357428465195">Imate več težav z gesli, ki lahko ogrozijo vašo varnost.</translation>
+<translation id="422477017457571619">Sprotna zaščita z uporabo umetne inteligence pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="4231395118547300571">Obvestila varnostnega preverjanja so vklopljena</translation>
 <translation id="4237377247299956313">Dotaknite se možnosti za <ph name="BEGIN_BOLD" />privzeto aplikacijo za brskanje<ph name="END_BOLD" />.</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
@@ -1350,10 +1352,12 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7218491361283758048">Poštna številka</translation>
 <translation id="7221173315674413369">Raziščite nove funkcije in nasvete v »Novosti«</translation>
 <translation id="722339453342442311">Preveri</translation>
+<translation id="7227235818314667565">Upravljanje deljenja</translation>
 <translation id="7233006041370588369">Izberite geslo, ki ga želite vnesti.</translation>
 <translation id="7241135764990439166">Anonimni način ni na voljo</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Zgodovina iskanja<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />druge oblike dejavnosti<ph name="END_LINK" /> se morda shranjujejo v računu Google.</translation>
 <translation id="7253951228444156601">Preverjanje gesel …</translation>
+<translation id="7261217796641151584">Deli skupino</translation>
 <translation id="7271220006028561438">Dovoli samodejne nadgradnje ključev za dostop</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
 <translation id="7293429513719260019">Izbira jezika</translation>

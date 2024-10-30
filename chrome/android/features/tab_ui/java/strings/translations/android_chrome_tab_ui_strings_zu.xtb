@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Kusungulwe onyakeni ongu-<ph name="NUM_YEARS_ONE" /> odlule}one{Kusungulwe eminyakeni engu-<ph name="NUM_YEARS_MANY" /> edlule}other{Kusungulwe eminyakeni engu-<ph name="NUM_YEARS_MANY" /> edlule}}</translation>
 <translation id="1173894706177603556">Qamba kabusha</translation>
 <translation id="1197088940767939838">Olintshi</translation>
-<translation id="125153950246128346">Thepha ukuze ubone enye ithebhu</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> iqembu lamathebhu ongakhetha kuwo</translation>
 <translation id="1293272072740285747">Gcina leli qembu ukuze wengeze amathebhu kamuva, noma lisule uma ungasalidingi.
 
@@ -96,7 +95,6 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="5007392906805964215">Buyekeza</translation>
 <translation id="5073204694187207510">Fihla igridi yesikrini esigcwele</translation>
 <translation id="5076161749301278626">Bona izibuyekezo zesitoreji?</translation>
-<translation id="5082793167783849073">Qhathanisa ngokushesha amakhasi ngokwenza iqembu. Ukuze uqale, thinta uphinde ubambe isixhumanisi.</translation>
 <translation id="5094423602314093681">Susa amathebhu futhi usule iqembu?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe}}</translation>
 <translation id="5161254044473106830">Isihloko siyadingeka</translation>
@@ -196,7 +194,6 @@ Uma uhamba, uzolahlekelwa ngokushesha ukufinyelela eqenjini lethebhu elithi "<ph
 <translation id="9090098097337832354">Ulwazi olumayelana nalesi sitolo esivaliwe</translation>
 <translation id="9111228330448174435">Bonisa idayalogi ekusungulweni kweqembu lethebhu elisha</translation>
 <translation id="9114502155681725011">Vula imenyu yesenzo seqembu lethebhu seqembu lethebhu le-<ph name="TITLE_OF_GROUP" />, umbala <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Shintsha phakathi komaka kuqembu lethebhu lakho eduze kwangaphansi kwesikrini</translation>
 <translation id="9169594135889675189">Engeza ithebhu entsha kuqembu</translation>
 <translation id="9216898458513705996">Amathebhu azohlala evuliwe kule divayisi kodwa iqembu lizosulwa kuwo wonke amadivayisi angeniswe ku-<ph name="USER_EMAIL" /> ngemvume</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu ngethebhu le-<ph name="TABS_COUNT_ONE" />, umbala <ph name="COLOR_NAME" />.}one{Nweba iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}other{Nweba iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}}</translation>

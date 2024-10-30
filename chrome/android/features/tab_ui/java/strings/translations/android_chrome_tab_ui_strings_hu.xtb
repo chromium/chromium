@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> éve létrehozva}other{<ph name="NUM_YEARS_MANY" /> éve létrehozva}}</translation>
 <translation id="1173894706177603556">Átnevezés</translation>
 <translation id="1197088940767939838">Narancssárga</translation>
-<translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
 <translation id="1273910660700874265">A következő lapcsoport beállításai: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.
 
@@ -96,7 +95,6 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>
-<translation id="5082793167783849073">Csoport kialakításával gyorsan összehasonlíthat oldalakat. A kezdéshez tartsa lenyomva ujját a kívánt linken.</translation>
 <translation id="5094423602314093681">Eltávolítja a lapokat, valamint törli a csoportot?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> lap hozzáadva}other{<ph name="MANY_ADDED" /> lap hozzáadva}}</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
@@ -196,7 +194,6 @@ Ha kilép, azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROU
 <translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
 <translation id="9111228330448174435">Párbeszédpanel megjelenítése új lapcsoport létrehozásakor</translation>
 <translation id="9114502155681725011">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport műveleti menüjének megnyitása.</translation>
-<translation id="9150694013019234766">Válthat a képernyő aljánál lévő lapcsoport lapjai között</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>
 <translation id="9216898458513705996">A lapok nyitva maradnak ezen az eszközön, de a csoport törlődni fog minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása.}}</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پیش ایجاد شد}one{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}other{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}}</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1197088940767939838">نارنجی</translation>
-<translation id="125153950246128346">برای دیدن برگه دیگر تک‌ضرب بزنید</translation>
 <translation id="1273910660700874265">گزینه‌های گروه برگه <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به این گروه نیاز ندارید، آن را حذف کنید.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">مرور</translation>
 <translation id="5073204694187207510">پنهان کردن شبکه تمام‌صفحه</translation>
 <translation id="5076161749301278626">می‌خواهید مرورهای فروشگاه را ببینید؟</translation>
-<translation id="5082793167783849073">با ایجاد گروه، صفحه‌ها را سریع مقایسه کنید. برای شروع، پیوندی را لمس کنید و نگه دارید.</translation>
 <translation id="5094423602314093681">برگه(ها) برداشته و گروه حذف شود؟</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد}}</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">اطلاعات مربوط به این فروشگاه بسته شد</translation>
 <translation id="9111228330448174435">نمایش کادر گفتگو برای ایجاد گروه برگه جدید</translation>
 <translation id="9114502155681725011">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">جابه‌جایی بین برگه‌ها در گروه برگه شما واقع در نزدیک پایین صفحه‌نمایش</translation>
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
 <translation id="9216898458513705996">برگه‌ها در این دستگاه باز می‌ماند اما گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>

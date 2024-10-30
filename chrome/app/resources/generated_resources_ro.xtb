@@ -425,6 +425,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1288037062697528143">Lumina de noapte se va activa automat la apus</translation>
 <translation id="1288300545283011870">Proprietăți pentru vorbire</translation>
 <translation id="1289619947962767206">Această opțiune nu mai este acceptată. Pentru a afișa o filă, folosește <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Dacă selectezi un gest deja atribuit, acesta va fi eliminat din acțiunea inițială.</translation>
 <translation id="1291119821938122630">Termeni și condiții <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Resetează tastele</translation>
 <translation id="1292849930724124745">Introdu cardul inteligent ca să rămâi conectat(ă)</translation>
@@ -616,6 +617,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1436671784520050284">Continuă configurarea</translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437986450143295708">Descrie problema detaliat</translation>
+<translation id="1438630805136563416">A fost eliminată acțiunea <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">asistență pe durată extinsă</translation>
 <translation id="1440090277117135316">Înscrierea la școală s-a finalizat</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selectate</translation>
@@ -981,6 +983,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1677306805708094828">Nu s-a putut adăuga <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Scanarea nu a reușit. Fișierul poate fi un virus sau un program malware.</translation>
+<translation id="1678919064276516737">Adresa de e-mail și PIN-ul pe care le-ai introdus nu corespund</translation>
 <translation id="1679068421605151609">Instrumente pentru dezvoltatori</translation>
 <translation id="1679810534535368772">Sigur dorești să ieși?</translation>
 <translation id="167983332380191032">Serviciul de administrare a trimis o eroare HTTP.</translation>
@@ -1426,6 +1429,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1981434377190976112">să citească toate datele de pe toate site-urile</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} și {field_2}}few{{field_1}, {field_2} și {field_3}}other{{field_1}, {field_2} și {field_3}}}</translation>
 <translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
+<translation id="198507684520034826">Ajutor</translation>
 <translation id="1986836014090708999">Setări avansate privind locația</translation>
 <translation id="1987317783729300807">Conturi</translation>
 <translation id="1987574314042117472">Selectează și instalează aplicații populare</translation>
@@ -2921,6 +2925,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Afișează instrumentele pentru creion pe raft</translation>
 <translation id="3029808567601324798">Blocare</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să descarci o actualizare azi. Actualizarea se va descărca automat când te vei conecta la internet.}few{<ph name="MANAGER" /> solicită să descarci o actualizare înainte de termenul limită. Actualizarea se va descărca automat când te vei conecta la internet.}other{<ph name="MANAGER" /> solicită să descarci o actualizare înainte de termenul limită. Actualizarea se va descărca automat când te vei conecta la internet.}}</translation>
+<translation id="3030772324014024606">Editează</translation>
 <translation id="3030967311408872958">De la apus la răsărit</translation>
 <translation id="3031417829280473749">Agenta X</translation>
 <translation id="3031532026314193077">Folosește touchpadul și tastatura pentru a da clic dreapta</translation>
@@ -4025,6 +4030,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3824621460022590830">Indicativul de înregistrare a dispozitivului nu este valid. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Conectează-te pentru a vedea filele de pe alte dispozitive</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Reține alegerea mea pentru următorul tip de fișier: <ph name="FILE_TYPES" />}few{Reține alegerea mea pentru următoarele tipuri de fișiere: <ph name="FILE_TYPES" />}other{Reține alegerea mea pentru următoarele tipuri de fișiere: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Afișează</translation>
 <translation id="3825635794653163640">Afișează punctul pe pictograma aplicației pentru alertele de la aplicație</translation>
 <translation id="3826071569074535339">Au permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="3826086052025847742">Jurnale ChromeOS Flex</translation>
@@ -4136,6 +4142,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3905761538810670789">Repară aplicația</translation>
 <translation id="3908288065506437185">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3908501907586732282">Activați extensia</translation>
+<translation id="3909456989251621103">Dacă ștergi un certificat de server, Chrome nu îl va mai folosi pentru a identifica servere.</translation>
 <translation id="3909701002594999354">Afișează toate &amp;comenzile</translation>
 <translation id="3909791450649380159">&amp;Taie</translation>
 <translation id="39103738135459590">Codul de activare</translation>
@@ -5054,6 +5061,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4581774856936278355">Eroare la restabilirea Linux</translation>
 <translation id="4582297591746054421">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4582563038311694664">Restabilește toate setările</translation>
+<translation id="4584770411839426377">Fereastră</translation>
 <translation id="4585793705637313973">Editează pagina</translation>
 <translation id="4586275095964870617"><ph name="URL" /> nu s-a putut deschide în browserul secundar. Contactează administratorul de sistem.</translation>
 <translation id="4587589328781138893">Site-uri</translation>
@@ -5445,6 +5453,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4872192066608821120">Pentru a importa parole, selectează un fișier CSV</translation>
 <translation id="4872212987539553601">Configurează criptarea pe dispozitiv</translation>
 <translation id="4873312501243535625">Verificator de fișiere media</translation>
+<translation id="4875690134140862902">Filă</translation>
 <translation id="4876273079589074638">Ajută-i pe inginerii noștri să investigheze și să remedieze această blocare. Dacă poți, indică pașii exacți. Orice detaliu este important!</translation>
 <translation id="4876305945144899064">Niciun nume de utilizator</translation>
 <translation id="4876327226315760474">Aceasta înseamnă că funcțiile site-ului ar trebui să ruleze conform așteptărilor, dar este posibil să ai mai puțină protecție la navigare.</translation>
@@ -5557,6 +5566,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="495170559598752135">Acțiuni</translation>
 <translation id="4951966678293618079">Nu salva niciodată parolele pentru acest site</translation>
 <translation id="4953808748584563296">Avatar portocaliu prestabilit</translation>
+<translation id="4954652437333037880">Fișier</translation>
 <translation id="4955707703665801001">Vizibilitatea pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Alege codul PIN</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6733,6 +6743,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5832970156002835240">Permite pe toate site-urile</translation>
 <translation id="5833397272224757657">Folosește conținutul de pe site-urile pe care le accesezi, activitatea browserului și interacțiunile pentru personalizare</translation>
 <translation id="5833726373896279253">Aceste setări pot fi modificate numai de proprietar:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Nu permite site-urilor să folosească JavaScript</translation>
 <translation id="583431638776747">Site-ul nu este disponibil</translation>
 <translation id="5834581999798853053">Au mai rămas aproape <ph name="TIME" /> min.</translation>
@@ -7815,6 +7826,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6635674640674343739">Conexiunea la rețea nu poate fi stabilită. Verifică starea conexiunii la rețea și încearcă din nou.</translation>
 <translation id="663569763553406962">Vezi ce extensii pot să citească sau să modifice un site</translation>
 <translation id="6635944431854494329">Proprietarul poate controla această funcție din Setări &gt; Avansate &gt; Trimite automat la Google date de diagnosticare și de utilizare.</translation>
+<translation id="6636258750460740634">Istoric</translation>
 <translation id="6636623428211296678">Explorează mai multe dintre setările de mai jos sau finalizează acum</translation>
 <translation id="6639554308659482635">Memorie SQLite</translation>
 <translation id="6640268266988685324">Filă deschisă</translation>

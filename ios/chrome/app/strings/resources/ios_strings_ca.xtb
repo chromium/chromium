@@ -845,6 +845,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="496392417432935267">S'ha obert en un altre lloc</translation>
 <translation id="4971735654804503942">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos. T'avisa sobre violacions de les contrasenyes. Requereix que les dades de navegació s'enviïn a Google.</translation>
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
+<translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
 <translation id="4989065233040279145">Tria on vols desar <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Grup de pestanyes de color <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
@@ -1351,10 +1352,12 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7218491361283758048">Codi postal</translation>
 <translation id="7221173315674413369">Explora noves funcions i consells a Novetats</translation>
 <translation id="722339453342442311">Comprova ara</translation>
+<translation id="7227235818314667565">Gestiona la compartició</translation>
 <translation id="7233006041370588369">Selecciona una contrasenya per emplenar.</translation>
 <translation id="7241135764990439166">El mode d'incògnit no està disponible</translation>
 <translation id="7248046129087111453">És possible que l'<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google.</translation>
 <translation id="7253951228444156601">S'estan comprovant les contrasenyes…</translation>
+<translation id="7261217796641151584">Comparteix el grup</translation>
 <translation id="7271220006028561438">Permet les actualitzacions automàtiques de les claus d'accés</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>

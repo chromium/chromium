@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Buka versi Online</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
+<translation id="1070329623210597193">File yang dapat dilihat atau diedit oleh situs ini</translation>
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberi tahu kami alasan Anda mengizinkan cookie pihak ketiga. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Lainnya</translation>
 <translation id="6064125863973209585">Download yang selesai</translation>
 <translation id="6071501408666570960">Anda mungkin akan logout dari situs ini</translation>
+<translation id="6085954183010297841">Hapus pemberian izin edit file? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Jika diaktifkan, situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat. Jika dinonaktifkan, situs tidak dapat mengetahui saat Anda aktif menggunakan perangkat.</translation>
 <translation id="6140839633433422817">Yakin ingin mereset izin, serta menghapus cookie dan data situs?</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>

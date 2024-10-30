@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Pagina nu s-a încărcat, deoarece modulul IU pentru dezvoltatori (dev_ui) nu este instalat</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Săgeată stânga</translation>
 <translation id="5633029987065897167">Gol</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{Un min.}few{# min.}other{# min.}}</translation>

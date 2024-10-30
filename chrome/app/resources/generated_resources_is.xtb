@@ -425,6 +425,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1288037062697528143">Kveikir sjálfkrafa á næturljósi við sólsetur</translation>
 <translation id="1288300545283011870">Eiginleikar fyrir tal</translation>
 <translation id="1289619947962767206">Þessi valkostur er ekki lengur studdur. Notaðu <ph name="GOOGLE_MEET" /> til að birta flipa.</translation>
+<translation id="1291057703584594733">Þegar valin er bending með úthlutun verður hún aftengd við núverandi aðgerð.</translation>
 <translation id="1291119821938122630">Þjónustuskilmálar <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Endurstilla lykla</translation>
 <translation id="1292849930724124745">Settu snjallkort í til að halda þér innskráðri/innskráðum</translation>
@@ -616,6 +617,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1436671784520050284">Halda uppsetningu áfram</translation>
 <translation id="1436784010935106834">Fjarlægð</translation>
 <translation id="1437986450143295708">Lýstu vandamálinu í smáatriðum</translation>
+<translation id="1438630805136563416">Fjarlægði aðgerð <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">langtímastuðningur</translation>
 <translation id="1440090277117135316">Skólaskráningu lokið</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> valin</translation>
@@ -982,6 +984,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1677306805708094828">Ekki er hægt að bæta við <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
 <translation id="1678849866171627536">Skönnun mistókst. Þessi skrá gæti verið vírus eða spilliforrit.</translation>
+<translation id="1678919064276516737">Netfangið og PIN-númerið sem þú slóst inn passa ekki saman</translation>
 <translation id="1679068421605151609">Forritunartól</translation>
 <translation id="1679810534535368772">Ertu viss um að þú viljir hætta?</translation>
 <translation id="167983332380191032">Umsjónarþjónusta sendi HTTP-villu.</translation>
@@ -1436,6 +1439,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1981434377190976112">Lesa öll gögn þín á öllum vefsvæðum</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} og {field_2}}one{{field_1}, {field_2} og {field_3}}other{{field_1}, {field_2} og {field_3}}}</translation>
 <translation id="1984417487208496350">Engin vörn (ekki mælt með)</translation>
+<translation id="198507684520034826">Hjálp</translation>
 <translation id="1986836014090708999">Ítarlegar staðsetningarstillingar</translation>
 <translation id="1987317783729300807">Reikningar</translation>
 <translation id="1987574314042117472">Velja og setja upp vinsæl forrit</translation>
@@ -2934,6 +2938,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3029466929721441205">Sýna pennaverkfæri á hillu</translation>
 <translation id="3029808567601324798">Tími til að læsa</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krefst þess að þú sækir uppfærslu í dag. Uppfærslunni verður hlaðið niður sjálfkrafa þegar þú tengist við internetið.}one{<ph name="MANAGER" /> krefst þess að þú sækir uppfærslu áður en fresturinn er liðinn. Uppfærslunni verður hlaðið niður sjálfkrafa þegar þú tengist við internetið.}other{<ph name="MANAGER" /> krefst þess að þú sækir uppfærslu áður en fresturinn er liðinn. Uppfærslunni verður hlaðið niður sjálfkrafa þegar þú tengist við internetið.}}</translation>
+<translation id="3030772324014024606">Breyta</translation>
 <translation id="3030967311408872958">Sólsetur til sólarupprásar</translation>
 <translation id="3031417829280473749">Birgitta</translation>
 <translation id="3031532026314193077">Nota snertiflöt og lyklaborð til að hægrismella</translation>
@@ -4039,6 +4044,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3824621460022590830">Skráningarlykill tækis er ógildur. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Skráðu þig inn til að sjá flipa úr öðrum tækjum</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muna valið mitt fyrir þessa skráargerð: <ph name="FILE_TYPES" />}one{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}other{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Skoða</translation>
 <translation id="3825635794653163640">Sýna punkt á forritstákni fyrir forritstilkynningar</translation>
 <translation id="3826071569074535339">Mega nota hreyfiskynjara</translation>
 <translation id="3826086052025847742">ChromeOS Flex-annálar</translation>
@@ -4150,6 +4156,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3905761538810670789">Gera við forrit</translation>
 <translation id="3908288065506437185">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="3908501907586732282">Virkja viðbót</translation>
+<translation id="3909456989251621103">Ef þú eyðir vottorði þjóns mun Chrome ekki lengur nota það til að bera kennsl á þjóna.</translation>
 <translation id="3909701002594999354">Sýna allar &amp;stýringar</translation>
 <translation id="3909791450649380159">Klippa</translation>
 <translation id="39103738135459590">Virkjunarkóði</translation>
@@ -5068,6 +5075,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4581774856936278355">Villa við endurheimt á Linux</translation>
 <translation id="4582297591746054421">Vefsvæði fara yfirleitt yfir klippiborðið í leit að eiginleikum, t.d. til að halda sniði textans sem þú afritaðir</translation>
 <translation id="4582563038311694664">Núllstilla allt</translation>
+<translation id="4584770411839426377">Gluggi</translation>
 <translation id="4585793705637313973">Breyta síðu</translation>
 <translation id="4586275095964870617">Ekki var hægt að opna <ph name="URL" /> í öðrum vafra. Hafðu samband við kerfisstjórann þinn.</translation>
 <translation id="4587589328781138893">Svæði</translation>
@@ -5460,6 +5468,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4872192066608821120">Veldu CVS-skrá til að flytja aðgangsorð inn</translation>
 <translation id="4872212987539553601">Stilla dulkóðun í tæki</translation>
 <translation id="4873312501243535625">Athugun efnisskráa</translation>
+<translation id="4875690134140862902">Flipi</translation>
 <translation id="4876273079589074638">Hjálpaðu hugbúnaðarverkfræðingum okkar að rannsaka og lagfæra ástæðu þess að þetta hrun átti sér stað. Lýstu nákvæmum skrefum eins vel og þú getur. Lýsingin getur ekki verið of ítarleg!</translation>
 <translation id="4876305945144899064">Ekkert notandanafn</translation>
 <translation id="4876327226315760474">Þetta þýðir að flestir eiginleikar vefsvæðisins ættu að virka sem skyldi, en hugsanlega er minni vernd þegar vafrað er.</translation>
@@ -5572,6 +5581,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="495170559598752135">Aðgerðir</translation>
 <translation id="4951966678293618079">Aldrei vista aðgangsorð fyrir þetta vefsvæði</translation>
 <translation id="4953808748584563296">Sjálfgefin appelsínugul notandamynd</translation>
+<translation id="4954652437333037880">Skrá</translation>
 <translation id="4955707703665801001">Sýnileiki „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">Veldu þér PIN-númer</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6749,6 +6759,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5832970156002835240">Leyfa á öllum vefsvæðum</translation>
 <translation id="5833397272224757657">Notar efni af vefsvæðum sem þú heimsækir auk virkni og samskipta í vafra til að bjóða upp á sérsniðna notkun</translation>
 <translation id="5833726373896279253">Einungis eigandinn getur breytt þessum stillingum:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Ekki leyfa vefsvæðum að nota JavaScript</translation>
 <translation id="583431638776747">Vefsvæði var ekki tiltækt</translation>
 <translation id="5834581999798853053">Um <ph name="TIME" /> mínútur eftir</translation>
@@ -7831,6 +7842,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6635674640674343739">Ekki er hægt að koma á nettengingu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="663569763553406962">Sjáðu hvaða viðbætur geta lesið eða breytt vefsvæði</translation>
 <translation id="6635944431854494329">Eigandinn getur stjórnað þessum eiginleika í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
+<translation id="6636258750460740634">Ferill</translation>
 <translation id="6636623428211296678">Skoðaðu fleiri stillingar hér að neðan eða ljúktu þessu núna</translation>
 <translation id="6639554308659482635">SQLite-minni</translation>
 <translation id="6640268266988685324">Opna flipa</translation>

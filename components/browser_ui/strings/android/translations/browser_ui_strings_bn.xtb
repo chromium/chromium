@@ -13,6 +13,7 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1240190568154816272">Chrome সংক্রান্ত পরামর্শ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-এ এম্বেড করা হয়েছে</translation>
+<translation id="1263609676484797429">অ্যাপ  &gt; ডিফল্ট অ্যাপ বিকল্পে ট্যাপ করুন</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1289742167380433257">আপনার ডেটা সেভ করার জন্য, এই পৃষ্ঠার ছবিগুলি Google অপ্টিমাইজ করেছে।</translation>
 <translation id="129382876167171263">ওয়েবসাইট যেসব ফাইল সেভ করে সেগুলি এখানে দেখা যায়</translation>
@@ -191,6 +192,7 @@
 <translation id="3908288065506437185">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">কিছু ফিচার হয়ত কাজ করবে না। সম্পর্কিত সাইটগুলি এখনও থার্ড-পার্টি কুকি ব্যবহার করতে পারে।</translation>
+<translation id="3922092564198021702">আপনার ফোনে, 'সেটিংস' বিকল্প খুলুন</translation>
 <translation id="3933121352599513978">অবাঞ্ছিত অনুরোধ আড়াল করুন (সাজেস্ট করা)</translation>
 <translation id="3955193568934677022">সুরক্ষিত কন্টেন্ট প্লে করতে সাইটগুলিকে মঞ্জুরি দিন (প্রস্তাবিত)</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
@@ -349,6 +351,7 @@
 <translation id="6205314730813004066">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
 <translation id="6207207788774442484">ডেটা মুছে দিয়ে অনুমতি রিসেট করুন</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> আনইনস্টল করবেন?</translation>
+<translation id="6234351944623978659">ব্রাউজার অ্যাপ &gt; Chrome বিকল্পে ট্যাপ করুন</translation>
 <translation id="6262191102408817757">আপনার শেষ ট্যাবের উপর ভিত্তি করে</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ও <ph name="PERMISSION_2" /> ব্লক করা হয়েছে</translation>
 <translation id="6270391203985052864">সাইট আপনাকে বিজ্ঞপ্তি পাঠানোর আগে অনুমতি চাইতে পারে</translation>

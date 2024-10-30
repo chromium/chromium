@@ -13,6 +13,7 @@
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1240190568154816272">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> 'ਤੇ ਪਰੋਇਆ ਗਿਆ</translation>
+<translation id="1263609676484797429">ਐਪਾਂ &gt; ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
 <translation id="1289742167380433257">ਤੁਹਾਡਾ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, Google ਨੇ ਇਸ ਪੰਨੇ ਦੇ ਚਿੱਤਰਾਂ ਨੂੰ ਸੁਯੋਗ ਬਣਾਇਆ ਹੈ।</translation>
 <translation id="129382876167171263">ਵੈੱਬਸਾਈਟਾਂ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਸਣਗੀਆਂ</translation>
@@ -191,6 +192,7 @@
 <translation id="3908288065506437185">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ਸ਼ਾਇਦ ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ। ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਹਾਲੇ ਵੀ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="3922092564198021702">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ, ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3933121352599513978">ਅਣਚਾਹੀਆਂ ਬੇਨਤੀਆਂ ਨੂੰ ਸਮੇਟੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3955193568934677022">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3967822245660637423">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
@@ -349,6 +351,7 @@
 <translation id="6205314730813004066">ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="6207207788774442484">ਡਾਟਾ ਮਿਟਾਓ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6231752747840485235">ਕੀ '<ph name="APP_NAME" />' ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
+<translation id="6234351944623978659">ਐਪ ਬ੍ਰਾਊਜ਼ਰ ਕਰੋ &gt; Chrome 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="6262191102408817757">ਤੁਹਾਡੀ ਪਿਛਲੀ ਟੈਬ ਦੇ ਆਧਾਰ 'ਤੇ</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6270391203985052864">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>

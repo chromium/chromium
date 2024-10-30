@@ -2268,6 +2268,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5087286274860437796">De momento, o certificado do servidor não é válido.</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
 <translation id="5088142053160410913">Mensagem para o operador</translation>
+<translation id="5089791650329866127">Esta funcionalidade usa informações que já guardou com o preenchimento automático, como a sua morada.</translation>
 <translation id="5090647584136241764">Adicione separadores com produtos semelhantes para comparar facilmente os detalhes mais importantes para si</translation>
 <translation id="5093232627742069661">Dobra em Z</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chromium não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
@@ -4542,6 +4543,7 @@ Detalhes adicionais:
 <translation id="9211461151375991073">Escreva @ para pesquisar <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personalize o aspeto</translation>
 <translation id="9215416866750762878">Uma aplicação está a impedir que o Chrome se ligue a este site em segurança</translation>
+<translation id="921738974253889319">Esta funcionalidade usa informações que já guardou com o preenchimento automático, como a sua morada. Pode rever e gerir estes dados nesta página.</translation>
 <translation id="92178312226016010">Está a acompanhar este produto.</translation>
 <translation id="9218430445555521422">Predefinir</translation>
 <translation id="9219103736887031265">Imagens</translation>

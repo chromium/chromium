@@ -375,6 +375,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{A Chrome talált egy újrafelhasznált jelszót, amelyen lehetne javítani}other{A Chrome talált # újrafelhasznált jelszót, amelyen lehetne javítani}}</translation>
 <translation id="2800066122460699237">A lap (<ph name="TAB_TITLE" />) be lesz zárva</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
@@ -429,6 +430,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2981364137500752533">Legfeljebb öt ablak lehet nyitva.</translation>
 <translation id="2983102365694924129">A webhelyen végzett tevékenységei alapján. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="2984978667043170458">Környező szöveget is tartalmazó keresés a Google Kereső használatakor</translation>
+<translation id="2988638966064514052">Tegye erősebbé jelszavait</translation>
 <translation id="2989523299700148168">Legutóbb látogatott</translation>
 <translation id="2992473221983447149">Képleírások</translation>
 <translation id="2996291259634659425">Összetett jelszó létrehozása</translation>
@@ -604,6 +606,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3902562446536395999">Rendezés folyamatban: A-tól Z-ig</translation>
 <translation id="3908308510347173149">A(z) <ph name="PRODUCT_NAME" /> frissítése</translation>
 <translation id="3911609878849982353">Rendezés folyamatban: Z-től A-ig</translation>
+<translation id="3918415141610210050">Lap</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktív</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Adataim egyesítése</translation>
@@ -690,6 +693,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="433213510553688132">Követés…</translation>
 <translation id="4335835283689002019">A Biztonságos Böngészés ki van kapcsolva</translation>
 <translation id="4351244548802238354">Párbeszédablak bezárása</translation>
+<translation id="4352287748243729941">Szeretné <ph name="PROVIDER" />-jelszavát használni?</translation>
 <translation id="4355272626458588338">A fontos oldalakra könyvjelző felvételével térhet vissza a későbbiekben</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Biztonsági áttekintés</translation>
@@ -849,6 +853,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5005498671520578047">Jelszó másolása</translation>
 <translation id="5010886807652684893">Vizuális nézet</translation>
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
+<translation id="5012253429094023177">Úgy tűnik, hogy a(z) <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> és a(z) <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> kapcsolódik egymáshoz. A jelszó használata előtt győződjön meg róla, hogy a(z) <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> megbízható.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Elmúlt 15 perc</translation>
 <translation id="5032430150487044192">Nem lehet létrehozni a QR-kódot.</translation>
@@ -902,6 +907,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5304593522240415983">Ez a mező nem lehet üres</translation>
 <translation id="5306014156308790439">A Hozzáadás a gyűjteményhez funkció letiltva</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
+<translation id="5310963254742922113">Jelszó használva.</translation>
 <translation id="5316947901395241499">A rendszergazda kikapcsolta a jelszavak mentését</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5319359161174645648">A Google a Chrome-ot ajánlja</translation>
@@ -1310,7 +1316,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7085332316435785646">Válassza ki, hogy szeretné-e használni a Chrome-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>
 <translation id="7088681679121566888">A Chrome naprakész</translation>
 <translation id="7094933634769755999">Pontatlan</translation>
-<translation id="7105047059074518658">Jelentkezzen be, hogy egyszerűbben böngészhessen eszközökön átnyúlóan</translation>
 <translation id="7106762743910369165">Böngészőjét a szervezete kezeli.</translation>
 <translation id="7111394291981742152">A Chrome nagyobb irányítást ad afelett, hogy milyen hirdetések jelenjenek meg Önnek, és korlátozza, hogy mely webhelyek tudhatnak meg Önről információkat, amikor személyre szabott hirdetéseket jelenítenek meg.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 webhely engedélyei felülvizsgálva}other{# webhely engedélyei felülvizsgálva}}</translation>
@@ -1686,6 +1691,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8754448020583829686">Másolás link nélkül</translation>
 <translation id="8756969031206844760">Szeretné frissíteni a jelszót?</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
+<translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{A Chrome talált egy gyenge jelszót, amelyen lehetne javítani}other{A Chrome talált # gyenge jelszót, amelyen lehetne javítani}}</translation>
 <translation id="8766529642647037772">Szeretne létrehozni egy ehhez hasonló kiemelt linket?</translation>
 <translation id="8788265440806329501">Bezárta a navigációs előzményeket</translation>
 <translation id="8788968922598763114">A legutóbb bezárt lap újranyitása</translation>

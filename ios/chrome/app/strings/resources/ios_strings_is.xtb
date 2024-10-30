@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Útskráð(ur). Skráðu þig aftur inn til að nota bókamerki, aðgangsorð og fleira á reikningnum þínum.</translation>
 <translation id="1054745118061919935">Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK" />þjónustuskilmálana<ph name="END_LINK" /></translation>
 <translation id="10614374240317010">Aldrei vistað</translation>
+<translation id="1062138828266376352">PIN-númerinu þínu var ekki breytt. Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="1066060668811609597">Stjórna samstillingu</translation>
 <translation id="1076421457278169141">Kóði skannaður</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} flipi}one{{count} flipi}other{{count} flipa}}</translation>
@@ -676,6 +677,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="421070604241073551">Ef kveikt er á þessu verða gögn vistuð á Google-reikningnum þínum. Ef slökkt er á þessu verða gögn eingöngu vistuð í þessu tæki.</translation>
 <translation id="4224534474590365556">Loka yfir 99 óvirkum flipum?</translation>
 <translation id="422474357428465195">Þú ert með ýmis aðgangsorðavandamál sem gætu stefnt öryggi þínu í hættu.</translation>
+<translation id="422477017457571619">Vörn í rauntíma, knúin af gervigreind, gegn hættulegum vefsvæðum, niðurhali og viðbótum sem byggir á vefskoðunargögnunum þínum sem eru send til Google</translation>
 <translation id="4231395118547300571">Kveikt er á tilkynningum fyrir öryggisathugun</translation>
 <translation id="4237377247299956313">Ýttu á <ph name="BEGIN_BOLD" />Sjálfgefið vafraforrit<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
@@ -1350,10 +1352,12 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7218491361283758048">Póstnúmer</translation>
 <translation id="7221173315674413369">Kannaðu nýja eiginleika og ábendingar í „Nýjungar“</translation>
 <translation id="722339453342442311">Athuga núna</translation>
+<translation id="7227235818314667565">Stjórna samnýtingu</translation>
 <translation id="7233006041370588369">Veldu aðgangsorð til að fylla inn.</translation>
 <translation id="7241135764990439166">Huliðsstilling er ekki í boði</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Leitarferill<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />aðrar tegundir aðgerða<ph name="END_LINK" /> kunna að vera vistaðar á Google-reikningnum þínum.</translation>
 <translation id="7253951228444156601">Athugar aðgangsorð…</translation>
+<translation id="7261217796641151584">Deila hópi</translation>
 <translation id="7271220006028561438">Leyfa sjálfvirkar uppfærslur á aðgangslyklum</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7293429513719260019">Velja tungumál</translation>

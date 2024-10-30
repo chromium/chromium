@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Krijuar <ph name="NUM_YEARS_MANY" /> vite më parë}}</translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1197088940767939838">Portokalli</translation>
-<translation id="125153950246128346">Trokit për të parë një skedë tjetër</translation>
 <translation id="1273910660700874265">Opsionet e grupit të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1293272072740285747">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.
 
@@ -96,7 +95,6 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="5007392906805964215">Rishiko</translation>
 <translation id="5073204694187207510">Fshih rrjetën me ekran të plotë</translation>
 <translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
-<translation id="5082793167783849073">Krahaso me shpejtësi faqet duke krijuar një grup. Për të filluar, prek dhe mbaj të shtypur një lidhje.</translation>
 <translation id="5094423602314093681">Të hiqen skedat dhe të fshihet grupi?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua}other{<ph name="MANY_ADDED" /> skeda u shtuan}}</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
@@ -196,7 +194,6 @@ Nëse largohesh, do të humbasësh menjëherë qasjen te grupi i skedave "<ph na
 <translation id="9090098097337832354">Informacioni për këtë dyqan është mbyllur</translation>
 <translation id="9111228330448174435">Shfaq dialogun në krijimin e një grupi të ri skedash</translation>
 <translation id="9114502155681725011">Hap menynë e veprimeve të grupit të skedave për grupin e skedave "<ph name="TITLE_OF_GROUP" />", ngjyrë <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Kalo mes skedave në grupin e skedave pranë fundit të ekranit</translation>
 <translation id="9169594135889675189">Shto skedë të re te grupi</translation>
 <translation id="9216898458513705996">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>

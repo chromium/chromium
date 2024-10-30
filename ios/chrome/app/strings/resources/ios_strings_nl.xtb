@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Uitgelogd. Log weer in om onder meer de bookmarks en wachtwoorden in je account te gebruiken.</translation>
 <translation id="1054745118061919935">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_LINK" />Servicevoorwaarden<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nooit opgeslagen</translation>
+<translation id="1062138828266376352">Je pincode is niet gewijzigd. Check de internetverbinding en probeer het opnieuw.</translation>
 <translation id="1066060668811609597">Synchronisatie beheren</translation>
 <translation id="1076421457278169141">Code gescand</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tabblad}other{{count} tabbladen}}</translation>
@@ -676,6 +677,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="421070604241073551">Als dit aanstaat, worden gegevens opgeslagen in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat.</translation>
 <translation id="4224534474590365556">Meer dan 99 inactieve tabbladen sluiten?</translation>
 <translation id="422474357428465195">Je hebt verschillende wachtwoordproblemen die een beveiligingsrisico kunnen vormen.</translation>
+<translation id="422477017457571619">Realtime, AI-gestuurde bescherming tegen gevaarlijke sites, downloads en extensies op basis van je browsegegevens die naar Google worden gestuurd</translation>
 <translation id="4231395118547300571">Meldingen van Veiligheidscheck aangezet</translation>
 <translation id="4237377247299956313">Tik op <ph name="BEGIN_BOLD" />Standaard browser-app<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
@@ -1350,10 +1352,12 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7218491361283758048">Postcode</translation>
 <translation id="7221173315674413369">Ontdek nieuwe functies en tips in Wat is er nieuw</translation>
 <translation id="722339453342442311">Nu checken</translation>
+<translation id="7227235818314667565">Delen beheren</translation>
 <translation id="7233006041370588369">Selecteer een wachtwoord om in te vullen.</translation>
 <translation id="7241135764990439166">Incognitomodus is niet beschikbaar</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Zoekgeschiedenis<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />andere vormen van activiteit<ph name="END_LINK" /> kunnen worden opgeslagen in je Google-account.</translation>
 <translation id="7253951228444156601">Wachtwoorden checken…</translation>
+<translation id="7261217796641151584">Groep delen</translation>
 <translation id="7271220006028561438">Automatische updates voor toegangssleutels toestaan</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
 <translation id="7293429513719260019">Taal selecteren</translation>

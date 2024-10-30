@@ -426,10 +426,12 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1288037062697528143">Noční režim se zapne automaticky za soumraku</translation>
 <translation id="1288300545283011870">Vlastnosti řeči</translation>
 <translation id="1289619947962767206">Tato možnost už není podporována. K prezentaci použijte službu <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Pokud vyberete už přiřazené gesto, odstraníte ho tím od původní akce.</translation>
 <translation id="1291119821938122630">Smluvní podmínky <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Resetovat klávesy</translation>
 <translation id="1292849930724124745">Pokud chcete zůstat přihlášeni, vložte čipovou kartu</translation>
 <translation id="1293264513303784526">Zařízení USB Type-C (levý port)</translation>
+<translation id="1293360286536751243">Gesto <ph name="MAIN_GESTURE" /> může kolidovat s gesty <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> a <ph name="CONFLICTING_GESTURE_THREE" />. Pokud je to možné, zkuste vybrat jiné.</translation>
 <translation id="1293556467332435079">Soubory</translation>
 <translation id="1294807885394205587">Tento proces může trvat několik minut. Spouštění správce kontejneru.</translation>
 <translation id="12951065153783848">Váš účet spravuje vaše organizace</translation>
@@ -616,6 +618,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1436671784520050284">Pokračovat v nastavování</translation>
 <translation id="1436784010935106834">Odebráno</translation>
 <translation id="1437986450143295708">Podrobně popište problém</translation>
+<translation id="1438630805136563416">Byla odstraněna akce <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">dlouhodobá podpora</translation>
 <translation id="1440090277117135316">Registrace do školy byla dokončena</translation>
 <translation id="144283815522798837">Vybrané položky: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
@@ -981,6 +984,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1677306805708094828">Rozšíření <ph name="EXTENSION_TYPE_PARAMETER" /> nelze přidat</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Kontrola se nezdařila. Tento soubor může být vir nebo malware.</translation>
+<translation id="1678919064276516737">Zadaný e-mail a PIN se neshodují</translation>
 <translation id="1679068421605151609">Nástroje pro vývojáře</translation>
 <translation id="1679810534535368772">Opravdu chcete skončit?</translation>
 <translation id="167983332380191032">Služba správy odeslala chybu protokolu HTTP.</translation>
@@ -1426,6 +1430,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1981434377190976112">Číst veškerá vaše data na všech webech</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} a {field_2}}few{{field_1}, {field_2} a {field_3}}many{{field_1}, {field_2} a {field_3}}other{{field_1}, {field_2} a {field_3}}}</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
+<translation id="198507684520034826">Nápověda</translation>
 <translation id="1986836014090708999">Pokročilé geografické nastavení</translation>
 <translation id="1987317783729300807">Účty</translation>
 <translation id="1987574314042117472">Vyberte a nainstalujte oblíbené aplikace</translation>
@@ -2615,6 +2620,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2806372837663997957">Cílové zařízení sdílený soubor nepřijalo</translation>
 <translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
+<translation id="2808985063107661499">Gesto <ph name="MAIN_GESTURE" /> může kolidovat s gesty <ph name="CONFLICTING_GESTURE_ONE" /> a <ph name="CONFLICTING_GESTURE_TWO" />. Pokud je to možné, zkuste vybrat jiné.</translation>
 <translation id="2811205483104563968">Účty</translation>
 <translation id="2812049959647166806">Rozhraní Thunderbolt není podporováno</translation>
 <translation id="2812171980080389735">Uložené sítě a hesla k okamžitému připojení</translation>
@@ -2920,6 +2926,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3029466929721441205">Zobrazit v poličce nástroje pro dotykové pero</translation>
 <translation id="3029808567601324798">Doba do uzamknutí</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Organizace <ph name="MANAGER" /> vyžaduje, abyste dnes stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}few{Organizace <ph name="MANAGER" /> vyžaduje, abyste do stanoveného termínu stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}many{Organizace <ph name="MANAGER" /> vyžaduje, abyste do stanoveného termínu stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}other{Organizace <ph name="MANAGER" /> vyžaduje, abyste do stanoveného termínu stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}}</translation>
+<translation id="3030772324014024606">Upravit</translation>
 <translation id="3030967311408872958">Od soumraku do úsvitu</translation>
 <translation id="3031417829280473749">Agentka</translation>
 <translation id="3031532026314193077">Ke kliknutí pravým tlačítkem používat touchpad a klávesnici</translation>
@@ -4023,6 +4030,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3824621460022590830">Token registrace zařízení není platný. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Pokud chcete zobrazit karty z jiných zařízení, přihlaste se</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamatovat moji volbu pro tento typ souboru: <ph name="FILE_TYPES" />}few{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}many{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}other{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Zobrazit</translation>
 <translation id="3825635794653163640">Zobrazovat puntík na ikoně aplikace jako upozornění</translation>
 <translation id="3826071569074535339">Povolení používat senzory pohybu</translation>
 <translation id="3826086052025847742">Protokoly ChromeOS Flex</translation>
@@ -4134,6 +4142,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3905761538810670789">Opravit aplikaci</translation>
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3908501907586732282">Aktivovat rozšíření</translation>
+<translation id="3909456989251621103">Pokud certifikát serveru vymažete, Chrome ho již nebude používat k identifikaci serverů.</translation>
 <translation id="3909701002594999354">Zobrazit všechny ovládací prvky</translation>
 <translation id="3909791450649380159">Vyjmou&amp;t</translation>
 <translation id="39103738135459590">Aktivační kód</translation>
@@ -4344,6 +4353,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="404894744863342743">Až stažený soubor nebudete potřebovat, smažte ho, aby ostatní uživatelé tohoto zařízení neviděli vaše hesla.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt není dostupný. Chcete-li u něj používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jeho účtu Google.}few{# kontakty nejsou dostupné. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}many{# kontaktu není dostupných. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}other{# kontaktů není dostupných. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}}</translation>
 <translation id="4050225813016893843">Metoda ověření</translation>
+<translation id="4050379682069019014">Gesto <ph name="MAIN_GESTURE" /> může kolidovat s gestem <ph name="CONFLICTING_GESTURE" />. Pokud je to možné, zkuste vybrat jiné.</translation>
 <translation id="4050534976465737778">Obě zařízení musí být odemknutá, blízko u sebe a musí v nich být zapnutý Bluetooth. Jestliže obsah sdílíte s Chromebookem, který nemáte v kontaktech, musí na něm být zapnutá viditelnost nablízko. (Otevřete stavovou oblast a poté vyberte možnost Viditelnost nablízko.) <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Pokud chcete přepnout na naposledy použitou metodu zadávání, stiskněte <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">hledat + šipka vpravo</translation>
@@ -5050,6 +5060,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4581774856936278355">Při obnovování systému Linux došlo k chybě</translation>
 <translation id="4582297591746054421">Weby obvykle načítají obsah schránky kvůli funkcím, jako je zachování formátu zkopírovaného textu</translation>
 <translation id="4582563038311694664">Resetovat všechna nastavení</translation>
+<translation id="4584770411839426377">Okno</translation>
 <translation id="4585793705637313973">Úprava stránky</translation>
 <translation id="4586275095964870617">Adresu <ph name="URL" /> se v alternativním prohlížeči nepodařilo otevřít. Kontaktujte svého administrátora systému.</translation>
 <translation id="4587589328781138893">Weby</translation>
@@ -5441,6 +5452,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4872192066608821120">Pokud chcete importovat hesla, vyberte soubor CSV</translation>
 <translation id="4872212987539553601">Nastavení šifrování v zařízení</translation>
 <translation id="4873312501243535625">Nástroj na kontrolu mediálních souborů</translation>
+<translation id="4875690134140862902">Karta</translation>
 <translation id="4876273079589074638">Pomozte našim technikům prozkoumat toto selhání a odstranit jeho příčiny. Je-li to možné, přesně popište jednotlivé kroky. Důležité mohou být i nejmenší podrobnosti.</translation>
 <translation id="4876305945144899064">Žádné uživatelské jméno</translation>
 <translation id="4876327226315760474">To znamená, že funkce webu by měly fungovat podle očekávání, ale můžete mít menší ochranu při procházení.</translation>
@@ -5553,6 +5565,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="495170559598752135">Akce</translation>
 <translation id="4951966678293618079">Pro tento web hesla nikdy neukládat</translation>
 <translation id="4953808748584563296">Výchozí oranžový avatar</translation>
+<translation id="4954652437333037880">Soubor</translation>
 <translation id="4955707703665801001">Viditelnost pro funkci <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Zvolte kód PIN</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6727,6 +6740,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5832970156002835240">Povolit na všech webech</translation>
 <translation id="5833397272224757657">Používá k personalizaci obsah navštěvovaných webů a aktivitu a interakce v prohlížeči</translation>
 <translation id="5833726373896279253">Toto nastavení může upravit pouze vlastník.</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Nepovolovat webům používat JavaScript</translation>
 <translation id="583431638776747">Web nebyl k dispozici</translation>
 <translation id="5834581999798853053">Zbývá přibližně <ph name="TIME" /> min</translation>
@@ -7810,6 +7824,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6635674640674343739">Nelze navázat síťové připojení. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="663569763553406962">Podívejte se, která rozšíření mohou číst nebo měnit web</translation>
 <translation id="6635944431854494329">Vlastník tuto funkci může ovládat v sekci Nastavení &gt; Rozšířená nastavení &gt; Automaticky do Googlu odesílat diagnostické údaje a údaje o využití.</translation>
+<translation id="6636258750460740634">Historie</translation>
 <translation id="6636623428211296678">Níže prozkoumejte další nastavení nebo skončete</translation>
 <translation id="6639554308659482635">Paměť SQLite</translation>
 <translation id="6640268266988685324">Otevřená karta</translation>

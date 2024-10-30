@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Sukurta prieš <ph name="NUM_YEARS_ONE" /> metus}one{Sukurta prieš <ph name="NUM_YEARS_MANY" /> metus}few{Sukurta prieš <ph name="NUM_YEARS_MANY" /> metus}many{Sukurta prieš <ph name="NUM_YEARS_MANY" /> metų}other{Sukurta prieš <ph name="NUM_YEARS_MANY" /> metų}}</translation>
 <translation id="1173894706177603556">Pervadinti</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
-<translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
 <translation id="1273910660700874265">„<ph name="TITLE_OF_GROUP" />“ skirtukų grupės parinktys</translation>
 <translation id="1293272072740285747">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba ištrinkite, jei jos nebereikia.
 
@@ -96,7 +95,6 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="5007392906805964215">Peržiūrėti</translation>
 <translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
 <translation id="5076161749301278626">Peržiūrėti parduotuvės apžvalgas?</translation>
-<translation id="5082793167783849073">Sparčiai palyginkite puslapius sukūrę grupę. Jei norite pradėti, palieskite ir palaikykite nuorodą.</translation>
 <translation id="5094423602314093681">Pašalinti skirtuką (-us) ir ištrinti grupę?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Pridėtas <ph name="ONE_ADDED" /> skirtukas}one{Pridėtas <ph name="MANY_ADDED" /> skirtukas}few{Pridėti <ph name="MANY_ADDED" /> skirtukai}many{Pridėta <ph name="MANY_ADDED" /> skirtuko}other{Pridėta <ph name="MANY_ADDED" /> skirtukų}}</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
@@ -196,7 +194,6 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
 <translation id="9111228330448174435">Rodyti dialogo langą kuriant naują skirtukų grupę</translation>
 <translation id="9114502155681725011">Atidaryti skirtukų grupės „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, veiksmų meniu.</translation>
-<translation id="9150694013019234766">Skirtukus perjunkite skirtukų grupėje netoli ekrano apačios</translation>
 <translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>
 <translation id="9216898458513705996">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>

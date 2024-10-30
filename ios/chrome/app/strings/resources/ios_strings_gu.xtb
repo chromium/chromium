@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">સાઇન આઉટ થયા. તમારા એકાઉન્ટમાં બુકમાર્ક, પાસવર્ડ વગેરેનો ઉપયોગ કરવા માટે ફરી સાઇન ઇન કરો.</translation>
 <translation id="1054745118061919935">આગળ વધીને, તમે <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
+<translation id="1062138828266376352">તમારો પિન બદલાયો નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="1066060668811609597">સિંક મેનેજ કરો</translation>
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
@@ -676,6 +677,7 @@
 <translation id="421070604241073551">જ્યારે ચાલુ હોય, ત્યારે ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. જ્યારે બંધ હોય, ત્યારે ડેટા માત્ર આ ડિવાઇસમાં સાચવવામાં આવે છે.</translation>
 <translation id="4224534474590365556">99+ નિષ્ક્રિય ટૅબ બંધ કરીએ?</translation>
 <translation id="422474357428465195">તમારા પાસવર્ડમાં કેટલીક એવી સમસ્યાઓ છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે.</translation>
+<translation id="422477017457571619">જોખમકારક સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રિઅલ-ટાઇમ, AI-સંચાલિત સંરક્ષણ કે જે Googleને મોકલવામાં આવતા તમારા બ્રાઉઝિંગ ડેટા પર આધારિત હોય છે</translation>
 <translation id="4231395118547300571">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ડિફૉલ્ટ બ્રાઉઝર ઍપ<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
@@ -1350,10 +1352,12 @@
 <translation id="7218491361283758048">ઝિપ કોડ</translation>
 <translation id="7221173315674413369">"નવું શું છે" સુવિધામાં નવી સુવિધાઓ અને ટિપ વિશે જાણો</translation>
 <translation id="722339453342442311">હમણાં ચેક કરો</translation>
+<translation id="7227235818314667565">શેરિંગ સુવિધા મેનેજ કરો</translation>
 <translation id="7233006041370588369">ભરવા માટે પાસવર્ડ પસંદ કરો.</translation>
 <translation id="7241135764990439166">છૂપો મોડ ઉપલબ્ધ નથી</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />શોધ ઇતિહાસ<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="7253951228444156601">પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
+<translation id="7261217796641151584">ગ્રૂપ શેર કરો</translation>
 <translation id="7271220006028561438">ઑટોમૅટિક પાસકી અપગ્રેડની મંજૂરી આપો</translation>
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
 <translation id="7293429513719260019">ભાષા પસંદ કરો</translation>

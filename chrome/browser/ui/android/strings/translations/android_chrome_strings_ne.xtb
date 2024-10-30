@@ -850,6 +850,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5005498671520578047">पासवर्ड कपी गर्नुहोस्</translation>
 <translation id="5010886807652684893">भिजुअल भ्यू</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> र <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> सम्बन्धित छन् जस्तो छ। <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> को विश्वसनीयता पुष्टि गर्नुहोस् अनि मात्र यो पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="5016205925109358554">सेरिफ</translation>
 <translation id="5017529052065664584">पछिल्लो १५ मिनेट</translation>
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
@@ -1311,7 +1312,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7085332316435785646">Google का सेवाहरूमा आफ्नो आवश्यकताअनुसारका सुविधाहरू पाउन Chrome को ब्राउजिङ इतिहास समावेश गर्ने कि नगर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7088681679121566888">Chrome अपडेट छ</translation>
 <translation id="7094933634769755999">गलत थियो</translation>
-<translation id="7105047059074518658">तपाईं विभिन्न डिभाइसमा सजिलै ब्राउज गर्न चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
 <translation id="7106762743910369165">तपाईंको संगठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
 <translation id="7111394291981742152">Chrome ले तपाईंले हेर्ने विज्ञापनहरूमा अझ बढी नियन्त्रण गर्छ र तपाईंलाई पर्सनलाइज गरिएका विज्ञापनहरू देखाउँदा ती साइटहरूले तपाईंका बारेमा जान्न सक्ने जानकारीको सीमा तोक्छ।</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमतिको समीक्षा गरिएको छ}other{# वटा साइटलाई दिइएका अनुमतिको समीक्षा गरिएको छ}}</translation>

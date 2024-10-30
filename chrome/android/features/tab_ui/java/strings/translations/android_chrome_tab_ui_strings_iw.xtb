@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{נוצרה לפני שנה (<ph name="NUM_YEARS_ONE" />)}one{נוצרה לפני <ph name="NUM_YEARS_MANY" /> שנים}two{נוצרה לפני שנתיים (<ph name="NUM_YEARS_MANY" />)}other{נוצרה לפני <ph name="NUM_YEARS_MANY" /> שנים}}</translation>
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1197088940767939838">כתום</translation>
-<translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1273910660700874265">‫<ph name="TITLE_OF_GROUP" /> אפשרויות לקבוצת כרטיסיות</translation>
 <translation id="1293272072740285747">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">עיון</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
-<translation id="5082793167783849073">כדי להשוות במהירות בין דפים, אפשר ליצור קבוצה. כדי להתחיל, צריך ללחוץ לחיצה ארוכה על קישור.</translation>
 <translation id="5094423602314093681">להסיר את הכרטיסיות ולמחוק את הקבוצה?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}}</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
 <translation id="9111228330448174435">הצגת תיבת דו-שיח בזמן יצירה של קבוצת כרטיסיות חדשה</translation>
 <translation id="9114502155681725011">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">מעבר בין כרטיסיות בקבוצת הכרטיסיות שבחלק התחתון של המסך</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>
 <translation id="9216898458513705996">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>

@@ -9324,6 +9324,23 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7680437377926096177">Sembunyikan dialog logout saat jendela terakhir ditutup.</translation>
 <translation id="7683777542468165012">Penyegaran Kebijakan Dinamis</translation>
+<translation id="7685309118897567488">Kebijakan ini memungkinkan administrator menyetel agregator penelusuran perusahaan khusus yang akan memberikan rekomendasi dan hasil penelusuran dalam kolom URL saat dipicu oleh kata kunci tertentu. Pengguna dapat memulai penelusuran dengan mengetik kata kunci yang ditentukan di kolom <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> dengan atau tanpa imbuhan @ (mis. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), diikuti dengan Spasi atau Tab, di kolom URL.
+
+Kolom berikut diperlukan: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Kolom <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> berkaitan dengan nama mesin telusur yang ditampilkan kepada pengguna di kolom URL.
+
+Kolom <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> berkaitan dengan kata kunci yang dimasukkan pengguna untuk memicu penelusuran. Pintasan dapat berisi kata dan karakter biasa, tetapi tidak boleh menyertakan spasi atau diawali dengan simbol @. Pintasan harus unik.
+
+Kolom <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan URL yang akan ditelusuri. Masukkan alamat web untuk halaman hasil mesin telusur, lalu gunakan <ph name="SEARCH_TERM_MARKER" /> sebagai pengganti kueri.
+
+Kolom <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan URL yang menyediakan saran penelusuran. Jika <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> berisi <ph name="SEARCH_TERM_MARKER" />, Chrome akan mendapatkan saran penelusuran melalui permintaan GET ke URL yang mengganti <ph name="SEARCH_TERM_MARKER" /> dengan kueri penelusuran pengguna. Jika tidak, permintaan POST akan dibuat, kueri pengguna akan diteruskan dalam param POST di bagian kunci <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Kolom <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> menentukan URL ke gambar yang akan digunakan di saran penelusuran. Ikon default akan digunakan jika kolom ini tidak disetel. Sebaiknya gunakan favicon (contoh <ph name="ICON_URL_EXAMPLE" />).
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7687943045976362719">Jika kebijakan ini ditetapkan, jenis konten yang ditentukan akan ditangani oleh <ph name="PRODUCT_FRAME_NAME" />.
 
           Jika kebijakan ini tidak ditetapkan, perender default akan digunakan untuk semua situs. (Kebijakan <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> dapat digunakan untuk mengonfigurasi perender default.)</translation>

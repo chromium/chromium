@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Online megnyitás</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1044891598689252897">A webhelyek a megszokott módon fognak működni</translation>
+<translation id="1070329623210597193">A webhely által megtekinthető vagy szerkeszthető fájlok</translation>
 <translation id="1073417869336441572">Segítsen a Chrome fejlesztésében. Mondja el, miért engedélyezte a harmadik féltől származó cookie-kat. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">A Chrome használata alapértelmezettként</translation>
 <translation id="1178581264944972037">Szünet</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1240190568154816272">Chrome-tippek</translation>
 <translation id="1242008676835033345">Beágyazva itt: <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Koppintson az Alkalmazások  &gt; Alapértelmezett alkalmazások elemre</translation>
 <translation id="1272079795634619415">Leállítás</translation>
 <translation id="1289742167380433257">Az adatforgalom csökkentése érdekében a Google optimalizálta az oldalon lévő képeket.</translation>
 <translation id="129382876167171263">A webhelyek által elmentett fájlok itt jelennek meg</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">Harmadik felektől származó cookie-k letiltása inkognitó módban</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Lehetséges, hogy néhány funkció nem működik. A kapcsolódó webhelyek továbbra is használhatnak harmadik féltől származó cookie-kt.</translation>
+<translation id="3922092564198021702">A telefonján nyissa meg a Beállítások alkalmazást</translation>
 <translation id="3933121352599513978">Nem kívánt kérelmek összecsukása (ajánlott)</translation>
 <translation id="3955193568934677022">Engedélyezi a webhelyek számára a védett tartalmak lejátszását (ajánlott)</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6064125863973209585">Befejezett letöltések</translation>
 <translation id="6071501408666570960">Előfordulhat, hogy a rendszer kijelentkezteti erről a webhelyről</translation>
+<translation id="6085954183010297841">Visszavonja a fájlszerkesztési engedélyt? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Ha be van kapcsolva, a webhelyek lekérdezhetik, hogy Ön mikor használja aktívan az eszközét. Ha ki van kapcsolva, a webhelyek nem tudhatják, hogy Ön mikor használja aktívan az eszközt.</translation>
 <translation id="6140839633433422817">Biztosan visszaállítja az engedélyeket, és törölni szeretné cookie-kat és a webhelyadatokat?</translation>
 <translation id="6165508094623778733">További információ</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
 <translation id="6207207788774442484">Adatok törlése és engedélyek alaphelyzetbe állítása</translation>
 <translation id="6231752747840485235">Eltávolítja ezt az alkalmazást: <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Koppintson a Böngésző &gt; Chrome lehetőségre</translation>
 <translation id="6262191102408817757">A legutóbbi lap alapján</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>

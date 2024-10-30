@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_YEARS_ONE" /> έτος}other{Δημιουργήθηκε πριν από <ph name="NUM_YEARS_MANY" /> έτη}}</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1197088940767939838">Πορτοκαλί</translation>
-<translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα ή διαγράψτε την, αν δεν τη χρειάζεστε πλέον.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Έλεγχος</translation>
 <translation id="5073204694187207510">Απόκρυψη πλέγματος πλήρους οθόνης</translation>
 <translation id="5076161749301278626">Εμφάνιση αξιολογήσεων καταστήματος;</translation>
-<translation id="5082793167783849073">Συγκρίνετε γρήγορα σελίδες δημιουργώντας μια ομάδα. Για να ξεκινήσετε, αγγίξτε παρατεταμένα κάποιον σύνδεσμο.</translation>
 <translation id="5094423602314093681">Να καταργηθούν οι καρτέλες και να διαγραφεί η ομάδα;</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες}}</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Κλείσιμο πληροφοριών σχετικά με αυτό το κατάστημα</translation>
 <translation id="9111228330448174435">Εμφάνιση παραθύρου διαλόγου κατά τη δημιουργία νέας ομάδας καρτελών</translation>
 <translation id="9114502155681725011">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την ομάδα καρτελών <ph name="TITLE_OF_GROUP" />, με χρώμα <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Κάντε εναλλαγή μεταξύ των καρτελών στην ομάδα καρτελών σας κοντά στο κάτω μέρος της οθόνης</translation>
 <translation id="9169594135889675189">Προσθήκη νέας καρτέλας στην ομάδα</translation>
 <translation id="9216898458513705996">Οι καρτέλες θα παραμείνουν ανοιχτές σε αυτή τη συσκευή, αλλά η ομάδα θα διαγραφεί από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Ανάπτυξη ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>

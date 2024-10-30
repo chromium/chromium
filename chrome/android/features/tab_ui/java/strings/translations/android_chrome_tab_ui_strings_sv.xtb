@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Skapades för <ph name="NUM_YEARS_ONE" /> år sedan}other{Skapades för <ph name="NUM_YEARS_MANY" /> år sedan}}</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1197088940767939838">Orange</translation>
-<translation id="125153950246128346">Tryck för att visa en annan flik</translation>
 <translation id="1273910660700874265">Alternativ för flikgruppen <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Behåll gruppen om du vill lägga till flikar senare eller radera den om den inte längre behövs.
 
@@ -96,7 +95,6 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="5007392906805964215">Granska</translation>
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
 <translation id="5076161749301278626">Vill du visa butiksrecensioner?</translation>
-<translation id="5082793167783849073">Jämför sidor snabbt genom att skapa en grupp. Börja med att trycka länge på en länk.</translation>
 <translation id="5094423602314093681">Vill du ta bort flikarna och radera gruppen?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flik har lagts till}other{<ph name="MANY_ADDED" /> flikar har lagts till}}</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
@@ -196,7 +194,6 @@ Om du lämnar gruppen förlorar du omedelbart åtkomsten till flikgruppen <ph na
 <translation id="9090098097337832354">Informationen om den här butiken stängdes</translation>
 <translation id="9111228330448174435">Visa dialogruta när en ny flikgrupp skapas</translation>
 <translation id="9114502155681725011">Öppna åtgärdsmenyn för flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /></translation>
-<translation id="9150694013019234766">Byt mellan flikarna i flikgruppen nära sidans nederkant</translation>
 <translation id="9169594135889675189">Lägg till ny flik i gruppen</translation>
 <translation id="9216898458513705996">Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>

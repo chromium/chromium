@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Онлайн режимде ашу</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1044891598689252897">Сайттар қалыпты күйде жұмыс істейді.</translation>
+<translation id="1070329623210597193">Бұл сайт көре алатын немесе өзгерте алатын файлдар</translation>
 <translation id="1073417869336441572">Үшінші тарап cookie файлдарын рұқсат ету себебін айтып, Chrome браузерін жақсартуға көмектесіңіз. <ph name="BEGIN_LINK" />Пікір жіберу<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Chrome-ды әдепкі браузер ретінде пайдалану</translation>
 <translation id="1178581264944972037">Кідірту</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1240190568154816272">Chrome браузеріне қатысты кеңестер</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> мекенжайына ендірілген</translation>
+<translation id="1263609676484797429">"Қолданбалар &gt; Әдепкі қолданбалар" тармағын түртіңіз.</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
 <translation id="1289742167380433257">Деректеріңізді сақтау үшін бұл беттің суреттері Google арқылы оңтайландырылды.</translation>
 <translation id="129382876167171263">Веб-сайттар арқылы сақталған файлдар осында көрсетіледі.</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">Инкогнито режимінде үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Кейбір мүмкіндіктер жұмыс істемеуі мүмкін. Қатысты сайттарда әлі де үшінші тарап cookie файлдары пайдаланылуы мүмкін.</translation>
+<translation id="3922092564198021702">Телефондағы "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="3933121352599513978">Қажетсіз сұрауларды жию (ұсынылады)</translation>
 <translation id="3955193568934677022">Сайттарға қорғалған контентті ойнатуға рұқсат беру (ұсынылады)</translation>
 <translation id="3967822245660637423">Жүктеп алынды</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">Жаю</translation>
 <translation id="6064125863973209585">Жүктеп алынғандар</translation>
 <translation id="6071501408666570960">Сіз бұл сайтта аккаунттан шығарылуыңыз мүмкін.</translation>
+<translation id="6085954183010297841">Файл өзгерту рұқсатын жою қажет пе? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Қосылса, сайттар құрылғыны белсенді пайдаланатын уақытыңызды білуге рұқсат сұрай алады. Өшірілсе, біле алмайды.</translation>
 <translation id="6140839633433422817">Рұқсаттарды бастапқы күйге қайтарып, cookie файлдары мен сайт деректерін жою қажет пе?</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">Жарнамадағы құпиялық</translation>
 <translation id="6207207788774442484">Деректерді жою және рұқсаттарды қайта орнату</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" қолданбасы жойылсын ба?</translation>
+<translation id="6234351944623978659">"Браузер қолданбасы &gt; Chrome" тармағын түртіңіз.</translation>
 <translation id="6262191102408817757">Соңғы ашылған қойындыға негізделген.</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін тыйым салынған.</translation>
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">zaidi</translation>
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3321030238473337787">Kasi ya uchezaji</translation>
+<translation id="3327613592010997943">Utaweza kutumia kifaa hiki tena <ph name="DAY" /> saa <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Jaribio linatekelezwa</translation>
 <translation id="3340011300870565703">Kiwango cha chaji cha spika ya masikioni ya kulia ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">mipangilio</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Hali ya Ukurasa wa Mwanzo</translation>
 <translation id="5763838252932650682">Kuzima kisha kuwasha na kusasisha <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Ongeza mwangaza wa skrini</translation>
+<translation id="5775340474232476653">Mwalimu wako ametamatisha darasa</translation>
 <translation id="5779818640587041940">Usizime skrini unaporekodi</translation>
 <translation id="57838592816432529">Zima sauti</translation>
 <translation id="5784136236926853061">Muda mwingi wa kusubiri maombi ya HTTP</translation>
@@ -1357,6 +1359,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="757747079855995705">jiwe</translation>
 <translation id="7590883480672980941">Mipangilio ya kuweka data</translation>
 <translation id="7595982850646262331">Zimesalia <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Msimamizi wa <ph name="MANAGER" /> amebainisha wakati ambapo unaweza kutumia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Badilisha nafasi ukitumia kipanya au vitufe vya vishale.</translation>
 <translation id="7618774594543487847">Wastani</translation>
 <translation id="7620771111601174153">Pata maelezo zaidi katika Kituo cha Usaidizi</translation>
@@ -1462,6 +1465,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8088963492174775412">Bonyeza ili urekodi</translation>
 <translation id="8094062939584182041">Ruhusu Google ikutumie barua pepe kuhusu hitilafu hii</translation>
 <translation id="8104083085214006426">Unatumia mtandao usio salama unaoweza kutumiwa na mtu yeyote</translation>
+<translation id="8110942816572072814">Mwalimu wako amefunga skrini yako</translation>
 <translation id="811820734797650957">Lango linaweza Kuitwa (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Thibitisha</translation>

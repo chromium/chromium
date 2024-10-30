@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1240190568154816272">Chrome'ду колдонуу кеңештери</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> кыналган</translation>
+<translation id="1263609676484797429">Колдонмолор &gt; Демейки колдонмолорду таптап коюңуз</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1289742167380433257">Интернет трафигин үнөмдөө үчүн Google бул барактагы сүрөттөрдү ыңгайлаштырды.</translation>
 <translation id="129382876167171263">Вебсайттар сактаган файлдар ушул жерде көрүнөт</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Айрым функциялар иштебеши мүмкүн. Байланышкан сайттар үчүнчү тараптын cookie файлдарын колдоно бериши мүмкүн.</translation>
+<translation id="3922092564198021702">Телефонуңуздан Параметрлерди ачыңыз</translation>
 <translation id="3933121352599513978">Керексиз сурамдарды жыйыштыруу (сунушталат)</translation>
 <translation id="3955193568934677022">Сайттарга корголгон мазмунду ойнотууга уруксат берүү (сунушталат)</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
 <translation id="6207207788774442484">Маалыматты өчүрүү жана уруксаттарды баштапкы абалга келтирүү</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" колдонмосун чыгарып саласызбы?</translation>
+<translation id="6234351944623978659">Серепчи колдонмосу &gt; Chrome'ду басыңыз</translation>
 <translation id="6262191102408817757">Акыркы өтмөктүн негизинде көрсөтүлдү</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> бөгөттөлдү</translation>
 <translation id="6270391203985052864">Сайттар билдирмелерди жөнөтүүнү сурана алышат</translation>

@@ -631,6 +631,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="3208321278970793882">Aplikace</translation>
 <translation id="3213571860604332401">Uložit odkaz jako záložku</translation>
 <translation id="3217205077783620295">Zvuk je zapnutý. Přepnutím ho vypnete.</translation>
+<translation id="3218561536255328229">Touchpad aktivujete stisknutím klávesy Esc pětkrát</translation>
 <translation id="3226991577105957773">a ještě <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Spořič baterie se vypnul</translation>
@@ -1147,6 +1148,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4902797682482387055">Navrhovaný úkol, na který byste se měli zaměřit</translation>
 <translation id="490375751687810070">Na výšku</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
+<translation id="4911191962826748981">Toto je experimentální funkce založená na umělé inteligenci a nemusí vždy fungovat správně.</translation>
 <translation id="491504982845934899">Síť <ph name="NETWORK_NAME" /> lze aktivovat až po nastavení zařízení</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4918086044614829423">Přijmout</translation>
@@ -2008,6 +2010,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7807067443225230855">Vyhledávání a Asistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Palec nahoru odešle zpětnou vazbu, že se vám tento návrh líbí</translation>
 <translation id="7825412704590278437">Z nadcházející události v kalendáři</translation>
 <translation id="7829386189513694949">Silný signál</translation>
 <translation id="7830453190047749513">U zařízení <ph name="PERIPHERAL_NAME" /> si můžete přizpůsobit akce tlačítek, rychlost kurzoru a další možnosti</translation>
@@ -2162,6 +2165,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock je zapnutý</translation>
 <translation id="8315514906653279104">Zapínání…</translation>
+<translation id="8319634750346253957">Palec dolů odešle zpětnou vazbu, že se vám tento návrh nelíbí</translation>
 <translation id="8331351032546853669">Nevyřízené stahování</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

@@ -606,6 +606,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3902562446536395999">Ibinubukod-bukod mula A hanggang Z</translation>
 <translation id="3908308510347173149">I-update ang <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Ibinubukod-bukod mula Z hanggang A</translation>
+<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434">Naka-on ang <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Pagsamahin ang aking data</translation>
@@ -692,6 +693,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="433213510553688132">Sinusubaybayan…</translation>
 <translation id="4335835283689002019">Naka-off ang Ligtas na Pag-browse</translation>
 <translation id="4351244548802238354">Isara ang dialog</translation>
+<translation id="4352287748243729941">Gamitin ang iyong password sa <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Mababalikan mo ang isang page na mahalaga sa iyo sa pamamagitan ng pagdaragdag ng bookmark</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Kaligtasan sa isang sulyap</translation>
@@ -851,6 +853,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
+<translation id="5012253429094023177">Mukhang magkaugnay ang <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> at <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" />. Tiyaking pinagkakatiwalaan mo ang <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> bago mo gamitin ang iyong password.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Nakalipas na 15 minuto</translation>
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
@@ -904,6 +907,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5304593522240415983">Hindi maaaring maging blangko ang field na ito</translation>
 <translation id="5306014156308790439">Naka-disable ang Idagdag sa koleksyon</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
+<translation id="5310963254742922113">Ginamit ang password.</translation>
 <translation id="5316947901395241499">In-off ng iyong administrator ang pag-save ng password</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5319359161174645648">Inirerekomenda ng Google ang Chrome</translation>
@@ -1312,7 +1316,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7085332316435785646">Piliin kung isasama ang history ng Chrome para sa mas naka-personalize na mga karanasan sa mga serbisyo ng Google</translation>
 <translation id="7088681679121566888">Updated ang Chrome</translation>
 <translation id="7094933634769755999">Hindi tumpak</translation>
-<translation id="7105047059074518658">Mag-sign in para mag-browse nang mas madali sa lahat ng device</translation>
 <translation id="7106762743910369165">Pinapamahalaan ng iyong organisasyon ang browser mo</translation>
 <translation id="7111394291981742152">Binibigyan ka ng Chrome ng higit pang kontrol sa mga nakikita mong ad at nililimitahan nito kung ano ang matututunan ng mga site tungkol sa iyo kapag nagpakita ang mga ito ng mga naka-personalize na ad sa iyo.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Sinuri ang mga pahintulot para sa 1 site}one{Sinuri ang mga pahintulot para sa # site}other{Sinuri ang mga pahintulot para sa # na site}}</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">mer</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3321030238473337787">Avspillingshastighet</translation>
+<translation id="3327613592010997943">Du kan bruke denne enheten igjen <ph name="DAY" /> kl. <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
 <translation id="3340978935015468852">innstillinger</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Portaltilstand</translation>
 <translation id="5763838252932650682">Starter <ph name="APP_NAME" /> på nytt og oppdaterer appen</translation>
 <translation id="576835345334454681">Skjermlysstyrke opp</translation>
+<translation id="5775340474232476653">Læreren har avsluttet timen</translation>
 <translation id="5779818640587041940">Hold skjermen på under opptak</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5784136236926853061">Høy HTTP-tidsforsinkelse</translation>
@@ -1356,6 +1358,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="757747079855995705">stein</translation>
 <translation id="7590883480672980941">Inndatainnstillinger</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
+<translation id="7600430297804876776">Administratoren for <ph name="MANAGER" /> har angitt når denne <ph name="DEVICE_TYPE" />-enheten kan brukes.</translation>
 <translation id="7613724632293948900">Juster med muse- eller piltastene.</translation>
 <translation id="7618774594543487847">Nøytral</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
@@ -1461,6 +1464,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8088963492174775412">Trykk for å ta opp</translation>
 <translation id="8094062939584182041">La Google sende deg e-post om dette problemet</translation>
 <translation id="8104083085214006426">Du bruker et åpent og usikret nettverk</translation>
+<translation id="8110942816572072814">Læreren har låst skjermen din</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekreft</translation>

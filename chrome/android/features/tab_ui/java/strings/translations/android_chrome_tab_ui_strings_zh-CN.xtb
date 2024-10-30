@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_YEARS_ONE" /> 年前}other{创建时间：<ph name="NUM_YEARS_MANY" /> 年前}}</translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1197088940767939838">橙色</translation>
-<translation id="125153950246128346">点按即可查看另一标签页</translation>
 <translation id="1273910660700874265">“<ph name="TITLE_OF_GROUP" />”标签页分组选项</translation>
 <translation id="1293272072740285747">您可以保留此分组以便日后添加标签页；如果不再需要，也可以将其删除。
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">查看</translation>
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
-<translation id="5082793167783849073">通过分组快速比较网页。为此，请先轻触并按住某个链接。</translation>
 <translation id="5094423602314093681">要移除标签页并删除分组吗？</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页}}</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">此商店的相关信息已关闭</translation>
 <translation id="9111228330448174435">在创建新标签页分组时显示对话框</translation>
 <translation id="9114502155681725011">打开标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）的操作菜单。</translation>
-<translation id="9150694013019234766">在屏幕底部附近的标签页组中切换标签页</translation>
 <translation id="9169594135889675189">向组中添加新标签页</translation>
 <translation id="9216898458513705996">相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除该分组</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>

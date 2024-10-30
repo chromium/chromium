@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
 <translation id="1197088940767939838">কমলা</translation>
-<translation id="125153950246128346">অন্য এটা টেব চাবলৈ টিপক</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> টেবৰ গোটৰ বিকল্প</translation>
 <translation id="1293272072740285747">পাছত টেব যোগ দিবলৈ এই গোটটো ৰাখক বা যদি আপোনাক এইটো আৰু নালাগে তেন্তে ইয়াক মচক।
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
 <translation id="5073204694187207510">সম্পূৰ্ণ স্ক্রীণৰ গ্ৰিড লুকুৱাওক</translation>
 <translation id="5076161749301278626">ষ্ট'ৰৰ পর্যালোচনা চাবনে?</translation>
-<translation id="5082793167783849073">এটা গোট বনাই পৃষ্ঠাসমূহ দ্ৰুতভাৱে তুলনা কৰক। আৰম্ভ কৰিবলৈ এটা লিংকত স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="5094423602314093681">টেব(সমূহ) আঁতৰাব আৰু গোটটো মচিবনে?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> টা টেব যোগ দিয়া হ’ল}one{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল}other{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল}}</translation>
 <translation id="5161254044473106830">শিৰোনাম বাধ্যতামূলক</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">এই দোকানৰ বিষয়ে তথ্য দেখুওৱা বন্ধ হৈছে</translation>
 <translation id="9111228330448174435">নতুন টেবৰ গোট সৃষ্টিত ডায়লগ দেখুৱাওক</translation>
 <translation id="9114502155681725011">টেবৰ গোট <ph name="TITLE_OF_GROUP" />, ৰং <ph name="COLOR_NAME" />ৰ বাবে টেবৰ গোটৰ কামৰ মেনুখন খোলক।</translation>
-<translation id="9150694013019234766">স্ক্রীণৰ একেবাৰে তলৰ কাষত থকা টেবৰ গোটৰ টেবসমূহ সলনা সলনিকৈ ব্যৱহাৰ কৰক</translation>
 <translation id="9169594135889675189">গোটত নতুন টেব যোগ কৰক</translation>
 <translation id="9216898458513705996">টেবসমূহ এই ডিভাইচত খোলা থাকিব কিন্তু গোটটো <ph name="USER_EMAIL" />ত ছাইন ইন কৰা আটাইবোৰ ডিভাইচৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>

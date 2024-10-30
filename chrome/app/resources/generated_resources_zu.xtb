@@ -429,6 +429,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1291421198328146277">Setha kabusha okhiye</translation>
 <translation id="1292849930724124745">Faka ikhadi elimsathi ukuze uhlale ungene ngemvume</translation>
 <translation id="1293264513303784526">Idivayisi ye-USB-C (imbobo engakwesokunxele)</translation>
+<translation id="1293360286536751243">Okuthi "<ph name="MAIN_GESTURE" />" kungase kugqagqane nokuthi "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", kanye nokuthi "<ph name="CONFLICTING_GESTURE_THREE" />". Uma kungenzeka, zama ukukhetha ukunyakazisa umzimba okuhlukile.</translation>
 <translation id="1293556467332435079">Amafayela</translation>
 <translation id="1294807885394205587">Le nqubo ingathatha amaminithi ambalwa. Iqalisa umphathi wesiqukathi.</translation>
 <translation id="12951065153783848">Inkampani yakho ephethe i-akhawuti yakho</translation>
@@ -2627,6 +2628,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2806372837663997957">Idivayisi ozama ukwabelana nayo ayamukelanga</translation>
 <translation id="2806891468525657116">Isinqamuleli sesivele sikhona</translation>
 <translation id="2807517655263062534">Amafayela owalandayo azovela lapha</translation>
+<translation id="2808985063107661499">Okuthi "<ph name="MAIN_GESTURE" />" kungase kugqagqene nokuthi "<ph name="CONFLICTING_GESTURE_ONE" />" kanye nokuthi "<ph name="CONFLICTING_GESTURE_TWO" />". Uma kungenzeka, zama ukukhetha ukunyakazisa umzimba okuhlukile.</translation>
 <translation id="2811205483104563968">Ama-akhawunti</translation>
 <translation id="2812049959647166806">I-thunderbolt ayisekelwe</translation>
 <translation id="2812171980080389735">Amanethiwekhi alondoloziwe namaphasiwedi ukuze ukwazi ukuxhuma ngokushesha</translation>
@@ -4358,6 +4360,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="404894744863342743">Ngemuva kokuthi usuqedile ukusebenzisa ifayela elidawunilodiwe, lisuse ukuze abanye abasebenzisa le divayisi bangakwazi ukubona amaphasiwedi akho.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{othintwayo ongu-# akatholakali. Ukuze usebenzise Ukuthumela Eduze nabo, engeza ikheli le-imeyili elihlothaniswa ne-Akhawunti yabo ye-Google koxhumana nabo.}one{abathintwayo abangu-# abatholakali. Ukuze usebenzise Ukuthumela Eduze nabo, engeza amakheli e-imeyili ahlotshaniswa nama-Akhawunti abo e-Google koxhumana nabo.}other{abathintwayo abangu-# abatholakali. Ukuze usebenzise Ukuthumela Eduze nabo, engeza amakheli e-imeyili ahlotshaniswa nama-Akhawunti abo e-Google koxhumana nabo.}}</translation>
 <translation id="4050225813016893843">Indlela yokufakazela ubuqiniso</translation>
+<translation id="4050379682069019014">Okuthi "<ph name="MAIN_GESTURE" />" kungase kugqagqane nokuthi "<ph name="CONFLICTING_GESTURE" />". Uma kungenzeka, zama ukukhetha ukunyakazisa umzimba okuhlukile.</translation>
 <translation id="4050534976465737778">Qiniseka ukuthi womabili amadivayisi avuliwe, asondelene, futhi avulwe i-Bluetooth. Uma wabelana nge-Chromebook engekho koxhumana nabo, qiniseka ukuthi ukubonakala Eduze kuvuliwe kuyo (vula indawo yesimo, bese uvula ukubonakala Eduze). <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Ukuze ushintshele endleleni yokufaka esetsehenziswe kamuva, cindezela okuthi <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">sesha + umcibisholo obheke phezulu</translation>

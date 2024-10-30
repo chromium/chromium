@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> वर्षअघि बनाइएको}other{<ph name="NUM_YEARS_MANY" /> वर्षअघि बनाइएको}}</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
-<translation id="125153950246128346">अर्को ट्याब हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ट्याब समूहका विकल्पहरू</translation>
 <translation id="1293272072740285747">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा अबदेखि चाहिँदैन भने यसलाई मेटाउनुहोस्।
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
 <translation id="5073204694187207510">फुल स्क्रिन ग्रिड लुकाउनुहोस्</translation>
 <translation id="5076161749301278626">स्टोरसम्बन्धी समीक्षाहरू हेर्ने हो?</translation>
-<translation id="5082793167783849073">कुनै समूह बनाएर द्रुत रूपमा पृष्ठहरूको तुलना गर्नुहोस्। सुरु गर्न कुनै लिंकमा टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="5094423602314093681">ट्याब(हरू) हटाउने र समूह मेटाउने हो?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> वटा ट्याब हालियो}other{<ph name="MANY_ADDED" /> वटा ट्याब हालिए}}</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
 <translation id="9111228330448174435">नयाँ ट्याब समूह बनाउँदा डायलग देखाउनुहोस्</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
-<translation id="9150694013019234766">स्क्रिनको फेद नजिकैबाट आफ्नो ट्याब समूहका ट्याबहरूको अदलबदल गर्नुहोस्</translation>
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
 <translation id="9216898458513705996">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>

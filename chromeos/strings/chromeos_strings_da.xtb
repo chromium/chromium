@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">mere</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3321030238473337787">Afspilningshastighed</translation>
+<translation id="3327613592010997943">Du kan bruge enheden igen <ph name="DAY" /> kl. <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3340978935015468852">indstillinger</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">grå</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5600027863942488546">Du har testet tasten <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Du er logget ud</translation>
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Tilstand for portal</translation>
 <translation id="5763838252932650682">Genstarter og opdaterer <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Øg skærmens lysstyrke</translation>
+<translation id="5775340474232476653">Din underviser har afsluttet lektionen</translation>
 <translation id="5779818640587041940">Sørg for, at skærmen er tændt, mens du optager</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
@@ -1356,6 +1359,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="757747079855995705">sten</translation>
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
+<translation id="7600430297804876776">Administratoren af <ph name="MANAGER" /> har angivet, hvornår denne <ph name="DEVICE_TYPE" /> kan bruges.</translation>
 <translation id="7613724632293948900">Juster med musen eller piletasterne.</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
@@ -1461,6 +1465,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8088963492174775412">Tryk for at optage</translation>
 <translation id="8094062939584182041">Giv Google tilladelse til at kontakte dig via mail vedrørende dette problem</translation>
 <translation id="8104083085214006426">Du bruger et åbent og usikkert netværk</translation>
+<translation id="8110942816572072814">Din underviser har låst din skærm</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekræft</translation>

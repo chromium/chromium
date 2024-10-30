@@ -606,6 +606,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3902562446536395999">Sorteres fra A til Å</translation>
 <translation id="3908308510347173149">Opdater <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sorteres fra Å til A</translation>
+<translation id="3918415141610210050">Fane</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> er aktiveret</translation>
 <translation id="3927692899758076493">Sans serif</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
@@ -692,6 +693,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="433213510553688132">Følger...</translation>
 <translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
 <translation id="4351244548802238354">Luk dialogboksen</translation>
+<translation id="4352287748243729941">Vil du bruge din adgangskode til <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Sikkerhedsoverblik</translation>
@@ -904,6 +906,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5304593522240415983">Dette felt må ikke være tomt</translation>
 <translation id="5306014156308790439">Føj til samling er deaktiveret</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
+<translation id="5310963254742922113">Adgangskoden blev brugt.</translation>
 <translation id="5316947901395241499">Din administrator har deaktiveret lagring af adgangskoder</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
@@ -1312,7 +1315,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7085332316435785646">Vælg, om du vil inkludere Chrome-historikken for at få mere personligt tilpassede oplevelser i Googles tjenester</translation>
 <translation id="7088681679121566888">Chrome er opdateret</translation>
 <translation id="7094933634769755999">Unøjagtige oplysninger</translation>
-<translation id="7105047059074518658">Log ind for nemmere at søge på flere enheder</translation>
 <translation id="7106762743910369165">Din browser administreres af din organisation</translation>
 <translation id="7111394291981742152">Chrome giver dig mere kontrol over, hvilke annoncer du får vist, og browseren begrænser, hvilke websites der kan få oplysninger om dig, når de viser dig personligt tilpassede annoncer.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tilladelserne er gennemgået for 1 website}one{Tilladelserne er gennemgået for # website}other{Tilladelserne er gennemgået for # websites}}</translation>

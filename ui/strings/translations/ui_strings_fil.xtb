@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Hindi na-load ang page dahil hindi naka-install ang developer UI module (dev_ui)</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> system</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">KAliwang  Arrow</translation>
 <translation id="5633029987065897167">Walang laman</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 minuto}one{# minuto}other{# na minuto}}</translation>

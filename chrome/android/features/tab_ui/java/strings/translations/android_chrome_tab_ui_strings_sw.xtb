@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Kiliundwa mwaka <ph name="NUM_YEARS_ONE" /> uliopita}other{Kiliundwa miaka <ph name="NUM_YEARS_MANY" /> iliyopita}}</translation>
 <translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1197088940767939838">Rangi ya machungwa</translation>
-<translation id="125153950246128346">Gusa ili uone kichupo kingine</translation>
 <translation id="1273910660700874265">Chaguo za kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Usifute kikundi hiki ili uweke vichupo baadaye au ukifute ikiwa hukihitaji tena.
 
@@ -96,7 +95,6 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="5007392906805964215">Maoni</translation>
 <translation id="5073204694187207510">Ficha gridi ya skrini nzima</translation>
 <translation id="5076161749301278626">Je, unaona maoni kuhusu duka?</translation>
-<translation id="5082793167783849073">Linganisha kurasa kwa haraka kwa kuanzisha kikundi. Ili uanze, gusa na ushikilie kiungo.</translation>
 <translation id="5094423602314093681">Ungependa kuondoa vichupo na kufuta kikundi?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Kichupo <ph name="ONE_ADDED" /> kimeongezwa}other{Vichupo <ph name="MANY_ADDED" /> vimeongezwa}}</translation>
 <translation id="5161254044473106830">Kichwa kinahitajika</translation>
@@ -196,7 +194,6 @@ Ikiwa utaondoka, papo hapo hutaweza kufikia kikundi cha vichupo cha "<ph name="T
 <translation id="9090098097337832354">Maelezo kuhusu duka hili yamefungwa</translation>
 <translation id="9111228330448174435">Onyesha kidirisha cha utaratibu wa kuanzisha kikundi kipya cha vichupo</translation>
 <translation id="9114502155681725011">Fungua menyu ya vitendo ya kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" />, rangi <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Badili kati ya vichupo vilivyo katika kikundi chako cha vichupo karibu na sehemu ya chini ya skrini</translation>
 <translation id="9169594135889675189">Ongeza kichupo kipya kwenye kikundi</translation>
 <translation id="9216898458513705996">Vichupo havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo chenye kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Panua kikundi cha vichupo chenye vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" />.}}</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">ещё</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3321030238473337787">Скорость воспроизведения</translation>
+<translation id="3327613592010997943">Вы сможете снова использовать это устройство <ph name="DAY" /> в <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">настройки</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">серый</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5600027863942488546">Клавиша <ph name="KEY_NAME" /> протестирована</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Вы вышли из системы</translation>
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5630438231335788050">баухаус</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Состояние страницы входа</translation>
 <translation id="5763838252932650682">Перезапуск и обновление приложения "<ph name="APP_NAME" />"</translation>
 <translation id="576835345334454681">Увеличение яркости экрана</translation>
+<translation id="5775340474232476653">Преподаватель завершил занятие.</translation>
 <translation id="5779818640587041940">Не отключать экран во время записи</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">камень</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7613724632293948900">Измените положение с помощью мыши или клавиш со стрелками.</translation>
 <translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">Нажмите, чтобы начать запись</translation>
 <translation id="8094062939584182041">Разрешить Google отправлять вам сообщения об этой проблеме по электронной почте</translation>
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
+<translation id="8110942816572072814">Преподаватель заблокировал экран.</translation>
 <translation id="811820734797650957">Запрос ping к шлюзу (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>

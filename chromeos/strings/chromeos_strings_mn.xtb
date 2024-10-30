@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">бусад</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3321030238473337787">Дахин тоглуулах хурд</translation>
+<translation id="3327613592010997943">Та энэ төхөөрөмжийг <ph name="DAY" />-ны <ph name="TIME" />-д дахин ашиглах боломжтой болно.</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="3340978935015468852">тохиргоо</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">саарал</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> товчлуурыг туршиж үзсэн</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Таныг гаргалаа</translation>
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5630438231335788050">баухаус</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Порталын төлөв</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />-г дахин эхлүүлж, шинэчилж байна</translation>
 <translation id="576835345334454681">Дэлгэцийн гэрэлтүүлгийг нэмэгдүүлэх</translation>
+<translation id="5775340474232476653">Танай багш ангийг дуусгасан</translation>
 <translation id="5779818640587041940">Бичих үед дэлгэцийг асаалттай байлгах</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">чулуу</translation>
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
+<translation id="7600430297804876776">Энэ <ph name="DEVICE_TYPE" />-г хэзээ ашиглаж болохыг <ph name="MANAGER" />-н администратор тохируулсан байна.</translation>
 <translation id="7613724632293948900">Хулгана эсвэл суман товчоор дахин байрлуулна уу.</translation>
 <translation id="7618774594543487847">Завсрын</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">Бичихийн тулд дарах</translation>
 <translation id="8094062939584182041">Танд энэ асуудлын талаар имэйл илгээхийг Google-д зөвшөөрөх</translation>
 <translation id="8104083085214006426">Та нээлттэй бөгөөд найдваргүй сүлжээ ашиглаж байна</translation>
+<translation id="8110942816572072814">Танай багш дэлгэцийг тань түгжсэн</translation>
 <translation id="811820734797650957">(Android) Гэйтвэй рүү пин илгээх боломжтой</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Батлах</translation>

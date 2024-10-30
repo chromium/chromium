@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Atvērt tiešsaistē</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
+<translation id="1070329623210597193">Faili, ko šī vietne drīkst skatīt vai rediģēt</translation>
 <translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Chrome izmantošana pēc noklusējuma</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1240190568154816272">Chrome padomi</translation>
 <translation id="1242008676835033345">Iegults vietnē <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Pieskarieties vienumam Lietotnes &gt; Noklusējuma lietotnes.</translation>
 <translation id="1272079795634619415">Apturēt</translation>
 <translation id="1289742167380433257">Lai palīdzētu jums samazināt datu lietojumu, Google optimizēja šajā lapā iekļautos attēlus.</translation>
 <translation id="129382876167171263">Šeit tiek rādīti tīmekļa vietņu saglabātie faili</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">Bloķēt trešo pušu sīkfailus inkognito režīmā</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Dažas funkcijas var nedarboties. Saistītās vietnes joprojām var izmantot trešo pušu sīkfailus.</translation>
+<translation id="3922092564198021702">Tālrunī atveriet sadaļu Iestatījumi.</translation>
 <translation id="3933121352599513978">Sakļaut nevēlamos pieprasījumus (ieteicams)</translation>
 <translation id="3955193568934677022">Atļaut vietnēm atskaņot aizsargātu saturu (ieteicams)</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">Vairāk</translation>
 <translation id="6064125863973209585">Pabeigtās lejupielādes</translation>
 <translation id="6071501408666570960">Iespējams, automātiski izrakstīsieties no šīs vietnes.</translation>
+<translation id="6085954183010297841">Vai dzēst faila rediģēšanas atļauju? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt informāciju par to, kad jūs aktīvi lietojat savu ierīci. Kad šis slēdzis ir izslēgts, vietnes nevar iegūt informāciju par to, kad jūs aktīvi lietojat savu ierīci.</translation>
 <translation id="6140839633433422817">Vai tiešām vēlaties atiestatīt atļaujas un izdzēst sīkfailus un vietņu datus?</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
 <translation id="6207207788774442484">Dzēst datus un atiestatīt atļaujas</translation>
 <translation id="6231752747840485235">Vai atinstalēt lietotni <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Pieskarieties vienumam Pārlūka lietotne &gt; Chrome.</translation>
 <translation id="6262191102408817757">Pamatojoties uz pēdējās cilnes saturu</translation>
 <translation id="6262279340360821358">Bloķētas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vietnēs var lūgt atļauju sūtīt paziņojumus</translation>

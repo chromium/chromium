@@ -689,7 +689,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3430396595145920809">Atzera egiteko, pasatu hatza eskuinetik ezkerrera</translation>
 <translation id="3431517721463707585">Lan-eremua 14</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
-<translation id="343571671045587506">Editatu abisua</translation>
+<translation id="343571671045587506">Editatu gogorarazpena</translation>
 <translation id="3435967511775410570">Ezagutu da hatz-marka</translation>
 <translation id="3437677362970530951">Play Store-ko eta beste bideojoko-plataformetako jokoak</translation>
 <translation id="3439896670700055005">Kargatu orria berriro, baina cacheko edukia erabili gabe</translation>
@@ -1148,6 +1148,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4902797682482387055">Kontzentratzeko iradokitako zeregina</translation>
 <translation id="490375751687810070">Bertikala</translation>
 <translation id="490788395437447240">Bateria: % <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="4911191962826748981">AA bidezko eginbide esperimental bat da hau, eta dena ez du ongi egingo beti.</translation>
 <translation id="491504982845934899">Aktibatu <ph name="NETWORK_NAME" /> gailua ezarri ostean</translation>
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4918086044614829423">Onartu</translation>
@@ -1848,7 +1849,7 @@ Berriki instalatu da</translation>
 <translation id="7256634071279256947">Atzeko mikrofonoa</translation>
 <translation id="7258828758145722155">Atzo editatu zen</translation>
 <translation id="726276584504105859">Arrastatu hona pantaila zatitzeko eginbidea erabiltzeko</translation>
-<translation id="7262906531272962081">Sortu abisua</translation>
+<translation id="7262906531272962081">Sortu gogorarazpena</translation>
 <translation id="7264788308526527464">Murriztu <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Atzera tekla</translation>
 <translation id="7285232777292757180">Pantaila-argazkiak egiteko, erabili ezarpen bizkorretan dagoen Pantaila-kaptura tresna</translation>
@@ -2010,6 +2011,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7807067443225230855">Bilaketa eta Laguntzailea</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> eta <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">"Gustatu zait" sakatuta, iradokizun hau gustatu zaizula esaten duen ohar bat bidaliko da</translation>
 <translation id="7825412704590278437">Egutegiko etorkizuneko gertaera batetik</translation>
 <translation id="7829386189513694949">Seinale indartsua</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" /> gailuaren botoien ekintzak, kurtsorearen abiadura eta beste ezaugarri batzuk pertsonaliza ditzakezu</translation>
@@ -2164,6 +2166,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Maiuskulen blokeoa aktibatuta dago</translation>
 <translation id="8315514906653279104">Aktibatzen…</translation>
+<translation id="8319634750346253957">"Ez zait gustatu" sakatuta, iradokizun hau gustatu ez zaizula esaten duen ohar bat bidaliko da</translation>
 <translation id="8331351032546853669">Deskarga zain</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2318,7 +2321,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8875021410787719674">Mugitu beheko eskuinaldeko izkinaren, Exekutatzeko tresnaren, helbide-barraren, laster-marken barraren, irekitako webgunearen eta deskargen artean</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> gertaeratan <ph name="EVENT_POSITION" />garrena</translation>
 <translation id="8876661425082386199">Egiaztatu konektatuta zaudela</translation>
-<translation id="8877788021141246043">Ezarri abisu bat</translation>
+<translation id="8877788021141246043">Ezarri gogorarazpen bat</translation>
 <translation id="8878886163241303700">Pantaila hedatzen</translation>
 <translation id="8885424115080869847">Ezin izan da konektatu YouTube Music-era</translation>
 <translation id="888982883502837004">Firmware-eguneratze batzuk erabilgarri daude gailurako. Sakatu hau eguneratzeak berrikusi eta instalatzeko.</translation>

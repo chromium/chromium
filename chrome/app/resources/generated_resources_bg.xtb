@@ -616,6 +616,7 @@
 <translation id="1436671784520050284">Продължаване с настройването</translation>
 <translation id="1436784010935106834">Премахнато</translation>
 <translation id="1437986450143295708">Опишете проблема подробно</translation>
+<translation id="1438630805136563416">Действието „<ph name="REMOVED_ACTION" />“ е премахнато</translation>
 <translation id="1439671507542716852">дългосрочна поддръжка (LTS)</translation>
 <translation id="1440090277117135316">Регистрирането в учебно заведение е завършено</translation>
 <translation id="144283815522798837">Избрахте <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
@@ -979,6 +980,7 @@
 <translation id="1677306805708094828">Не може да се добави <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Сканирането не бе успешно. Този файл може да е вирус или злонамерен софтуер.</translation>
+<translation id="1678919064276516737">Въведените имейл адрес и ПИН код не съвпадат</translation>
 <translation id="1679068421605151609">Инструменти за програмисти</translation>
 <translation id="1679810534535368772">Наистина ли искате да излезете?</translation>
 <translation id="167983332380191032">Услугата за управление изпрати HTTP грешка.</translation>
@@ -1432,6 +1434,7 @@
 <translation id="1981434377190976112">да чете всичките ви данни в уебсайтовете</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} и {field_2}}other{{field_1}, {field_2} и {field_3}}}</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
+<translation id="198507684520034826">Помощ</translation>
 <translation id="1986836014090708999">Разширени настройки за местоположението</translation>
 <translation id="1987317783729300807">Профили</translation>
 <translation id="1987574314042117472">Избиране и инсталиране на популярни приложения</translation>
@@ -2930,6 +2933,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3029466929721441205">Показване на инструментите за писане в лавицата</translation>
 <translation id="3029808567601324798">Време до заключване</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да изтеглите актуализация днес. Тя ще се изтегли автоматично, когато се свържете с интернет.}other{<ph name="MANAGER" /> изисква да изтеглите актуализация преди крайния срок. Тя ще се изтегли автоматично, когато се свържете с интернет.}}</translation>
+<translation id="3030772324014024606">Редактиране</translation>
 <translation id="3030967311408872958">От залез до изгрев</translation>
 <translation id="3031417829280473749">Агент „X“</translation>
 <translation id="3031532026314193077">Използване на сензорния панел и клавиатурата за кликване с десния бутон</translation>
@@ -4035,6 +4039,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3824621460022590830">Означението за регистриране на устройството е невалидно. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Влезте в профила си, за да видите разделите от други устройства</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомняне на избора ми за този файлов тип: <ph name="FILE_TYPES" />}other{Запомняне на избора ми за следните файлови типове: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Изглед</translation>
 <translation id="3825635794653163640">Показване на точка върху иконата на приложението при сигнал</translation>
 <translation id="3826071569074535339">Сайтове с разрешение за използване на сензорите за движение</translation>
 <translation id="3826086052025847742">Регистрационни файлове за ChromeOS Flex</translation>
@@ -4147,6 +4152,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3905761538810670789">Поправяне на приложението</translation>
 <translation id="3908288065506437185">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3908501907586732282">Активиране на разширението</translation>
+<translation id="3909456989251621103">Ако изтриете сертификат на сървър, Chrome вече няма да го използва за идентифициране на сървърите.</translation>
 <translation id="3909701002594999354">Показване на всички &amp;контроли</translation>
 <translation id="3909791450649380159">Изрязва&amp;не</translation>
 <translation id="39103738135459590">Код за активиране</translation>
@@ -5065,6 +5071,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4581774856936278355">Грешка при възстановяването на Linux</translation>
 <translation id="4582297591746054421">Сайтовете обикновено четат буферната ви памет, за да осигуряват функции като запазване на форматирането на копирания от вас текст</translation>
 <translation id="4582563038311694664">Нулиране на всички настройки</translation>
+<translation id="4584770411839426377">Прозорец</translation>
 <translation id="4585793705637313973">Редактиране на страницата</translation>
 <translation id="4586275095964870617"><ph name="URL" /> не можа да се отвори в алтернативен браузър. Моля, свържете се със системния си администратор.</translation>
 <translation id="4587589328781138893">Сайтове</translation>
@@ -5457,6 +5464,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4872192066608821120">За да импортирате пароли, изберете CSV файл</translation>
 <translation id="4872212987539553601">Настройване на локалното шифроване</translation>
 <translation id="4873312501243535625">Проверка на медийни файлове</translation>
+<translation id="4875690134140862902">Раздел</translation>
 <translation id="4876273079589074638">Помогнете на инженерите ни да открият и отстранят причината за този срив. Ако е възможно, посочете точните стъпки. Всяка подробност е важна!</translation>
 <translation id="4876305945144899064">Няма потребителско име</translation>
 <translation id="4876327226315760474">Това означава, че функциите на сайта би трябвало да работят по очаквания начин, но може да разполагате с по-ниско ниво на защита при сърфиране.</translation>
@@ -5569,6 +5577,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Без запазване на паролите за този сайт</translation>
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
+<translation id="4954652437333037880">Файл</translation>
 <translation id="4955707703665801001">Видимост за „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7828,6 +7837,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6635674640674343739">Не може да се установи мрежова връзка. Проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="663569763553406962">Вижте кои разширения могат да четат или променят данните на даден сайт</translation>
 <translation id="6635944431854494329">Собственикът може да контролира тази функция от „Настройки &gt; Разширени &gt; Автоматично изпращане до Google на данни за диагностиката и употребата“.</translation>
+<translation id="6636258750460740634">История</translation>
 <translation id="6636623428211296678">Разгледайте още настройки по-долу или завършете сега</translation>
 <translation id="6639554308659482635">Памет за SQLite</translation>
 <translation id="6640268266988685324">Отворен раздел</translation>

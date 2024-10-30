@@ -631,6 +631,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3208321278970793882">Alkalmazás</translation>
 <translation id="3213571860604332401">Link mentése könyvjelzőként</translation>
 <translation id="3217205077783620295">A hang be van kapcsolva, a gombra kattintva elnémítja.</translation>
+<translation id="3218561536255328229">Az érintőpad engedélyezéséhez nyomja meg ötször az Esc billentyűt</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> további</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Akkumulátorkímélő mód kikapcsolva</translation>
@@ -1148,6 +1149,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4902797682482387055">Javasolt feladat a következőre fókuszálva:</translation>
 <translation id="490375751687810070">Függőleges</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />%-os töltöttség</translation>
+<translation id="4911191962826748981">Ez egy kísérleti AI-funkció, amely nem mindig működik megfelelően.</translation>
 <translation id="491504982845934899">A(z) <ph name="NETWORK_NAME" /> hálózat aktiválása csak az eszköz beállítása után lehetséges</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
@@ -2010,6 +2012,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7807067443225230855">Keresés és a Segéd</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> és <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">A „Tetszik” gombbal azt a visszajelzést küldi, hogy tetszik Önnek ez a javaslat</translation>
 <translation id="7825412704590278437">Közelgő naptáreseményből</translation>
 <translation id="7829386189513694949">Erős jel</translation>
 <translation id="7830453190047749513">Személyre szabhatja <ph name="PERIPHERAL_NAME" /> eszközén a gombműveleteket, a kurzor sebességét és egyebeket</translation>
@@ -2164,6 +2167,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="830868413617744215">Béta</translation>
 <translation id="8314772463905284467">A Caps Lock be van kapcsolva</translation>
 <translation id="8315514906653279104">Bekapcsolás…</translation>
+<translation id="8319634750346253957">A „Nem tetszik” gombbal azt a visszajelzést küldi, hogy nem tetszik Önnek ez a javaslat</translation>
 <translation id="8331351032546853669">Letöltés függőben</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

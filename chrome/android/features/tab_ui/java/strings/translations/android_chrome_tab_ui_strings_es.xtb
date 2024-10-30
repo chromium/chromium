@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creado hace <ph name="NUM_YEARS_ONE" /> año}other{Creado hace <ph name="NUM_YEARS_MANY" /> años}}</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1197088940767939838">Naranja</translation>
-<translation id="125153950246128346">Pulsa para ver otra pestaña</translation>
 <translation id="1273910660700874265">Opciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Mantén este grupo para añadir pestañas más tarde o elimínalo si ya no lo necesitas.
 
@@ -96,7 +95,6 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="5007392906805964215">Ver</translation>
 <translation id="5073204694187207510">Ocultar la cuadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">¿Ver reseñas sobre la tienda?</translation>
-<translation id="5082793167783849073">Crea un grupo para comparar páginas rápidamente. Para comenzar, mantén pulsado un enlace.</translation>
 <translation id="5094423602314093681">¿Quitar pestañas y eliminar grupo?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña añadida}other{<ph name="MANY_ADDED" /> pestañas añadidas}}</translation>
 <translation id="5161254044473106830">Título obligatorio</translation>
@@ -196,7 +194,6 @@ Si lo abandonas, perderás inmediatamente el acceso al grupo de pestañas <ph na
 <translation id="9090098097337832354">Información sobre esta tienda cerrada</translation>
 <translation id="9111228330448174435">Mostrar cuadro de diálogo al crear un nuevo grupo de pestañas</translation>
 <translation id="9114502155681725011">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" />, color <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Cambia de una pestaña a otra en tu grupo de pestañas de la parte inferior de la pantalla</translation>
 <translation id="9169594135889675189">Añadir una pestaña al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>

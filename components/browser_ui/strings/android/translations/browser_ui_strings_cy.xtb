@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1240190568154816272">Awgrymiadau Chrome</translation>
 <translation id="1242008676835033345">Plannwyd ar <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Tapiwch Apiau  &gt; Apiau diofyn</translation>
 <translation id="1272079795634619415">Stopio</translation>
 <translation id="1289742167380433257">Er mwyn cadw eich data, mae lluniau'r dudalen hon wedi'u hoptimeiddio gan Google.</translation>
 <translation id="129382876167171263">Mae ffeiliau a gedwir gan wefannau yn ymddangos yma</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Rhwystro cwcis trydydd parti yn y modd Anhysbys</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Mae'n bosib na fydd rhai nodweddion yn gweithio. Gall gwefannau cysylltiedig barhau i ddefnyddio cwcis trydydd parti.</translation>
+<translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
 <translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
 <translation id="6207207788774442484">Dileu data ac ailosod caniatadau</translation>
 <translation id="6231752747840485235">Dadosod '<ph name="APP_NAME" />'?</translation>
+<translation id="6234351944623978659">Tapiwch Ap porwr &gt; Chrome</translation>
 <translation id="6262191102408817757">Yn seiliedig ar eich tab olaf</translation>
 <translation id="6262279340360821358">Mae <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> wedi'u rhwystro</translation>
 <translation id="6270391203985052864">Gall gwefannau ofyn am anfon hysbysiadau</translation>

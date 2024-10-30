@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_YEARS_ONE" /> ዓመት በፊት የተፈጠረ}one{ከ<ph name="NUM_YEARS_MANY" /> ዓመት በፊት የተፈጠረ}other{ከ<ph name="NUM_YEARS_MANY" /> ዓመታት በፊት የተፈጠረ}}</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
 <translation id="1197088940767939838">ብርቱካናማ</translation>
-<translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> የትር ቡድን አማራጮች</translation>
 <translation id="1293272072740285747">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ የማይፈልጉት ከሆነ ይሰርዙት።
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">ገምግም</translation>
 <translation id="5073204694187207510">የሙሉ ማያ ፍርግርግን ደብቅ</translation>
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
-<translation id="5082793167783849073">ስብስብ በመፍጠር በፍጥነት ገጾችን ያነጻጽሩ። ለመጀመር አንድ አገናኝን ነክተው ይያዙ።</translation>
 <translation id="5094423602314093681">ትር/ሮች ይወገድ/ዱ እና ቡድን ይሰረዝ?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል}one{<ph name="MANY_ADDED" /> ትር ታክሏል}other{<ph name="MANY_ADDED" /> ትሮች ታክለዋል}}</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ስለዚህ መደብር መረጃ ተዘግቷል</translation>
 <translation id="9111228330448174435">መገናኛን በአዲስ የትር ቡድን ፈጠራ ውስጥ አሳይ</translation>
 <translation id="9114502155681725011">ለትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> የትር ቡድን የእርምጃ ምናሌ ይክፈቱ።</translation>
-<translation id="9150694013019234766">ከማያው ግርጌ አጠገብ በትር ቡድንዎ ውስጥ ባሉ ትሮች መካከይ ይቀያይሩ</translation>
 <translation id="9169594135889675189">አዲስ ትር ወደ ቡድን አክል</translation>
 <translation id="9216898458513705996">ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="USER_EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}}</translation>

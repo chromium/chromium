@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">daugiau</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3321030238473337787">Atkūrimo sparta</translation>
+<translation id="3327613592010997943">Šį įrenginį vėl galėsite naudoti <ph name="DAY" /> <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3340978935015468852">Nustatymai</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Portalo būsena</translation>
 <translation id="5763838252932650682">„<ph name="APP_NAME" />“ paleidžiama iš naujo ir atnaujinama</translation>
 <translation id="576835345334454681">Padidinti ekrano šviesumą</translation>
+<translation id="5775340474232476653">Mokytojas baigė pamoką</translation>
 <translation id="5779818640587041940">Įrašant palikti ekraną įjungtą</translation>
 <translation id="57838592816432529">Nutildyti</translation>
 <translation id="5784136236926853061">Didelė HTTP delsa</translation>
@@ -1357,6 +1359,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="757747079855995705">akmens</translation>
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> administratorius apribojo šio „<ph name="DEVICE_TYPE" />“ naudojimo laiką.</translation>
 <translation id="7613724632293948900">Pakeiskite padėtį naudodami pelės arba rodyklių klavišus.</translation>
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
@@ -1462,6 +1465,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8088963492174775412">Paspauskite, kad įrašytumėte</translation>
 <translation id="8094062939584182041">Leisti „Google“ siųsti jums el. laišką apie šią problemą</translation>
 <translation id="8104083085214006426">Naudojate atvirąjį ir nesaugų tinklą</translation>
+<translation id="8110942816572072814">Mokytojas užrakino jūsų ekraną</translation>
 <translation id="811820734797650957">(„Android“) Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>

@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1240190568154816272">Astuces de Chrome</translation>
 <translation id="1242008676835033345">Intégré sur <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Touchez Applis &gt; Applis par défaut.</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1289742167380433257">Pour vous faire économiser les données, Google a optimisé les images de cette page.</translation>
 <translation id="129382876167171263">Les fichiers enregistrés par les sites Web s'affichent ici</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Bloquer les témoins tiers en mode de navigation privée</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Certaines fonctionnalités pourraient ne pas fonctionner. Les sites associés peuvent toujours utiliser des témoins tiers.</translation>
+<translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire le contenu protégé (recommandé)</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6207207788774442484">Supprimer les données et réinitialiser les autorisations</translation>
 <translation id="6231752747840485235">Désinstaller « <ph name="APP_NAME" /> »?</translation>
+<translation id="6234351944623978659">Touchez Appli de navigation &gt; Chrome.</translation>
 <translation id="6262191102408817757">En fonction de votre dernier onglet</translation>
 <translation id="6262279340360821358">Autorisations <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /> bloquées</translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>

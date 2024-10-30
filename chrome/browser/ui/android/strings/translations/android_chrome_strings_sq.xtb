@@ -375,6 +375,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2779651927720337254">dështoi</translation>
 <translation id="2781151931089541271">1 sekondë e mbetur</translation>
 <translation id="2789486458103222910">Në rregull</translation>
+<translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome gjeti një fjalëkalim të ripërdorur që mund ta përmirësosh}other{Chrome gjeti # fjalëkalime të ripërdorura që mund t'i përmirësosh}}</translation>
 <translation id="2800066122460699237">Skeda <ph name="TAB_TITLE" /> do të mbyllet</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
@@ -428,6 +429,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2981364137500752533">Mund të kesh deri në 5 dritare.</translation>
 <translation id="2983102365694924129">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është joaktiv.</translation>
 <translation id="2984978667043170458">Përfshi tekstin përreth në kërkimet e Google</translation>
+<translation id="2988638966064514052">Forco fjalëkalimet e tua</translation>
 <translation id="2989523299700148168">Vizituar së fundi</translation>
 <translation id="2992473221983447149">Përshkrimet e imazheve</translation>
 <translation id="2996291259634659425">Krijo një frazë kalimi</translation>
@@ -1306,7 +1308,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7094933634769755999">E pasaktë</translation>
-<translation id="7105047059074518658">Identifikohu për të shfletuar më lehtë nëpër pajisje</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
 <translation id="7111394291981742152">Chrome të jep më shumë kontroll mbi reklamat që shikon ti dhe kufizon ato që sajtet mund të mësojnë për ty kur të shfaqin reklama të personalizuara.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Lejet u rishikuan për 1 sajt}other{Lejet u rishikuan për # sajte}}</translation>
@@ -1677,6 +1678,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8754448020583829686">Kopjo pa lidhjen</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
 <translation id="8765470054473112089">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
+<translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome gjeti një fjalëkalim të dobët që mund ta përmirësosh}other{Chrome gjeti # fjalëkalime të dobëta që mund t'i përmirësosh}}</translation>
 <translation id="8766529642647037772">Të krijohet një lidhje e theksuar si kjo?</translation>
 <translation id="8788265440806329501">Historiku i navigimit është mbyllur</translation>
 <translation id="8788968922598763114">Hap përsëri skedën e fundit të mbyllur</translation>

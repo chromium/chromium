@@ -426,6 +426,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1288037062697528143">Noćno svjetlo automatski će se uključiti u suton</translation>
 <translation id="1288300545283011870">Svojstva govora</translation>
 <translation id="1289619947962767206">Ova opcija više nije podržana. Da biste prikazali karticu, upotrijebite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Ako odaberete već dodijeljeni pokret, uklonit će se iz izvorne radnje.</translation>
 <translation id="1291119821938122630">Uvjeti upotrebe za uslugu <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Poništi tipke</translation>
 <translation id="1292849930724124745">Umetnite pametnu karticu da biste ostali prijavljeni</translation>
@@ -6742,6 +6743,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5832970156002835240">Dopusti na svim web-lokacijama</translation>
 <translation id="5833397272224757657">Upotrebljava sadržaj na web-lokacijama koje posjećujete te aktivnosti i interakcije u pregledniku radi prilagodbe</translation>
 <translation id="5833726373896279253">Ove postavke može izmjenjivati samo vlasnik:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Ne dopuštaj web-lokacijama korištenje JavaScripta</translation>
 <translation id="583431638776747">Web-lokacija nije bila dostupna</translation>
 <translation id="5834581999798853053">Preostalo je oko <ph name="TIME" /> min</translation>

@@ -428,6 +428,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1291421198328146277">Stel sleutels terug</translation>
 <translation id="1292849930724124745">Sit slimkaart in om aangemeld te bly</translation>
 <translation id="1293264513303784526">USB C-toestel (poort aan linkerkant)</translation>
+<translation id="1293360286536751243">“<ph name="MAIN_GESTURE" />” kan oorvleuel met “<ph name="CONFLICTING_GESTURE_ONE" />”, “<ph name="CONFLICTING_GESTURE_TWO" />” en “<ph name="CONFLICTING_GESTURE_THREE" />”. Probeer ’n ander gebaar kies, indien moontlik.</translation>
 <translation id="1293556467332435079">Lêers</translation>
 <translation id="1294807885394205587">Hierdie proses kan 'n paar minute neem. Begin tans die houerbestuurder.</translation>
 <translation id="12951065153783848">Jou organisasie bestuur jou rekening</translation>
@@ -2626,6 +2627,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2806372837663997957">Die toestel waarmee jy probeer deel, het dit nie aanvaar nie</translation>
 <translation id="2806891468525657116">Kortpad bestaan reeds</translation>
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
+<translation id="2808985063107661499">“<ph name="MAIN_GESTURE" />” kan oorvleuel met “<ph name="CONFLICTING_GESTURE_ONE" />” en “<ph name="CONFLICTING_GESTURE_TWO" />”. Probeer ’n ander gebaar kies, indien moontlik.</translation>
 <translation id="2811205483104563968">Rekeninge</translation>
 <translation id="2812049959647166806">Thunderbolt word nie gesteun nie</translation>
 <translation id="2812171980080389735">Gestoorde netwerke en wagwoorde sodat jy in ’n kits kan koppel</translation>
@@ -4358,6 +4360,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="404894744863342743">Vee die afgelaaide lêer uit nadat jy dit klaar gebruik het sodat ander mense wat hierdie toestel gebruik nie jou wagwoorde kan sien nie.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak is nie beskikbaar nie. Om Nabydeling met hulle te gebruik, moet jy die e-posadres wat met hul Google-rekening geassosieer word, by jou kontakte voeg.}other{# kontakte is nie beskikbaar nie. Om Nabydeling met hulle te gebruik, moet jy die e-posadresse wat met hul Google-rekeninge geassosieer word, by jou kontakte voeg.}}</translation>
 <translation id="4050225813016893843">Stawingmetode</translation>
+<translation id="4050379682069019014">“<ph name="MAIN_GESTURE" />” kan oorvleuel met “<ph name="CONFLICTING_GESTURE" />”. Probeer ’n ander gebaar kies, indien moontlik.</translation>
 <translation id="4050534976465737778">Maak seker dat albei toestelle ontsluit is, naby mekaar is, en dat Bluetooth aangeskakel is. As jy met 'n Chromebook deel wat nie in jou kontakte is nie, moet jy seker maak dat Nabysigbaarheid aangeskakel is (maak die statusarea oop en skakel dan Nabysigbaarheid aan). <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Druk <ph name="KEY_CODES" /> om oor te skakel na die invoermetode wat laaste gebruik is</translation>
 <translation id="4051177682900543628">soek + regspyl</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creat acum <ph name="NUM_YEARS_ONE" /> an}few{Creat acum <ph name="NUM_YEARS_MANY" /> ani}other{Creat acum <ph name="NUM_YEARS_MANY" /> de ani}}</translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1197088940767939838">Portocaliu</translation>
-<translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
 <translation id="1273910660700874265">Opțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.
 
@@ -96,7 +95,6 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="5007392906805964215">Examinează</translation>
 <translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>
 <translation id="5076161749301278626">Vezi recenziile magazinului?</translation>
-<translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
 <translation id="5094423602314093681">Elimini filele și ștergi grupul?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată}few{<ph name="MANY_ADDED" /> file adăugate}other{<ph name="MANY_ADDED" /> de file adăugate}}</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
@@ -196,7 +194,6 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
 <translation id="9111228330448174435">Afișează caseta de dialog la crearea unui nou grup de file</translation>
 <translation id="9114502155681725011">Deschide meniul de acțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" />, de culoare <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Comută între filele din grupul de file în partea de jos a ecranului</translation>
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
 <translation id="9216898458513705996">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>

@@ -424,6 +424,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1288037062697528143">Funktsioon Öövalgus lülitub automaatselt sisse päikeseloojangul</translation>
 <translation id="1288300545283011870">Kõne atribuudid</translation>
 <translation id="1289619947962767206">Seda valikut enam ei toetata. Vahelehe esitamiseks kasutage rakendust <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Juba määratud liigutuse valimine eemaldab selle algselt toimingult.</translation>
 <translation id="1291119821938122630">Teenuse <ph name="MANAGER" /> tingimused</translation>
 <translation id="1291421198328146277">Lähtesta klahvid</translation>
 <translation id="1292849930724124745">Sisestage kiipkaart, et jääda sisselogituks</translation>
@@ -6739,6 +6740,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5832970156002835240">Luba kõigil saitidel</translation>
 <translation id="5833397272224757657">Kasutab isikupärastamiseks teie külastatavate saitide sisu ning brauseri tegevusi ja interaktsioone</translation>
 <translation id="5833726373896279253">Neid seadeid saab muuta ainult omanik:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Ärge lubage saitidel kasutada JavaScripti</translation>
 <translation id="583431638776747">Sait ei olnud saadaval</translation>
 <translation id="5834581999798853053">Jäänud on umbes <ph name="TIME" /> minutit</translation>

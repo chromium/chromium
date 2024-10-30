@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> ವರ್ಷದ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_YEARS_MANY" /> ವರ್ಷಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}other{<ph name="NUM_YEARS_MANY" /> ವರ್ಷಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
-<translation id="125153950246128346">ಇನ್ನೊಂದು ಟ್ಯಾಬ್ ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಆಯ್ಕೆಗಳು</translation>
 <translation id="1293272072740285747">ನಂತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಅಗತ್ಯವಿಲ್ಲದಿದ್ದರೆ ಅದನ್ನು ಅಳಿಸಿ.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5073204694187207510">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಗ್ರಿಡ್‌ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="5076161749301278626">ಸ್ಟೋರ್ ವಿಮರ್ಶೆಗಳನ್ನು ನೋಡಬೇಕೆ?</translation>
-<translation id="5082793167783849073">ಗುಂಪನ್ನು ರಚಿಸುವ ಮೂಲಕ ಪುಟಗಳನ್ನು ತ್ವರಿತವಾಗಿ ಹೋಲಿಸಿ ನೋಡಿ. ಪ್ರಾರಂಭಿಸಲು, ಲಿಂಕ್ ಸ್ಪರ್ಶಿಸಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="5094423602314093681">ಟ್ಯಾಬ್(ಗಳನ್ನು) ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ}one{<ph name="MANY_ADDED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}other{<ph name="MANY_ADDED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="5161254044473106830">ಶೀರ್ಷಿಕೆ ಅಗತ್ಯವಿದೆ</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿ ಮುಚ್ಚಲ್ಪಟ್ಟಿದೆ</translation>
 <translation id="9111228330448174435">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪು ರಚನೆಯಲ್ಲಿ ಡೈಲಾಗ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="9114502155681725011">ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" />, ಬಣ್ಣ <ph name="COLOR_NAME" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
-<translation id="9150694013019234766">ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿರುವ ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿರುವ ಟ್ಯಾಬ್‌ಗಳ ನಡುವೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="9169594135889675189">ಗುಂಪಿಗೆ ಹೊಸ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
 <translation id="9216898458513705996">ಈ ಸಾಧನದಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದಿರುತ್ತವೆ ಆದರೆ <ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಗುಂಪನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>

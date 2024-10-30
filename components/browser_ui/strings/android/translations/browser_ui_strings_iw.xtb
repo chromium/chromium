@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1240190568154816272">‏טיפים של Chrome</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">מקישים על 'אפליקציות'  &gt; 'אפליקציות ברירת מחדל'</translation>
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1289742167380433257">‏כדי לחסוך לך נתונים, התמונות בדף הזה עברו אופטימיזציה על ידי Google.</translation>
 <translation id="129382876167171263">קבצים שנשמרו על ידי אתרים מופיעים כאן</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">‏חסימת קובצי cookie של צד שלישי במצב פרטי</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">‏יכול להיות שחלק מהתכונות לא יפעלו. אתרים קשורים עדיין יכולים להשתמש בקובצי cookie של צד שלישי.</translation>
+<translation id="3922092564198021702">בטלפון, פותחים את ההגדרות</translation>
 <translation id="3933121352599513978">כיווץ בקשות לא רצויות (מומלץ)</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
@@ -348,6 +350,7 @@
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
+<translation id="6234351944623978659">‏מקישים על אפליקציית הדפדפן &gt; Chrome</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>

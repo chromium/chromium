@@ -424,10 +424,12 @@
 <translation id="1288037062697528143">Түнкү режим күн батканда автоматтык түрдө күйөт</translation>
 <translation id="1288300545283011870">Кептин параметрлери</translation>
 <translation id="1289619947962767206">Бул параметр колдоого алынбай калды. Өтмөктү <ph name="GOOGLE_MEET" /> аркылуу көрсөтүңүз.</translation>
+<translation id="1291057703584594733">Буга чейин дайындалган жаңсоону тандоо аны баштапкы аракетинен өчүрөт.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> Тейлөө шарттары</translation>
 <translation id="1291421198328146277">Баскычтарды баштапкы абалга келтирүү</translation>
 <translation id="1292849930724124745">Чыгып кетпөө үчүн акылдуу картаңызды салыңыз</translation>
 <translation id="1293264513303784526">USB-C түзмөгү (сол жактагы оюкча)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" жаңсоосу "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" жана "<ph name="CONFLICTING_GESTURE_THREE" />" жаңсоолоруна дал келип калышы ыктымал. Эгер мүмкүн болсо, башка жаңсоону тандаңыз.</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1294807885394205587">Бул процесс бир нече мүнөткө созулушу мүмкүн. Контейнерди башкаруучу иштетилип баштады.</translation>
 <translation id="12951065153783848">Аккаунтуңузду уюмуңуз башкарат</translation>
@@ -2626,6 +2628,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2806372837663997957">Түзмөк бөлүшкүңүз келген файлды кабыл алган жок</translation>
 <translation id="2806891468525657116">Кыска жол мурунтан бар</translation>
 <translation id="2807517655263062534">Жүктөлүп алынган файлдар бул жерде көрүнөт</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" жаңсоосу "<ph name="CONFLICTING_GESTURE_ONE" />" жана "<ph name="CONFLICTING_GESTURE_TWO" />" жаңсоолоруна дал келип калышы ыктымал. Эгер мүмкүн болсо, башка жаңсоону тандаңыз.</translation>
 <translation id="2811205483104563968">Аккаунттар</translation>
 <translation id="2812049959647166806">Thunderbolt колдоого алынбайт</translation>
 <translation id="2812171980080389735">Сакталган тармактар жана сырсөздөр менен тез туташа аласыз</translation>
@@ -4358,6 +4361,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="404894744863342743">Бул түзмөктү пайдаланган башка адамдар сырсөздөрүңүздү көрүп албашы үчүн, жүктөлүп алынган файлды колдонгондон кийин өчүрүп коюңуз.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# байланыш жеткиликсиз. Nearby Share функциясы аркылуу аларга ар кандай нерселерди жөнөтүп же алуу үчүн байланыштарыңызга алардын Google аккаунттарында көрсөтүлгөн электрондук почта даректерин кошуңуз.}other{# байланыш жеткиликсиз. Nearby Share функциясы аркылуу аларга ар кандай нерселерди жөнөтүп же алуу үчүн байланыштарыңызга алардын Google аккаунттарында көрсөтүлгөн электрондук почта даректерин кошуңуз.}}</translation>
 <translation id="4050225813016893843">Аныктыгын текшерүү ыкмасы</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" жаңсоосу "<ph name="CONFLICTING_GESTURE" />" жаңсоосуна дал келип калышы ыктымал. Эгер мүмкүн болсо, башка жаңсоону тандаңыз.</translation>
 <translation id="4050534976465737778">Эки түзмөктүн тең кулпусу ачылып, бири-бирине жакын жайгашып, Bluetooth күйүп турушу керек. Байланыштарыңызда болбогон Chromebook менен бөлүшүп жатсаңыз, андагы Nearby күйүк экенин текшериңиз (статус аймагын ачып, Nearby функциясын күйгүзүңүз). <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Акыркы колдонулган киргизүү ыкмасына которулуу үчүн <ph name="KEY_CODES" /> баскычтарын басыңыз</translation>
 <translation id="4051177682900543628">издөө + oңго жебе</translation>
@@ -6745,6 +6749,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5832970156002835240">Бардык сайттарда уруксат берүү</translation>
 <translation id="5833397272224757657">Жекелештирүү үчүн сиз баш баккан сайттардагы мазмунду жана башка серептөө таржымалын пайдаланат</translation>
 <translation id="5833726373896279253">Бул параметрлерди ээси гана өзгөртө алат:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Сайттар JavaScript'ти колдоно албасын</translation>
 <translation id="583431638776747">Сайт жеткиликсиз</translation>
 <translation id="5834581999798853053">Болжол менен <ph name="TIME" /> мүнөт калды</translation>

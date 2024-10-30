@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">કદ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ચાપકર્ણ</translation>
 <translation id="1923956950274750765">મધ્યમ ઑર્કિડ</translation>
+<translation id="1926147969119007125">ફેસ કન્ટ્રોલની સુવિધા થોભાવો</translation>
 <translation id="1928932365747995741">ફેરફાર કરી શકાય તેવી કોઈ પાછલી ટેક્સ્ટ ફીલ્ડ નથી</translation>
 <translation id="1964135212174907577">આગલો ઑબ્જેક્ટ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">આગલી ફોકસ કરવા યોગ્ય આઇટમ પર જમ્પ કરો</translation>
 <translation id="2756452585631602151">કસ્ટમ લેબલ દાખલ કરો</translation>
 <translation id="2766299274563946262">ડાબી બાજુએ કોઈ સેલ નથી</translation>
+<translation id="2770947749427257887">સ્ક્રોલ મોડમાં દાખલ થાઓ</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">પાછળની આઇટમ પર જવા માટે, તમે એક આંગળીથી ડાબેથી જમણે સ્વાઇપ પણ કરી શકો છો. હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="280499067616661124">ChromeVox પેજમાં શોધો</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">અમાન્ય કી દબાણ</translation>
 <translation id="3468959318854349468">કોઈ શીર્ષક નથી</translation>
 <translation id="3469413619751135069">આછો લીલો</translation>
+<translation id="3473744269398144689">ડિક્ટેશન શરૂ કરો</translation>
 <translation id="3490765818161916458">સૂચિ ગ્રિડ</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{જમણો મોટો કૌંસ}one{# જમણા મોટાં કૌંસ}other{# જમણા મોટાં કૌંસ}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
 <translation id="5290220123487191192">ચાલો, આપણે કેટલાક એવા સંકેતથી શરૂઆત કરીએ, જેનો તમે નિયમિત રીતે ઉપયોગ કરશો. જ્યારે તમે કોઈ એવી આઇટમ પર આવો જેને તમારે સક્રિય કરવી છે, ત્યારે સ્ક્રીન પર એક આંગળી વડે બે વાર ટૅપ કરો. ચાલુ રાખવા માટે, હમણાં બે વાર ટૅપ કરો.</translation>
+<translation id="5291860916305032607">ફેસ કન્ટ્રોલની સુવિધા ફરી શરૂ કરો</translation>
 <translation id="5302089807023311274">ગ્રંથસૂચિનો સંદર્ભ</translation>
 <translation id="530391007967514163">નીચેની ટેક્સ્ટ પર નૅવિગેટ કરવા માટે, મથાળા મુજબ જમ્પ કરો.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ટેબ</translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="5402367795255837559">બ્રેઇલ</translation>
 <translation id="5402791055281059602">મોડલ ચેતવણી</translation>
+<translation id="5406272775687194041">'ખેંચો અને છોડો' શરૂ કરો</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{અર્ધવિરામ}one{# અર્ધવિરામ}other{# અર્ધવિરામ}}</translation>
 <translation id="5420259671171615858">મેનૂ પર શોધો</translation>
 <translation id="5435274640623994081">ઇઅરકોન લૉગિંગ ચાલુ કરો</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">પેજ લોડ થવાનું પૂર્ણ થાય એ પછી તેને ઑટોમૅટિક રીતે વાંચો</translation>
 <translation id="5826479389509458994">પંક્તિ <ph name="ROW" /> કૉલમ <ph name="COL" /></translation>
 <translation id="5833044594931167190">કોઈ ARIA લૅન્ડમાર્ક નથી</translation>
+<translation id="584044465500042213">સ્ક્રોલ મોડમાંથી બહાર નીકળો</translation>
 <translation id="5842625257683688671">કોઈ આગલું ગ્રાફિક નથી</translation>
 <translation id="5847883414085148048">સમર્પણ</translation>
 <translation id="5850707923114094062">પાછળની તરફ પેન કરો</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">કોષ્ટકો</translation>
 <translation id="7289186959554153431">મથાળું 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">'ખેંચો અને છોડો' સમાપ્ત કરો</translation>
 <translation id="7308519659008003150">કોઈ પાછલી ફોર્મ ફીલ્ડ નથી</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">સહાય</translation>
@@ -1159,6 +1166,7 @@
 <translation id="8775203254697638994">ક્યારેક તમને ડ્રૉપ-ડાઉન સૂચિમાંથી કોઈ આઇટમ પસંદ કરવાની જરૂર પડશે. તેમ કરવા માટે, પહેલાં Search + Space દબાવીને સૂચિ મોટી કરો. પછી 'ઉપર અને નીચે ઍરો' કી દબાવીને આઇટમ પસંદ કરો. અંતમાં, Search + Space દબાવીને સૂચિ નાની કરો.</translation>
 <translation id="8779057862865475116">કોઈ પાછલી લિંક નથી</translation>
 <translation id="8796411681063377102">આગલા સ્તર 3 નું મથાળું</translation>
+<translation id="8821891849214789910">ડિક્ટેશન રોકો</translation>
 <translation id="8823311177246872527"><ph name="TOTALPAGES" />માંથી <ph name="CURRENTPAGE" /> પેજ</translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">મુખ્ય</translation>

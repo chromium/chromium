@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Çıxılıb. Hesabda əlfəcin, parol və s. istifadə etmək üçün yenidən daxil olun.</translation>
 <translation id="1054745118061919935">Davam etməklə, <ph name="BEGIN_LINK" />Xidmət Şərtləri<ph name="END_LINK" /> ilə razılaşırsınız.</translation>
 <translation id="10614374240317010">Heç vaxt saxlanılmır</translation>
+<translation id="1062138828266376352">PIN dəyişdirilmədi. İnternet bağlantısını yoxlayın və yenidən cəhd edin</translation>
 <translation id="1066060668811609597">Sinxronizasiyanı İdarə Edin</translation>
 <translation id="1076421457278169141">Kod skan olundu</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
@@ -676,6 +677,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="421070604241073551">Yanılı olduqda data Google Hesabında yadda saxlanılır. Sönülü olduqda data yalnız bu cihazda yadda saxlanılır.</translation>
 <translation id="4224534474590365556">99+ deaktiv tab bağlansın?</translation>
 <translation id="422474357428465195">Təhlükəsizliyi riskə atan bir neçə parol problemi var.</translation>
+<translation id="422477017457571619">Google-a göndərilən axtarış datasına əsasən təhlükəli sayt, endirmə və artırmalardan real zamanda Sİ dəstəkli qorunma</translation>
 <translation id="4231395118547300571">Təhlükəsizlik yoxlanışı bildirişləri yandırıldı</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Defolt Brauzer Tətbiqi<ph name="END_BOLD" /> seçiminə toxunun</translation>
 <translation id="4242533952199664413">Ayarları açın</translation>
@@ -1350,10 +1352,12 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7218491361283758048">Poçt indeksi</translation>
 <translation id="7221173315674413369">Yeniliklər bölməsində yeni funksiyaları və məsləhətləri araşdırın</translation>
 <translation id="722339453342442311">İndi yoxlayın</translation>
+<translation id="7227235818314667565">Paylaşımı idarə edin</translation>
 <translation id="7233006041370588369">Daxil etmək üçün parol seçin.</translation>
 <translation id="7241135764990439166">Anonim rejim əlçatan deyil</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Axtarış tarixçəsi<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />digər fəaliyyət formaları<ph name="END_LINK" /> Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="7253951228444156601">Parollar yoxlanılır…</translation>
+<translation id="7261217796641151584">Qrupu paylaşın</translation>
 <translation id="7271220006028561438">Avtomatik giriş açarı təkmilləşdirmələrinə icazə verin</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="7293429513719260019">Dil seçin</translation>

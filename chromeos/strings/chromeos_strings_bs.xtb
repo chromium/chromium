@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">više</translation>
 <translation id="3310640316857623290">Latentnost DNS-a je znatno iznad dozvoljenog praga</translation>
 <translation id="3321030238473337787">Brzina reprodukcije</translation>
+<translation id="3327613592010997943">Ovaj uređaj moći ćete ponovo upotrebljavati <ph name="DAY" /> u <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3340978935015468852">postavke</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="5763838252932650682">Ponovno pokretanje i ažuriranje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Pojačavanje osvjetljenja ekrana</translation>
+<translation id="5775340474232476653">Nastavnik je završio nastavu</translation>
 <translation id="5779818640587041940">Ostavi uključen ekran prilikom snimanja</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Visoka HTTP latentnost</translation>
@@ -1357,6 +1359,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="757747079855995705">kamena</translation>
 <translation id="7590883480672980941">Postavke unosa</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Administrator <ph name="MANAGER" /> odredio je kada se ovaj uređaj <ph name="DEVICE_TYPE" /> može upotrebljavati.</translation>
 <translation id="7613724632293948900">Premještanje mišem ili tipkama sa strelicama.</translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
@@ -1462,6 +1465,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8088963492174775412">Pritisnite da snimate</translation>
 <translation id="8094062939584182041">Dozvolite Googleu da vam šalje e-poruke o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i nezaštićenu mrežu</translation>
+<translation id="8110942816572072814">Nastavnik je zaključao zaslon</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može provjeriti pingom</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>

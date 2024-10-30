@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">rhagor</translation>
 <translation id="3310640316857623290">Mae cuddni DNS yn sylweddol uwch na'r trothwy a ganiateir</translation>
 <translation id="3321030238473337787">Cyflymder chwarae</translation>
+<translation id="3327613592010997943">Byddwch yn gallu defnyddio'r ddyfais hon eto <ph name="DAY" /> am <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Mae prawf wrthi'n rhedeg</translation>
 <translation id="3340011300870565703">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri bud dde.</translation>
 <translation id="3340978935015468852">gosodiadau</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">llwyd</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5600027863942488546">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phrofi</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Rydych wedi'ch allgofnodi</translation>
 <translation id="5620281292257375798">Mewnol yn unig</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Cyflwr y Porth</translation>
 <translation id="5763838252932650682">Ailgychwyn a diweddaru <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Disgleirdeb y sgrîn i fyny</translation>
+<translation id="5775340474232476653">Mae eich athro wedi gorffen dosbarth</translation>
 <translation id="5779818640587041940">Cadw'r sgrîn ymlaen wrth recordio</translation>
 <translation id="57838592816432529">Distewi</translation>
 <translation id="5784136236926853061">Cuddni HTTP uchel</translation>
@@ -1356,6 +1359,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="757747079855995705">carreg</translation>
 <translation id="7590883480672980941">Gosodiadau mewnbynnu</translation>
 <translation id="7595982850646262331">Mae <ph name="TIME_VALUE" /> ar ôl</translation>
+<translation id="7600430297804876776">Mae'r gweinyddwr <ph name="MANAGER" /> wedi pennu pryd y gellir defnyddio'r <ph name="DEVICE_TYPE" /> hwn.</translation>
 <translation id="7613724632293948900">Ail-leoli gyda'r llygoden neu'r bysellau saeth.</translation>
 <translation id="7618774594543487847">Niwtral</translation>
 <translation id="7620771111601174153">Dysgu rhagor yn y Ganolfan Gymorth</translation>
@@ -1461,6 +1465,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8088963492174775412">Pwyswch i recordio</translation>
 <translation id="8094062939584182041">Caniatáu i Google anfon e-bost atoch am y broblem hon</translation>
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
+<translation id="8110942816572072814">Mae eich athro wedi cloi eich sgrîn</translation>
 <translation id="811820734797650957">Gall porth gael ei Bingio (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>

@@ -13,6 +13,7 @@
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1240190568154816272">Consells de Chrome</translation>
 <translation id="1242008676835033345">Incrustada a <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Toca Aplicacions &gt; Aplicacions predeterminades</translation>
 <translation id="1272079795634619415">Atura</translation>
 <translation id="1289742167380433257">Perquè estalviïs dades, Google ha optimitzat les imatges d'aquesta pàgina.</translation>
 <translation id="129382876167171263">Els fitxers desats pels llocs web es mostren aquí</translation>
@@ -191,6 +192,7 @@
 <translation id="3908288065506437185">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">És possible que algunes funcions no estiguin operatives. Els llocs web relacionats podran continuar utilitzant galetes de tercers.</translation>
+<translation id="3922092564198021702">Al telèfon, obre Configuració</translation>
 <translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3955193568934677022">Permet que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
@@ -349,6 +351,7 @@
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
 <translation id="6207207788774442484">Suprimeix les dades i restableix els permisos</translation>
 <translation id="6231752747840485235">Vols desinstal·lar <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Toca Aplicació de navegador &gt; Chrome</translation>
 <translation id="6262191102408817757">Segons la teva darrera pestanya</translation>
 <translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>

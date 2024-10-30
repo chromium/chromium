@@ -2262,6 +2262,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5087286274860437796">Het servercertificaat is momenteel niet geldig.</translation>
 <translation id="5087580092889165836">Pas toevoegen</translation>
 <translation id="5088142053160410913">Bericht aan bediener</translation>
+<translation id="5089791650329866127">Deze functie gebruikt informatie die je al hebt opgeslagen met automatisch invullen, zoals je adres</translation>
 <translation id="5090647584136241764">Voeg tabbladen met vergelijkbare producten toe om de details die voor jou belangrijk zijn makkelijk te vergelijken</translation>
 <translation id="5093232627742069661">Zigzagvouw</translation>
 <translation id="5094747076828555589">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chromium. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
@@ -4534,6 +4535,7 @@ Aanvullende informatie:
 <translation id="9211461151375991073">Typ @ om te zoeken op <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Weergave aanpassen</translation>
 <translation id="9215416866750762878">Een app voorkomt dat Chrome veilig verbinding kan maken met deze site</translation>
+<translation id="921738974253889319">Deze functie gebruikt informatie die je al hebt opgeslagen met automatisch invullen, zoals je adres. Je kunt deze gegevens op deze pagina controleren en beheren.</translation>
 <translation id="92178312226016010">Je volgt dit product.</translation>
 <translation id="9218430445555521422">Instellen als standaard</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>

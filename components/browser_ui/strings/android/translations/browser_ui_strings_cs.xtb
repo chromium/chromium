@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Další</translation>
 <translation id="1240190568154816272">Tipy k Chromu</translation>
 <translation id="1242008676835033345">Vloženo do <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Klepněte na Aplikace &gt; Výchozí aplikace</translation>
 <translation id="1272079795634619415">Zastavit</translation>
 <translation id="1289742167380433257">Google obrázky na této stránce optimalizoval, abyste ušetřili data.</translation>
 <translation id="129382876167171263">Zde se budou zobrazovat soubory uložené webovými stránkami</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Některé funkce mohou být omezeny. Související weby mohou soubory cookie třetích stran používat i nadále.</translation>
+<translation id="3922092564198021702">V telefonu přejděte do Nastavení</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
 <translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
 <translation id="6207207788774442484">Vymazat data a resetovat oprávnění</translation>
 <translation id="6231752747840485235">Odinstalovat aplikaci <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Klepněte na aplikaci Prohlížeč &gt; Chrome</translation>
 <translation id="6262191102408817757">Na základě vaší poslední karty</translation>
 <translation id="6262279340360821358">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou zablokována</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>

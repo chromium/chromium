@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> سال پہلے تخلیق کیا گیا}other{<ph name="NUM_YEARS_MANY" /> سال پہلے تخلیق کیا گیا}}</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1197088940767939838">نارنجی</translation>
-<translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کے اختیارات</translation>
 <translation id="1293272072740285747">اس گروپ کو بعد میں ٹیبز شامل کرنے کیلئے برقرار رکھیں یا اگر آپ کو اس کی مزید ضرورت نہیں ہے تو اسے حذف کریں۔
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="5073204694187207510">پوری اسکرین گرڈ کو چھپائیں</translation>
 <translation id="5076161749301278626">اسٹور کے جائزے دیکھیں؟</translation>
-<translation id="5082793167783849073">ایک گروپ بنا کر صفحات کا فوری طور پر موازنہ کریں۔ شروع کرنے کیلئے، کسی لنک کو ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="5094423602314093681">ٹیب (ٹیبز) ہٹائیں اور گروپ کو حذف کریں؟</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ٹیب شامل کیا گیا}other{<ph name="MANY_ADDED" /> ٹیبز شامل کیے گئے}}</translation>
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">اس اسٹور سے متعلق معلومات بند ہے</translation>
 <translation id="9111228330448174435">نئے ٹیب گروپ کی تخلیق پر ڈائیلاگ دکھائیں</translation>
 <translation id="9114502155681725011">ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
-<translation id="9150694013019234766">اسکرین کے نچلے حصے کے قریب ٹیبز کے اپنے گروپ میں ٹیبز کے درمیان سوئچ کریں</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="9216898458513705996">اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپ کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="USER_EMAIL" /> میں سائن ان ہیں</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}}</translation>

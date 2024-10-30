@@ -156,6 +156,7 @@
 <translation id="1914424852593176649">Μέγεθος <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Συγχορδία <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Μεσαία ορχιδέα</translation>
+<translation id="1926147969119007125">Παύση ελέγχου με το πρόσωπο</translation>
 <translation id="1928932365747995741">Δεν υπάρχει προηγούμενο πεδίο κειμένου με δυνατότητα επεξεργασίας.</translation>
 <translation id="1964135212174907577">Επόμενο αντικείμενο</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -274,6 +275,7 @@
 <translation id="27527859628328957">Μετάβαση στο επόμενο αντικείμενο με δυνατότητα εστίασης</translation>
 <translation id="2756452585631602151">Εισαγάγετε μια προσαρμοσμένη ετικέτα.</translation>
 <translation id="2766299274563946262">Δεν υπάρχει κελί αριστερά.</translation>
+<translation id="2770947749427257887">Είσοδος στη λειτουργία κύλισης</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Μπορείτε να σύρετε με ένα δάχτυλο από τα δεξιά προς τα αριστερά για να μετακινηθείτε στο προηγούμενο στοιχείο. Δοκιμάστε το τώρα.</translation>
 <translation id="280499067616661124">Εύρεση στη σελίδα του ChromeVox</translation>
@@ -340,6 +342,7 @@
 <translation id="311015743332597320">Σύρετε με τέσσερα δάχτυλα προς τα δεξιά.</translation>
 <translation id="3112457281078985179">Για ενεργοποίηση ή απενεργοποίηση του ChromeVox, χρησιμοποιήστε τον συνδυασμό Control+Alt+Z.</translation>
 <translation id="3115800313647508384">Απενεργοποίηση οθόνης;</translation>
+<translation id="3127625407966660979">Η υπαγόρευση είναι ενεργή</translation>
 <translation id="3131002934070407451">Ανάγνωση αριθμών ως:</translation>
 <translation id="3134461040845705080">μόνο για ανάγνωση</translation>
 <translation id="3137663468179739624">Λαδί</translation>
@@ -403,6 +406,7 @@
 <translation id="3466530247399808663">Ένα μη έγκυρο πάτημα κουμπιού</translation>
 <translation id="3468959318854349468">Χωρίς τίτλο</translation>
 <translation id="3469413619751135069">Παλ πράσινο</translation>
+<translation id="3473744269398144689">Ξεκινήστε την υπαγόρευση</translation>
 <translation id="3490765818161916458">Πλέγμα λίστας</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{δεξιά αγκύλη}other{# δεξιές αγκύλες}}</translation>
 <translation id="3494946239022273294">στοιχείο μενού</translation>
@@ -659,6 +663,7 @@
 <translation id="5263344797180442561">κεφαλίδα 2</translation>
 <translation id="528468243742722775">Τέλος</translation>
 <translation id="5290220123487191192">Ας ξεκινήσουμε με ορισμένες κινήσεις που θα χρησιμοποιείτε συχνά. Εάν φτάσετε σε ένα στοιχείο που θέλετε να ενεργοποιήσετε, πατήστε δύο φορές στην οθόνη με ένα δάχτυλο. Για να συνεχίσετε, πατήστε δύο φορές τώρα.</translation>
+<translation id="5291860916305032607">Συνέχιση ελέγχου με το πρόσωπο</translation>
 <translation id="5302089807023311274">Βιβλιογραφική αναφορά</translation>
 <translation id="530391007967514163">Δοκιμάστε να κάνετε μετάβαση βάση επικεφαλίδων για να πλοηγηθείτε στο παρακάτω κείμενο.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, καρτέλα</translation>
@@ -684,6 +689,7 @@
 <translation id="5400836586163650660">Γκρι</translation>
 <translation id="5402367795255837559">Μπράιγ</translation>
 <translation id="5402791055281059602">Μια αποκλειστική ειδοποίηση</translation>
+<translation id="5406272775687194041">Έναρξη μεταφοράς και απόθεσης</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{ερωτηματικό}other{# ερωτηματικά}}</translation>
 <translation id="5420259671171615858">Αναζήτηση στα μενού</translation>
 <translation id="5435274640623994081">Ενεργοποίηση καταγραφής ηχητικών μηνυμάτων</translation>
@@ -751,6 +757,7 @@
 <translation id="5824976764713185207">Αυτόματη ανάγνωση σελίδας μόλις ολοκληρωθεί η φόρτωσή της.</translation>
 <translation id="5826479389509458994">γραμμή <ph name="ROW" /> στήλη <ph name="COL" /></translation>
 <translation id="5833044594931167190">Δεν υπάρχουν ορόσημα ARIA.</translation>
+<translation id="584044465500042213">Έξοδος από τη λειτουργία κύλισης</translation>
 <translation id="5842625257683688671">Δεν υπάρχει επόμενο γραφικό.</translation>
 <translation id="5847883414085148048">Αφιέρωση</translation>
 <translation id="5850707923114094062">Μετακίνηση προς τα πίσω</translation>
@@ -953,6 +960,7 @@
 <translation id="7285387653379749618">Πίνακες</translation>
 <translation id="7289186959554153431">Επικεφαλίδα 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Τερματισμός μεταφοράς και απόθεσης</translation>
 <translation id="7308519659008003150">Δεν υπάρχει προηγούμενο πεδίο φόρμας.</translation>
 <translation id="731121099745151312">στοιχείο δέντρου</translation>
 <translation id="7313717760367325059">βοήθεια</translation>
@@ -1159,6 +1167,7 @@
 <translation id="8775203254697638994">Θα υπάρχουν φορές που θα χρειαστεί να επιλέξετε ένα στοιχείο από μια αναπτυσσόμενη λίστα. Για να το κάνετε αυτό, αναπτύξτε πρώτα τη λίστα πιέζοντας Αναζήτηση + πλήκτρο διαστήματος. Έπειτα, χρησιμοποιήστε τα πλήκτρα επάνω και κάτω βέλους για να επιλέξετε ένα στοιχείο. Τέλος, συμπτύξτε τη λίστα πιέζοντας Αναζήτηση + πλήκτρο διαστήματος.</translation>
 <translation id="8779057862865475116">Δεν υπάρχει προηγούμενος σύνδεσμος.</translation>
 <translation id="8796411681063377102">Επικεφαλίδα επόμενου επιπέδου 3</translation>
+<translation id="8821891849214789910">Διακοπή υπαγόρευσης</translation>
 <translation id="8823311177246872527">Σελίδα <ph name="CURRENTPAGE" /> από <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">banner</translation>
 <translation id="8851136666856101339">κύριο</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Створана <ph name="NUM_YEARS_ONE" /> год таму}one{Створана <ph name="NUM_YEARS_MANY" /> год таму}few{Створана <ph name="NUM_YEARS_MANY" /> гады таму}many{Створана <ph name="NUM_YEARS_MANY" /> гадоў таму}other{Створана <ph name="NUM_YEARS_MANY" /> года таму}}</translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1197088940767939838">Аранжавы</translation>
-<translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1273910660700874265">Дзеянні з групай укладак "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1293272072740285747">Вы можаце захаваць гэту групу, каб дадаць укладкі пазней, ці выдаліць яе, калі яна вам больш не патрэбная.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Праглядзець</translation>
 <translation id="5073204694187207510">Схаваць поўнаэкранную сетку</translation>
 <translation id="5076161749301278626">Паказаць водгукі аб краме?</translation>
-<translation id="5082793167783849073">Каб хутка параўнаць старонкі, можна стварыць групу. Для гэтага дакраніцеся да спасылкі і ўтрымлівайце яе.</translation>
 <translation id="5094423602314093681">Прыбраць укладкі і выдаліць групу?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Укладак дададзена: <ph name="ONE_ADDED" />}one{Укладак дададзена: <ph name="MANY_ADDED" />}few{Укладак дададзена: <ph name="MANY_ADDED" />}many{Укладак дададзена: <ph name="MANY_ADDED" />}other{Укладак дададзена: <ph name="MANY_ADDED" />}}</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Інфармацыя пра гэту краму згорнута</translation>
 <translation id="9111228330448174435">Паказваць дыялогавае акно падчас стварэння новай групы ўкладак</translation>
 <translation id="9114502155681725011">Адкрыць меню дзеянняў для групы ўкладак "<ph name="TITLE_OF_GROUP" />", колер <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Пераключайцеся паміж укладкамі групы ў ніжняй частцы экрана</translation>
 <translation id="9169594135889675189">Дадаць у групу новую ўкладку</translation>
 <translation id="9216898458513705996">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Разгарнуць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>

@@ -2268,6 +2268,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5087286274860437796">Vottorð þjóns er ekki gilt núna.</translation>
 <translation id="5087580092889165836">Bæta við korti</translation>
 <translation id="5088142053160410913">Skilaboð til stjórnanda</translation>
+<translation id="5089791650329866127">Þessi eiginleiki notar upplýsingar sem þú hefur þegar vistað með sjálfvirkri útfyllingu, eins og heimilisfangið þitt</translation>
 <translation id="5090647584136241764">Bættu flipum með svipaðar vörur við til að bera saman upplýsingar sem skipta þig máli á einfaldan hátt</translation>
 <translation id="5093232627742069661">Z-brot</translation>
 <translation id="5094747076828555589">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chromium treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
@@ -4541,6 +4542,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9211461151375991073">Sláðu inn @ til að leita í <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Sérsníða útlit</translation>
 <translation id="9215416866750762878">Forrit kemur í veg fyrir að Chrome geti tengst vefsvæðinu á öruggan máta</translation>
+<translation id="921738974253889319">Þessi eiginleiki notar upplýsingar sem þú hefur þegar vistað með sjálfvirkri útfyllingu, eins og heimilisfangið þitt. Þú getur farið yfir og stjórnað þessum gögnum á þessari síðu.</translation>
 <translation id="92178312226016010">Þú ert að fylgjast með þessari vöru.</translation>
 <translation id="9218430445555521422">Velja sem sjálfgefið</translation>
 <translation id="9219103736887031265">Myndir</translation>

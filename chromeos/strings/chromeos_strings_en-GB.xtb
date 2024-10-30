@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">more</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3321030238473337787">Playback speed</translation>
+<translation id="3327613592010997943">You'll be able to use this device again on <ph name="DAY" /> at <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test running</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3340978935015468852">settings</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">grey</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> key tested</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">You've been signed out</translation>
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Portal state</translation>
 <translation id="5763838252932650682">Restarting and updating <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Display brightness up</translation>
+<translation id="5775340474232476653">Your teacher has ended class</translation>
 <translation id="5779818640587041940">Keep screen on when recording</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
@@ -1356,6 +1359,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="757747079855995705">stone</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
+<translation id="7600430297804876776">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used.</translation>
 <translation id="7613724632293948900">Reposition with mouse or arrow keys.</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>
@@ -1461,6 +1465,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8088963492174775412">Press to record</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
+<translation id="8110942816572072814">Your teacher has locked your screen</translation>
 <translation id="811820734797650957">(Android) Gateway can be pinged</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>

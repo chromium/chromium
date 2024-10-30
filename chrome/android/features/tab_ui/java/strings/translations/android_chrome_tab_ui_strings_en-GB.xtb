@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Created <ph name="NUM_YEARS_ONE" /> year ago}other{Created <ph name="NUM_YEARS_MANY" /> years ago}}</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1197088940767939838">Orange</translation>
-<translation id="125153950246128346">Tap to see another tab</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab group options</translation>
 <translation id="1293272072740285747">Keep this group to add tabs later or delete it if you no longer need it.
 
@@ -96,7 +95,6 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="5007392906805964215">Review</translation>
 <translation id="5073204694187207510">Hide full-screen grid</translation>
 <translation id="5076161749301278626">See store reviews?</translation>
-<translation id="5082793167783849073">Quickly compare pages by making a group. To start, touch and hold a link.</translation>
 <translation id="5094423602314093681">Remove tab(s) and delete group?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added}other{<ph name="MANY_ADDED" /> tabs added}}</translation>
 <translation id="5161254044473106830">Title required</translation>
@@ -196,7 +194,6 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="9090098097337832354">Information about this shop closed</translation>
 <translation id="9111228330448174435">Show dialogue on new tab group creation</translation>
 <translation id="9114502155681725011">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Switch between tabs in your tab group near bottom of screen</translation>
 <translation id="9169594135889675189">Add new tab to group</translation>
 <translation id="9216898458513705996">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Expand tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>

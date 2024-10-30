@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Izrađeno prije <ph name="NUM_YEARS_ONE" /> godinu}one{Izrađeno prije <ph name="NUM_YEARS_MANY" /> godinu}few{Izrađeno prije <ph name="NUM_YEARS_MANY" /> godine}other{Izrađeno prije <ph name="NUM_YEARS_MANY" /> godina}}</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1197088940767939838">Narančasta</translation>
-<translation id="125153950246128346">Dodirnite za prikaz druge kartice</translation>
 <translation id="1273910660700874265">Opcije grupe kartica za <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Sačuvajte ovu grupu da biste kasnije dodali kartice ili je izbrišite ako vam više nije potrebna.
 
@@ -96,7 +95,6 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5073204694187207510">Sakrij rešetku na cijelom zaslonu</translation>
 <translation id="5076161749301278626">Pregled recenzija trgovine?</translation>
-<translation id="5082793167783849073">Izradom grupe možete brzo usporediti stranice. Da biste započeli, dodirnite i držite vezu.</translation>
 <translation id="5094423602314093681">Želite li ukloniti kartice i izbrisati grupu?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Dodana je <ph name="ONE_ADDED" /> kartica}one{Dodana je <ph name="MANY_ADDED" /> kartica}few{Dodane su <ph name="MANY_ADDED" /> kartice}other{Dodano je <ph name="MANY_ADDED" /> kartica}}</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
@@ -196,7 +194,6 @@ Ako napustite grupu, odmah ćete izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="9090098097337832354">Zatvorene su informacije o ovoj trgovini</translation>
 <translation id="9111228330448174435">Prikaži dijaloški okvir pri izradi nove grupe kartica</translation>
 <translation id="9114502155681725011">Otvorite izbornik aktivnosti grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja.</translation>
-<translation id="9150694013019234766">Prebacujte se između kartica u grupi kartica pri dnu zaslona</translation>
 <translation id="9169594135889675189">Dodajte novu karticu grupi</translation>
 <translation id="9216898458513705996">Kartice će ostati otvorene na ovom uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Proširite grupu kartica s <ph name="TABS_COUNT_ONE" /> karticom, <ph name="COLOR_NAME" /> boja.}one{Proširite grupu kartica s <ph name="TABS_COUNT_MANY" /> karticom, <ph name="COLOR_NAME" /> boja.}few{Proširite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartice, <ph name="COLOR_NAME" /> boja.}other{Proširite grupu kartica s <ph name="TABS_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja.}}</translation>

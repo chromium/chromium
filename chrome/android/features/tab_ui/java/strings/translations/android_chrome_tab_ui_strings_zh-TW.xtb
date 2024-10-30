@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前建立}other{<ph name="NUM_YEARS_MANY" /> 年前建立}}</translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1197088940767939838">橘色</translation>
-<translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
 <translation id="1273910660700874265">「<ph name="TITLE_OF_GROUP" />」分頁群組選項</translation>
 <translation id="1293272072740285747">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">查看</translation>
 <translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
-<translation id="5082793167783849073">建立群組以快速比較多個頁面。如要開始建立，請輕觸並按住連結。</translation>
 <translation id="5094423602314093681">要移除分頁並刪除群組嗎？</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">這間店的資訊已關閉</translation>
 <translation id="9111228330448174435">建立新分頁群組時顯示對話方塊</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」(<ph name="COLOR_NAME" />) 的動作選單。</translation>
-<translation id="9150694013019234766">在靠近畫面底部的分頁群組中切換分頁</translation>
 <translation id="9169594135889675189">在群組中新增分頁</translation>
 <translation id="9216898458513705996">這些分頁會在這部裝置上保持開啟，但該群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>

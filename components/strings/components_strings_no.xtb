@@ -213,7 +213,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1358223345833465883">Søkemotoren din i Chromium</translation>
 <translation id="1359836962251219822">Kjøkken og spiserom</translation>
 <translation id="1360955481084547712">Åpne et nytt inkognitovindu for å surfe privat</translation>
-<translation id="1361528602584216624">Grense per Pix-betaling: R$ <ph name="TRANSACTION_LIMIT" /></translation>
+<translation id="1361528602584216624">Grense på BRL <ph name="TRANSACTION_LIMIT" /> per Pix-betaling</translation>
 <translation id="1363015776076529485">Tilgjengelige betalingsmåter for å gå videre med betalingen er åpnet i full høyde.</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1364822246244961190">Denne regelen er blokkert. Regelens verdi ignoreres.</translation>

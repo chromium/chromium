@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">მეტი</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
 <translation id="3321030238473337787">დაკვრის სიჩქარე</translation>
+<translation id="3327613592010997943">ამ მოწყობილობის ხელახლა გამოყენებას შეძლებთ <ph name="DAY" />-ში <ph name="TIME" />-ზე.</translation>
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
 <translation id="3340011300870565703">მოწყობილობის მარჯვენა ყურსაცვამის ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">პარამეტრები</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">პორტალის მდგომარეობა</translation>
 <translation id="5763838252932650682">მიმდინარეობს <ph name="APP_NAME" />-ის გადატვირთვა და განახლება</translation>
 <translation id="576835345334454681">ეკრანის სიკაშკაშის მომატება</translation>
+<translation id="5775340474232476653">თქვენმა მასწავლებელმა დაასრულა გაკვეთილი</translation>
 <translation id="5779818640587041940">ეკრანის ჩართულად დატოვება ჩაწერისას</translation>
 <translation id="57838592816432529">დადუმება</translation>
 <translation id="5784136236926853061">HTTP რეაგირების დრო დიდია</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">ქვა</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7595982850646262331">დარჩენილია <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776"><ph name="MANAGER" />-ის ადმინისტრატორმა დააყენა, როდის შეიძლება ამ <ph name="DEVICE_TYPE" />-ის გამოყენება</translation>
 <translation id="7613724632293948900">გადაადგილება შეგიძლიათ მაუსის ან ისრიანი კლავიშების მეშვეობით.</translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">დააჭირეთ ჩასაწერად</translation>
 <translation id="8094062939584182041">ამ პრობლემის თაობაზე ელფოსტით დაკავშირების დაშვება Google-ისთვის</translation>
 <translation id="8104083085214006426">თქვენ ღია და არასტაბილური ქსელით სარგებლობთ</translation>
+<translation id="8110942816572072814">თქვენმა მასწავლებელმა თქვენი ეკრანი ჩაკეტა</translation>
 <translation id="811820734797650957">(Android) გეითვეის ping-მეთოდით ტესტირება</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>

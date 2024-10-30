@@ -631,6 +631,7 @@
 <translation id="3208321278970793882">အက်ပ်</translation>
 <translation id="3213571860604332401">လင့်ခ်ကို လိပ်စာအဖြစ် သိမ်းရန်</translation>
 <translation id="3217205077783620295">အသံဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံကိုတိတ်လိုက်ပါမည်။</translation>
+<translation id="3218561536255328229">တာ့ချ်ပက်ဖွင့်ရန် Esc ကီး ၅ ခါနှိပ်ပါ</translation>
 <translation id="3226991577105957773">+နောက်ထပ် <ph name="COUNT" /> ခု</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3233611303007751344">‘ဘက်ထရီ အားထိန်း’ ပိတ်ထားသည်</translation>
@@ -1147,6 +1148,7 @@
 <translation id="4902797682482387055">အာရုံစိုက်ရမည့် အကြံပြုထားသော လုပ်ဆောင်စရာ</translation>
 <translation id="490375751687810070">ဒေါင်လိုက်</translation>
 <translation id="490788395437447240">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">၎င်းသည် စမ်းသပ်ဆဲ AI တူးလ်ဖြစ်ပြီး အမြဲတမ်း မှန်ကန်မည်မဟုတ်ပါ။</translation>
 <translation id="491504982845934899">စက်စနစ်ထည့်သွင်းပြီးနောက် စသုံးရန် <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
@@ -2009,6 +2011,7 @@
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7807067443225230855">Search နှင့် Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> နှင့် <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">လက်မထောင်ခြင်းဖြင့် ဤအကြံပြုချက်ကို သင်နှစ်သက်ကြောင်း ပို့မည်</translation>
 <translation id="7825412704590278437">လာမည့် ပြက္ခဒိန်အစီအစဉ်မှ</translation>
 <translation id="7829386189513694949">လိုင်းအားကောင်းသည်</translation>
 <translation id="7830453190047749513">သင်၏ <ph name="PERIPHERAL_NAME" /> အတွက် ခလုတ်လုပ်ဆောင်ချက်များ၊ ကာဆာမြန်နှုန်း စသည်တို့ကို ပုဂ္ဂိုလ်ရေးသီးသန့်လုပ်နိုင်သည်</translation>
@@ -2163,6 +2166,7 @@
 <translation id="830868413617744215">စမ်းသပ်ဆဲ</translation>
 <translation id="8314772463905284467">‘စာလုံးကြီးလော့ခ်’ ဖွင့်ထားသည်</translation>
 <translation id="8315514906653279104">ဖွင့်နေသည်...</translation>
+<translation id="8319634750346253957">လက်မအောက်စိုက်ခြင်းဖြင့် ဤအကြံပြုချက်ကို သင်မကြိုက်ကြောင်း ပို့မည်</translation>
 <translation id="8331351032546853669">ဒေါင်းလုဒ် ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

@@ -426,6 +426,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1288037062697528143">Podświetlenie nocne będzie włączać się automatycznie o zachodzie słońca</translation>
 <translation id="1288300545283011870">Właściwości syntezy mowy</translation>
 <translation id="1289619947962767206">Ta opcja nie jest już obsługiwana. Do prezentowania kart używaj <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Wybranie już przypisanego gestu spowoduje usunięcie go z poprzedniej czynności.</translation>
 <translation id="1291119821938122630">Warunki korzystania z usługi <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Zresetuj klawisze</translation>
 <translation id="1292849930724124745">Aby nie nastąpiło wylogowanie, włóż kartę inteligentną</translation>
@@ -6721,6 +6722,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5832970156002835240">Zezwalaj we wszystkich witrynach</translation>
 <translation id="5833397272224757657">Zawartość otwieranych stron oraz informacje o Twoich interakcjach i aktywności w przeglądarce zostaną wykorzystane do personalizacji</translation>
 <translation id="5833726373896279253">Tylko właściciel może zmodyfikować te ustawienia:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Nie zezwalaj witrynom na używanie JavaScriptu</translation>
 <translation id="583431638776747">Witryna była niedostępna</translation>
 <translation id="5834581999798853053">Zostało około <ph name="TIME" /> min</translation>

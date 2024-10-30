@@ -13,6 +13,7 @@
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1240190568154816272">Chrome చిట్కాలు</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />లో పొందుపరచబడింది</translation>
+<translation id="1263609676484797429">యాప్‌లు &gt; ఆటోమేటిక్ సెట్టింగ్ యాప్‌లను ట్యాప్ చేయండి</translation>
 <translation id="1272079795634619415">ఆపు</translation>
 <translation id="1289742167380433257">మీ కోసం డేటాను సేవ్ చేయడానికి, ఈ పేజీ ఇమేజ్‌లు Google ద్వారా ఆప్టిమైజ్ చేయబడ్డాయి.</translation>
 <translation id="129382876167171263">వెబ్‌సైట్‌లు సేవ్ చేసిన ఫైళ్లు ఇక్కడ కనిపిస్తాయి</translation>
@@ -191,6 +192,7 @@
 <translation id="3908288065506437185">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">కొన్ని ఫీచర్‌లు పని చేయకపోవచ్చు. ఈ సెట్టింగ్‌ను ఎంచుకున్నప్పటికీ సంబంధిత సైట్‌లు థర్డ్-పార్టీ కుక్కీలను ఉపయోగించవచ్చు.</translation>
+<translation id="3922092564198021702">మీ ఫోన్‌లో, సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="3933121352599513978">అవాంఛిత రిక్వెస్ట్‌లను (సిఫార్సు చేయబడిన వాటిని) కుదించండి</translation>
 <translation id="3955193568934677022">రక్షిత కంటెంట్‌ను ప్లే చేయడానికి సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
@@ -349,6 +351,7 @@
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
 <translation id="6207207788774442484">డేటాను తొలగించండి, అనుమతులను రీసెట్ చేయండి</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />'ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
+<translation id="6234351944623978659">బ్రౌజర్ యాప్‌ను &gt; Chromeను ట్యాప్ చేయండి</translation>
 <translation id="6262191102408817757">మీ చివరి ట్యాబ్ ఆధారంగా</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>

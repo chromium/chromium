@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">více</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3321030238473337787">Rychlost přehrávání</translation>
+<translation id="3327613592010997943">Zařízení budete moci znovu použít <ph name="DAY" /> v <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavení</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">šedá</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5600027863942488546">Klávesa <ph name="KEY_NAME" /> byla vyzkoušena</translation>
+<translation id="5606865426897221650">Karta</translation>
 <translation id="5613201299517339763">Byli jste odhlášeni</translation>
 <translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5763838252932650682">Restartování a aktualizace aplikace <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Zvýšit jas displeje</translation>
+<translation id="5775340474232476653">Učitel ukončil výuku</translation>
 <translation id="5779818640587041940">Při nahrávání nechat zapnutou obrazovku</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784136236926853061">Vysoká latence požadavků HTTP</translation>
@@ -1356,6 +1359,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="757747079855995705">kámen</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Administrátor domény <ph name="MANAGER" /> nastavil, kdy se tohle zařízení <ph name="DEVICE_TYPE" /> může používat.</translation>
 <translation id="7613724632293948900">Přemístěte pomocí myši nebo kláves se šipkami.</translation>
 <translation id="7618774594543487847">Neutrální</translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
@@ -1461,6 +1465,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8088963492174775412">Stisknutím zaznamenáte</translation>
 <translation id="8094062939584182041">Povolit Googlu informovat vás o problému e-mailem</translation>
 <translation id="8104083085214006426">Používáte otevřenou, nezabezpečenou síť</translation>
+<translation id="8110942816572072814">Učitel vám obrazovku zamknul</translation>
 <translation id="811820734797650957">(Android) Pingnutí brány</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdit</translation>

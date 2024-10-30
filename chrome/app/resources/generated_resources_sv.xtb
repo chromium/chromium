@@ -424,10 +424,12 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1288037062697528143">Nattljuset aktiveras automatiskt vid solnedgången</translation>
 <translation id="1288300545283011870">Talegenskaper</translation>
 <translation id="1289619947962767206">Det här alternativet stöds inte längre. Använd <ph name="GOOGLE_MEET" /> om du vill presentera en flik.</translation>
+<translation id="1291057703584594733">Om du väljer en rörelse som redan har tilldelats tas den bort från den ursprungliga åtgärden.</translation>
 <translation id="1291119821938122630">Användarvillkor för <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Återställ tangenter</translation>
 <translation id="1292849930724124745">Sätt i smartkort för att fortsätta vara inloggad.</translation>
 <translation id="1293264513303784526">USB-C-enhet (vänster port)</translation>
+<translation id="1293360286536751243"><ph name="MAIN_GESTURE" /> kan krocka med <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> och <ph name="CONFLICTING_GESTURE_THREE" />. Välj en annan rörelse om det går.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1294807885394205587">Detta kan ta några minuter. Startar hanteraren av behållare.</translation>
 <translation id="12951065153783848">Din organisation hanterar ditt konto</translation>
@@ -2626,6 +2628,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2806372837663997957">Enheten som du försökte att dela med godkände inte delningsförsöket</translation>
 <translation id="2806891468525657116">Genvägen finns redan</translation>
 <translation id="2807517655263062534">Filer som du laddar ned visas här</translation>
+<translation id="2808985063107661499"><ph name="MAIN_GESTURE" /> kan krocka med <ph name="CONFLICTING_GESTURE_ONE" /> och <ph name="CONFLICTING_GESTURE_TWO" />. Välj en annan rörelse om det går.</translation>
 <translation id="2811205483104563968">Konton</translation>
 <translation id="2812049959647166806">Thunderbolt stöds inte</translation>
 <translation id="2812171980080389735">Spara nätverk och lösenord så att du kan ansluta direkt</translation>
@@ -4358,6 +4361,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="404894744863342743">När du är klar med den nedladdade filen raderar du den så att andra som använder enheten inte kan se dina lösenord.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt är inte tillgänglig. Lägg till den e-postadress som är kopplad till personens Google-konto i dina kontakter om du vill använda Närdelning med honom eller henne.}other{# kontakter är inte tillgängliga. Lägg till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter om du vill använda Närdelning med dem.}}</translation>
 <translation id="4050225813016893843">Autentiseringsmetod</translation>
+<translation id="4050379682069019014"><ph name="MAIN_GESTURE" /> kan krocka med <ph name="CONFLICTING_GESTURE" />. Välj en annan rörelse om det går.</translation>
 <translation id="4050534976465737778">Se till att båda enheterna är upplåsta, att de är nära varandra och att Bluetooth är aktiverat. Om du delar med en Chromebook som inte finns i dina kontakter kontrollerar du att Synlighet i närheten har aktiverats på den (öppna statusfältet och aktivera Synlighet i närheten). <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Om du vill byta till den inmatningsmetod som användes senast trycker du på <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">sök + högerpil</translation>
@@ -6745,6 +6749,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5832970156002835240">Tillåt på alla webbplatser</translation>
 <translation id="5833397272224757657">Använder innehåll på webbplatser du besöker, samt aktivitet i och interaktion med webbläsaren, i anpassningssyfte</translation>
 <translation id="5833726373896279253">Inställningarna kan bara ändras av ägaren:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Tillåt inte att webbplatser använder JavaScript</translation>
 <translation id="583431638776747">Webbplatsen var inte tillgänglig</translation>
 <translation id="5834581999798853053">Ca <ph name="TIME" /> minuter kvar</translation>

@@ -424,6 +424,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1288037062697528143">A Luz noturna irá ativar-se automaticamente ao pôr-do-sol.</translation>
 <translation id="1288300545283011870">Propriedades de voz</translation>
 <translation id="1289619947962767206">Esta opção já não é suportada. Para apresentar um separador, utilize o <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Selecionar um gesto já atribuído remove-o da respetiva ação original.</translation>
 <translation id="1291119821938122630">Termos de Utilização de <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Repor teclas</translation>
 <translation id="1292849930724124745">Insira o cartão inteligente para manter a sessão iniciada</translation>
@@ -615,6 +616,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1436671784520050284">Continuar configuração</translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437986450143295708">Descreva o problema detalhadamente</translation>
+<translation id="1438630805136563416">Ação <ph name="REMOVED_ACTION" /> removida</translation>
 <translation id="1439671507542716852">apoio técnico a longo prazo</translation>
 <translation id="1440090277117135316">Inscrição escolar concluída</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selecionados</translation>
@@ -980,6 +982,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1677306805708094828">Não é possível adicionar <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1678849866171627536">Falha ao analisar. Este ficheiro pode ser um vírus ou software malicioso.</translation>
+<translation id="1678919064276516737">O email e o PIN introduzidos não coincidem</translation>
 <translation id="1679068421605151609">Ferramentas para programadores</translation>
 <translation id="1679810534535368772">Tem a certeza de que quer sair?</translation>
 <translation id="167983332380191032">Ocorreu um erro com o HTTP enviado pelo serviço de gestão.</translation>
@@ -1425,6 +1428,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1981434377190976112">Ler todos os seus dados em todos os Websites</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} e {field_2}}other{{field_1}, {field_2} e {field_3}}}</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
+<translation id="198507684520034826">Ajuda</translation>
 <translation id="1986836014090708999">Definições de localização avançadas</translation>
 <translation id="1987317783729300807">Contas</translation>
 <translation id="1987574314042117472">Selecionar e instalar apps populares</translation>
@@ -2921,6 +2925,7 @@ Quer pará-lo?</translation>
 <translation id="3029466929721441205">Mostrar ferramentas da caneta stylus na prateleira</translation>
 <translation id="3029808567601324798">Tempo até ao bloqueio</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que transfira uma atualização hoje. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}other{<ph name="MANAGER" /> requer que transfira uma atualização antes do prazo. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}}</translation>
+<translation id="3030772324014024606">Editar</translation>
 <translation id="3030967311408872958">Do pôr do sol ao nascer do sol</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Use o touchpad e o teclado para clicar com o botão direito do rato</translation>
@@ -4026,6 +4031,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicie sessão para ver os separadores de outros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Ver</translation>
 <translation id="3825635794653163640">Mostrar ponto no ícone da app para alertas de apps</translation>
 <translation id="3826071569074535339">Com autorização para utilizar sensores de movimentos</translation>
 <translation id="3826086052025847742">Registos do ChromeOS Flex</translation>
@@ -4137,6 +4143,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3905761538810670789">Reparar aplicação</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no Modo de navegação anónima</translation>
 <translation id="3908501907586732282">Ativar extensão</translation>
+<translation id="3909456989251621103">Se eliminar um certificado de servidor, o Chrome deixa de o usar para identificar servidores.</translation>
 <translation id="3909701002594999354">Mostrar todos os &amp;controlos</translation>
 <translation id="3909791450649380159">Cor&amp;tar</translation>
 <translation id="39103738135459590">Código de ativação</translation>
@@ -5055,6 +5062,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
 <translation id="4582297591746054421">Normalmente, os sites leem a sua área de transferência para funcionalidades como manter a formatação do texto que copiou.</translation>
 <translation id="4582563038311694664">Repor todas as definições</translation>
+<translation id="4584770411839426377">Janela</translation>
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617">Não foi possível abrir <ph name="URL" /> num navegador alternativo. Contacte o administrador do sistema.</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -5447,6 +5455,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4872192066608821120">Para importar palavras-passe, selecione um ficheiro CSV</translation>
 <translation id="4872212987539553601">Configure a encriptação no dispositivo</translation>
 <translation id="4873312501243535625">Verificador de ficheiros multimédia</translation>
+<translation id="4875690134140862902">Separador</translation>
 <translation id="4876273079589074638">Ajude os nossos engenheiros a analisar e corrigir esta falha de sistema. Enumere os passos exatos, se possível. Nenhum detalhe é demasiado pequeno!</translation>
 <translation id="4876305945144899064">Sem nome de utilizador</translation>
 <translation id="4876327226315760474">Isto significa que as funcionalidades do site devem funcionar conforme esperado, mas pode ter menos proteção da navegação.</translation>
@@ -5559,6 +5568,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4951966678293618079">Nunca guarde palavras-passe para este site</translation>
 <translation id="4953808748584563296">Avatar cor de laranja predefinido</translation>
+<translation id="4954652437333037880">Ficheiro</translation>
 <translation id="4955707703665801001">Visibilidade da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6737,6 +6747,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5832970156002835240">Permitir em todos os sites</translation>
 <translation id="5833397272224757657">Utiliza conteúdo nos sites que visita e interações e atividades do navegador para personalização.</translation>
 <translation id="5833726373896279253">Estas definições só podem ser modificadas pelo proprietário:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" />: <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Não permitir que os sites usem JavaScript</translation>
 <translation id="583431638776747">O site não estava disponível</translation>
 <translation id="5834581999798853053">Faltam cerca de <ph name="TIME" /> minutos</translation>
@@ -7817,6 +7828,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6635674640674343739">Não é possível estabelecer ligação à rede. Verifique a ligação de rede e tente novamente.</translation>
 <translation id="663569763553406962">Veja que extensões podem ler ou alterar um site</translation>
 <translation id="6635944431854494329">O proprietário pode controlar esta funcionalidade em Definições &gt; Avançadas &gt; Enviar automaticamente dados de diagnóstico e de utilização para a Google.</translation>
+<translation id="6636258750460740634">Histórico</translation>
 <translation id="6636623428211296678">Explore mais definições abaixo ou conclua agora</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
 <translation id="6640268266988685324">Separador aberto</translation>

@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_YEARS_ONE" /> any}other{Creat fa <ph name="NUM_YEARS_MANY" /> anys}}</translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1197088940767939838">Taronja</translation>
-<translation id="125153950246128346">Toca per veure una altra pestanya</translation>
 <translation id="1273910660700874265">Opcions del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.
 
@@ -96,7 +95,6 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="5007392906805964215">Revisa</translation>
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
-<translation id="5082793167783849073">Crea un grup per comparar pàgines ràpidament. Per començar, mantén premut un enllaç.</translation>
 <translation id="5094423602314093681">Vols suprimir les pestanyes i el grup?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes}}</translation>
 <translation id="5161254044473106830">Cal indicar un títol</translation>
@@ -196,7 +194,6 @@ Si l'abandones, perdràs immediatament l'accés al grup de pestanyes "<ph name="
 <translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>
 <translation id="9111228330448174435">Mostra un quadre de diàleg en crear un grup de pestanyes nou</translation>
 <translation id="9114502155681725011">Obre el menú d'accions del grup de pestanyes <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Canvia de pestanya al grup de pestanyes de la part inferior de la pantalla</translation>
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="9216898458513705996">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>

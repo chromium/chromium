@@ -631,6 +631,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3208321278970793882">Aplikasi</translation>
 <translation id="3213571860604332401">Simpan link sebagai bookmark</translation>
 <translation id="3217205077783620295">Volume aktif, mengalihkan tombol akan membisukan audio.</translation>
+<translation id="3218561536255328229">Tekan Esc 5 kali untuk mengaktifkan touchpad</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Penghemat Baterai dinonaktifkan</translation>
@@ -2092,7 +2093,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="802782383769312836">Desktop virtual sebelumnya: <ph name="DESK_NAME" />. Desktop virtual <ph name="DESK_INDEX" /> dari <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Koneksi hotspot gagal</translation>
 <translation id="8029629653277878342">Perlu PIN atau sandi untuk keamanan tambahan</translation>
-<translation id="8030169304546394654">Diputuskan</translation>
+<translation id="8030169304546394654">Tidak terhubung</translation>
 <translation id="8036504271468642248">Kalimat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu setelan aksesibilitas</translation>
 <translation id="8044457332620420407">Lampu latar keyboard menyala</translation>

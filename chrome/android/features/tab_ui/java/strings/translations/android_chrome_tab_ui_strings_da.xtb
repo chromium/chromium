@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Oprettet for <ph name="NUM_YEARS_ONE" /> år siden}one{Oprettet for <ph name="NUM_YEARS_MANY" /> år siden}other{Oprettet for <ph name="NUM_YEARS_MANY" /> år siden}}</translation>
 <translation id="1173894706177603556">Omdøb</translation>
 <translation id="1197088940767939838">Orange</translation>
-<translation id="125153950246128346">Tryk for at se en anden fane</translation>
 <translation id="1273910660700874265">Valgmuligheder for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Behold denne gruppe for at tilføje faner senere, eller slet den, hvis du ikke længere skal bruge den.
 
@@ -96,7 +95,6 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="5007392906805964215">Gennemgå</translation>
 <translation id="5073204694187207510">Skjul fuldskærmsgitter</translation>
 <translation id="5076161749301278626">Vil du se butiksanmeldelser?</translation>
-<translation id="5082793167783849073">Sammenlign hurtigt sider ved at oprette en gruppe. Hold et link nede for at starte.</translation>
 <translation id="5094423602314093681">Vil du fjerne fanerne og slette gruppen?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane blev tilføjet}one{<ph name="MANY_ADDED" /> fane blev tilføjet}other{<ph name="MANY_ADDED" /> faner blev tilføjet}}</translation>
 <translation id="5161254044473106830">Der skal angives en titel</translation>
@@ -196,7 +194,6 @@ Hvis du forlader gruppen, mister du øjeblikkeligt adgangen til fanegruppen "<ph
 <translation id="9090098097337832354">Oplysningerne om denne butik er lukket</translation>
 <translation id="9111228330448174435">Vis dialogboks ved oprettelse af en ny fanegruppe</translation>
 <translation id="9114502155681725011">Åbn handlingsmenuen for fanegrupper for fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Skift mellem faner i din fanegruppe nederst på skærmen</translation>
 <translation id="9169594135889675189">Føj en ny fane til gruppen</translation>
 <translation id="9216898458513705996">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>

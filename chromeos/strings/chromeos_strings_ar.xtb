@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3321030238473337787">سرعة التشغيل</translation>
+<translation id="3327613592010997943">سيصبح بإمكانك استخدام هذا الجهاز مجددًا <ph name="DAY" /> في <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">حالة المدخل</translation>
 <translation id="5763838252932650682">إعادة تشغيل "<ph name="APP_NAME" />" وتحديثه</translation>
 <translation id="576835345334454681">زيادة سطوع الشاشة</translation>
+<translation id="5775340474232476653">أنهى مُعلّمك الصف</translation>
 <translation id="5779818640587041940">إبقاء الشاشة مشغَّلة أثناء التسجيل</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5784136236926853061">‏وقت استجابة بروتوكول HTTP طويل.</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">الحجر</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">ضبطَ مشرف <ph name="MANAGER" /> وقتًا لاستخدام جهاز <ph name="DEVICE_TYPE" /> خلاله.</translation>
 <translation id="7613724632293948900">غيِّر الموضع باستخدام الماوس أو مفاتيح الأسهم.</translation>
 <translation id="7618774594543487847">معتدل</translation>
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">اضغط لبدء التسجيل</translation>
 <translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
 <translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
+<translation id="8110942816572072814">قفل مُعلّمك الشاشة</translation>
 <translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8131740175452115882">تأكيد</translation>

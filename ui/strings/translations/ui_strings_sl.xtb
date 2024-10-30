@@ -128,6 +128,7 @@
 <translation id="5505748296268090374">Odstrani <ph name="ITEM_TEXT" />.</translation>
 <translation id="5528053674512161860">Nalaganje strani ni uspelo, ker modul uporabniškega vmesnika za razvijalce (dev_ui) ni nameščen</translation>
 <translation id="5583640892426849032">Vračalka</translation>
+<translation id="5606865426897221650">Tabulatorka</translation>
 <translation id="5613020302032141669">Puščica levo</translation>
 <translation id="5633029987065897167">Prazno</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}two{# min}few{# min}other{# min}}</translation>

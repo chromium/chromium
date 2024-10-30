@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1242008676835033345">Inbäddad på <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Tryck på Appar &gt; Standardappar</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1289742167380433257">Bilderna på den här sidan har optimerats av Google så att du sparar data.</translation>
 <translation id="129382876167171263">Filer som webbplatser har sparat visas här</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Blockera tredjepartscookies i inkognitoläge</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">En del funktioner fungerar eventuellt inte. Relaterade webbplatser kan fortfarande använda tredjepartscookies.</translation>
+<translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
 <translation id="3933121352599513978">Komprimera oönskade förfrågningar (rekommenderas)</translation>
 <translation id="3955193568934677022">Tillåt att skyddat innehåll spelas upp på webbplatser (rekommenderas)</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6207207788774442484">Radera data och återställ behörigheter</translation>
 <translation id="6231752747840485235">Vill du avinstallera <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Tryck på Webbläsarapp &gt; Chrome</translation>
 <translation id="6262191102408817757">Utifrån din senaste flik</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>

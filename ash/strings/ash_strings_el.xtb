@@ -631,6 +631,7 @@
 <translation id="3208321278970793882">Εφαρμογή</translation>
 <translation id="3213571860604332401">Αποθήκευση συνδέσμου ως σελιδοδείκτη</translation>
 <translation id="3217205077783620295">Ο ήχος είναι ενεργοποιημένος, η εναλλαγή θα ενεργοποιήσει τη σίγαση ήχου.</translation>
+<translation id="3218561536255328229">Πατήστε το Esc 5 φορές, για να ενεργοποιήσετε την επιφάνεια αφής</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> ακόμη</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3233611303007751344">Η Εξοικονόμηση μπαταρίας απενεργοποιήθηκε</translation>
@@ -1147,6 +1148,7 @@
 <translation id="4902797682482387055">Προτεινόμενη εργασία για εστίαση</translation>
 <translation id="490375751687810070">Κατακόρυφη περιστροφή</translation>
 <translation id="490788395437447240">Μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">Πρόκειται για πειραματική λειτουργία AI που μπορεί να μην λειτουργεί πάντα σωστά.</translation>
 <translation id="491504982845934899">Ενεργοποίηση μετά τη ρύθμιση της συσκευής <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="4918086044614829423">Αποδοχή</translation>
@@ -2009,6 +2011,7 @@
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7807067443225230855">Αναζήτηση και Βοηθός</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> και <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Με την επιλογή "Μου αρέσει" θα δηλώνατε ότι σας αρέσει αυτή η πρόταση</translation>
 <translation id="7825412704590278437">Από προσεχές συμβάν ημερολογίου</translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>
 <translation id="7830453190047749513">Μπορείτε να εξατομικεύσετε τις ενέργειες κουμπιών, την ταχύτητα του δείκτη και πολλά άλλα για τη συσκευή <ph name="PERIPHERAL_NAME" /></translation>
@@ -2163,6 +2166,7 @@
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Το Caps Lock είναι ενεργοποιημένο</translation>
 <translation id="8315514906653279104">Ενεργοποίηση…</translation>
+<translation id="8319634750346253957">Με την επιλογή "Δεν μου αρέσει" θα δηλώνατε ότι δεν σας αρέσει αυτή η πρόταση</translation>
 <translation id="8331351032546853669">Λήψη σε εκκρεμότητα</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

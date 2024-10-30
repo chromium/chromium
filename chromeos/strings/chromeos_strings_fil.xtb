@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">higit pa</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3321030238473337787">Bilis ng pag-playback</translation>
+<translation id="3327613592010997943">Magagamit mo ulit ang device na ito <ph name="DAY" /> nang <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
 <translation id="3340978935015468852">mga setting</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">gray</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5600027863942488546">Nasubok ang key na <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Na-sign out ka</translation>
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="5763838252932650682">Nire-restart at ina-update ang <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Taasan ang liwanag ng display</translation>
+<translation id="5775340474232476653">Tinapos na ng iyong guro ang klase</translation>
 <translation id="5779818640587041940">Panatilihing naka-on ang screen kapag nagre-record</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
@@ -1356,6 +1359,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="757747079855995705">bato</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>
+<translation id="7600430297804876776">Itinakda ng administrator ng <ph name="MANAGER" /> kung kailan magagamit ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="7613724632293948900">Baguhin ang posisyon gamit ang mouse o mga arrow key.</translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Matuto pa sa Help Center</translation>
@@ -1461,6 +1465,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8088963492174775412">Pindutin para mag-record</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
+<translation id="8110942816572072814">Ni-lock ng iyong guro ang screen mo</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>

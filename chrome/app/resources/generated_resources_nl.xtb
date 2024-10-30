@@ -616,6 +616,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1436671784520050284">Doorgaan met instellen</translation>
 <translation id="1436784010935106834">Verwijderd</translation>
 <translation id="1437986450143295708">Geef een gedetailleerde beschrijving van het probleem</translation>
+<translation id="1438630805136563416">Actie <ph name="REMOVED_ACTION" /> verwijderd</translation>
 <translation id="1439671507542716852">langdurige support</translation>
 <translation id="1440090277117135316">Schoolinschrijving afgerond</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> geselecteerd</translation>
@@ -981,6 +982,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1677306805708094828">Kan <ph name="EXTENSION_TYPE_PARAMETER" /> niet toevoegen</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
 <translation id="1678849866171627536">Scannen mislukt. Dit bestand is misschien een virus of malware.</translation>
+<translation id="1678919064276516737">Het ingevoerde e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="1679068421605151609">Ontwikkelaarstools</translation>
 <translation id="1679810534535368772">Weet je zeker dat je het scherm wilt afsluiten?</translation>
 <translation id="167983332380191032">Beheerservice heeft HTTP-fout verzonden.</translation>
@@ -1426,6 +1428,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1981434377190976112">Al je gegevens op alle websites lezen</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} en {field_2}}other{{field_1}, {field_2} en {field_3}}}</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
+<translation id="198507684520034826">Hulp</translation>
 <translation id="1986836014090708999">Geavanceerde locatie-instellingen</translation>
 <translation id="1987317783729300807">Accounts</translation>
 <translation id="1987574314042117472">Populaire apps selecteren en installeren</translation>
@@ -2921,6 +2924,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3029466929721441205">Stylustools in plank bekijken</translation>
 <translation id="3029808567601324798">Tijd voor vergrendeling</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}other{<ph name="MANAGER" /> vereist dat je vóór de deadline een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}}</translation>
+<translation id="3030772324014024606">Bewerken</translation>
 <translation id="3030967311408872958">Zonsondergang tot zonsopkomst</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Het touchpad en toetsenbord gebruiken om met de rechtermuisknop te klikken</translation>
@@ -4024,6 +4028,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log in om tabbladen van andere apparaten te bekijken</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mijn keuze onthouden voor dit bestandstype: <ph name="FILE_TYPES" />}other{Mijn keuze onthouden voor deze bestandstypen: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Bekijken</translation>
 <translation id="3825635794653163640">Stip op app-icoon tonen voor app-meldingen</translation>
 <translation id="3826071569074535339">Toestemming om bewegingssensoren te gebruiken</translation>
 <translation id="3826086052025847742">ChromeOS Flex-logboeken</translation>
@@ -4135,6 +4140,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3905761538810670789">App repareren</translation>
 <translation id="3908288065506437185">Cookies van derden blokkeren in de incognitomodus</translation>
 <translation id="3908501907586732282">Extensie aanzetten</translation>
+<translation id="3909456989251621103">Als je een servercertificaat verwijdert, gebruikt Chrome het niet meer om servers te identificeren.</translation>
 <translation id="3909701002594999354">Alle &amp;opties bekijken</translation>
 <translation id="3909791450649380159">&amp;Knippen</translation>
 <translation id="39103738135459590">Activeringscode</translation>
@@ -5052,6 +5058,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4581774856936278355">Fout bij het herstellen van Linux</translation>
 <translation id="4582297591746054421">Sites lezen je klembord meestal voor functies zoals behoud van opmaak van de tekst die je hebt gekopieerd</translation>
 <translation id="4582563038311694664">Alle instellingen opnieuw instellen</translation>
+<translation id="4584770411839426377">Venster</translation>
 <translation id="4585793705637313973">Pagina bewerken</translation>
 <translation id="4586275095964870617"><ph name="URL" /> kan niet in een alternatieve browser worden geopend. Neem contact op met je systeembeheerder.</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -5443,6 +5450,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4872192066608821120">Als je wachtwoorden wilt importeren, selecteer je een csv-bestand.</translation>
 <translation id="4872212987539553601">Versleuteling op het apparaat instellen</translation>
 <translation id="4873312501243535625">Media File Checker</translation>
+<translation id="4875690134140862902">Tabblad</translation>
 <translation id="4876273079589074638">Help onze engineers om deze crash te onderzoeken en op te lossen. Vermeld indien mogelijk je exacte stappen: elk detail is het vermelden waard.</translation>
 <translation id="4876305945144899064">Geen gebruikersnaam</translation>
 <translation id="4876327226315760474">Dit betekent dat sitefuncties werken zoals verwacht, maar dat je browser misschien minder goed beveiligd is.</translation>
@@ -5555,6 +5563,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4951966678293618079">Nooit wachtwoorden opslaan voor deze site</translation>
 <translation id="4953808748584563296">Standaard oranje avatar</translation>
+<translation id="4954652437333037880">Bestand</translation>
 <translation id="4955707703665801001">Zichtbaarheid voor <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Je pincode kiezen</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7809,6 +7818,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6635674640674343739">Netwerkverbinding kan niet tot stand worden gebracht. Check je netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="663569763553406962">Bekijken welke extensies een site kunnen lezen of wijzigen</translation>
 <translation id="6635944431854494329">De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens verzenden naar Google.</translation>
+<translation id="6636258750460740634">Geschiedenis</translation>
 <translation id="6636623428211296678">Bekijk hieronder meer instellingen of rond nu af</translation>
 <translation id="6639554308659482635">SQLite-geheugen</translation>
 <translation id="6640268266988685324">Geopend tabblad</translation>

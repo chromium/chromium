@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1240190568154816272">Chrome ଟିପ୍ସ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />ରେ ଏମ୍ବେଡ୍ କରାଯାଇଛି</translation>
+<translation id="1263609676484797429">ଆପ୍ସ  &gt; ଡିଫଲ୍ଟ ଆପ୍ସରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="1272079795634619415">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1289742167380433257">ଆପଣଙ୍କ ଡାଟା ସେଭ୍ କରିବା ପାଇଁ, Google ଏହି ପୃଷ୍ଠାର ଛବିଗୁଡ଼ିକୁ ଅପ୍ଟିମାଇଜ୍ କରିଛି।</translation>
 <translation id="129382876167171263">ୱେବ୍‍ସାଇଟ୍‍ଗୁଡ଼ିକ ଦ୍ୱାରା ସେଭ୍ କରାଯାଇଥିବା ଫାଇଲ୍‍ଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">କିଛି ଫିଚର କାମ କରିନପାରେ। ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକ ଏବେ ବି ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ।</translation>
+<translation id="3922092564198021702">ଆପଣଙ୍କ ଫୋନରେ, ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="3933121352599513978">ଅବାଞ୍ଛିତ ଅନୁରୋଧଗୁଡ଼ିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="3955193568934677022">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଚଲାଇବା ପାଇଁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି।(ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="3967822245660637423">ଡାଉନ୍‍‍‍ଲୋଡ୍ ଶେଷ ହୋଇଛି</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">ବିଜ୍ଞାପନ ଗୋପନୀୟତା</translation>
 <translation id="6207207788774442484">ଡାଟାକୁ ଡିଲିଟ କରି ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' କୁ ଅନଇନଷ୍ଟଲ୍ କରିବେ?</translation>
+<translation id="6234351944623978659">ବ୍ରାଉଜର ଆପ &gt; Chromeରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="6262191102408817757">ଆପଣଙ୍କ ଶେଷ ଟାବ ଆଧାରରେ</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ଏବଂ <ph name="PERMISSION_2" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="6270391203985052864">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ପଠାଇବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକ ପଚାରିପାରିବେ</translation>

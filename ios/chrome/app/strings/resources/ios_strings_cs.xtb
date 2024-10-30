@@ -843,6 +843,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="496392417432935267">Otevřeno jinde</translation>
 <translation id="4971735654804503942">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními. Upozorňuje vás na úniky hesel. Vyžaduje odesílání údajů o prohlížení do Googlu.</translation>
 <translation id="4979397965658815378">Přihlaste se pomocí účtu Google a získejte záložky, hesla, historii a další nastavení do všech svých zařízení.</translation>
+<translation id="498624032394115435">Kdokoli s odkazem může upravovat všechny karty.</translation>
 <translation id="4989065233040279145">Vyberte, kam soubor <ph name="FILENAME" /> chcete uložit</translation>
 <translation id="4992255726304765516">Barva skupiny karet: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
@@ -1349,10 +1350,12 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7218491361283758048">PSČ</translation>
 <translation id="7221173315674413369">Novinky a tipy v sekci Novinky</translation>
 <translation id="722339453342442311">Zkontrolovat</translation>
+<translation id="7227235818314667565">Spravovat sdílení</translation>
 <translation id="7233006041370588369">Vyberte heslo, které chcete vyplnit.</translation>
 <translation id="7241135764990439166">Anonymní režim není k dispozici</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Historie vyhledávání<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google</translation>
 <translation id="7253951228444156601">Kontrola hesel…</translation>
+<translation id="7261217796641151584">Sdílet skupinu</translation>
 <translation id="7271220006028561438">Povolit automatické upgrady přístupových klíčů</translation>
 <translation id="7272437679830969316">Vaši totožnost nelze ověřit. Heslo nebylo zkopírováno.</translation>
 <translation id="7293429513719260019">Zvolte jazyk</translation>

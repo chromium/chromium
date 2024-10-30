@@ -843,6 +843,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="496392417432935267">Har öppnats någon annanstans</translation>
 <translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
 <translation id="4979397965658815378">Logga in med ditt Google-konto så att du kan använda bokmärken, lösenord, historik med mera på alla dina enheter</translation>
+<translation id="498624032394115435">Alla som har länken kan redigera alla flikar.</translation>
 <translation id="4989065233040279145">Välj var du vill spara <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Flikgruppens färg <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiera lösenord</translation>
@@ -1349,10 +1350,12 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7218491361283758048">Postnummer</translation>
 <translation id="7221173315674413369">Utforska nya funktioner och tips i Nyheter</translation>
 <translation id="722339453342442311">Kontrollera nu</translation>
+<translation id="7227235818314667565">Hantera delning</translation>
 <translation id="7233006041370588369">Välj ett lösenord att fylla i.</translation>
 <translation id="7241135764990439166">Inkognitoläget är inte tillgängligt</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Sökhistorik<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot.</translation>
 <translation id="7253951228444156601">Kontrollerar lösenord …</translation>
+<translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7271220006028561438">Tillåt automatiska uppgraderingar av nycklar</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
 <translation id="7293429513719260019">Välj språk</translation>

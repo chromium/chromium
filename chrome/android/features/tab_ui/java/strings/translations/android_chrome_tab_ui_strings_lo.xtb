@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_YEARS_ONE" /> ປີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_YEARS_MANY" /> ປີກ່ອນ}}</translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
-<translation id="125153950246128346">ແຕະເພື່ອເບິ່ງແຖບອື່ນ</translation>
 <translation id="1273910660700874265">ຕົວເລືອກກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ລຶບມັນອອກຫາກທ່ານບໍ່ຕ້ອງການມັນແລ້ວ.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">ກວດສອບ</translation>
 <translation id="5073204694187207510">ເຊື່ອງຕາໜ່າງແບບເຕັມຈໍ</translation>
 <translation id="5076161749301278626">ເບິ່ງຄຳຕິຊົມຮ້ານຄ້າບໍ?</translation>
-<translation id="5082793167783849073">ປຽບທຽບໜ້າຕ່າງໆໄດ້ຢ່າງວ່ອງໄວໂດຍການສ້າງກຸ່ມ. ເພື່ອເລີ່ມຕົ້ນ, ກະລຸນາແຕະລິ້ງຄ້າງໄວ້.</translation>
 <translation id="5094423602314093681">ລຶບແຖບອອກ ແລະ ລຶບກຸ່ມບໍ?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{ເພີ່ມ <ph name="ONE_ADDED" /> ແຖບແລ້ວ}other{ເພີ່ມ <ph name="MANY_ADDED" /> ແຖບແລ້ວ}}</translation>
 <translation id="5161254044473106830">ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ຫົວ​ຂໍ້</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ປິດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແລ້ວ</translation>
 <translation id="9111228330448174435">ສະແດງກ່ອງໂຕ້ຕອບເມື່ອສ້າງກຸ່ມແຖບໃໝ່</translation>
 <translation id="9114502155681725011">ເປີດເມນູຄຳສັ່ງຂອງກຸ່ມແຖບສຳລັບກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" />, ສີ <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">ປ່ຽນໄປມາລະຫວ່າງແຖບຕ່າງໆໃນກຸ່ມແຖບຂອງທ່ານຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ</translation>
 <translation id="9169594135889675189">ເພີ່ມແຖບໃໝ່ໃສ່ກຸ່ມ</translation>
 <translation id="9216898458513705996">ແຖບຈະຍັງເປີດຢູ່ໃນອຸປະກອນນີ້ ແຕ່ລະບົບຈະລຶບກຸ່ມອອກຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>

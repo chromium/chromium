@@ -429,6 +429,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1291421198328146277">Touches de réinitialisation</translation>
 <translation id="1292849930724124745">Insérez votre carte à puce pour rester connecté</translation>
 <translation id="1293264513303784526">Appareil USB-C (port de gauche)</translation>
+<translation id="1293360286536751243">« <ph name="MAIN_GESTURE" /> » pourrait ressembler à « <ph name="CONFLICTING_GESTURE_ONE" /> », à « <ph name="CONFLICTING_GESTURE_TWO" /> » et à « <ph name="CONFLICTING_GESTURE_THREE" /> ». Si possible, essayez de choisir un geste différent.</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1294807885394205587">Ce processus peut prendre quelques minutes. Démarrage du gestionnaire de conteneur en cours…</translation>
 <translation id="12951065153783848">Votre organisation gère votre compte</translation>
@@ -2614,6 +2615,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers que vous téléchargez apparaissent ici</translation>
+<translation id="2808985063107661499">« <ph name="MAIN_GESTURE" /> » pourrait ressembler à « <ph name="CONFLICTING_GESTURE_ONE" /> » et à « <ph name="CONFLICTING_GESTURE_TWO" /> ». Si possible, essayez de choisir un geste différent.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Les connexions Thunderbolt ne sont pas prises en charge</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés pour que vous puissiez vous connecter instantanément</translation>
@@ -4348,6 +4350,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="404894744863342743">Une fois que vous avez terminé d'utiliser le fichier téléchargé, supprimez-le afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact n'est pas accessible. Pour utiliser la fonctionnalité Partage à proximité avec cette personne, ajoutez l'adresse de courriel associée à son compte Google dans vos contacts.}one{# contact n'est pas accessible. Pour utiliser la fonctionnalité Partage à proximité avec cette personne, ajoutez l'adresse de courriel associée à son compte Google dans vos contacts.}other{# contacts ne sont pas accessibles. Pour utiliser la fonctionnalité Partage à proximité avec ces personnes, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.}}</translation>
 <translation id="4050225813016893843">Méthode d'authentification</translation>
+<translation id="4050379682069019014">« <ph name="MAIN_GESTURE" /> » pourrait ressembler à « <ph name="CONFLICTING_GESTURE" /> ». Si possible, essayez de choisir un geste différent.</translation>
 <translation id="4050534976465737778">Assurez-vous que les deux appareils sont déverrouillés, à proximité l'un de l'autre, et que le Bluetooth est activé. Si vous effectuez le partage avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que le partage à proximité est activé sur celui-ci. Pour ce faire, ouvrez la zone de notifications, puis sélectionnez le partage à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Pour passer à la dernière méthode d'entrée, appuyez sur <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">rechercher+flèche vers la droite</translation>

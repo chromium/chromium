@@ -425,6 +425,7 @@
 <translation id="1288037062697528143">सूर्यास्त होने पर नाइट लाइट अपने आप चालू हो जाएगी</translation>
 <translation id="1288300545283011870">बोली के विवरण</translation>
 <translation id="1289619947962767206">यह विकल्प अब काम नहीं करता है. कोई टैब प्रज़ेंट करने के लिए, <ph name="GOOGLE_MEET" /> का इस्तेमाल करें.</translation>
+<translation id="1291057703584594733">पहले से असाइन किए गए किसी जेस्चर को चुनने पर, उसे उसकी मूल कार्रवाई से हटा दिया जाएगा.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> की सेवा की शर्तें</translation>
 <translation id="1291421198328146277">बटन रीसेट करें</translation>
 <translation id="1292849930724124745">साइन इन रहने के लिए, स्मार्ट कार्ड डालें</translation>
@@ -616,6 +617,7 @@
 <translation id="1436671784520050284">सेटअप जारी रखें</translation>
 <translation id="1436784010935106834">निकाला गया</translation>
 <translation id="1437986450143295708">समस्या के बारे में ज़्यादा जानकारी दें</translation>
+<translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> कार्रवाई को हटाया गया</translation>
 <translation id="1439671507542716852">लंबे समय तक सहायता</translation>
 <translation id="1440090277117135316">स्कूल में नाम दर्ज करने की प्रक्रिया पूरी हो गई है</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयनित</translation>
@@ -982,6 +984,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> को जोड़ा नहीं जा सकता</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
 <translation id="1678849866171627536">स्कैन नहीं किया जा सका. यह फ़ाइल कोई वायरस या मैलवेयर हो सकती है.</translation>
+<translation id="1678919064276516737">आपका डाला गया ईमेल और पिन मेल नहीं खा रहा है</translation>
 <translation id="1679068421605151609">डेवलपर टूल</translation>
 <translation id="1679810534535368772">क्या आप वाकई बाहर निकलना चाहते हैं?</translation>
 <translation id="167983332380191032">मैनेजर सेवा ने एचटीटीपी गड़बड़ी भेजी है.</translation>
@@ -1436,6 +1439,7 @@
 <translation id="1981434377190976112">यह एक्सटेंशन, सभी वेबसाइटों पर आपका पूरा डेटा पढ़ सकेगा</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} और {field_2}}one{{field_1}, {field_2}, और {field_3}}other{{field_1}, {field_2}, और {field_3}}}</translation>
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
+<translation id="198507684520034826">सहायता</translation>
 <translation id="1986836014090708999">जगह की जानकारी की ऐडवांस सेटिंग</translation>
 <translation id="1987317783729300807">खाते</translation>
 <translation id="1987574314042117472">लोकप्रिय ऐप्लिकेशन चुनें और इंस्टॉल करें</translation>
@@ -2934,6 +2938,7 @@
 <translation id="3029466929721441205">शेल्फ़ में स्टाइलस टूल दिखाएं</translation>
 <translation id="3029808567601324798">लॉक करने का समय</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप आज ही अपडेट डाउनलोड करें. इंटरनेट से कनेक्ट होने पर, अपडेट अपने-आप डाउनलोड हो जाएगा.}one{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप तय समय से पहले अपडेट डाउनलोड करें. इंटरनेट से कनेक्ट होने पर, अपडेट अपने-आप डाउनलोड हो जाएगा.}other{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप तय समय से पहले अपडेट डाउनलोड करें. इंटरनेट से कनेक्ट होने पर, अपडेट अपने-आप डाउनलोड हो जाएगा.}}</translation>
+<translation id="3030772324014024606">बदलाव करें</translation>
 <translation id="3030967311408872958">सूर्यास्त से सूर्योदय तक</translation>
 <translation id="3031417829280473749">एजेंट X</translation>
 <translation id="3031532026314193077">राइट क्लिक करके टचपैड और कीबोर्ड इस्तेमाल करें</translation>
@@ -4039,6 +4044,7 @@
 <translation id="3824621460022590830">डिवाइस का नाम दर्ज करने वाला टोकन अमान्य है. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">अन्य डिवाइसों में खुले हुए टैब देखने के लिए साइन इन करें</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}one{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}other{इन फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">देखें</translation>
 <translation id="3825635794653163640">ऐप्लिकेशन की सूचनाओं के लिए ऐप्लिकेशन आइकॉन पर डॉट दिखाएं</translation>
 <translation id="3826071569074535339">मोशन सेंसर इस्तेमाल करने की अनुमति है</translation>
 <translation id="3826086052025847742">ChromeOS Flex के लॉग</translation>
@@ -4150,6 +4156,7 @@
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
 <translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="3908501907586732282">एक्‍सटेंशन चालू करें</translation>
+<translation id="3909456989251621103">अगर सर्वर के सर्टिफ़िकेट को मिटाया जाता है, तो Chrome सर्वर की पहचान करने के लिए इसका इस्तेमाल नहीं करेगा.</translation>
 <translation id="3909701002594999354">सारे कंट्रोल कमांड दिखाएं</translation>
 <translation id="3909791450649380159">&amp;काटें</translation>
 <translation id="39103738135459590">ऐक्टिव करने वाला कोड</translation>
@@ -5067,6 +5074,7 @@
 <translation id="4581774856936278355">Linux को बहाल करते समय गड़बड़ी हुई</translation>
 <translation id="4582297591746054421">आम तौर पर, साइटें आपके क्लिपबोर्ड को पढ़ती हैं. आप जो टेक्स्ट कॉपी करते हैं उसकी फ़ॉर्मैटिंग सही रखने जैसी सुविधाओं के लिए ऐसा किया जाता है</translation>
 <translation id="4582563038311694664">सभी सेटिंग रीसेट करें</translation>
+<translation id="4584770411839426377">विंडो</translation>
 <translation id="4585793705637313973">पेज में बदलाव करें</translation>
 <translation id="4586275095964870617"><ph name="URL" /> वैकल्पिक ब्राउज़र में नहीं खुला. कृपया अपने सिस्टम एडमिन से संपर्क करें.</translation>
 <translation id="4587589328781138893">साइटें</translation>
@@ -5458,6 +5466,7 @@
 <translation id="4872192066608821120">पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें</translation>
 <translation id="4872212987539553601">डिवाइस पर एन्क्रिप्ट करने का तरीका सेट अप करें</translation>
 <translation id="4873312501243535625">मीडिया फ़ाइल चेकर</translation>
+<translation id="4875690134140862902">टैब</translation>
 <translation id="4876273079589074638">इस क्रैश की जाँच-पड़ताल करने और इसे ठीक करने में हमारे इंजीनियरों की सहायता करें. अगर हो सके तो सटीक चरणों की सूची बनाएं. कोई भी विवरण छोटा नहीं है!</translation>
 <translation id="4876305945144899064">कोई उपयोगकर्ता नाम नहीं</translation>
 <translation id="4876327226315760474">इसका मतलब है कि साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी, लेकिन हो सकता है कि आपको ब्राउज़िंग के लिए कम सुरक्षा मिले.</translation>
@@ -5570,6 +5579,7 @@
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4951966678293618079">इस साइट के लिए कभी भी पासवर्ड सेव न करें</translation>
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
+<translation id="4954652437333037880">फ़ाइल</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> के लिए, 'किसको दिखे' सेटिंग</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6746,6 +6756,7 @@
 <translation id="5832970156002835240">सभी साइटों पर अनुमति दें</translation>
 <translation id="5833397272224757657">आप जिन साइटों पर जाते हैं उनकी सामग्री के साथ ही ब्राउज़र गतिविधि और इंटरैक्शन का इस्तेमाल आपके मनमुताबिक बनाने के लिए करता है</translation>
 <translation id="5833726373896279253">ये सेटिंग केवल मालिक द्वारा ही संशोधित की जा सकती हैं:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">साइटों को JavaScript इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="583431638776747">साइट को ऐक्सेस नहीं किया जा सका</translation>
 <translation id="5834581999798853053">करीब <ph name="TIME" /> मिनट शेष हैं</translation>
@@ -7828,6 +7839,7 @@
 <translation id="6635674640674343739">इंटरनेट जोड़ा नहीं जा सकता. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="663569763553406962">देखें कि कौनसे एक्सटेंशन किसी साइट को पढ़ सकते हैं या उसमें बदलाव कर सकते हैं</translation>
 <translation id="6635944431854494329">इस सुविधा को नियंत्रित करने के लिए मालिक सेटिंग &gt; बेहतर &gt; Google को गड़बड़ी और इस्तेमाल से जुड़ा डेटा अपने-आप भेजें, पर जा सकते हैं.</translation>
+<translation id="6636258750460740634">इतिहास</translation>
 <translation id="6636623428211296678">नीचे दी गई अन्य सेटिंग देखें या इसे अभी पूरा करें</translation>
 <translation id="6639554308659482635">SQLite मेमोरी</translation>
 <translation id="6640268266988685324">टैब खोलें</translation>

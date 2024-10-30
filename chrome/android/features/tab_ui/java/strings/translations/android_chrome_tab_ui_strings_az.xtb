@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> il əvvəl yaradıldı}other{<ph name="NUM_YEARS_MANY" /> il əvvəl yaradıldı}}</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1197088940767939838">Narıncı</translation>
-<translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab qrupu seçimləri</translation>
 <translation id="1293272072740285747">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya ehtiyacınız yoxdursa, silin.
 
@@ -96,7 +95,6 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>
-<translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
 <translation id="5094423602314093681">Tab(lar) və qrup silinsin?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib}other{<ph name="MANY_ADDED" /> tab əlavə edilib}}</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
@@ -196,7 +194,6 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9111228330448174435">Yeni tab qrupunun yaradılması dialoqunu göstərin</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
-<translation id="9150694013019234766">Ekranın aşağısındakı tab qrupunda tablar arasında keçid edin</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="9216898458513705996">Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="USER_EMAIL" /> hesabına giriş edilmiş bütün cihazlardan silinəcək</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>

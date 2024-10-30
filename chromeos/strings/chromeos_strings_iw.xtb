@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">עוד</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3321030238473337787">מהירות הפעלה</translation>
+<translation id="3327613592010997943">אפשר יהיה להשתמש שוב במכשיר הזה <ph name="DAY" /> בשעה <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">הגדרות</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">מצב הפורטל</translation>
 <translation id="5763838252932650682">המערכת מפעילה מחדש ומעדכנת את <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
+<translation id="5775340474232476653">המורה סיים את השיעור</translation>
 <translation id="5779818640587041940">השארת המסך פועל בזמן ההקלטה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
@@ -1356,6 +1358,7 @@
 <translation id="757747079855995705">אבן</translation>
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="7613724632293948900">שינוי המיקום באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7618774594543487847">ניטרלי</translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
@@ -1461,6 +1464,7 @@
 <translation id="8088963492174775412">אפשר ללחוץ כדי להקליט</translation>
 <translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
 <translation id="8104083085214006426">הרשת שאליה התחברת פתוחה ואינה מאובטחת</translation>
+<translation id="8110942816572072814">המורה נעל את המסך שלך</translation>
 <translation id="811820734797650957">‏אפשר לבדוק אם יש חיבור לשער באמצעות פינג (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>

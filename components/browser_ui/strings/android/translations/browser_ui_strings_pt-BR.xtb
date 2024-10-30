@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1240190568154816272">Dicas do Chrome</translation>
 <translation id="1242008676835033345">Incorporado em <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Toque em Apps &gt; Apps padrão.</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1289742167380433257">Para que você economize dados, as imagens desta página foram otimizadas pelo Google.</translation>
 <translation id="129382876167171263">Os arquivos salvos por sites são exibidos aqui</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de navegação anônima</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">É possível que alguns recursos não funcionem. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
+<translation id="3922092564198021702">No smartphone, acesse as Configurações.</translation>
 <translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="3967822245660637423">Download concluído</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6207207788774442484">Excluir dados e redefinir permissões</translation>
 <translation id="6231752747840485235">Desinstalar <ph name="APP_NAME" />?</translation>
+<translation id="6234351944623978659">Toque em App de navegação &gt; Chrome.</translation>
 <translation id="6262191102408817757">Com base na sua última guia</translation>
 <translation id="6262279340360821358">Bloqueadas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>

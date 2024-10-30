@@ -427,6 +427,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1288037062697528143">Nakties šviesa bus įjungta automatiškai saulei leidžiantis</translation>
 <translation id="1288300545283011870">Kalbos ypatybės</translation>
 <translation id="1289619947962767206">Ši parinktis nebepalaikoma. Jei norite rodyti skirtuką, naudokite „<ph name="GOOGLE_MEET" />“.</translation>
+<translation id="1291057703584594733">Pasirinkus jau priskirtą gestą, jis bus atsietas nuo pradinio veiksmo.</translation>
 <translation id="1291119821938122630">„<ph name="MANAGER" />“ paslaugų teikimo sąlygos</translation>
 <translation id="1291421198328146277">Iš naujo nustatyti klavišus</translation>
 <translation id="1292849930724124745">Įdėkite išmaniąją kortelę, kad liktumėte prisijungę</translation>
@@ -6761,6 +6762,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5832970156002835240">Leisti visose svetainėse</translation>
 <translation id="5833397272224757657">Naudojamas svetainių, kuriose lankotės, turinys ir naršyklės veikla bei sąveikos suasmeninimo tikslais</translation>
 <translation id="5833726373896279253">Šiuos nustatymus gali keisti tik savininkas:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Neleisti svetainėms naudoti „JavaScript“</translation>
 <translation id="583431638776747">Svetainė buvo nepasiekiama</translation>
 <translation id="5834581999798853053">Liko apie <ph name="TIME" /> min.</translation>

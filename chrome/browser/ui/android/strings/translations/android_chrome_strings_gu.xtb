@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">Aથી Z અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> અપડેટ કરો</translation>
 <translation id="3911609878849982353">Zથી A અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
+<translation id="3918415141610210050">ટૅબ</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ચાલુ છે</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">ફૉલો કરી રહ્યાં છીએ...</translation>
 <translation id="4335835283689002019">Safe Browsing બંધ છે</translation>
 <translation id="4351244548802238354">સંવાદ બંધ કરો</translation>
+<translation id="4352287748243729941">તમારા <ph name="PROVIDER" /> પાસવર્ડનો ઉપયોગ કરીએ?</translation>
 <translation id="4355272626458588338">તમે કોઈ બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">સલામતી, એક નજરમાં</translation>
@@ -851,6 +853,7 @@
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5010886807652684893">વિઝ્યુઅલ વ્યૂ</translation>
 <translation id="5011311129201317034"><ph name="SITE" />, કનેક્ટ કરવા માગે છે</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> અને <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> એકબીજાથી સંબંધિત હોય એવું લાગે છે. આ પાસવર્ડનો ઉપયોગ કરતા પહેલાં તમને <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> પર વિશ્વાસ હોય તેની ખાતરી કરો.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">છેલ્લી 15 મિનિટ</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
@@ -904,6 +907,7 @@
 <translation id="5304593522240415983">આ ફીલ્ડ ખાલી હોઈ શકતું નથી</translation>
 <translation id="5306014156308790439">'સંગ્રહમાં ઉમેરો' બટન બંધ કર્યું છે</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
+<translation id="5310963254742922113">પાસવર્ડનો ઉપયોગ કરવામાં આવ્યો.</translation>
 <translation id="5316947901395241499">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
@@ -1312,7 +1316,6 @@
 <translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
 <translation id="7094933634769755999">અચોક્કસ</translation>
-<translation id="7105047059074518658">તમામ ડિવાઇસ પર વધુ સરળતાથી બ્રાઉઝ કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="7106762743910369165">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="7111394291981742152">તમે જુઓ છો તે જાહેરાતો માટે Chrome તમને વધુ નિયંત્રણો આપે છે અને સાઇટ તમને મનગમતી બનાવેલી જાહેરાતો બતાવે ત્યારે તે તમારા વિશે શું જાણી શકે છે તેને મર્યાદિત કરે છે.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}one{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}other{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>

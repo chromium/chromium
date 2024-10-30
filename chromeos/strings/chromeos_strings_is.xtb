@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">meira</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
 <translation id="3321030238473337787">Spilunarhraði</translation>
+<translation id="3327613592010997943">Þú getur notað þetta tæki aftur <ph name="DAY" /> klukkan <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Próf í gangi</translation>
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">stillingar</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">grár</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5600027863942488546">Lykillinn <ph name="KEY_NAME" /> var prófaðu</translation>
+<translation id="5606865426897221650">Dálkalykill</translation>
 <translation id="5613201299517339763">Þú hefur verið skráð(ur) út</translation>
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5630438231335788050">bauhausstíl</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Vefgáttarstaða</translation>
 <translation id="5763838252932650682">Endurræsir og uppfærir <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Auka birtustig skjás</translation>
+<translation id="5775340474232476653">Kennarinn þinn hefur lokið tímanum</translation>
 <translation id="5779818640587041940">Hafa kveikt á skjá á meðan á upptöku stendur</translation>
 <translation id="57838592816432529">Þagga</translation>
 <translation id="5784136236926853061">Langur HTTP-biðtími</translation>
@@ -1356,6 +1359,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="757747079855995705">steini</translation>
 <translation id="7590883480672980941">Inntaksstillingar</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> eftir</translation>
+<translation id="7600430297804876776">Kerfisstjóri <ph name="MANAGER" /> stillti hvenær hægt er að nota þetta <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Breyta staðsetningu með mús eða örvalyklum.</translation>
 <translation id="7618774594543487847">Hlutlaust</translation>
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
@@ -1461,6 +1465,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8088963492174775412">Ýta til að taka upp</translation>
 <translation id="8094062939584182041">Leyfa Google að senda þér tölvupóst vegna vandamálsins</translation>
 <translation id="8104083085214006426">Þú ert að nota opið og ótraust netkerfi</translation>
+<translation id="8110942816572072814">Kennarinn þinn hefur læst skjánum þínum</translation>
 <translation id="811820734797650957">(Android) Hægt er að ping-prófa gátt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Staðfesta</translation>

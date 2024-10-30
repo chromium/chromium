@@ -155,6 +155,7 @@
 <translation id="1914424852593176649">Ukuran <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> akor</translation>
 <translation id="1923956950274750765">Medium Orchid</translation>
+<translation id="1926147969119007125">Menjeda kontrol dengan wajah</translation>
 <translation id="1928932365747995741">Tidak ada kolom teks yang dapat diedit sebelumnya</translation>
 <translation id="1964135212174907577">Objek Berikutnya</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -273,6 +274,7 @@
 <translation id="27527859628328957">Melompat ke item yang dapat difokuskan berikutnya</translation>
 <translation id="2756452585631602151">Masukkan label khusus</translation>
 <translation id="2766299274563946262">Tidak ada sel di kiri</translation>
+<translation id="2770947749427257887">Masuk ke mode scroll</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Anda juga dapat menggeser dari kanan ke kiri dengan satu jari untuk berpindah ke item sebelumnya. Coba sekarang.</translation>
 <translation id="280499067616661124">ChromeVox ditemukan pada halaman</translation>
@@ -403,6 +405,7 @@
 <translation id="3466530247399808663">Penekanan tombol yang tidak valid</translation>
 <translation id="3468959318854349468">Tanpa judul</translation>
 <translation id="3469413619751135069">Pale Green</translation>
+<translation id="3473744269398144689">Memulai dikte</translation>
 <translation id="3490765818161916458">Petak daftar</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{kurung siku tutup}other{# kurung siku tutup}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -659,6 +662,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Berakhir</translation>
 <translation id="5290220123487191192">Mari mulai dengan beberapa gestur yang akan sering Anda gunakan. Jika Anda sudah menemukan item yang ingin diaktifkan, ketuk layar dua kali dengan satu jari. Untuk melanjutkan, ketuk dua kali sekarang.</translation>
+<translation id="5291860916305032607">Melanjutkan kontrol dengan wajah</translation>
 <translation id="5302089807023311274">Referensi bibliografi</translation>
 <translation id="530391007967514163">Coba lewati judul untuk menuju teks di bawahnya.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, tab</translation>
@@ -684,6 +688,7 @@
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Notifikasi modal</translation>
+<translation id="5406272775687194041">Memulai tarik lalu lepas</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{titik koma}other{# titik koma}}</translation>
 <translation id="5420259671171615858">Telusuri menu</translation>
 <translation id="5435274640623994081">Aktifkan pencatatan earcon</translation>
@@ -751,6 +756,7 @@
 <translation id="5824976764713185207">Baca halaman secara otomatis setelah selesai dimuat</translation>
 <translation id="5826479389509458994">baris <ph name="ROW" /> kolom <ph name="COL" /></translation>
 <translation id="5833044594931167190">Tidak ada penanda ARIA</translation>
+<translation id="584044465500042213">Keluar dari mode scroll</translation>
 <translation id="5842625257683688671">Tidak ada grafik berikutnya</translation>
 <translation id="5847883414085148048">Persembahan</translation>
 <translation id="5850707923114094062">Geser ke belakang</translation>
@@ -953,6 +959,7 @@
 <translation id="7285387653379749618">Tabel</translation>
 <translation id="7289186959554153431">Judul 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Mengakhiri tarik lalu lepas</translation>
 <translation id="7308519659008003150">Tidak ada kolom formulir sebelumnya</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">bantuan</translation>
@@ -1158,6 +1165,7 @@
 <translation id="8775203254697638994">Terkadang Anda perlu memilih item dari menu drop-down. Untuk melakukannya, luaskan daftar terlebih dahulu dengan menekan Penelusuran + Spasi. Lalu, gunakan tombol Panah atas atau bawah untuk memilih item. Terakhir, ciutkan daftar dengan menekan Penelusuran + Spasi.</translation>
 <translation id="8779057862865475116">Tidak ada link sebelumnya</translation>
 <translation id="8796411681063377102">Judul tingkat 3 berikutnya</translation>
+<translation id="8821891849214789910">Menghentikan dikte</translation>
 <translation id="8823311177246872527">Halaman <ph name="CURRENTPAGE" /> dari <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">main</translation>

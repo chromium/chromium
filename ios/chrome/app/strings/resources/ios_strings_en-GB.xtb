@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
 <translation id="1054745118061919935">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Never saved</translation>
+<translation id="1062138828266376352">Your PIN wasn't changed. Please check your Internet connection and try again</translation>
 <translation id="1066060668811609597">Manage Sync</translation>
 <translation id="1076421457278169141">Code scanned</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
@@ -676,6 +677,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="421070604241073551">When on, data is saved in your Google Account. When off, data is saved only to this device.</translation>
 <translation id="4224534474590365556">Close 99+ inactive tabs?</translation>
 <translation id="422474357428465195">You have several password issues that could put your security at risk.</translation>
+<translation id="422477017457571619">Real-time, AI-powered protection against dangerous sites, downloads and extensions that's based on your browsing data getting sent to Google</translation>
 <translation id="4231395118547300571">Safety Check notifications turned on</translation>
 <translation id="4237377247299956313">Tap <ph name="BEGIN_BOLD" />Default browser app<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Open settings</translation>
@@ -1350,10 +1352,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7218491361283758048">Postcode</translation>
 <translation id="7221173315674413369">Explore new features and tips in 'What’s new'</translation>
 <translation id="722339453342442311">Check now</translation>
+<translation id="7227235818314667565">Manage sharing</translation>
 <translation id="7233006041370588369">Select a password to fill.</translation>
 <translation id="7241135764990439166">Incognito mode is unavailable</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account.</translation>
 <translation id="7253951228444156601">Checking passwords…</translation>
+<translation id="7261217796641151584">Share group</translation>
 <translation id="7271220006028561438">Allow automatic passkey upgrades</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7293429513719260019">Select language</translation>

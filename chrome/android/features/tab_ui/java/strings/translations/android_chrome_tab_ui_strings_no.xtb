@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Opprettet for <ph name="NUM_YEARS_ONE" /> år siden}other{Opprettet for <ph name="NUM_YEARS_MANY" /> år siden}}</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1197088940767939838">Oransje</translation>
-<translation id="125153950246128346">Trykk for å se en annen fane</translation>
 <translation id="1273910660700874265">Alternativer for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Behold denne gruppen for å legge til faner senere, eller slett den hvis du ikke trenger den lenger.
 
@@ -96,7 +95,6 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="5007392906805964215">Se gjennom</translation>
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
-<translation id="5082793167783849073">Sammenlign sider raskt ved å lage en gruppe. For å begynne, trykk og hold på en link.</translation>
 <translation id="5094423602314093681">Vil du fjerne fanen(e) og slette gruppen?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til}other{<ph name="MANY_ADDED" /> faner er lagt til}}</translation>
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
@@ -196,7 +194,6 @@ Hvis du forlater gruppen, mister du umiddelbart tilgangen til fanegruppen «<ph 
 <translation id="9090098097337832354">Informasjon om denne butikken er lukket</translation>
 <translation id="9111228330448174435">Vis dialogboks ved oppretting av nye fanegrupper</translation>
 <translation id="9114502155681725011">Åpne handlingsmenyen for fanegruppen <ph name="TITLE_OF_GROUP" /> med fargen <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Bytt mellom faner i fanegruppen på nedre del av skjermen</translation>
 <translation id="9169594135889675189">Legg til ny fane i gruppen</translation>
 <translation id="9216898458513705996">Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Vis fanegruppe med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis fanegruppe med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>

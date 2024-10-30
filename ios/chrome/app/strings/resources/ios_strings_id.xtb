@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Telah Logout. Login kembali untuk menggunakan bookmark, sandi, dan lainnya di akun Anda.</translation>
 <translation id="1054745118061919935">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Jangan pernah disimpan</translation>
+<translation id="1062138828266376352">PIN Anda tidak diubah. Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="1066060668811609597">Kelola Sinkronisasi</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
@@ -676,6 +677,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="421070604241073551">Jika diaktifkan, data akan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
 <translation id="4224534474590365556">Tutup 99+ tab tidak aktif?</translation>
 <translation id="422474357428465195">Anda memiliki beberapa masalah sandi yang dapat membahayakan keamanan Anda.</translation>
+<translation id="422477017457571619">Perlindungan berteknologi AI secara real-time terhadap situs, download, dan ekstensi berbahaya yang didasarkan pada data penjelajahan yang dikirim ke Google</translation>
 <translation id="4231395118547300571">Notifikasi Pemeriksaan Keamanan diaktifkan</translation>
 <translation id="4237377247299956313">Ketuk <ph name="BEGIN_BOLD" />Aplikasi Browser Default<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Buka setelan</translation>
@@ -1350,10 +1352,12 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7218491361283758048">Kode pos</translation>
 <translation id="7221173315674413369">Pelajari berbagai fitur dan tips baru di Yang Baru</translation>
 <translation id="722339453342442311">Periksa sekarang</translation>
+<translation id="7227235818314667565">Kelola Berbagi</translation>
 <translation id="7233006041370588369">Pilih sandi untuk diisi.</translation>
 <translation id="7241135764990439166">Mode Samaran tidak tersedia</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Histori penelusuran<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda.</translation>
 <translation id="7253951228444156601">Memeriksa sandi…</translation>
+<translation id="7261217796641151584">Bagikan Grup</translation>
 <translation id="7271220006028561438">Izinkan upgrade kunci sandi otomatis</translation>
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>

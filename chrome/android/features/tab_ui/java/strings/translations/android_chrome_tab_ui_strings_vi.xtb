@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Tạo <ph name="NUM_YEARS_ONE" /> năm trước}other{Tạo <ph name="NUM_YEARS_MANY" /> năm trước}}</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1197088940767939838">Màu cam</translation>
-<translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
 <translation id="1273910660700874265">Các lựa chọn về nhóm thẻ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Giữ lại nhóm này để thêm thẻ vào lúc khác hoặc xoá nhóm này nếu bạn không cần nữa.
 
@@ -96,7 +95,6 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="5007392906805964215">Xem</translation>
 <translation id="5073204694187207510">Ẩn lưới toàn màn hình</translation>
 <translation id="5076161749301278626">Xem đánh giá về cửa hàng?</translation>
-<translation id="5082793167783849073">Tạo một nhóm để so sánh nhanh các trang. Để bắt đầu, hãy chạm và giữ một đường liên kết.</translation>
 <translation id="5094423602314093681">Bạn muốn loại bỏ thẻ và xoá nhóm?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ}}</translation>
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
@@ -196,7 +194,6 @@ Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm t
 <translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
 <translation id="9111228330448174435">Hiện hộp thoại khi tạo nhóm thẻ mới</translation>
 <translation id="9114502155681725011">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" /></translation>
-<translation id="9150694013019234766">Chuyển đổi giữa các thẻ trong nhóm thẻ ở gần cuối màn hình</translation>
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="9216898458513705996">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>

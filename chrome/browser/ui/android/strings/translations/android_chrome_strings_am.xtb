@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">ከA እስከ Z በመደርደር ላይ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ን ያዘምኑ</translation>
 <translation id="3911609878849982353">ከZ እስከ A በመደርደር ላይ</translation>
+<translation id="3918415141610210050">ትር</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> በርቷል</translation>
 <translation id="3927692899758076493">ሳንስ ሰሪፍ</translation>
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">በመከተል ላይ...</translation>
 <translation id="4335835283689002019">ደህንነቱ የተጠበቀ አሰሳ ጠፍቷል</translation>
 <translation id="4351244548802238354">መገናኛ ዝጋ</translation>
+<translation id="4352287748243729941">የ<ph name="PROVIDER" /> የይለፍ ቃልዎን ይጠቀማሉ?</translation>
 <translation id="4355272626458588338">ዕልባት በማከል ለእርስዎ አስፈላጊ ወደሆነ ገጽ መመለስ ይችላሉ</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ደህንነት በአፍታ ዕይታ</translation>
@@ -851,6 +853,7 @@
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
 <translation id="5010886807652684893">ምስላዊ ዕይታ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> መገናኘት ይፈልጋል</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> እና <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> የተዛመዱ ይመስላል። የይለፍ ቃልዎን ከመጠቀምዎ በፊት <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />ን እንደሚያምኑት እርግጠኛ ይሁኑ።</translation>
 <translation id="5016205925109358554">ሰሪፍ</translation>
 <translation id="5017529052065664584">ያለፉት 15 ደቂቃዎች</translation>
 <translation id="5032430150487044192">የQR ኮድ መፍጠር አልተቻለም</translation>
@@ -904,6 +907,7 @@
 <translation id="5304593522240415983">ይህ መስክ ባዶ ሊሆን አይችልም</translation>
 <translation id="5306014156308790439">ወደ ስብስብ አክል ተሰናክሏል</translation>
 <translation id="5308380583665731573">ይገናኙ</translation>
+<translation id="5310963254742922113">የይለፍ ቃል ጥቅም ላይ ውሏል።</translation>
 <translation id="5316947901395241499">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ ጠፍቷል</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319359161174645648">Google Chromeን ይመክራል</translation>
@@ -1312,7 +1316,6 @@
 <translation id="7085332316435785646">በGoogle አገልግሎቶች ውስጥ ተጨማሪ ግላዊነት የተላበሱ ተሞክሮዎችን ለማግኘት የChrome ታሪክን ለማካተት እና ላለማካተት ይምረጡ</translation>
 <translation id="7088681679121566888">Chrome የተዘመነ ነው</translation>
 <translation id="7094933634769755999">ትክክለኛ ያልሆነ</translation>
-<translation id="7105047059074518658">በመሳሪያዎች ላይ በቀላሉ ለማሰስ በመለያ ይግቡ</translation>
 <translation id="7106762743910369165">የእርስዎ አሳሽ በእርስዎ ድርጅት የሚተዳደር ነው</translation>
 <translation id="7111394291981742152">Chrome በሚያዩዋቸው ማስታወቂያዎች ላይ የበለጠ ቁጥጥር ይሰጥዎታል እንዲሁም ግላዊነት የተላበሱ ማስታወቂያዎችን ሲያሳዩዎ ጣቢያዎች ስለእርስዎ ምን ማወቅ እንደሚችሉ ይገድባል።</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ፈቃዶች ለ1 ጣቢያ ተገምግመዋል}one{ፈቃዶች ለ# ጣቢያ ተገምግመዋል}other{ፈቃዶች ለ# ጣቢያዎች ተገምግመዋል}}</translation>

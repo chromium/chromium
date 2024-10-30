@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> సంవత్సరం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_YEARS_MANY" /> సంవత్సరాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
 <translation id="1197088940767939838">నారింజ రంగు</translation>
-<translation id="125153950246128346">మరొక ట్యాబ్‌ను చూడటానికి నొక్కండి</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్ ఆప్షన్‌లు</translation>
 <translation id="1293272072740285747">ట్యాబ్‌లను తర్వాత జోడించడానికి ఈ గ్రూప్‌ను కొనసాగించండి, లేదా మీకు ఇది అవసరం లేకపోతే, దాన్ని తొలగించండి.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">రివ్యూ చేయండి</translation>
 <translation id="5073204694187207510">ఫుల్-స్క్రీన్‌ గ్రిడ్‌‌ను దాచిపెట్టు</translation>
 <translation id="5076161749301278626">స్టోర్ రివ్యూలను చూడాలనుకుంటున్నారా?</translation>
-<translation id="5082793167783849073">పేజీలను సమూహంగా వర్గీకరించడం ద్వారా వేగంగా సరిపోల్చండి. ప్రారంభించడానికి, లింక్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి.</translation>
 <translation id="5094423602314093681">ట్యాబ్(లు)ను తీసివేసి, గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ట్యాబ్ జోడించబడింది}other{<ph name="MANY_ADDED" /> ట్యాబ్‌లు జోడించబడ్డాయి}}</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ఈ స్టోర్ గురించిన సమాచారాన్ని చూపించే స్క్రీన్ మూసివేయబడింది</translation>
 <translation id="9111228330448174435">కొత్త ట్యాబ్ గ్రూప్ క్రియేషన్‌కు సంబంధించిన డైలాగ్‌ను చూపండి</translation>
 <translation id="9114502155681725011">ట్యాబ్ గ్రూప్ <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> రంగు కోసం ట్యాబ్ గ్రూప్ చర్యల మెనూను తెరవండి.</translation>
-<translation id="9150694013019234766">స్క్రీన్ దిగువ భాగం దగ్గరలో ఉండే మీ ట్యాబ్ గ్రూప్‌లో కోరుకునే ట్యాబ్‌లకు మారండి</translation>
 <translation id="9169594135889675189">గ్రూప్‌నకు కొత్త ట్యాబ్‌ను జోడించండి</translation>
 <translation id="9216898458513705996">ఈ పరికరంలో ట్యాబ్‌లు తెరిచి ఉంటాయి కానీ <ph name="USER_EMAIL" />‌కు సైన్ ఇన్ చేసిన అన్ని పరికరాల నుండి గ్రూప్ తొలగించబడుతుంది</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}}</translation>

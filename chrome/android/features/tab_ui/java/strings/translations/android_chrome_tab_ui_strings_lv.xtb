@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_YEARS_ONE" /> gada}zero{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}one{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gada}other{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}}</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="1197088940767939838">Oranža</translation>
-<translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1273910660700874265">Ciļņu grupas “<ph name="TITLE_OF_GROUP" />” iespējas</translation>
 <translation id="1293272072740285747">Paturiet šo grupu, lai vēlāk pievienotu cilnes, vai dzēsiet to, ja tā vairs nav nepieciešama.
 
@@ -96,7 +95,6 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="5007392906805964215">Pārskatīt</translation>
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>
 <translation id="5076161749301278626">Vai skatīt atsauksmes par veikalu?</translation>
-<translation id="5082793167783849073">Ātri salīdziniet lapas, izveidojot grupu. Lai sāktu, pieskarieties un turiet saiti.</translation>
 <translation id="5094423602314093681">Vai noņemt cilni(-es) un dzēst grupu?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> cilne pievienota}zero{<ph name="MANY_ADDED" /> cilnes pievienotas}one{<ph name="MANY_ADDED" /> cilne pievienota}other{<ph name="MANY_ADDED" /> cilnes pievienotas}}</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
@@ -196,7 +194,6 @@ Ja pametīsiet grupu, jūs nekavējoties zaudēsiet piekļuvi ciļņu grupai “
 <translation id="9090098097337832354">Informācija par šo veikalu ir aizvērta</translation>
 <translation id="9111228330448174435">Rādīt dialoglodziņu jaunas ciļņu grupas izveidei</translation>
 <translation id="9114502155681725011">Atvērt ciļņu grupas “<ph name="TITLE_OF_GROUP" />” (krāsa: <ph name="COLOR_NAME" />) darbību izvēlni</translation>
-<translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>
 <translation id="9216898458513705996">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>

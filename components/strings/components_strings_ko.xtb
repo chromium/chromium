@@ -2268,6 +2268,7 @@
 <translation id="5087286274860437796">서버의 인증서가 현재 유효하지 않습니다.</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="5088142053160410913">운영자에게 보내는 메시지</translation>
+<translation id="5089791650329866127">이 기능은 주소와 같이 자동 완성으로 이미 저장한 정보를 사용합니다.</translation>
 <translation id="5090647584136241764">비슷한 제품이 있는 탭을 추가하여 나에게 중요한 세부정보를 손쉽게 비교하세요.</translation>
 <translation id="5093232627742069661">Z 폴드</translation>
 <translation id="5094747076828555589">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chromium에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -4540,6 +4541,7 @@
 <translation id="9211461151375991073">@을 입력하여 <ph name="FEATURED_SEARCH_LIST" /> 검색</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9215416866750762878">애플리케이션으로 인해 Chrome이 안전하게 이 사이트에 접속할 수 없음</translation>
+<translation id="921738974253889319">이 기능은 주소와 같이 자동 완성으로 이미 저장한 정보를 사용합니다. 이 페이지에서 이 데이터를 검토하고 관리할 수 있습니다.</translation>
 <translation id="92178312226016010">추적 중인 제품입니다.</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>

@@ -628,6 +628,7 @@
 <translation id="3208321278970793882">Апликација</translation>
 <translation id="3213571860604332401">Зачувува линк како обележувач</translation>
 <translation id="3217205077783620295">Јачината на звук е вклучена. Ако смените, ќе се исклучи звукот на аудиото.</translation>
+<translation id="3218561536255328229">Притиснете Esc 5 пати за да ја овозможите допирната подлога</translation>
 <translation id="3226991577105957773">и уште <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Штедачот на батерија е исклучен</translation>
@@ -1145,6 +1146,7 @@
 <translation id="4902797682482387055">Предложена задача на којашто може да се фокусирате</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
+<translation id="4911191962826748981">Ова е експериментална AI-функција, па нема секогаш да прикажува точни информации.</translation>
 <translation id="491504982845934899">Активирајте <ph name="NETWORK_NAME" /> по поставувањето на уредот</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Прифати</translation>
@@ -2004,6 +2006,7 @@
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">„Ми се допаѓа“ ќе ги испрати повратните информации дека ви се допаѓа предлогов</translation>
 <translation id="7825412704590278437">Од претстоен настан во календарот</translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7830453190047749513">Може да ги персонализирате дејствата за копчињата, брзината на курсорот и друго за вашиот уред <ph name="PERIPHERAL_NAME" /></translation>
@@ -2157,6 +2160,7 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Вклучено е Caps Lock</translation>
 <translation id="8315514906653279104">Се вклучува…</translation>
+<translation id="8319634750346253957">„Не ми се допаѓа“ ќе ги испрати повратните информации дека не ви се допаѓа предлогов</translation>
 <translation id="8331351032546853669">Преземање на чекање</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>

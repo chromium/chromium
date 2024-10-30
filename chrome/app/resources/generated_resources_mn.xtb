@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">Нар жаргахад шөнийн гэрэл автоматаар асна</translation>
 <translation id="1288300545283011870">Ярианы төлөв байдал</translation>
 <translation id="1289619947962767206">Энэ сонголтыг цаашид дэмжихээ больсон. Табыг үзүүлэхийн тулд <ph name="GOOGLE_MEET" />-г ашиглана уу.</translation>
+<translation id="1291057703584594733">Аль хэдийн оноосон зангаа сонгох нь тус зангааг эх үйлдлээс нь хасна.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" />-н Үйлчилгээний нөхцөл</translation>
 <translation id="1291421198328146277">Товчнуудыг шинэчлэх</translation>
 <translation id="1292849930724124745">Нэвтэрсэн хэвээр байхын тулд ухаалаг карт оруулна уу</translation>
@@ -615,6 +616,7 @@
 <translation id="1436671784520050284">Тохируулгыг үргэлжлүүлэх</translation>
 <translation id="1436784010935106834">Устгасан</translation>
 <translation id="1437986450143295708">Асуудлыг дэлгэрэнгүй тайлбарлана уу</translation>
+<translation id="1438630805136563416"><ph name="REMOVED_ACTION" /> үйлдлийг хассан</translation>
 <translation id="1439671507542716852">урт хугацааны тусламж</translation>
 <translation id="1440090277117135316">Сургуулийн элсэлт дууслаа</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />-г сонгосон</translation>
@@ -977,6 +979,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэх боломжгүй байна</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1678849866171627536">Скан амжилтгүй боллоо. Энэ файл вирус эсвэл хортой программ байж магадгүй.</translation>
+<translation id="1678919064276516737">Таны оруулсан имэйл, ПИН таарахгүй байна</translation>
 <translation id="1679068421605151609">Хөгжүүлэгч багаж</translation>
 <translation id="1679810534535368772">Та эндээс гарахдаа итгэлтэй байна уу?</translation>
 <translation id="167983332380191032">Менежментийн үйлчилгээ HTTP-н алдааг илгээсэн.</translation>
@@ -1431,6 +1434,7 @@
 <translation id="1981434377190976112">Таны бүх вебсайт дээрх бүх өгөгдлийг унших</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} болон {field_2}}other{{field_1}, {field_2}, {field_3}}}</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
+<translation id="198507684520034826">Тусламж</translation>
 <translation id="1986836014090708999">Байршлын нарийвчилсан тохиргоо</translation>
 <translation id="1987317783729300807">Хаяг</translation>
 <translation id="1987574314042117472">Түгээмэл аппуудыг сонгож, суулгах</translation>
@@ -2929,6 +2933,7 @@
 <translation id="3029466929721441205">Тавиур дахь мэдрэгч үзгийн хэрэгслийг харуулах</translation>
 <translation id="3029808567601324798">Түгжих цаг боллоо</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> танаас өнөөдөр шинэчлэлт татаж авахыг шаардаж байна. Таныг интернэтэд холбогдоход шинэчлэлтийг автоматаар татаж авна.}other{<ph name="MANAGER" /> танаас эцсийн хугацаанаас өмнө шинэчлэлт татаж авахыг шаардаж байна. Таныг интернэтэд холбогдоход шинэчлэлтийг автоматаар татаж авна.}}</translation>
+<translation id="3030772324014024606">Засах</translation>
 <translation id="3030967311408872958">Нар мандахаас нар жаргах хүртэл</translation>
 <translation id="3031417829280473749">Х Агент</translation>
 <translation id="3031532026314193077">Баруун талыг товшихын тулд мэдрэгч самбар болон гарыг ашиглана уу</translation>
@@ -4034,6 +4039,7 @@
 <translation id="3824621460022590830">Төхөөрөмжийн бүртгэлийн тэмдэг буруу байна. Төхөөрөмж өмчлөгч эсвэл администратортайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Бусад төхөөрөмжийн табыг харахын тулд нэвтэрнэ үү</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Миний энэ файлын төрлийн сонголтыг санана уу: <ph name="FILE_TYPES" />}other{Миний эдгээр файлын төрлийн сонголтыг санана уу: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Харах</translation>
 <translation id="3825635794653163640">Аппын сэрэмжлүүлгийн аппын дүрс тэмдэгт цэг харуулах</translation>
 <translation id="3826071569074535339">Хөдөлгөөн мэдрэгчийг ашиглахыг зөвшөөрсөн</translation>
 <translation id="3826086052025847742">ChromeOS Flex-н логууд</translation>
@@ -4145,6 +4151,7 @@
 <translation id="3905761538810670789">Апп засах</translation>
 <translation id="3908288065506437185">Нууцлалын горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="3908501907586732282">Өргөтгөлийг идэвхжүүлэх</translation>
+<translation id="3909456989251621103">Хэрэв та серверийн сертификатыг устгавал Chrome цаашид серверүүдийг тодорхойлоход тухайн сертификатыг ашиглахгүй.</translation>
 <translation id="3909701002594999354">Бүх &amp;хяналтыг харуулах</translation>
 <translation id="3909791450649380159">Хайчлах</translation>
 <translation id="39103738135459590">Идэвхжүүлэх код</translation>
@@ -5062,6 +5069,7 @@
 <translation id="4581774856936278355">Linux-г сэргээхэд алдаа гарлаа</translation>
 <translation id="4582297591746054421">Сайтууд ихэвчлэн таны хуулсан текстийн форматыг хадгалах зэрэг онцлогуудад зориулж таны түр санах ойг уншдаг</translation>
 <translation id="4582563038311694664">Бүх тохиргоог дахин тохируулах</translation>
+<translation id="4584770411839426377">Цонх</translation>
 <translation id="4585793705637313973">Хуудас засах</translation>
 <translation id="4586275095964870617"><ph name="URL" />-г өөр хөтчид нээж чадсангүй. Системийнхээ админтай холбогдоно уу.</translation>
 <translation id="4587589328781138893">Сайт</translation>
@@ -5454,6 +5462,7 @@
 <translation id="4872192066608821120">Нууц үгнүүдийг импорт хийхийн тулд CSV файл сонгоно уу</translation>
 <translation id="4872212987539553601">Төхөөрөмж дээрх шифрлэлт тохируулах</translation>
 <translation id="4873312501243535625">Медиа файл шалгагч</translation>
+<translation id="4875690134140862902">Таб</translation>
 <translation id="4876273079589074638">Манай инженерүүдэд гэмтлийн асуудлын тодруулж, засахад нь тусална уу. Боломжтой бол дэлгэрэнгүй тайлбарлана уу. Бидэнд бүх нарийвчилсан мэдээлэл хэрэг болно.</translation>
 <translation id="4876305945144899064">Хэрэглэгчийн нэр алга</translation>
 <translation id="4876327226315760474">Энэ нь сайтын онцлогууд тооцоолсноор ажиллах ёстой хэдий ч таны үзэх хамгаалалт бага байж магадгүй гэсэн үг юм.</translation>
@@ -5566,6 +5575,7 @@
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4951966678293618079">Энэ сайтад нууц үгнүүдийг хэзээ ч бүү хадгал</translation>
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
+<translation id="4954652437333037880">Файл</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-н харагдац</translation>
 <translation id="4955710816792587366">ПИН-ээ сонгох</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6744,6 +6754,7 @@
 <translation id="5832970156002835240">Бүх сайт дээр зөвшөөрөх</translation>
 <translation id="5833397272224757657">Таны зочилдог сайтын агуулга, хөтчийн үйл ажиллагаа болон харилцан үйлдлийг хувийн болгоход ашигладаг</translation>
 <translation id="5833726373896279253">Эдгээр тохиргоонуудийг зөвхөн эзэмшигч нь өөрчилж болно:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Сайтуудад JavaScript-г ашиглахыг бүү зөвшөөр</translation>
 <translation id="583431638776747">Сайт боломжгүй байсан</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
@@ -7823,6 +7834,7 @@
 <translation id="6635674640674343739">Сүлжээний холболтыг тогтоох боломжгүй байна. Сүлжээний холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="663569763553406962">Ямар өргөтгөлүүд сайтыг унших эсвэл өөрчлөх боломжтойг харна уу</translation>
 <translation id="6635944431854494329">Эзэмшигч нь энэ онцлогийг Тохиргоо &gt; Дэвшилтэт &gt; Оношилгоо, ашиглалтын өгөгдлийг Google-д автоматаар илгээх хэсэгт хянах боломжтой.</translation>
+<translation id="6636258750460740634">Түүх</translation>
 <translation id="6636623428211296678">Доорх бусад тохиргоог судлах эсвэл одоо дуусгах</translation>
 <translation id="6639554308659482635">SQLite санах ой</translation>
 <translation id="6640268266988685324">Нээлттэй таб</translation>

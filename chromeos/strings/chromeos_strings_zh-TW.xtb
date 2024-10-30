@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3321030238473337787">播放速度</translation>
+<translation id="3327613592010997943">下次可使用這部裝置的時間是<ph name="DAY" /><ph name="TIME" />。</translation>
 <translation id="3328783797891415197">正在執行測試</translation>
 <translation id="3340011300870565703">裝置的右側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3340978935015468852">設定</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">灰色</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600027863942488546">已測試 <ph name="KEY_NAME" /> 鍵</translation>
+<translation id="5606865426897221650">Tab 鍵</translation>
 <translation id="5613201299517339763">你已登出</translation>
 <translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5630438231335788050">包浩斯</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">入口網站狀態</translation>
 <translation id="5763838252932650682">正在重新啟動並更新「<ph name="APP_NAME" />」</translation>
 <translation id="576835345334454681">顯示亮度調高</translation>
+<translation id="5775340474232476653">老師已結束課程</translation>
 <translation id="5779818640587041940">錄音時螢幕保持開啟</translation>
 <translation id="57838592816432529">靜音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">石頭</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7595982850646262331">還剩 <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> 的系統管理員已設定可使用這部 <ph name="DEVICE_TYPE" /> 的時間。</translation>
 <translation id="7613724632293948900">使用滑鼠或方向鍵調整位置。</translation>
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">按下即可錄製</translation>
 <translation id="8094062939584182041">允許 Google 透過電子郵件通知你這個問題的相關資訊</translation>
 <translation id="8104083085214006426">你目前使用的是未受保護的開放式網路</translation>
+<translation id="8110942816572072814">老師已鎖定你的畫面</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">確認</translation>

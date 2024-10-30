@@ -428,6 +428,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1291421198328146277">Berrezarri teklak</translation>
 <translation id="1292849930724124745">Sartu txartel adimenduna saioa hasita izaten jarraitzeko</translation>
 <translation id="1293264513303784526">USB-C gailua (ezkerraldeko ataka)</translation>
+<translation id="1293360286536751243">Baliteke "<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" eta "<ph name="CONFLICTING_GESTURE_THREE" />" oso antzekoak izatea. Ahal baduzu, aukeratu beste keinu bat.</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1294807885394205587">Agian minutu batzuk beharko dira prozesua osatzeko. Edukiontzi-kudeatzailea abiarazten.</translation>
 <translation id="12951065153783848">Erakundeak kudeatzen du zure kontua</translation>
@@ -2613,6 +2614,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2806372837663997957">Gailuak ez du onartu partekatzen saiatzen ari zaren fitxategia</translation>
 <translation id="2806891468525657116">Jada badago lasterbide hori</translation>
 <translation id="2807517655263062534">Deskargatutako fitxategiak agertuko dira hemen</translation>
+<translation id="2808985063107661499">Baliteke "<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />" eta "<ph name="CONFLICTING_GESTURE_TWO" />" oso antzekoak izatea. Ahal baduzu, aukeratu beste keinu bat.</translation>
 <translation id="2811205483104563968">Kontuak</translation>
 <translation id="2812049959647166806">Thunderbolt konektorea ez da bateragarria</translation>
 <translation id="2812171980080389735">Gordetako sareak eta pasahitzak, berehala konektatu ahal izateko</translation>
@@ -4343,6 +4345,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="404894744863342743">Deskargatutako fitxategia erabiltzen amaitzean, ezaba ezazu, gailu hau erabiltzen duten beste pertsonek zure pasahitzak ikustea ekiditeko.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktu ez dago erabilgarri. Nearby Share kontaktu horrekin erabiltzeko, gehitu kontaktuetan haren Google-ko kontuarekin lotutako helbide elektronikoa.}other{# kontaktu ez daude erabilgarri. Nearby Share kontaktu horiekin erabiltzeko, gehitu kontaktuetan haien Google-ko kontuarekin lotutako helbide elektronikoa.}}</translation>
 <translation id="4050225813016893843">Autentifikazio-metodoa</translation>
+<translation id="4050379682069019014">Baliteke "<ph name="MAIN_GESTURE" />" eta "<ph name="CONFLICTING_GESTURE" />" oso antzekoak izatea. Ahal baduzu, aukeratu beste keinu bat.</translation>
 <translation id="4050534976465737778">Egiaztatu bi gailuak desblokeatuta eta elkarrengandik hurbil daudela, eta Bluetootha aktibatuta daukatela. Zure kontaktuetan ez dagoen Chromebook batekin edukia partekatzeko asmoa baduzu, egiaztatu Nearby-ren ikusgaitasuna aktibatuta dagoela (ireki egoeraren eremua eta, gero, aktibatu Nearby-ren ikusgaitasuna). <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Erabili duzun azken idazketa-metodora itzultzeko, sakatu <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Bilaketa + eskuinera egiteko gezi-tekla</translation>

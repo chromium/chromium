@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}other{<ph name="NUM_YEARS_MANY" /> വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}}</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1197088940767939838">ഓറഞ്ച്</translation>
-<translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ഓപ്ഷനുകൾ</translation>
 <translation id="1293272072740285747">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക അല്ലെങ്കിൽ നിങ്ങൾക്ക് ഇനി ഗ്രൂപ്പ് ആവശ്യമില്ലെങ്കിൽ ഇല്ലാതാക്കുക.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">അവലോകനം ചെയ്യുക</translation>
 <translation id="5073204694187207510">പൂർണ്ണസ്ക്രീൻ ഗ്രിഡ് മറയ്ക്കുക</translation>
 <translation id="5076161749301278626">സ്റ്റോർ റിവ്യൂകൾ കാണണോ?</translation>
-<translation id="5082793167783849073">ഒരു ഗ്രൂപ്പ് സൃഷ്‌ടിച്ചുകൊണ്ട്, വേഗത്തിൽ പേജുകൾ താരതമ്യം ചെയ്യൂ. ആരംഭിക്കാൻ ഒരു ലിങ്ക് സ്‌പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="5094423602314093681">ടാബ്(കൾ) നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ടാബ് ചേർത്തു}other{<ph name="MANY_ADDED" /> ടാബുകൾ ചേർത്തു}}</translation>
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ അടച്ചു</translation>
 <translation id="9111228330448174435">പുതിയ ടാബ് ഗ്രൂപ്പ് സൃഷ്ടിയിൽ ഡയലോഗ് കാണിക്കുക</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പിനുള്ള, ടാബ് ഗ്രൂപ്പ് പ്രവർത്തന മെനു തുറക്കുക, <ph name="COLOR_NAME" /> നിറം.</translation>
-<translation id="9150694013019234766">സ്ക്രീനിന്റെ ചുവടെയുള്ള നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പിലെ, ടാബുകൾക്കിടയിൽ മാറുക</translation>
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>
 <translation id="9216898458513705996">ഈ ഉപകരണത്തിൽ ടാബുകൾ തുറന്നിരിക്കും, എന്നാൽ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>

@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">夜燈功能將於日落時自動開啟</translation>
 <translation id="1288300545283011870">語音屬性</translation>
 <translation id="1289619947962767206">系統已不支援此選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="1291057703584594733">如果選取已指派的表情，該表情就會從原始動作中移除。</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> 服務條款</translation>
 <translation id="1291421198328146277">重設按鍵</translation>
 <translation id="1292849930724124745">插入智慧型卡片才能保持登入狀態</translation>
@@ -615,6 +616,7 @@
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="1436784010935106834">已移除</translation>
 <translation id="1437986450143295708">請詳細說明問題</translation>
+<translation id="1438630805136563416">已移除動作「<ph name="REMOVED_ACTION" />」</translation>
 <translation id="1439671507542716852">長期支援</translation>
 <translation id="1440090277117135316">學校註冊程序完成</translation>
 <translation id="144283815522798837">已選取 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 個項目</translation>
@@ -980,6 +982,7 @@
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
 <translation id="1678849866171627536">掃描失敗。這個檔案可能是病毒或惡意軟體。</translation>
+<translation id="1678919064276516737">輸入的電子郵件和密碼不符</translation>
 <translation id="1679068421605151609">開發人員工具</translation>
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">管理服務傳回了 HTTP 錯誤。</translation>
@@ -1425,6 +1428,7 @@
 <translation id="1981434377190976112">讀取你在所有網站上的所有資料</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
+<translation id="198507684520034826">說明</translation>
 <translation id="1986836014090708999">進階位置資訊設定</translation>
 <translation id="1987317783729300807">帳戶</translation>
 <translation id="1987574314042117472">選取並安裝熱門應用程式</translation>
@@ -2920,6 +2924,7 @@
 <translation id="3029466929721441205">在檔案櫃中顯示觸控筆工具</translation>
 <translation id="3029808567601324798">鎖定時間</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內下載更新。當你連上網際網路時，系統會自動下載更新。}other{<ph name="MANAGER" /> 要求你在期限內下載更新。當你連上網際網路時，系統會自動下載更新。}}</translation>
+<translation id="3030772324014024606">編輯</translation>
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031532026314193077">使用觸控板和鍵盤按一下滑鼠右鍵</translation>
@@ -4022,6 +4027,7 @@
 <translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">登入即可查看在其他裝置上開啟的分頁</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">查看</translation>
 <translation id="3825635794653163640">在應用程式圖示上顯示代表快訊的圓點</translation>
 <translation id="3826071569074535339">可以使用動作感應器</translation>
 <translation id="3826086052025847742">ChromeOS Flex 記錄</translation>
@@ -4133,6 +4139,7 @@
 <translation id="3905761538810670789">修復應用程式</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3908501907586732282">啟用擴充功能</translation>
+<translation id="3909456989251621103">刪除伺服器憑證後，Chrome 就不會再用該憑證識別伺服器。</translation>
 <translation id="3909701002594999354">顯示所有控制項(&amp;C)</translation>
 <translation id="3909791450649380159">剪下(&amp;T)</translation>
 <translation id="39103738135459590">啟用代碼</translation>
@@ -5050,6 +5057,7 @@
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
 <translation id="4582297591746054421">網站通常會讀取你的剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4582563038311694664">重設所有設定</translation>
+<translation id="4584770411839426377">視窗</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617">無法在替代瀏覽器中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
 <translation id="4587589328781138893">網站</translation>
@@ -5441,6 +5449,7 @@
 <translation id="4872192066608821120">如要匯入密碼，請選取所需 CSV 檔案</translation>
 <translation id="4872212987539553601">設定裝置端加密功能</translation>
 <translation id="4873312501243535625">媒體檔案檢查工具</translation>
+<translation id="4875690134140862902">分頁</translation>
 <translation id="4876273079589074638">協助我們的工程師調查這項當機問題並予以修正。請儘可能列出所有確切步驟，鉅細靡遺！</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4876327226315760474">這表示網站功能應可正常運作，但瀏覽防護的強度可能會降低。</translation>
@@ -5553,6 +5562,7 @@
 <translation id="495170559598752135">動作</translation>
 <translation id="4951966678293618079">一律不儲存這個網站的密碼</translation>
 <translation id="4953808748584563296">預設的橘色顯示圖片</translation>
+<translation id="4954652437333037880">檔案</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />瀏覽權限</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6727,6 +6737,7 @@
 <translation id="5832970156002835240">允許在所有網站上執行</translation>
 <translation id="5833397272224757657">使用你所造訪網站的內容、瀏覽器活動和瀏覽器互動行為，提供個人化的使用體驗</translation>
 <translation id="5833726373896279253">你必須是擁有者，才能修改這些設定：</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /><ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">禁止網站使用 JavaScript</translation>
 <translation id="583431638776747">無法存取網站</translation>
 <translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
@@ -7805,6 +7816,7 @@
 <translation id="6635674640674343739">無法建立網路連線。請檢查網路連線，然後再試一次。</translation>
 <translation id="663569763553406962">查看哪些擴充功能可讀取或變更網站</translation>
 <translation id="6635944431854494329">裝置擁有者可依序前往「設定」&gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google] 來控管這項功能。</translation>
+<translation id="6636258750460740634">歷史記錄</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6640268266988685324">開啟分頁</translation>

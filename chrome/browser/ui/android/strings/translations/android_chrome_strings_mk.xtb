@@ -375,6 +375,7 @@
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
 <translation id="2789486458103222910">Во ред</translation>
+<translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome најде повторно употребена лозинка што би можеле да ја подобрите}one{Chrome најде # повторно употребена лозинка што би можеле да ги подобрите}other{Chrome најде # повторно употребени лозинки што би можеле да ги подобрите}}</translation>
 <translation id="2800066122460699237">Картичката <ph name="TAB_TITLE" /> ќе се затвори</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
@@ -428,6 +429,7 @@
 <translation id="2981364137500752533">Може да имате до 5 прозорци.</translation>
 <translation id="2983102365694924129">Според вашата активност на сајт. Оваа поставка е исклучена.</translation>
 <translation id="2984978667043170458">Вклучи го околниот текст во пребарувањата на Google</translation>
+<translation id="2988638966064514052">Зајакнете ги лозинките</translation>
 <translation id="2989523299700148168">Неодамна посетени</translation>
 <translation id="2992473221983447149">Описи на слики</translation>
 <translation id="2996291259634659425">Создајте лозинка</translation>
@@ -603,6 +605,7 @@
 <translation id="3902562446536395999">Се подредува од А до Ш</translation>
 <translation id="3908308510347173149">Ажурирај го уредот <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Се подредува од Ш до А</translation>
+<translation id="3918415141610210050">Картичка</translation>
 <translation id="3924911262913579434">Режимот „<ph name="SAFE_BROWSING_MODE" />“ е вклучен</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
@@ -687,6 +690,7 @@
 <translation id="433213510553688132">Се следи…</translation>
 <translation id="4335835283689002019">„Безбедното прелистување“ е исклучено</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
+<translation id="4352287748243729941">Да се користи лозинката за <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Може да се вратите на страница што ви е важна така што ќе додадете обележувач</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Безбедност на прв поглед</translation>
@@ -846,6 +850,7 @@
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5010886807652684893">Визуелен приказ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
+<translation id="5012253429094023177">Се чини дека <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> и <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> се поврзани. Погрижете се да имате доверба во <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> пред да ја искористите лозинката.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Изминатите 15 минути</translation>
 <translation id="5032430150487044192">Не може да се создаде QR-код</translation>
@@ -899,6 +904,7 @@
 <translation id="5304593522240415983">Ова поле не може да биде празно</translation>
 <translation id="5306014156308790439">Оневозможено копче „Додај во обележувачите“</translation>
 <translation id="5308380583665731573">Поврзи</translation>
+<translation id="5310963254742922113">Лозинката е искористена.</translation>
 <translation id="5316947901395241499">Администраторот го исклучил зачувувањето лозинки</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319359161174645648">Google го препорачува Chrome</translation>
@@ -1306,7 +1312,6 @@
 <translation id="7085332316435785646">Изберете дали да се опфати историјата на Chrome за поперсонализирани доживувања во услугите на Google</translation>
 <translation id="7088681679121566888">Chrome е ажуриран</translation>
 <translation id="7094933634769755999">Неточно</translation>
-<translation id="7105047059074518658">Најавете се за да прелистувате полесно на уредите</translation>
 <translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
 <translation id="7111394291981742152">Chrome ви дава поголема контрола над рекламите што ги гледате и ограничува што може да учат сајтовите за вас кога ви прикажуваат персонализирани реклами.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани се дозволите за 1 сајт}one{Прегледани се дозволите за # сајт}other{Прегледани се дозволите за # сајта}}</translation>
@@ -1677,6 +1682,7 @@
 <translation id="8754448020583829686">Копирај без линк</translation>
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8765470054473112089">Кога ќе напишете нешто во лентата за адреси или полето за пребарување, Chrome го испраќа напишаното до вашиот стандарден пребарувач за да добиете подобри предлози. Ова е исклучено во „Инкогнито“.</translation>
+<translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome најде слаба лозинка што би можеле да ја подобрите}one{Chrome најде # слаба лозинка што би можеле да ги подобрите}other{Chrome најде # слаби лозинки што би можеле да ги подобрите}}</translation>
 <translation id="8766529642647037772">Да се создаде нагласен линк како овој?</translation>
 <translation id="8788265440806329501">Историјата на навигација е затворена</translation>
 <translation id="8788968922598763114">Повторно отворете ја последната затворена картичка</translation>

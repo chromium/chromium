@@ -425,6 +425,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1288037062697528143">Awtomatikong mag-o-on ang Night Light sa paglubog ng araw</translation>
 <translation id="1288300545283011870">Mga Property ng Pagsasalita</translation>
 <translation id="1289619947962767206">Hindi na sinusuportahan ang opsyong ito. Para mag-present ng tab, gamitin ang <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Kapag pumili ng naitakda nang galaw, maaalis ito sa orihinal nitong aksyon.</translation>
 <translation id="1291119821938122630">Mga Tuntunin ng Serbisyo ng <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">I-reset ang mga key</translation>
 <translation id="1292849930724124745">Maglagay ng smart card para manatiling naka-sign in</translation>
@@ -616,6 +617,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1436671784520050284">Ipagpatuloy ang pag-set up</translation>
 <translation id="1436784010935106834">Inalis</translation>
 <translation id="1437986450143295708">Ilarawan nang detalyado ang isyu</translation>
+<translation id="1438630805136563416">Inalis ang aksyong <ph name="REMOVED_ACTION" /></translation>
 <translation id="1439671507542716852">pangmatagalang suporta (long-term support o LTS)</translation>
 <translation id="1440090277117135316">Kumpleto na ang pag-enroll para sa paaralan</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ang napili</translation>
@@ -982,6 +984,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1677306805708094828">Hindi maidagdag ang <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
 <translation id="1678849866171627536">Hindi na-scan. Posibleng virus o malware ang file na ito.</translation>
+<translation id="1678919064276516737">Hindi magkatugma ang inilagay mong email at PIN.</translation>
 <translation id="1679068421605151609">Mga Tool ng Developer</translation>
 <translation id="1679810534535368772">Sigurado ka bang gusto mong lumabas?</translation>
 <translation id="167983332380191032">Nagpadala ang serbisyo ng pamamahala ng HTTP error.</translation>
@@ -1436,6 +1439,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1981434377190976112">Basahin ang lahat ng iyong data sa lahat ng website</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} at {field_2}}one{{field_1}, {field_2}, at {field_3}}other{{field_1}, {field_2}, at {field_3}}}</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
+<translation id="198507684520034826">Tulong</translation>
 <translation id="1986836014090708999">Mga advanced na setting ng lokasyon</translation>
 <translation id="1987317783729300807">Mga Account</translation>
 <translation id="1987574314042117472">Pumili at mag-install ng mga sikat na app</translation>
@@ -2934,6 +2938,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3029466929721441205">Ipakita ang mga tool ng stylus sa shelf</translation>
 <translation id="3029808567601324798">Oras para mag-lock</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na mag-download ng update ngayong araw. Awtomatikong mada-download ang update kapag kumonekta ka sa internet.}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na mag-download ng update bago ang deadline. Awtomatikong mada-download ang update kapag kumonekta ka sa internet.}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na mag-download ng update bago ang deadline. Awtomatikong mada-download ang update kapag kumonekta ka sa internet.}}</translation>
+<translation id="3030772324014024606">Edit</translation>
 <translation id="3030967311408872958">Paglubog ng araw hanggang pagsikat ng araw</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Gumamit ng touchpad at keyboard para mag-right click</translation>
@@ -4039,6 +4044,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3824621460022590830">Invalid ang token sa pag-enroll ng device. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Mag-sign in para makita ang mga tab mula sa iba pang device</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Tandaan ang pinili ko para sa ganitong uri ng file: <ph name="FILE_TYPES" />}one{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}other{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">View</translation>
 <translation id="3825635794653163640">Ipakita ang dot sa icon ng app para sa mga alerto sa app</translation>
 <translation id="3826071569074535339">Pinapayagang gumamit ng mga sensor ng paggalaw</translation>
 <translation id="3826086052025847742">Mga Log ng ChromeOS Flex</translation>
@@ -4150,6 +4156,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3905761538810670789">Ayusin ang app</translation>
 <translation id="3908288065506437185">I-block ang mga third-party na cookie sa Incognito mode</translation>
 <translation id="3908501907586732282">Paganahin ang extension</translation>
+<translation id="3909456989251621103">Kung magde-delete ka ng certificate ng server, hindi na ito gagamitin ng Chrome para tumukoy ng mga server.</translation>
 <translation id="3909701002594999354">Ipakita ang Lahat ng &amp;Control</translation>
 <translation id="3909791450649380159">Al&amp;isin</translation>
 <translation id="39103738135459590">Code sa pag-activate</translation>
@@ -5068,6 +5075,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4581774856936278355">Error habang nire-restore ang Linux</translation>
 <translation id="4582297591746054421">Karaniwang binabasa ng mga site ang iyong clipboard para sa mga feature gaya ng pagpapanatili ng pag-format ng text na kinopya mo</translation>
 <translation id="4582563038311694664">I-reset lahat ng setting</translation>
+<translation id="4584770411839426377">Window</translation>
 <translation id="4585793705637313973">I-edit ang page</translation>
 <translation id="4586275095964870617">Hindi mabuksan ang <ph name="URL" /> sa isang alternatibong browser. Mangyaring makipag-ugnayan sa iyong system administrator.</translation>
 <translation id="4587589328781138893">Mga Site</translation>
@@ -5460,6 +5468,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4872192066608821120">Para mag-import ng mga password, pumili ng CSV file</translation>
 <translation id="4872212987539553601">I-set up ang on-device na pag-encrypt</translation>
 <translation id="4873312501243535625">Pangsuri ng Media File</translation>
+<translation id="4875690134140862902">Tab</translation>
 <translation id="4876273079589074638">Tulungan ang aming mga engineer na siyasatin at ayusin ang pag-crash na ito. Maglista ng mga eksaktong hakbang kung maaari. Walang detalye ang masasayang!</translation>
 <translation id="4876305945144899064">Walang username</translation>
 <translation id="4876327226315760474">Nangangahulugan ito na dapat gumana ang mga feature ng site na gaya ng inaasahan, pero posibleng magkaroon ka ng mas mahinang proteksyon sa pag-browse.</translation>
@@ -5572,6 +5581,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
 <translation id="4951966678293618079">Huwag kailanman mag-save ng mga password para sa site na ito</translation>
 <translation id="4953808748584563296">Default na orange na avatar</translation>
+<translation id="4954652437333037880">File</translation>
 <translation id="4955707703665801001">Visibility ng <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Piliin ang iyong PIN</translation>
 <translation id="4956847150856741762">1</translation>
@@ -6749,6 +6759,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5832970156002835240">Payagan sa lahat ng site</translation>
 <translation id="5833397272224757657">Ginagamit ang content sa mga site na binibisita mo at ang aktibidad at mga pakikipag-ugnayan sa browser para sa pag-personalize</translation>
 <translation id="5833726373896279253">Mababago lang ang mga setting na ito ng may-ari:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Huwag payagan ang mga site na gumamit ng JavaScript</translation>
 <translation id="583431638776747">Hindi available ang site</translation>
 <translation id="5834581999798853053">Mga <ph name="TIME" /> (na) minuto ang natitira</translation>
@@ -7831,6 +7842,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6635674640674343739">Hindi makakonekta sa network. Suriin ang iyong koneksyon sa network at subukan ulit.</translation>
 <translation id="663569763553406962">Tingnan kung anong mga extension ang kayang magbasa o magbago ng site</translation>
 <translation id="6635944431854494329">Puwedeng konrolin ng may-ari ang feature na ito mula sa Mga Setting &gt; Advanced &gt; Awtomatikong magpadala ng data ng diagnostic at paggamit sa Google.</translation>
+<translation id="6636258750460740634">History</translation>
 <translation id="6636623428211296678">Mag-explore pa ng mga setting sa ibaba o tapusin ngayon</translation>
 <translation id="6639554308659482635">Memorya sa SQLite</translation>
 <translation id="6640268266988685324">Bukas na Tab</translation>

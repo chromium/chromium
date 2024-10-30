@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_YEARS_ONE" /> rok temu}few{Utworzono <ph name="NUM_YEARS_MANY" /> lata temu}many{Utworzono <ph name="NUM_YEARS_MANY" /> lat temu}other{Utworzono <ph name="NUM_YEARS_MANY" /> roku temu}}</translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
-<translation id="125153950246128346">Kliknij, by zobaczyć inną kartę</translation>
 <translation id="1273910660700874265">Opcje grupy kart <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.
 
@@ -96,7 +95,6 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="5007392906805964215">Sprawdź</translation>
 <translation id="5073204694187207510">Ukryj siatkę pełnego ekranu</translation>
 <translation id="5076161749301278626">Wyświetlić opinie o sklepie?</translation>
-<translation id="5082793167783849073">Możesz szybko porównać strony, tworząc ich grupę. Aby to zrobić, naciśnij i przytrzymaj link.</translation>
 <translation id="5094423602314093681">Usunąć karty i grupę?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę}few{Dodano <ph name="MANY_ADDED" /> karty}many{Dodano <ph name="MANY_ADDED" /> kart}other{Dodano <ph name="MANY_ADDED" /> karty}}</translation>
 <translation id="5161254044473106830">Tytuł jest wymagany</translation>
@@ -196,7 +194,6 @@ Jeśli opuścisz grupę, natychmiast utracisz dostęp do grupy kart „<ph name=
 <translation id="9090098097337832354">Informacje o tym sklepie zostały zamknięte</translation>
 <translation id="9111228330448174435">Pokazuj okno podczas tworzenia nowej grupy kart</translation>
 <translation id="9114502155681725011">Otwórz menu czynności grupy kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">W grupie kart w dolnej części ekranu możesz przełączać się między kartami</translation>
 <translation id="9169594135889675189">Dodaj nową kartę do grupy</translation>
 <translation id="9216898458513705996">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>

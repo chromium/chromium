@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">több</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
 <translation id="3321030238473337787">Lejátszási sebesség</translation>
+<translation id="3327613592010997943">Ezt az eszközt ezen a napon és időpontban használhatja újra: <ph name="DAY" />, <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">beállítások</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">szürke</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5600027863942488546">A következő gomb tesztelve: <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">A rendszer kijelentkeztette Önt</translation>
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Portál állapota</translation>
 <translation id="5763838252932650682">A(z) <ph name="APP_NAME" /> újraindítása és frissítése…</translation>
 <translation id="576835345334454681">Kijelző fényerejének növelése</translation>
+<translation id="5775340474232476653">A tanár befejezte az órát</translation>
 <translation id="5779818640587041940">Képernyő bekapcsolva tartása felvétel készítése közben</translation>
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5784136236926853061">Hosszú HTTP várakozási idő</translation>
@@ -1356,6 +1359,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="757747079855995705">kő</translation>
 <translation id="7590883480672980941">Beviteli beállítások</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> van hátra</translation>
+<translation id="7600430297804876776">A(z) <ph name="MANAGER" /> adminisztrátora meghatározta, hogy mikor használható ez a <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Átrendezés egérrel vagy nyílbillentyűkkel.</translation>
 <translation id="7618774594543487847">Semleges</translation>
 <translation id="7620771111601174153">További információ a Súgóban</translation>
@@ -1461,6 +1465,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8088963492174775412">Nyomja meg a rögzítéshez</translation>
 <translation id="8094062939584182041">A problémáról szóló e-mail küldésének engedélyezése a Google számára</translation>
 <translation id="8104083085214006426">Ön nyílt és nem biztonságos hálózatot használ</translation>
+<translation id="8110942816572072814">A tanár zárolta a képernyőt</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Megerősítés</translation>

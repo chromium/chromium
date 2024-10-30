@@ -12,6 +12,7 @@
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1240190568154816272">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1242008676835033345">Զետեղված է <ph name="WEBSITE_URL" /> կայքում</translation>
+<translation id="1263609676484797429">Հպեք «Հավելվածներ»  &gt; «Կանխադրված հավելվածներ»</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1289742167380433257">Թրաֆիկը խնայելու համար այս էջի պատկերները Google-ի կողմից օպտիմալացվել են։</translation>
 <translation id="129382876167171263">Կայքերի կողմից պահված ֆայլերը կցուցադրվեն այստեղ</translation>
@@ -190,6 +191,7 @@
 <translation id="3908288065506437185">Արգելափակել երրորդ կողմի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Որոշ գործառույթներ կարող են չաշխատել։ Առնչվող կայքերը կարող են նախկինի պես օգտագործել երրորդ կողմի քուքիներ։</translation>
+<translation id="3922092564198021702">Ձեր հեռախոսում բացեք Կարգավորումները</translation>
 <translation id="3933121352599513978">Ծալել անցանկալի հարցումները (խորհուրդ է տրվում)</translation>
 <translation id="3955193568934677022">Թույլ տալ կայքերին նվագարկել պաշտպանված բովանդակությունը (խորհուրդ է տրվում)</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
@@ -347,6 +349,7 @@
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6207207788774442484">Ջնջել տվյալները և զրոյացնել թույլտվությունները</translation>
 <translation id="6231752747840485235">Ապատեղադրե՞լ <ph name="APP_NAME" /> հավելվածը</translation>
+<translation id="6234351944623978659">Հպեք «Դիտարկիչի հավելված» &gt; Chrome</translation>
 <translation id="6262191102408817757">Ձեր վերջին ներդիրի հիման վրա</translation>
 <translation id="6262279340360821358">Արգելափակված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>

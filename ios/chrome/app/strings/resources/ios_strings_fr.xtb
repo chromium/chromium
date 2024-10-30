@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, mots de passe et plus encore dans votre compte.</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
+<translation id="1062138828266376352">Votre code n'a pas été modifié. Vérifiez votre connexion Internet, puis réessayez</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
@@ -676,6 +677,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="421070604241073551">Lorsque cette option est activée, les données sont enregistrées dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur cet appareil.</translation>
 <translation id="4224534474590365556">Fermer plus de 99 onglets inactifs ?</translation>
 <translation id="422474357428465195">Vous avez plusieurs problèmes de mot de passe pouvant compromettre votre sécurité.</translation>
+<translation id="422477017457571619">Protection optimisée par l'IA en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="4231395118547300571">Notifications du contrôle de sécurité activées</translation>
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -843,6 +845,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="496392417432935267">Ouvert ailleurs</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe et nécessite d'envoyer les données de navigation à Google.</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
+<translation id="498624032394115435">Toutes les personnes disposant du lien peuvent modifier tous les onglets.</translation>
 <translation id="4989065233040279145">Choisissez où enregistrer <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
@@ -1349,10 +1352,12 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7218491361283758048">Code postal</translation>
 <translation id="7221173315674413369">Découvrez de nouvelles fonctionnalités et des astuces dans "Nouveautés"</translation>
 <translation id="722339453342442311">Vérifier maintenant</translation>
+<translation id="7227235818314667565">Gérer le partage</translation>
 <translation id="7233006041370588369">Sélectionnez un mot de passe à renseigner.</translation>
 <translation id="7241135764990439166">Mode navigation privée indisponible</translation>
 <translation id="7248046129087111453">L'<ph name="BEGIN_LINK" />historique des recherches<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google.</translation>
 <translation id="7253951228444156601">Vérification des mots de passe…</translation>
+<translation id="7261217796641151584">Partager le groupe</translation>
 <translation id="7271220006028561438">Autoriser la mise à niveau automatique vers des clés d'accès</translation>
 <translation id="7272437679830969316">Impossible de confirmer votre identité. Mot de passe non copié.</translation>
 <translation id="7293429513719260019">Sélectionner une langue</translation>

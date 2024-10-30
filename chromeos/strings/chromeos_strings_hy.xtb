@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">ավելին</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3321030238473337787">Նվագարկման արագություն</translation>
+<translation id="3327613592010997943">Դուք կկարողանաք նորից օգտագործել այս սարքը <ph name="DAY" />, ժամը <ph name="TIME" />։</translation>
 <translation id="3328783797891415197">Փորձարկում</translation>
 <translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="3340978935015468852">կարգավորումներում</translation>
@@ -953,6 +954,7 @@
 <translation id="5760715441271661976">Պորտալի վիճակը</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> հավելվածը վերագործարկվում և թարմացվում է</translation>
 <translation id="576835345334454681">Էկրանի պայծառության ավելացում</translation>
+<translation id="5775340474232476653">Ուսուցիչն ավարտել է դասը</translation>
 <translation id="5779818640587041940">Ձայնագրության ժամանակ էկրանը միացրած պահել</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
 <translation id="5784136236926853061">HTTP-ի բարձր հապաղում</translation>
@@ -1356,6 +1358,7 @@
 <translation id="757747079855995705">քար</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7595982850646262331">Մնացել է <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Ադմինիստրատորը (<ph name="MANAGER" />) սահմանափակել է <ph name="DEVICE_TYPE" /> սարքի օգտագործման ժամանակը։</translation>
 <translation id="7613724632293948900">Փոխեք դիրքը մկնիկի կամ սլաքի ստեղների միջոցով։</translation>
 <translation id="7618774594543487847">Չեզոք</translation>
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
@@ -1461,6 +1464,7 @@
 <translation id="8088963492174775412">Սեղմեք ձայնագրելու համար</translation>
 <translation id="8094062939584182041">Թույլ տվեք Google-ին տեղեկացնել ձեզ էլփոստով այս խնդրի մասին</translation>
 <translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
+<translation id="8110942816572072814">Ուսուցիչը կողպել է ձեր էկրանը</translation>
 <translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>

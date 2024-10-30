@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">περισσότερα</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3321030238473337787">Ταχύτητα αναπαραγωγής</translation>
+<translation id="3327613592010997943">Θα μπορείτε να χρησιμοποιήσετε ξανά αυτή τη συσκευή <ph name="DAY" /> στις <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ρυθμίσεις</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">γκρι</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5600027863942488546">Το πλήκτρο <ph name="KEY_NAME" /> ελέγχθηκε</translation>
+<translation id="5606865426897221650">Καρτέλα</translation>
 <translation id="5613201299517339763">Αποσυνδεθήκατε</translation>
 <translation id="5620281292257375798">Εσωτερική χρήση μόνο</translation>
 <translation id="5630438231335788050">μπάουχαους</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Κατάσταση πύλης</translation>
 <translation id="5763838252932650682">Επανεκκίνηση και ενημέρωση της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Αύξηση φωτεινότητας οθόνης</translation>
+<translation id="5775340474232476653">Ο καθηγητής σας ολοκλήρωσε το μάθημα</translation>
 <translation id="5779818640587041940">Διατήρηση ενεργοποίησης οθόνης κατά την εγγραφή</translation>
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5784136236926853061">Υψηλός λανθάνων χρόνος HTTP</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">πέτρα</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί η συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Επανατοποθετήστε χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">Πατήστε για εγγραφή</translation>
 <translation id="8094062939584182041">Επιτρέψτε στην Google να σας στέλνει μηνύματα ηλεκτρονικού ταχυδρομείου σχετικά με αυτό το ζήτημα</translation>
 <translation id="8104083085214006426">Χρησιμοποιείτε ένα ανοιχτό και μη ασφαλές δίκτυο.</translation>
+<translation id="8110942816572072814">Ο καθηγητής σας έχει κλειδώσει την οθόνη σας</translation>
 <translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>

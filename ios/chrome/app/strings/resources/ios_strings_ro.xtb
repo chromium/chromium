@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Te-ai deconectat. Conectează-te din nou pentru a folosi marcajele, parolele și altele în contul tău.</translation>
 <translation id="1054745118061919935">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK" />Termenii și condițiile<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
+<translation id="1062138828266376352">PIN-ul nu a fost schimbat. Verifică-ți conexiunea la internet și încearcă din nou.</translation>
 <translation id="1066060668811609597">Gestionează sincronizarea</translation>
 <translation id="1076421457278169141">Codul a fost scanat</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} filă}few{{count} file}other{{count} de file}}</translation>
@@ -676,6 +677,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="421070604241073551">Când opțiunea este activată, datele se salvează în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv.</translation>
 <translation id="4224534474590365556">Închizi peste 99 de file inactive?</translation>
 <translation id="422474357428465195">Ai mai multe probleme legate de parole care îți pot periclita securitatea.</translation>
+<translation id="422477017457571619">Protecție în timp real, bazată pe inteligență artificială, împotriva site-urilor, descărcărilor și extensiilor periculoase, pe baza datelor de navigare trimise la Google</translation>
 <translation id="4231395118547300571">Notificările privind Verificarea de siguranță sunt activate</translation>
 <translation id="4237377247299956313">Atinge <ph name="BEGIN_BOLD" />Aplicația browser prestabilită<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Deschide setările</translation>
@@ -1350,10 +1352,12 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7218491361283758048">Cod poștal</translation>
 <translation id="7221173315674413369">Explorează noile funcții și sfaturi în secțiunea Noutăți</translation>
 <translation id="722339453342442311">Verifică acum</translation>
+<translation id="7227235818314667565">Gestionare colaborări</translation>
 <translation id="7233006041370588369">Selectează o parolă de completat.</translation>
 <translation id="7241135764990439166">Modul incognito nu este disponibil</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Istoricul căutărilor<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />alte tipuri de activități<ph name="END_LINK" /> se pot salva în Contul tău Google.</translation>
 <translation id="7253951228444156601">Se verifică parolele…</translation>
+<translation id="7261217796641151584">Trimite grupul</translation>
 <translation id="7271220006028561438">Permite upgrade-urile automate ale cheilor de acces</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
 <translation id="7293429513719260019">Selectează limba</translation>

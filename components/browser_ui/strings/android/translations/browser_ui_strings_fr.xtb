@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Ouvrir la version en ligne</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
+<translation id="1070329623210597193">Fichiers que ce site peut afficher ou modifier</translation>
 <translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les cookies tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1178581264944972037">Suspendre</translation>
@@ -12,6 +13,7 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1240190568154816272">Astuces Chrome</translation>
 <translation id="1242008676835033345">Intégration sur <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">Appuyez sur Applis &gt; Applis par défaut</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1289742167380433257">Pour sauvegarder vos données, les images de cette page ont été optimisées par Google.</translation>
 <translation id="129382876167171263">Les fichiers enregistrés par des sites Web sont répertoriés ici</translation>
@@ -190,6 +192,7 @@
 <translation id="3908288065506437185">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Certaines fonctionnalités sont susceptibles de ne pas fonctionner. Les sites associés peuvent toujours utiliser des cookies tiers.</translation>
+<translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3933121352599513978">Réduire les demandes indésirables (recommandé)</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire les contenus protégés (recommandé)</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -333,6 +336,7 @@
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6064125863973209585">Téléchargements terminés</translation>
 <translation id="6071501408666570960">Il se peut que vous soyez déconnecté de ce site</translation>
+<translation id="6085954183010297841">Supprimer l'autorisation de modification de fichier ? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Lorsque cette option est activée, les sites peuvent demander à savoir quand vous utilisez activement votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas savoir quand vous utilisez activement votre appareil.</translation>
 <translation id="6140839633433422817">Voulez-vous vraiment réinitialiser les autorisations et supprimer les cookies et les données des sites ?</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
@@ -347,6 +351,7 @@
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6207207788774442484">Supprimer les données et réinitialiser les autorisations</translation>
 <translation id="6231752747840485235">Désinstaller <ph name="APP_NAME" /> ?</translation>
+<translation id="6234351944623978659">Appuyez sur Appli de navigateur &gt; Chrome</translation>
 <translation id="6262191102408817757">D'après votre dernier onglet</translation>
 <translation id="6262279340360821358">Autorisations refusées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>

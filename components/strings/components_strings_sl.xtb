@@ -2268,6 +2268,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5087286274860437796">Potrdilo strežnika trenutno ni veljavno.</translation>
 <translation id="5087580092889165836">Dodaj kartico</translation>
 <translation id="5088142053160410913">Sporočilo operaterju</translation>
+<translation id="5089791650329866127">Ta funkcija uporablja podatke, ki ste jih že shranili s samodejnim izpolnjevanjem, na primer naslov.</translation>
 <translation id="5090647584136241764">Dodajte zavihke s podobnimi izdelki, da boste preprosto primerjali podrobnosti, ki so za vas pomembne</translation>
 <translation id="5093232627742069661">Cikcakasto prepogibanje</translation>
 <translation id="5094747076828555589">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chromium ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
@@ -4542,6 +4543,7 @@ Dodatne podrobnosti:
 <translation id="9211461151375991073">Vnesite @, če želite iskati <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Prilagajanje videza</translation>
 <translation id="9215416866750762878">Aplikacija Chromu preprečuje vzpostavitev varne povezave s tem mestom</translation>
+<translation id="921738974253889319">Ta funkcija uporablja podatke, ki ste jih že shranili s samodejnim izpolnjevanjem, na primer naslov. Te podatke lahko pregledate in upravljate na tej strani.</translation>
 <translation id="92178312226016010">Spremljate ta izdelek.</translation>
 <translation id="9218430445555521422">Nastavi kot privzeto</translation>
 <translation id="9219103736887031265">Slike</translation>

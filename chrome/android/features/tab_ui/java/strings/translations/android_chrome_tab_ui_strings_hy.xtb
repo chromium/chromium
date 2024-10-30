@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Ստեղծվել է <ph name="NUM_YEARS_ONE" /> տարի առաջ}one{Ստեղծվել է <ph name="NUM_YEARS_MANY" /> տարի առաջ}other{Ստեղծվել է <ph name="NUM_YEARS_MANY" /> տարի առաջ}}</translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1197088940767939838">Նարնջագույն</translation>
-<translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1273910660700874265">Ներդիրների «<ph name="TITLE_OF_GROUP" />» խմբի ընտրանքներ</translation>
 <translation id="1293272072740285747">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ ջնջեք խումբը, եթե այն այլևս պետք չէ ձեզ։
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Դիտել</translation>
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>
 <translation id="5076161749301278626">Ցուցադրե՞լ խանութի մասին կարծիքները</translation>
-<translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
 <translation id="5094423602314093681">Հեռացնե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}}</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Այս խանութի մասին տեղեկությունները փակված են</translation>
 <translation id="9111228330448174435">Ցույց տալ ներդիրների նոր խումբ ստեղծելու պատուհանը</translation>
 <translation id="9114502155681725011">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների խմբի գործողությունների ընտրացանկը, գույնը՝ <ph name="COLOR_NAME" />։</translation>
-<translation id="9150694013019234766">Էկրանի ներքևի հատվածում գտնվող ներդիրների խմբում կարող եք անցնել մի ներդիրից մյուսը</translation>
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>
 <translation id="9216898458513705996">Այս սարքում ներդիրները կմնան բացված, սակայն խումբը կջնջվի բոլոր սարքերից, որոնցում մուտք եք գործել <ph name="USER_EMAIL" /> հաշիվ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Ծավալել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծավալել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Ծավալել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>

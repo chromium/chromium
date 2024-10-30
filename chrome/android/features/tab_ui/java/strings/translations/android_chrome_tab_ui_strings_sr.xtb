@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Направљено је пре <ph name="NUM_YEARS_ONE" /> године}one{Направљено је пре <ph name="NUM_YEARS_MANY" /> године}few{Направљено је пре <ph name="NUM_YEARS_MANY" /> године}other{Направљено је пре <ph name="NUM_YEARS_MANY" /> година}}</translation>
 <translation id="1173894706177603556">Преименуј</translation>
 <translation id="1197088940767939838">Наранџаста</translation>
-<translation id="125153950246128346">Додирните да бисте видели неку другу картицу</translation>
 <translation id="1273910660700874265">Опције групе картица <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Задржите ову групу да бисте додали картице касније или је избришите ако вам више не треба.
 
@@ -96,7 +95,6 @@
 <translation id="5007392906805964215">Прегледај</translation>
 <translation id="5073204694187207510">Сакријте приказ мреже на целом екрану</translation>
 <translation id="5076161749301278626">Желите да видите рецензије продавница?</translation>
-<translation id="5082793167783849073">Направите групу да бисте брзо упоређивали странице. За почетак додирните и задржите линк.</translation>
 <translation id="5094423602314093681">Желите да уклоните картице и избришете групу?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата}one{<ph name="MANY_ADDED" /> картица је додата}few{<ph name="MANY_ADDED" /> картице су додате}other{<ph name="MANY_ADDED" /> картица је додато}}</translation>
 <translation id="5161254044473106830">Наслов је обавезан</translation>
@@ -196,7 +194,6 @@
 <translation id="9090098097337832354">Информације о овој продавници су затворене</translation>
 <translation id="9111228330448174435">Приказивање дијалога о прављењу нове групе картица</translation>
 <translation id="9114502155681725011">Отворите мени са радњама групе картица за групу картица <ph name="TITLE_OF_GROUP" />, чија боја је <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Прелазите са једне картице на другу у групи картица у дну екрана</translation>
 <translation id="9169594135889675189">Додајте нову картицу у групу</translation>
 <translation id="9216898458513705996">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Проширите групу картица са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>

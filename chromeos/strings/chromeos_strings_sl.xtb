@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">več</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3321030238473337787">Hitrost predvajanja</translation>
+<translation id="3327613592010997943">To napravo boste lahko znova uporabljali <ph name="DAY" /> ob <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavitve</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">siva</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5600027863942488546">Tipka <ph name="KEY_NAME" /> je bila preizkušena.</translation>
+<translation id="5606865426897221650">Tabulatorka</translation>
 <translation id="5613201299517339763">Odjavljeni ste</translation>
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="5763838252932650682">Vnovični zagon in posodabljanje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Povečanje svetlosti zaslona</translation>
+<translation id="5775340474232476653">Učitelj je končal predavanje</translation>
 <translation id="5779818640587041940">Med snemanjem naj zaslon ostane vklopljen</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5784136236926853061">Velika zakasnitev HTTP</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">kamen</translation>
 <translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Skrbnik <ph name="MANAGER" /> je določil, kdaj je mogoče uporabljati to napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Prestavljanje z miško ali puščičnimi tipkami.</translation>
 <translation id="7618774594543487847">Nevtralna</translation>
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">Pritisnite za snemanje</translation>
 <translation id="8094062939584182041">Googlu dovolite, da se po e-pošti obrne na vas glede te težave</translation>
 <translation id="8104083085214006426">Uporabljate odprto omrežje, ki ni varno.</translation>
+<translation id="8110942816572072814">Učitelj je zaklenil vaš zaslon</translation>
 <translation id="811820734797650957">Prehod je mogoče preveriti (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potrdi</translation>

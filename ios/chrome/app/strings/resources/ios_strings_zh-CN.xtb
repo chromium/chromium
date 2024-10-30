@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="10614374240317010">一律不保存</translation>
+<translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
 <translation id="1066060668811609597">管理同步数据</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
@@ -676,6 +677,7 @@
 <translation id="421070604241073551">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上。</translation>
 <translation id="4224534474590365556">要关闭超过 99 个闲置标签页吗？</translation>
 <translation id="422474357428465195">您有多个密码问题，这可能会给您带来安全风险。</translation>
+<translation id="422477017457571619">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，使您免受危险网站、下载内容和扩展程序的侵害</translation>
 <translation id="4231395118547300571">已开启安全检查通知</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -1350,10 +1352,12 @@
 <translation id="7218491361283758048">邮编</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
 <translation id="722339453342442311">立即检查</translation>
+<translation id="7227235818314667565">管理分享设置</translation>
 <translation id="7233006041370588369">选择要填充的密码。</translation>
 <translation id="7241135764990439166">无痕模式不可用</translation>
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />可能会保存在您的 Google 账号中。</translation>
 <translation id="7253951228444156601">正在检查密码…</translation>
+<translation id="7261217796641151584">分享分组</translation>
 <translation id="7271220006028561438">允许自动升级为通行密钥</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7293429513719260019">选择语言</translation>

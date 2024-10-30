@@ -2268,6 +2268,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5087286274860437796">Hindi angkop ang certificate ng server sa oras na ito.</translation>
 <translation id="5087580092889165836">Magdagdag ng card</translation>
 <translation id="5088142053160410913">Mensahe sa operator</translation>
+<translation id="5089791650329866127">Ginagamit ng feature na ito ang impormasyong na-save mo na sa autofill, gaya ng iyong address</translation>
 <translation id="5090647584136241764">Magdagdag ng mga tab na may magkakatulad na produkto para madaling paghambingin ang mga detalyeng mahalaga sa iyo</translation>
 <translation id="5093232627742069661">Z-fold</translation>
 <translation id="5094747076828555589">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng Chromium ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
@@ -4542,6 +4543,7 @@ Mga karagdagang detalye:
 <translation id="9211461151375991073">I-type ang @ para maghanap sa <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">I-customize ang hitsura</translation>
 <translation id="9215416866750762878">Pinipigilan ng isang application na makakonekta nang ligtas ang Chrome sa site na ito</translation>
+<translation id="921738974253889319">Ginagamit ng feature na ito ang impormasyong na-save mo na sa autofill, gaya ng iyong address. Puwede mong suriin at pamahalaan ang data na ito sa page na ito.</translation>
 <translation id="92178312226016010">Sinusubaybayan mo ang produktong ito.</translation>
 <translation id="9218430445555521422">Itakda bilang default</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>

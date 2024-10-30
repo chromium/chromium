@@ -843,6 +843,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="496392417432935267">Wedi'i agor rhywle arall</translation>
 <translation id="4971735654804503942">Amddiffyniad cynt a rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus. Mae'n eich rhybuddio am achosion o dor diogelwch mewn perthynas â chyfrineiriau. Mae angen anfon data pori at Google.</translation>
 <translation id="4979397965658815378">Mewngofnodwch gyda'ch Cyfrif Google i gael eich nodau tudalen, eich cyfrineiriau, eich hanes a'ch gosodiadau eraill ar eich holl ddyfeisiau</translation>
+<translation id="498624032394115435">Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau.</translation>
 <translation id="4989065233040279145">Dewiswch ble i gadw <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Lliw grŵp tabiau <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copïo'r cyfrinair</translation>
@@ -1349,10 +1350,12 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7218491361283758048">Cod zip</translation>
 <translation id="7221173315674413369">Archwiliwch nodweddion ac awgrymiadau newydd yn Beth sy'n Newydd</translation>
 <translation id="722339453342442311">Gwirio nawr</translation>
+<translation id="7227235818314667565">Rheoli Rhannu</translation>
 <translation id="7233006041370588369">Dewis cyfrinair i'w lenwi.</translation>
 <translation id="7241135764990439166">Nid yw'r modd Anhysbys ar gael</translation>
 <translation id="7248046129087111453">Mae'n bosib y bydd <ph name="BEGIN_LINK" />hanes chwilio<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />ffurfiau eraill o weithgarwch<ph name="END_LINK" /> yn cael eu cadw yn eich Cyfrif Google.</translation>
 <translation id="7253951228444156601">Wrthi'n gwirio cyfrineiriau…</translation>
+<translation id="7261217796641151584">Rhannu Grŵp</translation>
 <translation id="7271220006028561438">Caniatáu uwchraddio cod pas awtomatig</translation>
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
 <translation id="7293429513719260019">Dewis iaith</translation>

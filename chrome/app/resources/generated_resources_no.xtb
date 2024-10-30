@@ -424,6 +424,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1288037062697528143">Nattlys blir slått på automatisk ved solnedgang</translation>
 <translation id="1288300545283011870">Taleegenskaper</translation>
 <translation id="1289619947962767206">Dette alternativet støttes ikke lenger. For å presentere en fane, bruk <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Hvis du velger en bevegelse som allerede er tilordnet, fjernes den fra den opprinnelige handlingen.</translation>
 <translation id="1291119821938122630">Vilkår for bruk av <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Tilbakestill taster</translation>
 <translation id="1292849930724124745">Sett inn smartkortet for å forbli pålogget</translation>
@@ -6737,6 +6738,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5832970156002835240">Tillat på alle nettsteder</translation>
 <translation id="5833397272224757657">Bruker innhold fra nettsteder du besøker, nettleseraktivitet og andre interaksjoner for å gi ting et personlig preg</translation>
 <translation id="5833726373896279253">Disse innstillingene kan bare modifiseres av eieren:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Ikke la nettsteder bruke JavaScript</translation>
 <translation id="583431638776747">Nettstedet var ikke tilgjengelig</translation>
 <translation id="5834581999798853053">Omtrent <ph name="TIME" /> minutter igjen</translation>

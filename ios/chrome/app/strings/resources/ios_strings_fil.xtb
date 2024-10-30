@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Nag-Sign out. Mag-sign in ulit para magamit ang mga bookmark, password, at higit pa sa iyong account.</translation>
 <translation id="1054745118061919935">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Hindi kailanman nag-save</translation>
+<translation id="1062138828266376352">Hindi napalitan ang iyong PIN. Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="1066060668811609597">Pamahalaan ang Pag-sync</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}one{{count} tab}other{{count} na tab}}</translation>
@@ -676,6 +677,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="421070604241073551">Kapag naka-on, mase-save ang data sa iyong Google Account. Kapag naka-off, mase-save lang ang data sa device na ito.</translation>
 <translation id="4224534474590365556">Isara ang 99+ na hindi aktibong tab?</translation>
 <translation id="422474357428465195">Mayroon kang ilang isyu sa password na naglalagay ng iyong seguridad sa panganib.</translation>
+<translation id="422477017457571619">Real-time at AI-powered na proteksyon laban sa mga mapanganib na site, download, at extension na nakabatay sa iyong data mula sa pag-browse na ipinapadala sa Google</translation>
 <translation id="4231395118547300571">Naka-on ang mga notification sa Pag-check sa Kaligtasan</translation>
 <translation id="4237377247299956313">I-tap ang <ph name="BEGIN_BOLD" />Default na Browser App<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
@@ -1350,10 +1352,12 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7218491361283758048">Zip code</translation>
 <translation id="7221173315674413369">Mag-explore ng mga bagong feature at tip sa Ano’ng Bago</translation>
 <translation id="722339453342442311">Suriin ngayon</translation>
+<translation id="7227235818314667565">Pamahalaan ang Pag-share</translation>
 <translation id="7233006041370588369">Pumili ng password na pupunan</translation>
 <translation id="7241135764990439166">Hindi available ang Incognito mode</translation>
 <translation id="7248046129087111453">Posibleng naka-save sa iyong Google Account ang <ph name="BEGIN_LINK" />history ng paghahanap<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />iba pang anyo ng aktibidad<ph name="END_LINK" />.</translation>
 <translation id="7253951228444156601">Sinusuri ang mga password…</translation>
+<translation id="7261217796641151584">I-share ang Grupo</translation>
 <translation id="7271220006028561438">Payagan ang mga awtomatikong pag-upgrade sa passkey</translation>
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
 <translation id="7293429513719260019">Pumili ng wika</translation>

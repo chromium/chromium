@@ -843,6 +843,7 @@
 <translation id="496392417432935267">ההגדרה פתוחה במקום אחר</translation>
 <translation id="4971735654804503942">‏הגנה מהירה יותר ואקטיבית מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google.</translation>
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
+<translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
 <translation id="4989065233040279145">בחירת מיקום לשמירת הקובץ <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">הצבע של קבוצת הכרטיסיות <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
@@ -1349,10 +1350,12 @@
 <translation id="7218491361283758048">מיקוד</translation>
 <translation id="7221173315674413369">בתכונה 'מה חדש' אפשר לגלות תכונות וטיפים חדשים</translation>
 <translation id="722339453342442311">לבדיקה</translation>
+<translation id="7227235818314667565">ניהול השיתוף</translation>
 <translation id="7233006041370588369">צריך לבחור סיסמה למילוי.</translation>
 <translation id="7241135764990439166">המצב הפרטי לא זמין</translation>
 <translation id="7248046129087111453">‏<ph name="BEGIN_LINK" />היסטוריית החיפושים<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />סוגי פעילות אחרים<ph name="END_LINK" /> עשויים להישמר בחשבון שלך ב-Google.</translation>
 <translation id="7253951228444156601">הסיסמאות נבדקות…</translation>
+<translation id="7261217796641151584">שיתוף קבוצה</translation>
 <translation id="7271220006028561438">הפעלת שדרוגים אוטומטיים של מפתחות גישה</translation>
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>

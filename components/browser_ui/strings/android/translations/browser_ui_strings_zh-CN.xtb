@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
+<translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">展开</translation>
 <translation id="6064125863973209585">下载已完成</translation>
 <translation id="6071501408666570960">您可能已从此网站上退出账号</translation>
+<translation id="6085954183010297841">要撤消文件修改权限吗？<ph name="FILE" /></translation>
 <translation id="6120483543004435978">开启此设置后，网站可以请求监测您是否正在使用设备。关闭此设置后，网站无法得知您是否正在使用设备。</translation>
 <translation id="6140839633433422817">确定要重置权限并删除 Cookie 和网站数据吗？</translation>
 <translation id="6165508094623778733">了解详情</translation>

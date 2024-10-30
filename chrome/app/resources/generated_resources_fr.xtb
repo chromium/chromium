@@ -429,6 +429,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1291421198328146277">Réinitialiser les touches</translation>
 <translation id="1292849930724124745">Insérez votre carte à puce pour rester connecté</translation>
 <translation id="1293264513303784526">Appareil USB de type C (port situé sur la gauche de l'appareil)</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" risque de se chevaucher avec "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" et "<ph name="CONFLICTING_GESTURE_THREE" />". Si possible, essayez de choisir un autre geste.</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1294807885394205587">Ce processus peut prendre quelques minutes. Démarrage du gestionnaire de conteneurs…</translation>
 <translation id="12951065153783848">Votre organisation gère votre compte</translation>
@@ -615,6 +616,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="1436784010935106834">Supprimé</translation>
 <translation id="1437986450143295708">Décrivez en détail le problème rencontré</translation>
+<translation id="1438630805136563416">Action <ph name="REMOVED_ACTION" /> supprimée</translation>
 <translation id="1439671507542716852">support à long terme</translation>
 <translation id="1440090277117135316">Enregistrement auprès de l'établissement terminé</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> sélectionnés</translation>
@@ -980,6 +982,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1677306805708094828">Impossible d'ajouter <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Échec de l'analyse. Ce fichier est peut-être un virus ou un logiciel malveillant.</translation>
+<translation id="1678919064276516737">L'adresse e-mail et le code saisis ne correspondent pas</translation>
 <translation id="1679068421605151609">Outils pour les développeurs</translation>
 <translation id="1679810534535368772">Voulez-vous vraiment quitter cet écran ?</translation>
 <translation id="167983332380191032">Le service de gestion a renvoyé une erreur HTTP.</translation>
@@ -1425,6 +1428,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1981434377190976112">Lire toutes vos données sur tous les sites Web</translation>
 <translation id="1983074053702805575">{count,plural, =1{votre {field_1}}=2{vos {field_1} et {field_2}}one{vos {field_1}, {field_2} et {field_3}}other{vos {field_1}, {field_2} et {field_3}}}</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
+<translation id="198507684520034826">Aide</translation>
 <translation id="1986836014090708999">Paramètres de localisation avancés</translation>
 <translation id="1987317783729300807">Comptes</translation>
 <translation id="1987574314042117472">Sélectionner et installer les applis populaires</translation>
@@ -2614,6 +2618,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" risque de se chevaucher avec "<ph name="CONFLICTING_GESTURE_ONE" />" et "<ph name="CONFLICTING_GESTURE_TWO" />". Si possible, essayez de choisir un autre geste.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Le format Thunderbolt n'est pas compatible</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés afin que vous puissiez vous connecter instantanément</translation>
@@ -2919,6 +2924,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3029466929721441205">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="3029808567601324798">Délai de verrouillage</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de télécharger une mise à jour aujourd'hui. Cette mise à jour sera téléchargée automatiquement lorsque vous vous connecterez à Internet.}one{<ph name="MANAGER" /> vous demande de télécharger une mise à jour avant la date limite. Cette mise à jour sera téléchargée automatiquement lorsque vous vous connecterez à Internet.}other{<ph name="MANAGER" /> vous demande de télécharger une mise à jour avant la date limite. Cette mise à jour sera téléchargée automatiquement lorsque vous vous connecterez à Internet.}}</translation>
+<translation id="3030772324014024606">Modifier</translation>
 <translation id="3030967311408872958">Du coucher au lever du soleil</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Utiliser le pavé tactile et le clavier pour effectuer un clic droit</translation>
@@ -4022,6 +4028,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3824621460022590830">Le jeton d'enregistrement de l'appareil n'est pas valide. Veuillez contacter le propriétaire ou l'administrateur de l'appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Connectez-vous pour voir les onglets d'autres appareils</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mémoriser mon choix pour ce type de fichier : <ph name="FILE_TYPES" />}one{Mémoriser mon choix pour ce type de fichier : <ph name="FILE_TYPES" />}other{Mémoriser mes choix pour ces types de fichiers : <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Afficher</translation>
 <translation id="3825635794653163640">Afficher le point sur l'icône de l'appli pour les alertes</translation>
 <translation id="3826071569074535339">Autorisé à utiliser des capteurs de mouvement</translation>
 <translation id="3826086052025847742">Journaux ChromeOS Flex</translation>
@@ -4133,6 +4140,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3905761538810670789">Réparer l'application</translation>
 <translation id="3908288065506437185">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3908501907586732282">Activer l'extension</translation>
+<translation id="3909456989251621103">Si vous supprimez un certificat de serveur, Chrome ne l'utilisera plus pour identifier les serveurs.</translation>
 <translation id="3909701002594999354">Afficher toutes les commandes</translation>
 <translation id="3909791450649380159">Cou&amp;per</translation>
 <translation id="39103738135459590">Code d'activation</translation>
@@ -4344,6 +4352,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="404894744863342743">Quand vous n'avez plus besoin du fichier téléchargé, supprimez-le afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact n'est pas disponible. Pour utiliser le Partage à proximité avec cette personne, ajoutez à vos contacts l'adresse e-mail associée à son compte Google.}one{# contact n'est pas disponible. Pour utiliser le Partage à proximité avec cette personne, ajoutez à vos contacts l'adresse e-mail associée à son compte Google.}other{# contacts ne sont pas disponibles. Pour utiliser le Partage à proximité avec ces personnes, ajoutez à vos contacts les adresses e-mail associées à leurs comptes Google.}}</translation>
 <translation id="4050225813016893843">Méthode d'authentification</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" risque de se chevaucher avec "<ph name="CONFLICTING_GESTURE" />". Si possible, essayez de choisir un autre geste.</translation>
 <translation id="4050534976465737778">Assurez-vous que les deux appareils sont déverrouillés, qu'ils sont proches l'un de l'autre et que le Bluetooth est activé sur les deux. Si vous partagez des fichiers avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que l'option "Visibilité à proximité" est activée sur celui-ci. Pour cela, ouvrez la zone d'état, puis sélectionnez "Visibilité à proximité". <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Pour reprendre le dernier mode de saisie utilisé, appuyez sur <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Recherche+Flèche vers la droite</translation>
@@ -5050,6 +5059,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4581774856936278355">Erreur lors de la restauration de Linux</translation>
 <translation id="4582297591746054421">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
+<translation id="4584770411839426377">Fenêtre</translation>
 <translation id="4585793705637313973">Modifier la page</translation>
 <translation id="4586275095964870617">Impossible d'ouvrir <ph name="URL" /> dans le navigateur secondaire. Veuillez contacter votre administrateur système.</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -5441,6 +5451,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4872192066608821120">Pour importer des mots de passe, sélectionnez un fichier CSV</translation>
 <translation id="4872212987539553601">Configurer le chiffrement sur l'appareil</translation>
 <translation id="4873312501243535625">Vérification de fichiers multimédias</translation>
+<translation id="4875690134140862902">Onglet</translation>
 <translation id="4876273079589074638">Aidez nos ingénieurs à trouver l'origine de ce plantage pour y apporter une solution. Dans la mesure du possible, indiquez précisément les étapes suivies. Chaque détail compte.</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
 <translation id="4876327226315760474">Cela signifie que les fonctionnalités du site devraient fonctionner comme prévu, mais que votre navigation pourrait être moins sécurisée.</translation>
@@ -5553,6 +5564,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="495170559598752135">Actions</translation>
 <translation id="4951966678293618079">Ne jamais enregistrer les mots de passe pour ce site</translation>
 <translation id="4953808748584563296">Avatar orange par défaut</translation>
+<translation id="4954652437333037880">Fichier</translation>
 <translation id="4955707703665801001">Visibilité du <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Configurer un code</translation>
 <translation id="4956847150856741762">1</translation>
@@ -7812,6 +7824,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6635674640674343739">Impossible d'établir la connexion au réseau. Vérifiez votre connexion réseau et réessayez.</translation>
 <translation id="663569763553406962">Voir les extensions qui peuvent lire ou modifier un site</translation>
 <translation id="6635944431854494329">Le propriétaire peut contrôler cette fonctionnalité dans Paramètres &gt; Paramètres avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.</translation>
+<translation id="6636258750460740634">Historique</translation>
 <translation id="6636623428211296678">Découvrez d'autres paramètres ci-dessous ou terminez maintenant</translation>
 <translation id="6639554308659482635">Mémoire SQLite</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>

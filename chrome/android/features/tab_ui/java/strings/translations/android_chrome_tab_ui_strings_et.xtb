@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Loodud <ph name="NUM_YEARS_ONE" /> aasta tagasi}other{Loodud <ph name="NUM_YEARS_MANY" /> aastat tagasi}}</translation>
 <translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1197088940767939838">Oranž</translation>
-<translation id="125153950246128346">Puudutage muu vahelehe vaatamiseks</translation>
 <translation id="1273910660700874265">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> valikud</translation>
 <translation id="1293272072740285747">Saate selle grupi säilitada, et lisada vahelehed hiljem, või selle kustutada, kui seda enam vaja pole.
 
@@ -96,7 +95,6 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="5007392906805964215">Vaata üle</translation>
 <translation id="5073204694187207510">Peida täisekraani ruudustik</translation>
 <translation id="5076161749301278626">Kas kuvada poe arvustused?</translation>
-<translation id="5082793167783849073">Looge rühm, et lehti kiiresti võrrelda. Alustamiseks puudutage pikalt linki.</translation>
 <translation id="5094423602314093681">Kas eemaldada vahelehed ja kustutada grupp?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati}other{<ph name="MANY_ADDED" /> vahelehte lisati}}</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
@@ -196,7 +194,6 @@ Kui lahkute, kaotate kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GR
 <translation id="9090098097337832354">Selle poe teave suleti</translation>
 <translation id="9111228330448174435">Kuva uue vahelehegrupi loomisel dialoog</translation>
 <translation id="9114502155681725011">Avage vahelehegrupi <ph name="TITLE_OF_GROUP" /> toimingute menüü, värv <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Ekraanikuva allosas olevas vahelehtede grupis vahelehtede vahel vahetamine</translation>
 <translation id="9169594135889675189">Lisa gruppi uus vaheleht</translation>
 <translation id="9216898458513705996">Vahelehegrupid jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest teistest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegruppi, värv on <ph name="COLOR_NAME" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegruppi, värv on <ph name="COLOR_NAME" />.}}</translation>

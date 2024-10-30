@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Apri online</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
+<translation id="1070329623210597193">File che questo sito può visualizzare o modificare</translation>
 <translation id="1073417869336441572">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Usa Chrome per impostazione predefinita</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Altro</translation>
 <translation id="6064125863973209585">Download completati</translation>
 <translation id="6071501408666570960">Il tuo account potrebbe essere disconnesso da questo sito</translation>
+<translation id="6085954183010297841">Eliminare autorizzazione di modifica file? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quando l'opzione è attiva, i siti possono chiederti di sapere quando stai utilizzando attivamente il tuo dispositivo. Quando l'opzione è disattivata, i siti non possono sapere quando stai utilizzando attivamente il tuo dispositivo.</translation>
 <translation id="6140839633433422817">Vuoi reimpostare le autorizzazioni ed eliminare cookie e dati dei siti?</translation>
 <translation id="6165508094623778733">Scopri di più</translation>

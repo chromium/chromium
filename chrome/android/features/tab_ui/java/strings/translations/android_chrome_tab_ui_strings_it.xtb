@@ -7,7 +7,6 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_YEARS_ONE" /> anno fa}other{Creato <ph name="NUM_YEARS_MANY" /> anni fa}}</translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1197088940767939838">Arancione</translation>
-<translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
 <translation id="1273910660700874265">Opzioni del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1293272072740285747">Mantieni questo gruppo per aggiungere schede in un secondo momento o eliminalo se non ti serve più.
 
@@ -96,7 +95,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
-<translation id="5082793167783849073">Confronta rapidamente le pagine creando un gruppo. Innanzitutto, tocca e tieni premuto un link.</translation>
 <translation id="5094423602314093681">Rimuovere le schede ed eliminare il gruppo?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta}other{<ph name="MANY_ADDED" /> schede aggiunte}}</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
@@ -196,7 +194,6 @@ Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_
 <translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
 <translation id="9111228330448174435">Mostra la finestra di dialogo alla creazione di un nuovo gruppo di schede</translation>
 <translation id="9114502155681725011">Apri il menu Azioni del gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
-<translation id="9150694013019234766">Passa da una scheda all'altra del gruppo di schede nella parte inferiore dello schermo</translation>
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
 <translation id="9216898458513705996">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
