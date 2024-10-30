@@ -207,24 +207,13 @@ static constexpr LinearModelConfig<float, 2u> kCrossFadeAnimation{
                    }}};
 
 //=============================== Scrim animation ==============================
-// The scrim range is from 0.2 to 0 in dark mode and 0.1 to 0 in light mode. The
-// scrim value is a linear function of the top layer's position.
-static constexpr LinearModelConfig<float, 2u> kScrimAnimationLightMode{
+// The scrim range is from 0.65 to 0 in both light and dark modes.
+// The scrim value is a linear function of the top layer's position.
+static constexpr LinearModelConfig<float, 2u> kScrimAnimation{
     .target_property = TargetProperty::kScrim,
     .key_frames = {KeyFrame{
                        .time = base::TimeDelta(),
-                       .value = 0.1f,
-                   },
-                   KeyFrame{
-                       .time = kFittedTimelineDuration,
-                       .value = 0.0f,
-                   }}};
-
-static constexpr LinearModelConfig<float, 2u> kScrimAnimationDarkMode{
-    .target_property = TargetProperty::kScrim,
-    .key_frames = {KeyFrame{
-                       .time = base::TimeDelta(),
-                       .value = 0.2f,
+                       .value = 0.65f,
                    },
                    KeyFrame{
                        .time = kFittedTimelineDuration,
@@ -1325,17 +1314,8 @@ void BackForwardTransitionAnimator::
   // at which we must have no models yet.
   CHECK(effect_.keyframe_models().empty());
 
-  const blink::web_pref::WebPreferences& web_prefs =
-      animation_manager_->web_contents_view_android()
-          ->web_contents()
-          ->GetOrCreateWebPreferences();
+  AddLinearModelToEffect(kScrimAnimation, this, effect_);
 
-  if (web_prefs.preferred_color_scheme ==
-      blink::mojom::PreferredColorScheme::kDark) {
-    AddLinearModelToEffect(kScrimAnimationDarkMode, this, effect_);
-  } else {
-    AddLinearModelToEffect(kScrimAnimationLightMode, this, effect_);
-  }
   if (rounded_rectangle_) {
     CHECK(fallback_ux_);
     AddLinearModelToEffect(kRRectOpacityModel, this, effect_);

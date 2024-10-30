@@ -131,11 +131,13 @@ AssertionResult ColorsNear(const SkColor4f& e, const SkColor4f& a) {
          << "," << a.fA << "].";
 }
 
-// For light mode.
-static constexpr SkColor4f kScrimColorAtStart = {0, 0, 0, 0.1f};
-static constexpr SkColor4f kScrimColorAt30 = {0, 0, 0, 0.0745f};
-static constexpr SkColor4f kScrimColorAt60 = {0, 0, 0, 0.049f};
-static constexpr SkColor4f kScrimColorAt90 = {0, 0, 0, 0.0235f};
+// Color values with scrim for light/dark modes.
+// The scrim is calculated as follows: 0.65 * (1 - [percent] * 0.85)
+// For example, scrim at 30% is 0.65 * (1 - 0.3 * 0.85).
+static constexpr SkColor4f kScrimColorAtStart = {0, 0, 0, 0.65f};
+static constexpr SkColor4f kScrimColorAt30 = {0, 0, 0, 0.48425f};
+static constexpr SkColor4f kScrimColorAt60 = {0, 0, 0, 0.3185f};
+static constexpr SkColor4f kScrimColorAt90 = {0, 0, 0, 0.15275f};
 
 int64_t GetItemSequenceNumberForNavigation(
     NavigationHandle* navigation_handle) {
@@ -874,45 +876,29 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
-                       DarkModeScrim) {
+                       Scrim) {
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
-
-  blink::web_pref::WebPreferences prefs =
-      web_contents()->GetOrCreateWebPreferences();
-  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kDark;
-  web_contents()->SetWebPreferences(prefs);
-
-  // Dark mode has twice the scrim from the light mode.
-  const SkColor4f kDMScrimColorAtStart = {0, 0, 0, kScrimColorAtStart.fA * 2};
-  const SkColor4f kDMScrimColorAt30 = {0, 0, 0, kScrimColorAt30.fA * 2};
-  const SkColor4f kDMScrimColorAt60 = {0, 0, 0, kScrimColorAt60.fA * 2};
-  const SkColor4f kDMScrimColorAt90 = {0, 0, 0, kScrimColorAt90.fA * 2};
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
                                           NavType::kBackward);
   ASSERT_TRUE(GetScrimLayer());
   EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAtStart, GetScrimLayer()->background_color()));
+      ColorsNear(kScrimColorAtStart, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt30, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt90, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt30, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
 }
 
 // Tests the translation of the live page as the gesture is progressed in both
@@ -1101,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   // Only a screenshot layer with a scrim should have been added, under the live
   // page.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
-  ASSERT_EQ(GetScrimLayer()->background_color().fA, 0.1f);
+  ASSERT_EQ(GetScrimLayer()->background_color().fA, 0.65f);
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
 
