@@ -128,6 +128,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -2870,9 +2871,17 @@ using UserFeedbackDataCallback =
     return;
   }
 
-  id<SettingsCommands> settingsHandler = HandlerForProtocol(
-      self.currentInterface.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showClearBrowsingDataSettings];
+  CommandDispatcher* dispatcher =
+      self.currentInterface.browser->GetCommandDispatcher();
+  if (IsIosQuickDeleteEnabled()) {
+    id<QuickDeleteCommands> quickDeleteHandler =
+        HandlerForProtocol(dispatcher, QuickDeleteCommands);
+    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
+  } else {
+    id<SettingsCommands> settingsHandler =
+        HandlerForProtocol(dispatcher, SettingsCommands);
+    [settingsHandler showClearBrowsingDataSettings];
+  }
 }
 
 - (void)openLatestTab {
