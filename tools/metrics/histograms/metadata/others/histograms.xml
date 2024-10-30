@@ -220,6 +220,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DidStartLoading"/>
   <variant name="DidStartNavigation"/>
   <variant name="DidStopLoading"/>
+  <variant name="DidUpdateNavigationHandleTiming"/>
   <variant name="DocumentAvailableInMainFrame"/>
   <variant name="DOMContentLoaded"/>
   <variant name="LoadProgressChanged"/>
