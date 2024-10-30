@@ -995,6 +995,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ios_runtime_cache_18_2",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "runtime_ios_18_2",
+                path = "Runtime-ios-18.2",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "ioswpt-chromium-swarming-pool",
     generate_pyl_entry = False,
     swarming = targets.swarming(
@@ -2257,12 +2270,12 @@ targets.mixin(
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "16a242d",
+        "16b40",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16a242d",
+                name = "xcode_ios_16b40",
                 path = "Xcode.app",
             ),
         ],
@@ -2270,16 +2283,16 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "xcode_16_1_beta",
+    name = "xcode_16_2_beta",
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "16b40",
+        "16b5100e",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16b40",
+                name = "xcode_ios_16b5100e",
                 path = "Xcode.app",
             ),
         ],

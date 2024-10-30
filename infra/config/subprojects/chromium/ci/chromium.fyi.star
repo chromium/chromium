@@ -2346,7 +2346,7 @@ fyi_ios_builder(
             "mac_default_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_1_beta",
+            "xcode_16_2_beta",
             "xctest",
         ],
     ),
@@ -2400,7 +2400,7 @@ fyi_ios_builder(
             short_name = "dev",
         ),
     ],
-    xcode = xcode.x16_1betabots,
+    xcode = xcode.x16_2betabots,
 )
 
 fyi_ios_builder(
@@ -2441,7 +2441,7 @@ fyi_ios_builder(
             "mac_14_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_1_beta",
+            "xcode_16_2_beta",
             "xctest",
         ],
     ),
@@ -2452,7 +2452,7 @@ fyi_ios_builder(
             short_name = "sdk17",
         ),
     ],
-    xcode = xcode.x16_1betabots,
+    xcode = xcode.x16_2betabots,
 )
 
 fyi_ios_builder(
