@@ -289,7 +289,7 @@ std::unique_ptr<views::View> SaveIbanBubbleView::CreateLegalMessageView() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
-  legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
+  legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
       message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
       GetProfileAvatar(controller()->GetAccountInfo()),
       base::BindRepeating(&SaveIbanBubbleView::LinkClicked,

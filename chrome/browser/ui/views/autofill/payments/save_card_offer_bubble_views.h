@@ -57,7 +57,7 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
   std::unique_ptr<views::View> CreateLoadingRow();
-  std::unique_ptr<LegalMessageView> CreateLegalMessageView();
+  std::unique_ptr<views::View> CreateLegalMessageView();
 
   void LinkClicked(const GURL& url);
   void ShowThrobber();

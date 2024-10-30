@@ -15,11 +15,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/view.h"
 
 class GURL;
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -51,26 +51,17 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
   gfx::Size GetMinimumSize() const override;
 };
 
-// Defines a view with legal message. This class handles the legal message
-// parsing and the links clicking events.
-class LegalMessageView : public views::BoxLayoutView {
-  METADATA_HEADER(LegalMessageView, views::BoxLayoutView)
-
- public:
-  using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
-
-  // Along with the legal message lines and link callbacks, user email and
-  // avatar will be displayed at the bottom line of this view if both
-  // `user_email` and `user_avatar` are present.
-  LegalMessageView(const LegalMessageLines& legal_message_lines,
-                   const std::u16string& user_email,
-                   const ui::ImageModel& user_avatar,
-                   LinkClickedCallback callback);
-  ~LegalMessageView() override;
-};
-
 PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
     const views::Widget* widget);
+
+// Creates a view with a legal message.  Along with the legal message lines and
+// link callbacks, the user email and the user avatar will be displayed at the
+// bottom line of this view if both `user_email` and `user_avatar` are present.
+std::unique_ptr<views::View> CreateLegalMessageView(
+    const LegalMessageLines& legal_message_lines,
+    const std::u16string& user_email,
+    const ui::ImageModel& user_avatar,
+    base::RepeatingCallback<void(const GURL&)> callback);
 
 // TODO(crbug.com/40197696): Replace all payments' progress bars with this.
 // Creates a progress bar with an explanatory text below.

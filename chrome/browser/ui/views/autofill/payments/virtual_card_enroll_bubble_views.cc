@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -222,20 +223,20 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
 
   const LegalMessageLines google_legal_message =
       controller_->GetUiModel().enrollment_fields().google_legal_message;
-  const LegalMessageLines issuser_legal_message =
+  const LegalMessageLines issuer_legal_message =
       controller_->GetUiModel().enrollment_fields().issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
-  legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
+  legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
       google_legal_message, /*user_email=*/std::u16string(),
       /*user_avatar=*/ui::ImageModel(),
       base::BindRepeating(
           &VirtualCardEnrollBubbleViews::GoogleLegalMessageClicked,
           base::Unretained(this))));
 
-  if (!issuser_legal_message.empty()) {
-    legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-        issuser_legal_message, /*user_email=*/std::u16string(),
+  if (!issuer_legal_message.empty()) {
+    legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
+        issuer_legal_message, /*user_email=*/std::u16string(),
         /*user_avatar=*/ui::ImageModel(),
         base::BindRepeating(
             &VirtualCardEnrollBubbleViews::IssuerLegalMessageClicked,

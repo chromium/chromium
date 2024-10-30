@@ -333,7 +333,7 @@ class LocalCardMigrationOfferView : public views::View {
         AddChildView(std::make_unique<views::ScrollView>());
     legal_message_container->SetHorizontalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
-    legal_message_container->SetContents(std::make_unique<LegalMessageView>(
+    legal_message_container->SetContents(CreateLegalMessageView(
         controller->GetLegalMessageLines(), /*user_email=*/std::u16string(),
         /*user_avatar=*/ui::ImageModel(),
         base::BindRepeating(

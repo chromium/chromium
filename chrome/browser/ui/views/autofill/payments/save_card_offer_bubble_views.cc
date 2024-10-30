@@ -416,7 +416,7 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
   return upload_explanation_tooltip;
 }
 
-std::unique_ptr<LegalMessageView>
+std::unique_ptr<views::View>
 SaveCardOfferBubbleViews::CreateLegalMessageView() {
   const LegalMessageLines message_lines = controller()->GetLegalMessageLines();
 
@@ -424,13 +424,11 @@ SaveCardOfferBubbleViews::CreateLegalMessageView() {
     return nullptr;
   }
 
-  LegalMessageView::LinkClickedCallback LegalMessageCallBack =
-      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
-                          base::Unretained(this));
-
-  return std::make_unique<LegalMessageView>(
+  return ::autofill::CreateLegalMessageView(
       message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
-      GetProfileAvatar(controller()->GetAccountInfo()), LegalMessageCallBack);
+      GetProfileAvatar(controller()->GetAccountInfo()),
+      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                          base::Unretained(this)));
 }
 
 std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateLoadingRow() {
