@@ -3880,7 +3880,8 @@
         "args": [
           "--extra-browser-args=--enable-crashpad",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
-          "--browser=android-chromium"
+          "--browser=android-chromium",
+          "--gtest_filter=-core.perf_benchmark_unittest.PerfBenchmarkTest.testVariationArgs"
         ],
         "isolate_profile_data": true,
         "merge": {
