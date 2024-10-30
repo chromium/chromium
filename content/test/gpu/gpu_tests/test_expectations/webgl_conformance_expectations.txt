@@ -766,7 +766,7 @@ crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_text
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_WEBGL_draw_buffers [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
+crbug.com/1287280 [ android-14 android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
 # TODO(crbug.com/371971708): Re-add the context-lost expectations after the
 # expectations associated with crbug.com/371971708 are removed.
 # crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
@@ -877,7 +877,6 @@ crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-up
 
 crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 
-crbug.com/337904214 [ win angle-d3d9 intel-0x4680 passthrough release ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 #################################################################
 # Temporary suppressions for introduction of drawingBufferStorage
