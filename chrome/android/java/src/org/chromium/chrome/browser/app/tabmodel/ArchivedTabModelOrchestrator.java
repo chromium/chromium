@@ -123,7 +123,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mRestoreTabsCalled;
     private boolean mDeclutterInitializationCalled;
     private boolean mRescueTabsCalled;
-    private boolean mSkipSaveTabList;
+    private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier =
+            new ObservableSupplierImpl<>(false);
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Integer> mUnderlyingTabCountSupplier;
     // Always refers to the tab creator of the first activity to create the
@@ -325,7 +326,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     public void saveTabListAsynchronously() {
                         // Manually skip saving the tab list until after the declutter pass has
                         // completed.
-                        if (mSkipSaveTabList) {
+                        if (mSkipSaveTabListSupplier.get()) {
                             return;
                         }
                         super.saveTabListAsynchronously();
@@ -499,11 +500,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     private void disableSaveTabList() {
-        mSkipSaveTabList = true;
+        mSkipSaveTabListSupplier.set(true);
     }
 
     private void enableSaveTabList() {
-        mSkipSaveTabList = false;
+        mSkipSaveTabListSupplier.set(false);
         mTabPersistentStore.saveTabListAsynchronously();
     }
 
@@ -522,7 +523,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTaskRunner = taskRunner;
     }
 
-    public boolean getSkipSaveTabListForTesting() {
-        return mSkipSaveTabList;
+    protected void setSkipSaveTabListSupplierForTesting( // IN-TEST
+            ObservableSupplierImpl<Boolean> skipSaveTabListSupplier) {
+        mSkipSaveTabListSupplier = skipSaveTabListSupplier;
     }
 }

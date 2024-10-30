@@ -27,10 +27,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -100,6 +100,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
     @Mock private TabArchiver.Clock mClock;
+    @Mock private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier;
 
     private Profile mProfile;
     private FakeTaskRunner mTaskRunner;
@@ -128,6 +129,7 @@ public class ArchivedTabModelOrchestratorTest {
                     mTaskRunner = new FakeTaskRunner();
                     mOrchestrator.setTaskRunnerForTesting(mTaskRunner);
                 });
+        doReturn(false).when(mSkipSaveTabListSupplier).get();
     }
 
     private void finishLoading() {
@@ -160,8 +162,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/374790959")
-    public void testBeginDeclutter() {
+    public void testBeginDeclutter_DisablesAndEnablesSaveTabListTask() {
         finishLoading();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -170,14 +171,18 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(0, mArchivedTabModel.getCount());
         setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
+        runOnUiThreadBlocking(
+                () -> {
+                    mOrchestrator.setSkipSaveTabListSupplierForTesting(mSkipSaveTabListSupplier);
+                    mOrchestrator.maybeBeginDeclutter();
+                });
 
-        CriteriaHelper.pollUiThread(() -> mOrchestrator.getSkipSaveTabListForTesting());
         CriteriaHelper.pollUiThread(() -> 2 == mTaskRunner.mDelayedTasks.size());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        CriteriaHelper.pollUiThread(() -> !mOrchestrator.getSkipSaveTabListForTesting());
+        verify(mSkipSaveTabListSupplier).set(true);
+        verify(mSkipSaveTabListSupplier).set(false);
     }
 
     @Test
