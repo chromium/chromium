@@ -76,10 +76,7 @@ public class SigninFirstRunFragment extends Fragment
                         mModalDialogManager,
                         this,
                         PrivacyPreferencesManagerImpl.getInstance(),
-                        new FullscreenSigninConfig(
-                                /* titleId= */ R.string.signin_fre_title,
-                                /* subtitleId= */ R.string.signin_fre_subtitle,
-                                /* logoId= */ R.drawable.fre_product_logo),
+                        new FullscreenSigninConfig(),
                         SigninAccessPoint.START_PAGE);
 
         if (getPageDelegate().isLaunchedFromCct()) {

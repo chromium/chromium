@@ -94,6 +94,9 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.SUBTITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.SUBTITLE_STRING_ID);
             view.getSubtitle().setText(textId);
+        } else if (propertyKey == FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID) {
+            @StringRes int textId = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING_ID);
+            view.getDismissButtonView().setText(textId);
         } else if (propertyKey == FullscreenSigninProperties.FOOTER_STRING) {
             final CharSequence footerText = model.get(FullscreenSigninProperties.FOOTER_STRING);
             if (footerText == null) {

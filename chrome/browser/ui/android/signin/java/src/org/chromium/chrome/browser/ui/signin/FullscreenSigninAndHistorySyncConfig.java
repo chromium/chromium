@@ -28,6 +28,7 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
     public static class Builder {
         private @StringRes int mSigninTitleId = R.string.signin_fre_title;
         private @StringRes int mSigninSubtitleId = R.string.signin_fre_subtitle;
+        private @StringRes int mSigninDismissTextId = R.string.signin_fre_dismiss_button;
         private @DrawableRes int mSigninLogoId = R.drawable.fre_product_logo;
         private @StringRes int mHistorySyncTitleId = R.string.history_sync_title;
         private @StringRes int mHistorySyncSubtitleId = R.string.history_sync_subtitle;
@@ -36,31 +37,37 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
 
         public Builder signinTitleId(@StringRes int signinTitleId) {
             assert signinTitleId != 0;
-            this.mSigninTitleId = signinTitleId;
+            mSigninTitleId = signinTitleId;
             return this;
         }
 
         public Builder signinSubtitleId(@StringRes int signinSubtitleId) {
             assert signinSubtitleId != 0;
-            this.mSigninSubtitleId = signinSubtitleId;
+            mSigninSubtitleId = signinSubtitleId;
+            return this;
+        }
+
+        public Builder signinDismissTextId(@StringRes int signinDismissTextId) {
+            assert signinDismissTextId != 0;
+            mSigninDismissTextId = signinDismissTextId;
             return this;
         }
 
         public Builder signinLogoId(@DrawableRes int signinLogoId) {
             assert signinLogoId != 0;
-            this.mSigninLogoId = signinLogoId;
+            mSigninLogoId = signinLogoId;
             return this;
         }
 
         public Builder historySyncTitleId(@StringRes int historySyncTitleId) {
             assert historySyncTitleId != 0;
-            this.mHistorySyncTitleId = historySyncTitleId;
+            mHistorySyncTitleId = historySyncTitleId;
             return this;
         }
 
         public Builder historySyncSubtitleId(@StringRes int historySyncSubtitleId) {
             assert historySyncSubtitleId != 0;
-            this.mHistorySyncSubtitleId = historySyncSubtitleId;
+            mHistorySyncSubtitleId = historySyncSubtitleId;
             return this;
         }
 
@@ -69,6 +76,7 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
                     new FullscreenSigninConfig(
                             /* titleId= */ mSigninTitleId,
                             /* subtitleId= */ mSigninSubtitleId,
+                            /* dismissTextId= */ mSigninDismissTextId,
                             /* logoId= */ mSigninLogoId);
             final HistorySyncConfig historySyncConfig =
                     new HistorySyncConfig(

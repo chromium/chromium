@@ -82,6 +82,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             "SigninAndHistorySyncActivity.FullscreenSigninConfigTitle";
     private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_SUBTITLE =
             "SigninAndHistorySyncActivity.FullscreenSigninConfigSubtitle";
+    private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_DISMISS_TEXT =
+            "SigninAndHistorySyncActivity.FullscreenSigninConfigDismissText";
     private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_LOGO =
             "SigninAndHistorySyncActivity.FullscreenSigninConfigLogo";
     private static final String ARGUMENT_HISTORY_SYNC_CONFIG_TITLE =
@@ -143,6 +145,10 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         intent.getIntExtra(
                                 ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_SUBTITLE,
                                 R.string.signin_fre_subtitle);
+                int signinDismissText =
+                        intent.getIntExtra(
+                                ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_DISMISS_TEXT,
+                                R.string.signin_fre_dismiss_button);
                 int signinLogoId =
                         intent.getIntExtra(
                                 ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_LOGO,
@@ -158,6 +164,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         new FullscreenSigninAndHistorySyncConfig.Builder()
                                 .signinTitleId(signinTitleId)
                                 .signinSubtitleId(signinSubtitleId)
+                                .signinDismissTextId(signinDismissText)
                                 .signinLogoId(signinLogoId)
                                 .historySyncTitleId(historySyncTitleId)
                                 .historySyncSubtitleId(historySyncSubtitleId)
@@ -374,6 +381,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_TITLE, config.signinConfig.titleId);
             intent.putExtra(
                     ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_SUBTITLE, config.signinConfig.subtitleId);
+            intent.putExtra(
+                    ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_DISMISS_TEXT,
+                    config.signinConfig.dismissTextId);
             intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_LOGO, config.signinConfig.logoId);
             intent.putExtra(ARGUMENT_HISTORY_SYNC_CONFIG_TITLE, config.historySyncConfig.titleId);
             intent.putExtra(

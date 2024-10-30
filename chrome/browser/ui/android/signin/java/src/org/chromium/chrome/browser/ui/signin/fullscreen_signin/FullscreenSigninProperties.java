@@ -61,6 +61,9 @@ class FullscreenSigninProperties {
     static final WritableIntPropertyKey SUBTITLE_STRING_ID =
             new WritableIntPropertyKey("subtitle_string_id");
 
+    static final WritableIntPropertyKey DISMISS_BUTTON_STRING_ID =
+            new WritableIntPropertyKey("dismiss_button_string_id");
+
     static final WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
             new WritableObjectPropertyKey<>("footer_string");
 
@@ -79,6 +82,7 @@ class FullscreenSigninProperties {
                 LOGO_DRAWABLE_ID,
                 TITLE_STRING_ID,
                 SUBTITLE_STRING_ID,
+                DISMISS_BUTTON_STRING_ID,
                 FOOTER_STRING,
             };
 
@@ -90,7 +94,8 @@ class FullscreenSigninProperties {
             boolean isSigninSupported,
             @DrawableRes int logoDrawableId,
             @StringRes int titleStringId,
-            @StringRes int subtitleStringId) {
+            @StringRes int subtitleStringId,
+            @StringRes int dismissStringId) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
@@ -103,6 +108,7 @@ class FullscreenSigninProperties {
                 .with(LOGO_DRAWABLE_ID, logoDrawableId)
                 .with(TITLE_STRING_ID, titleStringId)
                 .with(SUBTITLE_STRING_ID, subtitleStringId)
+                .with(DISMISS_BUTTON_STRING_ID, dismissStringId)
                 .with(FOOTER_STRING, null)
                 .build();
     }

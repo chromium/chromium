@@ -30,8 +30,9 @@ public final class HistorySyncConfig implements Parcelable {
             };
 
     public HistorySyncConfig() {
-        this.titleId = R.string.history_sync_title;
-        this.subtitleId = R.string.history_sync_subtitle;
+        this(
+                /* titleId= */ R.string.history_sync_title,
+                /* subtitleId= */ R.string.history_sync_subtitle);
     }
 
     public HistorySyncConfig(@StringRes int titleId, @StringRes int subtitleId) {
@@ -40,8 +41,7 @@ public final class HistorySyncConfig implements Parcelable {
     }
 
     private HistorySyncConfig(Parcel in) {
-        titleId = in.readInt();
-        subtitleId = in.readInt();
+        this(/* titleId= */ in.readInt(), /* subtitleId= */ in.readInt());
     }
 
     /** Implements {@link Parcelable} */

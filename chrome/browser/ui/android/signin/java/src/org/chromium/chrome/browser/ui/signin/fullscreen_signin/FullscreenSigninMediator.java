@@ -128,7 +128,8 @@ public class FullscreenSigninMediator
                                 && !disableSignInForAutomotiveDevice(),
                         mConfig.logoId,
                         R.string.fre_welcome,
-                        mConfig.subtitleId);
+                        mConfig.subtitleId,
+                        mConfig.dismissTextId);
 
         mDelegate
                 .getNativeInitializationPromise()

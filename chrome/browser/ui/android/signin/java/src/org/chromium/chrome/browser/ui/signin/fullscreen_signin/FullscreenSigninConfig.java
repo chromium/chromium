@@ -10,10 +10,13 @@ import android.os.Parcelable;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.ui.signin.R;
+
 /* Class containing IDs of resources for the fullscreen sign-in view. */
 public final class FullscreenSigninConfig implements Parcelable {
     public final @StringRes int titleId;
     public final @StringRes int subtitleId;
+    public final @StringRes int dismissTextId;
     public final @DrawableRes int logoId;
 
     public static final Parcelable.Creator<FullscreenSigninConfig> CREATOR =
@@ -29,17 +32,31 @@ public final class FullscreenSigninConfig implements Parcelable {
                 }
             };
 
+    public FullscreenSigninConfig() {
+        this(
+                /* titleId= */ R.string.signin_fre_title,
+                /* subtitleId= */ R.string.signin_fre_subtitle,
+                /* dismissTextId= */ R.string.signin_fre_dismiss_button,
+                /* logoId= */ R.drawable.fre_product_logo);
+    }
+
     public FullscreenSigninConfig(
-            @StringRes int titleId, @StringRes int subtitleId, @DrawableRes int logoId) {
+            @StringRes int titleId,
+            @StringRes int subtitleId,
+            @StringRes int dismissTextId,
+            @DrawableRes int logoId) {
         this.titleId = titleId;
         this.subtitleId = subtitleId;
+        this.dismissTextId = dismissTextId;
         this.logoId = logoId;
     }
 
     private FullscreenSigninConfig(Parcel in) {
-        titleId = in.readInt();
-        subtitleId = in.readInt();
-        logoId = in.readInt();
+        this(
+                /* titleId= */ in.readInt(),
+                /* subtitleId= */ in.readInt(),
+                /* dismissTextId= */ in.readInt(),
+                /* logoId= */ in.readInt());
     }
 
     /** Implements {@link Parcelable} */
@@ -53,6 +70,7 @@ public final class FullscreenSigninConfig implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(titleId);
         out.writeInt(subtitleId);
+        out.writeInt(dismissTextId);
         out.writeInt(logoId);
     }
 }

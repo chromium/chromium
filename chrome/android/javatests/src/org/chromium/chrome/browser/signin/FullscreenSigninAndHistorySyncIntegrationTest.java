@@ -385,6 +385,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                         .signinTitleId(R.string.history_sync_title)
                         .signinSubtitleId(R.string.history_sync_subtitle)
                         .signinLogoId(R.drawable.ic_globe_24dp)
+                        .signinDismissTextId(R.string.signin_add_account_to_device)
                         .historySyncTitleId(R.string.signin_fre_title)
                         .historySyncSubtitleId(R.string.signin_fre_subtitle)
                         .build();
@@ -394,6 +395,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         onView(allOf(withId(R.id.title), withText(R.string.history_sync_title)))
                 .check(matches(isDisplayed()));
         onView(allOf(withId(R.id.subtitle), withText(R.string.history_sync_subtitle)))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withId(R.id.signin_fre_dismiss_button),
+                                withText(R.string.signin_add_account_to_device)))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
 
