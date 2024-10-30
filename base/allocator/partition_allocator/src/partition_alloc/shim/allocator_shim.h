@@ -148,7 +148,8 @@ using SchedulerLoopQuarantine = partition_alloc::internal::base::
 using ZappingByFreeFlags =
     partition_alloc::internal::base::StrongAlias<class ZappingByFreeFlagsTag,
                                                  bool>;
-
+using EventuallyZeroFreedMemory = partition_alloc::internal::base::
+    StrongAlias<class EventuallyZeroFreedMemoryTag, bool>;
 using UsePoolOffsetFreelists = partition_alloc::internal::base::
     StrongAlias<class UsePoolOffsetFreelistsTag, bool>;
 
@@ -167,6 +168,7 @@ void ConfigurePartitions(
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
     UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans);
 

@@ -618,6 +618,7 @@ void ConfigurePartitions(
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
     UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
@@ -645,6 +646,10 @@ void ConfigurePartitions(
                        : partition_alloc::PartitionOptions::kDisabled;
         opts.zapping_by_free_flags =
             zapping_by_free_flags
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
+        opts.eventually_zero_freed_memory =
+            eventually_zero_freed_memory
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine =

@@ -384,6 +384,7 @@ class PartitionAllocTest
     PartitionOptions opts;
     // Requires explicit `FreeFlag` to activate, no effect otherwise.
     opts.zapping_by_free_flags = PartitionOptions::kEnabled;
+    opts.eventually_zero_freed_memory = PartitionOptions::kEnabled;
     opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
     opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
         std::numeric_limits<size_t>::max();
@@ -3838,7 +3839,8 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);
   memset(ptr, 'A', 1);
-  allocator.root()->Free<FreeFlags::kZap>(ptr);
+  constexpr auto kFlags = FreeFlags::kZap | FreeFlags::kSchedulerLoopQuarantine;
+  allocator.root()->Free<kFlags>(ptr);
   // Accessing memory after free requires a retag.
   ptr = TagPtr(ptr);
   EXPECT_NE('A', *static_cast<unsigned char*>(ptr));
@@ -3847,13 +3849,52 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   ptr = allocator.root()->Alloc(size, type_name);
   EXPECT_TRUE(ptr);
   memset(ptr, 'A', size);
-  allocator.root()->Free<FreeFlags::kZap>(ptr);
+  allocator.root()->Free<kFlags>(ptr);
   // Accessing memory after free requires a retag.
   ptr = TagPtr(ptr);
   EXPECT_NE('A', *static_cast<unsigned char*>(ptr));
   EXPECT_EQ(kFreedByte,
             *(static_cast<unsigned char*>(ptr) + 2 * sizeof(void*)));
   EXPECT_EQ(kFreedByte, *(static_cast<unsigned char*>(ptr) + size - 1));
+
+  // Make sure the quarantine is empty before the root is reset.
+  allocator.root()->GetSchedulerLoopQuarantineBranchForTesting().Purge();
+}
+
+TEST_P(PartitionAllocTest, ZeroFreedMemory) {
+  auto* root = allocator.root();
+  ASSERT_TRUE(root->settings.eventually_zero_freed_memory);
+
+  constexpr int kByte = 'A';
+  auto alloc_and_return_freed_pointer = [&](size_t size) {
+    void* ptr = allocator.root()->Alloc(size, type_name);
+    EXPECT_TRUE(ptr);
+    memset(ptr, kByte, size);
+    allocator.root()->Free(ptr);
+    // Accessing memory after free requires a retag.
+    ptr = TagPtr(ptr);
+    // Freed memory is always different at its first byte, because of the
+    // freelist.
+    EXPECT_NE(kByte, *static_cast<unsigned char*>(ptr));
+    return ptr;
+  };
+
+  // Zeroing of regular allocations.
+  size_t size = 1024;
+  void* ptr = alloc_and_return_freed_pointer(size);
+  EXPECT_EQ(0, *(static_cast<unsigned char*>(ptr) + 2 * sizeof(void*)));
+  EXPECT_EQ(0, *(static_cast<unsigned char*>(ptr) + size - 1));
+
+  // Single-slot slot span are not zeroed.
+  size = MaxRegularSlotSpanSize() + 1;
+  ptr = alloc_and_return_freed_pointer(size);
+  // Not asserting on the specific value because depending on flags, the memory
+  // may be zapped anyway.
+  EXPECT_NE(0, *(static_cast<unsigned char*>(ptr) + 2 * sizeof(void*)));
+  EXPECT_NE(0, *(static_cast<unsigned char*>(ptr) + size - 1));
+
+  // No test with direct-mapped allocations, as they are decommitted right away,
+  // and the freed memory cannot be touched anymore.
 }
 
 TEST_P(PartitionAllocTest, Bug_897585) {

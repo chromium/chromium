@@ -1032,6 +1032,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
               .Get());
   const bool zapping_by_free_flags = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocZappingByFreeFlags);
+  const bool eventually_zero_freed_memory = base::FeatureList::IsEnabled(
+      base::features::kPartitionAllocEventuallyZeroFreedMemory);
 
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
   const bool use_pool_offset_freelists =
@@ -1116,6 +1118,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_branch_capacity_in_bytes,
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags),
+      allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
       allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists),
       use_small_single_slot_spans);
 

@@ -44,6 +44,7 @@ class ExtremeLightweightDetectorMallocShimsTest
         allocator_shim::SchedulerLoopQuarantine(false),
         /*scheduler_loop_quarantine_capacity_in_bytes=*/0,
         allocator_shim::ZappingByFreeFlags(false),
+        allocator_shim::EventuallyZeroFreedMemory(false),
         allocator_shim::UsePoolOffsetFreelists(true),
         allocator_shim::UseSmallSingleSlotSpans(true));
     InstallExtremeLightweightDetectorHooks(
