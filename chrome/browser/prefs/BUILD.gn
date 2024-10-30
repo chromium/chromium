@@ -4,6 +4,7 @@
 
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
@@ -260,7 +261,6 @@ source_set("impl") {
     ]
   } else {
     deps += [
-      "//chrome/browser/on_device_translation:prefs",
       "//chrome/browser/promos:utils",
       "//chrome/browser/screen_ai:prefs",
       "//chrome/browser/search/background",
@@ -289,6 +289,10 @@ source_set("impl") {
 
   if (enable_extensions_core) {
     deps += [ "//extensions/browser" ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//chrome/browser/on_device_translation:prefs" ]
   }
 
   if (enterprise_data_controls) {
