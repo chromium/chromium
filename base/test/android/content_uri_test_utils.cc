@@ -6,6 +6,7 @@
 
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 
 namespace base::test::android {
 
@@ -32,6 +33,21 @@ std::optional<FilePath> GetInMemoryContentUriFromCacheDirFilePath(
   if (!cache_dir.AppendRelativePath(path, &uri)) {
     return std::nullopt;
   }
+  return uri;
+}
+
+std::optional<FilePath> GetInMemoryContentTreeUriFromCacheDirDirectory(
+    const FilePath& path) {
+  base::FilePath cache_dir;
+  if (!base::android::GetCacheDirectory(&cache_dir)) {
+    return std::nullopt;
+  }
+  base::FilePath document_id;
+  if (!cache_dir.AppendRelativePath(path, &document_id)) {
+    return std::nullopt;
+  }
+  base::FilePath uri("content://org.chromium.native_test.inmemory/tree/" +
+                     base::EscapeAllExceptUnreserved(document_id.value()));
   return uri;
 }
 

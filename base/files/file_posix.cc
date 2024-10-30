@@ -717,9 +717,16 @@ int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
       sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
       sb->st_size = info.size;
       sb->st_mtime = info.last_modified.ToTimeT();
+      // Time internally is stored as microseconds since windows epoch, so first
+      // get subsecond time, and then convert to nanos. Do not subtract
+      // Time::UnixEpoch() (which is a little bigger than 2^53), or convert to
+      // nanos (multiply by 10^3 which is just under 2^10) prior to doing
+      // modulo as these can cause overflow / clamping at [-2^63, 2^63) which
+      // will corrupt the result.
       sb->st_mtime_nsec =
-          (info.last_modified - Time::UnixEpoch()).InNanoseconds() %
-          Time::kNanosecondsPerSecond;
+          (info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+           Time::kMicrosecondsPerSecond) *
+          Time::kNanosecondsPerMicrosecond;
       return 0;
     }
   }

@@ -1773,24 +1773,46 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
       *test::android::GetContentUriFromCacheDirFilePath(file);
   FilePath content_uri_dir =
       *test::android::GetContentUriFromCacheDirFilePath(dir);
+  FilePath content_uri_file_in_memory =
+      *test::android::GetInMemoryContentUriFromCacheDirFilePath(file);
+  FilePath content_uri_dir_in_memory =
+      *test::android::GetInMemoryContentUriFromCacheDirFilePath(dir);
+  FilePath content_uri_dir_tree =
+      *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
 
   // GetInfo() should work the same for files and content-URIs.
   File::Info info;
   File::Info content_uri_info;
+  File::Info content_uri_in_memory_info;
   EXPECT_TRUE(GetFileInfo(file, &info));
   EXPECT_TRUE(GetFileInfo(content_uri_file, &content_uri_info));
+  EXPECT_TRUE(
+      GetFileInfo(content_uri_file_in_memory, &content_uri_in_memory_info));
   EXPECT_EQ(12u, info.size);
   EXPECT_EQ(12u, content_uri_info.size);
+  EXPECT_EQ(12u, content_uri_in_memory_info.size);
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
+  // Java InMemory provider sets last-modified to unix epoch.
+  EXPECT_EQ(content_uri_in_memory_info.last_modified, Time::FromTimeT(0));
   EXPECT_FALSE(info.is_directory);
   EXPECT_FALSE(content_uri_info.is_directory);
+  EXPECT_FALSE(content_uri_in_memory_info.is_directory);
 
   // GetInfo() should work the same for dirs and content-URIs.
   EXPECT_TRUE(GetFileInfo(dir, &info));
   EXPECT_TRUE(GetFileInfo(content_uri_dir, &content_uri_info));
+  // GetInfo() is not supported for dirs by the in-memory content-provider.
+  EXPECT_FALSE(
+      GetFileInfo(content_uri_dir_in_memory, &content_uri_in_memory_info));
+  File::Info content_uri_tree_info;
+  EXPECT_TRUE(GetFileInfo(content_uri_dir_tree, &content_uri_tree_info));
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
+  // Java uses FileEnumerator::FileInfo which only does resolution to seconds.
+  EXPECT_EQ(info.last_modified.ToTimeT(),
+            content_uri_tree_info.last_modified.ToTimeT());
   EXPECT_TRUE(info.is_directory);
   EXPECT_TRUE(content_uri_info.is_directory);
+  EXPECT_TRUE(content_uri_tree_info.is_directory);
 
   // GetPosixFilePermissions() should fail for content URIs.
   int mode = 0;

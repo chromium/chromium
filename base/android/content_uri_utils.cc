@@ -85,9 +85,7 @@ bool ContentUriGetFileInfo(const FilePath& content_uri, File::Info* results) {
     LOG(ERROR) << "Unknown file length for " << content_uri;
     return false;
   }
-  results->size = result[0].GetSize();
-  results->is_directory = result[0].IsDirectory();
-  results->last_modified = result[0].GetLastModifiedTime();
+  results->FromStat(result[0].stat());
   return true;
 }
 
