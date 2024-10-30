@@ -11874,6 +11874,132 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       </if>
 
+    <!-- Data Sharing -->
+      <if expr="use_titlecase">
+        <!-- Sign in Sync Flow -->
+        <message name="IDS_DATA_SHARING_NEED_SIGN_IN" desc="The title of dialog that prompts users to sign in and sync.">
+          Sign in and Sync Needed
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC" desc="The title of dialog that prompts users to sync.">
+          Sync Is Needed
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS" desc="The title of dialog that prompts users to sync tab groups.">
+          Sync Your Tab Groups
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT" desc="The title of dialog that prompts users to verify the account.">
+          Verify Your Account
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON" desc="The confirm button of dialog that prompts users to verify the account.">
+          Verify It's You
+        </message>
+
+        <!-- errors and warnings -->
+        <message name="IDS_DATA_SHARING_GOT_IT" desc="The general confirm button of informative dialogs.">
+          Got It
+        </message>
+        <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
+          Something Went Wrong
+        </message>
+        <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
+          Your Organization Doesn't Allow You to Sign in
+        </message>
+        <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
+          Your Organization Limits What You Can Save
+        </message>
+        <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
+          You’re Signed out
+        </message>
+        <message name="IDS_DATA_SHARING_GROUP_FULL" desc="The title of the group being full dialog.">
+          This Tab Group Is Full
+        </message>
+      </if>
+
+      <if expr="not use_titlecase">
+        <!-- Sign in Sync Flow -->
+        <message name="IDS_DATA_SHARING_NEED_SIGN_IN" desc="The title of dialog that prompts users to sign in and sync.">
+          Sign in and sync needed
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC" desc="The title of dialog that prompts users to sync.">
+          Sync is needed
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS" desc="The title of dialog that prompts users to sync tab groups.">
+          Sync your tab groups
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT" desc="The title of dialog that prompts users to verify the account.">
+          Verify your account
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BUTTON" desc="The confirm button of dialog that prompts users to verify the account.">
+          Verify it's you
+        </message>
+
+        <!-- errors and warnings -->
+        <message name="IDS_DATA_SHARING_GOT_IT" desc="The general confirm button of informative dialogs.">
+          Got it
+        </message>
+        <message name="IDS_DATA_SHARING_SOMETHING_WRONG" desc="The title of the generic failure dialog.">
+          Something went wrong
+        </message>
+        <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN" desc="The title of the organization disallowing signin dialog.">
+          Your organization doesn't allow you to sign in
+        </message>
+        <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE" desc="The title of the organization limiting saving to account dialog.">
+          Your organization limits what you can save
+        </message>
+        <message name="IDS_DATA_SHARING_SIGNED_OUT" desc="The title of the dialog that prompts users to allow Chrome sign in.">
+          You’re signed out
+        </message>
+        <message name="IDS_DATA_SHARING_GROUP_FULL" desc="The title of the group being full dialog when joining.">
+          This tab group is full
+        </message>
+      </if>
+
+      <!-- Sign in Sync Flow -->
+      <message name="IDS_DATA_SHARING_NEED_SIGN_IN_BODY" desc="The body of dialog that prompts users to sign in and sync.">
+        To share or join tab groups, you need to sign in and turn on sync
+      </message>
+      <message name="IDS_DATA_SHARING_NEED_SIGN_IN_CONTINUE_BUTTON" desc="The continue button of dialog that prompts users to sign in and sync.">
+        Continue
+      </message>
+      <message name="IDS_DATA_SHARING_NEED_SYNC_BODY" desc="The body of dialog that prompts users to sync.">
+        To share or join tab groups, you need to turn on sync
+      </message>
+      <message name="IDS_DATA_SHARING_NEED_SYNC_TAB_GROUPS_BODY" desc="The body of dialog that prompts users to sync tab groups.">
+        To share, join, and collaborate in tab groups, sync your tab groups in Settings
+      </message>
+      <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_BODY" desc="The body of dialog that prompts users to verify account.">
+        To share, join, and collaborate in tab groups, verify it’s you
+      </message>
+
+      <!-- errors and warnings -->
+      <message name="IDS_DATA_SHARING_SOMETHING_WRONG_BODY" desc="The body text of the generic failure dialog.">
+        There was an error. Try again.
+      </message>
+      <message name="IDS_DATA_SHARING_SHARE_ERROR_BODY" desc="The body text of the share error bubble.">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_DATA_SHARING_JOIN_WARNING" desc="The warning at the top of join dialog.">
+        Make sure you trust the person that sent this invitation
+      </message>
+      <message name="IDS_DATA_SHARING_ORGANIZATION_DISALLOW_SIGN_IN_BODY" desc="The body text of the organization disallowing signin dialog.">
+        To share or join tab groups, you must be able to sign in to Chrome
+      </message>
+      <message name="IDS_DATA_SHARING_ORGANIZATION_LIMIT_SAVE_BODY" desc="The body text of the organization limiting saving to account dialog.">
+        When your organization limits saving to your Google Account, you can’t share or join tab groups
+      </message>
+      <message name="IDS_DATA_SHARING_SIGNED_OUT_BODY" desc="The body text of the dialog that prompts users to allow Chrome sign in.">
+        To share, join, and collaborate in tab groups, open settings and turn on Allow Chrome sign-in
+      </message>
+      <message name="IDS_DATA_SHARING_SETTINGS" desc="The generic text on buttons that take users to Chrome settings page.">
+        Settings
+      </message>
+      <message name="IDS_DATA_SHARING_GROUP_FULL_BODY" desc="The body text of the group being full dialog when joining.">
+        Contact the person who sent this link
+      </message>
+      <message name="IDS_DATA_SHARING_OWNER_CANNOT_SHARE" desc="The warning on the manage dialog that warns the owner cannot share the link because group is full.">
+        Your tab group is full, new members can’t join with the link
+      </message>
+    <!-- /Data Sharing -->
+
       <!-- Application window menu -->
       <if expr="not use_titlecase">
         <message name="IDS_APP_MENU_RELOAD" desc="The reload menu in application windows">
