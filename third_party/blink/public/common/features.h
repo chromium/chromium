@@ -83,12 +83,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletThreadRealtimePeriodMac);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletThreadPool);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAutofillIncludeFormElementsInShadowDom);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAutofillIncludeShadowDomInUnassociatedListedElements);
-
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 

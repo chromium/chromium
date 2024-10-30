@@ -139,16 +139,10 @@ std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
 // Returns the form that owns the `form_control`, or a null `WebFormElement` if
 // no form owns the `form_control`.
 //
-// When `kAutofillIncludeFormElementsInShadowDom` is enabled, the form that owns
-// `form_control` is
+// The form that owns `form_control` is
 // - if `form_control` is associated to a form, the furthest shadow-including
 //   form ancestor of that form,
 // - otherwise, the furthest shadow-including form ancestor of `form_control`.
-//
-// When `kAutofillIncludeFormElementsInShadowDom` is disabled, `form_control`'s
-// owner is
-// - if `form_control` is associated to a form, that form,
-// - otherwise, the nearest shadow-including form ancestor of `form_control`.
 blink::WebFormElement GetOwningForm(
     const blink::WebFormControlElement& form_control);
 
