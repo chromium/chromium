@@ -269,8 +269,6 @@ class FakeSecurityDomainsServerMemberStatusChecker
   const raw_ptr<trusted_vault::FakeSecurityDomainsServer> server_;
 };
 
-}  // namespace
-
 class SingleClientNigoriSyncTest : public SyncTest {
  public:
   SingleClientNigoriSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -287,12 +285,9 @@ class SingleClientNigoriSyncTest : public SyncTest {
   }
 
   std::vector<variations::ActiveGroupId> GetSyntheticFieldTrials() {
-    std::vector<variations::ActiveGroupId> synthetic_trials;
-    g_browser_process->metrics_service()
+    return g_browser_process->metrics_service()
         ->GetSyntheticTrialRegistry()
-        ->GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                           &synthetic_trials);
-    return synthetic_trials;
+        ->GetCurrentSyntheticFieldTrialsForTest();
   }
 };
 
@@ -2410,3 +2405,5 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param ? "Explicit" : "Implicit";
     });
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+}  // namespace
