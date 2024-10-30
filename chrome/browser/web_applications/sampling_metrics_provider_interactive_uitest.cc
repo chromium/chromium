@@ -122,10 +122,6 @@ class SamplingMetricsProviderInteractiveUiTest : public WebAppBrowserTestBase {
   }
 };
 
-// TODO(https://crbug.com/358404364): The test works correctly but the
-// production logic is broken on macOS.
-#if !BUILDFLAG(IS_MAC)
-
 IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest,
                        OpenCloseAppBrowser) {
   // There are no web-apps open by default.
@@ -141,7 +137,6 @@ IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest,
   ui_test_utils::WaitForBrowserToClose(app_browser);
   CheckWebAppCount(/*web_app_count=*/0, /*is_active=*/false);
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest, Tab) {
   // There are no web-apps open by default.

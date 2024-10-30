@@ -1172,7 +1172,21 @@ Browser::GetWebContentsModalDialogHostForWindow() {
 }
 
 bool Browser::IsActive() {
+// TODO(https://crbug.com/376306245): This is a temporary workaround for the
+// fact that window_->IsActive() does not return the right result for macOS
+// standalone PWA windows. This new behavior is still not technically correct,
+// since it's checking that the last active window is `this`, as opposed to
+// whether `this` is active.
+#if BUILDFLAG(IS_MAC)
+  // If this is a standalone PWA window, check BrowserList instead.
+  if (GetAppBrowserController()) {
+    return BrowserList::GetInstance()->GetLastActive() == this;
+  } else {
+    return window_->IsActive();
+  }
+#else
   return window_->IsActive();
+#endif
 }
 
 base::CallbackListSubscription Browser::RegisterDidBecomeActive(
