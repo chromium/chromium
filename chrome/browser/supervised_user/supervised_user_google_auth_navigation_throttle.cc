@@ -30,6 +30,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_android.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/android/view_android.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
@@ -198,13 +200,19 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   // while re-minting is underway.
   return content::NavigationThrottle::DEFER;
 #elif BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/375383826): Improve / verify coverage of the code below.
   if (!has_shown_reauth_) {
     has_shown_reauth_ = true;
 
     content::WebContents* web_contents = navigation_handle()->GetWebContents();
+    if (!web_contents->GetNativeView()->GetWindowAndroid()) {
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
+
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
     // This class doesn't care about browser sync consent.
     CoreAccountInfo account_info =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
