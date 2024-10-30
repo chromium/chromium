@@ -25,7 +25,6 @@
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
-#import "components/component_updater/url_param_filter_remover.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -238,11 +237,6 @@ void RegisterComponentsForUpdate() {
   component_updater::ComponentUpdateService* cus =
       GetApplicationContext()->GetComponentUpdateService();
   DCHECK(cus);
-  base::FilePath path;
-  const bool success = base::PathService::Get(ios::DIR_USER_DATA, &path);
-  DCHECK(success);
-  component_updater::DeleteUrlParamFilter(path);
-
   RegisterOnDeviceHeadSuggestComponent(
       cus, GetApplicationContext()->GetApplicationLocale());
   RegisterSafetyTipsComponent(cus);

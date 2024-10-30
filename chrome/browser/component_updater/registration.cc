@@ -48,7 +48,6 @@
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
-#include "components/component_updater/url_param_filter_remover.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -155,8 +154,6 @@ void RegisterComponentsForUpdate() {
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
-    component_updater::DeleteUrlParamFilter(path);
-
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
 
