@@ -316,26 +316,25 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
          "TestLabel"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
-    gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+    {
+      std::unique_ptr<gpu::SharedImageTexture> color_texture =
+          shared_image_->CreateGLTexture(gl_);
+      std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+          color_texture_scoped_access =
+              color_texture->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
 
-    GLuint color_texture = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
-        shared_image_->mailbox().name);
-    gl_->BeginSharedImageAccessDirectCHROMIUM(
-        color_texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+      gl_->BindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+      gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_TEXTURE_2D,
+                                color_texture_scoped_access->texture_id(), 0);
 
-    gl_->BindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              GL_TEXTURE_2D, color_texture, 0);
+      gl_->Viewport(0, 0, rect_.width(), rect_.height());
+      DrawSceneGL();
 
-    gl_->Viewport(0, 0, rect_.width(), rect_.height());
-    DrawSceneGL();
-
-    gl_->EndSharedImageAccessDirectCHROMIUM(color_texture);
-    gl_->DeleteTextures(1, &color_texture);
-
-    gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token_.GetData());
-
-    shared_bitmap_ = nullptr;
+      sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+          std::move(color_texture_scoped_access));
+      shared_bitmap_ = nullptr;
+    }
   } else {
     if (shared_image_interface_) {
       const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
