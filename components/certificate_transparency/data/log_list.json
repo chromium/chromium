@@ -1,6 +1,6 @@
 {
-  "version": "48.15",
-  "log_list_timestamp": "2024-10-29T12:54:41Z",
+  "version": "48.17",
+  "log_list_timestamp": "2024-10-30T12:55:04Z",
   "operators": [
     {
       "name": "Google",
@@ -168,7 +168,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "Cloudflare",
@@ -227,7 +228,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "DigiCert",
@@ -459,7 +461,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "Sectigo",
@@ -643,7 +646,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "Let's Encrypt",
@@ -731,7 +735,8 @@
             "end_exclusive": "2027-01-20T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "TrustAsia",
@@ -819,7 +824,8 @@
             "end_exclusive": "2027-01-08T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     }
   ]
 }
