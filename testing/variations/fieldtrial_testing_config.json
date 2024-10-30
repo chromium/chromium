@@ -3306,6 +3306,21 @@
             ]
         }
     ],
+    "BirchCoral": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CoralFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "BirchWeather": [
         {
             "platforms": [
