@@ -789,16 +789,20 @@ constexpr uint128::operator unsigned __int128() const {
 // Conversion operators to floating point types.
 
 inline uint128::operator float() const {
-  return static_cast<float>(lo_) + std::ldexp(static_cast<float>(hi_), 64);
+  // Note: This method might return Inf.
+  constexpr float pow_2_64 = 18446744073709551616.0f;
+  return static_cast<float>(lo_) + static_cast<float>(hi_) * pow_2_64;
 }
 
 inline uint128::operator double() const {
-  return static_cast<double>(lo_) + std::ldexp(static_cast<double>(hi_), 64);
+  constexpr double pow_2_64 = 18446744073709551616.0;
+  return static_cast<double>(lo_) + static_cast<double>(hi_) * pow_2_64;
 }
 
 inline uint128::operator long double() const {
+  constexpr long double pow_2_64 = 18446744073709551616.0L;
   return static_cast<long double>(lo_) +
-         std::ldexp(static_cast<long double>(hi_), 64);
+         static_cast<long double>(hi_) * pow_2_64;
 }
 
 // Comparison operators.
