@@ -219,6 +219,11 @@ bool PrerendererImpl::MaybePrerender(
     return false;
   }
 
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host_.get());
+  static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents))
+      ->SetHasSpeculationRulesPrerender();
   if (blocked_) {
     blocked_candidates_.emplace_back(candidate->Clone(), enacting_predictor,
                                      confidence);
@@ -233,8 +238,6 @@ bool PrerendererImpl::MaybePrerender(
     return false;
 
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host_.get());
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host_.get());
 
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
@@ -246,9 +249,6 @@ bool PrerendererImpl::MaybePrerender(
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
-  auto* preloading_data = static_cast<PreloadingDataImpl*>(
-      PreloadingData::GetOrCreateForWebContents(web_contents));
-  preloading_data->SetHasSpeculationRulesPrerender();
 
   IncrementReceivedPrerendersCountForMetrics(
       PreloadingTriggerTypeFromSpeculationInjectionType(
