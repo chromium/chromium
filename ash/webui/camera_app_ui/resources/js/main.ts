@@ -421,12 +421,20 @@ async function main() {
   // There are three possible cases:
   // 1. Regular instance
   //      (intent === null)
-  // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
+  // 2. Intents within [INTENT_ACTION_STILL_IMAGE_CAMERA,
+  //                    INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE,
+  //                    INTENT_ACTION_VIDEO_CAMERA]
   //      (intent !== null && shouldHandleResult === false)
-  // 3. Other intents
+  // 3. Intents within [ACTION_STILL_IMAGE_CAMERA,
+  //                    ACTION_STILL_IMAGE_CAMERA_SECURE,
+  //                    ACTION_VIDEO_CAMERA]
   //      (intent !== null && shouldHandleResult === true)
-  // `shouldHandleIntentResult` will be false in (1) and (2), and gallery
-  // button will be shown on the UI.
+  //
+  // For 1. and 2., CCA is opened in a normal window and there's no need of
+  // handling capture result and passed it back to ARC.
+  //
+  // For 3., CCA is opened in a system dialog, gallery button won't be shown,
+  // and camera folder won't be accessible. (See http://b/374629916#comment16)
   const shouldHandleIntentResult = intent?.shouldHandleResult === true;
   state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
 
@@ -502,9 +510,9 @@ async function main() {
   const cameraStartSuccessful = await cameraManager.reconfigure();
 
   try {
-    await filesystem.initialize();
-    const cameraDir = filesystem.getCameraDirectory();
+    await filesystem.initialize(shouldHandleIntentResult);
     if (!shouldHandleIntentResult) {
+      const cameraDir = filesystem.getCameraDirectory();
       await resultSaver.initialize(cameraDir);
     }
   } catch (error) {
