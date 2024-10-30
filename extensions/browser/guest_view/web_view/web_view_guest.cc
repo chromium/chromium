@@ -1323,9 +1323,12 @@ void WebViewGuest::NavigateGuest(
 
 bool WebViewGuest::HandleKeyboardShortcuts(
     const input::NativeWebKeyboardEvent& event) {
-  // <webview> outside of Chrome Apps do not handle keyboard shortcuts.
-  if (!GuestViewManager::FromBrowserContext(browser_context())
-           ->IsOwnedByExtension(this)) {
+  // Only <controlledframe> and <webview> in Chrome Apps handle keyboard
+  // shortcuts. <webview> instances in WebUI, etc, do not.
+  GuestViewManager* manager =
+      GuestViewManager::FromBrowserContext(browser_context());
+  if (!manager->IsOwnedByExtension(this) &&
+      !manager->IsOwnedByControlledFrameEmbedder(this)) {
     return false;
   }
 
@@ -1688,16 +1691,14 @@ bool WebViewGuest::IsFullscreenForTabOrPending(
   return is_guest_fullscreen_;
 }
 
-void WebViewGuest::RequestPointerLock(WebContents* web_contents,
+void WebViewGuest::RequestPointerLock(WebContents* guest_web_contents,
                                       bool user_gesture,
                                       bool last_unlocked_by_target) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  CHECK_EQ(guest_web_contents, web_contents());
 
   web_view_permission_helper_->RequestPointerLockPermission(
-      user_gesture, last_unlocked_by_target,
-      base::BindOnce(
-          base::IgnoreResult(&WebContents::GotPointerLockPermissionResponse),
-          base::Unretained(web_contents)));
+      user_gesture, last_unlocked_by_target);
 }
 
 void WebViewGuest::LoadURLWithParams(

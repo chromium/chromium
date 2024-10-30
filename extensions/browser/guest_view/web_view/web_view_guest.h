@@ -175,7 +175,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool GuestMadeEmbedderFullscreen() const;
   void SetFullscreenState(bool is_fullscreen);
 
-  void RequestPointerLockPermission(bool user_gesture,
+  void RequestPointerLockPermission(content::WebContents* web_contents,
+                                    bool user_gesture,
                                     bool last_unlocked_by_target,
                                     base::OnceCallback<void(bool)> callback);
 
@@ -262,7 +263,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ExitFullscreenModeForTab(content::WebContents* web_contents) final;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) final;
-  void RequestPointerLock(content::WebContents* web_contents,
+  void RequestPointerLock(content::WebContents* guest_web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
 
