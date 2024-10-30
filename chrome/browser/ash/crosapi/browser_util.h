@@ -192,13 +192,6 @@ GetCachedLacrosAvailabilityForTesting();
 // Clears the cached values for lacros availability policy.
 void ClearLacrosAvailabilityCacheForTest();
 
-// Indicate whether sync on Ash should be enabled for browser data. Sync should
-// stop syncing browser items from Ash if Lacros is enabled and once browser
-// data is migrated to Lacros making it safe to turn off web browser on
-// Ash and sync for browser data. Only use after the primary user profile is set
-// on UserManager since it calls `IsLacrosEnabled()`.
-bool IsAshBrowserSyncEnabled();
-
 // Returns who decided how Lacros should be used - or not: The User, the policy
 // or another edge case.
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();

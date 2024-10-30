@@ -296,13 +296,4 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
              : LacrosLaunchSwitchSource::kForcedByPolicy;
 }
 
-bool IsAshBrowserSyncEnabled() {
-  // Turn off sync from Ash if Lacros is enabled and Ash web browser is
-  // disabled.
-  if (IsLacrosEnabled() && !IsAshWebBrowserEnabled())
-    return false;
-
-  return true;
-}
-
 }  // namespace crosapi::browser_util

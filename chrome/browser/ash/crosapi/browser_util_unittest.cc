@@ -361,25 +361,6 @@ TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
   EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
 }
 
-TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
-  AddRegularUser("user@random.com");
-
-  {
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsAshBrowserSyncEnabled());
-  }
-
-  {
-    base::test::ScopedCommandLine command_line;
-    command_line.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_FALSE(browser_util::IsAshBrowserSyncEnabled());
-  }
-}
-
 TEST_F(BrowserUtilTest, GetLacrosLaunchSwitchSourceNonGoogle) {
   AddRegularUser("user@random.com");
 
