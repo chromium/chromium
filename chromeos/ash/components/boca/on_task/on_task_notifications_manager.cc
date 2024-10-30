@@ -7,13 +7,30 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notification_blocker.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/gurl.h"
+
+using message_center::MessageCenter;
+using message_center::Notification;
+using message_center::NotificationType;
+using message_center::NotifierId;
+using message_center::NotifierType;
+using message_center::RichNotificationData;
+using message_center::SystemNotificationWarningLevel;
 
 namespace ash::boca {
 
@@ -43,10 +60,41 @@ OnTaskNotificationsManager::ToastCreateParams::operator=(
 
 OnTaskNotificationsManager::ToastCreateParams::~ToastCreateParams() = default;
 
+OnTaskNotificationsManager::NotificationCreateParams::NotificationCreateParams(
+    std::string id,
+    std::u16string title,
+    std::u16string message,
+    message_center::NotifierId notifier_id)
+    : id(id), title(title), message(message), notifier_id(notifier_id) {}
+
+OnTaskNotificationsManager::NotificationCreateParams::NotificationCreateParams(
+    const NotificationCreateParams& other) = default;
+OnTaskNotificationsManager::NotificationCreateParams&
+OnTaskNotificationsManager::NotificationCreateParams::operator=(
+    const NotificationCreateParams& other) = default;
+OnTaskNotificationsManager::NotificationCreateParams::NotificationCreateParams(
+    NotificationCreateParams&& other) = default;
+OnTaskNotificationsManager::NotificationCreateParams&
+OnTaskNotificationsManager::NotificationCreateParams::operator=(
+    NotificationCreateParams&& other) = default;
+
+OnTaskNotificationsManager::NotificationCreateParams::
+    ~NotificationCreateParams() = default;
+
 void OnTaskNotificationsManager::Delegate::ShowToast(ToastData toast_data) {
   ash::ToastManager* const toast_manager = ash::ToastManager::Get();
   CHECK(toast_manager);
   toast_manager->Show(std::move(toast_data));
+}
+
+void OnTaskNotificationsManager::Delegate::ShowNotification(
+    std::unique_ptr<Notification> notification) {
+  MessageCenter::Get()->AddNotification(std::move(notification));
+}
+
+void OnTaskNotificationsManager::Delegate::ClearNotification(
+    const std::string& notification_id) {
+  MessageCenter::Get()->RemoveNotification(notification_id, /*by_user=*/false);
 }
 
 // static
@@ -82,6 +130,20 @@ void OnTaskNotificationsManager::CreateToast(ToastCreateParams params) {
   pending_notifications_map_[params.id] = std::move(notification_timer);
 }
 
+void OnTaskNotificationsManager::CreateNotification(
+    NotificationCreateParams params) {
+  // Clear pre-existing notifications with the same id if it exists. This is
+  // to ensure they pop up when the window happens to be locked.
+  delegate_->ClearNotification(params.id);
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
+      NotificationType::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
+      params.message, /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(), params.notifier_id,
+      message_center::RichNotificationData(), /*delegate=*/nullptr,
+      chromeos::kEnterpriseIcon, SystemNotificationWarningLevel::NORMAL);
+  delegate_->ShowNotification(std::move(notification));
+}
+
 void OnTaskNotificationsManager::StopProcessingNotification(
     const std::string& notification_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -89,6 +151,28 @@ void OnTaskNotificationsManager::StopProcessingNotification(
     return;
   }
   pending_notifications_map_.erase(notification_id);
+}
+
+void OnTaskNotificationsManager::ConfigureForLockedMode(bool locked) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (locked && (notification_blocker_ != nullptr)) {
+    // Notification blocker already set up. Return.
+    return;
+  }
+  if (locked) {
+    notification_blocker_ =
+        std::make_unique<OnTaskNotificationBlocker>(MessageCenter::Get());
+    notification_blocker_->Init();
+  } else {
+    // Clear notification blocker if the window happens to be unlocked.
+    notification_blocker_.reset();
+  }
+}
+
+OnTaskNotificationBlocker*
+OnTaskNotificationsManager::GetNotificationBlockerForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return notification_blocker_.get();
 }
 
 void OnTaskNotificationsManager::CreateToastInternal(

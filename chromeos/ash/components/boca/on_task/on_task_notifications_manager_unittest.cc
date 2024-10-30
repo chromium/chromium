@@ -19,11 +19,24 @@
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
+
+using message_center::MessageCenter;
+using message_center::Notification;
+using message_center::NotifierId;
+using ::testing::IsNull;
+using ::testing::NotNull;
 
 namespace ash::boca {
 namespace {
 
 constexpr char kTestNotificationId[] = "TestOnTaskNotification";
+constexpr std::u16string_view kTestNotificationTitle =
+    u"TestOnTaskNotificationTitle";
+constexpr std::u16string_view kTestNotificationMessage =
+    u"TestOnTaskNotificationMessage";
 constexpr std::u16string_view kToastDescription = u"TestDescription";
 constexpr base::TimeDelta kToastCountdownPeriod = base::Seconds(5);
 
@@ -36,11 +49,22 @@ class FakeOnTaskNotificationsManagerDelegate
 
   // OnTaskNotificationsManager::Delegate:
   void ShowToast(ToastData toast_data) override { ++toast_count_; }
+  void ShowNotification(
+      std::unique_ptr<message_center::Notification> notification) override {
+    ++notification_count_;
+  }
+  void ClearNotification(const std::string& id) override {
+    if (GetNotificationCount() > 0u) {
+      --notification_count_;
+    }
+  }
 
   size_t GetToastCount() { return toast_count_.load(); }
+  size_t GetNotificationCount() { return notification_count_.load(); }
 
  private:
   std::atomic<size_t> toast_count_;
+  std::atomic<size_t> notification_count_;
 };
 
 class OnTaskNotificationsManagerTest : public ::testing::Test {
@@ -178,6 +202,28 @@ TEST_F(OnTaskNotificationsManagerTest,
   // Verify callback is triggered after the countdown period.
   task_environment_.FastForwardBy(kToastCountdownPeriod);
   EXPECT_TRUE(callback_triggered);
+}
+
+TEST_F(OnTaskNotificationsManagerTest, CreateNotification) {
+  OnTaskNotificationsManager::NotificationCreateParams create_params(
+      /*id=*/kTestNotificationId,
+      /*title=*/std::u16string{kTestNotificationTitle},
+      /*message=*/std::u16string{kTestNotificationMessage},
+      /*notifier_id=*/NotifierId());
+  notifications_manager_->CreateNotification(std::move(create_params));
+  EXPECT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
+}
+
+TEST_F(OnTaskNotificationsManagerTest, ConfigureForLockedWindow) {
+  notifications_manager_->ConfigureForLockedMode(/*locked=*/true);
+  EXPECT_THAT(notifications_manager_->GetNotificationBlockerForTesting(),
+              NotNull());
+}
+
+TEST_F(OnTaskNotificationsManagerTest, ConfigureForUnlockedWindow) {
+  notifications_manager_->ConfigureForLockedMode(/*locked=*/false);
+  EXPECT_THAT(notifications_manager_->GetNotificationBlockerForTesting(),
+              IsNull());
 }
 
 }  // namespace
