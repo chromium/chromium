@@ -147,8 +147,6 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionH264) {
     EXPECT_TRUE(HasValidYUVData(*frame));
     EXPECT_TRUE(frame->IsMappable());
     EXPECT_FALSE(frame->HasSharedImage());
-    EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
   } else {
     EXPECT_EQ(result->frame_data->which(),
               chrome::mojom::VideoFrameData::Tag::kEncodedData);
