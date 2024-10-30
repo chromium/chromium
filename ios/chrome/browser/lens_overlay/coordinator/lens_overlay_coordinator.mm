@@ -445,7 +445,6 @@ const CGFloat kMenuSymbolSize = 18;
     _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
     _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
-    _associatedTabHelper = nil;
   }
 
   if (!animated) {
@@ -923,6 +922,7 @@ const CGFloat kMenuSymbolSize = 18;
   _mediator = nil;
   _consentViewController = nil;
   _isExiting = NO;
+  _associatedTabHelper = nil;
   _scopedForceOrientation.reset();
 }
 
