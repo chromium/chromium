@@ -39,10 +39,18 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
   //  Register BocaSessionManager for the current profile.
   if (BocaAppClient::HasInstance()) {
     BocaAppClient::Get()->AddSessionManager(this);
+    identity_manager_ = BocaAppClient::Get()->GetIdentityManager();
+    if (identity_manager_) {
+      identity_manager_->AddObserver(this);
+    }
   }
   LoadInitialNetworkState();
 }
-BocaSessionManager::~BocaSessionManager() = default;
+BocaSessionManager::~BocaSessionManager() {
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+  }
+}
 
 void BocaSessionManager::Observer::OnBundleUpdated(
     const ::boca::Bundle& bundle) {}
@@ -200,6 +208,20 @@ void BocaSessionManager::OnNetworkStateFetched(
       break;
     }
   }
+}
+
+void BocaSessionManager::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& info) {
+  if (info.email != account_id_.GetUserEmail()) {
+    return;
+  }
+  LoadCurrentSession();
+}
+
+void BocaSessionManager::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_->RemoveObserver(this);
+  identity_manager_ = nullptr;
 }
 
 bool BocaSessionManager::IsProfileActive() {

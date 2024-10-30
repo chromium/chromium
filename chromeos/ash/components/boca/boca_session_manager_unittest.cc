@@ -138,7 +138,11 @@ class BocaSessionManagerTest : public testing::Test {
 
     // Expect to have registered session manager for current profile.
     EXPECT_CALL(*boca_app_client_, GetIdentityManager())
-        .WillOnce(Return(identity_test_env_.identity_manager()));
+        .Times(2)
+        .WillRepeatedly(Return(identity_manager()));
+
+    core_account_id_ = identity_manager()->PickAccountIdForAccount(
+        signin::GetTestGaiaIdForEmail(kTestUserEmail), kTestUserEmail);
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
         session_client_impl_.get(), account_id);
@@ -186,6 +190,10 @@ class BocaSessionManagerTest : public testing::Test {
   content::BrowserTaskEnvironment* task_environment() {
     return &task_environment_;
   }
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
+  CoreAccountId& core_account_id() { return core_account_id_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -201,6 +209,7 @@ class BocaSessionManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   std::unique_ptr<BocaSessionManager> boca_session_manager_;
+  CoreAccountId core_account_id_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
@@ -888,6 +897,13 @@ TEST_F(BocaSessionManagerTest,
   // Have updated two sessions.
   task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest, LoadSessionWhenRefreshTokenReady) {
+  EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(2);
+  // MakeAccountAvailable fires a fresh token ready event.
+  identity_test_env().MakeAccountAvailable(kTestUserEmail);
+  identity_test_env().SetRefreshTokenForAccount(core_account_id());
 }
 
 }  // namespace

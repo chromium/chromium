@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,7 +36,8 @@ enum ApiErrorCode;
 namespace ash::boca {
 
 class BocaSessionManager
-    : public chromeos::network_config::CrosNetworkConfigObserver {
+    : public chromeos::network_config::CrosNetworkConfigObserver,
+      public signin::IdentityManager::Observer {
  public:
   inline static constexpr base::TimeDelta kPollingInterval = base::Minutes(5);
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
@@ -117,6 +119,11 @@ class BocaSessionManager
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
       override;
 
+  // signin::IdentityManager::Observer
+  void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo& info) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
   void NotifyError(BocaError error);
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -173,6 +180,7 @@ class BocaSessionManager
       cros_network_config_observer_{this};
   AccountId account_id_;
   raw_ptr<SessionClientImpl> session_client_impl_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca
