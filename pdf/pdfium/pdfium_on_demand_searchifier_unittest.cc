@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_range.h"
 #include "pdf/pdfium/pdfium_test_base.h"
@@ -236,8 +237,8 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
     ASSERT_TRUE(GetPDFiumPageForTest(*engine(), page).GetPage());
   }
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
-  page.Unload();
+  PDFiumPage& page0 = GetPDFiumPageForTest(*engine(), 0);
+  page0.Unload();
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
   ASSERT_TRUE(searchifier);
@@ -250,14 +251,48 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   ASSERT_TRUE(future.Wait());
   ASSERT_EQ(performed_ocrs(), kPageCount - 1);
 
-  // First page is not searchified.
-  std::string page_text = GetPageText(page);
-  EXPECT_TRUE(page_text.empty());
+  // First page is not Searchified.
+  EXPECT_TRUE(GetPageText(page0).empty());
+  EXPECT_FALSE(page0.IsPageSearchified());
+  EXPECT_FALSE(page0.GetTextRunInfo(0).has_value());
 
-  // Other pages are searchified.
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 0");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 2");
+  // Other pages are Searchified.
+  PDFiumPage& page1 = GetPDFiumPageForTest(*engine(), 1);
+  EXPECT_EQ(GetPageText(page1), "OCR Text 0");
+  EXPECT_TRUE(page1.IsPageSearchified());
+  std::optional<AccessibilityTextRunInfo> page1_info = page1.GetTextRunInfo(0);
+  ASSERT_TRUE(page1_info.has_value());
+  EXPECT_TRUE(page1_info.value().is_searchified);
+
+  PDFiumPage& page2 = GetPDFiumPageForTest(*engine(), 2);
+  EXPECT_EQ(GetPageText(page2), "OCR Text 1");
+  EXPECT_TRUE(page2.IsPageSearchified());
+  std::optional<AccessibilityTextRunInfo> page2_info = page2.GetTextRunInfo(0);
+  ASSERT_TRUE(page2_info.has_value());
+  EXPECT_TRUE(page2_info.value().is_searchified);
+
+  PDFiumPage& page3 = GetPDFiumPageForTest(*engine(), 3);
+  EXPECT_EQ(GetPageText(page3), "OCR Text 2");
+  EXPECT_TRUE(page3.IsPageSearchified());
+  std::optional<AccessibilityTextRunInfo> page3_info = page3.GetTextRunInfo(0);
+  ASSERT_TRUE(page3_info.has_value());
+  EXPECT_TRUE(page3_info.value().is_searchified);
+
+  // Unload a Searchified page.
+  page3.Unload();
+
+  // Get the text from the page, which reloads the page. It still has the
+  // Searchified text because OCR finished and the text has been committed into
+  // the page.
+  EXPECT_EQ(GetPageText(page3), "OCR Text 2");
+  EXPECT_TRUE(page3.IsPageSearchified());
+
+  // Fetch `page3_info` again.
+  page3_info = page3.GetTextRunInfo(0);
+  ASSERT_TRUE(page3_info.has_value());
+  // TODO(crbug.com/376304020): Figure out how to properly track Searchified
+  // text, so this returns true.
+  EXPECT_FALSE(page3_info.value().is_searchified);
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
