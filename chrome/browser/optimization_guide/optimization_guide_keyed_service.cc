@@ -789,6 +789,13 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
   if (!model_execution_features_controller_) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (optimization_guide::features::kShowAiSettingsForTesting.Get()) {
+    return true;
+  }
+#endif
+
   return model_execution_features_controller_->IsSettingVisible(feature);
 }
 

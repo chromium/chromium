@@ -586,26 +586,29 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       optimization_guide::features::kAiSettingsPageRefresh);
 
   if (ai_settings_refresh_enabled) {
-    const bool tab_organization_enabled =
-        TabOrganizationUtils::GetInstance()->IsEnabled(profile);
-    const bool wallpaper_search_enabled =
-        customize_chrome::IsWallpaperSearchEnabledForProfile(profile);
-    const bool history_search_enabled =
-        history_embeddings::IsHistoryEmbeddingsSettingVisible(profile);
-    const bool compare_enabled = commerce::CanFetchProductSpecificationsData(
-        shopping_service->GetAccountChecker());
+    const bool show_ai_settings_for_testing =
+        optimization_guide::features::kShowAiSettingsForTesting.Get();
 
-    html_source->AddBoolean("showComposeControl", compose_enabled);
-    html_source->AddBoolean("showTabOrganizationControl",
-                            tab_organization_enabled);
-    html_source->AddBoolean("showWallpaperSearchControl",
-                            wallpaper_search_enabled);
-    html_source->AddBoolean("showHistorySearchControl", history_search_enabled);
-    html_source->AddBoolean("showCompareControl", compare_enabled);
+    std::pair<const std::string_view, bool> optimization_guide_features[6] = {
+        {"showTabOrganizationControl",
+         TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
+        {"showComposeControl", compose_enabled},
+        {"showWallpaperSearchControl",
+         customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
+        {"showTabOrganizationControl",
+         TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
+        {"showHistorySearchControl",
+         history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
+        {"showCompareControl", commerce::CanFetchProductSpecificationsData(
+                                   shopping_service->GetAccountChecker())},
+    };
 
-    const bool show_ai_page = compose_enabled || tab_organization_enabled ||
-                              wallpaper_search_enabled ||
-                              history_search_enabled || compare_enabled;
+    bool show_ai_page = show_ai_settings_for_testing;
+    for (auto [name, visible] : optimization_guide_features) {
+      html_source->AddBoolean(name, visible || show_ai_settings_for_testing);
+      show_ai_page |= visible;
+    }
+
     // "showAdvancedFeaturesMainControl", despite the name, controls whether the
     // AI subpage is shown. We want to show the page if any of the AI features
     // are enabled.

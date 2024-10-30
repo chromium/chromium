@@ -178,6 +178,9 @@ BASE_FEATURE(kOnDeviceModelValidation,
 BASE_FEATURE(kAiSettingsPageRefresh,
              "AiSettingsPageRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kShowAiSettingsForTesting{
+    &kAiSettingsPageRefresh, "show_ai_settings_for_testing", false};
 #endif
 
 // The default value here is a bit of a guess.

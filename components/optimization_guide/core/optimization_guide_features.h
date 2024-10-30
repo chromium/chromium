@@ -82,6 +82,9 @@ BASE_DECLARE_FEATURE(kOnDeviceModelValidation);
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAiSettingsPageRefresh);
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<bool> kShowAiSettingsForTesting;
 #endif
 
 typedef base::EnumSet<proto::RequestContext,
