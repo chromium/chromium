@@ -2769,10 +2769,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kDalvikMemoryProfileTestCases));
 
 TEST_P(ArcVmClientAdapterDalvikMemoryProfileTest, Profile) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kUseDalvikMemoryProfile,
-                                    true /* use */);
-
   const auto& test_param = GetParam();
   StartParams start_params(GetPopulatedStartParams());
   start_params.dalvik_memory_profile = test_param.profile;

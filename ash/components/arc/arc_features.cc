@@ -393,13 +393,6 @@ BASE_FEATURE(kUsbStorageUIFeature,
              "ArcUsbStorageUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls ARC dalvik memory profile in ARCVM.
-// When enabled, Android tries to use dalvik memory profile tuned based on the
-// device memory size.
-BASE_FEATURE(kUseDalvikMemoryProfile,
-             "ArcUseDalvikMemoryProfile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the system/vendor images are mounted without specifying a
 // block size.
 BASE_FEATURE(kUseDefaultBlockSize,
