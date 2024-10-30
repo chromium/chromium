@@ -1318,6 +1318,13 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                           "value for the 'popover' attribute.");
     return false;
   }
+  if (!GetDocument().IsActive() &&
+      RuntimeEnabledFeatures::TopLayerInactiveDocumentExceptionsEnabled()) {
+    maybe_throw_exception(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid for popovers within documents that are not fully active.");
+    return false;
+  }
   if (action == PopoverTriggerAction::kShow &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
     return false;
