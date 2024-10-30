@@ -19448,6 +19448,22 @@
      ]
     ]
    },
+   "resize-observer": {
+    "resize-loop-cancel-error-notification-console-manual.tentative.html": [
+     "2c0fe2c0f2875f5db5ffe47d0f072b3e1bff9dd4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "resize-loop-error-notification-console-manual.tentative.html": [
+     "ef7dba83866ad067f0df42d0ad933c97986d53a0",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "screen-orientation": {
     "page-visibility-manual.html": [
      "cc63279217806ff261195be2958194a5719cbaa1",
@@ -275330,7 +275346,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.drawImage.html": [
-        "8e6b95ae2210375f6e0db2cfa408bf4a7694deb3",
+        "acf9892ec37555645872fc61f225e053a9d98b4e",
         [
          null,
          [
@@ -275346,11 +275362,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275359,7 +275375,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.html": [
-        "5dca89e3c12b884f9d226d9b6b8f10f1a67d68ae",
+        "be37d492581c7147c239c3b009bc07c2a6b64ce5",
         [
          null,
          [
@@ -275375,11 +275391,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275388,7 +275404,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.pattern.html": [
-        "6b3c4c6a5890f555e3831ea7a27c5896a2f08b5f",
+        "7e68be70eaa9ccbc2ff6ba9a44af57bd842e2b74",
         [
          null,
          [
@@ -275404,11 +275420,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275417,7 +275433,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.drawImage.html": [
-        "f6872b221274b543dd16aa7568dc9f5b36da3791",
+        "918debe2e4097230a7b0e2adb9966614f1cabec0",
         [
          null,
          [
@@ -275433,11 +275449,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275446,7 +275462,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.fillRect.html": [
-        "1c68c0e454059db077a2469143608ad7f95cdb7c",
+        "363f9ed454efa0ab4fc5409fe907bb477041793a",
         [
          null,
          [
@@ -275462,11 +275478,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275475,7 +275491,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.pattern.html": [
-        "1e3f14fb9a3c1b62ec7b21c4ac7152d958811616",
+        "18ea3a473d8c9b001e3ee455d734c4ebd52e1559",
         [
          null,
          [
@@ -275491,11 +275507,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275504,7 +275520,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.html": [
-        "31e0fba79189df8fab876b886a278509abbc8581",
+        "cd9ad95b92c2913f03dacfeb4f9170956dcabc0f",
         [
          null,
          [
@@ -275520,11 +275536,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275533,7 +275549,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.html": [
-        "e14c336868ecdef5024ba8fd2f9d4b6bdb202d25",
+        "f007fd3fc7e16a3c52937295c5bbbb270b2128e9",
         [
          null,
          [
@@ -275549,11 +275565,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275562,7 +275578,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.html": [
-        "6f8159466dbd72bf6ae879484d2eb2a2b5db00fa",
+        "5362b2f1f5348b6f340b3d7224f132c746e42c0c",
         [
          null,
          [
@@ -275578,11 +275594,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275591,7 +275607,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.html": [
-        "84527f5a2832d77cbd1e358ebee7bb9fbf2ae483",
+        "e77309135d69d819e08a3f695b0567b166f9b325",
         [
          null,
          [
@@ -275607,11 +275623,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275620,7 +275636,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.html": [
-        "46bc366c8ac0cdad497c6145db3c8b16e96ee80e",
+        "c82ca80cadfb0519051ef0762fc4388773b10286",
         [
          null,
          [
@@ -275636,11 +275652,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -275649,7 +275665,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.pattern.html": [
-        "e636330c59f5b3b37f790c060e729730640b37af",
+        "bc7d0134b344a0fb6cf108a2c35bf848e2557182",
         [
          null,
          [
@@ -275665,11 +275681,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278172,7 +278188,7 @@
      "offscreen": {
       "compositing": {
        "2d.composite.grid.filter.no_shadow.drawImage.html": [
-        "72b23aeeafb87787e402a298b2b9c6b87a6a1cb5",
+        "5a90053e8f681b2daf00bf143f46d729b748ce50",
         [
          null,
          [
@@ -278188,11 +278204,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278201,7 +278217,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.drawImage.w.html": [
-        "89f4dba75b570cc5ff514cd02d52b7597a3c9dfe",
+        "d010912cd06d497633726f0cdc9c7bb993b72615",
         [
          null,
          [
@@ -278217,11 +278233,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278230,7 +278246,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.html": [
-        "3f8fdc8164d1fc971fd30d881d4a7ad4d28580fc",
+        "6bad129784f26b485759f0ae5bf66c3a14c129e2",
         [
          null,
          [
@@ -278246,11 +278262,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278259,7 +278275,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.w.html": [
-        "37839bf8a8b460c1a500c6ba05047210edc3120f",
+        "0c93086b54c89cdcb5d1e7ea58006cd85ad13494",
         [
          null,
          [
@@ -278275,11 +278291,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278288,7 +278304,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.pattern.html": [
-        "0bb970ab3f84683b2ce40a140bd7288c13112838",
+        "47cd363f06ee8c030c7e85c38292f268c97ba519",
         [
          null,
          [
@@ -278304,11 +278320,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278317,7 +278333,7 @@
         ]
        ],
        "2d.composite.grid.filter.no_shadow.pattern.w.html": [
-        "81d0a8e6a693ef89a730a7bbc12bddd09c0a8fc6",
+        "7f07a2c76451122e9ccb531f0839ebf8676f3976",
         [
          null,
          [
@@ -278333,11 +278349,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278346,7 +278362,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.drawImage.html": [
-        "5c9e992c7ce72164d04615a9d4fda9b629b21a85",
+        "fc8f2e20162c69328476d9041129595041353493",
         [
          null,
          [
@@ -278362,11 +278378,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278375,7 +278391,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.drawImage.w.html": [
-        "08e66abd46439ecb07fa8312fc5c0dad1bd28854",
+        "fb417b9c57610a1a13c89ee18f67cf9486465af3",
         [
          null,
          [
@@ -278391,11 +278407,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278404,7 +278420,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.fillRect.html": [
-        "0f6b88fd5e9e16e69213bdeb4dc66bb49c21427d",
+        "995bc9d65e62fe85fc4adec2b556ee3e8ec62541",
         [
          null,
          [
@@ -278420,11 +278436,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278433,7 +278449,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.fillRect.w.html": [
-        "f754f538b560b5bfd95539d4fd2033f3dbbea34a",
+        "78c509f40f3c0c125d93f9b54a33feb972f8e4fa",
         [
          null,
          [
@@ -278449,11 +278465,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278462,7 +278478,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.pattern.html": [
-        "e89aff9196dc194b5a4dd12a41f24312a0173e3d",
+        "f1bc4c64be79f6e25eebd61c634fd1ce8109e296",
         [
          null,
          [
@@ -278478,11 +278494,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278491,7 +278507,7 @@
         ]
        ],
        "2d.composite.grid.filter.shadow.pattern.w.html": [
-        "79f7aab01cd4e14509bc951dd3e67bdfb1e60667",
+        "de144bfaa6410a9130276e7639020bd83fe80114",
         [
          null,
          [
@@ -278507,11 +278523,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278520,7 +278536,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.html": [
-        "54a53b46576b55657183a59248937405efe3031a",
+        "5aac6d6b212d3910bc465d2755ffeeb6d8842c1c",
         [
          null,
          [
@@ -278536,11 +278552,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278549,7 +278565,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.w.html": [
-        "4750ed210ffe98e6b7de2443764fd648e69e1254",
+        "67fdbabce2ea11eaa40e7ff8f94701c617b481cd",
         [
          null,
          [
@@ -278565,11 +278581,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278578,7 +278594,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.html": [
-        "e69af8a79a92adbc0b3eff5e27a6295e873180f4",
+        "c1001d778158c9de4d95176917321141c2a4f01a",
         [
          null,
          [
@@ -278594,11 +278610,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278607,7 +278623,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.w.html": [
-        "0cfc23ab86a5d823f695bc11d1ac2a24a94feb5d",
+        "fcc39718c39980b1c0e1c376f737d1d5e39016a0",
         [
          null,
          [
@@ -278623,11 +278639,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278636,7 +278652,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.html": [
-        "b6008b7c79f3106750ec7e07bdf1d98582e02843",
+        "b977eb0bec3e239ebd7cfc8ab925fe0f1ecc729c",
         [
          null,
          [
@@ -278652,11 +278668,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278665,7 +278681,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.w.html": [
-        "ef952ce12cdaa3ea260cbc0ff4aa0ed4de3ea68e",
+        "9e9eb0229157b2315dfbe83e90e756cd5d42ae4b",
         [
          null,
          [
@@ -278681,11 +278697,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278694,7 +278710,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.html": [
-        "d25f183aeb8bc510e76a09c5571332e066c30aed",
+        "382f3abeb195fe5575cfa5f4980262ad0c9f960e",
         [
          null,
          [
@@ -278710,11 +278726,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278723,7 +278739,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.w.html": [
-        "c66b467d627df12414affa25f21a23d6088cff6a",
+        "56db72864d3f1e5af63a5a55392b588b62313c96",
         [
          null,
          [
@@ -278739,11 +278755,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278752,7 +278768,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.html": [
-        "3fdbfa72cafc7fe9a5e2e8eaf41662fd2c4013d8",
+        "bb58344fcbd6c3410cd3f6021e91cf2a446d5571",
         [
          null,
          [
@@ -278768,11 +278784,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278781,7 +278797,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.w.html": [
-        "519631612f05abd4f078c6d6a632dcbfb4913ace",
+        "3586c806cd4e32efd891b4b6a638635d7106caf9",
         [
          null,
          [
@@ -278797,11 +278813,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278810,7 +278826,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.pattern.html": [
-        "d9df6be84f174dde2a3d1f4b957cf4f8315d32ad",
+        "9703ea138d0baac48fc5e21f2addb4c40c47f77f",
         [
          null,
          [
@@ -278826,11 +278842,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -278839,7 +278855,7 @@
         ]
        ],
        "2d.composite.grid.no_filter.shadow.pattern.w.html": [
-        "5c698e8c7603057f8e6207dcca9396aae585b43e",
+        "318d2b971e446693cc616090c15427659a68981b",
         [
          null,
          [
@@ -278855,11 +278871,11 @@
             [
              [
               0,
-              2
+              3
              ],
              [
               0,
-              10210
+              25392
              ]
             ]
            ]
@@ -291254,7 +291270,7 @@
    },
    "jpegxl": {
     "3x3_jpeg_recompression.html": [
-     "f28fca8fdce33b39ace86403a348195f910de481",
+     "9ee3e6233c5e40936f1b79f05ecca2a6cf3dfdb5",
      [
       null,
       [
@@ -291274,7 +291290,7 @@
           ],
           [
            0,
-           9
+           275625
           ]
          ]
         ]
@@ -291283,7 +291299,7 @@
      ]
     ],
     "3x3_srgb_lossless.html": [
-     "589f11c68c4152eea3d395104c0d5ce4bbefbf4d",
+     "075e9cbcba6fcbb51c24e61ce10fc566fef8e6f0",
      [
       null,
       [
@@ -291303,7 +291319,7 @@
           ],
           [
            0,
-           9
+           275625
           ]
          ]
         ]
@@ -291312,7 +291328,7 @@
      ]
     ],
     "3x3_srgb_lossy.html": [
-     "3a92b2b7301d35570b4349513ccc1e1318a8ca8f",
+     "0412cd1e8bd598ffeb162350193722a65c1174c6",
      [
       null,
       [
@@ -291332,7 +291348,7 @@
           ],
           [
            0,
-           9
+           275625
           ]
          ]
         ]
@@ -291341,7 +291357,7 @@
      ]
     ],
     "3x3a_srgb_lossless.html": [
-     "1de61a5ba2713b0fc876305666069cb58299de29",
+     "8b73dac37b629c6d3e87812be2a234f63edbc478",
      [
       null,
       [
@@ -291361,7 +291377,7 @@
           ],
           [
            0,
-           9
+           275625
           ]
          ]
         ]
@@ -291370,7 +291386,7 @@
      ]
     ],
     "3x3a_srgb_lossy.html": [
-     "59583a11a9aab8bf4114bad2de3f405dffc3f0cd",
+     "f5cbf2eb7323081a1312dba470ac09c2ed21de6d",
      [
       null,
       [
@@ -291390,7 +291406,7 @@
           ],
           [
            0,
-           9
+           275625
           ]
          ]
         ]
@@ -305152,6 +305168,10 @@
       "d5317de7e76c0d7f37472222b902ca2d078dc3d8",
       []
      ],
+     "derive_key_and_encrypt.js": [
+      "5963a852fcfbe1ff42cf4a936ae5bcff86bc7635",
+      []
+     ],
      "derived_bits_length.https.any-expected.txt": [
       "21228fb640dc74cf44a886ffb65e6e0d4126cf8e",
       []
@@ -305617,7 +305637,7 @@
     },
     "util": {
      "helpers.js": [
-      "bda97003263ff4ac5a61c0941a144513e66ea9b0",
+      "c60371dc6adac9a77aee624e66b6680f6b4bfaca",
       []
      ],
      "worker-report-crypto-subtle-presence.js": [
@@ -377163,7 +377183,7 @@
         []
        ],
        "2d.composite.grid.filter.no_shadow.drawImage.png": [
-        "2318c1ec94e401b19677b4c4b5e7badff8cea77e",
+        "263ed6ecdd29143e3a572ec18811ca96f893e621",
         []
        ],
        "2d.composite.grid.filter.no_shadow.fillRect-expected.html": [
@@ -377171,7 +377191,7 @@
         []
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.png": [
-        "2318c1ec94e401b19677b4c4b5e7badff8cea77e",
+        "263ed6ecdd29143e3a572ec18811ca96f893e621",
         []
        ],
        "2d.composite.grid.filter.no_shadow.pattern-expected.html": [
@@ -377179,7 +377199,7 @@
         []
        ],
        "2d.composite.grid.filter.no_shadow.pattern.png": [
-        "2318c1ec94e401b19677b4c4b5e7badff8cea77e",
+        "263ed6ecdd29143e3a572ec18811ca96f893e621",
         []
        ],
        "2d.composite.grid.filter.shadow.drawImage-expected.html": [
@@ -377187,7 +377207,7 @@
         []
        ],
        "2d.composite.grid.filter.shadow.drawImage.png": [
-        "fde787731168e3a2565ca15d6da5e160a03ef484",
+        "ade9f67ef2e8b1a46ca58cde2e7b85f0373ba83a",
         []
        ],
        "2d.composite.grid.filter.shadow.fillRect-expected.html": [
@@ -377195,7 +377215,7 @@
         []
        ],
        "2d.composite.grid.filter.shadow.fillRect.png": [
-        "fde787731168e3a2565ca15d6da5e160a03ef484",
+        "ade9f67ef2e8b1a46ca58cde2e7b85f0373ba83a",
         []
        ],
        "2d.composite.grid.filter.shadow.pattern-expected.html": [
@@ -377203,7 +377223,7 @@
         []
        ],
        "2d.composite.grid.filter.shadow.pattern.png": [
-        "fde787731168e3a2565ca15d6da5e160a03ef484",
+        "ade9f67ef2e8b1a46ca58cde2e7b85f0373ba83a",
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage-expected.html": [
@@ -377211,7 +377231,7 @@
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.png": [
-        "ce392a1dcccc5e06a3d163dff873a5647ecdb65c",
+        "0163f403ca425156553ada8e5b8548261f774ba4",
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect-expected.html": [
@@ -377219,7 +377239,7 @@
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.png": [
-        "ce392a1dcccc5e06a3d163dff873a5647ecdb65c",
+        "0163f403ca425156553ada8e5b8548261f774ba4",
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern-expected.html": [
@@ -377227,7 +377247,7 @@
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.png": [
-        "ce392a1dcccc5e06a3d163dff873a5647ecdb65c",
+        "0163f403ca425156553ada8e5b8548261f774ba4",
         []
        ],
        "2d.composite.grid.no_filter.shadow.drawImage-expected.html": [
@@ -377235,7 +377255,7 @@
         []
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.png": [
-        "aca03a61b220c1022c65b71dbd092f7b6de3c754",
+        "6e80ad32bb6f6e29fb35286262e0f3120e09bbb4",
         []
        ],
        "2d.composite.grid.no_filter.shadow.fillRect-expected.html": [
@@ -377243,7 +377263,7 @@
         []
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.png": [
-        "aca03a61b220c1022c65b71dbd092f7b6de3c754",
+        "6e80ad32bb6f6e29fb35286262e0f3120e09bbb4",
         []
        ],
        "2d.composite.grid.no_filter.shadow.pattern-expected.html": [
@@ -377251,7 +377271,7 @@
         []
        ],
        "2d.composite.grid.no_filter.shadow.pattern.png": [
-        "aca03a61b220c1022c65b71dbd092f7b6de3c754",
+        "6e80ad32bb6f6e29fb35286262e0f3120e09bbb4",
         []
        ],
        "2d.composite.image.clear.png": [
@@ -379025,7 +379045,7 @@
         []
        ],
        "2d.composite.grid.filter.no_shadow.drawImage.png": [
-        "2318c1ec94e401b19677b4c4b5e7badff8cea77e",
+        "263ed6ecdd29143e3a572ec18811ca96f893e621",
         []
        ],
        "2d.composite.grid.filter.no_shadow.fillRect-expected.html": [
@@ -379033,7 +379053,7 @@
         []
        ],
        "2d.composite.grid.filter.no_shadow.fillRect.png": [
-        "2318c1ec94e401b19677b4c4b5e7badff8cea77e",
+        "263ed6ecdd29143e3a572ec18811ca96f893e621",
         []
        ],
        "2d.composite.grid.filter.no_shadow.pattern-expected.html": [
@@ -379041,7 +379061,7 @@
         []
        ],
        "2d.composite.grid.filter.no_shadow.pattern.png": [
-        "2318c1ec94e401b19677b4c4b5e7badff8cea77e",
+        "263ed6ecdd29143e3a572ec18811ca96f893e621",
         []
        ],
        "2d.composite.grid.filter.shadow.drawImage-expected.html": [
@@ -379049,7 +379069,7 @@
         []
        ],
        "2d.composite.grid.filter.shadow.drawImage.png": [
-        "fde787731168e3a2565ca15d6da5e160a03ef484",
+        "ade9f67ef2e8b1a46ca58cde2e7b85f0373ba83a",
         []
        ],
        "2d.composite.grid.filter.shadow.fillRect-expected.html": [
@@ -379057,7 +379077,7 @@
         []
        ],
        "2d.composite.grid.filter.shadow.fillRect.png": [
-        "fde787731168e3a2565ca15d6da5e160a03ef484",
+        "ade9f67ef2e8b1a46ca58cde2e7b85f0373ba83a",
         []
        ],
        "2d.composite.grid.filter.shadow.pattern-expected.html": [
@@ -379065,7 +379085,7 @@
         []
        ],
        "2d.composite.grid.filter.shadow.pattern.png": [
-        "fde787731168e3a2565ca15d6da5e160a03ef484",
+        "ade9f67ef2e8b1a46ca58cde2e7b85f0373ba83a",
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage-expected.html": [
@@ -379073,7 +379093,7 @@
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.drawImage.png": [
-        "ce392a1dcccc5e06a3d163dff873a5647ecdb65c",
+        "0163f403ca425156553ada8e5b8548261f774ba4",
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect-expected.html": [
@@ -379081,7 +379101,7 @@
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.fillRect.png": [
-        "ce392a1dcccc5e06a3d163dff873a5647ecdb65c",
+        "0163f403ca425156553ada8e5b8548261f774ba4",
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern-expected.html": [
@@ -379089,7 +379109,7 @@
         []
        ],
        "2d.composite.grid.no_filter.no_shadow.pattern.png": [
-        "ce392a1dcccc5e06a3d163dff873a5647ecdb65c",
+        "0163f403ca425156553ada8e5b8548261f774ba4",
         []
        ],
        "2d.composite.grid.no_filter.shadow.drawImage-expected.html": [
@@ -379097,7 +379117,7 @@
         []
        ],
        "2d.composite.grid.no_filter.shadow.drawImage.png": [
-        "aca03a61b220c1022c65b71dbd092f7b6de3c754",
+        "6e80ad32bb6f6e29fb35286262e0f3120e09bbb4",
         []
        ],
        "2d.composite.grid.no_filter.shadow.fillRect-expected.html": [
@@ -379105,7 +379125,7 @@
         []
        ],
        "2d.composite.grid.no_filter.shadow.fillRect.png": [
-        "aca03a61b220c1022c65b71dbd092f7b6de3c754",
+        "6e80ad32bb6f6e29fb35286262e0f3120e09bbb4",
         []
        ],
        "2d.composite.grid.no_filter.shadow.pattern-expected.html": [
@@ -379113,7 +379133,7 @@
         []
        ],
        "2d.composite.grid.no_filter.shadow.pattern.png": [
-        "aca03a61b220c1022c65b71dbd092f7b6de3c754",
+        "6e80ad32bb6f6e29fb35286262e0f3120e09bbb4",
         []
        ]
       },
@@ -379809,7 +379829,7 @@
         []
        ],
        "compositing.yaml": [
-        "1db0c590db2bce8d1e3429e92ec1f7880cbb3cb9",
+        "838ad4b06cba88bc6ea080ca52a5f1ec3fb53cd5",
         []
        ],
        "conformance_requirements.yaml": [
@@ -395520,23 +395540,23 @@
    },
    "jpegxl": {
     "3x3_jpeg_recompression-ref.html": [
-     "070243d6a7e66183f9a7bcbe77cd7263e0ecbcc0",
+     "8d4e807875ee5d5e0d4e31a8d9a5ae23d1a6a630",
      []
     ],
     "3x3_srgb_lossless-ref.html": [
-     "1bb50832409d6aa7a645a413622ccc5e2443bea8",
+     "72f11d1aff2b5d684acf84a12fb8f7f89bc25df6",
      []
     ],
     "3x3_srgb_lossy-ref.html": [
-     "a5e95baba3b19607b9d7044328e4516937918784",
+     "d0ef01b67b38a42ca0e02edcf764bcb5cb4a958c",
      []
     ],
     "3x3a_srgb_lossless-ref.html": [
-     "75d8ba7452ede9efbe871e28637cc30120c88809",
+     "3b2c6a4b4ad51ab1707c4c121da653bf86bc2e43",
      []
     ],
     "3x3a_srgb_lossy-ref.html": [
-     "3a1c22e8a2775b32622ccc538e3cef14d527db5a",
+     "3256365b8d9d296960579a0ebc68fee3d386ba5e",
      []
     ],
     "META.yml": [
@@ -398255,10 +398275,6 @@
     ],
     "GUM-deny.https-expected.txt": [
      "f3767215c16f4d8bb7b0d43d0fd0e47abea4be59",
-     []
-    ],
-    "GUM-permissions-query.https-expected.txt": [
-     "4f7764e63cd5710fdb3686b5a8d3593f2f20e73b",
      []
     ],
     "META.yml": [
@@ -408014,6 +408030,10 @@
       "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
       []
      ],
+     "erroneous-function-module.js": [
+      "6d4630552559ea17b9fb6004664334bff72fb8a1",
+      []
+     ],
      "frame0.html": [
       "c9b559fe83a6e04f58364037976e82dbaa44591a",
       []
@@ -408030,6 +408050,30 @@
       "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
       []
      ],
+     "frame2.html": [
+      "bbbc067ce01f45c9386c0448bb86f7480295edad",
+      []
+     ],
+     "frame2.html.headers": [
+      "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
+      []
+     ],
+     "frame3.html": [
+      "e12a2ad909a663e0ebc4d7b9b956a1e376e0e9e2",
+      []
+     ],
+     "frame3.html.headers": [
+      "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
+      []
+     ],
+     "frame4.html": [
+      "716e803da0ada8f9dd1a3ed9768b03b05bb844c9",
+      []
+     ],
+     "frame4.html.headers": [
+      "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
+      []
+     ],
      "register-service-worker-iframe.https.html": [
       "547ab1d93d9adb9cb82ea797ee5e900b9d0e067c",
       []
@@ -408040,6 +408084,10 @@
      ],
      "select-url-permissions-policy-helper.html": [
       "896daa59828a485908b4a8bf826ec10b00a2ae2b",
+      []
+     ],
+     "select-url-saved-query-inner.https.sub.html": [
+      "9d5efe388d0145e77df69ef5a9a4513884668992",
       []
      ],
      "sender0.html": [
@@ -408111,7 +408159,7 @@
       []
      ],
      "simple-module.js": [
-      "eeb0ce95b040687a57a7eaa65be7c17a88b592fe",
+      "e639f47000819e2c5974c1cb99bdb04e3dbb1cfb",
       []
      ],
      "simple-module.js.headers": [
@@ -408127,7 +408175,7 @@
       []
      ],
      "util.js": [
-      "09eb45c591b42b3bbb969948362668daf902b3f0",
+      "b1456fc01db71a46244068e264782916051087b1",
       []
      ],
      "util.sub.js": [
@@ -408196,6 +408244,10 @@
     "resources": {
      "run-url-selection-operation-limit-inner.https.html": [
       "c5d057f3e2ffc613c1ae20c19986a3fb13c8c246",
+      []
+     ],
+     "select-url-saved-query-multi-frame-inner.https.sub.html": [
+      "549eec0fbfb97e8b373d954ef78c655ed4710c16",
       []
      ],
      "utils.js": [
@@ -430086,6 +430138,47 @@
          [
           "script",
           "cfrg_curves_keys.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "derive_key_and_encrypt.https.any.js": [
+      "5edc832b6163bd8976c02ddbf42a375a8a36e87d",
+      [
+       "WebCryptoAPI/derive_bits_keys/derive_key_and_encrypt.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveKey() Using HKDF and PBKDF2 from an ECDH key"
+         ],
+         [
+          "script",
+          "derive_key_and_encrypt.js"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "WebCryptoAPI/derive_bits_keys/derive_key_and_encrypt.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveKey() Using HKDF and PBKDF2 from an ECDH key"
+         ],
+         [
+          "script",
+          "derive_key_and_encrypt.js"
+         ],
+         [
+          "script",
+          "../util/helpers.js"
          ]
         ]
        }
@@ -579841,90 +579934,6 @@
          {}
         ]
        ],
-       "2d.composite.grid.filter.no_shadow.drawImage.worker.js": [
-        "45329fcd9c8b222abe33fff963358e4b8ae728d6",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.filter.no_shadow.drawImage.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.filter.no_shadow.fillRect.worker.js": [
-        "dff55436a40b07924332b17725d930f9c3956a4c",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.filter.no_shadow.fillRect.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.filter.no_shadow.pattern.worker.js": [
-        "d3e79cd2d156f65378c8e9ddeb4f7ee326a0c2c4",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.filter.no_shadow.pattern.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.filter.shadow.drawImage.worker.js": [
-        "9a9c2f9363225722249284b1ac48709482b1f204",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.filter.shadow.drawImage.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.filter.shadow.fillRect.worker.js": [
-        "f495009b301eeb9c36286f6fe8dc6edcc835427c",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.filter.shadow.fillRect.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.filter.shadow.pattern.worker.js": [
-        "d960d0d54014226083b2d86e922048aea84a6db1",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.filter.shadow.pattern.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.no_filter.no_shadow.drawImage.worker.js": [
-        "de1686a76e80b558ca3b9b40f86b9ea80a053a1d",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.no_filter.no_shadow.drawImage.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.no_filter.no_shadow.fillRect.worker.js": [
-        "cb60645b70402e4e97a34d78687e12365215613c",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.no_filter.no_shadow.fillRect.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.no_filter.no_shadow.pattern.worker.js": [
-        "e1479261ce22afe939a593343c1dcacc01dc0050",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.no_filter.no_shadow.pattern.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.no_filter.shadow.drawImage.worker.js": [
-        "c7827238f6936c67f0a1a705008c38d4c75bc310",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.drawImage.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.no_filter.shadow.fillRect.worker.js": [
-        "217fe38a8de678c2dc69b21faf5bc8abb6c2fd50",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.fillRect.worker.html",
-         {}
-        ]
-       ],
-       "2d.composite.grid.no_filter.shadow.pattern.worker.js": [
-        "f26657b521426a8773ef674b1be07c31411adbc8",
-        [
-         "html/canvas/offscreen/compositing/2d.composite.grid.no_filter.shadow.pattern.worker.html",
-         {}
-        ]
-       ],
        "2d.composite.image.clear.html": [
         "f001c4409c3e2c2ca59b64de64174cf6251624f6",
         [
@@ -668782,6 +668791,48 @@
       {}
      ]
     ],
+    "select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html": [
+     "7738d90fa69dd7c5c16f601da1aa1e72f7266c25",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-key-tuples.tentative.https.sub.html": [
+     "05bc807b868239126b1f0fbaa8db9c2c690c2b00",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-rejection.tentative.https.sub.html": [
+     "819b5e5166a1970ff543583a7fb0a75e7d7821b5",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-same-origin-multi-query.tentative.https.sub.html": [
+     "9ee49bb2b25c90ec78a3fcd00da802c7d12d2f27",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-validate-index-after-retrieving.tentative.https.sub.html": [
+     "f45ce4957c4644dc017be927e2d2b3b955b9500b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-validate-index-before-storing.tentative.https.sub.html": [
+     "5cb906e61d51fb6396fc757c261e73830dfc3594",
+     [
+      null,
+      {}
+     ]
+    ],
     "set-exceed-former-entry-limit.tentative.https.html": [
      "b78abbf1efd17711d2bffe641b83266c8f862e14",
      [
@@ -669054,6 +669105,34 @@
     ],
     "select-url-limit-multiple-worklets.tentative.https.sub.html": [
      "62cbe7a90ffa04fffe34280d37a4add6409a8365",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-async.tentative.https.sub.html": [
+     "f0d35f658b167f75e026ddaca33edb6ed43e1044",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-different-operation.tentative.https.sub.html": [
+     "aec53bfccfed5c1d131cd8996e55d9b1b5142bcf",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query-multi-frame.tentative.https.sub.html": [
+     "c33e1d346aadb8108bcd77878102028bec3b9188",
+     [
+      null,
+      {}
+     ]
+    ],
+    "select-url-saved-query.tentative.https.sub.html": [
+     "0c33bd74fe9a8aace4cc8154bd57aa4643b10484",
      [
       null,
       {}
