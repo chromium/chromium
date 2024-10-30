@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -184,7 +185,8 @@ void ChromeAutofillPredictionImprovementsClient::
     OpenPredictionImprovementsSettings() {
   web_contents_->OpenURL(
       content::OpenURLParams(
-          GURL(chrome::kAutofillPredictionImprovementsSubPage),
+          GURL(base::StrCat({"chrome://settings/",
+                             chrome::kAutofillPredictionImprovementsSubPage})),
           content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false),
