@@ -103,7 +103,15 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   bool loaded() const;
 
-  size_t GetChildrenCount(const BookmarkParentFolder& bookmark) const;
+  size_t GetChildrenCount(const BookmarkParentFolder& folder) const;
+
+  // TODO(crbug.com/364594278): This function will need to return a wrapper that
+  // provides access to children as in some cases, child nodes will be a
+  // combination of the two bookmark nodes's children that would be tracked in a
+  // vector of non-owning pointers to child bookmark nodes. The wrapper would
+  // hide the type difference vector of unique/raw pointers.
+  const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& GetChildren(
+      const BookmarkParentFolder& folder) const;
 
   // Moves `node` to `new_parent` at position `index`.
   // Note: If `BookmarkParentFolder` is a permanent bookmark folder, `index` is
