@@ -135,6 +135,14 @@ class Node:
         # Skipping the first and last character that correspond to the curly
         # braces denoting the start and end of a serialized node.
         x = txt[1:-1].split('\\,')
+
+        # Value are escaped to avoid conflicts with the separator. Unescape
+        # them.
+        x = [urllib.parse.unquote(y) for y in x]
+
+        # `./apply-edits.py` expects `\n` to be escaped.
+        x = [y.replace('\n', '\0') for y in x]
+
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
         # - is_buffer
@@ -146,10 +154,6 @@ class Node:
         assert len(x) == 6, txt
 
         node = Node(*x)
-
-        # replacement and include_directive fields are percent-encoded.
-        node.replacement = urllib.parse.unquote(node.replacement)
-        node.include_directive = urllib.parse.unquote(node.include_directive)
 
         # Deduplicate nodes, as they might appear multiple times in the input.
         if (Node.key_to_node.get(node.replacement) is None):
@@ -386,7 +390,7 @@ def main():
 
     for index, component in enumerate(component_with_changes):
         for text in component.changes:
-            print(text.replace('\n', '\0'))
+            print(text)
 
         summary_file.write(f'patch_{index}: {len(component.changes)}\n')
 
