@@ -367,6 +367,8 @@ void DesktopWindowTreeHostPlatform::Close() {
   if (close_widget_factory_.HasWeakPtrs() || !platform_window())
     return;
 
+  platform_window()->PrepareForShutdown();
+
   GetContentWindow()->Hide();
 
   // Hide while waiting for the close.
@@ -390,8 +392,6 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
 #if BUILDFLAG(IS_OZONE)
   SetWmDropHandler(platform_window(), nullptr);
 #endif
-
-  platform_window()->PrepareForShutdown();
 
   ReleaseCapture();
   if (native_widget_delegate_)
