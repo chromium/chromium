@@ -250,6 +250,9 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   }
 
   void UpdatePermissionsAndCallBack() {
+    extension_key_permissions_service_->RegisterOneTimeSigningPermissionForKey(
+        public_key_spki_der_);
+
     extension_key_permissions_service_->RegisterKeyForCorporateUsage(
         public_key_spki_der_,
         base::BindOnce(&GenerateKeyTask::OnKeyRegisteredForCorporateUsage,
@@ -458,7 +461,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       return;
     }
 
-    extension_key_permissions_service_->CanUseKeyForSigning(
+    extension_key_permissions_service_->CanUseKey(
         public_key_spki_der_,
         base::BindOnce(&SignTask::OnCanUseKeyForSigningKnown,
                        weak_factory_.GetWeakPtr()));
@@ -611,10 +614,11 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         CheckKeyPermissions(Step::INTERSECT_WITH_INPUT_CERTS /* next_step */);
         return;
       case Step::INTERSECT_WITH_INPUT_CERTS:
-        if (interactive_)
+        if (interactive_) {
           next_step_ = Step::SELECT_CERTS;
-        else  // Skip SelectCerts and UpdatePermission if not interactive.
+        } else {  // Skip SelectCerts and UpdatePermission if not interactive.
           next_step_ = Step::PASS_RESULTING_CERTS;
+        }
         IntersectWithInputCerts();
         return;
       case Step::SELECT_CERTS:
@@ -693,8 +697,9 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
             certificate->cert_buffer(), &unused_key_size, &actual_key_type);
         const std::vector<net::X509Certificate::PublicKeyType>& accepted_types =
             request_.certificate_key_types;
-        if (!base::Contains(accepted_types, actual_key_type))
+        if (!base::Contains(accepted_types, actual_key_type)) {
           continue;
+        }
       }
 
       matches_pending_permissions_check_.push_back(std::move(certificate));
@@ -721,7 +726,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     std::vector<uint8_t> public_key_spki_der =
         platform_keys::GetSubjectPublicKeyInfoBlob(certificate);
 
-    extension_key_permissions_service_->CanUseKeyForSigning(
+    extension_key_permissions_service_->CanUseKey(
         public_key_spki_der,
         base::BindOnce(&SelectTask::OnKeySigningPermissionKnown,
                        weak_factory_.GetWeakPtr(), public_key_spki_der,
@@ -823,8 +828,9 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   void PassResultingCerts() {
     std::unique_ptr<net::CertificateList> selection(new net::CertificateList);
     if (interactive_) {
-      if (selected_cert_)
+      if (selected_cert_) {
         selection->push_back(selected_cert_);
+      }
     } else {
       selection->assign(matches_.begin(), matches_.end());
     }
@@ -976,21 +982,24 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
 void ExtensionPlatformKeysService::StartOrQueueTask(
     std::unique_ptr<Task> task) {
   tasks_.push(std::move(task));
-  if (tasks_.size() == 1)
+  if (tasks_.size() == 1) {
     tasks_.front()->Start();
+  }
 }
 
 void ExtensionPlatformKeysService::TaskFinished(Task* task) {
   DCHECK(!tasks_.empty());
   DCHECK(task == tasks_.front().get());
   // Remove all finished tasks from the queue (should be at most one).
-  while (!tasks_.empty() && tasks_.front()->IsDone())
+  while (!tasks_.empty() && tasks_.front()->IsDone()) {
     tasks_.pop();
+  }
 
   // Now either the queue is empty or the next task is not finished yet and it
   // can be started.
-  if (!tasks_.empty())
+  if (!tasks_.empty()) {
     tasks_.front()->Start();
+  }
 }
 
 }  // namespace chromeos

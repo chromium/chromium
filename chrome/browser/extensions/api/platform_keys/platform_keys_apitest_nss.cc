@@ -105,8 +105,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 
     PlatformKeysTestBase::SetUpOnMainThread();
 
-    if (IsPreTest())
+    if (IsPreTest()) {
       return;
+    }
 
     {
       base::RunLoop loop;
@@ -117,8 +118,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
       loop.Run();
     }
 
-    if (user_status() != UserStatus::UNMANAGED && key_permission_policy_)
+    if (user_status() != UserStatus::UNMANAGED && key_permission_policy_) {
       SetupKeyPermissionUserPolicy();
+    }
   }
 
   void SetupKeyPermissionUserPolicy() {
@@ -213,8 +215,16 @@ class PlatformKeysTest : public PlatformKeysTestBase {
           extension_key_permissions_service) {
     auto* extension_key_permissions_service_unowned =
         extension_key_permissions_service.get();
+    std::vector<uint8_t> subject_public_key_info =
+        chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(client_cert1_);
+
+    // Mimics the behaviour of the ExtensionPlatformKeysService, which sets the
+    // one-time signing permission when the key is registered for corporate
+    // usage.
+    extension_key_permissions_service_unowned
+        ->RegisterOneTimeSigningPermissionForKey(subject_public_key_info);
     extension_key_permissions_service_unowned->RegisterKeyForCorporateUsage(
-        chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(client_cert1_),
+        subject_public_key_info,
         base::BindOnce(&PlatformKeysTest::OnKeyRegisteredForCorporateUsage,
                        base::Unretained(this),
                        std::move(extension_key_permissions_service),
@@ -304,8 +314,9 @@ class TestSelectDelegate
         }
       }
     }
-    if (certs_to_select_.size() > 1)
+    if (certs_to_select_.size() > 1) {
       certs_to_select_.pop_back();
+    }
     std::move(callback).Run(selection);
   }
 
@@ -575,13 +586,14 @@ IN_PROC_BROWSER_TEST_P(ManagedWithPermissionPlatformKeysTest,
   // The policy grants access to corporate keys.
   // As the profile is managed, the user must not be able to grant any
   // certificate permission.
-  // If the user is not affilited, no corporate keys are available. Set up a
+  // If the user is not affiliated, no corporate keys are available. Set up a
   // delegate that fails on any invocation. If the user is affiliated, client_2
-  // on the system token will be avialable for selection, as it is implicitly
+  // on the system token will be available for selection, as it is implicitly
   // corporate.
   net::CertificateList certs;
-  if (user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN)
+  if (user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN) {
     certs.push_back(nullptr);
+  }
 
   GetExtensionPlatformKeysService()->SetSelectDelegate(
       std::make_unique<TestSelectDelegate>(certs));
