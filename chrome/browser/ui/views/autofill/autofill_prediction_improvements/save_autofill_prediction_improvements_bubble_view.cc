@@ -114,7 +114,6 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
   button->SetTooltipText(tooltip);
   button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   button->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  button->GetViewAccessibility().SetIsIgnored(true);
   // This is used in tests only.
   button->SetID(
       is_thumbs_up
