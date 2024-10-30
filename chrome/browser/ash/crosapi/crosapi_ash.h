@@ -431,7 +431,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindGuestOsSkForwarderFactory(
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
-  void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
   void REMOVED_29(
       mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
   void REMOVED_105(mojo::PendingReceiver<mojom::FirewallHoleServiceDeprecated>

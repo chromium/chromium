@@ -875,10 +875,7 @@ interface Crosapi {
   [MinVersion=121] BindGuestOsSkForwarderFactory@123(
       pending_receiver<GuestOsSkForwarderFactory> receiver);
 
-  // Passes generic browser information such as version, etc into ash in
-  // |browser_info| during startup.
-  // Added in M87.
-  [MinVersion=3] OnBrowserStartup@6(BrowserInfo browser_info);
+  // OnBrowserStartup@6 was removed.
 
   // Binds the service containing input method related functionality such
   // as changing the keyboard input language.

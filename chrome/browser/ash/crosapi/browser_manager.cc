@@ -133,10 +133,6 @@ constexpr base::TimeDelta kDailyLaunchModeTimeDelta = base::Minutes(30);
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-// Global flag to disable most of BrowserManager for testing.
-// Read by the BrowserManager constructor.
-bool g_disabled_for_testing = false;
-
 constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
@@ -238,8 +234,7 @@ BrowserManager::BrowserManager(
 BrowserManager::BrowserManager(
     std::unique_ptr<BrowserLoader> browser_loader,
     component_updater::ComponentUpdateService* update_service)
-    : browser_loader_(std::move(browser_loader)),
-      disabled_for_testing_(g_disabled_for_testing) {
+    : browser_loader_(std::move(browser_loader)) {
   DCHECK(!g_instance);
   g_instance = this;
 
@@ -300,17 +295,6 @@ bool BrowserManager::IsRunning() const {
   return state_ == State::RUNNING;
 }
 
-bool BrowserManager::IsRunningOrWillRun() const {
-  return state_ == State::RUNNING || state_ == State::STARTING ||
-         state_ == State::PREPARING_FOR_LAUNCH ||
-         state_ == State::WAITING_FOR_MOJO_DISCONNECTED ||
-         state_ == State::WAITING_FOR_PROCESS_TERMINATED;
-}
-
-bool BrowserManager::IsInitialized() const {
-  return state_ != State::NOT_INITIALIZED;
-}
-
 void BrowserManager::NewWindow(bool incognito,
                                bool should_trigger_session_restore) {
   int64_t target_display_id =
@@ -324,31 +308,10 @@ void BrowserManager::OpenForFullRestore(bool skip_crash_restore) {
   PerformOrEnqueue(BrowserAction::OpenForFullRestore(skip_crash_restore));
 }
 
-void BrowserManager::NewWindowForDetachingTab(
-    const std::u16string& tab_id_str,
-    const std::u16string& group_id_str,
-    NewWindowForDetachingTabCallback callback) {
-  PerformOrEnqueue(BrowserAction::NewWindowForDetachingTab(
-      tab_id_str, group_id_str, std::move(callback)));
-}
-
-void BrowserManager::NewFullscreenWindow(const GURL& url,
-                                         NewFullscreenWindowCallback callback) {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::NewFullscreenWindow(url, target_display_id,
-                                                      std::move(callback)));
-}
-
 void BrowserManager::NewGuestWindow() {
   int64_t target_display_id =
       display::Screen::GetScreen()->GetDisplayForNewWindows().id();
   PerformOrEnqueue(BrowserAction::NewGuestWindow(target_display_id));
-}
-
-void BrowserManager::NewTab() {
-  PerformOrEnqueue(
-      BrowserAction::NewTab(ash::desks_util::GetActiveDeskLacrosProfileId()));
 }
 
 void BrowserManager::Launch() {
@@ -378,16 +341,6 @@ void BrowserManager::SwitchToTab(const GURL& url,
       crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior));
 }
 
-void BrowserManager::RestoreTab() {
-  PerformOrEnqueue(BrowserAction::RestoreTab());
-}
-
-void BrowserManager::HandleTabScrubbing(float x_offset,
-                                        bool is_fling_scroll_event) {
-  PerformOrEnqueue(
-      BrowserAction::HandleTabScrubbing(x_offset, is_fling_scroll_event));
-}
-
 void BrowserManager::CreateBrowserWithRestoredData(
     const std::vector<GURL>& urls,
     const gfx::Rect& bounds,
@@ -406,54 +359,6 @@ void BrowserManager::CreateBrowserWithRestoredData(
 
 void BrowserManager::OpenProfileManager() {
   PerformOrEnqueue(BrowserAction::OpenProfileManager());
-}
-
-bool BrowserManager::EnsureLaunch() {
-  // This method can only ensure Lacros's launch if the user profile is already
-  // initialized.
-  auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user || !user->is_profile_created()) {
-    return false;
-  }
-
-  switch (state_) {
-    case State::NOT_INITIALIZED:
-      LOG(WARNING) << "Ensuring Lacros launch: initialize and start";
-      InitializeAndStartIfNeeded();
-      return true;
-
-    case State::RUNNING:
-      LOG(WARNING) << "Ensuring Lacros launch: already running";
-      return true;
-
-    case State::STOPPED:
-      if (IsKeepAliveEnabled() || !pending_actions_.IsEmpty()) {
-        LOG(WARNING) << "Ensuring Lacros launch: currently stopped, but will "
-                        "be restarted";
-      } else {
-        LOG(WARNING) << "Ensuring Lacros launch: currently stopped, starting";
-        StartIfNeeded();
-      }
-      return true;
-
-    case State::MOUNTING:
-    case State::PREPARING_FOR_LAUNCH:
-    case State::STARTING:
-      LOG(WARNING)
-          << "Ensuring Lacros launch: already in the process of starting";
-      return true;
-
-    case State::WAITING_FOR_MOJO_DISCONNECTED:
-    case State::WAITING_FOR_PROCESS_TERMINATED:
-      LOG(WARNING)
-          << "Ensuring Lacros launch: currently terminating, enqueueing launch";
-      PerformOrEnqueue(BrowserAction::GetActionForSessionStart());
-      return true;
-
-    case State::UNAVAILABLE:
-      LOG(WARNING) << "Can't ensure Lacros launch: unavailable";
-      return false;
-  }
 }
 
 void BrowserManager::InitializeAndStartIfNeeded() {
@@ -495,25 +400,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
     browser_loader_->Unload();
     ClearLacrosData();
   }
-}
-
-// TODO(neis): Create BrowserAction also for this and others, perhaps even
-// UpdateKeepAlive.
-void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
-  CHECK_GE(browser_service_->interface_version,
-           crosapi::mojom::BrowserService::kGetFeedbackDataMinVersion);
-  browser_service_->service->GetFeedbackData(std::move(callback));
-}
-
-bool BrowserManager::GetHistogramsSupported() const {
-  return browser_service_.has_value() &&
-         browser_service_->interface_version >=
-             crosapi::mojom::BrowserService::kGetHistogramsMinVersion;
-}
-
-void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
-  DCHECK(GetHistogramsSupported());
-  browser_service_->service->GetHistograms(std::move(callback));
 }
 
 bool BrowserManager::GetActiveTabUrlSupported() const {
@@ -570,19 +456,6 @@ void BrowserManager::Shutdown() {
   }
 }
 
-void BrowserManager::set_device_ownership_waiter_for_testing(
-    std::unique_ptr<user_manager::DeviceOwnershipWaiter>
-        device_ownership_waiter) {
-  browser_launcher_.set_device_ownership_waiter_for_testing(  // IN-TEST
-      std::move(device_ownership_waiter));
-}
-
-void BrowserManager::set_relaunch_requested_for_testing(
-    bool relaunch_requested) {
-  CHECK_IS_TEST();
-  relaunch_requested_ = relaunch_requested;
-}
-
 void BrowserManager::SetState(State state) {
   if (state_ == state) {
     return;
@@ -618,30 +491,6 @@ BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
 
 void BrowserManager::Start() {
   NOTREACHED();
-}
-
-void BrowserManager::OnLaunchComplete(
-    base::expected<BrowserLauncher::LaunchResults,
-                   BrowserLauncher::LaunchFailureReason> launch_results) {
-  CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
-
-  if (!launch_results.has_value()) {
-    switch (launch_results.error()) {
-      case BrowserLauncher::LaunchFailureReason::kUnknown:
-        // We give up, as this is most likely a permanent problem.
-        SetState(State::UNAVAILABLE);
-        return;
-      case BrowserLauncher::LaunchFailureReason::kShutdownRequested:
-        LOG(ERROR) << "Start attempted after Shutdown() called.";
-        SetState(State::STOPPED);
-        return;
-    }
-  }
-
-  crosapi_id_ = launch_results->crosapi_id;
-  lacros_launch_time_ = launch_results->lacros_launch_time;
-
-  SetState(State::STARTING);
 }
 
 void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
@@ -820,13 +669,6 @@ void BrowserManager::OnLacrosChromeTerminated() {
 
 void BrowserManager::OnSessionStateChanged() {
   TRACE_EVENT0("login", "BrowserManager::OnSessionStateChanged");
-  if (disabled_for_testing_) {
-    CHECK_IS_TEST();
-    LOG(WARNING)
-        << "BrowserManager disabled for testing, entering UNAVAILABLE state";
-    SetState(State::UNAVAILABLE);
-    return;
-  }
 
   // Wait for session to become active.
   auto* session_manager = session_manager::SessionManager::Get();
@@ -1126,37 +968,6 @@ void BrowserManager::OnDailyLaunchModeTimer() {
   base::UmaHistogramEnumeration(kLacrosLaunchModeDaily, *lacros_mode_);
   base::UmaHistogramEnumeration(kLacrosLaunchModeAndSourceDaily,
                                 *lacros_mode_and_source_);
-}
-
-// static
-void BrowserManager::DisableForTesting() {
-  CHECK_IS_TEST();
-  g_disabled_for_testing = true;
-}
-
-// static
-void BrowserManager::EnableForTesting() {
-  CHECK_IS_TEST();
-  g_disabled_for_testing = false;
-}
-
-BrowserManager::ScopedUnsetAllKeepAliveForTesting::
-    ScopedUnsetAllKeepAliveForTesting(BrowserManager* manager)
-    : manager_(manager) {
-  previous_keep_alive_features_ = std::move(manager_->keep_alive_features_);
-  manager_->keep_alive_features_.clear();
-  manager_->UpdateKeepAliveInBrowserIfNecessary(false);
-}
-
-BrowserManager::ScopedUnsetAllKeepAliveForTesting::
-    ~ScopedUnsetAllKeepAliveForTesting() {
-  manager_->keep_alive_features_ = std::move(previous_keep_alive_features_);
-  manager_->UpdateKeepAliveInBrowserIfNecessary(
-      !manager_->keep_alive_features_.empty());
-}
-
-void BrowserManager::KillLacrosForTesting() {
-  browser_launcher_.TriggerTerminate(/*exit_code=*/1);
 }
 
 }  // namespace crosapi

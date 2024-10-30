@@ -1071,10 +1071,6 @@ void CrosapiAsh::BindWebAppPublisher(
   web_apps->RegisterWebAppsCrosapiHost(std::move(receiver));
 }
 
-void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
-  BrowserManager::Get()->set_browser_version(browser_info->browser_version);
-}
-
 void CrosapiAsh::REMOVED_29(
     mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) {
   NOTIMPLEMENTED();
