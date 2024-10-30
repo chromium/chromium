@@ -898,7 +898,6 @@ crbug.com/1081978 [ angle-opengl intel-0x9bc5 linux passthrough ] conformance2/t
 ## Linux NVIDIA ##
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/366284863 [ angle-opengl linux nvidia-0x2184 nvidia_lt_535.183.01 passthrough ] deqp/functional/gles3/shaderoperator/sequence.html [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
 
@@ -953,7 +952,7 @@ crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conform
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 
-crbug.com/335857348 [ android android-pixel-4 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+crbug.com/335857348 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 crbug.com/375117795 [ android android-pixel-4 ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
 
 #####################
@@ -1010,7 +1009,6 @@ crbug.com/1488978 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/li
 crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1492242 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/buffers/uniform-buffers.html [ Failure ]
 crbug.com/1492245 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/extensions/oes-sample-variables.html [ Failure ]
-crbug.com/1492246 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/1492248 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/array-as-return-value.html [ Failure ]
 crbug.com/1492250 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/matrix-row-major.html [ Failure ]
 crbug.com/1492256 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/texture-bias.html [ Failure ]
