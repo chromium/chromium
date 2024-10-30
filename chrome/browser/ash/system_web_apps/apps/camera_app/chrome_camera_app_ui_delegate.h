@@ -56,6 +56,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
     CameraAppDialog& operator=(const CameraAppDialog&) = delete;
 
     static void ShowIntent(const std::string& queries,
+                           bool launch_in_dialog,
                            gfx::NativeWindow parent);
 
     // SystemWebDialogDelegate

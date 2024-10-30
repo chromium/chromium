@@ -526,10 +526,11 @@ void ChromeNewWindowClient::OpenFile(const base::FilePath& file_path) {
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
+                                            bool launch_in_dialog,
                                             int32_t task_id) {
   DCHECK(IsCameraAppEnabled());
   ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
-      queries, arc::GetArcWindow(task_id));
+      queries, launch_in_dialog, arc::GetArcWindow(task_id));
   apps::RecordAppLaunch(ash::kCameraAppId, apps::LaunchSource::kFromArc);
 }
 

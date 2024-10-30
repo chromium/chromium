@@ -41,6 +41,7 @@
 #include "chrome/browser/pdf/pdf_service.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -106,10 +107,19 @@ constexpr int kPdfDpi = 72;
 // static
 void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
     const std::string& queries,
+    bool launch_in_dialog,
     gfx::NativeWindow parent) {
   std::string url = ash::kChromeUICameraAppMainURL + queries;
-  CameraAppDialog* dialog = new CameraAppDialog(url);
-  dialog->ShowSystemDialog(parent);
+  if (launch_in_dialog) {
+    CameraAppDialog* dialog = new CameraAppDialog(url);
+    dialog->ShowSystemDialog(parent);
+  } else {
+    ash::SystemAppLaunchParams params;
+    params.url = GURL(url);
+    params.launch_source = apps::LaunchSource::kFromArc;
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
+                                 ash::SystemWebAppType::CAMERA, params);
+  }
 }
 
 ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
