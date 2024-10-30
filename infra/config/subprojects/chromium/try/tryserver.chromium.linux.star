@@ -663,6 +663,10 @@ try_.builder(
     ),
     execution_timeout = 6 * time.hour,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+    # Do not use remote linking becaues it doesn't download
+    # the remote artifacts by default. But, the deterministic recipe
+    # requires them for determinism check.
+    siso_remote_linking = False,
 )
 
 try_.builder(

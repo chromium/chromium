@@ -436,6 +436,12 @@ try_.builder(
             ],
         },
     },
+    # Do not use remote linking becaues it doesn't download
+    # the remote artifacts by default. But, the binary size recipe
+    # requires them for binary size check.
+    # TODO: crbug.com/376354860 - Enable remote linking with an appropriate
+    # download strategy so that we can downgrade the machine spec.
+    siso_remote_linking = False,
     tryjob = try_.job(),
 )
 
@@ -821,6 +827,10 @@ try_.builder(
         ],
     ),
     execution_timeout = 6 * time.hour,
+    # Do not use remote linking becaues it doesn't download
+    # the remote artifacts by default. But, the deterministic recipe
+    # requires them for determinism check.
+    siso_remote_linking = False,
 )
 
 try_.builder(
@@ -836,6 +846,10 @@ try_.builder(
         ],
     ),
     execution_timeout = 6 * time.hour,
+    # Do not use remote linking becaues it doesn't download
+    # the remote artifacts by default. But, the deterministic recipe
+    # requires them for determinism check.
+    siso_remote_linking = False,
 )
 
 try_.builder(
