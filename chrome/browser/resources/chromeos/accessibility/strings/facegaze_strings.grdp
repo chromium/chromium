@@ -136,13 +136,13 @@
     Make a circle with your lips
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should stretch the left corner of their mouth.">
-    Stretch left corner of your mouth
+    Move your mouth left
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_PUCKER" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should pucker their lips.">
     Pucker by squeezing lips together
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should stretch the right corner of their mouth.">
-    Stretch right corner of your mouth
+    Move your mouth right
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_SMILE" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should smile.">
     Smile
