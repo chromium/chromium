@@ -14,6 +14,16 @@
 
 namespace payments::facilitated {
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
+  base::HistogramTester histogram_tester;
+
+  LogPixCodeCopied();
+
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogPaymentCodeValidationResultAndLatency_ValidatorFailed) {
   base::HistogramTester histogram_tester;

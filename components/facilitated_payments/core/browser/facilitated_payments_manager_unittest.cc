@@ -366,6 +366,33 @@ TEST_F(FacilitatedPaymentsManagerTest, ResettingPreventsPayment) {
 }
 
 TEST_F(FacilitatedPaymentsManagerTest,
+       CopyTrigger_UrlInAllowlist_LogPixCodeCopied) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  GURL url("https://example.com/");
+  // Mock allowlist check result.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  manager_->OnPixCodeCopiedToClipboard(
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
        CopyTrigger_UrlInAllowlist_PixValidationTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
   GURL url("https://example.com/");

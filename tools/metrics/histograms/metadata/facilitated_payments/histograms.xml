@@ -56,6 +56,23 @@ reviewer.
   </token>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.PixCodeCopied" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    A Pix specific histogram. Emits true when a likely Pix code is copied to the
+    clipboard on an allowlisted merchant website. A likely Pix code contains
+    substring &quot;0014br.gov.bcb.pix&quot;, but this is logged before the code
+    validation, which could thereafter fail and not trigger a PIX FOP selector
+    UI. [Trigger] User copies a likely Pix code to the clipboard. [Frequency]
+    Logged once per Pix payflow. Pix payflow is triggered at most once per page
+    load.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
     expires_after="2025-07-01">
   <owner>siashah@google.com</owner>

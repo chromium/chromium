@@ -12,6 +12,11 @@
 
 namespace payments::facilitated {
 
+void LogPixCodeCopied() {
+  base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",
+                            /*sample=*/true);
+}
+
 void LogPaymentCodeValidationResultAndLatency(
     base::expected<bool, std::string> result,
     base::TimeDelta duration) {

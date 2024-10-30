@@ -42,6 +42,10 @@ enum class TriggerSource {
   kMaxValue = kCopyEvent
 };
 
+// Log when a Pix code is copied to the clippboard on an allowlisted merchant
+// website.
+void LogPixCodeCopied();
+
 // Log the result and latency for validating a payment code using
 // `data_decoder::DataDecoder`.
 void LogPaymentCodeValidationResultAndLatency(
