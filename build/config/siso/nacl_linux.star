@@ -228,16 +228,8 @@ def __step_config(ctx, step_config):
             "remote": False,
         },
         # nacl_helper_arm32
-        {
-            "name": "nacl/helper_arm32/clang++",
-            "action": "nacl_helper_arm32_cxx",
-            "remote": False,
-        },
-        {
-            "name": "nacl/helper_arm32/clang",
-            "action": "nacl_helper_arm32_cc",
-            "remote": False,
-        },
+        # TODO: crbug.com/376103200 - Support remote nacl_helper_arm32
+        # alink/solink/link steps.
         {
             "name": "nacl/helper_arm32/alink",
             "action": "nacl_helper_arm32_alink",
