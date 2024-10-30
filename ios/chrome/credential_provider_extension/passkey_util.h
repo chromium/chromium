@@ -26,7 +26,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    NSData* security_domain_secret) API_AVAILABLE(ios(17.0));
+    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0));
 
 // On a success, returns a valid passkey assertion structure.
 // Returns nil otherwise.
@@ -34,7 +34,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    NSData* security_domain_secret) API_AVAILABLE(ios(17.0));
+    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0));
 
 // Returns whether or not the user should be asked to re-authenticate depending
 // on the provided `userVerificationPreferenceString` and whether biometric

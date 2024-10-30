@@ -12,7 +12,7 @@
 @protocol Credential;
 
 typedef void (^FetchSecurityDomainSecretCompletionBlock)(
-    NSData* security_domain_secret);
+    NSArray<NSData*>* security_domain_secrets);
 
 // A handler to allow children to communicate selected credentials back to the
 // parent. This is essentially a wrapper for

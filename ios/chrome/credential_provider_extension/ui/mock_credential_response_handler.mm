@@ -9,11 +9,13 @@
 
 namespace {
 
-NSData* SecurityDomainSecret() {
+NSArray<NSData*>* SecurityDomainSecrets() {
   std::vector<uint8_t> sds;
   base::HexStringToBytes(
       "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
-  return [NSData dataWithBytes:sds.data() length:sds.size()];
+  return [NSArray arrayWithObjects:[NSData dataWithBytes:sds.data()
+                                                  length:sds.size()],
+                                   nil];
 }
 
 }  // namespace
@@ -42,7 +44,7 @@ NSData* SecurityDomainSecret() {
   if (@available(iOS 17.0, *)) {
     [self userSelectedPasskey:PerformPasskeyAssertion(passkey, clientDataHash,
                                                       nil,
-                                                      SecurityDomainSecret())];
+                                                      SecurityDomainSecrets())];
   }
 }
 

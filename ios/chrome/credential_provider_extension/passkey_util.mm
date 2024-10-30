@@ -46,13 +46,10 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
                           NSData* encrypted_message,
                           NSData* authenticator_data,
                           NSData* client_data_hash,
-                          NSData* security_domain_secret) {
-  if (!security_domain_secret) {
+                          NSArray<NSData*>* security_domain_secrets) {
+  if ([security_domain_secrets count] == 0) {
     return nil;
   }
-
-  std::vector<uint8_t> trusted_vault_key;
-  Append(trusted_vault_key, security_domain_secret);
 
   // Decrypt the private key using the security domain secret.
   sync_pb::WebauthnCredentialSpecifics credential_specifics;
@@ -66,9 +63,20 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
     return nil;
   }
 
+  bool successful_decryption = false;
   sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
-  if (!webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          trusted_vault_key, credential_specifics, &credential_secrets)) {
+  for (NSData* security_domain_secret in security_domain_secrets) {
+    std::vector<uint8_t> trusted_vault_key;
+    Append(trusted_vault_key, security_domain_secret);
+
+    if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+            trusted_vault_key, credential_specifics, &credential_secrets)) {
+      successful_decryption = true;
+      break;
+    }
+  }
+
+  if (!successful_decryption) {
     return nil;
   }
 
@@ -141,13 +149,13 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
-  if (!security_domain_secret) {
+    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0)) {
+  if ([security_domain_secrets count] == 0) {
     return nil;
   }
 
   std::vector<uint8_t> trusted_vault_key;
-  Append(trusted_vault_key, security_domain_secret);
+  Append(trusted_vault_key, security_domain_secrets[0]);
 
   // Convert input arguments to std equivalents for use in functions below.
   std::vector<uint8_t> user_id;
@@ -193,8 +201,8 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
-  if (!security_domain_secret) {
+    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0)) {
+  if ([security_domain_secrets count] == 0) {
     return nil;
   }
 
@@ -209,7 +217,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
       MakeAuthenticatorDataForAssertion(credential.rpId);
   NSData* signature = GenerateSignature(
       credential.privateKey, credential.encrypted, authenticatorData,
-      client_data_hash, security_domain_secret);
+      client_data_hash, security_domain_secrets);
 
   if (!signature) {
     return nil;

@@ -37,17 +37,19 @@ NSData* ClientDataHash() {
   return Sha256(StringToData("ClientDataHash"));
 }
 
-NSData* SecurityDomainSecret() {
+NSArray<NSData*>* SecurityDomainSecrets() {
   std::vector<uint8_t> sds;
   base::HexStringToBytes(
       "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
-  return [NSData dataWithBytes:sds.data() length:sds.size()];
+  return [NSArray arrayWithObjects:[NSData dataWithBytes:sds.data()
+                                                  length:sds.size()],
+                                   nil];
 }
 
 ArchivableCredential* TestPasskeyCredential() {
   std::vector<uint8_t> trusted_vault_key;
-  NSData* security_domain_secret = SecurityDomainSecret();
-  Append(trusted_vault_key, security_domain_secret);
+  NSArray<NSData*>* security_domain_secrets = SecurityDomainSecrets();
+  Append(trusted_vault_key, security_domain_secrets[0]);
 
   std::vector<uint8_t> user_id;
   Append(user_id, StringToData("userId"));
@@ -105,7 +107,7 @@ TEST_F(PasskeyUtilTest, AssertionAuthenticatorDataIsValid) {
 
     ASPasskeyAssertionCredential* passkeyAssertionCredential =
         PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                                SecurityDomainSecret());
+                                SecurityDomainSecrets());
 
     ASSERT_NSEQ(clientDataHash, passkeyAssertionCredential.clientDataHash);
     ASSERT_NSEQ(credential.credentialId,
@@ -131,7 +133,7 @@ TEST_F(PasskeyUtilTest, AssertionFailsOnCredentialId) {
         [NSArray arrayWithObject:StringToData("otherCredentialId")];
     ASPasskeyAssertionCredential* passkeyAssertionCredential =
         PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                                SecurityDomainSecret());
+                                SecurityDomainSecrets());
     ASSERT_NSEQ(passkeyAssertionCredential, nil);
   }
 }
@@ -146,7 +148,7 @@ TEST_F(PasskeyUtilTest, AssertionSucceedsOnCredentialId) {
         [NSArray arrayWithObject:credential.credentialId];
     ASPasskeyAssertionCredential* passkeyAssertionCredential =
         PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
-                                SecurityDomainSecret());
+                                SecurityDomainSecrets());
     ASSERT_NSNE(passkeyAssertionCredential, nil);
   }
 }
@@ -160,7 +162,7 @@ TEST_F(PasskeyUtilTest, CreationSucceeds) {
     ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
         PerformPasskeyCreation(clientDataHash, credential.rpId,
                                credential.username, credential.userId, nil,
-                               SecurityDomainSecret());
+                               SecurityDomainSecrets());
 
     ASSERT_NSEQ(clientDataHash, passkeyRegistrationCredential.clientDataHash);
     ASSERT_EQ(passkeyRegistrationCredential.credentialID.length, 16u);

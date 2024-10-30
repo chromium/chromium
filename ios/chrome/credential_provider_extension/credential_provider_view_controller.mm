@@ -410,11 +410,11 @@ UIColor* BackgroundColor() {
          allowedCredentials:(NSArray<NSData*>*)allowedCredentials
                  allowRetry:(BOOL)allowRetry API_AVAILABLE(ios(17.0)) {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSData* securityDomainSecret) {
+  auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
     [weakSelf passkeyAssertionWithCredential:credential
                               clientDataHash:clientDataHash
                           allowedCredentials:allowedCredentials
-                        securityDomainSecret:securityDomainSecret
+                       securityDomainSecrets:securityDomainSecrets
                                   allowRetry:allowRetry];
   };
 
@@ -715,11 +715,11 @@ UIColor* BackgroundColor() {
         relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
                       username:(NSString*)username
                     userHandle:(NSData*)userHandle
-          securityDomainSecret:(NSData*)securityDomainSecret
+         securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
       PerformPasskeyCreation(clientDataHash, relyingPartyIdentifier, username,
-                             userHandle, [self gaia], securityDomainSecret);
+                             userHandle, [self gaia], securityDomainSecrets);
   if (passkeyRegistrationCredential) {
     [self completeRegistrationRequestWithSelectedPasskeyCredential:
               passkeyRegistrationCredential];
@@ -735,12 +735,12 @@ UIColor* BackgroundColor() {
                       username:(NSString*)username
                     userHandle:(NSData*)userHandle API_AVAILABLE(ios(17.0)) {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSData* securityDomainSecret) {
+  auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
     [weakSelf createPasskeyForClient:clientDataHash
               relyingPartyIdentifier:relyingPartyIdentifier
                             username:username
                           userHandle:userHandle
-                securityDomainSecret:securityDomainSecret];
+               securityDomainSecrets:securityDomainSecrets];
   };
 
   [self fetchSecurityDomainSecretForGaia:[self gaia]
@@ -753,11 +753,11 @@ UIColor* BackgroundColor() {
 - (void)passkeyAssertionWithCredential:(id<Credential>)credential
                         clientDataHash:(NSData*)clientDataHash
                     allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                  securityDomainSecret:(NSData*)securityDomainSecret
+                 securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
                             allowRetry:(BOOL)allowRetry
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
-      credential, clientDataHash, allowedCredentials, securityDomainSecret);
+      credential, clientDataHash, allowedCredentials, securityDomainSecrets);
   if (passkeyCredential || !allowRetry) {
     [self userSelectedPasskey:passkeyCredential];
   } else {
