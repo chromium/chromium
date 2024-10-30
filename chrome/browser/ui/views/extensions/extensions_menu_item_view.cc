@@ -204,6 +204,8 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
 
 }  // namespace
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionMenuItemViewElementId);
+
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
@@ -325,6 +327,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetProperty(views::kBoxLayoutFlexKey,
                    views::BoxLayoutFlexSpecification())
+      .SetProperty(views::kElementIdentifierKey,
+                   kExtensionMenuItemViewElementId)
       .AddChildren(
           // Main row.
           views::Builder<views::FlexLayoutView>()

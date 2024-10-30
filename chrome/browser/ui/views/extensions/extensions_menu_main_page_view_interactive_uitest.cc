@@ -494,6 +494,28 @@ class ExtensionsMenuMainPageViewInteractiveTest
                  WaitForShow(kExtensionsMenuMainPageElementId));
   }
 
+  // Returns the menu item view for `extension_id` in the menu's main page, if
+  // existent.
+  ExtensionMenuItemView* GetMenuItemViewFor(
+      const extensions::ExtensionId& extension_id) {
+    ExtensionsMenuMainPageView* main_page =
+        extensions_container()
+            ->GetExtensionsMenuCoordinatorForTesting()
+            ->GetControllerForTesting()
+            ->GetMainPageViewForTesting();
+    if (!main_page) {
+      return nullptr;
+    }
+
+    std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
+
+    auto iter = base::ranges::find(menu_items, extension_id,
+                                   [](ExtensionMenuItemView* view) {
+                                     return view->view_controller()->GetId();
+                                   });
+    return (iter == menu_items.end()) ? nullptr : *iter;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -525,4 +547,45 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   RunTestSequence(InstrumentTab(kTab), OpenExtensionsMenu(),
                   PressButton(kExtensionsMenuManageExtensionsElementId),
                   WaitForWebContentsReady(kTab, GURL("chrome://extensions")));
+}
+
+// Tests triggering the extension's action while the extensions menu is opened
+// records the correct invocation source.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       InvocationSourceMetrics) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kMenuItemActionButton[] = "menu_item_action_button";
+
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("uitest/extension_with_action_and_command"));
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      InstrumentTab(kTab), Do([&]() {
+        histogram_tester.ExpectTotalCount("Extensions.Toolbar.InvocationSource",
+                                          0);
+      }),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      OpenExtensionsMenu(),
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kMenuItemActionButton),
+      PressButton(kMenuItemActionButton),
+
+      Do([&]() {
+        histogram_tester.ExpectTotalCount("Extensions.Toolbar.InvocationSource",
+                                          1);
+        histogram_tester.ExpectBucketCount(
+            "Extensions.Toolbar.InvocationSource",
+            ToolbarActionViewController::InvocationSource::kMenuEntry, 1);
+      }));
+
+  // TODO(crbug.com/40684492): Add a test for command invocation once
+  // triggering an action via command with extensions menu opened is
+  // fixed.
 }

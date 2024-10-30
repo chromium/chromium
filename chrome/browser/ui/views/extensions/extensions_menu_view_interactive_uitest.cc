@@ -707,8 +707,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       kHistogramName, ToolbarActionViewController::InvocationSource::kMenuEntry,
       1);
 
-  // TODO(devlin): Add a test for command invocation once
-  // https://crbug.com/1070305 is fixed.
+  // TODO(crbug.com/40684492): Add a test for command invocation once triggering
+  // an action via command with extensions menu opened is fixed.
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,

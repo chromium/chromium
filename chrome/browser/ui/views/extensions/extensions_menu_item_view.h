@@ -26,6 +26,8 @@ namespace views {
 class ToggleButton;
 }  // namespace views
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionMenuItemViewElementId);
+
 // Single row inside the extensions menu for every installed extension. Includes
 // information about the extension, a button to pin the extension to the toolbar
 // and a button for accessing the associated context menu.
