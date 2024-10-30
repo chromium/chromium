@@ -94,12 +94,12 @@ UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
 
 bool TestSyncUserSettings::IsTypeManagedByPolicy(
     UserSelectableType type) const {
-  return managed_types_.Has(type);
+  return managed_by_policy_types_.Has(type);
 }
 
 bool TestSyncUserSettings::IsTypeManagedByCustodian(
     UserSelectableType type) const {
-  return false;
+  return managed_by_custodian_types_.Has(type);
 }
 
 SyncUserSettings::UserSelectableTypePrefState
@@ -280,9 +280,18 @@ void TestSyncUserSettings::ClearInitialSyncFeatureSetupComplete() {
 void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,
                                             bool managed) {
   if (managed) {
-    managed_types_.Put(type);
+    managed_by_policy_types_.Put(type);
   } else {
-    managed_types_.Remove(type);
+    managed_by_policy_types_.Remove(type);
+  }
+}
+
+void TestSyncUserSettings::SetTypeIsManagedByCustodian(UserSelectableType type,
+                                                       bool managed) {
+  if (managed) {
+    managed_by_custodian_types_.Put(type);
+  } else {
+    managed_by_custodian_types_.Remove(type);
   }
 }
 

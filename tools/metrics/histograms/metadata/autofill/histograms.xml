@@ -1589,6 +1589,22 @@ AutofillSaveCreditCardPromptDestination.
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
 </histogram>
 
+<histogram name="Autofill.CreditCard.SyncDisabledReason"
+    enum="AutofillSyncDisabledReason" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    When a credit card form is submitted, Chrome runs a sequence of checks to
+    see if it should offer upload of the card to Google Payments. The result of
+    these checks are logged in the &quot;Autofill.CardUploadEnabled&quot;
+    histogram. If it results in the
+    &quot;SyncServiceMissingAutofillWalletDataActiveType&quot; bucket, denoting
+    that Chrome Sync was missing an active kPayments sync type, this metric
+    additionally records the reason the sync type was deemed inactive. Logged at
+    the time these checks happen.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.CreditCard.{CardIssuer}.SelectedWithIssuerMetadataPresentOnce"
     enum="Boolean" expires_after="2025-07-01">

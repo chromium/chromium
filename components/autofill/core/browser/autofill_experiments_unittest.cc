@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -137,6 +138,67 @@ TEST_F(AutofillExperimentsTest,
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillWalletDataActiveType,
       1);
+}
+
+TEST_F(AutofillExperimentsTest,
+       CreditCardSyncDisabled_LogsReasonForBeingDisabled_UserNotSignedIn) {
+  sync_service_.SetSignedOut();
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.SyncDisabledReason",
+      autofill_metrics::SyncDisabledReason::kNotSignedIn, 1);
+}
+
+TEST_F(AutofillExperimentsTest,
+       CreditCardSyncDisabled_LogsReasonForBeingDisabled_SyncDisabledByPolicy) {
+  sync_service_.SetAllowedByEnterprisePolicy(false);
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.SyncDisabledReason",
+      autofill_metrics::SyncDisabledReason::kSyncDisabledByPolicy, 1);
+}
+
+TEST_F(AutofillExperimentsTest,
+       CreditCardSyncDisabled_LogsReasonForBeingDisabled_TypeDisabledByPolicy) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  sync_service_.GetUserSettings()->SetTypeIsManaged(
+      syncer::UserSelectableType::kPayments, true);
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.SyncDisabledReason",
+      autofill_metrics::SyncDisabledReason::kTypeDisabledByPolicy, 1);
+}
+
+TEST_F(
+    AutofillExperimentsTest,
+    CreditCardSyncDisabled_LogsReasonForBeingDisabled_TypeDisabledByCustodian) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  sync_service_.GetUserSettings()->SetTypeIsManagedByCustodian(
+      syncer::UserSelectableType::kPayments, true);
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.SyncDisabledReason",
+      autofill_metrics::SyncDisabledReason::kTypeDisabledByCustodian, 1);
+}
+
+TEST_F(AutofillExperimentsTest,
+       CreditCardSyncDisabled_LogsReasonForBeingDisabled_TypeDisabledByUser) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  EXPECT_FALSE(IsCreditCardUploadEnabled(
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.SyncDisabledReason",
+      autofill_metrics::SyncDisabledReason::kTypeProbablyDisabledByUser, 1);
 }
 
 // Tests that for syncing users, credit card upload is offered only when

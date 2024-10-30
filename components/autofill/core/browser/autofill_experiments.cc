@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -115,6 +116,36 @@ bool IsCreditCardUploadEnabled(
         signin_state_for_metrics);
     LogCardUploadDisabled(
         log_manager, "SYNC_SERVICE_MISSING_AUTOFILL_WALLET_ACTIVE_DATA_TYPE");
+    // Log the specific reason sync was not active. Note that this is
+    // best-effort, as Sync also takes ~10 seconds for the data types to become
+    // active after starting the browser.
+    autofill_metrics::SyncDisabledReason reason;
+    if (sync_service->GetDisableReasons().Has(
+            syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
+      reason = autofill_metrics::SyncDisabledReason::kNotSignedIn;
+    } else if (sync_service->GetDisableReasons().Has(
+                   syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+      reason = autofill_metrics::SyncDisabledReason::kSyncDisabledByPolicy;
+    } else if (sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                   syncer::UserSelectableType::kPayments)) {
+      // A mismatch between the kPayments type being "selected" vs. "active".
+      // Should be rare due to checking if Sync was active above, but good to
+      // check to prove these values are generally interchangeable for our case.
+      reason = autofill_metrics::SyncDisabledReason::kSelectedButNotActive;
+    } else if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+                   syncer::UserSelectableType::kPayments)) {
+      reason = autofill_metrics::SyncDisabledReason::kTypeDisabledByPolicy;
+    } else if (sync_service->GetUserSettings()->IsTypeManagedByCustodian(
+                   syncer::UserSelectableType::kPayments)) {
+      reason = autofill_metrics::SyncDisabledReason::kTypeDisabledByCustodian;
+    } else {
+      // By process of elimination, if the toggle is not disabled for any of the
+      // above reasons, it is reasonable to expect that it was due to an
+      // explicit choice by the user.
+      reason =
+          autofill_metrics::SyncDisabledReason::kTypeProbablyDisabledByUser;
+    }
+    LogAutofillPaymentsSyncDisabled(reason);
     return false;
   }
 

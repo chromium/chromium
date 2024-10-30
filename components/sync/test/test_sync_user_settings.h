@@ -88,6 +88,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetInitialSyncFeatureSetupComplete();
   void ClearInitialSyncFeatureSetupComplete();
   void SetTypeIsManaged(UserSelectableType type, bool managed);
+  void SetTypeIsManagedByCustodian(UserSelectableType type, bool managed);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
 #endif
@@ -118,7 +119,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableOsTypeSet managed_os_types_;
 #endif
   UserSelectableTypeSet selected_types_ = UserSelectableTypeSet::All();
-  UserSelectableTypeSet managed_types_;
+  UserSelectableTypeSet managed_by_policy_types_;
+  UserSelectableTypeSet managed_by_custodian_types_;
 
   bool initial_sync_feature_setup_complete_ = true;
   bool sync_everything_enabled_ = true;
