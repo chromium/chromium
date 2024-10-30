@@ -64,7 +64,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
-#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
@@ -140,11 +139,6 @@ const CGFloat kMenuSymbolSize = 18;
   LensOverlayConsentViewController* _consentViewController;
 
   UIViewController<ChromeLensOverlay>* _selectionViewController;
-
-  // View that blocks user interaction with selection UI when the consent view
-  // controller is displayed. Note that selection UI isn't started, so it won't
-  // accept many interactions, but we do this to be extra safe.
-  UIView* _selectionInteractionBlockingView;
 
   /// Entrypoint used for the current lens overlay invocation.
   LensOverlayEntrypoint _currentEntrypoint;
@@ -592,6 +586,8 @@ const CGFloat kMenuSymbolSize = 18;
       break;
     case SheetDimensionStateLarge:
       [self disableSelectionInteraction:YES];
+      break;
+    case SheetDimensionStateConsent:
       break;
     default:
       [self disableSelectionInteraction:NO];
@@ -1045,24 +1041,7 @@ const CGFloat kMenuSymbolSize = 18;
 
 // Blocks user interaction with the Lens UI.
 - (void)disableSelectionInteraction:(BOOL)disabled {
-  if (disabled) {
-    if (_selectionInteractionBlockingView) {
-      return;
-    }
-
-    UIView* containerView = _containerViewController.view;
-    UIView* blocker = [[UIView alloc] init];
-    blocker.backgroundColor = UIColor.clearColor;
-    blocker.userInteractionEnabled = YES;
-    [containerView addSubview:blocker];
-
-    blocker.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(containerView, blocker);
-    _selectionInteractionBlockingView = blocker;
-  } else {
-    [_selectionInteractionBlockingView removeFromSuperview];
-    _selectionInteractionBlockingView = nil;
-  }
+  _containerViewController.selectionInteractionDisabled = disabled;
 }
 
 // Called after consent dialog was dismissed and TOS accepted.
