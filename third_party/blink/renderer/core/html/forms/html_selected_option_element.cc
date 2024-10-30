@@ -49,6 +49,12 @@ Node::InsertionNotificationRequest HTMLSelectedOptionElement::InsertedInto(
     if (ancestor == insertion_point) {
       passed_insertion_point = true;
     }
+    if (IsA<HTMLOptionElement>(ancestor) ||
+        IsA<HTMLSelectedOptionElement>(ancestor)) {
+      // Putting a <selectedoption> inside an <option> or another
+      // <seletedoption> can lead to infinite loops.
+      disabled_ = true;
+    }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       if (first_ancestor_select) {
         // If there are multiple ancestor selects, then cloning can lead to
