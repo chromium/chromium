@@ -44,6 +44,8 @@ public class TabGroupTimeAgoResolver {
      * @param creationMillis The creation time of the tab group.
      * @return Simple text for how long ago the tab group was created.
      */
+    // duration.getSeconds should be toSeconds after api 31.
+    @SuppressWarnings("JavaDurationGetSecondsToToSeconds")
     public String resolveTimeAgoText(long creationMillis) {
         long nowMillis = mClock.millis();
         int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(nowMillis - creationMillis);
