@@ -290,7 +290,7 @@ TEST(ScriptPromiseTest, CastPromise) {
       ScriptPromise<IDLAny>::FromV8Promise(scope.GetIsolate(), promise);
 
   ASSERT_FALSE(promise.IsEmpty());
-  EXPECT_EQ(promise, new_promise.V8Value());
+  EXPECT_EQ(promise, new_promise.V8Promise());
 }
 
 TEST(ScriptPromiseTest, CastNonPromise) {
@@ -312,10 +312,7 @@ TEST(ScriptPromiseTest, CastNonPromise) {
 
   ASSERT_FALSE(promise1.IsEmpty());
   ASSERT_FALSE(promise2.IsEmpty());
-  EXPECT_NE(promise1.V8Value(), promise2.V8Value());
-
-  ASSERT_TRUE(promise1.V8Value()->IsPromise());
-  ASSERT_TRUE(promise2.V8Value()->IsPromise());
+  EXPECT_NE(promise1.V8Promise(), promise2.V8Promise());
 
   EXPECT_FALSE(resolve1->react_called);
   EXPECT_FALSE(reject1->react_called);
@@ -345,7 +342,6 @@ TEST(ScriptPromiseTest, Reject) {
   promise.React(scope.GetScriptState(), resolve, reject);
 
   ASSERT_FALSE(promise.IsEmpty());
-  ASSERT_TRUE(promise.V8Value()->IsPromise());
 
   EXPECT_FALSE(resolve->react_called);
   EXPECT_FALSE(reject->react_called);

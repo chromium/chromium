@@ -45,9 +45,7 @@ TEST(TCPSocketTest, CloseBeforeInit) {
 
   auto* script_state = scope.GetScriptState();
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
-
-  auto close_promise =
-      tcp_socket->close(script_state, scope.GetExceptionState());
+  tcp_socket->close(script_state, scope.GetExceptionState());
 
   ASSERT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
@@ -81,8 +79,7 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   opened_tester.WaitUntilSettled();
   ASSERT_TRUE(opened_tester.IsFulfilled());
 
-  auto close_promise =
-      tcp_socket->close(script_state, scope.GetExceptionState());
+  tcp_socket->close(script_state, scope.GetExceptionState());
   test::RunPendingTasks();
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 }

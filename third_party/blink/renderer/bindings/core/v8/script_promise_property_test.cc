@@ -314,7 +314,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   ASSERT_FALSE(v.IsEmpty());
   {
     ScriptState::Scope scope(MainScriptState());
-    EXPECT_EQ(v.V8Value().As<v8::Object>()->GetCreationContextChecked(),
+    EXPECT_EQ(v.V8Promise()->GetCreationContextChecked(),
               ToV8Context(DomWindow(), MainWorld()));
   }
   EXPECT_EQ(Property::kPending, GetProperty()->GetState());
@@ -333,12 +333,12 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   ASSERT_FALSE(v.IsEmpty());
   {
     ScriptState::Scope scope(OtherScriptState());
-    EXPECT_EQ(u.V8Value().As<v8::Object>()->GetCreationContextChecked(),
+    EXPECT_EQ(u.V8Promise()->GetCreationContextChecked(),
               ToV8Context(DomWindow(), OtherWorld()));
   }
   {
     ScriptState::Scope scope(MainScriptState());
-    EXPECT_EQ(v.V8Value().As<v8::Object>()->GetCreationContextChecked(),
+    EXPECT_EQ(v.V8Promise()->GetCreationContextChecked(),
               ToV8Context(DomWindow(), MainWorld()));
   }
   EXPECT_EQ(Property::kPending, GetProperty()->GetState());
@@ -368,7 +368,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
     observation = MakeGarbageCollected<GCObservation>(
         GetIsolate(),
-        Promise(DOMWrapperWorld::MainWorld(GetIsolate())).V8Value());
+        Promise(DOMWrapperWorld::MainWorld(GetIsolate())).V8Promise());
   }
 
   Gc();

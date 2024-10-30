@@ -251,7 +251,7 @@ void ReadableStream::IterationSource::AsyncIteratorReturn(ScriptValue arg) {
     // 4.2. Perform ! ReadableStreamDefaultReaderRelease(reader).
     ReadableStreamDefaultReader::Release(script_state, reader_);
     // 4.3. Return result.
-    TakePendingPromiseResolver()->Resolve(result.V8Value());
+    TakePendingPromiseResolver()->Resolve(result.V8Promise());
     return;
   }
 

@@ -36,12 +36,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -50,7 +49,7 @@
 
 namespace blink {
 
-class DOMException;
+class ExceptionState;
 
 template <typename IDLResolvedType>
 class ScriptPromise;
@@ -75,7 +74,7 @@ struct ToV8Traits<IDLPromise<T>> {
       ScriptState* script_state,
       const ScriptPromise<T>& script_promise) {
     DCHECK(!script_promise.IsEmpty());
-    return script_promise.V8Value();
+    return script_promise.V8Promise();
   }
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
@@ -244,15 +243,13 @@ class ScriptPromise {
     return ScriptPromise<IDLResolvedType>(isolate, resolver->GetPromise());
   }
 
-  v8::Local<v8::Value> V8Value() const { return promise_.V8Value(); }
   v8::Local<v8::Promise> V8Promise() const {
-    // This is safe because `promise_` always stores a promise value as long
-    // as it's non-empty.
-    return promise_.V8Value().As<v8::Promise>();
+    return IsEmpty() ? v8::Local<v8::Promise>()
+                     : promise_.Get(ScriptState::ForCurrentRealm(isolate_));
   }
 
   bool IsEmpty() const { return promise_.IsEmpty(); }
-  void Clear() { promise_.Clear(); }
+  void Clear() { promise_.Reset(); }
 
   // Marks this promise as handled to avoid reporting unhandled rejections.
   void MarkAsHandled() {
@@ -378,7 +375,7 @@ class ScriptPromise {
   friend class ScriptPromiseResolver;
 
   ScriptPromise(v8::Isolate* isolate, v8::Local<v8::Promise> promise)
-      : promise_(isolate, promise) {}
+      : isolate_(isolate), promise_(isolate, promise) {}
 
   static v8::Local<v8::Function> GetV8Function(
       ScriptState* script_state,
@@ -387,7 +384,8 @@ class ScriptPromise {
         ->V8Function();
   }
 
-  ScriptValue promise_;
+  v8::Isolate* isolate_ = nullptr;
+  WorldSafeV8Reference<v8::Promise> promise_;
 };
 
 template <typename IDLType, typename BlinkType>

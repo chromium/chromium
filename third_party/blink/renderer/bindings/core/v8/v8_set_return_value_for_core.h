@@ -24,7 +24,7 @@ void V8SetReturnValue(const CallbackInfo& info, const ScriptValue& value) {
 // ScriptPromise
 template <typename CallbackInfo, typename T>
 void V8SetReturnValue(const CallbackInfo& info, const ScriptPromise<T>& value) {
-  V8SetReturnValue(info, value.V8Value());
+  V8SetReturnValue(info, value.V8Promise());
 }
 
 // EventListener

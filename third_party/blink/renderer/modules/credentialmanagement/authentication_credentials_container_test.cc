@@ -299,10 +299,10 @@ TEST(AuthenticationCredentialsContainerTest,
         WebFeature::kCredentialManagerGetLegacyFederatedCredential);
     auto* request_options = CredentialRequestOptions::Create();
     request_options->setPassword(true);
-    auto promise = AuthenticationCredentialsContainer::credentials(
-                       *context.DomWindow().navigator())
-                       ->get(context.GetScriptState(), request_options,
-                             IGNORE_EXCEPTION_FOR_TESTING);
+    AuthenticationCredentialsContainer::credentials(
+        *context.DomWindow().navigator())
+        ->get(context.GetScriptState(), request_options,
+              IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
     EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
         WebFeature::kCredentialManagerGetPasswordCredential));
@@ -324,10 +324,10 @@ TEST(AuthenticationCredentialsContainerTest,
     auto* federated_cred_options = FederatedCredentialRequestOptions::Create();
     federated_cred_options->setProviders({"idp.example"});
     request_options->setFederated(federated_cred_options);
-    auto promise = AuthenticationCredentialsContainer::credentials(
-                       *context.DomWindow().navigator())
-                       ->get(context.GetScriptState(), request_options,
-                             IGNORE_EXCEPTION_FOR_TESTING);
+    AuthenticationCredentialsContainer::credentials(
+        *context.DomWindow().navigator())
+        ->get(context.GetScriptState(), request_options,
+              IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
     EXPECT_FALSE(context.DomWindow().document()->IsUseCounted(
         WebFeature::kCredentialManagerGetPasswordCredential));
@@ -350,10 +350,10 @@ TEST(AuthenticationCredentialsContainerTest,
     federated_cred_options->setProviders({"idp.example"});
     request_options->setFederated(federated_cred_options);
     request_options->setPassword(true);
-    auto promise = AuthenticationCredentialsContainer::credentials(
-                       *context.DomWindow().navigator())
-                       ->get(context.GetScriptState(), request_options,
-                             IGNORE_EXCEPTION_FOR_TESTING);
+    AuthenticationCredentialsContainer::credentials(
+        *context.DomWindow().navigator())
+        ->get(context.GetScriptState(), request_options,
+              IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
     EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
         WebFeature::kCredentialManagerGetPasswordCredential));
@@ -376,10 +376,10 @@ TEST(AuthenticationCredentialsContainerTest,
     federated_cred_options->setProviders({});
     request_options->setFederated(federated_cred_options);
     request_options->setPassword(true);
-    auto promise = AuthenticationCredentialsContainer::credentials(
-                       *context.DomWindow().navigator())
-                       ->get(context.GetScriptState(), request_options,
-                             IGNORE_EXCEPTION_FOR_TESTING);
+    AuthenticationCredentialsContainer::credentials(
+        *context.DomWindow().navigator())
+        ->get(context.GetScriptState(), request_options,
+              IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
     EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
         WebFeature::kCredentialManagerGetPasswordCredential));

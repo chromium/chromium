@@ -256,7 +256,6 @@ TEST_F(DynamicModuleResolverTest, ResolveJSONModuleSuccess) {
 
   auto* promise_resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       scope.GetScriptState());
-  auto promise = promise_resolver->Promise();
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   Vector<ImportAttribute> import_attributes{

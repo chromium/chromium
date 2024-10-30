@@ -100,7 +100,6 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamDefaultReader::read(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<ReadableStreamReadResult>>(
           script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
 
   // 3. Let readRequest be a new read request with the following items:
   //    chunk steps, given chunk

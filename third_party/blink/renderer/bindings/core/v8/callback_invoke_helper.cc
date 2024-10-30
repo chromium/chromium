@@ -160,7 +160,7 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::Call(
       // doesn't matter what type we use.
       result_ = ScriptPromise<IDLUndefined>::Reject(
                     callback_->CallbackRelevantScriptState(), block.Exception())
-                    .V8Value();
+                    .V8Promise();
     }
   } else {
     if (!CallInternal(argc, argv))
