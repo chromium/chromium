@@ -406,7 +406,6 @@ class CORE_EXPORT HTMLCanvasElement final
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
   void ReplaceExisting2dLayerBridge(
-      std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
       std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
           nullptr);
 

@@ -713,8 +713,7 @@ void HTMLCanvasElement::DisableAcceleration(
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
   if (canvas2d_bridge_) {
-    ReplaceExisting2dLayerBridge(std::make_unique<Canvas2DLayerBridge>(this),
-                                 std::move(new_provider_for_testing));
+    ReplaceExisting2dLayerBridge(std::move(new_provider_for_testing));
   }
 
   // We must force a paint invalidation on the canvas even if it's
@@ -1612,7 +1611,7 @@ bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {
     return false;
   }
   SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  ReplaceExisting2dLayerBridge(std::make_unique<Canvas2DLayerBridge>(this));
+  ReplaceExisting2dLayerBridge();
   return true;
 }
 
@@ -1852,7 +1851,6 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
 }
 
 void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
-    std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
     std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
   CanvasResourceProvider* old_provider = ResourceProvider();
   if (old_provider == nullptr) {
@@ -1877,7 +1875,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
       old_provider->ReleaseRecorder();
   ResetLayer();
   ReplaceResourceProvider(nullptr);
-  canvas2d_bridge_ = std::move(new_layer_bridge);
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
 
   if (new_provider_for_testing) {
     ReplaceResourceProvider(std::move(new_provider_for_testing));
