@@ -200,28 +200,20 @@ void ToolbarButton::UpdateColorsAndInsets() {
   }
 
   // Apply new border with target insets.
-
   std::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
-  if (!GetBorder() || target_insets != GetInsets() ||
-      last_border_color_ != border_color ||
-      last_paint_insets_ != paint_insets) {
-    if (ShouldPaintBorder() && border_color) {
-      int border_thickness_dp = GetText().empty()
-                                    ? kBorderThicknessDpWithoutLabel
-                                    : kBorderThicknessDpWithLabel;
-      // Create a border with insets totalling |target_insets|, split into
-      // painted insets (matching the background) and internal padding to
-      // position child views correctly.
-      std::unique_ptr<views::Border> border = views::CreateRoundedRectBorder(
-          border_thickness_dp, highlight_radius, paint_insets, *border_color);
-      const gfx::Insets extra_insets = target_insets - border->GetInsets();
-      SetBorder(views::CreatePaddedBorder(std::move(border), extra_insets));
-    } else {
-      SetBorder(views::CreateEmptyBorder(target_insets));
-    }
-    last_border_color_ = border_color;
-    last_paint_insets_ = paint_insets;
+  if (ShouldPaintBorder() && border_color) {
+    int border_thickness_dp = GetText().empty() ? kBorderThicknessDpWithoutLabel
+                                                : kBorderThicknessDpWithLabel;
+    // Create a border with insets totalling |target_insets|, split into
+    // painted insets (matching the background) and internal padding to
+    // position child views correctly.
+    std::unique_ptr<views::Border> border = views::CreateRoundedRectBorder(
+        border_thickness_dp, highlight_radius, paint_insets, *border_color);
+    const gfx::Insets extra_insets = target_insets - border->GetInsets();
+    SetBorder(views::CreatePaddedBorder(std::move(border), extra_insets));
+  } else {
+    SetBorder(views::CreateEmptyBorder(target_insets));
   }
 
   // Update spacing on the outer-side of the label to match the current

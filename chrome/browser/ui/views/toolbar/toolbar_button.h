@@ -354,12 +354,6 @@ class ToolbarButton : public views::LabelButton,
   // |this| to refresh UI).
   HighlightColorAnimation highlight_color_animation_;
 
-  // If either |last_border_color_| or |last_paint_insets_| have changed since
-  // the last update to |border_| it must be recalculated  to match current
-  // values.
-  std::optional<SkColor> last_border_color_;
-  gfx::Insets last_paint_insets_;
-
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&ToolbarButton::TouchUiChanged,

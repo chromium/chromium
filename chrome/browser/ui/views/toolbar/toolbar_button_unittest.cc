@@ -42,15 +42,6 @@ class ToolbarButtonTestApi {
   views::MenuRunner* menu_runner() { return button_->menu_runner_.get(); }
   bool menu_showing() const { return button_->menu_showing_; }
 
-  const gfx::Insets last_paint_insets() const {
-    return button_->last_paint_insets_;
-  }
-  const gfx::Insets layout_inset_delta() const {
-    return button_->layout_inset_delta_;
-  }
-  const std::optional<SkColor> last_border_color() const {
-    return button_->last_border_color_;
-  }
   void SetAnimationTimingForTesting() {
     button_->highlight_color_animation_.highlight_color_animation_
         .SetSlideDuration(base::TimeDelta());
