@@ -140,8 +140,8 @@ following:
     the sqlite_cherry_picker.py script is preferred. This script automates a
     few tasks such as:
 
-    * Identifying the correct Git commit hash to use if given the
-      Fossil commit hash. **note this is currently broken and a Git hash must be provided**
+    * Identifying the correct Git commit hash to use if given the Fossil commit
+      hash.
     * Automatically calculating Fossil manifest hashes.
     * Skipping conflicted binary files.
     * Generating the amalgamations.
