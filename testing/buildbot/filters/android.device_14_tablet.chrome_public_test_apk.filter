@@ -43,6 +43,7 @@
 -org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_Complete
 -org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_UserAbort
+-org.chromium.chrome.browser.payments.PaymentRequestContactDetailsTest.testPaymentRequestIncognitoMode
 
 # crbug.com/376168546
 -org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.*
@@ -50,3 +51,15 @@
 # crbug.com/376169912
 -org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testFakeSearchBoxWidth
 -org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testMvtLayoutHorizontalMargin
+
+# crbug.com/376367458
+-org.chromium.chrome.browser.app.ContextMenuDragTest.*
+
+# crbug.com/376371633
+-org.chromium.chrome.browser.tabmodel.ChromeTabCreatorTest.testCreateNewTabInBackground
+
+# crbug.com/368117896
+-org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
+
+# crbug.com/376375165
+-org.chromium.chrome.browser.NavigateTest.testWindowOpenUrlSpoof
