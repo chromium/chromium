@@ -141,6 +141,9 @@ void SelectionEditor::SetSelectionAndEndTyping(
 
 void SelectionEditor::DidChangeChildren(const ContainerNode&,
                                         const ContainerNode::ChildrenChange&) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    return;
+  }
   selection_.ResetDirectionCache();
   MarkCacheDirty();
   DidFinishDOMMutation();
@@ -238,6 +241,10 @@ void SelectionEditor::NodeChildrenWillBeRemoved(ContainerNode& container) {
 void SelectionEditor::NodeWillBeRemoved(Node& node_to_be_removed) {
   if (selection_.IsNone())
     return;
+
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    return;
+  }
   const Position old_anchor = selection_.anchor_;
   const Position old_focus = selection_.focus_;
   const Position& new_anchor =

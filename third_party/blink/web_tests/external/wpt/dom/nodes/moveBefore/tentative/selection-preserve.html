@@ -12,13 +12,13 @@
 </body>
 
 <script>
-  'use strict';
+'use strict';
 
-async function select_range(t, anchorNode, extentNode) {
+async function select_range(t, anchorNode, focusNode) {
   await new test_driver.Actions()
       .pointerMove(0, 0, {origin: anchorNode})
       .pointerDown()
-      .pointerMove(extentNode.clientWidth, extentNode.clientHeight, {origin: extentNode})
+      .pointerMove(focusNode.clientWidth, focusNode.clientHeight, {origin: focusNode})
       .pointerUp()
       .send();
 }
@@ -71,5 +71,68 @@ promise_test(async t => {
   new_parent.moveBefore(text, null);
   assert_equals(getSelection().anchorNode, text.firstChild);
 }, "moveBefore should not reset selection with preceding and following text");
+
+const kHTML = `
+  <div id=grandparentDiv>
+    <span id=grandparentParagraph>Grandparent paragraph</span>
+    <div id=parentDiv>
+      <span id=parentParagraph>Parent paragraph</span>
+      <div id=childDiv>
+        <span id=childParagraph1>Child paragraph one</span>
+        <span id=childParagraph2>Paragraph two</span>
+      </div>
+    </div>
+  </div>
+`;
+
+// Selection spans parent->child.
+promise_test(async t => {
+  document.body.innerHTML = kHTML;
+  getSelection().removeAllRanges();
+  await select_range(t, parentParagraph, childParagraph1);
+
+  grandparentDiv.moveBefore(parentDiv, grandparentParagraph);
+  assert_equals(getSelection().anchorNode, parentParagraph.firstChild);
+  assert_equals(getSelection().focusNode, childParagraph1.firstChild);
+}, "moveBefore should not reset selection that enters a subtree, when the " +
+   "whole selection is moved");
+
+// Selection anchor node is moved upwards in the DOM, to suddenly intersect more
+// nodes.
+promise_test(async t => {
+  document.body.innerHTML = kHTML;
+  getSelection().removeAllRanges();
+  await select_range(t, parentParagraph, childParagraph1);
+
+  grandparentDiv.moveBefore(parentParagraph, grandparentParagraph);
+  assert_equals(getSelection().anchorNode, parentParagraph.firstChild);
+  assert_equals(getSelection().focusNode, childParagraph1.firstChild);
+  assert_true(getSelection().getRangeAt(0).intersectsNode(grandparentParagraph));
+}, "moveBefore anchor node moved up to expand selection and absorb nodes");
+
+// Intersecting nodes are moved *out* of the selection.
+promise_test(async t => {
+  document.body.innerHTML = kHTML;
+  getSelection().removeAllRanges();
+  await select_range(t, grandparentParagraph, childParagraph2);
+
+  grandparentDiv.moveBefore(childParagraph1, grandparentParagraph);
+  assert_equals(getSelection().anchorNode, grandparentParagraph.firstChild);
+  assert_equals(getSelection().focusNode, childParagraph2.firstChild);
+  assert_false(getSelection().getRangeAt(0).intersectsNode(childParagraph1));
+}, "moveBefore move intersecting nodes out of a selection");
+
+// Selection focus node is moved upwards in the DOM, shrinking the selection and
+// excluding once-intersecting nodes.
+promise_test(async t => {
+  document.body.innerHTML = kHTML;
+  getSelection().removeAllRanges();
+  await select_range(t, grandparentParagraph, childParagraph2);
+
+  parentDiv.moveBefore(childDiv, parentParagraph);
+  assert_equals(getSelection().anchorNode, grandparentParagraph.firstChild);
+  assert_equals(getSelection().focusNode, childParagraph2.firstChild);
+  assert_false(getSelection().getRangeAt(0).intersectsNode(parentParagraph));
+}, "moveBefore focus node moved up to shrink selection and exclude nodes");
 </script>
 </html>

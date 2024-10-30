@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] moveBefore should not reset selection with preceding text
-  assert_equals: expected Text node "Text" but got Text node "This text does not move"
-[FAIL] moveBefore should not reset selection with preceding and following text
-  assert_equals: expected Text node "Text" but got Text node "\n      "
-Harness: the test ran to completion.
-
