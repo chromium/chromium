@@ -221,9 +221,8 @@ Component* Component::Compile(v8::Isolate* isolate,
                                             : WTF::kTextCaseASCIIInsensitive;
     DCHECK(base::IsStringASCII(regexp_string));
     regexp = MakeGarbageCollected<ScriptRegexp>(
-        isolate, String(regexp_string.data(), regexp_string.size()),
-        case_sensitive, MultilineMode::kMultilineDisabled,
-        UnicodeMode::kUnicodeSets);
+        isolate, String(regexp_string), case_sensitive,
+        MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
 
     if (!regexp->IsValid()) {
       // The regular expression failed to compile.  This means that some
@@ -234,7 +233,7 @@ Component* Component::Compile(v8::Isolate* isolate,
         if (part.type != liburlpattern::PartType::kRegex)
           continue;
         DCHECK(base::IsStringASCII(part.value));
-        String group_value(part.value.data(), part.value.size());
+        String group_value(part.value);
         regexp = MakeGarbageCollected<ScriptRegexp>(
             isolate, group_value, case_sensitive,
             MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);

@@ -309,19 +309,19 @@ TEST(SharedBufferIteratorTest, SingleSegment) {
   auto it = buffer->cbegin();
   ASSERT_NE(it, buffer->cend());
 
-  EXPECT_EQ(String(it->data(), it->size()), "hello");
+  EXPECT_EQ(String(base::as_bytes(*it)), "hello");
 
   ++it;
 
   EXPECT_EQ(it, buffer->cend());
 
   it = buffer->GetIteratorAt(static_cast<size_t>(0));
-  EXPECT_EQ(String(it->data(), it->size()), "hello");
+  EXPECT_EQ(String(base::as_bytes(*it)), "hello");
 
   it = buffer->GetIteratorAt(static_cast<size_t>(1));
-  EXPECT_EQ(String(it->data(), it->size()), "ello");
+  EXPECT_EQ(String(base::as_bytes(*it)), "ello");
   it = buffer->GetIteratorAt(static_cast<size_t>(4));
-  EXPECT_EQ(String(it->data(), it->size()), "o");
+  EXPECT_EQ(String(base::as_bytes(*it)), "o");
   EXPECT_EQ(buffer->GetIteratorAt(static_cast<size_t>(5)), buffer->cend());
 }
 

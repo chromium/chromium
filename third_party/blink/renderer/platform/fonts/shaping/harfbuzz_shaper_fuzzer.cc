@@ -47,8 +47,10 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // We don't use a FontSelector here. Only look for system fonts for now.
   font_description.SetComputedSize(16.0f);
 
-  String string(reinterpret_cast<const UChar*>(data),
-                std::min(kMaxInputLength, size / sizeof(UChar)));
+  // SAFETY: Just make a span from the function arguments provided by libfuzzer.
+  String string(UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const UChar*>(data),
+                 std::min(kMaxInputLength, size / sizeof(UChar)))));
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 

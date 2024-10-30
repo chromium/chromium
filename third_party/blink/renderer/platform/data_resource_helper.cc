@@ -16,8 +16,7 @@ String UncompressResourceAsString(int resource_id) {
 }
 
 String UncompressResourceAsASCIIString(int resource_id) {
-  std::string data = Platform::Current()->GetDataResourceString(resource_id);
-  String result(data.data(), data.size());
+  String result(Platform::Current()->GetDataResourceString(resource_id));
   DCHECK(result.ContainsOnlyASCIIOrEmpty());
   return result;
 }

@@ -271,7 +271,7 @@ TEST_P(ParkableStringTest, DecompressUtf16String) {
     data[i * 2 + 1] = emoji_grinning_face[1];
   }
 
-  String large_string = String(&data[0], size_in_chars);
+  String large_string = String(data);
   String copy = String(large_string.Impl()->IsolatedCopy());
   ParkableString parkable(large_string.ReleaseImpl());
   large_string = String();
@@ -1322,7 +1322,7 @@ TEST_P(ParkableStringTest, EncodingAndDeduplication) {
   for (size_t i = 0; i < size_in_chars; ++i) {
     data_16[i] = 0x2020;
   }
-  String large_string_16 = String(&data_16[0], size_in_chars);
+  String large_string_16 = String(data_16);
 
   ParkableString parkable_16(large_string_16.Impl());
   ASSERT_TRUE(parkable_16.Impl()->digest());

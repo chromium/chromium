@@ -86,13 +86,13 @@ class WTF_EXPORT String {
   explicit String(base::span<const LChar> latin1_data);
   String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
-  explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
+  explicit String(const std::string& s) : String(base::as_byte_span(s)) {}
 
 #if defined(ARCH_CPU_64_BITS)
-  // Only define size_t constructors if size_t is 64 bit otherwise
-  // we'd have a duplicate define.
-  String(const UChar* characters, size_t length);
-  String(const char* characters, size_t length);
+  // Delete size_t constructors if size_t is 64 bit.
+  // Use constructors with base::span instead.
+  String(const UChar* characters, size_t length) = delete;
+  String(const char* characters, size_t length) = delete;
 #endif  // defined(ARCH_CPU_64_BITS)
 
   // Construct a string with latin1 data, from a null-terminated source. The
@@ -102,8 +102,10 @@ class WTF_EXPORT String {
   // `uint8_t[N]`.
   explicit String(const LChar* characters)
       : String(reinterpret_cast<const char*>(characters)) {}
-  String(const char* characters)
-      : String(characters, characters ? strlen(characters) : 0) {}
+  String(const char* characters)  // NOLINT(google-explicit-constructor)
+      : String(characters,
+               characters ? base::checked_cast<wtf_size_t>(strlen(characters))
+                          : 0) {}
 
   // Construct a string referencing an existing StringImpl.
   String(StringImpl* impl) : impl_(impl) {}

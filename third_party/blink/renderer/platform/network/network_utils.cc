@@ -62,7 +62,7 @@ String GetDomainAndRegistry(const StringView& host,
   StringUTF8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       host_utf8.AsStringView(), getNetPrivateRegistryFilter(filter));
-  return String(domain.data(), domain.length());
+  return String(domain);
 }
 
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(

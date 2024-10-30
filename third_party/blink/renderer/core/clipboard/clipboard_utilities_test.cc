@@ -42,10 +42,10 @@ TEST(ClipboardUtilitiesTest, URLToImageMarkupEmbeddedNull) {
   const char kExpectedOutputWithNull[] =
       "<img src=\"http://test.example/%00.png\" alt=\"\0\"/>";
   EXPECT_EQ(
-      String(kExpectedOutputWithNull, sizeof(kExpectedOutputWithNull) - 1),
+      String(base::byte_span_from_cstring(kExpectedOutputWithNull)),
       URLToImageMarkup(
-          KURL(NullURL(), String(kURLWithNull, sizeof(kURLWithNull) - 1)),
-          String(kTitleWithNull, sizeof(kTitleWithNull) - 1)));
+          KURL(NullURL(), String(base::byte_span_from_cstring(kURLWithNull))),
+          String(base::byte_span_from_cstring(kTitleWithNull))));
 }
 
 TEST(ClipboardUtilitiesTest, PNGToImageMarkupEmpty) {

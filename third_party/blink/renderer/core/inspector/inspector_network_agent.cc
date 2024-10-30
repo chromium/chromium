@@ -2479,7 +2479,7 @@ String InspectorNetworkAgent::NavigationInitiatorInfo(LocalFrame* frame) {
   }
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(cbor), &json);
-  return String(reinterpret_cast<const char*>(json.data()), json.size());
+  return String(base::span(json));
 }
 
 InspectorNetworkAgent::InspectorNetworkAgent(

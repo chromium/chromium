@@ -253,7 +253,7 @@ TEST_F(FormDataBytesConsumerTest, EndReadCanReturnDone) {
   base::span<const char> buffer;
   ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
   ASSERT_EQ(12u, buffer.size());
-  EXPECT_EQ("hello, world", String(buffer.data(), buffer.size()));
+  EXPECT_EQ("hello, world", String(base::as_bytes(buffer)));
   EXPECT_EQ(BytesConsumer::PublicState::kReadableOrWaiting,
             consumer->GetPublicState());
   EXPECT_EQ(Result::kDone, consumer->EndRead(buffer.size()));
@@ -387,7 +387,7 @@ TEST_F(FormDataBytesConsumerTest, BeginReadAffectsDraining) {
   BytesConsumer* consumer =
       MakeGarbageCollected<FormDataBytesConsumer>("hello, world");
   ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  EXPECT_EQ("hello, world", String(buffer.data(), buffer.size()));
+  EXPECT_EQ("hello, world", String(base::as_bytes(buffer)));
 
   ASSERT_EQ(Result::kOk, consumer->EndRead(0));
   EXPECT_FALSE(consumer->DrainAsFormData());
@@ -504,7 +504,7 @@ TEST_F(FormDataBytesConsumerTest,
       GetFrame().DomWindow(), input_form_data);
   base::span<const char> buffer;
   EXPECT_EQ(BytesConsumer::Result::kOk, consumer->BeginRead(buffer));
-  EXPECT_EQ("foo", String(buffer.data(), buffer.size()));
+  EXPECT_EQ("foo", String(base::as_bytes(buffer)));
 
   // Try to drain form data. It should return null since we started reading.
   scoped_refptr<EncodedFormData> drained_form_data =

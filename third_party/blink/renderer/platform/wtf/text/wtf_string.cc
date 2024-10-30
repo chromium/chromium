@@ -84,14 +84,6 @@ String::String(const char* characters, unsigned length)
                                      length)
                 : nullptr) {}
 
-#if defined(ARCH_CPU_64_BITS)
-String::String(const UChar* characters, size_t length)
-    : String(characters, base::checked_cast<unsigned>(length)) {}
-
-String::String(const char* characters, size_t length)
-    : String(characters, base::checked_cast<unsigned>(length)) {}
-#endif  // defined(ARCH_CPU_64_BITS)
-
 int CodeUnitCompare(const String& a, const String& b) {
   return CodeUnitCompare(a.Impl(), b.Impl());
 }

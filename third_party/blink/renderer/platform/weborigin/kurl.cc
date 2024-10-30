@@ -509,8 +509,8 @@ bool KURL::SetProtocol(const String& protocol) {
     return false;
 
   DCHECK_EQ(protocol_component.begin, 0);
-  const size_t protocol_length =
-      base::checked_cast<size_t>(protocol_component.len);
+  const wtf_size_t protocol_length =
+      base::checked_cast<wtf_size_t>(protocol_component.len);
   const String new_protocol_canon =
       String(canon_protocol.data(), protocol_length);
 

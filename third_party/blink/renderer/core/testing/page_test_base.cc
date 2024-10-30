@@ -276,7 +276,7 @@ void PageTestBase::InsertStyleElement(const std::string& style_rules) {
   DCHECK_EQ(head, GetOrCreateElement(&GetDocument(), html_names::kHeadTag));
   Element* const style = GetDocument().CreateRawElement(
       html_names::kStyleTag, CreateElementFlags::ByCreateElement());
-  style->setTextContent(String(style_rules.data(), style_rules.size()));
+  style->setTextContent(String(style_rules));
   head->appendChild(style);
 }
 

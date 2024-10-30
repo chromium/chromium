@@ -56,7 +56,7 @@ TEST_F(PlaceHolderBytesConsumerTest, Update) {
   Result result = consumer->BeginRead(buffer);
   EXPECT_EQ(result, Result::kOk);
   ASSERT_EQ(buffer.size(), 5u);
-  EXPECT_EQ(String(buffer.data(), buffer.size()), "hello");
+  EXPECT_EQ(String(base::as_bytes(buffer)), "hello");
 
   result = consumer->EndRead(buffer.size());
   EXPECT_EQ(result, Result::kDone);

@@ -417,8 +417,7 @@ TEST_F(BodyStreamBufferTest, LoadBodyStreamBufferAsArrayBuffer) {
   EXPECT_TRUE(buffer->IsStreamLocked());
   EXPECT_TRUE(buffer->IsStreamDisturbed());
   ASSERT_TRUE(array_buffer);
-  EXPECT_EQ("hello", String(static_cast<const char*>(array_buffer->Data()),
-                            array_buffer->ByteLength()));
+  EXPECT_EQ("hello", String(array_buffer->ByteSpan()));
 }
 
 class BodyStreamBufferBlobTest : public BodyStreamBufferTest {

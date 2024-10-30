@@ -1491,8 +1491,7 @@ void InspectorOverlayAgent::EvaluateInOverlay(
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(command->Serialize()), &json);
   ClassicScript::CreateUnspecifiedScript(
-      "dispatch(" +
-          String(reinterpret_cast<const char*>(json.data()), json.size()) + ")",
+      "dispatch(" + String(base::span(json)) + ")",
       ScriptSourceLocationType::kInspector)
       ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);

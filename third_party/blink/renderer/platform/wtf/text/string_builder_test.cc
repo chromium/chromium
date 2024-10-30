@@ -121,7 +121,7 @@ TEST(StringBuilderTest, Append) {
   EXPECT_EQ(3U, builder_for_u_char32_append.length());
   const UChar result_array[] = {U16_LEAD(fraktur_a_char),
                                 U16_TRAIL(fraktur_a_char), 'A'};
-  ExpectBuilderContent(String(result_array, std::size(result_array)),
+  ExpectBuilderContent(String(base::span(result_array)),
                        builder_for_u_char32_append);
 }
 

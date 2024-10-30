@@ -63,7 +63,7 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
 
     void BodyDataReceived(base::span<const char> data) override {
       client_->DecodedBodyDataReceived(
-          String(data.data(), data.size()).UpperASCII(),
+          String(base::as_bytes(data)).UpperASCII(),
           WebEncodingData{.encoding = "utf-8"}, base::SpanOrSize(data));
     }
 

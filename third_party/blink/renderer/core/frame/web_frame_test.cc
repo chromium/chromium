@@ -11840,8 +11840,7 @@ class TestLocalFrameHostForSaveImageFromDataURL : public FakeLocalFrameHost {
     void Run() { run_loop_.Run(); }
 
     void OnDataAvailable(base::span<const uint8_t> data) override {
-      std::string_view chars = base::as_string_view(data);
-      *output_ = String(chars.data(), chars.size());
+      *output_ = String(data);
     }
     void OnDataComplete() override { run_loop_.Quit(); }
 

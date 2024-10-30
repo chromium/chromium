@@ -1182,8 +1182,7 @@ TEST_F(HarfBuzzShaperTest, EmojiZWJSequence) {
                                 0x270C, 0x200D, 0xD83C, 0xDFFC};
   TextDirection direction = TextDirection::kLtr;
 
-  HarfBuzzShaper shaper(
-      String(emoji_zwj_sequence, std::size(emoji_zwj_sequence)));
+  HarfBuzzShaper shaper{String(base::span(emoji_zwj_sequence))};
   shaper.Shape(&font, direction);
 }
 

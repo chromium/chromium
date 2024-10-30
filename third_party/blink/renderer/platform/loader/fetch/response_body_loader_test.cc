@@ -1041,7 +1041,7 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
   ASSERT_EQ(5u, buffer.size());
-  EXPECT_EQ(String(buffer.data(), buffer.size()), "hello");
+  EXPECT_EQ(String(base::as_bytes(buffer)), "hello");
 
   task_runner->RunUntilIdle();
   EXPECT_FALSE(client->LoadingIsCancelled());

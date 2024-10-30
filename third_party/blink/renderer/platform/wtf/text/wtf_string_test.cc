@@ -406,8 +406,7 @@ TEST(StringTest, StringPrinter) {
   static const UChar kUnicodeSample[] = {0x30C6, 0x30B9,
                                          0x30C8};  // "Test" in Japanese.
   EXPECT_EQ("\"\\u30C6\\u30B9\\u30C8\"",
-            ToStdStringThroughPrinter(
-                String(kUnicodeSample, std::size(kUnicodeSample))));
+            ToStdStringThroughPrinter(String(base::span(kUnicodeSample))));
 }
 
 class TestMatcher {

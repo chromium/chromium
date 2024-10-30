@@ -55,7 +55,7 @@ Vector<VariationAxis> VariableAxesNames::GetVariationAxes(
 
     std::array<uint8_t, 4> tag = {HB_UNTAG(axes[i].tag)};
 
-    axis.tag = String(reinterpret_cast<const char*>(tag.data()), tag.size());
+    axis.tag = String(base::span(tag));
     axis.minValue = axes[i].min_value;
     axis.maxValue = axes[i].max_value;
     axis.defaultValue = axes[i].default_value;

@@ -276,7 +276,7 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   String decoded = DecodeURLEscapeSequences("%e6%bc%a2%e5%ad%97",
                                             DecodeURLMode::kUTF8OrIsomorphic);
   const UChar kDecodedExpected[] = {0x6F22, 0x5b57};
-  EXPECT_EQ(String(kDecodedExpected, std::size(kDecodedExpected)), decoded);
+  EXPECT_EQ(String(base::span(kDecodedExpected)), decoded);
 
   // Test the error behavior for invalid UTF-8 (we differ from WebKit here).
   // %e4 %a0 are invalid for UTF-8, but %e5%a5%bd is valid.

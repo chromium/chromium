@@ -44,8 +44,7 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
 
 String ToBinaryString(ArrayBufferContents raw_data) {
   CHECK(raw_data.IsValid());
-  return String(static_cast<const char*>(raw_data.Data()),
-                static_cast<size_t>(raw_data.DataLength()));
+  return String(raw_data.ByteSpan());
 }
 
 String ToTextString(ArrayBufferContents raw_data,

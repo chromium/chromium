@@ -134,7 +134,8 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
   if (tokenizer.TokenTag() == CBORTokenTag::STRING16) {
     *v = WTF::String(
         reinterpret_cast<const UChar*>(tokenizer.GetString16WireRep().data()),
-        tokenizer.GetString16WireRep().size() / 2);
+        base::checked_cast<wtf_size_t>(tokenizer.GetString16WireRep().size() /
+                                       2));
     return true;
   }
   return false;

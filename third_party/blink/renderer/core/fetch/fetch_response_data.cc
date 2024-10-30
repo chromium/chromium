@@ -30,7 +30,7 @@ Vector<String> HeaderSetToVector(const HTTPHeaderSet& headers) {
   result.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(headers.size()));
   // HTTPHeaderSet stores headers using Latin1 encoding.
   for (const auto& header : headers)
-    result.push_back(String(header.data(), header.size()));
+    result.push_back(String(header));
   return result;
 }
 
