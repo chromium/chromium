@@ -123,6 +123,7 @@ WebDialogUI::WebDialogUI(content::WebUI* web_ui)
 WebDialogUI::~WebDialogUI() = default;
 
 void WebDialogUI::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
+  content::WebUIController::WebUIRenderFrameCreated(render_frame_host);
   HandleRenderFrameCreated(render_frame_host);
 }
 
@@ -131,15 +132,14 @@ void WebDialogUI::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
 // the "dialogClose" message handler above in
 // WebDialogUIBase::HandleRenderFrameCreated().
 MojoWebDialogUI::MojoWebDialogUI(content::WebUI* web_ui)
-    : WebDialogUIBase(web_ui),
-      MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {}
+    : WebDialogUI(web_ui),
+      ui::EnableMojoWebUI(web_ui, /*enable_chrome_send=*/true) {}
 
 MojoWebDialogUI::~MojoWebDialogUI() = default;
 
 void MojoWebDialogUI::WebUIRenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  content::WebUIController::WebUIRenderFrameCreated(render_frame_host);
-  HandleRenderFrameCreated(render_frame_host);
+  WebDialogUI::WebUIRenderFrameCreated(render_frame_host);
 }
 
 }  // namespace ui
