@@ -4,8 +4,6 @@
 
 // https://www.w3.org/TR/webnn/#api-mltensor
 
-typedef [EnforceRange] unsigned long long MLSize64;
-
 dictionary MLTensorDescriptor : MLOperandDescriptor {
   boolean importableToWebGPU = false;
   boolean readable = false;
