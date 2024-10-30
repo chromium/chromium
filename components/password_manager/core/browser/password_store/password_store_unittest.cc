@@ -190,12 +190,18 @@ class PasswordStoreTest : public testing::Test {
     // Mock OSCrypt. There is a call to OSCrypt on initializling
     // PasswordReuseDetector, so it should be mocked.
     OSCryptMocker::SetUp();
-
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    // All tests currently rely on built-in backend, so the pref should stay
+    // off. Tests relying on the android backend should set this accordingly.
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+#else
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
 #endif

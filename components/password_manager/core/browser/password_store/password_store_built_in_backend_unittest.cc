@@ -144,6 +144,12 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+    // The built-in backend is only created if the user hasn't been migrated to
+    // use UPM for local and split stores.
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 #endif
 #if !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterBooleanPref(
