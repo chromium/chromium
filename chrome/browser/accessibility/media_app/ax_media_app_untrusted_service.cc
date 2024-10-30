@@ -41,6 +41,8 @@
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -269,11 +271,15 @@ void AXMediaAppUntrustedService::PerformAction(
       return;
     }
     case ax::mojom::Action::kScrollToMakeVisible: {
-      if (!media_app_) {
-        DCHECK_NE(action_data.target_tree_id, ui::AXTreeIDUnknown());
-      } else {
+      if (media_app_) {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
+      }
+      if (action_data.target_tree_id == ui::AXTreeIDUnknown()) {
+        return;
+      }
+      if (action_data.target_node_id == ui::kInvalidAXNodeID) {
+        return;
       }
 
       // Record the time that the user starts navigating content and the most
@@ -286,7 +292,6 @@ void AXMediaAppUntrustedService::PerformAction(
         latest_reading_time_ = base::TimeTicks::Now();
       }
 
-      DCHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
       // Some pages might not be in the document yet, because of page
       // batching.
       DCHECK_GE(pages_.size(), document_->GetRoot()->GetUnignoredChildCount() -
@@ -364,9 +369,89 @@ void AXMediaAppUntrustedService::PerformAction(
     case ax::mojom::Action::kSetScrollOffset:
       NOTIMPLEMENTED();
       return;
-    case ax::mojom::Action::kSetSelection:
-      // TODO(nektar): Implement for Select-to-Speak to work.
+    case ax::mojom::Action::kSetSelection: {
+      if (action_data.target_tree_id == ui::AXTreeIDUnknown() ||
+          action_data.anchor_node_id == ui::kInvalidAXNodeID ||
+          action_data.anchor_offset < 0 ||
+          action_data.focus_node_id == ui::kInvalidAXNodeID ||
+          action_data.focus_offset < 0) {
+        return;
+      }
+
+      // Blink only supports selections within a single tree, so by design we
+      // have to unfortunately limit ourselves to selections within a single
+      // page, unless the assistive software is modified to send multiple
+      // `kSetSelection` actions.
+      std::string page_id;
+      const std::unique_ptr<ui::AXTreeManager>* page_manager_ptr;
+      for (const auto& page : pages_) {
+        if (page.second->GetTreeID() == action_data.target_tree_id) {
+          page_id = page.first;
+          page_manager_ptr = &page.second;
+          break;
+        }
+      }
+      if (page_id.empty() || !page_manager_ptr) {
+        return;
+      }
+      const std::unique_ptr<ui::AXTreeManager>& page_manager =
+          *page_manager_ptr;
+      DCHECK(page_manager->ax_tree());
+      DCHECK(page_manager->GetRoot());
+      std::unique_ptr<TreeSerializer>& page_serializer =
+          page_serializers_.at(page_id);
+      DCHECK(page_serializer.get());
+      ui::AXNode* anchor_node =
+          page_manager->GetNode(action_data.anchor_node_id);
+      if (!anchor_node) {
+        return;
+      }
+      ui::AXNode* focus_node = page_manager->GetNode(action_data.focus_node_id);
+      if (!focus_node) {
+        return;
+      }
+
+      // We use `ui::AXNodePosition` for two reasons: To validate the selection
+      // bounds given by the assistive software, and to normalize them to leaf
+      // text positions (i.e. a deep equivalent positions) so that they are
+      // easier to be used by Select-to-Speak.
+      auto anchor_position = ui::AXNodePosition::CreatePosition(
+          *anchor_node, action_data.anchor_offset);
+      if (!anchor_position->IsValid()) {
+        return;
+      }
+      anchor_position = anchor_position->AsLeafTextPosition();
+      auto focus_position = ui::AXNodePosition::CreatePosition(
+          *focus_node, action_data.focus_offset);
+      if (!focus_position->IsValid()) {
+        return;
+      }
+      focus_position = focus_position->AsLeafTextPosition();
+
+      ui::AXTreeUpdate selection_update;
+      selection_update.root_id = page_manager->GetRoot()->id();
+      selection_update.has_tree_data = true;
+      selection_update.tree_data.sel_is_backward =
+          *anchor_position > *focus_position;
+      selection_update.tree_data.sel_anchor_object_id =
+          anchor_position->anchor_id();
+      selection_update.tree_data.sel_anchor_offset =
+          anchor_position->text_offset();
+      selection_update.tree_data.sel_anchor_affinity =
+          anchor_position->affinity();
+      selection_update.tree_data.sel_focus_object_id =
+          focus_position->anchor_id();
+      selection_update.tree_data.sel_focus_offset =
+          focus_position->text_offset();
+      selection_update.tree_data.sel_focus_affinity =
+          focus_position->affinity();
+      if (!page_manager->ax_tree()->Unserialize(selection_update)) {
+        mojo::ReportBadMessage(page_manager->ax_tree()->error());
+        return;
+      }
+      SendAXTreeToAccessibilityService(*page_manager, *page_serializer);
       return;
+    }
     case ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint:
     case ax::mojom::Action::kSetValue:
     case ax::mojom::Action::kShowContextMenu:
@@ -755,7 +840,7 @@ void AXMediaAppUntrustedService::SendAXTreeToAccessibilityService(
   }
   if (pending_serialized_updates_for_testing_) {
     ui::AXTreeUpdate simplified_update = update;
-    simplified_update.tree_data = ui::AXTreeData();
+    simplified_update.tree_data.tree_id = ui::AXTreeIDUnknown();
     pending_serialized_updates_for_testing_->push_back(
         std::move(simplified_update));
   }
@@ -764,12 +849,26 @@ void AXMediaAppUntrustedService::SendAXTreeToAccessibilityService(
   DCHECK(event_router);
   const gfx::Point& mouse_location =
       aura::Env::GetInstance()->last_mouse_location();
-  // An `ax::mojom::Event::kLayoutComplete` should be raised in order for
-  // Select-to-Speak to recognize that this is an OCRed PDF.
-  ui::AXEvent layout_complete_event(manager.GetRoot()->id(),
-                                    ax::mojom::Event::kLayoutComplete);
-  event_router->DispatchAccessibilityEvents(
-      manager.GetTreeID(), {update}, mouse_location, {layout_complete_event});
+  if (!update.nodes.empty()) {
+    // An `ax::mojom::Event::kLayoutComplete` should be raised in order for
+    // Select-to-Speak to recognize that this is an OCRed PDF.
+    event_router->DispatchAccessibilityEvents(
+        manager.GetTreeID(), {update}, mouse_location,
+        {ui::AXEvent(manager.GetRoot()->id(),
+                     ax::mojom::Event::kLayoutComplete)});
+  } else {
+    event_router->DispatchAccessibilityEvents(
+        manager.GetTreeID(), {update}, mouse_location,
+        {ui::AXEvent(manager.GetRoot()->id(), ax::mojom::Event::kNone)});
+  }
+  if (update.has_tree_data &&
+      (update.tree_data.sel_anchor_object_id != ui::kInvalidAXNodeID ||
+       update.tree_data.sel_focus_object_id != ui::kInvalidAXNodeID)) {
+    event_router->DispatchAccessibilityEvents(
+        manager.GetTreeID(), {update}, mouse_location,
+        {ui::AXEvent(manager.GetRoot()->id(),
+                     ax::mojom::Event::kDocumentSelectionChanged)});
+  }
 #endif  // defined(USE_AURA)
 }
 

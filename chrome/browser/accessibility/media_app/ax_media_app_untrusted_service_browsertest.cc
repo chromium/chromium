@@ -37,6 +37,7 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -1315,17 +1316,17 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   // contains them.
   ASSERT_EQ(kTestNumPages + 1u, pending_serialized_updates.size());
   EXPECT_EQ(
-      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
       "AXTreeUpdate: root id -2\n"
       "id=-2 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
       pending_serialized_updates[0].ToString());
   EXPECT_EQ(
-      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
       "AXTreeUpdate: root id -3\n"
       "id=-3 staticText name=Testing (0, 10)-(3, 8) language=en-US\n",
       pending_serialized_updates[1].ToString());
   EXPECT_EQ(
-      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
       "AXTreeUpdate: root id -4\n"
       "id=-4 staticText name=Testing (0, 20)-(3, 8) language=en-US\n",
       pending_serialized_updates[2].ToString());
@@ -1333,7 +1334,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   // offset. Each page will be correctly offset as the root node of its (child)
   // tree has a correct offset.
   EXPECT_EQ(
-      "AXTreeUpdate tree data:\nAXTreeUpdate: root id 1\n"
+      "AXTreeUpdate tree data: has_parent_tree title=PDF document\n"
+      "AXTreeUpdate: root id 1\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
       "name_from=attribute url=fakepdfurl.pdf clips_children child_ids=2,3,4 "
       "(0, 0)-(3, 28) text_align=left restriction=readonly scroll_x_min=0 "
@@ -1398,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
       "8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[7].ToString());
   EXPECT_EQ(
-      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate tree data: has_parent_tree title=Screen AI\n"
       "AXTreeUpdate: clear node -3\n"
       "AXTreeUpdate: root id -5\n"
       "id=-5 staticText name=Testing (0, 10)-(8, 3) language=en-US\n",
@@ -1879,6 +1881,68 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
 
   histograms.ExpectUniqueSample(
       "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, SetSelection) {
+  service_->DisableStatusNodesForTesting();
+  service_->DisablePostamblePageForTesting();
+  EnableSelectToSpeakForTesting();
+  constexpr size_t kTestNumPages = 2u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  service_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+
+  ui::AXActionData set_selection_action;
+  set_selection_action.action = ax::mojom::Action::kSetSelection;
+  ASSERT_EQ(kTestNumPages, service_->GetPagesForTesting().size());
+  set_selection_action.target_tree_id =
+      service_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            service_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  set_selection_action.anchor_node_id = set_selection_action.focus_node_id =
+      service_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+  set_selection_action.anchor_offset = 0;
+  // Select the whole page. (There is only a single word "Testing".)
+  set_selection_action.focus_offset = 7;
+
+  service_->EnablePendingSerializedUpdatesForTesting();
+  service_->PerformAction(set_selection_action);
+
+  const std::vector<ui::AXTreeUpdate>& pending_serialized_updates =
+      service_->GetPendingSerializedUpdatesForTesting();
+  ASSERT_EQ(1u, pending_serialized_updates.size());
+  EXPECT_EQ(
+      "AXTreeUpdate tree data: sel_is_backward=false sel_anchor_object_id=-2 "
+      "sel_anchor_offset=0 sel_anchor_affinity=downstream "
+      "sel_focus_object_id=-2 sel_focus_offset=7 "
+      "sel_focus_affinity=downstream\n"
+      "AXTreeUpdate: root id -2\n"
+      "id=-2 staticText name=Testing (0, 0)-(3, 8) language=en-US\n",
+      pending_serialized_updates[0].ToString());
+
+  // Make an invalid selection.
+  set_selection_action.focus_offset = 77;
+  service_->PerformAction(set_selection_action);
+  ASSERT_EQ(1u, service_->GetPendingSerializedUpdatesForTesting().size());
+
+  const ui::AXTreeData& tree_data =
+      service_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeData();
+  EXPECT_FALSE(tree_data.sel_is_backward);
+  EXPECT_EQ(
+      service_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id(),
+      tree_data.sel_anchor_object_id);
+  EXPECT_EQ(0, tree_data.sel_anchor_offset);
+  EXPECT_EQ(
+      service_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id(),
+      tree_data.sel_focus_object_id);
+  EXPECT_EQ(7, tree_data.sel_focus_offset);
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, tree_data.sel_focus_affinity);
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, PageBatching) {
