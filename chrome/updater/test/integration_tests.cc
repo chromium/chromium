@@ -955,6 +955,11 @@ INSTANTIATE_TEST_SUITE_P(
     }()));
 
 TEST_P(IntegrationCleanupOldVersionTest, VariousArchitectures) {
+  if (!GetParam().version.IsValid()) {
+    GTEST_SKIP() << "Skipping test since the version for "
+                 << GetParam().updater_setup_path << " is not valid";
+  }
+
   ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
 
   // Since the old version is not working, the real version should install and

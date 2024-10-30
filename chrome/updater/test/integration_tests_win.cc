@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1636,31 +1637,26 @@ void InvokeTestServiceFunction(const std::string& function_name,
 }
 
 std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
-  struct LowerVersion {
-    base::FilePath arch_dir;
-    base::Version version;
-  };
-
-  std::vector<LowerVersion> lower_versions;
+  std::vector<std::wstring> supported_archs;
 
 // TODO(crbug.com/374217027): Test with newer x64 chrome-branded executables
 // that install to %ProgramFiles(x86)%.
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  lower_versions = {
-      {base::FilePath(L"chromium_win_arm64"), base::Version("132.0.6792.0")},
-      {base::FilePath(L"chromium_win_x86_64"), base::Version("132.0.6792.0")},
-      {base::FilePath(L"chromium_win_x86"), base::Version("132.0.6793.0")},
+  supported_archs = {
+      L"chromium_win_arm64",
+      L"chromium_win_x86_64",
+      L"chromium_win_x86",
   };
 #elif defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
-  lower_versions = {
-      {base::FilePath(L"chromium_win_x86_64"), base::Version("132.0.6792.0")},
-      {base::FilePath(L"chromium_win_x86"), base::Version("132.0.6793.0")},
+  supported_archs = {
+      L"chromium_win_x86_64",
+      L"chromium_win_x86",
   };
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  lower_versions = {
-      {base::FilePath(L"chrome_win_x86"), base::Version("119.0.5999.0")},
+  supported_archs = {
+      L"chrome_win_x86",
   };
 #endif
 
@@ -1677,11 +1673,14 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
 
   std::vector<TestUpdaterVersion> updater_versions;
   base::ranges::transform(
-      lower_versions, std::back_inserter(updater_versions),
-      [&](const LowerVersion& lower_version) -> TestUpdaterVersion {
-        return {
-            old_updater_path.Append(lower_version.arch_dir).Append(path_suffix),
-            lower_version.version};
+      supported_archs, std::back_inserter(updater_versions),
+      [&](const std::wstring& arch) -> TestUpdaterVersion {
+        const base::FilePath updater_setup_path =
+            old_updater_path.Append(arch).Append(path_suffix);
+        return {updater_setup_path,
+                base::Version(base::UTF16ToUTF8(
+                    FileVersionInfo::CreateFileVersionInfo(updater_setup_path)
+                        ->file_version()))};
       });
   return updater_versions;
 }
