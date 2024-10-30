@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/scanner/scanner_keyed_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -104,7 +106,7 @@ void ScannerKeyedService::FetchActionsForImage(
     return;
   }
   manta::proto::ScannerInput scanner_input;
-  scanner_input.set_image(std::string(jpeg_bytes->begin(), jpeg_bytes->end()));
+  scanner_input.set_image(std::string(base::as_string_view(*jpeg_bytes)));
   scanner_provider_->Call(scanner_input, std::move(callback));
 }
 
