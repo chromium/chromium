@@ -9,10 +9,6 @@ import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
-if (enable_arcore) {
-  import("//chrome/android/features/ar/ar_module.gni")
-}
-
 # List of feature module descs for each Chrome flavor. These lists are used to
 # autogenerate the relevant module targets and bundles. A feature module desc
 # is a GN scope with the following fields:
@@ -37,9 +33,6 @@ chrome_module_descs = [
 ]
 if (dfmify_dev_ui) {
   chrome_module_descs += [ dev_ui_module_desc ]
-}
-if (false) {  # AR DFM is currently disabled
-  chrome_module_descs += [ ar_module_desc ]
 }
 
 monochrome_module_descs = chrome_module_descs
