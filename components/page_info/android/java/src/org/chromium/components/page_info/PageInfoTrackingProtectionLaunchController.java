@@ -42,7 +42,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     private List<TrackingProtectionFeature> mFeatures;
     private long mExpiration;
     private Website mWebsite;
-    private boolean mBlockAll3PC;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mFixedExpirationForTesting;
 
@@ -52,7 +52,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
             PageInfoControllerDelegate delegate) {
         super(delegate);
 
-        mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
+        mBlockAll3pc = delegate.allThirdPartyCookiesBlockedTrackingProtection();
         mIsIncognito = delegate.isIncognito();
 
         mMainController = mainController;
@@ -103,7 +103,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
-        params.blockAll3PC = mBlockAll3PC;
+        params.blockAll3pc = mBlockAll3pc;
         params.isIncognito = mIsIncognito;
         params.fixedExpirationForTesting = mFixedExpirationForTesting;
         mSubPage.setParams(params);
@@ -215,7 +215,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         mRowView.updateSubtitle(
                 mRowView.getContext()
                         .getString(
-                                mBlockAll3PC
+                                mBlockAll3pc
                                         ? R.string.page_info_cookies_subtitle_blocked
                                         : R.string
                                                 .page_info_tracking_protection_subtitle_cookies_limited));

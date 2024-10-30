@@ -41,7 +41,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
     private int mEnforcement;
     private long mExpiration;
     private Website mWebsite;
-    private boolean mBlockAll3PC;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mFixedExpirationForTesting;
 
@@ -51,7 +51,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
             PageInfoControllerDelegate delegate) {
         super(delegate);
 
-        mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
+        mBlockAll3pc = delegate.allThirdPartyCookiesBlockedTrackingProtection();
         mIsIncognito = delegate.isIncognito();
 
         mMainController = mainController;
@@ -60,7 +60,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         mTitle =
                 mRowView.getContext()
                         .getString(
-                                delegate.shouldShowTrackingProtectionBrandedUI()
+                                delegate.shouldShowTrackingProtectionBrandedUi()
                                         ? R.string.page_info_tracking_protection_title
                                         : R.string.page_info_cookies_title);
         mBridge = delegate.createCookieControlsBridge(this);
@@ -69,7 +69,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         rowParams.visible = delegate.isSiteSettingsAvailable();
         rowParams.title = mTitle;
         rowParams.iconResId =
-                delegate.shouldShowTrackingProtectionBrandedUI()
+                delegate.shouldShowTrackingProtectionBrandedUi()
                         ? R.drawable.ic_eye_crossed
                         : R.drawable.permission_cookie;
         rowParams.decreaseIconSize = true;
@@ -109,7 +109,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
-        params.blockAll3PC = mBlockAll3PC;
+        params.blockAll3pc = mBlockAll3pc;
         params.isIncognito = mIsIncognito;
         params.fixedExpirationForTesting = mFixedExpirationForTesting;
         mSubPage.setParams(params);
@@ -227,7 +227,7 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         mRowView.updateSubtitle(
                 mRowView.getContext()
                         .getString(
-                                mBlockAll3PC
+                                mBlockAll3pc
                                         ? R.string.page_info_cookies_subtitle_blocked
                                         : R.string
                                                 .page_info_tracking_protection_subtitle_cookies_limited));

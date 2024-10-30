@@ -62,7 +62,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public boolean disableCookieDeletion;
         public CharSequence hostName;
         // Block all third-party cookies when Tracking Protection is on.
-        public boolean blockAll3PC;
+        public boolean blockAll3pc;
         public boolean isIncognito;
     }
 
@@ -274,7 +274,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             return false;
         }
 
-        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                 : "Related Website Sets UI and access should be enabled to show RWS info.";
 

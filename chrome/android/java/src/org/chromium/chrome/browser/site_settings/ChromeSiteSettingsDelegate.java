@@ -195,7 +195,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
+    public boolean isPrivacySandboxFirstPartySetsUiFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI);
     }
 
@@ -339,18 +339,18 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionUI() {
+    public boolean shouldShowTrackingProtectionUi() {
         return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionBrandedUI() {
+    public boolean shouldShowTrackingProtectionBrandedUi() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX);
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionACTFeaturesUI() {
+    public boolean shouldShowTrackingProtectionActFeaturesUi() {
         return shouldDisplayIpProtection() || shouldDisplayFingerprintingProtection();
     }
 
@@ -369,7 +369,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isBlockAll3PCDEnabledInTrackingProtection() {
+    public boolean isBlockAll3pcEnabledInTrackingProtection() {
         return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
     }
 

@@ -70,9 +70,9 @@ public interface SiteSettingsDelegate {
     boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
 
     /**
-     * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
+     * @return true if the PrivacySandboxFirstPartySetsUi Feature is enabled.
      */
-    boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
+    boolean isPrivacySandboxFirstPartySetsUiFeatureEnabled();
 
     /**
      * @return The id of the notification channel associated with the given origin.
@@ -173,7 +173,7 @@ public interface SiteSettingsDelegate {
     /**
      * @return true if the Tracking Protection UI should be displayed.
      */
-    boolean shouldShowTrackingProtectionUI();
+    boolean shouldShowTrackingProtectionUi();
 
     /**
      * @return true if the IP Protection UI should be displayed in User Bypass.
@@ -189,18 +189,17 @@ public interface SiteSettingsDelegate {
     /***
      * @return true if the Tracking Protection branded UI should be shown.
      */
-    boolean shouldShowTrackingProtectionBrandedUI();
+    boolean shouldShowTrackingProtectionBrandedUi();
 
     /**
      * @return whether the 100% 3PCD Tracking Protection with ACT features UI should be shown.
      */
-    boolean shouldShowTrackingProtectionACTFeaturesUI();
+    boolean shouldShowTrackingProtectionActFeaturesUi();
 
     /**
-     * @return true if all third-party cookies are blocked when Tracking Protection
-     *         is on.
+     * @return true if all third-party cookies are blocked when Tracking Protection is on.
      */
-    boolean isBlockAll3PCDEnabledInTrackingProtection();
+    boolean isBlockAll3pcEnabledInTrackingProtection();
 
     /** Enables/disables Related Website Sets data access. */
     void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);

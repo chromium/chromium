@@ -124,7 +124,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                     }
                                 })));
 
-        ChromeSwitchPreference blockAll3PCookiesSwitch =
+        ChromeSwitchPreference blockAll3pCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
         ChromeSwitchPreference ipProtectionSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_IP_PROTECTION_TOGGLE);
@@ -137,11 +137,11 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         ChromeSwitchPreference doNotTrackSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_DNT_TOGGLE);
 
-        // Block all 3PCD switch.
-        blockAll3PCookiesSwitch.setChecked(mDelegate.isBlockAll3PCDEnabled());
-        blockAll3PCookiesSwitch.setOnPreferenceChangeListener(
+        // Block all 3rd party cookies switch.
+        blockAll3pCookiesSwitch.setChecked(mDelegate.isBlockAll3pcEnabled());
+        blockAll3pCookiesSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
-                    mDelegate.setBlockAll3PCD((boolean) newValue);
+                    mDelegate.setBlockAll3pc((boolean) newValue);
                     return true;
                 });
 

@@ -50,7 +50,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
-    private boolean mBlockAll3PC;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     // Used to have a constant # of days until expiration to prevent test flakiness.
     private boolean mFixedExpiration;
@@ -66,7 +66,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         public boolean disableCookieDeletion;
         public CharSequence hostName;
         // Block all third-party cookies when Tracking Protection is on.
-        public boolean blockAll3PC;
+        public boolean blockAll3pc;
         public boolean isIncognito;
         public boolean fixedExpirationForTesting;
     }
@@ -103,7 +103,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     }
 
     public void setParams(PageInfoTrackingProtectionViewParams params) {
-        mBlockAll3PC = params.blockAll3PC;
+        mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
         mFixedExpiration = params.fixedExpirationForTesting;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
@@ -119,7 +119,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         if (mIsIncognito) {
             summaryString =
                     R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
-        } else if (mBlockAll3PC) {
+        } else if (mBlockAll3pc) {
             summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
         } else {
             summaryString = R.string.page_info_tracking_protection_description;
@@ -290,7 +290,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
             return false;
         }
 
-        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                 : "First Party Sets UI and access should be enabled to show FPS info.";
 
@@ -336,7 +336,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         // TODO(crbug.com/40064612): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
             int resId =
-                    mBlockAll3PC
+                    mBlockAll3pc
                             ? R.string.page_info_tracking_protection_toggle_blocked
                             : R.string.page_info_tracking_protection_toggle_limited;
             mCookieSwitch.setSummary(getString(resId));
@@ -347,7 +347,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     }
 
     private void updateTrackingProtectionTitleTemporary(int days) {
-        if (mBlockAll3PC || mIsIncognito) {
+        if (mBlockAll3pc || mIsIncognito) {
             mThirdPartyCookiesTitle.setTitle(
                     days == 0
                             ? getString(R.string.page_info_cookies_blocking_restart_today_title)

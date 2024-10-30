@@ -11,13 +11,17 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Interface implemented by the embedder to access embedder-specific logic. */
 public interface TrackingProtectionDelegate {
-    /** @return whether block all 3PCD pref is enabled. */
-    boolean isBlockAll3PCDEnabled();
+    /**
+     * @return whether block all 3PC pref is enabled.
+     */
+    boolean isBlockAll3pcEnabled();
 
-    /** Set the value of the block all 3PCD pref. */
-    void setBlockAll3PCD(boolean enabled);
+    /** Set the value of the block all 3PC pref. */
+    void setBlockAll3pc(boolean enabled);
 
-    /** @return whether the Do Not Track pref is enabled. */
+    /**
+     * @return whether the Do Not Track pref is enabled.
+     */
     boolean isDoNotTrackEnabled();
 
     /** Set the value of the Do Not Track Pref. */
