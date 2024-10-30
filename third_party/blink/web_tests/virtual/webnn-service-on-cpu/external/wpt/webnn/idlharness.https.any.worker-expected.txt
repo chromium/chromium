@@ -1,5 +1,21 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MLOperand interface: operation dataType()
+  assert_false: property should not have a getter expected false got true
+[FAIL] MLOperand interface: operation shape()
+  assert_false: property should not have a getter expected false got true
+[FAIL] MLOperand interface: input must inherit property "dataType()" with the proper type
+  assert_equals: expected "function" but got "string"
+[FAIL] MLOperand interface: input must inherit property "shape()" with the proper type
+  assert_equals: expected "function" but got "object"
+[FAIL] MLOperand interface: constant must inherit property "dataType()" with the proper type
+  assert_equals: expected "function" but got "string"
+[FAIL] MLOperand interface: constant must inherit property "shape()" with the proper type
+  assert_equals: expected "function" but got "object"
+[FAIL] MLOperand interface: output must inherit property "dataType()" with the proper type
+  assert_equals: expected "function" but got "string"
+[FAIL] MLOperand interface: output must inherit property "shape()" with the proper type
+  assert_equals: expected "function" but got "object"
 [FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long, optional MLOperatorOptions)
   assert_equals: property has wrong .length expected 2 but got 1
 Harness: the test ran to completion.
