@@ -117,14 +117,17 @@ luci.cq_group(
         # the CQ only runs for that ref
         refs = ["refs/heads/.+" if settings.is_main else settings.ref],
     ),
+    # TODO(omg/77315): Restore CQ ACLs once RBE outage is over.
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
-            groups = "project-chromium-committers",
+            # groups = "project-chromium-committers",
+            groups = "mdb/chrome-troopers",
         ),
         acl.entry(
             acl.CQ_DRY_RUNNER,
-            groups = "project-chromium-tryjob-access",
+            # groups = "project-chromium-tryjob-access",
+            groups = "mdb/chrome-troopers",
         ),
     ],
     additional_modes = [
