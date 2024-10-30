@@ -470,7 +470,11 @@ class CORE_EXPORT WebFrameWidgetImpl
                          const gfx::PointF& screen_point,
                          ui::mojom::blink::DragOperation,
                          base::OnceClosure callback) override;
-  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override;
+  void OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+      const gfx::Rect& focus_rect_in_widget,
+#endif  // BUILDFLAG(IS_WIN)
+      OnStartStylusWritingCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void PassImeRenderWidgetHost(
       mojo::PendingRemote<mojom::blink::ImeRenderWidgetHost>) override;

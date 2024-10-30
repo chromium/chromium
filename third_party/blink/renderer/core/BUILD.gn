@@ -414,6 +414,10 @@ component("core") {
     deps += [ "//ui/base/mojom" ]
   }
 
+  if (is_win) {
+    deps += [ "//components/stylus_handwriting/win:win" ]
+  }
+
   if (enable_printing || enable_printing_tests) {
     deps += [ "//printing:metafile" ]
   }
@@ -1517,6 +1521,10 @@ source_set("unit_tests") {
     "//ui/base/mojom:ui_base_types_blink",
     "//ui/gfx:test_support",
   ]
+
+  if (is_win) {
+    deps += [ "//components/stylus_handwriting/win:win" ]
+  }
 
   if (enable_nocompile_tests) {
     deps += [ "//third_party/blink/renderer/core/probe:probe_nocompile_tests" ]

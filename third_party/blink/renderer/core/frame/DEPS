@@ -78,6 +78,7 @@ specific_include_rules = {
     "+cc/trees/swap_promise.h",
     "+cc/trees/compositor_commit_data.h",
     "+ui/base/mojom/menu_source_type.mojom-blink-forward.h",
+    "+components/stylus_handwriting/win/features.h",
   ],
   "web_frame_widget_impl\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",
@@ -90,6 +91,7 @@ specific_include_rules = {
   ],
   "web_frame_widget_test\.cc": [
     "+base/run_loop.h",
+    "+components/stylus_handwriting/win/features.h",
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
   ],
   "settings\.h": [

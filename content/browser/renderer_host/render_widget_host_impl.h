@@ -813,7 +813,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnImeCancelComposition() override;
   input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
-  void UpdateElementFocusForStylusWriting() override;
+  void UpdateElementFocusForStylusWriting(
+#if BUILDFLAG(IS_WIN)
+      const gfx::Rect& focus_rect_in_widget
+#endif  // BUILDFLAG(IS_WIN)
+      ) override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(

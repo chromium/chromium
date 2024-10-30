@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "components/input/input_router_client.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
@@ -47,8 +48,16 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
   virtual StylusInterface* GetStylusInterface() = 0;
   // Initiate stylus handwriting.
   virtual void OnStartStylusWriting() = 0;
-  // Update which editable element has focus for stylus writing.
-  virtual void UpdateElementFocusForStylusWriting() = 0;
+  // Update which editable element has focus for stylus writing. When
+  // `focus_rect_in_widget` is provided, sets focus and caret position based on
+  // a hit test performed with that rect. Otherwise fallback to the Element
+  // CurrentTouchDownElement() and use default focus caret position. Caret
+  // position is only updated if the target element doesn't already have focus.
+  virtual void UpdateElementFocusForStylusWriting(
+#if BUILDFLAG(IS_WIN)
+      const gfx::Rect& focus_rect_in_widget
+#endif  // BUILDFLAG(IS_WIN)
+      ) = 0;
 };
 
 }  // namespace input

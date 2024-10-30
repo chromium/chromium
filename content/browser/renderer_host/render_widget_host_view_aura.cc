@@ -28,7 +28,6 @@
 #include "components/input/cursor_manager.h"
 #include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
-#include "components/stylus_handwriting/win/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -109,6 +108,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
+#include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -120,7 +120,7 @@
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/gdi_util.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/accessibility/platform/browser_accessibility_auralinux.h"
@@ -2308,10 +2308,10 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
     const gfx::Rect& rect_in_screen,
     const gfx::Size& distance_tolerance) {
-  // TODO(crbug.com/355578906): Propagate `rect_in_screen`.
   // TODO(crbug.com/355578906): Consider `distance_tolerance`.
   if (host()) {
-    host()->UpdateElementFocusForStylusWriting();
+    host()->UpdateElementFocusForStylusWriting(
+        ConvertRectFromScreen(rect_in_screen));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

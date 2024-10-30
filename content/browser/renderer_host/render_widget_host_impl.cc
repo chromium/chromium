@@ -2991,12 +2991,20 @@ void RenderWidgetHostImpl::OnStartStylusWriting() {
   }
 }
 
-void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting() {
+void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting(
+#if BUILDFLAG(IS_WIN)
+    const gfx::Rect& focus_rect_in_widget
+#endif  // BUILDFLAG(IS_WIN)
+) {
   if (blink_frame_widget_) {
     auto callback = base::BindOnce(
         &RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled,
         weak_factory_.GetWeakPtr());
-    blink_frame_widget_->OnStartStylusWriting(std::move(callback));
+    blink_frame_widget_->OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+        focus_rect_in_widget,
+#endif  // BUILDFLAG(IS_WIN)
+        std::move(callback));
   }
 }
 

@@ -116,7 +116,8 @@ interface FrameWidget {
   // another message that writing has ended. This message responds with the
   // focused edit bounds and caret bounds after stylus writable element is
   // focused, and null if that element could not be focused.
-  OnStartStylusWriting() => (StylusWritingFocusResult? focus_result);
+  OnStartStylusWriting([EnableIf=is_win] gfx.mojom.Rect focus_rect_in_widget)
+      => (StylusWritingFocusResult? focus_result);
 
   // Exposes an interface to the renderer to provide positional and styling
   // information about the currently focused element.

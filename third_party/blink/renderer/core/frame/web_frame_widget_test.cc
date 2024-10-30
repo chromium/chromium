@@ -15,6 +15,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -38,6 +39,10 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/stylus_handwriting/win/features.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace blink {
 
@@ -307,6 +312,14 @@ class WebFrameWidgetImplSimTest : public SimTest {
         std::move(callback));
   }
 
+  void OnStartStylusWriting() {
+    MockMainFrameWidget()->OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+        /*focus_rect_in_widget=*/gfx::Rect(),
+#endif  // BUILDFLAG(IS_WIN)
+        base::DoNothing());
+  }
+
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
@@ -446,6 +459,7 @@ TEST_F(WebFrameWidgetImplSimTest, SendElasticOverscrollForTouchscreen) {
 }
 
 TEST_F(WebFrameWidgetImplSimTest, TestStartStylusWritingForInputElement) {
+  ScopedStylusHandwritingForTest enable_stylus_handwriting(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -468,12 +482,13 @@ TEST_F(WebFrameWidgetImplSimTest, TestStartStylusWritingForInputElement) {
   GetEventHandler().HandlePointerEvent(event, Vector<WebPointerEvent>(),
                                        Vector<WebPointerEvent>());
   EXPECT_EQ(nullptr, GetDocument().FocusedElement());
-  MockMainFrameWidget()->OnStartStylusWriting(base::DoNothing());
+  OnStartStylusWriting();
   EXPECT_EQ(first, GetDocument().FocusedElement());
 }
 
 TEST_F(WebFrameWidgetImplSimTest,
        TestStartStylusWritingForContentEditableElement) {
+  ScopedStylusHandwritingForTest enable_stylus_handwriting(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -496,12 +511,13 @@ TEST_F(WebFrameWidgetImplSimTest,
   GetEventHandler().HandlePointerEvent(event, Vector<WebPointerEvent>(),
                                        Vector<WebPointerEvent>());
   EXPECT_EQ(nullptr, GetDocument().FocusedElement());
-  MockMainFrameWidget()->OnStartStylusWriting(base::DoNothing());
+  OnStartStylusWriting();
   EXPECT_EQ(first, GetDocument().FocusedElement());
 }
 
 TEST_F(WebFrameWidgetImplSimTest,
        TestStartStylusWritingForContentEditableChildElement) {
+  ScopedStylusHandwritingForTest enable_stylus_handwriting(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -529,9 +545,473 @@ TEST_F(WebFrameWidgetImplSimTest,
                                        Vector<WebPointerEvent>());
   EXPECT_EQ(second, GetEventHandler().CurrentTouchDownElement());
   EXPECT_EQ(nullptr, GetDocument().FocusedElement());
-  MockMainFrameWidget()->OnStartStylusWriting(base::DoNothing());
+  OnStartStylusWriting();
   EXPECT_EQ(first, GetDocument().FocusedElement());
 }
+
+#if BUILDFLAG(IS_WIN)
+struct ProximateBoundsCollectionArgs final {
+  base::RepeatingCallback<gfx::Rect(const Document&)> get_focus_rect_in_widget;
+  std::string expected_focus_id;
+  bool expect_null_proximate_bounds;
+  gfx::Range expected_range;
+  std::vector<gfx::Rect> expected_bounds;
+};
+
+std::ostream& operator<<(std::ostream& os,
+                         const ProximateBoundsCollectionArgs& args) {
+  os << "\nexpected_focus_id: " << args.expected_focus_id;
+  os << "\nexpect_null_proximate_bounds: " << args.expect_null_proximate_bounds;
+  os << "\nexpected_range: " << args.expected_range;
+  os << "\nexpected_bounds.size: [";
+  for (const auto& bounds : args.expected_bounds) {
+    os << "{" << bounds.ToString() << "}, ";
+  }
+  os << "]";
+  return os;
+}
+
+struct WebFrameWidgetProximateBoundsCollectionSimTestParam {
+  using TupleType = std::tuple</*enable_stylus_handwriting_win=*/bool,
+                               /*html_document=*/std::string,
+                               /*args=*/ProximateBoundsCollectionArgs>;
+  explicit WebFrameWidgetProximateBoundsCollectionSimTestParam(TupleType tup)
+      : enable_stylus_handwriting_win_(std::get<0>(tup)),
+        html_document_(std::get<1>(tup)),
+        proximate_bounds_collection_args_(std::get<2>(tup)) {}
+
+  bool IsStylusHandwritingWinEnabled() const {
+    return enable_stylus_handwriting_win_;
+  }
+
+  const std::string& GetHTMLDocument() const { return html_document_; }
+
+  const std::string& GetExpectedFocusId() const {
+    return proximate_bounds_collection_args_.expected_focus_id;
+  }
+
+  gfx::Rect GetFocusRectInWidget(const Document& document) const {
+    return proximate_bounds_collection_args_.get_focus_rect_in_widget.Run(
+        document);
+  }
+
+  bool ExpectNullProximateBounds() const {
+    return proximate_bounds_collection_args_.expect_null_proximate_bounds;
+  }
+
+  const gfx::Range& GetExpectedRange() const {
+    return proximate_bounds_collection_args_.expected_range;
+  }
+
+  const std::vector<gfx::Rect>& GetExpectedBounds() const {
+    return proximate_bounds_collection_args_.expected_bounds;
+  }
+
+ private:
+  friend std::ostream& operator<<(
+      std::ostream& os,
+      const WebFrameWidgetProximateBoundsCollectionSimTestParam& param);
+  const bool enable_stylus_handwriting_win_;
+  const std::string html_document_;
+  const ProximateBoundsCollectionArgs proximate_bounds_collection_args_;
+};
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const WebFrameWidgetProximateBoundsCollectionSimTestParam& param) {
+  return os << "\nenable_stylus_handwriting_win: "
+            << param.enable_stylus_handwriting_win_
+            << "\nhtml_document: " << param.html_document_
+            << "\nproximate_bounds_collection_args: {"
+            << param.proximate_bounds_collection_args_ << "}";
+}
+
+class WebFrameWidgetProximateBoundsCollectionSimTestBase
+    : public WebFrameWidgetImplSimTest {
+ public:
+  void LoadDocument(const String& html_document) {
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+    SimRequest request("https://example.com/test.html", "text/html");
+    SimSubresourceRequest style_resource("https://example.com/styles.css",
+                                         "text/css");
+    SimSubresourceRequest font_resource("https://example.com/Ahem.woff2",
+                                        "font/woff2");
+    LoadURL("https://example.com/test.html");
+    request.Complete(html_document);
+    style_resource.Complete(R"CSS(
+      @font-face {
+        font-family: custom-font;
+        src: url(https://example.com/Ahem.woff2) format("woff2");
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        width: 400px;
+        height: 400px;
+      }
+      #target_editable,
+      #target_readonly,
+      #second,
+      #touch_fallback {
+        font: 10px/1 custom-font, monospace;
+        margin: 0;
+        padding: 0;
+        border: none;
+        width: 260px;
+      }
+      #touch_fallback {
+        position: absolute;
+        left: 0px;
+        top: 200px;
+      }
+    )CSS");
+    Compositor().BeginFrame();
+    // Finish font loading, and trigger invalidations.
+    font_resource.Complete(
+        *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
+    Compositor().BeginFrame();
+  }
+
+  void HandlePointerDownEventOverTouchFallback() {
+    const Element* touch_fallback = GetElementById("touch_fallback");
+    const gfx::Point tap_point = touch_fallback->BoundsInWidget().CenterPoint();
+    const WebPointerEvent event(
+        WebInputEvent::Type::kPointerDown,
+        WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
+                             WebPointerProperties::Button::kLeft,
+                             gfx::PointF(tap_point), gfx::PointF(tap_point)),
+        1, 1);
+    GetEventHandler().HandlePointerEvent(event, Vector<WebPointerEvent>(),
+                                         Vector<WebPointerEvent>());
+    EXPECT_EQ(GetDocument().FocusedElement(), nullptr);
+  }
+
+  void OnStartStylusWriting(const gfx::Rect& focus_rect_in_widget) {
+    MockMainFrameWidget()->OnStartStylusWriting(
+        focus_rect_in_widget,
+        base::BindOnce(&WebFrameWidgetProximateBoundsCollectionSimTestBase::
+                           OnStartStylusWritingComplete,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  Element* GetElementById(const char* id) {
+    return GetDocument().getElementById(AtomicString(id));
+  }
+
+  const mojom::blink::ProximateCharacterRangeBounds* GetLastProximateBounds()
+      const {
+    return last_proximate_bounds_.get();
+  }
+
+ protected:
+  explicit WebFrameWidgetProximateBoundsCollectionSimTestBase(
+      bool enable_stylus_handwriting_win) {
+    if (enable_stylus_handwriting_win) {
+      // Note: kProximateBoundsCollectionHalfLimit is negative here to exercise
+      // the absolute value logic in `ProximateBoundsCollectionHalfLimit()`.
+      // Logically positive and negative values are equivalent for this, so it
+      // has no special meaning.
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{stylus_handwriting::win::kStylusHandwritingWin,
+            base::FieldTrialParams()},
+           {stylus_handwriting::win::kProximateBoundsCollection,
+            base::FieldTrialParams(
+                {{stylus_handwriting::win::kProximateBoundsCollectionHalfLimit
+                      .name,
+                  base::NumberToString(-2)}})}},
+          /*disabled_features=*/{});
+      enable_stylus_handwriting_.emplace(true);
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              stylus_handwriting::win::kStylusHandwritingWin});
+    }
+  }
+
+ private:
+  void OnStartStylusWritingComplete(
+      mojom::blink::StylusWritingFocusResultPtr focus_result) {
+    last_proximate_bounds_ =
+        focus_result ? std::move(focus_result->proximate_bounds) : nullptr;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Needed in tests because StyleAdjuster::AdjustEffectiveTouchAction depends
+  // on `RuntimeEnabledFeatures::StylusHandwritingEnabled()` to remove
+  // TouchAction::kInternalNotWritable from TouchAction::kAuto.
+  // In production this will be handled by web contents prefs propagation.
+  std::optional<ScopedStylusHandwritingForTest> enable_stylus_handwriting_;
+  mojom::blink::ProximateCharacterRangeBoundsPtr last_proximate_bounds_;
+  base::WeakPtrFactory<WebFrameWidgetProximateBoundsCollectionSimTestBase>
+      weak_factory_{this};
+};
+
+class WebFrameWidgetProximateBoundsCollectionSimTestF
+    : public WebFrameWidgetProximateBoundsCollectionSimTestBase {
+ public:
+  WebFrameWidgetProximateBoundsCollectionSimTestF()
+      : WebFrameWidgetProximateBoundsCollectionSimTestBase(
+            /*enable_stylus_handwriting_win=*/true) {}
+
+  void StartStylusWritingOnElementCenter(const Element& element) {
+    gfx::Rect focus_rect_in_widget(element.BoundsInWidget().CenterPoint(),
+                                   gfx::Size());
+    focus_rect_in_widget.Outset(gfx::Outsets(25));
+    OnStartStylusWriting(focus_rect_in_widget);
+  }
+};
+
+class WebFrameWidgetProximateBoundsCollectionSimTestP
+    : public WebFrameWidgetProximateBoundsCollectionSimTestBase,
+      public testing::WithParamInterface<
+          WebFrameWidgetProximateBoundsCollectionSimTestParam> {
+ public:
+  WebFrameWidgetProximateBoundsCollectionSimTestP()
+      : WebFrameWidgetProximateBoundsCollectionSimTestBase(
+            /*enable_stylus_handwriting_win=*/GetParam()
+                .IsStylusHandwritingWinEnabled()) {}
+};
+
+TEST_F(WebFrameWidgetProximateBoundsCollectionSimTestF,
+       ProximateBoundsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{stylus_handwriting::win::kProximateBoundsCollection,
+        base::FieldTrialParams(
+            {{stylus_handwriting::win::kProximateBoundsCollectionHalfLimit.name,
+              base::NumberToString(0)}})}},
+      /*disabled_features=*/{});
+  LoadDocument(String(R"HTML(
+    <!doctype html>
+    <link rel="stylesheet" href="styles.css">
+    <body>
+      <div id='target_editable' contenteditable>ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+      <div id="touch_fallback" contenteditable>Fallback Text</div>
+    </body>
+  )HTML"));
+  HandlePointerDownEventOverTouchFallback();
+  const Element& target_editable = *GetElementById("target_editable");
+  StartStylusWritingOnElementCenter(target_editable);
+  EXPECT_EQ(GetDocument().FocusedElement(), target_editable);
+  EXPECT_EQ(GetLastProximateBounds(), nullptr);
+}
+
+TEST_F(WebFrameWidgetProximateBoundsCollectionSimTestF, EmptyTextRange) {
+  LoadDocument(String(R"HTML(
+    <!doctype html>
+    <link rel="stylesheet" href="styles.css">
+    <body>
+      <div id='target_editable' contenteditable></div>
+      <div id="touch_fallback" contenteditable></div>
+    </body>
+  )HTML"));
+  HandlePointerDownEventOverTouchFallback();
+  const Element& target_editable = *GetElementById("target_editable");
+  StartStylusWritingOnElementCenter(target_editable);
+  EXPECT_EQ(GetDocument().FocusedElement(), target_editable);
+  EXPECT_EQ(GetLastProximateBounds(), nullptr);
+}
+
+TEST_F(WebFrameWidgetProximateBoundsCollectionSimTestF, EmptyFocusRect) {
+  LoadDocument(String(R"HTML(
+    <!doctype html>
+    <link rel="stylesheet" href="styles.css">
+    <body>
+      <div id='target_editable' contenteditable></div>
+      <div id="touch_fallback" contenteditable>ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+    </body>
+  )HTML"));
+  HandlePointerDownEventOverTouchFallback();
+  OnStartStylusWriting(gfx::Rect());
+  EXPECT_EQ(GetDocument().FocusedElement(), GetElementById("touch_fallback"));
+  EXPECT_EQ(GetLastProximateBounds(), nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebFrameWidgetProximateBoundsCollectionSimTestP,
+    ::testing::ConvertGenerator<
+        WebFrameWidgetProximateBoundsCollectionSimTestParam::TupleType>(
+        testing::Combine(
+            // std::get<0> enable_stylus_handwriting_win
+            testing::Bool(),
+            // std::get<1> document
+            testing::Values(
+                // input element test
+                R"HTML(
+                <!doctype html>
+                <link rel="stylesheet" href="styles.css">
+                <body>
+                <input type='text' id='target_editable'
+                       value='ABCDEFGHIJKLMNOPQRSTUVWXYZ'/>
+                <div id="target_readonly">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                <div id="touch_fallback" contenteditable>Fallback Text</div>
+                </body>
+                )HTML",
+                // contenteditable element test
+                R"HTML(
+                <!doctype html>
+                <link rel="stylesheet" href="styles.css">
+                <body>
+                <div id='target_editable' contenteditable>ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                <div id="target_readonly">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                <div id="touch_fallback" contenteditable>Fallback Text</div>
+                </body>
+                )HTML",
+                // contenteditable child element test
+                R"HTML(
+                <!doctype html>
+                <link rel="stylesheet" href="styles.css">
+                <body>
+                <div id='target_editable' contenteditable><span id='second'>ABCDEFGHIJKLMNOPQRSTUVWXYZ</span></div>
+                <div id="target_readonly">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                <div id="touch_fallback" contenteditable>Fallback Text</div>
+                </body>
+                )HTML",
+                // contenteditable inside <svg> <foreignObject> test
+                R"HTML(
+                <!doctype html>
+                <link rel="stylesheet" href="styles.css">
+                <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                  <foreignObject x="0" y="0" width="400" height="400">
+                    <div id='target_editable' contenteditable>ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                    <div id="target_readonly">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                    <div id="touch_fallback" contenteditable>Fallback Text</div>
+                  </foreignObject>
+                </svg>
+                )HTML"),
+            // std::get<2> proximate_bounds_collection_args
+            testing::Values(
+                // Test that bounds collection expands in both
+                // directions relative to the pivot position up-to
+                // the `ProximateBoundsCollectionHalfLimit()`.
+                ProximateBoundsCollectionArgs{
+                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                        [](const Document& document) -> gfx::Rect {
+                          const Element* target = document.getElementById(
+                              AtomicString("target_editable"));
+                          gfx::Rect focus_rect_in_widget(
+                              target->BoundsInWidget().top_center(),
+                              gfx::Size());
+                          focus_rect_in_widget.Outset(gfx::Outsets(25));
+                          return focus_rect_in_widget;
+                        }),
+                    /*expected_focus_id=*/"target_editable",
+                    /*expect_null_proximate_bounds=*/false,
+                    /*expected_range=*/gfx::Range(11, 15),
+                    /*expected_bounds=*/
+                    {gfx::Rect(110, 0, 10, 10), gfx::Rect(120, 0, 10, 10),
+                     gfx::Rect(130, 0, 10, 10), gfx::Rect(140, 0, 10, 10)}},
+                // Test that bounds collection at the start of a text
+                // range only expands in one direction up-to the
+                // `ProximateBoundsCollectionHalfLimit()`.
+                ProximateBoundsCollectionArgs{
+                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                        [](const Document& document) -> gfx::Rect {
+                          const Element* target = document.getElementById(
+                              AtomicString("target_editable"));
+                          gfx::Rect focus_rect_in_widget(
+                              target->BoundsInWidget().origin(), gfx::Size());
+                          focus_rect_in_widget.Outset(gfx::Outsets(25));
+                          return focus_rect_in_widget;
+                        }),
+                    /*expected_focus_id=*/"target_editable",
+                    /*expect_null_proximate_bounds=*/false,
+                    /*expected_range=*/gfx::Range(0, 2),
+                    /*expected_bounds=*/
+                    {gfx::Rect(0, 0, 10, 10), gfx::Rect(10, 0, 10, 10)}},
+                // Test that bounds collection at the end of a text
+                // range only expands in one direction up-to the
+                // `ProximateBoundsCollectionHalfLimit()`.
+                ProximateBoundsCollectionArgs{
+                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                        [](const Document& document) -> gfx::Rect {
+                          const Element* target = document.getElementById(
+                              AtomicString("target_editable"));
+                          gfx::Rect focus_rect_in_widget(
+                              target->BoundsInWidget().top_right() -
+                                  gfx::Vector2d(1, 0),
+                              gfx::Size());
+                          focus_rect_in_widget.Outset(gfx::Outsets(25));
+                          return focus_rect_in_widget;
+                        }),
+                    /*expected_focus_id=*/"target_editable",
+                    /*expect_null_proximate_bounds=*/false,
+                    /*expected_range=*/gfx::Range(24, 26),
+                    /*expected_bounds=*/
+                    {gfx::Rect(240, 0, 10, 10), gfx::Rect(250, 0, 9, 10)}},
+                // Test that `touch_fallback` is focused when
+                // `focus_rect_in_widget` misses, but it shouldn't collect
+                // bounds because the pivot offset cannot be determined.
+                ProximateBoundsCollectionArgs{
+                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                        [](const Document& document) -> gfx::Rect {
+                          const Element* target = document.getElementById(
+                              AtomicString("target_editable"));
+                          gfx::Rect focus_rect_in_widget(
+                              target->BoundsInWidget().right_center() +
+                                  gfx::Vector2d(100, 0),
+                              gfx::Size());
+                          focus_rect_in_widget.Outset(gfx::Outsets(25));
+                          return focus_rect_in_widget;
+                        }),
+                    /*expected_focus_id=*/"touch_fallback",
+                    /*expect_null_proximate_bounds=*/true,
+                    /*expected_range=*/gfx::Range(),
+                    /*expected_bounds=*/{}},
+                // Test that `touch_fallback` is focused when
+                // `focus_rect_in_widget` hits non-editable content, but it
+                // shouldn't collect bounds because the pivot offset cannot be
+                // determined.
+                ProximateBoundsCollectionArgs{
+                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                        [](const Document& document) -> gfx::Rect {
+                          const Element* target = document.getElementById(
+                              AtomicString("target_readonly"));
+                          gfx::Rect focus_rect_in_widget(
+                              target->BoundsInWidget().CenterPoint(),
+                              gfx::Size());
+                          focus_rect_in_widget.Outset(gfx::Outsets(25));
+                          return focus_rect_in_widget;
+                        }),
+                    /*expected_focus_id=*/"touch_fallback",
+                    /*expect_null_proximate_bounds=*/true,
+                    /*expected_range=*/gfx::Range(),
+                    /*expected_bounds=*/{}}))));
+
+TEST_P(WebFrameWidgetProximateBoundsCollectionSimTestP,
+       TestProximateBoundsCollection) {
+  LoadDocument(String(GetParam().GetHTMLDocument()));
+  HandlePointerDownEventOverTouchFallback();
+  OnStartStylusWriting(GetParam().GetFocusRectInWidget(GetDocument()));
+  if (!GetParam().IsStylusHandwritingWinEnabled()) {
+    EXPECT_EQ(GetDocument().FocusedElement(), nullptr);
+    EXPECT_EQ(GetLastProximateBounds(), nullptr);
+    return;
+  }
+
+  // Focus expectations.
+  const Element* expected_focus =
+      GetElementById(GetParam().GetExpectedFocusId().c_str());
+  const Element* actual_focus = GetDocument().FocusedElement();
+  ASSERT_NE(actual_focus, nullptr);
+  EXPECT_EQ(actual_focus, expected_focus);
+
+  // `Proximate` bounds cache expectations.
+  EXPECT_EQ(!GetLastProximateBounds(), GetParam().ExpectNullProximateBounds());
+  if (!GetParam().ExpectNullProximateBounds()) {
+    EXPECT_EQ(GetLastProximateBounds()->range, GetParam().GetExpectedRange());
+    EXPECT_TRUE(std::equal(GetLastProximateBounds()->bounds.begin(),
+                           GetLastProximateBounds()->bounds.end(),
+                           GetParam().GetExpectedBounds().begin(),
+                           GetParam().GetExpectedBounds().end()));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 class NotifySwapTimesWebFrameWidgetTest : public SimTest {
  public:
