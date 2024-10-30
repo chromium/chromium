@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

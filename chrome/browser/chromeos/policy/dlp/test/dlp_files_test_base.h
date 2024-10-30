@@ -8,17 +8,12 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace policy {
 
@@ -41,16 +36,13 @@ class DlpFilesTestBase : public testing::Test {
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context);
 
+  Profile* profile() { return profile_.get(); }
+  MockDlpRulesManager* rules_manager() { return rules_manager_; }
+
+ private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<TestingProfile> scoped_profile_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-#endif
-  raw_ptr<TestingProfile> profile_;
-
+  std::unique_ptr<Profile> profile_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_ = nullptr;
 };
 

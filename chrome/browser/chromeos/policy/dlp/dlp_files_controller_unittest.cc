@@ -76,9 +76,9 @@ class DlpFilesControllerTest : public DlpFilesTestBase {
   void SetUp() override {
     DlpFilesTestBase::SetUp();
 
-    ASSERT_TRUE(rules_manager_);
+    ASSERT_TRUE(rules_manager());
     files_controller_ =
-        std::make_unique<MockDlpFilesController>(*rules_manager_);
+        std::make_unique<MockDlpFilesController>(*rules_manager());
 
     chromeos::DlpClient::InitializeFake();
     chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);

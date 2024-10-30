@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"

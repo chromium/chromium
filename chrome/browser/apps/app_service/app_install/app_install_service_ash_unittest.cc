@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"

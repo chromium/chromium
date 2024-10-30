@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
