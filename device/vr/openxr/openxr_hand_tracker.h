@@ -59,8 +59,6 @@ class OpenXrHandTracker {
 
   XrResult Update(XrSpace base_space, XrTime predicted_display_time);
 
-  bool CanSupplyHandTrackingData() const;
-
   // Must not be overridden by subclasses.
   mojom::XRHandTrackingDataPtr GetHandTrackingData() const;
 

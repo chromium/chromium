@@ -195,6 +195,8 @@ if (enable_vr) {
         "openxr/openxr_graphics_binding.h",
         "openxr/openxr_hand_tracker.cc",
         "openxr/openxr_hand_tracker.h",
+        "openxr/openxr_hand_utils.cc",
+        "openxr/openxr_hand_utils.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
         "openxr/openxr_interaction_profile_paths.h",

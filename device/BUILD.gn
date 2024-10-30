@@ -462,6 +462,10 @@ test("device_unittests") {
       "vr/vr_device_base_unittest.cc",
     ]
 
+    if (enable_openxr) {
+      sources += [ "vr/openxr/openxr_hand_utils_unittest.cc" ]
+    }
+
     defines = [ "DEVICE_VR_IMPLEMENTATION" ]
 
     deps += [

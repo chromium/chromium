@@ -537,8 +537,7 @@ XrResult OpenXrController::UpdateInteractionProfile() {
 }
 
 bool OpenXrController::IsHandTrackingEnabled() const {
-  return hand_joints_enabled_ && hand_tracker_ &&
-         hand_tracker_->CanSupplyHandTrackingData();
+  return hand_joints_enabled_ && hand_tracker_;
 }
 
 mojom::XRHandTrackingDataPtr OpenXrController::GetHandTrackingData() {
