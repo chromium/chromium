@@ -33,7 +33,7 @@
 // The BrowserProviderInterface for the foreground scene, or for any background
 // connected scene if there's no foreground scene. If there are none of these,
 // this is `nil`.
-// TODO(crbug.com/40266840) Remove this public property.
+// TODO(crbug.com/341906612) Remove this public property.
 @property(nonatomic, readonly) id<BrowserProviderInterface>
     browserProviderInterfaceDoNotUse;
 
