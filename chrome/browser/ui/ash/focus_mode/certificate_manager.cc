@@ -54,6 +54,24 @@ std::optional<base::Time> CertificateExpiration(
   return x509->valid_expiry();
 }
 
+// Returns true if `data` is a certificate and it contains a SHA-1 signature.
+bool CertificateHasSha1Signature(std::string_view data) {
+  auto crypto_buffer = net::x509_util::CreateCryptoBuffer(data);
+  if (!crypto_buffer) {
+    return false;
+  }
+  return net::x509_util::HasRsaPkcs1Sha1Signature(crypto_buffer.get());
+}
+
+bool CertificateChainHasSha1Signature(const std::vector<std::string>& chain) {
+  for (const auto& certificate : chain) {
+    if (CertificateHasSha1Signature(certificate)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class CertificateManagerImpl : public CertificateManager {
  public:
   CertificateManagerImpl(
@@ -175,9 +193,10 @@ class CertificateManagerImpl : public CertificateManager {
       return;
     }
 
-    auto crypto_buffer = net::x509_util::CreateCryptoBuffer(client_cert);
-    if (net::x509_util::HasRsaPkcs1Sha1Signature(crypto_buffer.get())) {
+    if (CertificateHasSha1Signature(client_cert) ||
+        CertificateChainHasSha1Signature(cert_chain)) {
       if (!certificate_upgrade_attempted_) {
+        LOG(WARNING) << "Attempt certificate update";
         // Make 1 attempt to force a refresh of the certificate.
         certificate_upgrade_attempted_ = true;
         GetCertificateImpl(/*force_update=*/true, std::move(callback));
