@@ -248,9 +248,11 @@ additional_args = {
     'cronet_aml_third_party_netty_tcnative_netty_tcnative_so__testing': [
         ('cflags', {"-Wno-error=pointer-bool-conversion"})
     ],
-    'cronet_aml_third_party_apache_portable_runtime_apr__testing': [('cflags', {
-        "-Wno-incompatible-pointer-types-discards-qualifiers",
-    })],
+    'cronet_aml_third_party_apache_portable_runtime_apr__testing': [
+        ('cflags', {
+            "-Wno-incompatible-pointer-types-discards-qualifiers",
+        })
+    ],
     # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
     # include_dir from the public_configs
     # We had to add the export_include_dirs for each target because soong generates each header
@@ -301,15 +303,8 @@ additional_args = {
         ('errorprone', ('javacflags', {
             "-Xep:ReturnValueIgnored:WARN",
         }))
-    ],
-    # See http://crbug.com/374842582 and http://crbug.com/353739440.
-    'libproc_macro2_cronet_aml_third_party_rust_proc_macro2_v1_lib': [
-        ('host_cross_supported', False)
-    ],
-    # See http://crbug.com/374842582 and http://crbug.com/353739440.
-    'libproc_macro2_cronet_aml_third_party_rust_proc_macro2_v1_lib__testing': [
-        ('host_cross_supported', False)
-    ],
+    ]
+    # end export_include_dir.
 }
 
 _FEATURE_REGEX = "feature=\\\"(.+)\\\""
@@ -732,7 +727,6 @@ class Module(object):
     self.edition = None
     self.rustlibs = set()
     self.proc_macros = set()
-    self.host_cross_supported = None
 
   def to_string(self, output):
     if self.comment:
@@ -797,7 +791,6 @@ class Module(object):
     self._output_field(output, 'crate_root')
     self._output_field(output, 'rustlibs')
     self._output_field(output, 'proc_macros')
-    self._output_field(output, 'host_cross_supported')
     if self.rtti:
       self._output_field(output, 'rtti')
 
