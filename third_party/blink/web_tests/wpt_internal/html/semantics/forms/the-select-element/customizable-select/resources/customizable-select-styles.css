@@ -4,9 +4,6 @@
 
 .customizable-select-button, .customizable-select-popover {
   box-sizing: border-box;
-  /* TODO(crbug.com/1511354): Make the UA stylesheet use something standardized
-   * instead of -webkit-small-control. */
-  font: -webkit-small-control;
 }
 
 .customizable-select-popover {

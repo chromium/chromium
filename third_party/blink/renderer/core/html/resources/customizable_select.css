@@ -8,6 +8,10 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
+select:not(:-internal-list-box) {
+  font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
+}
+
 /* These rules are intended to apply to appearance:base-select when the author
  * provides a child <button> element. They still apply when appearance computes
  * to auto, but the values provided in the
@@ -111,6 +115,7 @@ select:not(:-internal-list-box) option {
   min-inline-size: 24px;
   min-block-size: max(24px, 1.2em);
   align-content: center;
+  font-weight: -internal-appearance-auto-base-select(normal, inherit);
 }
 
 
@@ -160,6 +165,7 @@ select:not(:-internal-list-box) optgroup {
 /* This can be merged with the :-internal-list-box rule in html.css */
 select:not(:-internal-list-box) optgroup option {
   padding-inline-start: 20px;
+  font-weight: normal;
 }
 
 /* These styles are copied from optgroup's label attribute inline style properties */

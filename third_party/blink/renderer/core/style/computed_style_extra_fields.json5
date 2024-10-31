@@ -1307,5 +1307,13 @@
       default_value: "false",
       inherited: false,
     },
+    {
+      name: "InBaseSelectAppearance",
+      inherited: true,
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
   ],
 }

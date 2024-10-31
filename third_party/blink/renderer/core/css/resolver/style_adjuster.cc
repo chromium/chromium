@@ -487,6 +487,10 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
 
 static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
                                       HTMLElement& element) {
+  if (builder.HasBaseSelectAppearance()) {
+    builder.SetInBaseSelectAppearance(true);
+  }
+
   // <div> and <span> are the most common elements on the web, we skip all the
   // work for them.
   if (IsA<HTMLDivElement>(element) || IsA<HTMLSpanElement>(element)) {
