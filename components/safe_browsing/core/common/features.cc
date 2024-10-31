@@ -113,6 +113,10 @@ BASE_FEATURE(kEsbAiStringUpdate,
              "EsbAiStringUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEsbAsASyncedSetting,
+             "EsbAsASyncedSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
              "ExtendedReportingRemovePrefDependency",
              base::FEATURE_DISABLED_BY_DEFAULT);

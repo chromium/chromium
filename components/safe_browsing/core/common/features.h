@@ -105,6 +105,10 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
 // chrome://settings/security to mention the use of AI.
 BASE_DECLARE_FEATURE(kEsbAiStringUpdate);
 
+// Makes the Enhanced Protection a syncable setting.
+// Check the design doc (go/esb-as-a-synced-setting-dd) for further details.
+BASE_DECLARE_FEATURE(kEsbAsASyncedSetting);
+
 // Controls whether Safe Browsing Extended Reporting (SBER) is deprecated.
 // When this feature flag is enabled:
 // - the Extended Reporting toggle will not be displayed on
