@@ -212,22 +212,27 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
 // Convert AV1/VP9 qindex (0-255) to the quantizer parameter input in MF
 // AVEncVideoEncodeQP. AVEncVideoEncodeQP maps it to libvpx qp tuning parameter
 // and thus the range is 0-63.
-uint8_t QindextoAVEncQP(uint8_t q_index) {
-  // The following computation is based on the table in
-  // //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.c.
-  // //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c
-  // {
-  //   0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
-  //   52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
-  //   104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
-  //   156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204,
-  //   208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
-  // };
-  if (q_index <= 244)
-    return (q_index + 3) / 4;
-  if (q_index <= 249)
-    return 62;
-  return 63;
+uint8_t QindextoAVEncQP(VideoCodec codec, uint8_t q_index) {
+  if (codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
+    // The following computation is based on the table in
+    // //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.c.
+    // //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c
+    // {
+    //   0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
+    //   52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
+    //   104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
+    //   156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204,
+    //   208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
+    // };
+    if (q_index <= 244) {
+      return (q_index + 3) / 4;
+    }
+    if (q_index <= 249) {
+      return 62;
+    }
+    return 63;
+  }
+  return q_index;
 }
 
 // Convert AV1/VP9 AVEncVideoEncodeQP values to qindex (0-255) range.
@@ -2257,7 +2262,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     input_since_keyframe_count_ = 0;
   }
 
-  std::optional<int> metadata_qp;
+  int max_quantizer = AVEncQPtoQindex(codec_, GetMaxQuantizer(codec_));
   std::optional<uint8_t> quantizer;
   int temporal_id = 0;
   if (input.options.quantizer.has_value()) {
@@ -2279,36 +2284,19 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     frame_params.spatial_layer_id = 0;
     // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
     // set on sample metadata and carried over from input to output.
-    metadata_qp = rate_ctrl_->ComputeQP(frame_params);
-    if (codec_ == VideoCodec::kH264) {
-      if (metadata_qp.value() >= 0) {
-        // For H.264, the qp value should be in the range of 1-51.
-        metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
-        quantizer = metadata_qp;
-      } else {
-        // Negative QP values mean that the frame should be dropped. We use
-        // maximum QP in that case.
-        // Drop frame functionality is not supported yet.
-        // TODO(b/361250558): Support drop frame for H.264 Rate Controller
-        quantizer = kH264MaxQuantizer;
-        metadata_qp = quantizer;
-      }
+    int computed_qp = rate_ctrl_->ComputeQP(frame_params);
+    if (computed_qp < 0) {
+      // Negative QP values mean that the frame should be dropped. We use
+      // maximum QP in that case.
+      // Drop frame functionality is not supported yet.
+      // TODO(b/361250558): Support drop frame for H.264/HEVC Rate Controller
+      computed_qp = max_quantizer;
     }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    else if (codec_ == VideoCodec::kHEVC) {
-      // For HEVC, the qp value should be in the range of 1-51.
-      metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
-      quantizer = metadata_qp;
-    }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    else {
-      // VP9 or AV1 codec.
-      quantizer = QindextoAVEncQP(metadata_qp.value());
-    }
+    quantizer = std::clamp(computed_qp, 1, max_quantizer);
   } else if (input.discard_output) {
     // Set up encoder for maximum speed if we're anyway going to discard the
     // output.
-    quantizer = GetMaxQuantizer(codec_);
+    quantizer = max_quantizer;
   }
 
   HRESULT hr = S_OK;
@@ -2322,7 +2310,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     var.vt = VT_UI8;
     // Only 16 least significant bits are responsible for generic frame QP
     // values.
-    var.ullVal = quantizer.value() & 0xFFFF;
+    var.ullVal = QindextoAVEncQP(codec_, quantizer.value());
     DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
