@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
   // URL has been added to be within scope for the SWA.
-  GURL in_scope_for_swa_page("http://example.com/in-scope");
+  GURL in_scope_for_swa_page("https://example.com/in-scope");
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(),
       in_scope_for_swa_page, 1);
@@ -1779,7 +1779,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSingleWindowTest, WindowReuse) {
 
   // Third launch reuses the window despite different URL.
   apps::AppLaunchParams params = LaunchParamsForApp(GetAppType());
-  params.override_url = GURL("http://example.com/in-scope");
+  params.override_url = GURL("https://example.com/in-scope");
   EXPECT_EQ(web_contents, LaunchAppWithoutWaiting(std::move(params)));
 }
 

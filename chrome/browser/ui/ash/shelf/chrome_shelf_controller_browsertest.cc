@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForUnpinnedHostedApp) {
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForPinnedHostedApp) {
   // Load and pin a hosted app.
   const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("app1/"));
+      LoadExtension(test_data_dir_.AppendASCII("app1_https/"));
   ASSERT_TRUE(extension);
   PinAppWithIDToShelf(extension->id());
 
@@ -1408,19 +1408,19 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DemoModeAppLaunchSourceReported) {
 // Confirm that a page can be navigated from and to while maintaining the
 // correct running state.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, Navigation) {
-  ash::ShelfID shortcut_id = CreateShortcut("app1");
+  ash::ShelfID shortcut_id = CreateShortcut("app1_https");
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
   SelectItem(shortcut_id);
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
 
   // Navigate away.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("http://www.example.com/path0/bar.html")));
+      browser(), GURL("https://www.example.com/path0/bar.html")));
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
 
   // Navigate back.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("http://www.example.com/path1/foo.html")));
+      browser(), GURL("https://www.example.com/path1/foo.html")));
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
 }
 
@@ -1499,14 +1499,14 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, RefocusFilterLaunch) {
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AsyncActivationStateCheck) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
-  ash::ShelfID shortcut_id = CreateShortcut("app1");
-  SetRefocusURL(shortcut_id, GURL("http://www.example.com/path1/*"));
+  ash::ShelfID shortcut_id = CreateShortcut("app1_https");
+  SetRefocusURL(shortcut_id, GURL("https://www.example.com/path1/*"));
 
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
 
   // Create new tab which would be the running app.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://www.example.com/path1/bar.html"),
+      browser(), GURL("https://www.example.com/path1/bar.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
@@ -1993,8 +1993,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   Browser::CreateParams params = Browser::CreateParams(profile(), true);
   params.initial_show_state = ui::mojom::WindowShowState::kInactive;
   Browser* browser2 = Browser::Create(params);
-  SetRefocusURL(shortcut_id, GURL("http://www.example.com/path/*"));
-  std::string url = "http://www.example.com/path/bla";
+  SetRefocusURL(shortcut_id, GURL("https://www.example.com/path/*"));
+  std::string url = "https://www.example.com/path/bla";
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -2331,7 +2331,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
   // Load and pin a hosted app.
   const Extension* hosted_app =
-      LoadExtension(test_data_dir_.AppendASCII("app1/"));
+      LoadExtension(test_data_dir_.AppendASCII("app1_https/"));
   ASSERT_TRUE(hosted_app);
   PinAppWithIDToShelf(hosted_app->id());
   const ash::ShelfID hosted_app_shelf_id(hosted_app->id());
@@ -2373,7 +2373,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   // Load and pin a hosted app.
   const Extension* hosted_app =
-      LoadExtension(test_data_dir_.AppendASCII("app1/"));
+      LoadExtension(test_data_dir_.AppendASCII("app1_https/"));
   ASSERT_TRUE(hosted_app);
   PinAppWithIDToShelf(hosted_app->id());
   const ash::ShelfID hosted_app_shelf_id(hosted_app->id());
