@@ -523,6 +523,10 @@ class ASH_EXPORT CaptureModeController
   void OnTextDetectionComplete(const gfx::Rect& captured_region,
                                std::string detected_text);
 
+  // Called back when the copy text button is clicked. This will copy `text` to
+  // clipboard, show a notification, and close the capture session.
+  void OnCopyTextButtonClicked(const std::u16string& text);
+
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
   void OnScannerActionsFetched(

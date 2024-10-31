@@ -52,6 +52,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -362,6 +363,10 @@ void ShowVideoRecordingStoppedByHdcpNotification() {
 void CopyImageToClipboard(const gfx::Image& image) {
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteImage(image.AsBitmap());
+}
+
+void CopyTextToClipboard(const std::u16string& text) {
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }
 
 // Emits UMA samples for the |status| of the recording as reported by the
@@ -1795,12 +1800,21 @@ void CaptureModeController::OnTextDetectionComplete(
     return;
   }
 
-  // TODO(crbug.com/374186111): Implement functionality of "copy text" button.
+  // TODO(crbug.com/375967525): Finalize and translate the copy text label.
   capture_mode_util::AddActionButton(
-      views::Button::PressedCallback(), u"Copy text",
-      &vector_icons::kContentCopyIcon,
-      ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0});
+      base::BindOnce(&CaptureModeController::OnCopyTextButtonClicked,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::UTF8ToUTF16(detected_text)),
+      u"Copy text", &vector_icons::kContentCopyIcon,
+      ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0});
   // TODO(crbug.com/374356291): Implement Scanner actions button.
+}
+
+void CaptureModeController::OnCopyTextButtonClicked(
+    const std::u16string& text) {
+  CopyTextToClipboard(text);
+  // TODO(crbug.com/375963884): Show a notification for the copied text.
+  Stop();
 }
 
 void CaptureModeController::OnScannerActionsFetched(

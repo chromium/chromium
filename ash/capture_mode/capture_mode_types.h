@@ -109,6 +109,7 @@ enum class SessionType {
 enum class ActionButtonType {
   kOther,
   kScanner,
+  kCopyText,
   kSunfish,
 };
 

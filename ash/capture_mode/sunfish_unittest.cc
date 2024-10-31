@@ -47,6 +47,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
@@ -59,6 +60,7 @@ namespace ash {
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::SizeIs;
@@ -881,8 +883,22 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              Contains(Property(&PillButton::GetText, u"Copy text")));
+  // Copy text button should have been created.
+  // TODO(crbug.com/376174530): Add a test API to get buttons of a particular
+  // type / rank and use it here.
+  std::vector<PillButton*> action_buttons = session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              ElementsAre(Property(&PillButton::GetText, u"Copy text")));
+  // Clipboard should currently be empty.
+  std::u16string clipboard_data;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  EXPECT_EQ(clipboard_data, u"");
+  // Clicking on the button should copy text to clipboard.
+  LeftClickOn(action_buttons[0]);
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  EXPECT_EQ(clipboard_data, u"detected text");
 }
 
 // Tests that the copy text button is not shown in default capture mode if no
