@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -315,22 +316,17 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (profile == null) return null;
         return new MismatchNotificationChecker(
                 profile,
-                (lastShownTime, onClose) -> {
+                IdentityServicesProvider.get().getIdentityManager(profile),
+                (accountId, lastShownTime, mimData, onClose) -> {
                     boolean show =
                             connection.shouldShowAccountMismatchNotification(
-                                    intent, profile, lastShownTime);
+                                    intent, profile, accountId, lastShownTime, mimData);
                     if (show) {
                         MismatchNotificationController.get(
                                         mWindowAndroid,
                                         profile,
                                         connection.getAppAccountName(intent))
-                                .showSignedOutMessage(
-                                        mActivity,
-                                        (closeType) -> {
-                                            onClose.onResult(closeType);
-                                            connection.onCloseMismatchNotification(
-                                                    intent, profile, closeType);
-                                        });
+                                .showSignedOutMessage(mActivity, onClose);
                     }
                     return show;
                 });

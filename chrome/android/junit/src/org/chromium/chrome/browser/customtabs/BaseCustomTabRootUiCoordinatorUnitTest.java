@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -82,6 +83,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
@@ -150,6 +152,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
 
     private AppCompatActivity mActivity;
     private BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
@@ -172,6 +176,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         when(mBrowserControlsManager.getBrowserVisibilityDelegate())
                 .thenReturn(mBrowserStateBrowserControlsVisibilityDelegate);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
         mBaseCustomTabRootUiCoordinator =
                 new BaseCustomTabRootUiCoordinator(

@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /** Collection of app data storing the information on sign-in prompt UI for a specific profile. */
 public class MismatchNotificationData {
@@ -47,24 +48,44 @@ public class MismatchNotificationData {
         }
     }
 
-    /** App ID -> App prompt UI data */
-    private final HashMap<String, AppUiData> mUiData = new HashMap<>();
+    /**
+     * The entire notification data for apps. Nested map of {@link AppUiData} with the account/app
+     * ID as a key.
+     */
+    private final Map<String, Map<String, AppUiData>> mDataMap = new HashMap<>();
 
     /**
-     * @param appId ID for the app in interest.
-     * @return {@link AppUiData} for a given app. If not present, A new empty object is created and
-     *     returned.
+     * Returns the notification data for a given account/app ID. An empty data is returned if the
+     * corresponding entry has not been created yet.
+     *
+     * @param account Account ID
+     * @param appId App ID
      */
-    public @NonNull AppUiData getForApp(String appId) {
-        AppUiData res = mUiData.get(appId);
+    public @NonNull AppUiData getAppData(String accountId, String appId) {
+        Map<String, AppUiData> accountData = mDataMap.get(accountId);
+        AppUiData res = accountData != null ? accountData.get(appId) : null;
         return res != null ? res : new AppUiData();
     }
 
     /**
-     * @param appId ID for the app in interest.
-     * @param data {@link AppUiData} for a given app.
+     * Stores the notification data for a given account/app ID.
+     *
+     * @param account Account ID
+     * @param appId App ID
      */
-    public void setForApp(String appId, @NonNull AppUiData data) {
-        mUiData.put(appId, data);
+    public void setAppData(String accountId, String appId, @NonNull AppUiData data) {
+        Map<String, AppUiData> accountData = mDataMap.get(accountId);
+        if (accountData != null) {
+            accountData.put(appId, data);
+        } else {
+            // Create a new inner app -> data map if it doesn't exist.
+            accountData = new HashMap<String, AppUiData>();
+            accountData.put(appId, data);
+            mDataMap.put(accountId, accountData);
+        }
+    }
+
+    public Map<String, Map<String, AppUiData>> getAllForTesting() {
+        return mDataMap;
     }
 }

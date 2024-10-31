@@ -20,7 +20,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 
 /** Class that maintain the data for the client app id -> last time branding is shown. */
-class BrandingChecker extends AsyncTask<Integer> {
+class BrandingChecker extends AsyncTask<BrandingInfo> {
     public static final int BRANDING_TIME_NOT_FOUND = -1;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -41,9 +41,9 @@ class BrandingChecker extends AsyncTask<Integer> {
     }
 
     /**
-     * Interface BrandingChecked used to fetch branding information.
-     * If the storage involves any worker thread operation (e.g. Disk I/O), the storage impl has
-     * the responsibility to manage switching calls to the right thread.
+     * Interface BrandingChecked used to fetch branding information. If the storage involves any
+     * worker thread operation (e.g. Disk I/O), the storage impl has the responsibility to manage
+     * switching calls to the right thread.
      */
     public interface BrandingLaunchTimeStorage {
         /**
@@ -52,32 +52,55 @@ class BrandingChecker extends AsyncTask<Integer> {
          *
          * @param appId ID of CCT embedded app.
          * @return Timestamp when CCT branding was last shown.
-         * */
+         */
         @WorkerThread
         long get(String appId);
 
         /**
-         * Record the timestamp when CCT branding was last shown.
+         * Record the timestamp when CCT branding for an app was last shown.
          *
          * @param appId ID of CCT embedded app.
          * @param brandingLaunchTime Timestamp when CCT branding was last shown.
-         * */
+         */
         @MainThread
         void put(String appId, long brandingLaunchTime);
+
+        /** Return the last time branding was shown, with all apps/other branding considered. */
+        @WorkerThread
+        long getLastShowTimeGlobal();
+
+        /**
+         * Record the global timestamp when CCT branding/mismatch notification was last shown.
+         *
+         * @param launchTime The timestamp
+         */
+        @MainThread
+        void putLastShowTimeGlobal(long launchTime);
+
+        /**
+         * Returns all the account mismatch notification data. If not found, return {@code null}.
+         *
+         * @return {@link MismatchNotificationData} object.
+         */
+        @WorkerThread
+        @Nullable
+        MismatchNotificationData getMimData();
+
+        /**
+         * Record the account mismatch notification data.
+         *
+         * @param {@link MismatchNotificationData} object.
+         */
+        @MainThread
+        void putMimData(MismatchNotificationData data);
     }
 
     private final String mAppId;
     private final long mBrandingCadence;
-    @BrandingDecision private final Callback<Integer> mBrandingCheckCallback;
+    private final Callback<BrandingInfo> mBrandingCheckCallback;
     @BrandingDecision private final int mDefaultBrandingDecision;
 
     private BrandingLaunchTimeStorage mStorage;
-
-    /**
-     * Cached version of the storage value. Shared with account mismatch logic. This gets updated
-     * once #onTaskFinished is invoked.
-     */
-    private long mLastShowTime;
 
     /**
      * Create a BrandingChecker used to fetch BrandingDecision.
@@ -92,7 +115,7 @@ class BrandingChecker extends AsyncTask<Integer> {
     BrandingChecker(
             String appId,
             BrandingLaunchTimeStorage storage,
-            @NonNull @BrandingDecision Callback<Integer> brandingCheckCallback,
+            @NonNull Callback<BrandingInfo> brandingCheckCallback,
             long brandingCadence,
             @BrandingDecision int defaultBrandingDecision) {
         mAppId = appId;
@@ -100,18 +123,23 @@ class BrandingChecker extends AsyncTask<Integer> {
         mBrandingCheckCallback = brandingCheckCallback;
         mBrandingCadence = brandingCadence;
         mDefaultBrandingDecision = defaultBrandingDecision;
-        mLastShowTime = BRANDING_TIME_NOT_FOUND;
     }
 
     @WorkerThread
     @Override
-    protected @Nullable @BrandingDecision Integer doInBackground() {
+    protected BrandingInfo doInBackground() {
         @BrandingDecision Integer brandingDecision = null;
         long startTime = SystemClock.elapsedRealtime();
+        long lastShowTime = BRANDING_TIME_NOT_FOUND;
+        long lastShowTimeGlobal = BRANDING_TIME_NOT_FOUND; // Last show time for all apps combined.
+        MismatchNotificationData mimData = null;
         if (!TextUtils.isEmpty(mAppId)) {
-            mLastShowTime = mStorage.get(mAppId);
-            brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, mLastShowTime);
+            lastShowTime = mStorage.get(mAppId);
+            lastShowTimeGlobal = mStorage.getLastShowTimeGlobal();
+            mimData = mStorage.getMimData();
+            brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, lastShowTime);
         }
+        BrandingInfo info = new BrandingInfo(brandingDecision, lastShowTimeGlobal, mimData);
         @BrandingAppIdType int appIdType = getAppIdType(mAppId);
         RecordHistogram.recordTimesHistogram(
                 "CustomTabs.Branding.BrandingCheckDuration",
@@ -119,19 +147,19 @@ class BrandingChecker extends AsyncTask<Integer> {
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.Branding.AppIdType", appIdType, BrandingAppIdType.NUM_ENTRIES);
 
-        return brandingDecision;
+        return info;
     }
 
     @MainThread
     @Override
-    protected void onPostExecute(@Nullable @BrandingDecision Integer brandingDecision) {
-        onTaskFinished(brandingDecision);
+    protected void onPostExecute(BrandingInfo info) {
+        onTaskFinished(info);
     }
 
     @MainThread
     @Override
     protected void onCancelled() {
-        onTaskFinished(null);
+        onTaskFinished(BrandingInfo.EMPTY);
     }
 
     @VisibleForTesting
@@ -152,23 +180,18 @@ class BrandingChecker extends AsyncTask<Integer> {
         }
     }
 
-    private void onTaskFinished(@BrandingDecision Integer brandingDecision) {
+    private void onTaskFinished(BrandingInfo info) {
         long taskFinishedTime = SystemClock.elapsedRealtime();
-        if (brandingDecision == null) {
-            brandingDecision = mDefaultBrandingDecision;
-        }
-        mBrandingCheckCallback.onResult(brandingDecision);
+        if (info.getDecision() == null) info.setDecision(mDefaultBrandingDecision);
+        mBrandingCheckCallback.onResult(info);
 
-        // Do not record branding time for invalid app id, or branding is not shown.
-        if (brandingDecision != BrandingDecision.NONE && !TextUtils.isEmpty(mAppId)) {
+        // Note: Branding decision can be altered to MIM when mismatch notification UI overrides it
+        // later, but this still counts as 'shown' to the respect global rate-limiting policy.
+        if (info.getDecision() != BrandingDecision.NONE && !TextUtils.isEmpty(mAppId)) {
             mStorage.put(mAppId, taskFinishedTime);
         }
 
         // Remove the storage from reference.
         mStorage = null;
-    }
-
-    long getLastShowTime() {
-        return mLastShowTime;
     }
 }

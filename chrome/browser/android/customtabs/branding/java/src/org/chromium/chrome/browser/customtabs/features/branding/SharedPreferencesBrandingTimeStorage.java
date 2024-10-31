@@ -13,6 +13,8 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import com.google.gson.Gson;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.PostTask;
@@ -28,6 +30,8 @@ import java.util.Map;
 class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLaunchTimeStorage {
     private static final String KEY_SHARED_PREF = "pref_cct_brand_show_time";
     private static final String NON_PACKAGE_PREFIX = "REFERRER_";
+    private static final String KEY_LAST_SHOW_TIME_GLOBAL = "LAST_SHOW_TIME_GLOBAL";
+    private static final String KEY_MIM_DATA = "MIM_DATA";
     @VisibleForTesting static final int MAX_NON_PACKAGE_ENTRIES = 50;
 
     private static SharedPreferencesBrandingTimeStorage sInstance;
@@ -97,18 +101,57 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
         return count >= MAX_NON_PACKAGE_ENTRIES ? oldEntry : null;
     }
 
+    @WorkerThread
+    @Override
+    public long getLastShowTimeGlobal() {
+        return getSharedPref().getLong(KEY_LAST_SHOW_TIME_GLOBAL, -1);
+    }
+
+    @MainThread
+    @Override
+    @SuppressLint({"ApplySharedPref"})
+    public void putLastShowTimeGlobal(long launchTime) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> {
+                    SharedPreferences.Editor pref = getSharedPref().edit();
+                    pref.putLong(KEY_LAST_SHOW_TIME_GLOBAL, launchTime);
+                    pref.commit();
+                });
+    }
+
+    @WorkerThread
+    @Override
+    public MismatchNotificationData getMimData() {
+        String str = getSharedPref().getString(KEY_MIM_DATA, null);
+        return new Gson().fromJson(str, MismatchNotificationData.class);
+    }
+
+    @MainThread
+    @Override
+    @SuppressLint({"ApplySharedPref"})
+    public void putMimData(MismatchNotificationData data) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> {
+                    SharedPreferences.Editor pref = getSharedPref().edit();
+                    pref.putString(KEY_MIM_DATA, new Gson().toJson(data));
+                    pref.commit();
+                });
+    }
+
     /**
      * @return Size of the current shared preference. Should not run on main thread as we are
-     * reading all the keys from disk.
+     *     reading all the keys from disk.
      */
     @WorkerThread
     int getSize() {
-        return getSharedPref().getAll().size();
-    }
+        int size = getSharedPref().getAll().size();
 
-    @VisibleForTesting
-    public void resetSharedPref() {
-        getSharedPref().edit().clear().apply();
+        // Leave out entries related to mismatch notification.
+        if (getLastShowTimeGlobal() >= 0) --size;
+        if (getMimData() != null) --size;
+        return size;
     }
 
     private String hash(String packageName) {
@@ -126,5 +169,10 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
 
     void setSharedPrefForTesting(SharedPreferences pref) {
         mSharedPref = pref;
+    }
+
+    public void resetSharedPrefForTesting() {
+        getSharedPref().edit().clear().apply();
+        sInstance = null;
     }
 }

@@ -49,10 +49,10 @@ public class BrandingController {
     @VisibleForTesting static final int BRANDING_CADENCE_MS = (int) TimeUnit.HOURS.toMillis(1);
 
     private final CallbackController mCallbackController = new CallbackController();
-    private final @BrandingDecision OneshotSupplierImpl<Integer> mBrandingDecision =
-            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<BrandingInfo> mBrandingInfo = new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
+    private final String mAppId;
     private final String mBrowserName;
     private final int mToastTemplateId;
     @Nullable private final PureJavaExceptionReporter mExceptionReporter;
@@ -60,6 +60,7 @@ public class BrandingController {
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
+
     private Supplier<MismatchNotificationChecker> mMismatchNotificationChecker;
 
     /**
@@ -80,19 +81,20 @@ public class BrandingController {
             @NonNull Supplier<MismatchNotificationChecker> mismatchNotificationChecker,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
+        mAppId = appId;
         mBrowserName = browserName;
         mToastTemplateId = toastTemplateId;
         mMismatchNotificationChecker = mismatchNotificationChecker;
         mExceptionReporter = exceptionReporter;
-        mBrandingDecision.onAvailable(
-                mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
+        mBrandingInfo.onAvailable(
+                mCallbackController.makeCancelable((data) -> maybeMakeBrandingDecision()));
 
         // TODO(crbug.com/40234239): Start branding checker during CCT warm up.
         mBrandingChecker =
                 new BrandingChecker(
                         appId,
                         SharedPreferencesBrandingTimeStorage.getInstance(),
-                        mBrandingDecision::set,
+                        mBrandingInfo::set,
                         BRANDING_CADENCE_MS,
                         BrandingDecision.TOAST);
         mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
@@ -131,9 +133,10 @@ public class BrandingController {
 
     /** Make decision after BrandingChecker and mToolbarBrandingDelegate is ready. */
     private void maybeMakeBrandingDecision() {
-        if (mToolbarBrandingDelegate == null || mBrandingDecision.get() == null) return;
+        BrandingInfo info = mBrandingInfo.get();
+        if (mToolbarBrandingDelegate == null || info == null) return;
 
-        @BrandingDecision int brandingDecision = mBrandingDecision.get();
+        @BrandingDecision int brandingDecision = info.getDecision();
 
         // Mismatch notification checker is invoked when branding decision data is available
         // to respect the timing with which the decision is made. The decision making takes
@@ -141,14 +144,18 @@ public class BrandingController {
         // layer to be initialized. For this reason, it is instantiated lazily only at this
         // point, where the native is likely to be ready for pre-warmed CCTs.
         var checker = mMismatchNotificationChecker.get();
-        if (checker != null && checker.maybeShow(mBrandingChecker.getLastShowTime())) {
-            brandingDecision = BrandingDecision.NONE;
+        if (checker != null) {
+            var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+            if (checker.maybeShow(mAppId, info.lastShowTime, info.mimData, storage::putMimData)) {
+                brandingDecision = BrandingDecision.MIM;
+            }
         }
 
         long timeToolbarEmpty = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
         long remainingBrandingTime = TOTAL_BRANDING_DELAY_MS - timeToolbarEmpty;
 
         switch (brandingDecision) {
+            case BrandingDecision.MIM:
             case BrandingDecision.NONE:
                 mToolbarBrandingDelegate.showRegularToolbar();
                 break;
@@ -162,7 +169,7 @@ public class BrandingController {
             default:
                 assert false : "Unreachable state!";
         }
-
+        mBrandingInfo.get().setDecision(brandingDecision);
         finish();
     }
 
@@ -210,6 +217,8 @@ public class BrandingController {
         if (mToast != null) {
             mToast.cancel();
         }
+        var checker = mMismatchNotificationChecker.get();
+        if (checker != null) checker.cancel();
     }
 
     private void reportErrorMessage(String message) {
@@ -220,6 +229,10 @@ public class BrandingController {
     }
 
     private void finish() {
+        if (getBrandingDecision() == BrandingDecision.MIM) {
+            var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+            storage.putLastShowTimeGlobal(SystemClock.elapsedRealtime());
+        }
         // Post the task as it's not important to be complete during branding check.
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT,
@@ -236,11 +249,12 @@ public class BrandingController {
                                 SharedPreferencesBrandingTimeStorage.resetInstance();
                             }
                         }));
-        mMismatchNotificationChecker = null;
     }
 
+    @VisibleForTesting
     @BrandingDecision
-    Integer getBrandingDecisionForTest() {
-        return mBrandingDecision.get();
+    Integer getBrandingDecision() {
+        BrandingInfo info = mBrandingInfo.get();
+        return info != null ? info.getDecision() : null;
     }
 }

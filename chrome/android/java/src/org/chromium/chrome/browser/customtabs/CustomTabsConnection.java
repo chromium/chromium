@@ -1397,11 +1397,17 @@ public class CustomTabsConnection {
      *
      * @param intent The intent that launched the custom tab.
      * @param profile The current profile object.
+     * @param accountId Account ID to be used to access notification data.
      * @param lastShownTime The last time the notification was shown to user.
+     * @param mimData Mismatch notification data.
      * @return Whether the notification was shown or not.
      */
     boolean shouldShowAccountMismatchNotification(
-            Intent intent, Profile profile, long lastShownTime) {
+            Intent intent,
+            Profile profile,
+            String accountId,
+            long lastShownTime,
+            MismatchNotificationData mimData) {
         return false;
     }
 
@@ -1413,16 +1419,6 @@ public class CustomTabsConnection {
     String getAppAccountName(Intent intent) {
         return null;
     }
-
-    /**
-     * Perform tasks when account mismatch notification is close.
-     *
-     * @param intent The intent that launched the custom tab.
-     * @param profile The current profile object.
-     * @param closeType How the notification UI was closed.
-     */
-    void onCloseMismatchNotification(
-            Intent intent, Profile profile, @MismatchNotificationData.UserAction int closeType) {}
 
     /**
      * Sends a callback using {@link CustomTabsCallback} with the first run result if necessary.

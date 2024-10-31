@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -28,6 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -39,6 +45,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
@@ -64,7 +71,7 @@ public class BrandingControllerUnitTest {
 
     @Mock ToolbarBrandingDelegate mToolbarBrandingDelegate;
     @Mock MismatchNotificationChecker mMismatchNotificationChecker;
-
+    @Captor ArgumentCaptor<Callback<MismatchNotificationData>> mCloseCallbackCaptor;
     private BrandingController mBrandingController;
     private ShadowPostTask.TestImpl mShadowPostTaskImpl;
 
@@ -88,7 +95,7 @@ public class BrandingControllerUnitTest {
     @After
     public void tearDown() {
         mFakeTimeTestRule.resetTimes();
-        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPref();
+        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPrefForTesting();
         ShadowSystemClock.reset();
         ShadowToast.reset();
         ToastManager.resetForTesting();
@@ -135,16 +142,19 @@ public class BrandingControllerUnitTest {
     public void testBrandingWorkflow_MismatchPrecedenceOverBranding() {
         new BrandingCheckTester()
                 .newBrandingController()
-                .setMaybeShowMimatchNotification(true)
+                .setMaybeShowMismatchNotification(true)
                 .idleMainLooper()
                 .onToolbarInitialized()
-                // Even though the branding decision was TOAST, mismatch notification
-                // overwrites the decision and gets shown instead.
-                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                // Mismatch notification overwrites the decision and gets shown instead.
+                .assertBrandingDecisionMade(BrandingDecision.MIM)
+                .invokeMimCloseCallback()
+                .idleMainLooper()
+                .assertLastShowTimeGlobalUpdated()
+                .assertMimDataUpdated()
                 .assertShownToastBranding(false)
                 .advanceMills(BRANDING_CADENCE_MS + 1)
                 .newBrandingController()
-                .setMaybeShowMimatchNotification(false)
+                .setMaybeShowMismatchNotification(false)
                 .idleMainLooper()
                 .onToolbarInitialized()
                 // The branding decision is respected if mismatch notification doesn't show.
@@ -340,7 +350,7 @@ public class BrandingControllerUnitTest {
             assertEquals(
                     "BrandingDecision is different.",
                     decision,
-                    mBrandingController.getBrandingDecisionForTest());
+                    mBrandingController.getBrandingDecision());
             return this;
         }
 
@@ -350,6 +360,12 @@ public class BrandingControllerUnitTest {
                     shown ? 1 : 0,
                     ShadowToast.shownToastCount());
             ToastManager.resetForTesting();
+            return this;
+        }
+
+        public BrandingCheckTester assertLastShowTimeGlobalUpdated() {
+            long ts = SharedPreferencesBrandingTimeStorage.getInstance().getLastShowTimeGlobal();
+            assertTrue("Global last-show-time was not updated", ts >= 0);
             return this;
         }
 
@@ -369,8 +385,22 @@ public class BrandingControllerUnitTest {
             return this;
         }
 
-        public BrandingCheckTester setMaybeShowMimatchNotification(boolean show) {
-            when(mMismatchNotificationChecker.maybeShow(anyLong())).thenReturn(show);
+        public BrandingCheckTester setMaybeShowMismatchNotification(boolean show) {
+            when(mMismatchNotificationChecker.maybeShow(
+                            anyString(), anyLong(), any(), mCloseCallbackCaptor.capture()))
+                    .thenReturn(show);
+            return this;
+        }
+
+        public BrandingCheckTester invokeMimCloseCallback() {
+            mCloseCallbackCaptor.getValue().onResult(new MismatchNotificationData());
+            return this;
+        }
+
+        public BrandingCheckTester assertMimDataUpdated() {
+            assertNotNull(
+                    "MimData should be updated",
+                    SharedPreferencesBrandingTimeStorage.getInstance().getMimData());
             return this;
         }
 
