@@ -229,3 +229,119 @@ class ChromeStdlib(TestSuite):
         703,2
         708,2
         """))
+
+  def test_chrome_graphics_pipeline_surface_frame_steps(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m131.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+
+        SELECT
+          id,
+          ts,
+          dur,
+          step,
+          surface_frame_trace_id,
+          utid
+        FROM chrome_graphics_pipeline_surface_frame_steps
+        ORDER BY ts
+        LIMIT 10;
+        """,
+        out=Csv("""
+        "id","ts","dur","step","surface_frame_trace_id","utid"
+        209,1292552020392633,142000,"STEP_ISSUE_BEGIN_FRAME",1407387768455321,6
+        210,1292552020907210,1264000,"STEP_RECEIVE_BEGIN_FRAME",1407387768455321,4
+        259,1292552026179210,1550000,"STEP_GENERATE_COMPOSITOR_FRAME",1407387768455321,4
+        264,1292552026586210,924000,"STEP_SUBMIT_COMPOSITOR_FRAME",1407387768455321,4
+        265,1292552027255633,791000,"STEP_RECEIVE_COMPOSITOR_FRAME",1407387768455321,6
+        268,1292552028200633,122000,"STEP_ISSUE_BEGIN_FRAME",4294967439,6
+        269,1292552028581257,1772000,"STEP_GENERATE_COMPOSITOR_FRAME",4294967439,1
+        276,1292552030185257,164000,"STEP_SUBMIT_COMPOSITOR_FRAME",4294967439,1
+        277,1292552030600633,195000,"STEP_RECEIVE_COMPOSITOR_FRAME",4294967439,6
+        302,1292552032277633,178000,"STEP_ISSUE_BEGIN_FRAME",1407387768455322,6
+        """))
+
+  def test_chrome_graphics_pipeline_display_frame_steps(self):
+    return DiffTestBlueprint(
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
+      INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+
+      SELECT
+        id,
+        ts,
+        dur,
+        step,
+        display_trace_id,
+        utid
+      FROM chrome_graphics_pipeline_display_frame_steps
+      ORDER BY ts
+      LIMIT 10;
+      """,
+      out=Csv("""
+      "id","ts","dur","step","display_trace_id","utid"
+      279,1292552030930633,1263000,"STEP_DRAW_AND_SWAP",65565,6
+      285,1292552031240633,143000,"STEP_SURFACE_AGGREGATION",65565,6
+      299,1292552032042633,68000,"STEP_SEND_BUFFER_SWAP",65565,6
+      319,1292552033751131,667000,"STEP_BUFFER_SWAP_POST_SUBMIT",65565,7
+      337,1292552036240633,2033000,"STEP_DRAW_AND_SWAP",65566,6
+      341,1292552036520633,873000,"STEP_SURFACE_AGGREGATION",65566,6
+      359,1292552038113633,75000,"STEP_SEND_BUFFER_SWAP",65566,6
+      376,1292552039773131,458000,"STEP_BUFFER_SWAP_POST_SUBMIT",65566,7
+      394,1292552043191131,48000,"STEP_FINISH_BUFFER_SWAP",65565,7
+      397,1292552043253633,75000,"STEP_SWAP_BUFFERS_ACK",65565,6
+      """))
+
+  def test_chrome_graphics_pipeline_aggregated_frames(self):
+    return DiffTestBlueprint(
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
+      INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+
+      SELECT
+        display_trace_id,
+        surface_frame_trace_id
+      FROM chrome_graphics_pipeline_aggregated_frames
+      ORDER BY display_trace_id, surface_frame_trace_id
+      LIMIT 10;
+      """,
+      out=Csv("""
+      "display_trace_id","surface_frame_trace_id"
+      65565,4294967439
+      65565,1407387768455321
+      65566,4294967440
+      65566,1407387768455322
+      65567,4294967441
+      65567,1407387768455323
+      65568,4294967442
+      65568,1407387768455324
+      65569,4294967443
+      65569,1407387768455325
+      """))
+
+  def test_chrome_graphics_pipeline_inputs_to_surface_frames(self):
+    return DiffTestBlueprint(
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
+      INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+
+      SELECT
+        surface_frame_trace_id,
+        latency_id
+      FROM chrome_graphics_pipeline_inputs_to_surface_frames
+      ORDER BY surface_frame_trace_id, latency_id
+      LIMIT 10;
+      """,
+      out=Csv("""
+      "surface_frame_trace_id","latency_id"
+      1407387768455321,-2143831735395279174
+      1407387768455321,-2143831735395279169
+      1407387768455322,-2143831735395279191
+      1407387768455323,-2143831735395279278
+      1407387768455324,-2143831735395279270
+      1407387768455325,-2143831735395279284
+      1407387768455326,-2143831735395279244
+      1407387768455327,-2143831735395279233
+      1407387768455328,-2143831735395279258
+      1407387768455329,-2143831735395279255
+      """))
