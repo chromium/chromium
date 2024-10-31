@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   webapps::AppId app_id = InstallWebApp();
 
-  EXPECT_EQ(GetResultAfterPageLoad(GURL("http://example.org")),
+  EXPECT_EQ(GetResultAfterPageLoad(GURL("https://example.org")),
             ManifestUpdateResult::kNoAppInScope);
 
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
