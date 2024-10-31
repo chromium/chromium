@@ -393,10 +393,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
 // an origin and does punycode conversion as well as URL canonicalization.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonAsciiUrl) {
-  GURL url = GURL("http://🥄.ws/other/stuff.htm");
+  GURL url = GURL("https://🥄.ws/other/stuff.htm");
   std::string expected_url =
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
-  std::string expected_query = "?site=http%3A%2F%2Fxn--9q9h.ws";
+  std::string expected_query = "?site=https%3A%2F%2Fxn--9q9h.ws";
   EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
