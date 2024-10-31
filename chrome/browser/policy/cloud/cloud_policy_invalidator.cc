@@ -545,7 +545,7 @@ void CloudPolicyInvalidator::RegisterWithInvalidationService(
   // Update subscription with the invalidation service.
   const bool success =
       invalidation_service->UpdateInterestedTopics(this, /*topics=*/{topic});
-  CHECK(success) << "Could not subscribe to topic: " << topic;
+  LOG_IF(ERROR, !success) << "Could not subscribe to topic: " << topic;
 }
 
 void CloudPolicyInvalidator::UnregisterWithInvalidationService() {
