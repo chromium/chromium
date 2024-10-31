@@ -108,6 +108,27 @@ std::string GetSignalUnknownCredentialScript(
                                          /*offsets=*/nullptr);
 }
 
+std::string GetSignalAllAcceptedCredentials(
+    base::span<const uint8_t> credential_id,
+    base::span<const uint8_t> user_id) {
+  static constexpr char kSignalAllAcceptedCredentials[] = R"(
+  PublicKeyCredential.signalAllAcceptedCredentials({
+    rpId: "www.example.com",
+    allAcceptedCredentialIds: ["$1"],
+    userId: "$2",
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )";
+  std::string b64_credential_id, b64_user_id;
+  base::Base64UrlEncode(credential_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &b64_credential_id);
+  base::Base64UrlEncode(user_id, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &b64_user_id);
+  return base::ReplaceStringPlaceholders(kSignalAllAcceptedCredentials,
+                                         {b64_credential_id, b64_user_id},
+                                         /*offsets=*/nullptr);
+}
+
 sync_pb::WebauthnCredentialSpecifics CreateWebAuthnCredentialSpecifics(
     base::span<const uint8_t> credential_id,
     base::span<const uint8_t> user_id,
@@ -327,6 +348,8 @@ class WinWebAuthnBrowserTest
   void SetUpOnMainThread() override {
     WebAuthnBrowserTest::SetUpOnMainThread();
     signal_unknown_credential_run_loop_ = std::make_unique<base::RunLoop>();
+    signal_all_accepted_credentials_run_loop_ =
+        std::make_unique<base::RunLoop>();
     auto virtual_device_factory =
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
     virtual_device_factory->set_discover_win_webauthn_api_authenticator(true);
@@ -343,6 +366,13 @@ class WinWebAuthnBrowserTest
 
   void WaitForSignalUnknownCredential() {
     signal_unknown_credential_run_loop_->Run();
+    signal_unknown_credential_run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  void WaitForSignalAllAcceptedCredentials() {
+    signal_all_accepted_credentials_run_loop_->Run();
+    signal_all_accepted_credentials_run_loop_ =
+        std::make_unique<base::RunLoop>();
   }
 
   // device::WinWebAuthnApiAuthenticator::TestObserver:
@@ -350,8 +380,13 @@ class WinWebAuthnBrowserTest
     signal_unknown_credential_run_loop_->Quit();
   }
 
+  void OnSignalAllAcceptedCredentials() override {
+    signal_all_accepted_credentials_run_loop_->Quit();
+  }
+
  protected:
   std::unique_ptr<base::RunLoop> signal_unknown_credential_run_loop_;
+  std::unique_ptr<base::RunLoop> signal_all_accepted_credentials_run_loop_;
   device::FakeWinWebAuthnApi win_api_;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{&win_api_};
   std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
@@ -439,9 +474,48 @@ IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinSignalUnknownCredential) {
       win_api_.registrations().begin()->first;
 
   // Signal the passkey as unknown, which should delete it.
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     GetSignalUnknownCredentialScript(credential_id)));
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GetSignalUnknownCredentialScript(credential_id)));
+
   WaitForSignalUnknownCredential();
+  EXPECT_TRUE(win_api_.registrations().empty());
+}
+
+// Integration test for signalAllAcceptedCredentials on Windows.
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest,
+                       WinSignalAllAcceptedCredentials) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  win_api_.set_version(WEBAUTHN_API_VERSION_4);
+  win_api_.set_supports_silent_discovery(true);
+
+  // Set up a Windows Hello passkey.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeDiscoverableCredential));
+  ASSERT_EQ(win_api_.registrations().size(), 1u);
+  const std::vector<uint8_t>& credential_id =
+      win_api_.registrations().begin()->first;
+  const std::vector<uint8_t>& user_id =
+      win_api_.registrations().begin()->second.user->id;
+
+  // Signal the passkey as known, which should keep it.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GetSignalAllAcceptedCredentials(credential_id, user_id)));
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_EQ(win_api_.registrations().size(), 1u);
+
+  // Signal a different passkey as known, which should delete the existing one.
+  EXPECT_EQ("webauthn: OK",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                GetSignalAllAcceptedCredentials(kCredentialID2, user_id)));
+  WaitForSignalAllAcceptedCredentials();
   EXPECT_TRUE(win_api_.registrations().empty());
 }
 
@@ -618,16 +692,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
 
   // Reports the user ID and credential ID matching the created passkey.
   // The passkey will not be deleted.
-  EXPECT_EQ(
-      "webauthn: OK",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      R"(
-  PublicKeyCredential.signalAllAcceptedCredentials({
-    rpId: "www.example.com",
-    userId: "AQIDBA",
-    allAcceptedCredentialIds: ["AQIDBAUGBwgJCgsMDQ4PEA"],
-  }).then(c => 'webauthn: OK', e => 'error ' + e);
-  )"));
+  EXPECT_EQ("webauthn: OK",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                GetSignalAllAcceptedCredentials(kCredentialID, kUserId1)));
 
   // Check that the passkey with kCredentialID was not deleted.
   EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(

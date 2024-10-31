@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   class TestObserver {
    public:
     virtual void OnSignalUnknownCredential() {}
+    virtual void OnSignalAllAcceptedCredentials() {}
   };
 
   // SetGlobalObserverForTesting sets the single |TestObserver| that is active
@@ -77,6 +78,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   static void SignalUnknownCredential(WinWebAuthnApi* api,
                                       const std::vector<uint8_t>& credential_id,
                                       const std::string& relying_party_id);
+
+  // If the Windows Hello version supports it, removes all discoverable Windows
+  // Hello credentials that are not present in |all_accepted_credential_ids|
+  // associated to |relying_party_id| and |user_id|.
+  // Credentials may not be discovered and therefore not removed in some cases,
+  // like under RDP proxying.
+  static void SignalAllAcceptedCredentials(
+      WinWebAuthnApi* api,
+      const std::string& relying_party_id,
+      const std::vector<uint8_t>& user_id,
+      const std::vector<std::vector<uint8_t>>& all_accepted_credential_ids);
 
   // Instantiates an authenticator that uses the default WinWebAuthnApi.
   //

@@ -1916,6 +1916,12 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         req_state_->relying_party_id,
         options->all_accepted_credentials->user_id,
         options->all_accepted_credentials->all_accepted_credentials_ids);
+#if BUILDFLAG(IS_WIN)
+    device::WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+        device::WinWebAuthnApi::GetDefault(), req_state_->relying_party_id,
+        options->all_accepted_credentials->user_id,
+        options->all_accepted_credentials->all_accepted_credentials_ids);
+#endif  // BUILDFLAG(IS_WIN)
   } else if (options->current_user_details) {
     UpdateVirtualAuthenticatorUserCreds(
         render_frame_host, req_state_->relying_party_id,
