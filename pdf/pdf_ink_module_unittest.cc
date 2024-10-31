@@ -1142,19 +1142,14 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
 class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {
  protected:
   void PerformUndo() {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateAnnotationUndoRedoMessage("annotationUndo")));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
+            TestAnnotationUndoRedoMessageType::kUndo)));
   }
   void PerformRedo() {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateAnnotationUndoRedoMessage("annotationRedo")));
-  }
-
- private:
-  base::Value::Dict CreateAnnotationUndoRedoMessage(std::string_view type) {
-    base::Value::Dict message;
-    message.Set("type", type);
-    return message;
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
+            TestAnnotationUndoRedoMessageType::kRedo)));
   }
 };
 

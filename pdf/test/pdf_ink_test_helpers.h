@@ -20,6 +20,11 @@
 
 namespace chrome_pdf {
 
+enum class TestAnnotationUndoRedoMessageType {
+  kUndo,
+  kRedo,
+};
+
 // Optional parameters that the `setAnnotationBrushMessage` may have, depending
 // on the brush type.
 struct TestAnnotationBrushMessageParams {
@@ -45,6 +50,9 @@ base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     const std::string& type,
     double size,
     const TestAnnotationBrushMessageParams* params);
+
+base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
+    TestAnnotationUndoRedoMessageType type);
 
 MATCHER_P6(InkAffineTransformEq,
            expected_a,

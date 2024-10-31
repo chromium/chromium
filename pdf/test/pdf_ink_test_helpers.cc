@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/values.h"
 #include "pdf/pdf_ink_conversions.h"
 
@@ -51,6 +52,20 @@ base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable) {
   message.Set("type", "setAnnotationMode");
   message.Set("enable", enable);
   return message;
+}
+
+base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
+    TestAnnotationUndoRedoMessageType type) {
+  base::Value::Dict message;
+  switch (type) {
+    case TestAnnotationUndoRedoMessageType::kUndo:
+      message.Set("type", "annotationUndo");
+      return message;
+    case TestAnnotationUndoRedoMessageType::kRedo:
+      message.Set("type", "annotationRedo");
+      return message;
+  }
+  NOTREACHED();
 }
 
 base::FilePath GetInkTestDataFilePath(std::string_view filename) {
