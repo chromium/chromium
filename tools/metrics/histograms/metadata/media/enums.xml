@@ -1050,11 +1050,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Ash bundled"/>
 </enum>
 
-<enum name="MakeAudioInputStreamStatus">
+<enum name="MakeAudioStreamStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Had switch fail-audio-stream-creation"/>
   <int value="2" label="Error: Invalid params"/>
-  <int value="3" label="Error: Excessive input streams"/>
+  <int value="3" label="Error: Excessive input/output streams"/>
   <int value="4" label="Error: Failed to create a stream object"/>
 </enum>
 
