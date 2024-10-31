@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/flags_ui/feature_entry.h"
 
 #include "base/check_op.h"
@@ -118,11 +113,9 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
       || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE
 #endif
   ) {
-    const char* const kEnableDisableDescriptions[] = {
-        kGenericExperimentChoiceDefault,
-        kGenericExperimentChoiceEnabled,
-        kGenericExperimentChoiceDisabled,
-    };
+    const auto kEnableDisableDescriptions = std::to_array<const char*>(
+        {kGenericExperimentChoiceDefault, kGenericExperimentChoiceEnabled,
+         kGenericExperimentChoiceDisabled});
     description = kEnableDisableDescriptions[index];
   } else if (type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
 #if BUILDFLAG(IS_CHROMEOS_ASH)
