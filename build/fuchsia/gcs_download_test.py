@@ -25,7 +25,7 @@ def _mock_task(status_code: int = 0, stderr: str = '') -> mock.Mock:
 
 
 @mock.patch('tempfile.TemporaryDirectory')
-@mock.patch('subprocess.run')
+@mock.patch('gs_util_wrapper.subprocess.run')
 @mock.patch('tarfile.open')
 @unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
@@ -47,11 +47,7 @@ class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
     mock_seq.assert_has_calls([
         mock.call.MkTmpD(),
         mock.call.MkTmpD().__enter__(),
-        mock.call.Run(mock.ANY,
-                      stderr=subprocess.PIPE,
-                      stdout=subprocess.PIPE,
-                      check=True,
-                      encoding='utf-8'),
+        mock.call.Run(mock.ANY, check=True),
         mock.call.Untar(name=image_tgz_path, mode='r|gz'),
         mock.call.Untar().extractall(path=output_dir),
         mock.call.MkTmpD().__exit__(None, None, None)
@@ -61,13 +57,14 @@ class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
     # Verify cmd.
     cmd = ' '.join(mock_run.call_args[0][0])
     self.assertRegex(
-        cmd, r'.*python3?\s.*gsutil.py\s+cp\s+gs://some/url\s+' + image_tgz_path)
+        cmd,
+        r'.*python3?\s.*gsutil.py\s+cp\s+gs://some/url\s+' + image_tgz_path)
 
   def testFailedTarOpen(self, mock_tarfile, mock_run, mock_tmp_dir):
     mock_run.return_value = _mock_task(stderr='some error')
     mock_tarfile.side_effect = tarfile.ReadError()
 
-    with self.assertRaises(subprocess.CalledProcessError):
+    with self.assertRaises(tarfile.ReadError):
       DownloadAndUnpackFromCloudStorage('', '')
       mock_tmp_dir.assert_called_once()
       mock_run.assert_called_once()
