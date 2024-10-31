@@ -51,6 +51,7 @@ class CaptureModeSettingsView;
 class CaptureRegionOverlayController;
 class CaptureWindowObserver;
 class CursorSetter;
+class PillButton;
 class RecordingTypeMenuView;
 class UserNudgeController;
 class WindowDimmer;
@@ -414,6 +415,15 @@ class ASH_EXPORT CaptureModeSession
   // `action_container_widget_` exists,
   void RemoveAllActionButtons();
 
+  // Creates the feedback button widget if it wasn't previously created, and
+  // updates the widget's bounds.
+  void UpdateFeedbackButtonWidget();
+
+  // Returns true if `widget` is the `feedback_button_widget_` and we should
+  // hide it, as the button should only be shown when we are in region selection
+  // mode for an image (including Sunfish/Scanner sessions).
+  bool ShouldHideFeedbackWidget(views::Widget* widget) const;
+
   // BaseCaptureModeSession:
   void InitInternal() override;
   void ShutdownInternal() override;
@@ -452,6 +462,10 @@ class ASH_EXPORT CaptureModeSession
   views::UniqueWidgetPtr recording_type_menu_widget_;
   raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
       nullptr;
+
+  // Widget that shows a feedback button for Sunfish.
+  views::UniqueWidgetPtr feedback_button_widget_;
+  raw_ptr<PillButton> feedback_button_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

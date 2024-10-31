@@ -45,6 +45,7 @@
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -193,6 +194,9 @@ constexpr int kActionButtonSpacing = 10;
 
 // The corner radius for an action button.
 constexpr int kActionButtonRadius = 18;
+
+// The spacing between the feedback button and the work area.
+constexpr int kFeedbackButtonSpacing = 10;
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -784,8 +788,8 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
     return;
   }
 
-  // TODO(hewer): Further refine this so the area between buttons does not show
-  // the hand cursor.
+  // TODO: crbug.com/375696216 - Further refine this so the area between buttons
+  // does not show the hand cursor.
   // If the current mouse event is on an action button, show the hand mouse
   // cursor.
   const bool is_event_on_action_button =
@@ -793,6 +797,17 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
       action_container_widget_->GetWindowBoundsInScreen().Contains(
           location_in_screen);
   if (is_event_on_action_button) {
+    cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
+    return;
+  }
+
+  // If the current mouse event is on the feedback button, show the hand mouse
+  // cursor.
+  const bool is_event_on_feedback_button =
+      feedback_button_widget_ &&
+      feedback_button_widget_->GetWindowBoundsInScreen().Contains(
+          location_in_screen);
+  if (is_event_on_feedback_button) {
     cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
     return;
   }
@@ -897,6 +912,9 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   if (action_container_widget_) {
     widget_opacity_map[action_container_widget_.get()] = 1.f;
   }
+  if (feedback_button_widget_) {
+    widget_opacity_map[feedback_button_widget_.get()] = 1.f;
+  }
 
   const bool is_settings_visible = capture_mode_settings_widget_ &&
                                    capture_mode_settings_widget_->IsVisible();
@@ -905,6 +923,8 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   gfx::Rect capture_region = controller_->user_capture_region();
   wm::ConvertRectToScreen(current_root_, &capture_region);
 
+  // TODO: crbug.com/376311324 - Refactor this logic, as the `for` loop is
+  // getting messy with all the `if` statements.
   for (auto& pair : widget_opacity_map) {
     views::Widget* widget = pair.first;
     float& opacity = pair.second;
@@ -982,6 +1002,11 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
         opacity = 0.f;
         continue;
       }
+    }
+
+    if (ShouldHideFeedbackWidget(widget)) {
+      opacity = 0.f;
+      continue;
     }
   }
 
@@ -1363,6 +1388,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
 
   UpdateRootWindowDimmers();
   MaybeReparentCameraPreviewWidget();
+  UpdateFeedbackButtonWidget();
 
   // Changing the root window may require updating the stacking order on the new
   // display.
@@ -1683,6 +1709,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   layer()->SetBounds(parent->bounds());
 
   RefreshBarWidgetBounds();
+  UpdateFeedbackButtonWidget();
 
   // Only need to update the camera preview's bounds if the capture source is
   // `kFullscreen`, since `ClampCaptureRegionToRootWindowSize` will take care of
@@ -1771,6 +1798,12 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
     result.push_back(dimensions_label_widget_.get());
   if (auto* toast = capture_toast_controller_.capture_toast_widget())
     result.push_back(toast);
+  if (action_container_widget_) {
+    result.push_back(action_container_widget_.get());
+  }
+  if (feedback_button_widget_) {
+    result.push_back(feedback_button_widget_.get());
+  }
   return result;
 }
 
@@ -1889,6 +1922,9 @@ void CaptureModeSession::RefreshStackingOrder() {
     widget_in_order.emplace_back(capture_label_widget_.get());
   if (action_container_widget_) {
     widget_in_order.emplace_back(action_container_widget_.get());
+  }
+  if (feedback_button_widget_) {
+    widget_in_order.emplace_back(feedback_button_widget_.get());
   }
   if (capture_mode_bar_widget_)
     widget_in_order.emplace_back(capture_mode_bar_widget_.get());
@@ -2154,6 +2190,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // Let the action buttons handle their events if any.
   if (capture_mode_util::IsEventTargetedOnWidget(
           *event, action_container_widget_.get())) {
+    return;
+  }
+
+  // Let the feedback button handle its events if any.
+  if (capture_mode_util::IsEventTargetedOnWidget(
+          *event, feedback_button_widget_.get())) {
     return;
   }
 
@@ -3139,6 +3181,61 @@ void CaptureModeSession::RemoveAllActionButtons() {
   }
 }
 
+void CaptureModeSession::UpdateFeedbackButtonWidget() {
+  // TODO: crbug.com/374831944 - The feedback button should be created if
+  // either Sunfish or Scanner are enabled.
+  if (!features::IsSunfishFeatureEnabled()) {
+    return;
+  }
+
+  if (!feedback_button_widget_) {
+    views::Widget::InitParams params =
+        CreateWidgetParams(GetParentContainer(current_root_), gfx::Rect(),
+                           "SunfishFeedbackWidget");
+
+    feedback_button_widget_ =
+        std::make_unique<views::Widget>(std::move(params));
+    feedback_button_ =
+        feedback_button_widget_->SetContentsView(std::make_unique<PillButton>(
+            // TODO(hewer): Add callback to open a feedback page.
+            views::Button::PressedCallback(), u"Send Feedback",
+            PillButton::Type::kDefaultWithIconLeading, &kFeedbackIcon));
+    feedback_button_widget_->ShowInactive();
+  }
+
+  // TODO(hewer): Determine the behavior/appearance of the feedback button and
+  // search results panel to avoid overlap.
+  // Position the feedback button in the bottom right corner of the work area
+  // (not including the shelf).
+  auto pref_size = feedback_button_->GetPreferredSize();
+  const gfx::Rect work_area =
+      WorkAreaInsets::ForWindow(current_root_)->ComputeStableWorkArea();
+  feedback_button_widget_->SetBounds(gfx::Rect(
+      work_area.width() - kFeedbackButtonSpacing - pref_size.width(),
+      work_area.height() - kFeedbackButtonSpacing - pref_size.height(),
+      pref_size.width(), pref_size.height()));
+}
+
+bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
+  if (widget != feedback_button_widget_.get()) {
+    return false;
+  }
+
+  // If drag for capture region is in progress, the feedback button should be
+  // hidden.
+  if (is_drag_in_progress_) {
+    return true;
+  }
+
+  // TODO(hewer): Clarify if we should show the feedback button in only region
+  // select mode, or all default capture modes.
+  // Note that Sunfish behavior always has `CaptureModeType::kImage` and
+  // `CaptureModeSource::kRegion`.
+  auto* controller = CaptureModeController::Get();
+  return controller->type() != CaptureModeType::kImage ||
+         controller->source() != CaptureModeSource::kRegion;
+}
+
 void CaptureModeSession::InitInternal() {
   layer()->set_delegate(this);
   auto* parent = GetParentContainer(current_root_);
@@ -3202,6 +3299,7 @@ void CaptureModeSession::InitInternal() {
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
+  UpdateFeedbackButtonWidget();
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
@@ -3261,17 +3359,19 @@ void CaptureModeSession::ShutdownInternal() {
     SetMouseWarpEnabled(*old_mouse_warp_status_);
   }
 
-  // Close all widgets immediately to avoid having them show up in the captured
-  // screenshots or video.
-  for (auto* widget : GetAvailableWidgets()) {
-    widget->CloseNow();
-  }
-
   // Clear all the contents view of all the widgets to avoid UAF.
   capture_mode_bar_view_ = nullptr;
   capture_mode_settings_view_ = nullptr;
   capture_label_view_ = nullptr;
   recording_type_menu_view_ = nullptr;
+  action_container_view_ = nullptr;
+  feedback_button_ = nullptr;
+
+  // Close all widgets immediately to avoid having them show up in the captured
+  // screenshots or video.
+  for (auto* widget : GetAvailableWidgets()) {
+    widget->CloseNow();
+  }
 
   if (a11y_alert_on_session_exit_) {
     capture_mode_util::TriggerAccessibilityAlert(
