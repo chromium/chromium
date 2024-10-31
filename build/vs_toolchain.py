@@ -17,7 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2022 17.9.2 with 10.0.26100.1742 SDK with ARM64 libraries and UWP support.
+# VS 2022 17.9.2 with 10.0.22621.2428 SDK with ARM64 libraries and UWP support.
 # See go/win-toolchain-reference for instructions about how to update the
 # toolchain.
 #
@@ -59,8 +59,8 @@ from gn_helpers import ToGNString
 # * docs/windows_build_instructions.md
 #   Make sure any version numbers in the documentation match the code.
 #
-TOOLCHAIN_HASH = '698eb5635a'
-SDK_VERSION = '10.0.26100.0'
+TOOLCHAIN_HASH = '7393122652'
+SDK_VERSION = '10.0.22621.0'
 
 # Visual Studio versions are listed in descending order of priority.
 # The first version is assumed by this script to be the one that is packaged,
