@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/session_store.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace net {
@@ -262,6 +263,11 @@ void URLRequestContext::set_device_bound_session_service(
     std::unique_ptr<device_bound_sessions::SessionService>
         device_bound_session_service) {
   device_bound_session_service_ = std::move(device_bound_session_service);
+}
+void URLRequestContext::set_device_bound_session_store(
+    std::unique_ptr<device_bound_sessions::SessionStore>
+        device_bound_session_store) {
+  device_bound_session_store_ = std::move(device_bound_session_store);
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

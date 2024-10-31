@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/session_store.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 
@@ -14,12 +15,23 @@ namespace net::device_bound_sessions {
 
 SessionServiceImpl::SessionServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
-    const URLRequestContext* request_context)
-    : key_service_(key_service), context_(request_context) {
+    const URLRequestContext* request_context,
+    SessionStore* store)
+    : key_service_(key_service),
+      context_(request_context),
+      session_store_(store) {
   CHECK(context_);
 }
 
 SessionServiceImpl::~SessionServiceImpl() = default;
+
+void SessionServiceImpl::LoadSessionsAsync() {
+  if (!session_store_) {
+    return;
+  }
+  session_store_->LoadSessions(base::BindOnce(
+      &SessionServiceImpl::OnLoadSessionsComplete, weak_factory_.GetWeakPtr()));
+}
 
 void SessionServiceImpl::RegisterBoundSession(
     RegistrationFetcherParam registration_params,
@@ -31,6 +43,11 @@ void SessionServiceImpl::RegisterBoundSession(
                      weak_factory_.GetWeakPtr()));
 }
 
+void SessionServiceImpl::OnLoadSessionsComplete(
+    SessionStore::SessionsMap sessions) {
+  unpartitioned_sessions_.merge(sessions);
+}
+
 void SessionServiceImpl::OnRegistrationComplete(
     std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
   if (!params) {
@@ -40,8 +57,11 @@ void SessionServiceImpl::OnRegistrationComplete(
   auto session = Session::CreateIfValid(std::move(params->params), params->url);
   if (session) {
     session->set_unexportable_key_id(std::move(params->key_id));
-    unpartitioned_sessions_.insert(std::make_pair(
-        SchemefulSite(url::Origin::Create(params->url)), std::move(session)));
+    auto site = SchemefulSite(url::Origin::Create(params->url));
+    if (session_store_) {
+      session_store_->SaveSession(site, *session);
+    }
+    unpartitioned_sessions_.insert(std::make_pair(site, std::move(session)));
   }
   // Call Session::CreateIfValid(params). This callback will also need to take
   // the original request's info (in order to store the IsolationInfo etc).
@@ -52,13 +72,18 @@ void SessionServiceImpl::OnRegistrationComplete(
 std::pair<SessionServiceImpl::SessionsMap::iterator,
           SessionServiceImpl::SessionsMap::iterator>
 SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
-  auto range = unpartitioned_sessions_.equal_range(site);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (base::Time::Now() >= it->second->expiry_date()) {
-      unpartitioned_sessions_.erase(it);
+  auto now = base::Time::Now();
+  auto [begin, end] = unpartitioned_sessions_.equal_range(site);
+  for (auto it = begin; it != end;) {
+    if (now >= it->second->expiry_date()) {
+      if (session_store_) {
+        session_store_->DeleteSession(site, it->second->id());
+      }
+      it = unpartitioned_sessions_.erase(it);
       // TODO(crbug.com/353774923): Clear BFCache entries for this session.
     } else {
       it->second->RecordAccess();
+      it++;
     }
   }
 

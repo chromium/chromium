@@ -238,6 +238,11 @@ struct NetworkContextFilePaths {
   // empty.
   mojo_base.mojom.FilePath? cookie_database_name;
 
+  // Points to the device bound sessions database file name inside
+  // `data_directory`. An in-memory store is used if it's empty, or if
+  // `data_directory` is empty.
+  mojo_base.mojom.FilePath? device_bound_sessions_database_name;
+
   // Points to the Trust Token database file name inside `data_directory`. An
   // in-memory trust token store is used if it's empty, or if `data_directory`
   // is empty, or (through a fallback in the initialization logic; see

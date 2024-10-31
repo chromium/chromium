@@ -374,6 +374,11 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_has_device_bound_session_service(bool enable) {
     has_device_bound_session_service_ = enable;
   }
+
+  void set_device_bound_sessions_file_path(
+      const base::FilePath& device_bound_sessions_file_path) {
+    device_bound_sessions_file_path_ = device_bound_sessions_file_path;
+  }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Binds the context to `network`. All requests scheduled through the context
@@ -489,6 +494,7 @@ class NET_EXPORT URLRequestContextBuilder {
   bool has_device_bound_session_service_ = false;
   std::unique_ptr<device_bound_sessions::SessionService>
       device_bound_session_service_;
+  base::FilePath device_bound_sessions_file_path_;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;

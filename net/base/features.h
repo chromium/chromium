@@ -570,6 +570,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
 // This feature will enable the Device Bound Session Credentials protocol to let
 // the server assert sessions (and cookies) are bound to a specific device.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
+// This feature will enable the browser to persist Device Bound Session data
+// across restarts. This feature is only valid if `kDeviceBoundSessions` is
+// enabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kPersistDeviceBoundSessions);
 
 // Enables storing connection subtype in NetworkChangeNotifierDelegateAndroid to
 // save the cost of the JNI call for future access.

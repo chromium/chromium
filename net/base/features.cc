@@ -550,6 +550,9 @@ BASE_FEATURE(kReduceIPAddressChangeNotification,
 BASE_FEATURE(kDeviceBoundSessions,
              "DeviceBoundSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistDeviceBoundSessions,
+             "PersistDeviceBoundSessions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStoreConnectionSubtype,
              "StoreConnectionSubtype",

@@ -1069,6 +1069,8 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsDefaultParam) {
       CreateContextWithParams(std::move(context_params));
   EXPECT_FALSE(
       network_context->url_request_context()->device_bound_session_service());
+  EXPECT_FALSE(
+      network_context->url_request_context()->device_bound_session_store());
 }
 
 TEST_F(NetworkContextTest, DeviceBoundSessionsEnableParam) {
@@ -1093,6 +1095,30 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsDisableParam) {
       network_context->url_request_context()->device_bound_session_service());
 }
 
+TEST_F(NetworkContextTest, DeviceBoundSessionsEnableWithStore) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kPersistDeviceBoundSessions);
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath device_bound_sessions_file_path =
+      temp_dir.GetPath().AppendASCII("DeviceBoundSessions");
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->data_directory =
+      device_bound_sessions_file_path.DirName();
+  context_params->file_paths->device_bound_sessions_database_name =
+      device_bound_sessions_file_path.BaseName();
+  context_params->device_bound_sessions_enabled = true;
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  EXPECT_TRUE(
+      network_context->url_request_context()->device_bound_session_service());
+  EXPECT_TRUE(
+      network_context->url_request_context()->device_bound_session_store());
+}
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 TEST_F(NetworkContextTest, DisableNetworkErrorLogging) {

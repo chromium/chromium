@@ -20,7 +20,9 @@ namespace net::device_bound_sessions {
 // persistent store for device bound session state.
 class NET_EXPORT SessionStore {
  public:
-  SessionStore() = default;
+  static std::unique_ptr<SessionStore> Create(
+      const base::FilePath& db_storage_path);
+
   virtual ~SessionStore() = default;
 
   SessionStore(const SessionStore&) = delete;
@@ -47,6 +49,9 @@ class NET_EXPORT SessionStore {
       const SchemefulSite& site,
       const Session::Id& session_id,
       RestoreSessionBindingKeyCallback callback) = 0;
+
+ protected:
+  SessionStore() = default;
 };
 
 }  // namespace net::device_bound_sessions

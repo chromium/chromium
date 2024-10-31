@@ -12,10 +12,34 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/session_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace net::device_bound_sessions {
+
+class SessionStoreMock : public SessionStore {
+ public:
+  SessionStoreMock();
+  ~SessionStoreMock() override;
+
+  MOCK_METHOD(void, LoadSessions, (LoadSessionsCallback callback), (override));
+  MOCK_METHOD(void,
+              SaveSession,
+              (const SchemefulSite& site, const Session& session),
+              (override));
+  MOCK_METHOD(void,
+              DeleteSession,
+              (const SchemefulSite& site, const Session::Id& session_id),
+              (override));
+  MOCK_METHOD(SessionStore::SessionsMap, GetAllSessions, (), (const, override));
+  MOCK_METHOD(void,
+              RestoreSessionBindingKey,
+              (const SchemefulSite& site,
+               const Session::Id& session_id,
+               RestoreSessionBindingKeyCallback callback),
+              (override));
+};
 
 class SessionServiceMock : public SessionService {
  public:
