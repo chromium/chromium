@@ -152,11 +152,6 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // label widget, etc.) that should be ignored as the topmost window.
   virtual std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() = 0;
 
-  // Shows (if the underlying session type supports it) the results panel with
-  // the captured region as `image` and the search results `url`.
-  virtual void ShowSearchResultsPanel(const gfx::ImageSkia& image,
-                                      GURL url) = 0;
-
   // Adds an action button below the selected region during an active session.
   virtual void AddActionButton(views::Button::PressedCallback callback,
                                std::u16string text,

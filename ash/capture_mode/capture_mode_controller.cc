@@ -76,6 +76,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/snapshot/snapshot.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -600,6 +601,28 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/true);
 }
 
+SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
+  return search_results_panel_widget_
+             ? views::AsViewClass<SearchResultsPanel>(
+                   search_results_panel_widget_->GetContentsView())
+             : nullptr;
+}
+
+void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
+                                                   GURL url) {
+  DCHECK(features::IsSunfishFeatureEnabled() && IsActive());
+  if (!search_results_panel_widget_) {
+    search_results_panel_widget_ =
+        SearchResultsPanel::CreateWidget(capture_mode_session_->current_root());
+    search_results_panel_widget_->Show();
+  }
+  // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
+  // region selection and/or session is started.
+  auto* search_results_panel = GetSearchResultsPanel();
+  search_results_panel->SetSearchBoxImage(image);
+  search_results_panel->search_results_view()->Navigate(url);
+}
+
 bool CaptureModeController::IsActive() const {
   return capture_mode_session_ && !capture_mode_session_->is_shutting_down();
 }
@@ -729,6 +752,10 @@ void CaptureModeController::Stop() {
   capture_mode_session_->ReportSessionHistograms();
   capture_mode_session_->Shutdown();
   capture_mode_session_.reset();
+  // Close the results panel if the session type changes. This ensures a clean
+  // state and avoids potential edge cases.
+  // TODO(crbug.com/376134529): See if we can hide the panel instead.
+  search_results_panel_widget_.reset();
 
   delegate_->OnSessionStateChanged(/*started=*/false);
 }
@@ -1751,7 +1778,7 @@ void CaptureModeController::OnSearchUrlFetched(BaseCaptureModeSession* session,
                                                GURL url) {
   if (IsActive() && session == capture_mode_session() &&
       captured_region == user_capture_region_) {
-    capture_mode_session_->ShowSearchResultsPanel(image, url);
+    ShowSearchResultsPanel(image, url);
   }
 }
 

@@ -1015,13 +1015,6 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
-SearchResultsPanel* CaptureModeSession::GetSearchResultsPanel() const {
-  return search_results_panel_widget_
-             ? views::AsViewClass<SearchResultsPanel>(
-                   search_results_panel_widget_->GetContentsView())
-             : nullptr;
-}
-
 views::Widget* CaptureModeSession::GetCaptureModeBarWidget() {
   return capture_mode_bar_widget_.get();
 }
@@ -1396,21 +1389,6 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return ignore_windows;
 }
 
-void CaptureModeSession::ShowSearchResultsPanel(const gfx::ImageSkia& image,
-                                                GURL url) {
-  DCHECK(features::IsSunfishFeatureEnabled());
-  if (!search_results_panel_widget_) {
-    search_results_panel_widget_ =
-        SearchResultsPanel::CreateWidget(current_root());
-    search_results_panel_widget_->Show();
-  }
-  // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
-  // region selection and/or session is started.
-  auto* search_results_panel = GetSearchResultsPanel();
-  search_results_panel->SetSearchBoxImage(image);
-  search_results_panel->search_results_view()->Navigate(url);
-}
-
 // TODO(crbug.com/372740410): Determine behavior when we add a button with the
 // exact same rank (type and priority) as an existing valid button.
 void CaptureModeSession::AddActionButton(
@@ -1509,7 +1487,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   // If the results panel is visible and focused, let it handle key events.
-  if (auto* search_results_panel = GetSearchResultsPanel();
+  if (auto* search_results_panel = controller_->GetSearchResultsPanel();
       search_results_panel && search_results_panel->HasFocus()) {
     return;
   }
@@ -2098,7 +2076,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // must be done before running `deferred_cursor_updater` to allow the panel to
   // update the cursor type.
   if (capture_mode_util::IsEventTargetedOnWidget(
-          *event, search_results_panel_widget_.get())) {
+          *event, controller_->search_results_panel_widget())) {
     if (cursor_setter_) {
       cursor_setter_->ResetCursor();
     }

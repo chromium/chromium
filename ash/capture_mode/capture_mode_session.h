@@ -52,7 +52,6 @@ class CaptureRegionOverlayController;
 class CaptureWindowObserver;
 class CursorSetter;
 class RecordingTypeMenuView;
-class SearchResultsPanel;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -96,9 +95,6 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_label_widget() { return capture_label_widget_.get(); }
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
-  }
-  views::Widget* search_results_panel_widget() {
-    return search_results_panel_widget_.get();
   }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {
@@ -153,9 +149,6 @@ class ASH_EXPORT CaptureModeSession
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
 
-  // Returns the search results panel, or nullptr if none exists.
-  SearchResultsPanel* GetSearchResultsPanel() const;
-
   // BaseCaptureModeSession:
   views::Widget* GetCaptureModeBarWidget() override;
   aura::Window* GetSelectedWindow() const override;
@@ -183,7 +176,6 @@ class ASH_EXPORT CaptureModeSession
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
-  void ShowSearchResultsPanel(const gfx::ImageSkia& image, GURL url) override;
   void AddActionButton(views::Button::PressedCallback callback,
                        std::u16string text,
                        const gfx::VectorIcon* icon,
@@ -460,11 +452,6 @@ class ASH_EXPORT CaptureModeSession
   views::UniqueWidgetPtr recording_type_menu_widget_;
   raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
       nullptr;
-
-  // Contains `SearchResultsPanel` as its contents view.
-  // TODO(b/362772923): Determine whether we need to move
-  // `search_results_panel_widget_` to `CaptureModeController`.
-  std::unique_ptr<views::Widget> search_results_panel_widget_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

@@ -172,7 +172,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Test that the region selection UI remains visible.
   auto* session_layer = controller->capture_mode_session()->layer();
@@ -193,7 +193,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   EXPECT_NE(controller->user_capture_region(), old_region);
 
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Reposition the region.
   old_region = controller->user_capture_region();
@@ -205,7 +205,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   EXPECT_NE(controller->user_capture_region(), old_region);
 
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 }
 
 // Tests the sunfish capture label view.
@@ -403,12 +403,10 @@ TEST_F(SunfishTest, OnLocatedEvent) {
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
   ASSERT_TRUE(controller->IsActive());
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
 
   // Simulate opening the panel during an active session.
-  session->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
-  views::Widget* widget = session->search_results_panel_widget();
+  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
+  views::Widget* widget = controller->search_results_panel_widget();
   ASSERT_TRUE(widget);
   auto* search_results_panel =
       widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
@@ -434,10 +432,8 @@ TEST_F(SunfishTest, UpdateCursor) {
   EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
 
   // Simulate opening the panel during an active session.
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  session->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
-  views::Widget* widget = session->search_results_panel_widget();
+  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL(kTestSearchUrl));
+  views::Widget* widget = controller->search_results_panel_widget();
   ASSERT_TRUE(widget);
   auto* search_results_panel =
       widget->SetContentsView(std::make_unique<MockSearchResultsPanel>());
@@ -502,7 +498,7 @@ TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Test we can stop video recording.
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
@@ -539,8 +535,6 @@ TEST_F(SunfishTest, AddActionButton) {
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
   ASSERT_TRUE(controller->IsActive());
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
 
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
@@ -560,7 +554,7 @@ TEST_F(SunfishTest, AddActionButton) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Create another action button that, when clicked, will change the value of a
   // bool that can be verified later.
@@ -586,8 +580,6 @@ TEST_F(SunfishTest, ActionButtonRank) {
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
   ASSERT_TRUE(controller->IsActive());
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
 
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
@@ -598,7 +590,7 @@ TEST_F(SunfishTest, ActionButtonRank) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Add a default action button.
   capture_mode_util::AddActionButton(
@@ -729,7 +721,7 @@ TEST_F(SunfishTest, SearchActionButton) {
 
   LeftClickOn(session_test_api.GetActionButtons()[0]);
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(session->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget());
 
   // TODO(b/373896226): Determine whether to end capture mode session.
 }
@@ -763,7 +755,7 @@ TEST_F(SunfishTest, SearchBoxTextfield) {
     }
 
     WaitForImageCapturedForSearch();
-    auto* widget = session->search_results_panel_widget();
+    auto* widget = controller->search_results_panel_widget();
     ASSERT_TRUE(widget);
 
     // Click on the search box.
