@@ -255,36 +255,10 @@ export class CcaTest {
   }
 
   /**
-   * Returns the number of ui elements of the specified component.
-   *
-   * @deprecated Use countUi instead.
-   */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // TODO(b/371112908): Remove this after tast is updated
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static countUI(component: UiComponent): number {
-    return CcaTest.countUi(component);
-  }
-
-  /**
    * Returns the number of visible ui elements of the specified component.
    */
   static countVisibleUi(component: UiComponent): number {
     return getVisibleElementList(component).length;
-  }
-
-  /**
-   * Returns the number of visible ui elements of the specified component.
-   *
-   * @deprecated Use countVisibleUi instead.
-   */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // TODO(b/371112908): Remove this after tast is updated
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static countVisibleUI(component: UiComponent): number {
-    return CcaTest.countVisibleUi(component);
   }
 
   /**
@@ -341,7 +315,7 @@ export class CcaTest {
       return facing ?? 'unknown';
     }
 
-    const deviceId = CCATest.getDeviceId();
+    const deviceId = CcaTest.getDeviceId();
     const facing = await deviceOperator.getCameraFacing(deviceId);
     switch (facing) {
       case Facing.USER:
@@ -408,20 +382,6 @@ export class CcaTest {
     return Preview.getPtzSettingsForTest();
   }
 
-  /**
-   * Returns current PTZ settings. Throws an error if PTZ is not enabled, or
-   * any of the pan, tilt, or zoom values are missing.
-   *
-   * @deprecated Use getPtzSettings instead.
-   */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // TODO(b/371112908): Remove this after tast is updated
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static getPTZSettings(): StrictPtzSettings {
-    return CcaTest.getPtzSettings();
-  }
-
   static getScreenOrientation(): OrientationType {
     return window.screen.orientation.type;
   }
@@ -437,19 +397,6 @@ export class CcaTest {
       x: Math.round(rect.x + window.screenX),
       y: Math.round(rect.y + actionBarH + window.screenY),
     };
-  }
-
-  /**
-   * Gets screen x, y of the center of |index|'th ui component.
-   *
-   * @deprecated Use getScreenXy instead.
-   */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // TODO(b/371112908): Remove this after tast is updated
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static getScreenXY(component: UiComponent, index?: number): Coordinate {
-    return CcaTest.getScreenXy(component, index);
   }
 
   /**
@@ -490,19 +437,6 @@ export class CcaTest {
     const galleryButton =
         assertInstanceof(resolveElement('galleryButton'), GalleryButton);
     return galleryButton.getCoverUrlForTesting();
-  }
-
-  /**
-   * Gets the cover image URL of the gallery button.
-   *
-   * @deprecated Use getGalleryButtonCoverUrl instead.
-   */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // TODO(b/371112908): Remove this after tast is updated
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static getGalleryButtonCoverURL(): string {
-    return CcaTest.getGalleryButtonCoverUrl();
   }
 
   /**
@@ -575,7 +509,7 @@ export class CcaTest {
   static openSettingMenu(menu: SettingMenu): void {
     assert(menu !== undefined, 'Invalid SettingMenu value');
     const component = SETTING_MENU_MAP[menu].component;
-    CCATest.click(component);
+    CcaTest.click(component);
   }
 
   /**
@@ -602,19 +536,6 @@ export class CcaTest {
   }
 
   /**
-   * Hides all toasts, nudges and tooltips.
-   *
-   * @deprecated Use hideFloatingUi instead.
-   */
-  // This is used by tast side and name needs to be keep as is for backward
-  // compatibility.
-  // TODO(b/371112908): Remove this after tast is updated
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  static hideFloatingUI(): void {
-    CcaTest.hideFloatingUi();
-  }
-
-  /**
    * Disables resolution filter for video streams.
    */
   static disableVideoResolutionFilter(): void {
@@ -627,7 +548,7 @@ export class CcaTest {
    * range.
    */
   static setRangeInputValue(component: UiComponent, value: number): void {
-    const {max, min} = CCATest.getInputRange(component);
+    const {max, min} = CcaTest.getInputRange(component);
     if (value < min || value > max) {
       throw new Error(`Invalid value ${value} within range ${min}-${max}`);
     }
@@ -675,7 +596,7 @@ export class CcaTest {
   static toggleOption(option: SettingOption): void {
     assert(option !== undefined, 'Invalid SettingOption value.');
     const component = SETTING_OPTION_MAP[option].component;
-    CCATest.click(component);
+    CcaTest.click(component);
   }
 
   static getFpsObserver(): FpsObserver {
@@ -713,7 +634,7 @@ export class CcaTest {
   static async getVidPid(): Promise<string> {
     const deviceOperator = assertExists(
         DeviceOperator.getInstance(), 'Failed to get deviceOperator instance.');
-    return (await deviceOperator.getVidPid(CCATest.getDeviceId())) ?? '';
+    return (await deviceOperator.getVidPid(CcaTest.getDeviceId())) ?? '';
   }
 
   /**
@@ -731,11 +652,3 @@ export class CcaTest {
     return getDocumentReview().getLastFileProcessingTime();
   }
 }
-
-// This is used by tast side and name needs to be keep as is for backward
-// compatibility.
-// TODO(b/371112908): Remove this after tast is updated
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const CCATest = CcaTest;
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export type CCATest = CcaTest;
