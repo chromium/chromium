@@ -2456,10 +2456,11 @@
                      "referrer": "/banners/link_capturing/scope_a/sw.js",
                      "transition": "auto_toplevel",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "AppWnd_ScopeA2A_ServerSideViaB_ViaLink_MiddleClick_WithOpener_TargetBlank": {
@@ -4999,10 +5000,11 @@
                      "referrer": "/banners/link_capturing/scope_a/sw.js",
                      "transition": "auto_toplevel",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "AppWnd_ScopeA2B_ServerSideViaA_ViaLink_RightClick_WithoutOpener_TargetBlank": {
@@ -9220,10 +9222,11 @@
                      "referrer": "/banners/link_capturing/scope_a/sw.js",
                      "transition": "auto_toplevel",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
@@ -11073,10 +11076,11 @@
                      "referrer": "/banners/link_capturing/scope_a/sw.js",
                      "transition": "auto_toplevel",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaA_ViaLink_RightClick_WithoutOpener_TargetBlank": {
