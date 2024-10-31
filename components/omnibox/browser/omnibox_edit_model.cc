@@ -1442,9 +1442,9 @@ void OmniboxEditModel::OnPopupDataChanged(
       selections.emplace_back(0, prefix_autocompletion_.length());
     }
     if (view_) {
-      view_->OnInlineAutocompleteTextMaybeChanged(display_text, selections,
-                                                  prefix_autocompletion_,
-                                                  inline_autocompletion_);
+      view_->OnInlineAutocompleteTextMaybeChanged(
+          display_text, std::move(selections), prefix_autocompletion_,
+          inline_autocompletion_);
       view_->SetAdditionalText(additional_text);
     }
   }
@@ -2496,7 +2496,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   AutocompleteResult fake_single_entry_result;
   fake_single_entry_result.AppendMatches(fake_single_entry_matches);
 
-  const std::u16string& user_text =
+  std::u16string user_text =
       input_.IsZeroSuggest() ? std::u16string() : input_text;
   size_t completed_length = match.allowed_to_be_default_match
                                 ? match.inline_autocompletion.length()

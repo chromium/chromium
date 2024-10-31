@@ -104,7 +104,7 @@ ZpsSection::ZpsSection(size_t limit,
                        Groups groups,
                        omnibox::GroupConfigMap& group_configs,
                        omnibox::GroupConfig_SideType side_type)
-    : Section(limit, groups, group_configs, side_type) {}
+    : Section(limit, std::move(groups), group_configs, side_type) {}
 
 void ZpsSection::InitFromMatches(ACMatches& matches) {
   // Sort matches in the order of their potential containing groups. E.g., if
@@ -376,7 +376,7 @@ ZpsSectionWithMVTiles::ZpsSectionWithMVTiles(
     size_t limit,
     Groups groups,
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(limit, groups, group_configs) {}
+    : ZpsSection(limit, std::move(groups), group_configs) {}
 
 void ZpsSectionWithMVTiles::InitFromMatches(ACMatches& matches) {
   size_t tile_count = std::count_if(

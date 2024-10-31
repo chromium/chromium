@@ -62,8 +62,8 @@ ACMatchClassifications ClassifyAllMatchesInString(
 // "how to tie a tie", and |allow_mid_word_matching| false, this will return
 // "[ho]w [to] tie a tie". On the other hand, for |allow_mid_word_matching|
 // true, this will return "[ho]w [to] t[ie] a t[ie]."
-TermMatches FindTermMatches(std::u16string find_text,
-                            std::u16string text,
+TermMatches FindTermMatches(std::u16string_view find_text,
+                            std::u16string_view text,
                             bool allow_prefix_matching = true,
                             bool allow_mid_word_matching = false);
 
@@ -88,7 +88,7 @@ TermMatches FindTermMatchesForTerms(const String16Vector& find_terms,
 // ClassifyTermMatches will add a non_match_style classification with offset 20.
 // |match_style| and |non_match_style| specify the classifications to use for
 // matched and non-matched text.
-ACMatchClassifications ClassifyTermMatches(TermMatches matches,
+ACMatchClassifications ClassifyTermMatches(const TermMatches& matches,
                                            size_t text_length,
                                            int match_style,
                                            int non_match_style);

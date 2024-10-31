@@ -197,7 +197,7 @@ std::u16string ExpandToFullWord(std::u16string trimmed_text,
   // Add on the missing letters of `text_last_word`, rather than replace it with
   // `best_word` to preserve capitalization.
   return best_word.empty()
-             ? trimmed_text
+             ? std::move(trimmed_text)
              : base::StrCat(
                    {trimmed_text, best_word.substr(text_last_word.length())});
 }

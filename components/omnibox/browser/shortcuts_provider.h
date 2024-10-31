@@ -103,7 +103,7 @@ class ShortcutsProvider : public AutocompleteProvider,
       int relevance,
       const AutocompleteInput& input,
       const std::u16string& fixed_up_input_text,
-      const std::u16string lower_input);
+      const std::u16string& lower_input);
 
   // Returns iterator to first item in |shortcuts_map_| matching |keyword|.
   // Returns shortcuts_map_.end() if there are no matches.

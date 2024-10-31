@@ -71,9 +71,10 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
     ACMatchClassifications styles =
         ClassifyTermMatches(style_matches, std::string::npos, kMatch, kUrl);
     // Include some common builtin URLs as the user types the scheme.
-    for (std::u16string url : client_->GetBuiltinsToProvideAsUserTypes())
+    for (const std::u16string& url :
+         client_->GetBuiltinsToProvideAsUserTypes()) {
       AddBuiltinMatch(url, std::u16string(), styles);
-
+    }
   } else {
     // Match input about: or |embedderAbout| URL input against builtin URLs.
     GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text), std::string());

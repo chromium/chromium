@@ -223,7 +223,7 @@ class OnDeviceTailModelExecutor {
   // We use this on device filter since this model is an ML model and we do not
   // have a good way to force the model to drop a given result in any
   // circumstance during training.
-  bool IsSuggestionBad(const std::string suggestion);
+  bool IsSuggestionBad(const std::string& suggestion);
 
   // The tokenizer and tensorflow lite model & interpreter instances.
   std::unique_ptr<OnDeviceTailTokenizer> tokenizer_;

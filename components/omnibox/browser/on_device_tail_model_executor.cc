@@ -424,7 +424,7 @@ void OnDeviceTailModelExecutor::LoadBadwordHashSet() {
   }
 }
 
-bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string suggestion) {
+bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string& suggestion) {
   if (suggestion.empty()) {
     return false;
   }

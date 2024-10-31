@@ -219,7 +219,7 @@ bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
     // 'owner:...' as an operator. Ignore this rare edge case for simplicity.
     if (input_word != u"owner" &&
         base::ranges::none_of(
-            title_and_owner_words, [&](std::u16string title_word) {
+            title_and_owner_words, [&](const std::u16string& title_word) {
               return base::StartsWith(title_word, input_word,
                                       base::CompareCase::INSENSITIVE_ASCII);
             })) {
@@ -321,7 +321,7 @@ std::string FindStringKeyOrFallback(const base::Value::Dict& value,
                                     std::string_view key,
                                     std::string fallback = "") {
   auto* ptr = value.FindString(key);
-  return ptr ? *ptr : fallback;
+  return ptr ? *ptr : std::move(fallback);
 }
 
 }  // namespace
@@ -672,7 +672,7 @@ std::u16string DocumentProvider::GetMatchDescription(
                      base::UTF8ToUTF16(owner), mime_desc);
   }
   return owner.empty()
-             ? mime_desc
+             ? std::move(mime_desc)
              : l10n_util::GetStringFUTF16(
                    IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE,
                    base::UTF8ToUTF16(owner), mime_desc);

@@ -414,7 +414,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `UpdateResult()` helper. Returns whether the default match changed.
   bool CheckWhetherDefaultMatchChanged(
       std::optional<AutocompleteMatch> last_default_match,
-      std::u16string last_default_associated_keyword);
+      const std::u16string& last_default_associated_keyword);
 
   // Attaches actions to matches: pedals, history clusters, tab switch, etc.
   void AttachActions();
