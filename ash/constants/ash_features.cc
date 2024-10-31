@@ -87,11 +87,6 @@ BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable Ambient mode album selection with photo previews.
-BASE_FEATURE(kAmbientModePhotoPreviewFeature,
-             "ChromeOSAmbientModePhotoPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the logic for managed screensaver is enabled or not.
 BASE_FEATURE(kAmbientModeManagedScreensaver,
              "ChromeOSAmbientModeManagedScreensaver",
@@ -3499,10 +3494,6 @@ bool IsAmbientModeDevUseProdEnabled() {
 
 bool IsAmbientModeManagedScreensaverEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeManagedScreensaver);
-}
-
-bool IsAmbientModePhotoPreviewEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModePhotoPreviewFeature);
 }
 
 bool IsAnnotatorModeEnabled() {

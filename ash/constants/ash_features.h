@@ -36,8 +36,6 @@ BASE_DECLARE_FEATURE(kAlwaysReinstallSystemWebApps);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAmbientModeDevUseProdFeature);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kAmbientModePhotoPreviewFeature);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAmbientModeManagedScreensaver);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAnnotatorMode);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kApnRevamp);
@@ -1083,7 +1081,6 @@ bool IsEapDefaultCasWithoutSubjectVerificationAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAltClickAndSixPackCustomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeManagedScreensaverEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAnnotatorModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsApnRevampAndPoliciesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowApnModificationPolicyEnabled();
