@@ -7,6 +7,7 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -41,6 +42,22 @@ class MockComponentManager : public ComponentManager {
     return package_dir_;
   }
 
+  // Do not expect any call to RegisterTranslateKitComponent().
+  void DoNotExpectCallRegisterTranslateKitComponent();
+
+  // Expect one call to RegisterTranslateKitComponent() and install the mock
+  // TranslateKit component later as a result of the call.
+  void ExpectCallRegisterTranslateKitComponentAndInstall();
+
+  // Do not expect any call to RegisterTranslateKitLanguagePackComponent().
+  void DoNotExpectCallRegisterLanguagePackComponent();
+
+  // Expect one call to RegisterTranslateKitLanguagePackComponent() for each
+  // language pack key in `language_pack_keys` and install the fake language
+  // pack later as a result of the call.
+  void ExpectCallRegisterLanguagePackComponentAndInstall(
+      std::vector<LanguagePackKey> language_pack_keys);
+
   // Installs the mock TranslateKit component.
   // The mock component's translate method returns the concatenation of the
   // content of "dict.dat" in the language pack and the input text.
@@ -49,7 +66,10 @@ class MockComponentManager : public ComponentManager {
 
   // Installs the mock language pack.
   void InstallMockLanguagePack(LanguagePackKey language_pack_key,
-                               const std::string& fake_dictionary_data);
+                               const std::string_view fake_dictionary_data);
+
+  // Post a task to call InstallMockTranslateKitComponent()
+  void InstallMockTranslateKitComponentLater();
 
   // Post a task to call InstallMockLanguagePack()
   void InstallMockLanguagePackLater(
@@ -66,20 +86,26 @@ class MockComponentManager : public ComponentManager {
 // The content of the file is in the format of:
 //   <sourceLang> to <targetLang>: <translation>
 // For example, "en to ja: hello".
-std::string CreateFakeDictionaryData(const std::string& sourceLang,
-                                     const std::string& targetLang);
+std::string CreateFakeDictionaryData(const std::string_view sourceLang,
+                                     const std::string_view targetLang);
 
 // Tests that the simple translation works. The dictionary data generated using
 // CreateFakeDictionaryData() must be installed to pass the test.
 void TestSimpleTranslationWorks(Browser* browser,
-                                const std::string& sourceLang,
-                                const std::string& targetLang);
+                                const std::string_view sourceLang,
+                                const std::string_view targetLang);
 
 // Tests that the createTranslator() returns the expected result.
 void TestCreateTranslator(Browser* browser,
-                          const std::string& sourceLang,
-                          const std::string& targetLang,
-                          const std::string& result);
+                          const std::string_view sourceLang,
+                          const std::string_view targetLang,
+                          const std::string_view result);
+
+// Tests that the canTranslate() returns the expected result.
+void TestCanTranslate(Browser* browser,
+                      const std::string_view sourceLang,
+                      const std::string_view targetLang,
+                      const std::string_view result);
 
 }  // namespace on_device_translation
 

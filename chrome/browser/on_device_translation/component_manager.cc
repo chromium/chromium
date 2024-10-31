@@ -226,7 +226,7 @@ ComponentManager::GetLanguagePackInfoFromCommandLine() {
 #endif  // BUILDFLAG(IS_WIN)
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (splitted_strings.size() % 3 != 0) {
-    LOG(ERROR) << "Invalid --translate-kit-packages flag";
+    LOG(ERROR) << "Invalid --" << kTranslateKitPackagePaths << " flag.";
     return std::nullopt;
   }
 
@@ -234,7 +234,7 @@ ComponentManager::GetLanguagePackInfoFromCommandLine() {
   auto it = splitted_strings.begin();
   while (it != splitted_strings.end()) {
     if (!base::IsStringASCII(*it) || !base::IsStringASCII(*(it + 1))) {
-      LOG(ERROR) << "Invalid --translate-kit-packages flag";
+      LOG(ERROR) << "Invalid --" << kTranslateKitPackagePaths << " flag.";
       return std::nullopt;
     }
     LanguagePackInfo package;

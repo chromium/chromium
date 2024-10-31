@@ -16,6 +16,9 @@
 #include "components/services/on_device_translation/test/test_util.h"
 #include "content/public/test/browser_test_utils.h"
 
+using ::testing::_;
+using ::testing::Invoke;
+
 namespace on_device_translation {
 
 MockComponentManager::MockComponentManager(const base::FilePath& package_dir)
@@ -25,6 +28,33 @@ MockComponentManager::MockComponentManager(const base::FilePath& package_dir)
 
 MockComponentManager::~MockComponentManager() {
   ComponentManager::SetForTesting(nullptr);
+}
+
+void MockComponentManager::DoNotExpectCallRegisterTranslateKitComponent() {
+  EXPECT_CALL(*this, RegisterTranslateKitComponentImpl()).Times(0);
+}
+
+void MockComponentManager::ExpectCallRegisterTranslateKitComponentAndInstall() {
+  EXPECT_CALL(*this, RegisterTranslateKitComponentImpl())
+      .WillOnce(Invoke([&]() { InstallMockTranslateKitComponentLater(); }));
+}
+
+void MockComponentManager::DoNotExpectCallRegisterLanguagePackComponent() {
+  EXPECT_CALL(*this, RegisterTranslateKitLanguagePackComponent(_)).Times(0);
+}
+
+void MockComponentManager::ExpectCallRegisterLanguagePackComponentAndInstall(
+    std::vector<LanguagePackKey> language_pack_keys) {
+  auto& expectation =
+      EXPECT_CALL(*this, RegisterTranslateKitLanguagePackComponent(_));
+  for (const auto expected_key : language_pack_keys) {
+    expectation.WillOnce(Invoke([&, expected_key](LanguagePackKey key) {
+      EXPECT_EQ(key, expected_key);
+      InstallMockLanguagePackLater(
+          key, CreateFakeDictionaryData(GetSourceLanguageCode(key),
+                                        GetTargetLanguageCode(key)));
+    }));
+  }
 }
 
 void MockComponentManager::InstallMockTranslateKitComponent() {
@@ -41,7 +71,7 @@ void MockComponentManager::InstallMockTranslateKitComponent() {
 
 void MockComponentManager::InstallMockLanguagePack(
     LanguagePackKey language_pack_key,
-    const std::string& fake_dictionary_data) {
+    const std::string_view fake_dictionary_data) {
   base::ScopedAllowBlockingForTesting allow_io;
   const auto dict_dir_path =
       package_dir_.AppendASCII(GetPackageInstallDirName(language_pack_key));
@@ -59,6 +89,13 @@ void MockComponentManager::InstallMockLanguagePack(
       GetComponentPathPrefName(*config), dict_dir_path);
 }
 
+void MockComponentManager::InstallMockTranslateKitComponentLater() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MockComponentManager::InstallMockTranslateKitComponent,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void MockComponentManager::InstallMockLanguagePackLater(
     LanguagePackKey language_pack_key,
     const std::string_view fake_dictionary_data) {
@@ -69,14 +106,14 @@ void MockComponentManager::InstallMockLanguagePackLater(
                      std::string(fake_dictionary_data)));
 }
 
-std::string CreateFakeDictionaryData(const std::string& sourceLang,
-                                     const std::string& targetLang) {
+std::string CreateFakeDictionaryData(const std::string_view sourceLang,
+                                     const std::string_view targetLang) {
   return base::StringPrintf("%s to %s: ", sourceLang, targetLang);
 }
 
 void TestSimpleTranslationWorks(Browser* browser,
-                                const std::string& sourceLang,
-                                const std::string& targetLang) {
+                                const std::string_view sourceLang,
+                                const std::string_view targetLang) {
   // Translate "hello" from `sourceLang` to `targetLang`.
   // Note: the mock TranslateKit component returns the concatenation of the
   // content of "dict.dat" in the language pack and the input text.
@@ -102,9 +139,9 @@ void TestSimpleTranslationWorks(Browser* browser,
 
 // Tests that the createTranslator() returns the expected result.
 void TestCreateTranslator(Browser* browser,
-                          const std::string& sourceLang,
-                          const std::string& targetLang,
-                          const std::string& result) {
+                          const std::string_view sourceLang,
+                          const std::string_view targetLang,
+                          const std::string_view result) {
   ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                    base::StringPrintf(R"(
   (async () => {
@@ -114,6 +151,29 @@ void TestCreateTranslator(Browser* browser,
           targetLanguage: '%s',
         });
       return 'OK';
+    } catch (e) {
+      return e.toString();
+    }
+    })();
+  )",
+                                      sourceLang, targetLang))
+                .ExtractString(),
+            result);
+}
+
+// Tests that the canTranslate() returns the expected result.
+void TestCanTranslate(Browser* browser,
+                      const std::string_view sourceLang,
+                      const std::string_view targetLang,
+                      const std::string_view result) {
+  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(R"(
+  (async () => {
+    try {
+      return await translation.canTranslate({
+          sourceLanguage: '%s',
+          targetLanguage: '%s',
+        });
     } catch (e) {
       return e.toString();
     }

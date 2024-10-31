@@ -56,6 +56,31 @@ constexpr std::string_view kOriginTrialToken =
     "NDMiLCAiZmVhdHVyZSI6ICJUcmFuc2xhdGlvbkFQSSIsICJleHBpcnkiOiAyMDQ1NDUxMTAxfQ"
     "==";
 
+// Sets the path of the mock library to the command line.
+void SetMockLibraryPathToCommandLine(base::CommandLine* command_line) {
+  command_line->AppendSwitchPath("translate-kit-binary-path",
+                                 GetMockLibraryPath());
+}
+
+// Writes fake dictionary data to a file and sets the path of the file to the
+// command line.
+void WriteFakeDictionaryDataAndSetCommandLine(LanguagePackKey key,
+                                              const base::FilePath& temp_dir,
+                                              base::CommandLine* command_line) {
+  const auto dict_dir_path =
+      temp_dir.AppendASCII(GetPackageInstallDirName(key));
+  const auto dict_path = dict_dir_path.AppendASCII("dict.dat");
+  CHECK(base::CreateDirectory(dict_dir_path));
+  CHECK(base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
+            .WriteAndCheck(0, base::as_byte_span(CreateFakeDictionaryData(
+                                  GetSourceLanguageCode(key),
+                                  GetTargetLanguageCode(key)))));
+  command_line->AppendSwitchASCII(
+      "translate-kit-packages",
+      base::StrCat({GetSourceLanguageCode(key), ",", GetTargetLanguageCode(key),
+                    ",", dict_dir_path.AsUTF8Unsafe()}));
+}
+
 }  // namespace
 
 class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
@@ -78,6 +103,12 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
  protected:
   const base::FilePath& GetTempDir() { return tmp_dir_.GetPath(); }
 
+  // Navigates to an empty page.
+  void NavigateToEmptyPage() {
+    CHECK(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
  private:
   base::ScopedTempDir tmp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -86,8 +117,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
 // Tests the behavior of createTranslator().
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
   MockComponentManager mock_component_manager(GetTempDir());
-  CHECK(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  NavigateToEmptyPage();
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
@@ -151,31 +181,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, SimpleTranslation) {
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        ExceedLanguagePackCount) {
   MockComponentManager mock_component_manager(GetTempDir());
-  CHECK(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja, LanguagePackKey::kEn_Es,
+       LanguagePackKey::kEn_Zh});
 
-  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
-  // Install the mock TranslateKit component.
-  mock_component_manager.InstallMockTranslateKitComponent();
-
-  EXPECT_CALL(mock_component_manager,
-              RegisterTranslateKitLanguagePackComponent(_))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
-        EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
-        mock_component_manager.InstallMockLanguagePackLater(
-            key, CreateFakeDictionaryData("en", "ja"));
-      }))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
-        EXPECT_EQ(key, LanguagePackKey::kEn_Es);
-        mock_component_manager.InstallMockLanguagePackLater(
-            key, CreateFakeDictionaryData("en", "es"));
-      }))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
-        EXPECT_EQ(key, LanguagePackKey::kEn_Zh);
-        mock_component_manager.InstallMockLanguagePackLater(
-            key, CreateFakeDictionaryData("en", "zh"));
-      }));
+  NavigateToEmptyPage();
 
   // Create a translator for En => Ja.
   TestSimpleTranslationWorks(browser(), "en", "ja");
@@ -194,8 +205,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorUnsupportedLanguage) {
   MockComponentManager mock_component_manager(GetTempDir());
-  CHECK(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
+
+  NavigateToEmptyPage();
+
   // Create a translator for unsupported language.
   TestCreateTranslator(browser(), "en", "xx",
                        "NotSupportedError: Unable to create translator for the "
@@ -207,8 +221,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        FrameDeletedWhileCreatingATranslator) {
   MockComponentManager mock_component_manager(GetTempDir());
-  CHECK(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
@@ -222,8 +234,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         run_loop_for_register_language_pack.Quit();
       }));
 
-  CHECK(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  NavigateToEmptyPage();
 
   // Create a translator in an iframe.
   EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -346,13 +357,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialBrowserTest,
                    .ExtractBool());
 
   // Test the behavior of Translation API.
-  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
-  // Install the mock TranslateKit component.
-  mock_component_manager.InstallMockTranslateKitComponent();
-  // Install the mock language pack.
-  mock_component_manager.InstallMockLanguagePack(
-      LanguagePackKey::kEn_Ja, CreateFakeDictionaryData("en", "ja"));
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
@@ -369,13 +376,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialBrowserTest,
                    .ExtractBool());
 
   // Test the behavior of Translation API.
-  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
-  // Install the mock TranslateKit component.
-  mock_component_manager.InstallMockTranslateKitComponent();
-  // Install the mock language pack.
-  mock_component_manager.InstallMockLanguagePack(
-      LanguagePackKey::kEn_Ja, CreateFakeDictionaryData("en", "ja"));
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
@@ -427,36 +430,135 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialKillSwitchBrowserTest,
                   .ExtractBool());
 }
 
-class OnDeviceTranslationCommandLineBrowserTest
+// Tests the behavior of when the command line flag "translate-kit-binary-path"
+// is provided.
+class OnDeviceTranslationBinaryPathCommandLineBrowserTest
     : public OnDeviceTranslationBrowserTest {
  public:
-  OnDeviceTranslationCommandLineBrowserTest() = default;
-  ~OnDeviceTranslationCommandLineBrowserTest() override = default;
+  OnDeviceTranslationBinaryPathCommandLineBrowserTest() = default;
+  ~OnDeviceTranslationBinaryPathCommandLineBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchPath("translate-kit-binary-path",
-                                   GetMockLibraryPath());
-
-    const auto dict_dir_path = GetTempDir().AppendASCII("en_ja");
-    const auto dict_path = dict_dir_path.AppendASCII("dict.dat");
-    CHECK(base::CreateDirectory(dict_dir_path));
-    CHECK(
-        base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
-            .WriteAndCheck(
-                0, base::as_byte_span(CreateFakeDictionaryData("en", "ja"))));
-    command_line->AppendSwitchASCII(
-        "translate-kit-packages",
-        base::StrCat({"en,ja,", dict_dir_path.AsUTF8Unsafe()}));
+    OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
+    SetMockLibraryPathToCommandLine(command_line);
   }
 };
-
-// Tests the behavior of createTranslator() when the command line flags are
-// provided.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCommandLineBrowserTest,
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBinaryPathCommandLineBrowserTest,
                        SimpleTranslation) {
-  CHECK(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// Tests the behavior of when the command line flag "translate-kit-packages"
+// is provided.
+class OnDeviceTranslationPackagesCommandLineBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationPackagesCommandLineBrowserTest() = default;
+  ~OnDeviceTranslationPackagesCommandLineBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
+    WriteFakeDictionaryDataAndSetCommandLine(LanguagePackKey::kEn_Ja,
+                                             GetTempDir(), command_line);
+  }
+};
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
+                       SimpleTranslation) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
+  NavigateToEmptyPage();
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// Tests the behavior of when the command line flags "translate-kit-binary-path"
+// and "translate-kit-packages" are provided.
+class OnDeviceTranslationBinaryPathAndPackagesCommandLineBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationBinaryPathAndPackagesCommandLineBrowserTest() = default;
+  ~OnDeviceTranslationBinaryPathAndPackagesCommandLineBrowserTest() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
+    SetMockLibraryPathToCommandLine(command_line);
+    WriteFakeDictionaryDataAndSetCommandLine(LanguagePackKey::kEn_Ja,
+                                             GetTempDir(), command_line);
+  }
+};
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationBinaryPathAndPackagesCommandLineBrowserTest,
+    SimpleTranslation) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
+  NavigateToEmptyPage();
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// Tests the behavior of when the number of values passed to the
+// "translate-kit-packages" command-line flag is not a multiple of three.
+class OnDeviceTranslationInvalidCommandLineNonTriadPackageFlagBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationInvalidCommandLineNonTriadPackageFlagBrowserTest() =
+      default;
+  ~OnDeviceTranslationInvalidCommandLineNonTriadPackageFlagBrowserTest()
+      override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
+    // This is an invalid flag as "translate-kit-packages" requires
+    // arguments in groups of three: "first language code, second language code,
+    // model path".
+    command_line->AppendSwitchASCII("translate-kit-packages", "en,ja");
+  }
+};
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationInvalidCommandLineNonTriadPackageFlagBrowserTest,
+    SimpleTranslation) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// Tests the behavior of when non-ASCII language code is passed to the
+// "translate-kit-packages" command-line flag.
+class OnDeviceTranslationInvalidCommandLineNonAsciiLanguageFlagBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationInvalidCommandLineNonAsciiLanguageFlagBrowserTest() =
+      default;
+  ~OnDeviceTranslationInvalidCommandLineNonAsciiLanguageFlagBrowserTest()
+      override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
+    // This is an invalid flag as "translate-kit-packages" requires
+    // arguments in groups of three: "first language code, second language code,
+    // model path", and the language codes must be ASCII.
+    command_line->AppendSwitchASCII(
+        "translate-kit-packages",
+        base::StrCat({"en,日本語,", GetTempDir().AsUTF8Unsafe()}));
+  }
+};
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationInvalidCommandLineNonAsciiLanguageFlagBrowserTest,
+    SimpleTranslation) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
