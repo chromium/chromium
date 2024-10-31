@@ -1939,27 +1939,6 @@
             ]
         }
     ],
-    "AutofillFixFormTracking": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillFixFormTracking"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillFixValueSemantics": [
         {
             "platforms": [
@@ -2152,7 +2131,7 @@
             ]
         }
     ],
-    "AutofillImproveSubmittedFormComputation": [
+    "AutofillImproveSubmissionDetectionV2": [
         {
             "platforms": [
                 "android",
@@ -2165,8 +2144,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_All",
+                    "name": "Enabled",
                     "enable_features": [
+                        "AutofillFixFormTracking",
                         "AutofillPreferSavedFormAsSubmittedForm",
                         "AutofillUseSubmittedFormInHtmlSubmission"
                     ]
