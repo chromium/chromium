@@ -33,9 +33,8 @@ class FormTrackerTest : public test::AutofillRendererTest,
                         public testing::WithParamInterface<int> {
  public:
   FormTrackerTest() {
-    EXPECT_LE(GetParam(), 6);
+    EXPECT_LE(GetParam(), 5);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillUnifyAndFixFormTracking,
         features::kAutofillFixFormTracking,
         features::kAutofillUseSubmittedFormInHtmlSubmission,
         features::kAutofillPreferSavedFormAsSubmittedForm,
@@ -61,7 +60,7 @@ class FormTrackerTest : public test::AutofillRendererTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          FormTrackerTest,
-                         ::testing::Values(0, 1, 2, 3, 4, 5, 6));
+                         ::testing::Values(0, 1, 2, 3, 4, 5));
 
 // Check that submission is detected on a page with no <form> when in sequence:
 // 1) User types into a field.

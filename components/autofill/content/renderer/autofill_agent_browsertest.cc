@@ -727,9 +727,8 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
                                     public testing::WithParamInterface<int> {
  public:
   AutofillAgentSubmissionTest() {
-    EXPECT_LE(GetParam(), 6);
+    EXPECT_LE(GetParam(), 5);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillUnifyAndFixFormTracking,
         features::kAutofillFixFormTracking,
         features::kAutofillUseSubmittedFormInHtmlSubmission,
         features::kAutofillPreferSavedFormAsSubmittedForm,
@@ -754,7 +753,7 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          AutofillAgentSubmissionTest,
-                         ::testing::Values(0, 1, 2, 3, 4, 5, 6));
+                         ::testing::Values(0, 1, 2, 3, 4, 5));
 
 // Test that AutofillAgent::JavaScriptChangedValue updates the
 // last interacted saved state.

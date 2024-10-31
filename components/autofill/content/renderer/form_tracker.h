@@ -77,7 +77,7 @@ class FormTracker : public content::RenderFrameObserver,
     enum class SaveFormReason {
       kTextFieldChanged,
       // TODO(crbug.com/40281981): Remove after launching the feature
-      // kAutofillUnifyAndFixFormTracking.
+      // kAutofillPreferSavedFormAsSubmittedForm.
       kWillSendSubmitEvent,
       kSelectChanged,
     };
@@ -178,7 +178,7 @@ class FormTracker : public content::RenderFrameObserver,
   }
 
   // content::WebLocalFrameObserver:
-  void OnFrameDetached() override;
+  void OnFrameDetached() override {}
   void WillSendSubmitEvent(const blink::WebFormElement& form) override;
 
   // Called in a posted task by textFieldDidChange() to work-around a WebKit bug

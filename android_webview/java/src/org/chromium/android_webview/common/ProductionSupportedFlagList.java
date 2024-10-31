@@ -306,9 +306,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill local heuristics consider the placeholder attribute "
                         + "for determining field types."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_UNIFY_AND_FIX_FORM_TRACKING,
-                "When enabled, AutofillAgent and FormTracker track the same elements."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_AU_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Australia."),
         Flag.baseFeature(

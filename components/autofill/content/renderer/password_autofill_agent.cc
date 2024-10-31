@@ -1565,8 +1565,6 @@ void PasswordAutofillAgent::ReadyToCommitNavigation(
   CleanupOnDocumentShutdown();
 }
 
-void PasswordAutofillAgent::OnProbablyFormSubmitted() {}
-
 // mojom::PasswordAutofillAgent:
 void PasswordAutofillAgent::SetPasswordFillData(
     const PasswordFormFillData& form_data) {
@@ -2107,20 +2105,6 @@ void PasswordAutofillAgent::LogPrefilledUsernameFillOutcome(
                             outcome);
 }
 
-void PasswordAutofillAgent::OnProvisionallySaveForm(
-    const WebFormElement& form,
-    const WebFormControlElement& element,
-    SaveFormReason source) {
-  // SaveFormReason::kTextFieldChanged is handled in
-  // AutofillAgent::OnTextFieldDidChange(). For the sake of code clarity, please
-  // don't add handling for SaveFormReason::kTextFieldChanged here if
-  // possible.
-  if (source == SaveFormReason::kWillSendSubmitEvent) {
-    WebInputElement input_element = element.DynamicTo<WebInputElement>();
-    InformBrowserAboutUserInput(form, input_element);
-  }
-}
-
 void PasswordAutofillAgent::FireHostSubmitEvent(
     FormRendererId form_id,
     mojom::SubmissionSource source) {
@@ -2171,36 +2155,6 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
       submitted_form_data->ExtractFields(), field_data_manager()));
 
   GetPasswordManagerDriver().PasswordFormSubmitted(*submitted_form_data);
-}
-
-void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
-  switch (source) {
-    case mojom::SubmissionSource::NONE:
-    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
-    case mojom::SubmissionSource::FORM_SUBMISSION:
-      NOTREACHED();
-    case mojom::SubmissionSource::FRAME_DETACHED:
-      // If a sub frame has been destroyed while the user was entering
-      // information into a password form, try to save the data. See
-      // https://crbug.com/450806 or examples of sites that perform login using
-      // this technique. We are treating primary main frame and the root of
-      // embedded frames the same on purpose.
-      if (FrameCanAccessPasswordManager() &&
-          render_frame()->GetWebFrame()->Parent()) {
-        GetPasswordManagerDriver().DynamicFormSubmission(
-            SubmissionIndicatorEvent::FRAME_DETACHED);
-      }
-      CleanupOnDocumentShutdown();
-      return;
-    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
-    case mojom::SubmissionSource::XHR_SUCCEEDED:
-    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
-      if (FrameCanAccessPasswordManager()) {
-        GetPasswordManagerDriver().DynamicFormSubmission(
-            ToSubmissionIndicatorEvent(source));
-      }
-      return;
-  }
 }
 
 void PasswordAutofillAgent::HidePopup() {

@@ -313,13 +313,6 @@ BASE_FEATURE(kAutofillFixFormTracking,
              "AutofillFixFormTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Unifies the tracking of the last interacted elements between FormTracker and
-// AutofillAgent and fixes inconsistencies in this tracking.
-// TODO(crbug.com/40281981): Remove when launched.
-BASE_FEATURE(kAutofillUnifyAndFixFormTracking,
-             "AutofillUnifyAndFixFormTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Uses AutofillAgent::GetSubmittedForm() in HTML submissions.
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,

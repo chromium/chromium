@@ -107,10 +107,7 @@ class RendererSavePasswordProgressLogger;
 class PasswordGenerationAgent;
 
 // This class is responsible for filling password forms.
-// TODO(crbug.com/40281981): Remove FormTracker::Observer after launching
-// kAutofillUnifyAndFixFormTracking.
 class PasswordAutofillAgent : public content::RenderFrameObserver,
-                              public FormTracker::Observer,
                               public mojom::PasswordAutofillAgent {
  public:
   using EnableHeavyFormDataScraping =
@@ -168,13 +165,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void TriggerFormSubmission() override;
 #endif
 
-  // FormTracker::Observer
-  void OnProvisionallySaveForm(const blink::WebFormElement& form,
-                               const blink::WebFormControlElement& element,
-                               SaveFormReason source) override;
-  void OnProbablyFormSubmitted() override;
-  void OnFormSubmitted(const blink::WebFormElement& form) override;
-  void OnInferredFormSubmission(mojom::SubmissionSource source) override;
+  void OnFormSubmitted(const blink::WebFormElement& form);
 
   // WebLocalFrameClient editor related calls forwarded by AutofillAgent.
   // If they return true, it indicates the event was consumed and should not

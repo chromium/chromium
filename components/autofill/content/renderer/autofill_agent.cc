@@ -424,10 +424,6 @@ AutofillAgent::AutofillAgent(
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
   AddFormObserver(this);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
-    AddFormObserver(password_autofill_agent_.get());
-  }
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -437,10 +433,6 @@ AutofillAgent::AutofillAgent(
 // The process may be killed before this deletion can happen.
 AutofillAgent::~AutofillAgent() {
   RemoveFormObserver(this);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
-    RemoveFormObserver(password_autofill_agent_.get());
-  }
 }
 
 WebDocument AutofillAgent::GetDocument() const {
@@ -725,9 +717,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
     return pwm_sources.size() > 1;
   }();
 
-  if (!is_duplicate_submission_for_password_manager &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
+  if (!is_duplicate_submission_for_password_manager) {
     password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
                                                   source);
   }
@@ -944,15 +934,10 @@ void AutofillAgent::ApplyFieldsAction(
     if (auto it = base::ranges::find_if(fields, host_form_is_connected);
         it != fields.end()) {
       base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking) &&
-              base::FeatureList::IsEnabled(
-                  features::kAutofillAcceptDomMutationAfterAutofillSubmission)
+          features::kAutofillAcceptDomMutationAfterAutofillSubmission)
           ? TrackAutofilledElement(
                 form_util::GetFormControlByRendererId(it->renderer_id))
           : UpdateLastInteractedElement(it->host_form_id);
-    } else if (!base::FeatureList::IsEnabled(
-                   features::kAutofillUnifyAndFixFormTracking)) {
-      UpdateLastInteractedElement(FormRendererId());
     } else {
       for (const auto& [filled_field, state] : filled_fields) {
         if (WebFormControlElement control_element =
@@ -1115,8 +1100,7 @@ void AutofillAgent::ApplyFieldAction(
         // disconnected element.
         form_control = form_util::GetFormControlByRendererId(
             form_util::GetFieldRendererId(form_control));
-        if (form_control && base::FeatureList::IsEnabled(
-                                features::kAutofillUnifyAndFixFormTracking)) {
+        if (form_control) {
           if (WebFormElement form_element =
                   form_util::GetOwningForm(form_control)) {
             UpdateLastInteractedElement(
@@ -1809,39 +1793,29 @@ void AutofillAgent::OnProvisionallySaveForm(
                   });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUnifyAndFixFormTracking)) {
-      UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
-    } else {
-      UpdateLastInteractedElement(FormRendererId());
-    }
+    UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
   };
 
   switch (source) {
     case FormTracker::Observer::SaveFormReason::kWillSendSubmitEvent:
+      // TODO(crbug.com/40281981): Figure out if this is still needed, and
+      // document the reason, otherwise remove.
+      password_autofill_agent_->InformBrowserAboutUserInput(form_element,
+                                                            WebInputElement());
+      // TODO(crbug.com/40281981): Figure out if this is still needed, and
+      // document the reason, otherwise remove.
+      update_submission_data_on_user_edit();
+      if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
+              mojom::SubmissionSource::FORM_SUBMISSION)) {
+        // Save an extraction call since the submission will be ignored
+        // anyways by the duplicate submission filtering logic.
+        break;
+      }
       // Fire the form submission event to avoid missing submissions where
       // websites handle the onsubmit event. This also gets the form before
       // Javascript's submit event handler could change it. We don't clear
       // submitted_forms_ because OnFormSubmitted will normally be invoked
       // afterwards and we don't want to fire the same event twice.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillUnifyAndFixFormTracking)) {
-        // TODO(crbug.com/40281981): Figure out if this is still needed, and
-        // document the reason, otherwise remove.
-        password_autofill_agent_->InformBrowserAboutUserInput(
-            form_element, WebInputElement());
-        // TODO(crbug.com/40281981): Figure out if this is still needed, and
-        // document the reason, otherwise remove.
-        update_submission_data_on_user_edit();
-      }
-      if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
-              mojom::SubmissionSource::FORM_SUBMISSION) &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillUnifyAndFixFormTracking)) {
-        // Save an extraction call since the submission will be ignored anyways
-        // by the duplicate submission filtering logic.
-        break;
-      }
       if (std::optional<FormData> form_data =
               base::FeatureList::IsEnabled(
                   features::kAutofillUseSubmittedFormInHtmlSubmission)
@@ -1851,10 +1825,6 @@ void AutofillAgent::OnProvisionallySaveForm(
                         GetCallTimerState(kOnProvisionallySaveForm))) {
         FireHostSubmitEvents(*form_data, /*known_success=*/false,
                              mojom::SubmissionSource::FORM_SUBMISSION);
-      }
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillUnifyAndFixFormTracking)) {
-        ResetLastInteractedElements();
       }
       break;
     case FormTracker::Observer::SaveFormReason::kTextFieldChanged:
@@ -1883,9 +1853,7 @@ void AutofillAgent::OnProbablyFormSubmitted() {
 void AutofillAgent::OnFormSubmitted(const WebFormElement& form_element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
   if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
-          mojom::SubmissionSource::FORM_SUBMISSION) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
+          mojom::SubmissionSource::FORM_SUBMISSION)) {
     // Save an extraction call since the submission will be ignored anyways
     // by the duplicate submission filtering logic.
     return;
@@ -1903,11 +1871,6 @@ void AutofillAgent::OnFormSubmitted(const WebFormElement& form_element) {
     FireHostSubmitEvents(*form_data, /*known_success=*/false,
                          mojom::SubmissionSource::FORM_SUBMISSION);
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
-    ResetLastInteractedElements();
-    OnFormNoLongerSubmittable();
-  }
 }
 
 void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
@@ -1923,20 +1886,17 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
       NOTREACHED();
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillUnifyAndFixFormTracking)) {
-        password_autofill_agent_->FireHostSubmitEvent(
-            FormRendererId(),
+      password_autofill_agent_->FireHostSubmitEvent(
+          FormRendererId(),
+          mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
+      if (std::optional<FormData> form_data =
+              GetSubmittedForm(/*form_element=*/std::nullopt);
+          form_data &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+        FireHostSubmitEvents(
+            *form_data, /*known_success=*/true,
             mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
-        if (std::optional<FormData> form_data =
-                GetSubmittedForm(/*form_element=*/std::nullopt);
-            form_data &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
-          FireHostSubmitEvents(
-              *form_data, /*known_success=*/true,
-              mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
-        }
       }
       // `BrowserAutofillManager` ignores submissions with
       // DOM_MUTATION_AFTER_AUTOFILL as a source, therefore we early return in
@@ -1952,10 +1912,7 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
       // submission from it (and the relevant use cases will most probably be
       // handled by other sources), therefore we only consider detached
       // subframes.
-      if ((!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() ||
-           base::FeatureList::IsEnabled(
-               features::kAutofillUnifyAndFixFormTracking)) &&
-          provisionally_saved_form()) {
+      if (provisionally_saved_form()) {
         // Should not access the frame because it is now detached. Instead, use
         // `provisionally_saved_form()`.
         FireHostSubmitEvents(*provisionally_saved_form(),
@@ -2077,37 +2034,14 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
 }
 
 void AutofillAgent::ResetLastInteractedElements() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
-    form_tracker_->ResetLastInteractedElements();
-  } else {
-    last_interacted_form_ = {};
-    provisionally_saved_form() = {};
-  }
+  form_tracker_->ResetLastInteractedElements();
   formless_elements_user_edited_.clear();
   formless_elements_were_autofilled_ = false;
 }
 
 void AutofillAgent::UpdateLastInteractedElement(
     absl::variant<FormRendererId, FieldRendererId> element_id) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUnifyAndFixFormTracking)) {
-    form_tracker_->UpdateLastInteractedElement(element_id);
-  } else {
-    CHECK(absl::holds_alternative<FormRendererId>(element_id));
-    WebFormElement form_element =
-        form_util::GetFormByRendererId(absl::get<FormRendererId>(element_id));
-    last_interacted_form_ = FormRef(form_element);
-    WebDocument document = GetDocument();
-    provisionally_saved_form() =
-        document ? form_util::ExtractFormData(
-                       document,
-                       form_util::GetFormByRendererId(
-                           absl::get<FormRendererId>(element_id)),
-                       field_data_manager(),
-                       GetCallTimerState(kUpdateLastInteractedElement))
-                 : std::nullopt;
-  }
+  form_tracker_->UpdateLastInteractedElement(element_id);
 }
 
 void AutofillAgent::OnFormNoLongerSubmittable() {
