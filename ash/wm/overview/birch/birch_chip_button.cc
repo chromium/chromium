@@ -12,12 +12,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
-#include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "ash/wm/overview/birch/birch_animation_utils.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
+#include "ash/wm/overview/birch/resources/grit/coral_resources.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -87,9 +87,7 @@ constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation1;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
 
-//
 constexpr gfx::Size kLoadingAnimationSize = gfx::Size(100, 20);
-constexpr int kLoadingAnimationRadius = 10;
 
 BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
   switch (item_type) {
@@ -364,8 +362,7 @@ void BirchChipButton::Init(BirchItem* item) {
         title_loading_animated_image_->Play(
             birch_animation_utils::GetLottiePlaybackConfig(
                 *title_loading_animated_image_->animated_image()->skottie(),
-                // TODO(yulunwu) replace loading animation when available.
-                IDR_MAHI_LOADING_OUTLINES_ANIMATION));
+                IDR_CORAL_LOADING_TITLE_ANIMATION));
       }
       break;
     }
@@ -502,14 +499,12 @@ void BirchChipButton::BuildTitleLoadingAnimation() {
   std::unique_ptr<views::AnimatedImageView> title_loading_animated_image =
       views::Builder<views::AnimatedImageView>()
           .SetAnimatedImage(birch_animation_utils::GetLottieAnimationData(
-              IDR_MAHI_LOADING_OUTLINES_ANIMATION))
+              IDR_CORAL_LOADING_TITLE_ANIMATION))
           .SetImageSize(kLoadingAnimationSize)
           .SetVisible(true)
+          .SetHorizontalAlignment(views::ImageViewBase::Alignment::kLeading)
           .Build();
   // Setup rounder corners for `title_loading_animated_image_`.
-  title_loading_animated_image->SetPaintToLayer();
-  title_loading_animated_image->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kLoadingAnimationRadius));
   title_loading_animated_image_ =
       titles_container_->AddChildViewAt(std::move(title_loading_animated_image),
                                         /*index=*/0);

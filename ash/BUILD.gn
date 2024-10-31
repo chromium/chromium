@@ -3383,6 +3383,7 @@ component("ash") {
     "//ash/webui/personalization_app/proto",
     "//ash/webui/projector_app/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
+    "//ash/wm/overview/birch/resources:coral_resources_grit",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",

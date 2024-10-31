@@ -14,7 +14,7 @@ namespace ash::birch_animation_utils {
 namespace {
 
 constexpr char kLoadingAnimationRestartMarker[] =
-    "_CrOS_Marker_CycleRestart_Box";
+    "_CrOS_Marker_CycleRestart_Line";
 
 base::TimeDelta GetCycleRestartTimestamp(const cc::SkottieWrapper& skottie,
                                          int animation_id) {
