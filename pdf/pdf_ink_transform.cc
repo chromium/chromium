@@ -9,8 +9,10 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/envelope.h"
 #include "third_party/ink/src/ink/geometry/rect.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -143,6 +145,14 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
   float w = std::max(p1.x(), p2.x()) - x + 1;
   float h = std::max(p1.y(), p2.y()) - y + 1;
   return gfx::ToEnclosingRect(gfx::RectF(x, y, w, h));
+}
+
+gfx::AxisTransform2d GetCanonicalToPdfTransform(float page_height) {
+  CHECK_GE(page_height, 0);
+  constexpr float kScreenToPageScale =
+      static_cast<float>(printing::kPointsPerInch) / printing::kPixelsPerInch;
+  return gfx::AxisTransform2d::FromScaleAndTranslation(
+      {kScreenToPageScale, -kScreenToPageScale}, {0, page_height});
 }
 
 }  // namespace chrome_pdf

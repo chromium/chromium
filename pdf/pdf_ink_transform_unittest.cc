@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/envelope.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -411,6 +412,19 @@ TEST(PdfInkTransformTest,
         envelope, PageOrientation::kClockwise270, kPageContentRect,
         kScaleFactor2x);
     EXPECT_EQ(screen_rect, gfx::Rect(70.0f, 19.0f, 21.0f, 41.0f));
+  }
+}
+
+TEST(PdfInkTransformTest, GetCanonicalToPdfTransform) {
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/0);
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(0, 0), tr.translation());
+  }
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/712);
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(0, 712), tr.translation());
   }
 }
 

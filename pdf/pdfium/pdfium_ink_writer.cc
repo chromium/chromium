@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "pdf/pdf_ink_conversions.h"
-#include "printing/units.h"
+#include "pdf/pdf_ink_transform.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/geometry/point.h"
@@ -19,9 +19,6 @@
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
-
-using printing::kPixelsPerInch;
-using printing::kPointsPerInch;
 
 namespace chrome_pdf {
 
@@ -146,14 +143,8 @@ ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
     return nullptr;  // `shape` is empty.
   }
 
-  // The transform converts from canonical coordinates (which has a top-left
-  // origin and a different DPI), to PDF coordinates (which has a bottom-left
-  // origin).
-  constexpr float kScreenToPageScale =
-      static_cast<float>(kPointsPerInch) / kPixelsPerInch;
-  const auto transform = gfx::AxisTransform2d::FromScaleAndTranslation(
-      {kScreenToPageScale, -kScreenToPageScale},
-      {0, FPDF_GetPageHeightF(page)});
+  const gfx::AxisTransform2d transform =
+      GetCanonicalToPdfTransform(FPDF_GetPageHeightF(page));
 
   // Create a path using the first outline.
   ScopedFPDFPageObject path =

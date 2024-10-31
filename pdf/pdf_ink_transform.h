@@ -8,6 +8,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -109,6 +110,16 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
     float scale_factor);
+
+// Returns a transform that converts from canonical coordinates (which has a
+// top-left origin and a different DPI), to PDF coordinates (which has a
+// bottom-left origin).
+//
+// `page_height` is in points. It must not be negative.
+//
+// Note that callers can call gfx::AxisTransform2d::Invert() to get a transform
+// that does conversions in the opposite direction.
+gfx::AxisTransform2d GetCanonicalToPdfTransform(float page_height);
 
 }  // namespace chrome_pdf
 
