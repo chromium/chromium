@@ -68,6 +68,27 @@ export enum SubmitAccessCodeResult {
 }
 
 /**
+ * Declare network state enum type
+ */
+export enum NetworkState {
+  ONLINE = 0,
+  CONNECTED = 1,
+  PORTAL = 2,
+  CONNECTING = 3,
+  NOTCONNECTED = 4,
+}
+
+/**
+ * Declare network type enum type
+ */
+export enum NetworkType {
+  CELLULAR = 0,
+  ETHERNET = 1,
+  WIFI = 2,
+  UNSUPPORTED = 3,
+}
+
+/**
  * Declare controlled tab
  */
 export declare interface ControlledTab {
@@ -135,6 +156,16 @@ export declare interface StudentActivity {
 export declare interface IdentifiedActivity {
   id: string;
   studentActivity: StudentActivity;
+}
+
+/**
+ * Declare NetworkInfo
+ */
+export declare interface NetworkInfo {
+  networkState: NetworkState;
+  networkType: NetworkType;
+  name: string;
+  signalStrength: number;
 }
 
 /**
@@ -215,4 +246,9 @@ export declare interface ClientApi {
    * The entire payload would be sent.
    */
   onStudentActivityUpdated(studentActivity: IdentifiedActivity[]): void;
+
+  /**
+   * Notify the app that the active networks has been updated.
+   */
+  onActiveNetworkStateChanged(activeNetworks: NetworkInfo[]): void;
 }

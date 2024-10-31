@@ -11,6 +11,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
+#include "ash/webui/boca_ui/provider/network_info_provider.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -71,10 +72,12 @@ class BocaAppHandler : public mojom::PageHandler,
   void SubmitAccessCode(const std::string& access_code,
                         SubmitAccessCodeCallback callback) override;
 
+  // mojom::Page:
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
-
   void OnSessionConfigUpdated(mojom::SessionResultPtr config) override;
+  void OnActiveNetworkStateChanged(
+      std::vector<mojom::NetworkInfoPtr> active_networks) override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
@@ -126,6 +129,7 @@ class BocaAppHandler : public mojom::PageHandler,
   // keep track of pending config to avoid override in race.
   std::unique_ptr<::boca::OnTaskConfig> latest_ontask_config_;
   std::unique_ptr<::boca::CaptionsConfig> latest_caption_config_;
+  std::unique_ptr<NetworkInfoProvider> network_info_provider_;
   // Track the identity of the current app user.
   ::boca::UserIdentity user_identity_;
   mojo::Receiver<boca::mojom::PageHandler> receiver_;

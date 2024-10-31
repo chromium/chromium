@@ -169,6 +169,9 @@ BocaAppHandler::BocaAppHandler(
   user_identity_.set_photo_url(user->image_url().spec());
   // BocaAppClient is guaranteed to be live here.
   BocaAppClient::Get()->GetSessionManager()->AddObserver(this);
+  network_info_provider_ = std::make_unique<NetworkInfoProvider>(
+      base::BindRepeating(&BocaAppHandler::OnActiveNetworkStateChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 BocaAppHandler::~BocaAppHandler() {
@@ -441,6 +444,11 @@ void BocaAppHandler::OnSessionConfigUpdated(mojom::SessionResultPtr config) {
     return;
   }
   remote_->OnSessionConfigUpdated(std::move(config));
+}
+
+void BocaAppHandler::OnActiveNetworkStateChanged(
+    std::vector<mojom::NetworkInfoPtr> active_networks) {
+  remote_->OnActiveNetworkStateChanged(std::move(active_networks));
 }
 
 void BocaAppHandler::OnConsumerActivityUpdated(

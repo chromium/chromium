@@ -4,6 +4,7 @@
 
 module ash.boca.mojom;
 
+import "chromeos/services/network_config/public/mojom/network_types.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -47,9 +48,26 @@ struct Window {
   // User-customized window name.
   string? name;
   // Tabs within browser window. Tabs are ordererd using non-increasing order
-  // for tab's last access
-  // timestamp
+  // for tab's last access timestamp.
   array<TabInfo> tab_list;
+};
+
+// The network technology type.
+enum NetworkType {
+  kCellular,
+  kEthernet,
+  kWiFi,
+  kUnsupported,
+};
+
+// Represents the network information.
+struct NetworkInfo {
+  chromeos.network_config.mojom.ConnectionStateType state;
+  NetworkType type;
+  // The human readable name of the network.
+  string name;
+  // The signal strength of the network in percentage.
+  int32 signal_strength;
 };
 
 struct Config{
@@ -150,8 +168,7 @@ enum SubmitAccessCodeError {
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
-  // non-increasing order for most recent tab's last
-  // access timestamp
+  // non-increasing order for most recent tab's last access timestamp.
   GetWindowsTabsList() => (array<Window> window_list);
   // Fetch a list of courses for the current teacher.
   ListCourses() => (array<Course> courses);
@@ -177,7 +194,6 @@ interface PageHandler {
   SetFloatMode(bool isFloatMode)=> (bool success);
   // Submit access code to join a current class session.
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
-
 };
 
 // Implemented by renderer process
@@ -186,6 +202,8 @@ interface Page {
   OnStudentActivityUpdated(array<IdentifiedActivity> activities);
   // Notifies when session config updated.
   OnSessionConfigUpdated(SessionResult config);
+  // Notifies when active networks updated.
+  OnActiveNetworkStateChanged(array<NetworkInfo> active_networks);
 };
 
 // Implemented in browser process to set up the communication between the Page

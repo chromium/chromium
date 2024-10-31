@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClientDelegateFactory, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
+import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -550,4 +550,28 @@ suite('ClientDelegateTest', function() {
             await clientDelegateImpl.getInstance().submitAccessCode('1');
         assertDeepEquals(1, result);
       });
+
+  test('client delegate should translate data for network info', async () => {
+    const networks = [
+      {state: 0, type: 0, name: 'network1', signalStrength: 50},
+      {state: 1, type: 1, name: 'network2', signalStrength: 75}
+    ];
+    const result = getNetworkInfoMojomToUI(networks);
+    assertDeepEquals(
+        [
+          {
+            networkState: 0,
+            networkType: 0,
+            name: 'network1',
+            signalStrength: 50
+          },
+          {
+            networkState: 1,
+            networkType: 1,
+            name: 'network2',
+            signalStrength: 75
+          }
+        ],
+        result);
+  });
 });

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {Config, ControlledTab as ControlledTabMojom, Course, IdentifiedActivity as Activity, Identity as IdentityMojom, NetworkInfo as NetworkInfoMojom, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
-import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, OnTaskConfig, SessionConfig, SubmitAccessCodeResult} from './boca_app.js';
+import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Identity, NetworkInfo, OnTaskConfig, SessionConfig, SubmitAccessCodeResult} from './boca_app.js';
 
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
@@ -78,6 +78,14 @@ export function getSessionConfigMojomToUI(session: Config|
         accessCode: session.accessCode ? session.accessCode : ''
   }
 };
+
+export function getNetworkInfoMojomToUI(networks: NetworkInfoMojom[]):
+    NetworkInfo[]{return networks.map((item: NetworkInfoMojom) => ({
+                                        networkState: item.state.valueOf(),
+                                        networkType: item.type.valueOf(),
+                                        name: item.name,
+                                        signalStrength: item.signalStrength
+                                      }))};
 
 /**
  * A delegate implementation that provides API via privileged mojom API
