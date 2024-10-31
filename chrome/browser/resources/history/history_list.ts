@@ -26,7 +26,6 @@ import {BrowserServiceImpl} from './browser_service.js';
 import {BROWSING_GAP_TIME} from './constants.js';
 import type {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import type {HistoryItemElement} from './history_item.js';
-import {searchResultsTitle} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
 
 export interface ActionMenuModel {
@@ -168,8 +167,21 @@ export class HistoryListElement extends HistoryListElementBase {
     this.closeMenu_();
 
     if (info.term && !this.queryState.incremental) {
-      getAnnouncerInstance().announce(
-          searchResultsTitle(results.length, info.term));
+      let resultsLabelId;
+      if (loadTimeData.getBoolean('enableHistoryEmbeddings')) {
+        // Differentiate screen reader messages if embeddings are enabled so
+        // that the messages specify these are results for exact matches not
+        // embeddings results.
+        resultsLabelId = results.length === 1 ? 'searchResultExactMatch' :
+                                                'searchResultExactMatches';
+      } else {
+        resultsLabelId =
+            results.length === 1 ? 'searchResult' : 'searchResults';
+      }
+      const message = loadTimeData.getStringF(
+          'foundSearchResults', results.length,
+          loadTimeData.getString(resultsLabelId), info.term);
+      getAnnouncerInstance().announce(message);
     }
 
     this.addNewResults(results, this.queryState.incremental, info.finished);

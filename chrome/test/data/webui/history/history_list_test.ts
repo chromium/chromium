@@ -5,11 +5,13 @@
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, CrRouter, ensureLazyLoaded} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, shiftClick, waitForEvent} from './test_util.js';
@@ -686,6 +688,39 @@ suite('HistoryListTest', function() {
     await flushTasks();
     element.scrollOffset = 123;
     assertEquals(123, element.$['infinite-list'].scrollOffset);
+  });
+
+  test('AnnouncesExactMatches', async () => {
+    await finishSetup([]);
+    await flushTasks();
+
+    async function getMessagesForResults(
+        term: string, results: HistoryEntry[]) {
+      const a11yMessagesEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      element.queryState.incremental = false;
+      element.historyResult({finished: true, term}, results);
+      return (await a11yMessagesEventPromise).detail.messages[0];
+    }
+
+    let singleResultMessage =
+        await getMessagesForResults('some query', [TEST_HISTORY_RESULTS[0]!]);
+    assertEquals(`Found 1 search result for 'some query'`, singleResultMessage);
+
+    let multipleResultsMessage =
+        await getMessagesForResults('new query', TEST_HISTORY_RESULTS);
+    assertEquals(
+        `Found 4 search results for 'new query'`, multipleResultsMessage);
+
+    loadTimeData.overrideValues({enableHistoryEmbeddings: true});
+    singleResultMessage =
+        await getMessagesForResults('some query', [TEST_HISTORY_RESULTS[0]!]);
+    assertEquals(`Found 1 exact match for 'some query'`, singleResultMessage);
+
+    multipleResultsMessage =
+        await getMessagesForResults('new query', TEST_HISTORY_RESULTS);
+    assertEquals(
+        `Found 4 exact matches for 'new query'`, multipleResultsMessage);
   });
 
   teardown(function() {
