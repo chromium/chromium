@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 
+#include <optional>
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
@@ -13,12 +14,160 @@
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 namespace blink {
 namespace {
+
+bool ConsumeSyntaxCombinator(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kDelimiterToken &&
+      stream.Peek().Delimiter() == '|') {
+    stream.ConsumeIncludingWhitespace();
+    return true;
+  }
+  return false;
+}
+
+CSSSyntaxRepeat ConsumeSyntaxMultiplier(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kDelimiterToken &&
+      stream.Peek().Delimiter() == '#') {
+    stream.ConsumeIncludingWhitespace();
+    return CSSSyntaxRepeat::kCommaSeparated;
+  }
+  if (stream.Peek().GetType() == kDelimiterToken &&
+      stream.Peek().Delimiter() == '+') {
+    stream.ConsumeIncludingWhitespace();
+    return CSSSyntaxRepeat::kSpaceSeparated;
+  }
+  return CSSSyntaxRepeat::kNone;
+}
+
+std::optional<CSSSyntaxType> ConsumeTypeName(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() != kIdentToken) {
+    return std::nullopt;
+  }
+  if (stream.Peek().Value() == "angle") {
+    stream.Consume();
+    return CSSSyntaxType::kAngle;
+  }
+  if (stream.Peek().Value() == "color") {
+    stream.Consume();
+    return CSSSyntaxType::kColor;
+  }
+  if (stream.Peek().Value() == "custom-ident") {
+    stream.Consume();
+    return CSSSyntaxType::kCustomIdent;
+  }
+  if (stream.Peek().Value() == "image") {
+    stream.Consume();
+    return CSSSyntaxType::kImage;
+  }
+  if (stream.Peek().Value() == "integer") {
+    stream.Consume();
+    return CSSSyntaxType::kInteger;
+  }
+  if (stream.Peek().Value() == "length") {
+    stream.Consume();
+    return CSSSyntaxType::kLength;
+  }
+  if (stream.Peek().Value() == "length-percentage") {
+    stream.Consume();
+    return CSSSyntaxType::kLengthPercentage;
+  }
+  if (stream.Peek().Value() == "number") {
+    stream.Consume();
+    return CSSSyntaxType::kNumber;
+  }
+  if (stream.Peek().Value() == "percentage") {
+    stream.Consume();
+    return CSSSyntaxType::kPercentage;
+  }
+  if (stream.Peek().Value() == "resolution") {
+    stream.Consume();
+    return CSSSyntaxType::kResolution;
+  }
+  if (RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled() &&
+      stream.Peek().Value() == "string") {
+    stream.Consume();
+    return CSSSyntaxType::kString;
+  }
+  if (stream.Peek().Value() == "time") {
+    stream.Consume();
+    return CSSSyntaxType::kTime;
+  }
+  if (stream.Peek().Value() == "url") {
+    stream.Consume();
+    return CSSSyntaxType::kUrl;
+  }
+  if (stream.Peek().Value() == "transform-function") {
+    stream.Consume();
+    return CSSSyntaxType::kTransformFunction;
+  }
+  if (stream.Peek().Value() == "transform-list") {
+    stream.Consume();
+    return CSSSyntaxType::kTransformList;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::tuple<CSSSyntaxType, String>> ConsumeSyntaxSingleComponent(
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kDelimiterToken &&
+      stream.Peek().Delimiter() == '<') {
+    CSSParserSavePoint save_point(stream);
+    stream.Consume();
+    std::optional<CSSSyntaxType> syntax_type = ConsumeTypeName(stream);
+    if (!syntax_type.has_value()) {
+      return std::nullopt;
+    }
+    if (stream.Peek().GetType() != kDelimiterToken ||
+        stream.Peek().Delimiter() != '>') {
+      return std::nullopt;
+    }
+    stream.Consume();
+    save_point.Release();
+    return std::make_tuple(*syntax_type, String());
+  }
+  CSSParserToken peek = stream.Peek();
+  if (peek.GetType() != kIdentToken) {
+    return std::nullopt;
+  }
+  if (css_parsing_utils::IsCSSWideKeyword(peek.Value()) ||
+      css_parsing_utils::IsDefaultKeyword(peek.Value())) {
+    return std::nullopt;
+  }
+  return std::make_tuple(CSSSyntaxType::kIdent,
+                         stream.Consume().Value().ToString());
+}
+
+std::optional<CSSSyntaxComponent> ConsumeSyntaxComponent(
+    CSSParserTokenStream& stream) {
+  stream.EnsureLookAhead();
+  CSSParserSavePoint save_point(stream);
+
+  std::optional<std::tuple<CSSSyntaxType, String>> css_syntax_type_ident =
+      ConsumeSyntaxSingleComponent(stream);
+  if (!css_syntax_type_ident.has_value()) {
+    return std::nullopt;
+  }
+  CSSSyntaxType syntax_type;
+  String ident;
+  std::tie(syntax_type, ident) = *css_syntax_type_ident;
+  CSSSyntaxRepeat repeat = ConsumeSyntaxMultiplier(stream);
+  stream.ConsumeWhitespace();
+  if (syntax_type == CSSSyntaxType::kTransformList &&
+      repeat != CSSSyntaxRepeat::kNone) {
+    // <transform-list> may not be followed by a <syntax-multiplier>.
+    // https://drafts.csswg.org/css-values-5/#css-syntax
+    return std::nullopt;
+  }
+  save_point.Release();
+  return CSSSyntaxComponent(syntax_type, ident, repeat);
+}
 
 const CSSValue* ConsumeSingleTypeInternal(const CSSSyntaxComponent& syntax,
                                           CSSParserTokenStream& stream,
@@ -142,6 +291,29 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
 }
 
 }  // namespace
+
+std::optional<CSSSyntaxDefinition> CSSSyntaxDefinition::Consume(
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kDelimiterToken &&
+      stream.Peek().Delimiter() == '*') {
+    stream.ConsumeIncludingWhitespace();
+    return CSSSyntaxDefinition::CreateUniversal();
+  }
+
+  Vector<CSSSyntaxComponent> syntax_components;
+  CSSParserSavePoint save_point(stream);
+  do {
+    std::optional<CSSSyntaxComponent> syntax_component =
+        ConsumeSyntaxComponent(stream);
+    if (!syntax_component.has_value()) {
+      return std::nullopt;
+    }
+    syntax_components.emplace_back(*syntax_component);
+  } while (ConsumeSyntaxCombinator(stream));
+
+  save_point.Release();
+  return CSSSyntaxDefinition(std::move(syntax_components));
+}
 
 const CSSValue* CSSSyntaxDefinition::Parse(StringView text,
                                            const CSSParserContext& context,
