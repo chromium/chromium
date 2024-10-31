@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_consumer.h"
 
+@protocol MagicStackModuleContentViewDelegate;
 @protocol TipsModuleAudience;
 @class TipsModuleState;
 
@@ -20,6 +21,10 @@
 
 // The object that should handle user events.
 @property(nonatomic, weak) id<TipsModuleAudience> audience;
+
+// The delegate for handling content view events.
+@property(nonatomic, weak) id<MagicStackModuleContentViewDelegate>
+    contentViewDelegate;
 
 @end
 

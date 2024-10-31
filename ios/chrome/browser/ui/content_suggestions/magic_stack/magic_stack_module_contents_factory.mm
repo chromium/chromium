@@ -96,7 +96,8 @@
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips: {
       TipsModuleState* tipsConfig = static_cast<TipsModuleState*>(config);
-      return [self tipsViewForConfig:tipsConfig];
+      return [self tipsViewForConfig:tipsConfig
+                 contentViewDelegate:contentViewDelegate];
     }
     default:
       NOTREACHED();
@@ -206,10 +207,13 @@
   return view;
 }
 
-- (UIView*)tipsViewForConfig:(TipsModuleState*)state {
+- (UIView*)tipsViewForConfig:(TipsModuleState*)state
+         contentViewDelegate:
+             (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
   TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
 
   view.audience = state.audience;
+  view.contentViewDelegate = contentViewDelegate;
   [state.consumerSource addConsumer:view];
 
   return view;

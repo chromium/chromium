@@ -462,6 +462,15 @@ const CGFloat kSeparatorHeight = 0.5;
   _subtitle.accessibilityIdentifier = subtitle;
 }
 
+- (void)updateSeparatorVisibility:(BOOL)isHidden {
+  // Do nothing if the new value is the same as the old value
+  if (isHidden == _separator.hidden) {
+    return;
+  }
+
+  _separator.hidden = isHidden;
+}
+
 #pragma mark - Helpers
 
 // Handles taps on the "See More" button.
