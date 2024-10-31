@@ -31,6 +31,7 @@ class EmptyTabGroupSyncDelegate : public TabGroupSyncDelegate {
   CreateScopedLocalObserverPauser() override;
   void CreateLocalTabGroup(const SavedTabGroup& tab_group) override;
   void CloseLocalTabGroup(const LocalTabGroupID& local_id) override;
+  void ConnectLocalTabGroup(const SavedTabGroup& group) override;
   void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   void UpdateLocalTabGroup(const SavedTabGroup& group) override;
   std::vector<LocalTabGroupID> GetLocalTabGroupIds() override;

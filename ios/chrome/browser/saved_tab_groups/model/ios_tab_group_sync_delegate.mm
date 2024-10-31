@@ -218,9 +218,14 @@ void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
                            WebStateList::CLOSE_NO_FLAGS);
 }
 
+void IOSTabGroupSyncDelegate::ConnectLocalTabGroup(
+    const SavedTabGroup& saved_tab_group) {
+  // Do nothing because iOS doesn't support connecting/disconnecting groups.
+}
+
 void IOSTabGroupSyncDelegate::DisconnectLocalTabGroup(
     const LocalTabGroupID& local_id) {
-  NOTIMPLEMENTED();
+  // Do nothing because iOS doesn't support connecting/disconnecting groups.
 }
 
 void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(

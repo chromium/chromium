@@ -41,6 +41,10 @@ class TabGroupSyncDelegate {
   // Called to close the specified local tab group.
   virtual void CloseLocalTabGroup(const LocalTabGroupID& local_id) = 0;
 
+  // Called to start listening for changes to a local group. The local group
+  // must have less or equal number of tabs than the saved group. Desktop only.
+  virtual void ConnectLocalTabGroup(const SavedTabGroup& group) = 0;
+
   // Called to stop listening for changes to a local group.
   virtual void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) = 0;
 

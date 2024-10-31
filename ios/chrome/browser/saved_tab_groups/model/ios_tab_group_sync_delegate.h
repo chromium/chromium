@@ -54,6 +54,7 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   CreateScopedLocalObserverPauser() override;
   void CreateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   void CloseLocalTabGroup(const LocalTabGroupID& local_tab_group_id) override;
+  void ConnectLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   void UpdateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   std::vector<LocalTabGroupID> GetLocalTabGroupIds() override;

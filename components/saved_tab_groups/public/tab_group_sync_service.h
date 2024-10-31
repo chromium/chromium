@@ -192,6 +192,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Invoking this method would update the mapping for tab group, individual
   // tabs, and (on desktop) recreate the tab group listeners. `opening_source`
   // refers to the callsite that results in invoking this method.
+  // Note that this method does not update the local tab group, and must be
+  // invoked only if the number of local tabs is more or equal to saved tabs.
   virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
                                     const LocalTabGroupID& local_id,
                                     OpeningSource opening_source) = 0;

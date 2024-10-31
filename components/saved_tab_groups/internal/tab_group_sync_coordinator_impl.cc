@@ -50,7 +50,7 @@ void TabGroupSyncCoordinatorImpl::ConnectLocalTabGroup(
   // Retrieve the group again which should have IDs mapped already. Now, update
   // the local tab URLs and group visuals to exactly match sync.
   group = service_->GetGroup(sync_id);
-  platform_delegate_->UpdateLocalTabGroup(*group);
+  platform_delegate_->ConnectLocalTabGroup(*group);
 }
 
 std::unique_ptr<ScopedLocalObservationPauser>

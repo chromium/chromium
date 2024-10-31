@@ -54,6 +54,17 @@ ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
   listener_->ResumeLocalObservation();
 }
 
+TabStripModel* GetTabStripModelForLocalGroup(const LocalTabGroupID& group_id) {
+  Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+  CHECK(browser);
+
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  CHECK(tab_strip_model);
+  CHECK(tab_strip_model->SupportsTabGroups());
+
+  return tab_strip_model;
+}
+
 }  // namespace
 
 TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
@@ -116,6 +127,37 @@ void TabGroupSyncDelegateDesktop::CloseLocalTabGroup(
   listener_->RemoveLocalGroupFromSync(local_id);
 }
 
+void TabGroupSyncDelegateDesktop::ConnectLocalTabGroup(
+    const SavedTabGroup& group) {
+  if (!group.local_group_id().has_value()) {
+    // There is no a corresponding local group to connect.
+    return;
+  }
+
+  const LocalTabGroupID& group_id = group.local_group_id().value();
+  if (listener_->IsTrackingLocalTabGroup(group_id)) {
+    // The local group is already being tracked.
+    return;
+  }
+
+  TabStripModel* tab_strip_model = GetTabStripModelForLocalGroup(group_id);
+  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
+  CHECK(tab_group);
+
+  // Associate all the local tabs with the saved group, note that it's done on
+  // best effort without verifying if they match or valid.
+  gfx::Range tab_range = tab_group->ListTabs();
+  CHECK_LE(tab_range.length(), group.saved_tabs().size());
+  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
+  for (size_t i = 0; i < tab_range.length(); ++i) {
+    tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(tab_range.start() + i);
+    CHECK(tab);
+    tab_guid_mapping.emplace(tab, group.saved_tabs()[i].saved_tab_guid());
+  }
+
+  listener_->ConnectToLocalTabGroup(group, std::move(tab_guid_mapping));
+}
+
 void TabGroupSyncDelegateDesktop::DisconnectLocalTabGroup(
     const LocalTabGroupID& local_id) {
   listener_->DisconnectLocalTabGroup(local_id, ClosingSource::kDeletedByUser);
@@ -130,27 +172,7 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
   const LocalTabGroupID& group_id = group.local_group_id().value();
   if (!listener_->IsTrackingLocalTabGroup(group_id)) {
     // Start tracking this TabGroup if we are not already tracking it.
-    Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
-    CHECK(browser);
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    CHECK(tab_strip_model);
-    CHECK(tab_strip_model->SupportsTabGroups());
-
-    TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
-    CHECK(tab_group);
-
-    const gfx::Range tab_range = tab_group->ListTabs();
-    std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
-
-    for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-      tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(i);
-      CHECK(tab);
-      tab_guid_mapping.emplace(
-          tab, group.saved_tabs()[i - tab_range.start()].saved_tab_guid());
-    }
-
-    listener_->ConnectToLocalTabGroup(group, std::move(tab_guid_mapping));
+    ConnectLocalTabGroup(group);
   } else {
     listener_->UpdateLocalGroupFromSync(group_id);
   }
