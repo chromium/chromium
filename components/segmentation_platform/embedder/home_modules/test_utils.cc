@@ -28,4 +28,30 @@ AllCardSignals CreateAllCardSignals(CardSelectionInfo* card,
   return AllCardSignals(card_signal_map, signal_values);
 }
 
+std::vector<std::string> ExtractCardNames(
+    const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards) {
+  std::vector<std::string> card_names;
+  for (const auto& card : all_cards) {
+    if (card) {
+      card_names.push_back(card->card_name());
+    }
+  }
+  return card_names;
+}
+
+std::vector<std::string> GetSignalKeys(const CardSignalMap& cardSignalMap,
+                                       const char* cardName) {
+  std::vector<std::string> signalKeys;
+
+  auto singleCardSignalMap = cardSignalMap.find(cardName);
+  if (singleCardSignalMap != cardSignalMap.end()) {
+    const auto& signalMap = singleCardSignalMap->second;
+    for (const auto& signalPair : signalMap) {
+      signalKeys.push_back(signalPair.first);
+    }
+  }
+
+  return signalKeys;
+}
+
 }  // namespace segmentation_platform::home_modules

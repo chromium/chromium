@@ -19,6 +19,16 @@ namespace segmentation_platform::home_modules {
 AllCardSignals CreateAllCardSignals(CardSelectionInfo* card,
                                     const std::vector<float>& signal_values);
 
+// Helper function to extract the card names from a vector of CardSelectionInfo
+// objects.
+std::vector<std::string> ExtractCardNames(
+    const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards);
+
+// Helper function to retrieve all SignalKeys associated with a given CardName
+// in the CardSignalMap.
+std::vector<std::string> GetSignalKeys(const CardSignalMap& cardSignalMap,
+                                       const char* cardName);
+
 }  // namespace segmentation_platform::home_modules
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TEST_UTILS_H_

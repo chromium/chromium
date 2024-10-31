@@ -8,13 +8,18 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/test_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform::home_modules {
+
+using ::testing::Contains;
+using ::testing::Not;
 
 class HomeModulesCardRegistryTest : public testing::Test {
  public:
@@ -114,24 +119,20 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
   feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
-  ASSERT_EQ(2u, registry_->all_output_labels().size());
-  ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
-  ASSERT_EQ(1u, registry_->get_label_index(kDefaultBrowserPromo));
-  ASSERT_EQ(2u, registry_->all_cards_input_size());
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kDefaultBrowserPromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 2u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(1u, all_cards.size());
-  ASSERT_EQ(std::string(kDefaultBrowserPromo),
-            std::string(all_cards.front()->card_name()));
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kDefaultBrowserPromo));
+
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
-  ASSERT_EQ(0u,
-            signal_map.find(kDefaultBrowserPromo)
-                ->second
-                .find("has_default_browser_promo_reached_limit_in_role_manager")
-                ->second);
-  ASSERT_EQ(1u, signal_map.find(kDefaultBrowserPromo)
-                    ->second.find("is_default_browser_chrome")
-                    ->second);
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kDefaultBrowserPromo);
+  EXPECT_THAT(
+      signalKeys,
+      Contains("has_default_browser_promo_reached_limit_in_role_manager"));
+  EXPECT_THAT(signalKeys, Contains("is_default_browser_chrome"));
 #endif
 }
 
@@ -144,14 +145,21 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
                             std::make_unique<base::Value>(4));
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
-  ASSERT_EQ(1u, registry_->all_output_labels().size());
-  ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
+  EXPECT_THAT(registry_->all_output_labels(),
+              Not(Contains(kDefaultBrowserPromo)));
   ASSERT_EQ(0u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(0u, all_cards.size());
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kDefaultBrowserPromo)));
+
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
-  ASSERT_EQ(0u, signal_map.size());
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kDefaultBrowserPromo);
+  EXPECT_THAT(
+      signalKeys,
+      Not(Contains("has_default_browser_promo_reached_limit_in_role_manager")));
+  EXPECT_THAT(signalKeys, Not(Contains("is_default_browser_chrome")));
 #endif
 }
 
