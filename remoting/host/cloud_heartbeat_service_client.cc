@@ -127,6 +127,11 @@ void CloudHeartbeatServiceClient::RunHeartbeatResponseCallback(
     const ProtobufHttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!status.ok()) {
+    OnError(std::move(callback), status);
+    return;
+  }
+
   // Cloud hosts always require session authorization and do not support
   // changing the email address of the primary user. This service client always
   // uses 'lite' heartbeats.

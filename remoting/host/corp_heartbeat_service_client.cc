@@ -109,6 +109,11 @@ void CorpHeartbeatServiceClient::RunHeartbeatResponseCallback(
     const ProtobufHttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!status.ok()) {
+    OnError(std::move(callback), status);
+    return;
+  }
+
   // TODO: joedow - Return wait interval from the service and pass it through.
   // TODO: joedow - Return primary email from the service and pass it through.
   std::move(callback).Run(status, /*wait_interval=*/std::nullopt,
