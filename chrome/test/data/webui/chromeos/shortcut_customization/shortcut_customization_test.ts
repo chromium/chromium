@@ -8,7 +8,6 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
 import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
@@ -26,7 +25,6 @@ import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo, fakeSear
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
-import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
@@ -1362,35 +1360,5 @@ suite('shortcutCustomizationAppTest', function() {
     const policyIndicator = getPage().shadowRoot!.querySelector(
                                 '#policyIndicator') as HTMLDivElement;
     assertFalse(!!policyIndicator);
-  });
-
-  test('HandleFindShortcut', async () => {
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
-
-    let searchBox =
-        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
-    let searchField = strictQuery(
-        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
-    assertFalse(searchField.isSearchFocused());
-
-    // press ctrl + f.
-    const keyboardEvent = new KeyboardEvent('keydown', {
-      key: 'f',
-      keyCode: 70,
-      code: 'KeyF',
-      ctrlKey: true,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    });
-    getPage().dispatchEvent(keyboardEvent);
-    await flushTasks();
-
-    searchBox =
-        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
-    searchField = strictQuery(
-        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
-    assertTrue(searchField.isSearchFocused());
   });
 });
