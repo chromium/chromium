@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -71,6 +73,12 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   ModelIsLoading,
   ModelLoadComplete,
 };
+
+bool IOSPasskeysM2Enabled() {
+  return syncer::IsWebauthnCredentialSyncEnabled() &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kIOSPasskeysM2);
+}
 
 }  // namespace
 
@@ -244,7 +252,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
+  if (IOSPasskeysM2Enabled()) {
     // TODO(crbug.com/358343061): Add item for the policy enforced toggle.
     [model addSectionWithIdentifier:
                SectionIdentifierAutomaticPasskeyUpgradesSwitch];
@@ -941,9 +949,8 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 // Returns section index for the change GPM Pin button.
 - (NSInteger)computeGPMPinSectionIndex {
   NSInteger previousSection =
-      syncer::IsWebauthnCredentialSyncEnabled()
-          ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
-          : SectionIdentifierPasswordsInOtherApps;
+      IOSPasskeysM2Enabled() ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
+                             : SectionIdentifierPasswordsInOtherApps;
   return [self.tableViewModel sectionForSectionIdentifier:previousSection] + 1;
 }
 
@@ -955,13 +962,11 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   TableViewModel* tableViewModel = self.tableViewModel;
   NSInteger previousSection = SectionIdentifierPasswordsInOtherApps;
 
-  if (syncer::IsWebauthnCredentialSyncEnabled()) {
-    BOOL hasGPMPinSection =
-        [tableViewModel hasSectionForSectionIdentifier:
-                            SectionIdentifierGooglePasswordManagerPin];
-    previousSection = hasGPMPinSection
-                          ? SectionIdentifierGooglePasswordManagerPin
-                          : SectionIdentifierAutomaticPasskeyUpgradesSwitch;
+  if ([tableViewModel hasSectionForSectionIdentifier:
+                          SectionIdentifierGooglePasswordManagerPin]) {
+    previousSection = SectionIdentifierGooglePasswordManagerPin;
+  } else if (IOSPasskeysM2Enabled()) {
+    previousSection = SectionIdentifierAutomaticPasskeyUpgradesSwitch;
   }
 
   return [tableViewModel sectionForSectionIdentifier:previousSection] + 1;

@@ -13,6 +13,8 @@ namespace password_manager::features {
 
 BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
 
+BASE_DECLARE_FEATURE(kIOSPasskeysM2);
+
 // Helper function returning the status of `kIOSEnablePasscodeShortcut`.
 bool IsPasscodeSettingsEnabled();
 
