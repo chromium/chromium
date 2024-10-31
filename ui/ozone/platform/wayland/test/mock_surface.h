@@ -30,6 +30,8 @@ extern const struct wl_surface_interface kMockSurfaceImpl;
 extern const struct zwp_linux_surface_synchronization_v1_interface
     kMockZwpLinuxSurfaceSynchronizationImpl;
 
+class MockLinuxDrmSyncobjSurface;
+
 // Manage client surface
 class MockSurface : public ServerObject {
  public:
@@ -86,6 +88,13 @@ class MockSurface : public ServerObject {
   }
   TestAugmentedSurface* augmented_surface() { return augmented_surface_; }
 
+  void set_linux_drm_syncobj_surface(MockLinuxDrmSyncobjSurface* surface) {
+    linux_drm_syncobj_surface_ = surface;
+  }
+  MockLinuxDrmSyncobjSurface* linux_drm_syncobj_surface() {
+    return linux_drm_syncobj_surface_;
+  }
+
   void set_blending(TestAlphaBlending* blending) { blending_ = blending; }
   TestAlphaBlending* blending() { return blending_; }
 
@@ -134,6 +143,7 @@ class MockSurface : public ServerObject {
       prioritized_surface_ = nullptr;
   raw_ptr<TestAugmentedSurface, AcrossTasksDanglingUntriaged>
       augmented_surface_ = nullptr;
+  raw_ptr<MockLinuxDrmSyncobjSurface> linux_drm_syncobj_surface_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 

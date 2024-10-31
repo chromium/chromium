@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -34,6 +35,7 @@ struct zcr_blending_v1;
 
 namespace ui {
 
+class WaylandSyncobjAcquireTimeline;
 class WaylandConnection;
 class WaylandOutput;
 class WaylandWindow;
@@ -230,8 +232,9 @@ class WaylandSurface {
 
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
-  // Returns whether or not changes require a commit to the wl_surface.
-  bool ApplyPendingState();
+  // Returns whether or not changes require a commit to the wl_surface, or
+  // std::nullopt if it fails to apply the pending state.
+  std::optional<bool> ApplyPendingState();
 
   // Commits the underlying wl_surface, triggers a wayland connection flush if
   // |flush| is true.
@@ -267,19 +270,35 @@ class WaylandSurface {
                            UiScale_InitScaleAndBounds);
   FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
                            UiScale_HandlePopupGeometry);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceTest, SetExplicitSyncSuccess);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ConfigureWithExplicitSync);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ExplicitSyncNotSet_AcquireTimelineCreationFailed);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ExplicitSyncNotSet_ReleaseTimelineCreationFailed);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ExplicitSyncNotSet_InitialAcquireFenceNotSet);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ExplicitNotSyncSet_InitialAcquireFenceImportFail);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ExplicitSyncSet_SubsequentAcquireFenceNotSet);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
+                           ExplicitSyncNotSet_SubsequentAcquireFenceImportFail);
   // Holds information about each explicit synchronization buffer release.
-  struct ExplicitReleaseInfo {
-    ExplicitReleaseInfo(
+  struct ExplicitReleaseInfoLegacy {
+    ExplicitReleaseInfoLegacy(
         wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
         wl_buffer* buffer,
         ExplicitReleaseCallback explicit_release_callback);
-    ~ExplicitReleaseInfo();
+    ~ExplicitReleaseInfoLegacy();
 
-    ExplicitReleaseInfo(const ExplicitReleaseInfo&) = delete;
-    ExplicitReleaseInfo& operator=(const ExplicitReleaseInfo&) = delete;
+    ExplicitReleaseInfoLegacy(const ExplicitReleaseInfoLegacy&) = delete;
+    ExplicitReleaseInfoLegacy& operator=(const ExplicitReleaseInfoLegacy&) =
+        delete;
 
-    ExplicitReleaseInfo(ExplicitReleaseInfo&&);
-    ExplicitReleaseInfo& operator=(ExplicitReleaseInfo&&);
+    ExplicitReleaseInfoLegacy(ExplicitReleaseInfoLegacy&&);
+    ExplicitReleaseInfoLegacy& operator=(ExplicitReleaseInfoLegacy&&);
 
     wl::Object<zwp_linux_buffer_release_v1> linux_buffer_release;
     // The buffer associated with this explicit release.
@@ -369,6 +388,16 @@ class WaylandSurface {
 
   bool IsViewportScaled(const State& state);
 
+  bool SetExplicitSyncLegacy();
+  void EnsureSurfaceSync();
+  void EnsureAcquireTimeline();
+  // Returns whether explicit sync was set, or std::nullopt if there was some
+  // failure in setting explicit sync.
+  std::optional<bool> SetExplicitSync();
+  void OnFenceAvailable(uint32_t buffer_id,
+                        ExplicitReleaseCallback callback,
+                        base::ScopedFD fd);
+
   // Tracks the last sent src and dst values across wayland protocol s.t. we
   // skip resending them when possible.
   wl_fixed_t src_set_[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
@@ -391,9 +420,6 @@ class WaylandSurface {
   // called.
   State state_;
 
-  // Creates (if not created) the synchronization surface and returns a pointer
-  // to it.
-  zwp_linux_surface_synchronization_v1* GetOrCreateSurfaceSync();
   augmented_surface* get_augmented_surface() {
     return augmented_surface_.get();
   }
@@ -404,7 +430,9 @@ class WaylandSurface {
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
   wl::Object<zcr_blending_v1> blending_;
-  wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
+  wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_legacy_;
+  wl::Object<wp_linux_drm_syncobj_surface_v1> surface_sync_;
+  std::unique_ptr<WaylandSyncobjAcquireTimeline> acquire_timeline_;
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<augmented_surface> augmented_surface_;
   wl::Object<wp_content_type_v1> content_type_;
@@ -412,8 +440,8 @@ class WaylandSurface {
   std::unique_ptr<WaylandZcrColorManagementSurface>
       zcr_color_management_surface_;
   std::unique_ptr<WaylandZAuraSurface> zaura_surface_;
-  base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
-      linux_buffer_releases_;
+  base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfoLegacy>
+      linux_buffer_releases_legacy_;
   ExplicitReleaseCallback next_explicit_release_request_;
 
   // A cached copy of connection->SurfaceSubmissionInPixelCoordinates(). While
@@ -457,6 +485,8 @@ class WaylandSurface {
                               int32_t fence);
   static void OnImmediateRelease(void* data,
                                  zwp_linux_buffer_release_v1* buffer_release);
+
+  base::WeakPtrFactory<WaylandSurface> weak_factory_{this};
 };
 
 }  // namespace ui

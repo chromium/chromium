@@ -7,12 +7,28 @@
 
 #include <map>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 namespace wl {
 
 class TestWpLinuxDrmSyncobjManagerV1;
+
+class MockLinuxDrmSyncobjSurface : public ServerObject {
+ public:
+  MockLinuxDrmSyncobjSurface(wl_resource* resource, wl_resource* surface);
+  ~MockLinuxDrmSyncobjSurface() override;
+
+  MOCK_METHOD(void,
+              SetAcquirePoint,
+              (int timeline_fd, uint64_t acquire_point),
+              ());
+  MOCK_METHOD(void,
+              SetReleasePoint,
+              (int timeline_fd, uint64_t acquire_point),
+              ());
+};
 
 class TestLinuxDrmSyncobjTimeline : public ServerObject {
  public:

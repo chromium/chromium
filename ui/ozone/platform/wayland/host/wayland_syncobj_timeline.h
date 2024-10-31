@@ -26,6 +26,7 @@ class WaylandSyncobjTimeline {
   // Increments the sync point for this syncobj timeline.
   // The sync point is initially set to zero.
   virtual void IncrementSyncPoint();
+  void DecrementSyncPoint();
 
   wp_linux_drm_syncobj_timeline_v1* timeline() const { return timeline_.get(); }
   uint64_t sync_point() const { return sync_point_; }

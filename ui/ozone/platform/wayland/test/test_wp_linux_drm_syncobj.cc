@@ -6,25 +6,61 @@
 
 #include <linux-drm-syncobj-v1-server-protocol.h>
 
+#include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 namespace wl {
-
-const struct wp_linux_drm_syncobj_timeline_v1_interface
-    kTestLinuxDrmSyncobjTimelineImpl = {.destroy = DestroyResource};
 
 namespace {
 
 constexpr uint32_t kLinuxDrmSyncobjVersion = 1;
 constexpr uint32_t kTestLinuxDrmSyncobjTimelineVersion = 1;
+constexpr uint32_t kMockLinuxDrmSyncobjSurfaceVersion = 1;
+
+uint64_t ToU64SyncPoint(uint32_t point_hi, uint32_t point_lo) {
+  return (static_cast<uint64_t>(point_hi) << 32) |
+         static_cast<uint64_t>(point_lo);
+}
+
+void SetAcquirePoint(struct wl_client* client,
+                     struct wl_resource* resource,
+                     struct wl_resource* timeline,
+                     uint32_t point_hi,
+                     uint32_t point_lo) {
+  auto* timeline_resource =
+      GetUserDataAs<TestLinuxDrmSyncobjTimeline>(timeline);
+  GetUserDataAs<MockLinuxDrmSyncobjSurface>(resource)->SetAcquirePoint(
+      timeline_resource->fd(), ToU64SyncPoint(point_hi, point_lo));
+}
+
+void SetReleasePoint(struct wl_client* client,
+                     struct wl_resource* resource,
+                     struct wl_resource* timeline,
+                     uint32_t point_hi,
+                     uint32_t point_lo) {
+  auto* timeline_resource =
+      GetUserDataAs<TestLinuxDrmSyncobjTimeline>(timeline);
+  GetUserDataAs<MockLinuxDrmSyncobjSurface>(resource)->SetReleasePoint(
+      timeline_resource->fd(), ToU64SyncPoint(point_hi, point_lo));
+}
+
+const struct wp_linux_drm_syncobj_surface_v1_interface
+    kMockLinuxDrmSyncobjSurfaceImpl = {.destroy = DestroyResource,
+                                       .set_acquire_point = SetAcquirePoint,
+                                       .set_release_point = SetReleasePoint};
 
 void GetSurface(struct wl_client* client,
                 struct wl_resource* resource,
                 uint32_t id,
                 struct wl_resource* surface) {
-  // TODO(crbug.com/367623923) Add support for creating test surface along with
-  // implementation and unit tests.
+  CreateResourceWithImpl<MockLinuxDrmSyncobjSurface>(
+      client, &wp_linux_drm_syncobj_surface_v1_interface,
+      kMockLinuxDrmSyncobjSurfaceVersion, &kMockLinuxDrmSyncobjSurfaceImpl, id,
+      surface);
 }
+
+const struct wp_linux_drm_syncobj_timeline_v1_interface
+    kTestLinuxDrmSyncobjTimelineImpl = {.destroy = DestroyResource};
 
 void ImportTimeline(struct wl_client* client,
                     struct wl_resource* resource,
@@ -37,6 +73,14 @@ void ImportTimeline(struct wl_client* client,
 }
 
 }  // namespace
+
+MockLinuxDrmSyncobjSurface::MockLinuxDrmSyncobjSurface(wl_resource* resource,
+                                                       wl_resource* surface)
+    : ServerObject(resource) {
+  GetUserDataAs<MockSurface>(surface)->set_linux_drm_syncobj_surface(this);
+}
+
+MockLinuxDrmSyncobjSurface::~MockLinuxDrmSyncobjSurface() = default;
 
 TestLinuxDrmSyncobjTimeline::TestLinuxDrmSyncobjTimeline(
     wl_resource* resource,

@@ -84,6 +84,10 @@ struct WaylandFrame {
   base::ScopedFD merged_release_fence_fd;
   // Whether this frame has had OnSubmission sent for it.
   bool submission_acked;
+  // Whether OnSubmission for this frame should be sent with
+  // SWAP_NAK_RECREATE_BUFFERS. This is used if there was a failure in
+  // submitting this frame which shouldn't result in a GPU process restart.
+  bool swap_result_recreate_buffers = false;
 
   // The wayland object identifying this feedback.
   wl::Object<struct wp_presentation_feedback> pending_feedback;
@@ -148,11 +152,12 @@ class WaylandFrameManager {
   void EvaluateShouldSkipFrameCallbacks();
 
   // Configures |surface| but does not commit wl_surface states yet.
-  // Returns whether or not changes require a commit to the wl_surface.
-  bool ApplySurfaceConfigure(WaylandFrame* frame,
-                             WaylandSurface* surface,
-                             wl::WaylandOverlayConfig& config,
-                             bool needs_opaque_region);
+  // Returns whether or not changes require a commit to the wl_surface, or
+  // std::nullopt if there was a failure in configuring the surface.
+  std::optional<bool> ApplySurfaceConfigure(WaylandFrame* frame,
+                                            WaylandSurface* surface,
+                                            wl::WaylandOverlayConfig& config,
+                                            bool needs_opaque_region);
 
   void MaybeProcessSubmittedFrames();
   void ProcessOldSubmittedFrame(WaylandFrame* frame);

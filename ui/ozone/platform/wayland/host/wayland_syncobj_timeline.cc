@@ -71,6 +71,12 @@ void WaylandSyncobjTimeline::IncrementSyncPoint() {
   current_sync_point_has_fence_ = false;
 }
 
+void WaylandSyncobjTimeline::DecrementSyncPoint() {
+  if (sync_point_ > 0) {
+    --sync_point_;
+  }
+}
+
 WaylandSyncobjAcquireTimeline::WaylandSyncobjAcquireTimeline(
     DrmSyncobjIoctlWrapper* drm,
     std::unique_ptr<DrmSyncobj> syncobj,

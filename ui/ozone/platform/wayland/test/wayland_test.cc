@@ -66,6 +66,9 @@ void WaylandTestBase::SetUp() {
   }
 
   ASSERT_TRUE(server_.Start());
+  if (server_.wp_linux_drm_syncobj_manager_v1()) {
+    WaylandConnectionTestApi(connection_.get()).EnableLinuxDrmSyncobj();
+  }
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());

@@ -177,6 +177,9 @@ class TestWaylandServerThread : public TestOutput::Delegate,
   zwp_linux_explicit_synchronization_v1() {
     return &zwp_linux_explicit_synchronization_v1_;
   }
+  TestWpLinuxDrmSyncobjManagerV1* wp_linux_drm_syncobj_manager_v1() {
+    return &wp_linux_drm_syncobj_manager_v1_;
+  }
   MockZwpLinuxDmabufV1* zwp_linux_dmabuf_v1() { return &zwp_linux_dmabuf_v1_; }
 
   wl_display* display() const { return display_.get(); }

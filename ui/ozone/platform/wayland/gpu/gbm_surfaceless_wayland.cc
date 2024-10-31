@@ -19,6 +19,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/common/egl_util.h"
@@ -342,7 +343,8 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
 
   pending_presentation_frames_.push_back(std::move(submitted_frame));
 
-  if (swap_result != gfx::SwapResult::SWAP_ACK) {
+  if (swap_result != gfx::SwapResult::SWAP_ACK &&
+      swap_result != gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
     last_swap_buffers_result_ = false;
     return;
   }

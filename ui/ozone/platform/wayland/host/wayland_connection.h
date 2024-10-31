@@ -158,7 +158,8 @@ class WaylandConnection {
     return linux_drm_syncobj_manager_.get();
   }
   bool SupportsExplicitSync() const {
-    return !!linux_explicit_synchronization_v1();
+    return !!linux_explicit_synchronization_v1() ||
+           !!linux_drm_syncobj_manager_v1();
   }
   zxdg_decoration_manager_v1* xdg_decoration_manager_v1() const {
     return xdg_decoration_manager_.get();
@@ -512,6 +513,7 @@ class WaylandConnection {
   wl::Object<zcr_text_input_extension_v1> text_input_extension_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
       linux_explicit_synchronization_;
+  bool enable_linux_drm_syncobj_for_testing_ = false;
   wl::Object<wp_linux_drm_syncobj_manager_v1> linux_drm_syncobj_manager_;
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;

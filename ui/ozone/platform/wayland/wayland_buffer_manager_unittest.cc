@@ -2483,6 +2483,8 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   });
 }
 
+// TODO(crbug.com/367623923) Decouple this test from the older explicit sync
+// protocol and/or add coverage for the new linux-drm-syncobj protocol.
 TEST_P(WaylandBufferManagerTest, FencedRelease) {
   if (!connection_->linux_explicit_synchronization_v1())
     GTEST_SKIP();
