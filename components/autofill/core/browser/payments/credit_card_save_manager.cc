@@ -505,8 +505,7 @@ void CreditCardSaveManager::OnDidUploadCard(
           /*uploaded_card=*/&upload_request_.card);
 
   auto on_confirmation_closed_callback =
-      IsSaveCardLoadingAndConfirmationEnabled() &&
-              get_details_for_enrollment_response_details.has_value()
+      get_details_for_enrollment_response_details.has_value()
           ? std::make_optional(base::BindOnce(
                 &CreditCardSaveManager::InitVirtualCardEnroll,
                 weak_ptr_factory_.GetWeakPtr(), upload_request_.card,
@@ -516,17 +515,6 @@ void CreditCardSaveManager::OnDidUploadCard(
   // Show credit card upload feedback.
   client_->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       result, std::move(on_confirmation_closed_callback));
-
-  // Init virtual card enrollment since there is no save card
-  // confirmation bubble showing if the flag is disabled.
-  // TODO(crbug.com/309627643): Clean up Chrome feature flag:
-  // autofill-enable-save-card-loading-and-confirmation
-  if (get_details_for_enrollment_response_details.has_value() &&
-      !IsSaveCardLoadingAndConfirmationEnabled()) {
-    InitVirtualCardEnroll(
-        upload_request_.card,
-        std::move(get_details_for_enrollment_response_details));
-  }
 
   if (observer_for_testing_) {
     observer_for_testing_->OnShowCardSavedFeedback();

@@ -6058,65 +6058,6 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
       "Autofill.CreditCardUpload.RanLocalSaveFallback", false, 1);
 }
 
-class CreditCardSaveManagerWithLoadingAndConfirmation
-    : public CreditCardSaveManagerTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CreditCardSaveManagerWithLoadingAndConfirmation() = default;
-  bool IsSaveCardLoadingAndConfirmationEnabled() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(CreditCardSaveManagerTest,
-                         CreditCardSaveManagerWithLoadingAndConfirmation,
-                         testing::Bool());
-
-// Tests that `CreditCardSaveManager` directly calls `InitVirtualCardEnroll`
-// for uploaded card that is eligible for enrollment when loading and
-// confirmation is disabled.
-TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
-       InitVirtualCardEnroll_LoadingAndConfirmation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kAutofillEnableSaveCardLoadingAndConfirmation,
-      IsSaveCardLoadingAndConfirmationEnabled());
-
-  payments::UploadCardResponseDetails upload_card_response_details;
-  upload_card_response_details.instrument_id = 9223372036854775807;
-  upload_card_response_details.virtual_card_enrollment_state =
-      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
-
-  payments::GetDetailsForEnrollmentResponseDetails
-      get_details_for_enrollment_response_details;
-  get_details_for_enrollment_response_details.vcn_context_token =
-      "test_context_token";
-  get_details_for_enrollment_response_details.google_legal_message = {
-      TestLegalMessageLine("test_google_legal_message")};
-  get_details_for_enrollment_response_details.issuer_legal_message = {
-      TestLegalMessageLine("test_issuer_legal_message")};
-  upload_card_response_details.get_details_for_enrollment_response_details =
-      get_details_for_enrollment_response_details;
-  credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
-
-  EXPECT_CALL(payments_client(),
-              CreditCardUploadCompleted(
-                  payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-                  A<std::optional<payments::PaymentsAutofillClient::
-                                      OnConfirmationClosedCallback>>()));
-
-  // If loading and confirmation is enabled, `InitVirtualCardEnroll` is passed
-  // as a closure to save card bubble controller that executes it after bubble
-  // is closed. When flag is disabled, since there is no confirmation bubble
-  // showing, CCSM calls `InitVirtualCardEnroll`.
-  int num_of_calls = IsSaveCardLoadingAndConfirmationEnabled() ? 0 : 1;
-  EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
-                  payments_client().GetVirtualCardEnrollmentManager()),
-              InitVirtualCardEnroll)
-      .Times(num_of_calls);
-
-  credit_card_save_manager_->OnDidUploadCard(
-      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      upload_card_response_details);
-}
 
 class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
     : public CreditCardSaveManagerTest,
@@ -6134,8 +6075,6 @@ class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
 // correctly only when a card becomes eligible after upload.
 TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
        PrepareUploadedCardForVirtualCardEnrollment) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableSaveCardLoadingAndConfirmation};
   payments::UploadCardResponseDetails upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://www.example.com/");
   upload_card_response_details.instrument_id = 9223372036854775807;
@@ -6179,10 +6118,9 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
 
-  // If loading and confirmation is enabled, `InitVirtualCardEnroll` is passed
-  // as a closure to save card bubble controller that executes it after bubble
-  // is closed. Since there is no actual bubble, calling `InitVirtualCardEnroll`
-  // from here.
+  // `InitVirtualCardEnroll` is passed as a closure to save card bubble
+  // controller that executes it after bubble is closed. Since there is no
+  // actual bubble, calling `InitVirtualCardEnroll` from here.
   credit_card_save_manager_->InitVirtualCardEnroll(
       credit_card_save_manager_->upload_request()->card,
       std::move(upload_card_response_details

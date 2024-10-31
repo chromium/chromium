@@ -113,9 +113,7 @@ void SaveCardOfferBubbleViews::Init() {
 
   if (controller() &&
       (controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE ||
-       controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+       controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS)) {
     loading_row_ = AddChildView(CreateLoadingRow());
     if (controller()->GetBubbleType() == BubbleType::UPLOAD_IN_PROGRESS) {
       ShowThrobber();
@@ -127,10 +125,7 @@ void SaveCardOfferBubbleViews::Init() {
 
 bool SaveCardOfferBubbleViews::Accept() {
   bool show_throbber =
-      controller() &&
-      controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation);
+      controller() && controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE;
 
   if (show_throbber) {
     ShowThrobber();

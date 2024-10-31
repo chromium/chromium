@@ -232,35 +232,28 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
     std::optional<
         payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    // Hide the current bubble if still showing.
-    HideBubble();
+  // Hide the current bubble if still showing.
+  HideBubble();
 
-    is_reshow_ = false;
-    is_triggered_by_user_gesture_ = false;
-    current_bubble_type_ = BubbleType::UPLOAD_COMPLETED;
-    confirmation_ui_params_ =
-        card_saved ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-                         CreateForSaveCardSuccess()
-                   : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-                         CreateForSaveCardFailure();
-    on_confirmation_closed_callback_ =
-        std::move(on_confirmation_closed_callback);
+  is_reshow_ = false;
+  is_triggered_by_user_gesture_ = false;
+  current_bubble_type_ = BubbleType::UPLOAD_COMPLETED;
+  confirmation_ui_params_ =
+      card_saved ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+                       CreateForSaveCardSuccess()
+                 : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+                       CreateForSaveCardFailure();
+  on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
 
-    // Show upload confirmation bubble.
-    ShowBubble();
+  // Show upload confirmation bubble.
+  ShowBubble();
 
-    // Auto close confirmation bubble when card saved is successful.
-    if (card_saved) {
-      auto_close_confirmation_timer_.Start(
-          FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
-          base::BindOnce(&SaveCardBubbleControllerImpl::HideSaveCardBubble,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  } else {
-    autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
-        /*is_shown=*/false, card_saved);
+  // Auto close confirmation bubble when card saved is successful.
+  if (card_saved) {
+    auto_close_confirmation_timer_.Start(
+        FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
+        base::BindOnce(&SaveCardBubbleControllerImpl::HideSaveCardBubble,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -482,24 +475,18 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       // because we don't immediately close the bubble (at which time the other
       // metrics are logged) after OnSaveButton() and logging now aligns the
       // timing of the log with the other cases.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-        autofill_metrics::LogSaveCardPromptResultMetric(
-            autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
-            is_reshow_, options_,
-            personal_data_manager_->payments_data_manager()
-                .GetPaymentsSigninStateForMetrics(),
-            /*has_saved_cards=*/
-            !personal_data_manager_->payments_data_manager()
-                 .GetCreditCards()
-                 .empty());
-        autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
-            /*is_shown=*/true);
-        current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
-      } else {
-        autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
-            /*is_shown=*/false);
-      }
+      autofill_metrics::LogSaveCardPromptResultMetric(
+          autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
+          is_reshow_, options_,
+          personal_data_manager_->payments_data_manager()
+              .GetPaymentsSigninStateForMetrics(),
+          /*has_saved_cards=*/
+          !personal_data_manager_->payments_data_manager()
+               .GetCreditCards()
+               .empty());
+      autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
+          /*is_shown=*/true);
+      current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
 
       std::move(upload_save_card_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
@@ -744,10 +731,9 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
   }
 }
 
+// TODO(crbug.com/374815809): Remove this method.
 bool SaveCardBubbleControllerImpl::ShouldShowSavingPaymentAnimation() const {
-  return !base::FeatureList::IsEnabled(
-             features::kAutofillEnableSaveCardLoadingAndConfirmation) &&
-         current_bubble_type_ == BubbleType::UPLOAD_IN_PROGRESS;
+  return false;
 }
 
 bool SaveCardBubbleControllerImpl::ShouldShowPaymentSavedLabelAnimation()
@@ -789,19 +775,13 @@ SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting() {
 
 void SaveCardBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    if (visibility == content::Visibility::VISIBLE &&
-        (was_url_opened_ ||
-         current_bubble_type_ == BubbleType::UPLOAD_COMPLETED)) {
-      ReshowBubble(/*is_user_gesture=*/false);
-    } else if (visibility == content::Visibility::HIDDEN) {
-      HideBubble();
-    }
-    return;
+  if (visibility == content::Visibility::VISIBLE &&
+      (was_url_opened_ ||
+       current_bubble_type_ == BubbleType::UPLOAD_COMPLETED)) {
+    ReshowBubble(/*is_user_gesture=*/false);
+  } else if (visibility == content::Visibility::HIDDEN) {
+    HideBubble();
   }
-
-  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
 }
 
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
@@ -921,10 +901,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
 }
 
 void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    was_url_opened_ = true;
-  }
+  was_url_opened_ = true;
 
   web_contents()->OpenURL(
       content::OpenURLParams(url, content::Referrer(),
