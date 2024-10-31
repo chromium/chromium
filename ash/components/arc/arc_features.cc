@@ -159,11 +159,6 @@ BASE_FEATURE(kEnableReadOnlyPermissions,
              "ArcEnableReadOnlyPermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether we should delegate audio focus requests from ARC to Chrome.
-BASE_FEATURE(kEnableUnifiedAudioFocusFeature,
-             "ArcEnableUnifiedAudioFocus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether ARC handles unmanaged->managed account transition.
 BASE_FEATURE(kEnableUnmanagedToManagedTransitionFeature,
              "ArcEnableUnmanagedToManagedTransitionFeature",
