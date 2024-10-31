@@ -5,11 +5,15 @@
 #include "media/base/video_frame_layout.h"
 
 #include <string.h>
+
 #include <numeric>
 #include <sstream>
 
+#include "base/bits.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "media/base/video_frame.h"
 
 namespace media {
 
@@ -30,11 +34,16 @@ std::string VectorToString(const std::vector<T>& vec) {
   return result.str();
 }
 
-std::vector<ColorPlaneLayout> PlanesFromStrides(
-    const std::vector<int32_t>& strides) {
+std::vector<ColorPlaneLayout> CreatePlanes(VideoPixelFormat format,
+                                           const std::vector<int32_t>& strides,
+                                           const gfx::Size& coded_size) {
   std::vector<ColorPlaneLayout> planes(strides.size());
   for (size_t i = 0; i < strides.size(); i++) {
+    CHECK_GE(strides[i], 0) << " plane: " << i;
+    size_t rows =
+        VideoFrame::PlaneSizeInSamples(format, i, coded_size).height();
     planes[i].stride = strides[i];
+    planes[i].size = strides[i] * rows;
   }
   return planes;
 }
@@ -111,7 +120,8 @@ std::optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
     std::vector<int32_t> strides,
     size_t buffer_addr_align,
     uint64_t modifier) {
-  return CreateWithPlanes(format, coded_size, PlanesFromStrides(strides),
+  return CreateWithPlanes(format, coded_size,
+                          CreatePlanes(format, strides, coded_size),
                           buffer_addr_align, modifier);
 }
 

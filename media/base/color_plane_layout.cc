@@ -4,12 +4,16 @@
 
 #include "media/base/color_plane_layout.h"
 
+#include "base/check_op.h"
+
 namespace media {
 
 ColorPlaneLayout::ColorPlaneLayout() = default;
 
 ColorPlaneLayout::ColorPlaneLayout(int32_t stride, size_t offset, size_t size)
-    : stride(stride), offset(offset), size(size) {}
+    : stride(stride), offset(offset), size(size) {
+  CHECK_GE(stride, 0);
+}
 
 ColorPlaneLayout::~ColorPlaneLayout() = default;
 

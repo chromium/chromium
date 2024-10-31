@@ -572,33 +572,6 @@ TEST_F(VideoResourceUpdaterTest, HighBitFrameSoftwareCompositor) {
   EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
 }
 
-TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrame) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-  scoped_refptr<VideoFrame> video_frame = CreateWonkyTestYUVVideoFrame();
-
-  VideoFrameExternalResource resource =
-      updater->CreateExternalResourceFromVideoFrame(video_frame);
-  // With multiplanar shared images, a TextureDrawQuad is created instead of
-  // a YUVDrawQuad.
-  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-
-  // Create the resource again, to test the path where the
-  // resource are cached.
-  resource = updater->CreateExternalResourceFromVideoFrame(video_frame);
-  // With multiplanar shared images, a TextureDrawQuad is created instead of
-  // a YUVDrawQuad.
-  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-}
-
-TEST_F(VideoResourceUpdaterTest, WonkySoftwareFrameSoftwareCompositor) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForSoftware();
-  scoped_refptr<VideoFrame> video_frame = CreateWonkyTestYUVVideoFrame();
-
-  VideoFrameExternalResource resource =
-      updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
-}
-
 TEST_F(VideoResourceUpdaterTest, ReuseResource) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame = CreateTestYUVVideoFrame();

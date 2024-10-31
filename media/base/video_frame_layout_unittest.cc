@@ -91,7 +91,9 @@ TEST(VideoFrameLayout, CreateWithStrides) {
   for (size_t i = 0; i < 3; ++i) {
     EXPECT_EQ(layout->planes()[i].stride, strides[i]);
     EXPECT_EQ(layout->planes()[i].offset, 0u);
-    EXPECT_EQ(layout->planes()[i].size, 0u);
+    size_t size =
+        strides[i] * (i > 0 ? coded_size.height() / 2 : coded_size.height());
+    EXPECT_EQ(layout->planes()[i].size, size);
   }
 }
 
@@ -217,8 +219,8 @@ TEST(VideoFrameLayout, ToStringWithPlanes) {
       ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_I420, coded_size: 320x180, "
-            "planes (stride, offset, size): [(384, 0, 0), (192, 0, 0), "
-            "(192, 0, 0)], is_multi_planar: 0, buffer_addr_align: 32, "
+            "planes (stride, offset, size): [(384, 0, 69120), (192, 0, 17280), "
+            "(192, 0, 17280)], is_multi_planar: 0, buffer_addr_align: 32, "
             "modifier: " +
                 kNoModifier + ")");
 }
