@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
@@ -125,16 +126,21 @@ public class MismatchNotificationController
                                         .signin_account_picker_bottom_sheet_benefits_subtitle)
                         .build();
 
-        signinAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                context,
-                mProfile,
-                bottomSheetStrings,
-                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.NO_SIGNIN,
-                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
-                mAppAccountId);
+        @Nullable
+        Intent intent =
+                signinAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                        context,
+                        mProfile,
+                        bottomSheetStrings,
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.NO_SIGNIN,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                        SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
+                        mAppAccountId);
+        if (intent != null) {
+            context.startActivity(intent);
+        }
 
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }

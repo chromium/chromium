@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.identity_disc;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
@@ -366,19 +367,24 @@ public class IdentityDiscController
                                         R.string
                                                 .signin_account_picker_bottom_sheet_benefits_subtitle)
                                 .build();
-                SigninAndHistorySyncActivityLauncherImpl.get()
-                        .launchActivityIfAllowed(
-                                mContext,
-                                mProfileSupplier.get().getOriginalProfile(),
-                                bottomSheetStrings,
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                        .OPTIONAL,
-                                SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                /* selectedCoreAccountId= */ null);
+                @Nullable
+                Intent intent =
+                        SigninAndHistorySyncActivityLauncherImpl.get()
+                                .createBottomSheetSigninIntentOrShowError(
+                                        mContext,
+                                        mProfileSupplier.get().getOriginalProfile(),
+                                        bottomSheetStrings,
+                                        BottomSheetSigninAndHistorySyncCoordinator
+                                                .NoAccountSigninMode.BOTTOM_SHEET,
+                                        BottomSheetSigninAndHistorySyncCoordinator
+                                                .WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
+                                                .OPTIONAL,
+                                        SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                        /* selectedCoreAccountId= */ null);
+                if (intent != null) {
+                    mContext.startActivity(intent);
+                }
             } else {
                 SyncConsentActivityLauncherImpl.get()
                         .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);

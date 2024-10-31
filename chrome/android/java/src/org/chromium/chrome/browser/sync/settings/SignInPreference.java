@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.sync.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -207,19 +209,25 @@ public class SignInPreference extends Preference
                                 new AccountPickerBottomSheetStrings.Builder(
                                                 R.string.signin_account_picker_bottom_sheet_title)
                                         .build();
-                        SigninAndHistorySyncActivityLauncherImpl.get()
-                                .launchActivityIfAllowed(
-                                        getContext(),
-                                        mProfile,
-                                        bottomSheetStrings,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .NoAccountSigninMode.BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                                .OPTIONAL,
-                                        SigninAccessPoint.SETTINGS,
-                                        /* selectedCoreAccountId= */ null);
+                        @Nullable
+                        Intent intent =
+                                SigninAndHistorySyncActivityLauncherImpl.get()
+                                        .createBottomSheetSigninIntentOrShowError(
+                                                getContext(),
+                                                mProfile,
+                                                bottomSheetStrings,
+                                                BottomSheetSigninAndHistorySyncCoordinator
+                                                        .NoAccountSigninMode.BOTTOM_SHEET,
+                                                BottomSheetSigninAndHistorySyncCoordinator
+                                                        .WithAccountSigninMode
+                                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                                BottomSheetSigninAndHistorySyncCoordinator
+                                                        .HistoryOptInMode.OPTIONAL,
+                                                SigninAccessPoint.SETTINGS,
+                                                /* selectedCoreAccountId= */ null);
+                        if (intent != null) {
+                            getContext().startActivity(intent);
+                        }
                     } else {
                         SyncConsentActivityLauncherImpl.get()
                                 .launchActivityIfAllowed(

@@ -789,7 +789,7 @@ public class SafetyCheckMediatorTest {
         click(getPasswordsClickListener(mPasswordCheckModel));
 
         verify(mSigninLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(),
                         eq(mProfile),
                         any(),

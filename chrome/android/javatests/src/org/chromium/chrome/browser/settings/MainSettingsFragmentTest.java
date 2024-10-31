@@ -530,7 +530,7 @@ public class MainSettingsFragmentTest {
         onView(withText(R.string.signin_settings_title)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(Activity.class),
                         any(Profile.class),
                         any(AccountPickerBottomSheetStrings.class),

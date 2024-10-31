@@ -610,18 +610,24 @@ class SafetyCheckMediator {
                                                             .safety_check_passwords_error_signed_out)
                                             .build();
                             // Open the sign-in page.
-                            mSigninLauncher.launchActivityIfAllowed(
-                                    p.getContext(),
-                                    mProfile,
-                                    strings,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .ADD_ACCOUNT,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
-                                    SigninAccessPoint.SAFETY_CHECK,
-                                    /* selectedCoreAccountId= */ null);
+                            @Nullable
+                            Intent intent =
+                                    mSigninLauncher.createBottomSheetSigninIntentOrShowError(
+                                            p.getContext(),
+                                            mProfile,
+                                            strings,
+                                            BottomSheetSigninAndHistorySyncCoordinator
+                                                    .NoAccountSigninMode.ADD_ACCOUNT,
+                                            BottomSheetSigninAndHistorySyncCoordinator
+                                                    .WithAccountSigninMode
+                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            BottomSheetSigninAndHistorySyncCoordinator
+                                                    .HistoryOptInMode.NONE,
+                                            SigninAccessPoint.SAFETY_CHECK,
+                                            /* selectedCoreAccountId= */ null);
+                            if (intent != null) {
+                                p.getContext().startActivity(intent);
+                            }
                         } else {
                             // Open the sync page.
                             mSyncLauncher.launchActivityIfAllowed(

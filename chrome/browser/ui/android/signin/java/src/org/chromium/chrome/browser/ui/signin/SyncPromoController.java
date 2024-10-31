@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -666,16 +667,22 @@ public class SyncPromoController {
     private void signinWithNewAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
-            mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                    context,
-                    mProfile,
-                    mBottomSheetStrings,
-                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                    mHistoryOptInMode,
-                    mAccessPoint,
-                    /* selectedCoreAccountId= */ null);
+            @Nullable
+            Intent intent =
+                    mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                            context,
+                            mProfile,
+                            mBottomSheetStrings,
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            mHistoryOptInMode,
+                            mAccessPoint,
+                            /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                context.startActivity(intent);
+            }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(
                     context, mAccessPoint);
@@ -685,16 +692,22 @@ public class SyncPromoController {
     private void signinWithDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
-            mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                    context,
-                    mProfile,
-                    mBottomSheetStrings,
-                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                    mHistoryOptInMode,
-                    mAccessPoint,
-                    /* selectedCoreAccountId= */ null);
+            @Nullable
+            Intent intent =
+                    mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                            context,
+                            mProfile,
+                            mBottomSheetStrings,
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            mHistoryOptInMode,
+                            mAccessPoint,
+                            /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                context.startActivity(intent);
+            }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
                     context, mAccessPoint, mProfileData.getAccountEmail());
@@ -704,16 +717,22 @@ public class SyncPromoController {
     private void signinWithNotDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
-            mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                    context,
-                    mProfile,
-                    mBottomSheetStrings,
-                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                            .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                    mHistoryOptInMode,
-                    mAccessPoint,
-                    /* selectedCoreAccountId= */ null);
+            @Nullable
+            Intent intent =
+                    mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                            context,
+                            mProfile,
+                            mBottomSheetStrings,
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                            mHistoryOptInMode,
+                            mAccessPoint,
+                            /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                context.startActivity(intent);
+            }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
                     context, mAccessPoint, mProfileData.getAccountEmail());

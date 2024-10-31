@@ -206,7 +206,7 @@ public class SyncPromoControllerUITest {
         onView(withId(R.id.sync_promo_signin_button)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
@@ -236,7 +236,7 @@ public class SyncPromoControllerUITest {
         onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
@@ -270,7 +270,7 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
@@ -300,7 +300,7 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),
@@ -330,7 +330,7 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
                         eq(BOTTOM_SHEET_STRINGS),

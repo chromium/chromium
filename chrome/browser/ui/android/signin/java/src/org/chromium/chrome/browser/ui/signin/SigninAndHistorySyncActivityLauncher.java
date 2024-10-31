@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
@@ -39,8 +40,8 @@ public interface SigninAndHistorySyncActivityLauncher {
     @interface AccessPoint {}
 
     /**
-     * Launches the {@link SigninAndHistorySyncActivity} from an eligible access point, shows error
-     * UI if sign-in is not allowed. Returns a boolean indicating whether the activity was launched.
+     * Create {@Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access point,
+     * Show an error if the intent can't be created.
      *
      * @param profile the current profile.
      * @param bottomSheetStrings the strings shown in the sign-in bottom sheet.
@@ -55,7 +56,8 @@ public interface SigninAndHistorySyncActivityLauncher {
      *     sheet. If null, the default account will be displayed.
      */
     @MainThread
-    boolean launchActivityIfAllowed(
+    @Nullable
+    Intent createBottomSheetSigninIntentOrShowError(
             Context context,
             Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
@@ -67,10 +69,25 @@ public interface SigninAndHistorySyncActivityLauncher {
             @Nullable CoreAccountId selectedCoreAccountId);
 
     /**
-     * Launches the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if sign-in and
-     * history opt-in are allowed.
+     * Create {@Intent} for the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if
+     * sign-in and history opt-in are allowed. Does not show any error if the intent can't be
+     * created.
+     *
+     * @param config The object containing IDS of resources for the sign-in & history sync views.
      */
     @MainThread
-    void launchFullscreenSigninActivityIfAllowed(
+    @Nullable
+    Intent createFullscreenSigninIntent(
+            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config);
+
+    /**
+     * Create {@Intent} for the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if
+     * sign-in and history opt-in are allowed. Show an error if the intent can't be created.
+     *
+     * @param config The object containing IDS of resources for the sign-in & history sync views.
+     */
+    @MainThread
+    @Nullable
+    Intent createFullscreenSigninIntentOrShowError(
             Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config);
 }

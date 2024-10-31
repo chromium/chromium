@@ -72,6 +72,8 @@ public final class FeedActionDelegateImplTest {
 
     @Mock private BottomSheetController mBottomSheetController;
 
+    @Mock private Intent mSigninIntent;
+
     @Captor ArgumentCaptor<Intent> mIntentCaptor;
 
     private FeedActionDelegateImpl mFeedActionDelegateImpl;
@@ -119,9 +121,7 @@ public final class FeedActionDelegateImplTest {
     public void testStartSigninFlow_shownWhenFlagEnabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
-        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
-        verify(mMockSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+        when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(),
                         any(),
                         any(),
@@ -133,7 +133,12 @@ public final class FeedActionDelegateImplTest {
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
-                        isNull());
+                        isNull()))
+                .thenReturn(mSigninIntent);
+
+        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+
+        verify(mActivity).startActivity(mSigninIntent);
     }
 
     @Test
@@ -142,7 +147,7 @@ public final class FeedActionDelegateImplTest {
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
         mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSigninAndHistorySyncActivityLauncher, never())
-                .launchActivityIfAllowed(
+                .createBottomSheetSigninIntentOrShowError(
                         any(),
                         any(),
                         any(),
@@ -161,10 +166,7 @@ public final class FeedActionDelegateImplTest {
     public void testShowSigninInterstitial_replaceSyncPromosWithSignInPromosEnabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS, true));
-        mFeedActionDelegateImpl.showSignInInterstitial(
-                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null, null);
-        verify(mMockSigninAndHistorySyncActivityLauncher)
-                .launchActivityIfAllowed(
+        when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(),
                         any(),
                         any(),
@@ -176,7 +178,13 @@ public final class FeedActionDelegateImplTest {
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
-                        isNull());
+                        isNull()))
+                .thenReturn(mSigninIntent);
+
+        mFeedActionDelegateImpl.showSignInInterstitial(
+                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null, null);
+
+        verify(mActivity).startActivity(mSigninIntent);
     }
 
     @Test

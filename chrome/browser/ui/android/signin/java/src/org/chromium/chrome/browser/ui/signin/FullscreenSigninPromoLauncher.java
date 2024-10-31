@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -50,8 +53,13 @@ public final class FullscreenSigninPromoLauncher {
         if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
             FullscreenSigninAndHistorySyncConfig config =
                     new FullscreenSigninAndHistorySyncConfig.Builder().build();
-            signinAndHistorySyncActivityLauncher.launchFullscreenSigninActivityIfAllowed(
-                    context, profile, config);
+            @Nullable
+            Intent intent =
+                    signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
+                            context, profile, config);
+            if (intent != null) {
+                context.startActivity(intent);
+            }
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
             final List<CoreAccountInfo> coreAccountInfos =
                     AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(

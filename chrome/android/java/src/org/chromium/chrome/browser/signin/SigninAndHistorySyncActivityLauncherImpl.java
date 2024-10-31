@@ -52,7 +52,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     private SigninAndHistorySyncActivityLauncherImpl() {}
 
     @Override
-    public boolean launchActivityIfAllowed(
+    public @Nullable Intent createBottomSheetSigninIntentOrShowError(
             @NonNull Context context,
             @NonNull Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
@@ -62,28 +62,30 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId) {
-        Intent intent =
-                SigninAndHistorySyncActivity.createIntent(
-                        context,
-                        bottomSheetStrings,
-                        noAccountSigninMode,
-                        withAccountSigninMode,
-                        historyOptInMode,
-                        accessPoint,
-                        selectedCoreAccountId);
-        return launchActivityOrShowError(context, profile, intent, historyOptInMode, accessPoint);
+
+        if (canStartSigninAndHistorySyncOrShowError(
+                context, profile, historyOptInMode, accessPoint)) {
+            return SigninAndHistorySyncActivity.createIntent(
+                    context,
+                    bottomSheetStrings,
+                    noAccountSigninMode,
+                    withAccountSigninMode,
+                    historyOptInMode,
+                    accessPoint,
+                    selectedCoreAccountId);
+        }
+
+        return null;
     }
 
-    private boolean launchActivityOrShowError(
+    private boolean canStartSigninAndHistorySyncOrShowError(
             Context context,
             Profile profile,
-            Intent intent,
             @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int accessPoint) {
         if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
                 || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile, historyOptInMode)) {
-            context.startActivity(intent);
             return true;
         }
         // TODO(crbug.com/41493758): Update the UI related to sign-in errors, and handle the
@@ -94,19 +96,34 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                     "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
+        // TODO(crbug.com/376251506): Add generic error UI.
         return false;
     }
 
     @Override
-    public void launchFullscreenSigninActivityIfAllowed(
+    public @Nullable Intent createFullscreenSigninIntent(
             Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config) {
+        // TODO(crbug.com/372684475): Move those methods out of
+        // BottomSheetSigninAndHistorySyncCoordinator.
         if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
                 || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile,
                         BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
-            Intent intent =
-                    SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
-            context.startActivity(intent);
+            return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
         }
+        return null;
+    }
+
+    @Override
+    public @Nullable Intent createFullscreenSigninIntentOrShowError(
+            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config) {
+        if (canStartSigninAndHistorySyncOrShowError(
+                context,
+                profile,
+                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
+                SigninAccessPoint.SIGNIN_PROMO)) {
+            return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
+        }
+        return null;
     }
 }

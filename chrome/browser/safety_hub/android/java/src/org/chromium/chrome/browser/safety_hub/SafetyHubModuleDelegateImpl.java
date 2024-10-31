@@ -99,15 +99,20 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
                         .setSubtitleStringId(R.string.safety_check_passwords_error_signed_out)
                         .build();
         // Open the sign-in page.
-        mSigninLauncher.launchActivityIfAllowed(
-                context,
-                mProfile,
-                strings,
-                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                SigninAccessPoint.SAFETY_CHECK,
-                /* selectedCoreAccountId= */ null);
+        @Nullable
+        Intent intent =
+                mSigninLauncher.createBottomSheetSigninIntentOrShowError(
+                        context,
+                        mProfile,
+                        strings,
+                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                        SigninAccessPoint.SAFETY_CHECK,
+                        /* selectedCoreAccountId= */ null);
+        if (intent != null) {
+            context.startActivity(intent);
+        }
     }
 }

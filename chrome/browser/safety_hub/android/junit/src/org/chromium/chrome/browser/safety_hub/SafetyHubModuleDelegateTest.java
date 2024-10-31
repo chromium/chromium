@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,15 +44,15 @@ public class SafetyHubModuleDelegateTest {
 
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
+    @Mock private Intent mSigninIntent;
+    @Mock private Context mContext;
 
-    private Context mContext;
     private SafetyHubModuleDelegate mSafetyHubModuleDelegate;
     private Profile mProfile;
     private PendingIntent mPasswordCheckIntentForAccountCheckup;
 
     @Before
     public void setUp() {
-        mContext = ContextUtils.getApplicationContext();
         mProfile = mSafetyHubTestRule.getProfile();
         mPasswordCheckIntentForAccountCheckup =
                 mSafetyHubTestRule.getIntentForAccountPasswordCheckup();
@@ -72,16 +73,15 @@ public class SafetyHubModuleDelegateTest {
         mSafetyHubTestRule.setSignedInState(true);
         mSafetyHubTestRule.setUPMStatus(true);
 
-        mSafetyHubModuleDelegate.showPasswordCheckUI(mContext);
+        Context context = ContextUtils.getApplicationContext();
+        mSafetyHubModuleDelegate.showPasswordCheckUI(context);
         verify(mPasswordCheckIntentForAccountCheckup, times(1)).send();
     }
 
     @Test
     public void testLaunchSigninPromo() {
         mSafetyHubTestRule.setSignedInState(false);
-        mSafetyHubModuleDelegate.launchSigninPromo(mContext);
-        verify(mSigninLauncher)
-                .launchActivityIfAllowed(
+        when(mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                         eq(mContext),
                         eq(mProfile),
                         any(),
@@ -93,6 +93,11 @@ public class SafetyHubModuleDelegateTest {
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.SAFETY_CHECK),
-                        isNull());
+                        isNull()))
+                .thenReturn(mSigninIntent);
+
+        mSafetyHubModuleDelegate.launchSigninPromo(mContext);
+
+        verify(mContext).startActivity(mSigninIntent);
     }
 }
