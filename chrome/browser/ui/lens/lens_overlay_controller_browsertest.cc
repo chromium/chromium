@@ -2101,7 +2101,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   fake_controller->ResetSidePanelTracking();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
-  const GURL nav_url("http://new.domain.com/");
+  const GURL nav_url("https://new.domain.com/");
   // Simulate a cross-origin navigation on the results frame.
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
@@ -2151,7 +2151,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::RenderFrameHost* results_frame = content::ChildFrameAt(
       controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
       0);
-  const GURL nav_url("http://new.domain.com/");
+  const GURL nav_url("https://new.domain.com/");
   content::OverrideLastCommittedOrigin(results_frame,
                                        url::Origin::Create(search_url));
   EXPECT_TRUE(results_frame);
@@ -2211,7 +2211,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::RenderFrameHost* results_frame = content::ChildFrameAt(
       controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
       0);
-  const GURL nav_url("http://new.domain.com/");
+  const GURL nav_url("https://new.domain.com/");
   content::OverrideLastCommittedOrigin(results_frame,
                                        url::Origin::Create(nav_url));
   EXPECT_TRUE(results_frame);
