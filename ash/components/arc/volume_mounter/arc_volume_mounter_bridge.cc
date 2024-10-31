@@ -78,9 +78,8 @@ void ReportRemovableMediaUnmountResult(
 }
 
 void ReportRemovableMediaUnmountDuration(base::TimeDelta duration) {
-  base::UmaHistogramCustomTimes("Arc.VmRemovableMediaUnmount.Duration",
-                                duration, base::Milliseconds(1) /* min */,
-                                base::Seconds(20) /* max */, 50 /* buckets */);
+  base::UmaHistogramMediumTimes("Arc.VmRemovableMediaUnmount.Duration",
+                                duration);
 }
 
 // Singleton factory for ArcVolumeMounterBridge.
