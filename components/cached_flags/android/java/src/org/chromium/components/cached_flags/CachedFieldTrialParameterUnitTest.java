@@ -18,6 +18,7 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class CachedFieldTrialParameterUnitTest {
     }
 
     @Test
-    public void testNativeInitialized_getsFromChromeFeatureList() {
+    public void testNativeInitialized_getsFromFeatureMap() {
         CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
         assertValuesAreFromNative();
     }
@@ -152,6 +153,36 @@ public class CachedFieldTrialParameterUnitTest {
         // In the second run, should get cached values and not the new ones since
         // CachedFeatureFlags#cacheFieldTrialParameters() wasn't called.
         assertValuesAreFromNative();
+    }
+
+    @Test
+    @EnableFeatures(
+            FEATURE_A
+                    + ":"
+                    + STRING_PARAM_NAME
+                    + "/"
+                    + STRING_PARAM_TEST_OVERRIDE
+                    + "/"
+                    + BOOLEAN_PARAM_NAME
+                    + "/"
+                    + BOOLEAN_PARAM_TEST_OVERRIDE
+                    + "/"
+                    + INT_PARAM_NAME
+                    + "/"
+                    + INT_PARAM_TEST_OVERRIDE
+                    + "/"
+                    + DOUBLE_PARAM_NAME
+                    + "/"
+                    + DOUBLE_PARAM_TEST_OVERRIDE
+                    + "/"
+                    + STRING2_PARAM_NAME
+                    + "/"
+                    + STRING2_PARAM_TEST_OVERRIDE)
+    public void testAnnotationOverride() {
+        // Should not take priority over the overrides
+        CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
+
+        assertValuesAreOverrides();
     }
 
     @Test

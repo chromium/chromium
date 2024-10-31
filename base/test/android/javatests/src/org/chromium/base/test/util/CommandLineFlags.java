@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -37,8 +39,13 @@ public final class CommandLineFlags {
     private static final String TAG = "CommandLineFlags";
     private static final String DISABLE_FEATURES = "disable-features";
     private static final String ENABLE_FEATURES = "enable-features";
+    private static final String FORCE_FIELDTRIALS = "force-fieldtrials";
+    private static final String FORCE_FIELDTRIAL_PARAMS = "force-fieldtrial-params";
+    private static final Set<String> MERGED_FLAGS =
+            Set.of(ENABLE_FEATURES, DISABLE_FEATURES, FORCE_FIELDTRIALS, FORCE_FIELDTRIAL_PARAMS);
+
     // Features set by original command-line --enable-features / --disable-features.
-    private static Map<String, Boolean> sOrigFeatures = Collections.emptyMap();
+    private static FieldTrials sOrigFieldTrials = new FieldTrials();
     private static final Map<String, String> sActiveFlagPrevValues = new HashMap<>();
 
     /** Adds command-line flags to the {@link org.chromium.base.CommandLine} for this test. */
@@ -70,31 +77,33 @@ public final class CommandLineFlags {
             // under-test, it will still use the test flags file.
             CommandLineInitUtil.setFilenameOverrideForTesting(getTestCmdLineFile());
             CommandLineInitUtil.initCommandLine(null, () -> true);
-            // Store features from initial command-line for proper merging later.
+
+            // Store features from initial command-line into |sOrigFieldTrials| for proper merging
+            // later.
             CommandLine commandLine = CommandLine.getInstance();
-            String origEnabledFeatures = commandLine.getSwitchValue(ENABLE_FEATURES, "");
-            String origDisabledFeatures = commandLine.getSwitchValue(DISABLE_FEATURES, "");
-            sOrigFeatures =
-                    collectFeaturesFromFlags(
-                            List.of(
-                                    ENABLE_FEATURES + "=" + origEnabledFeatures,
-                                    DISABLE_FEATURES + "=" + origDisabledFeatures));
+            List<String> initialFlags = new ArrayList<>();
+            for (var e : commandLine.getSwitches().entrySet()) {
+                initialFlags.add(e.getKey() + "=" + e.getValue());
+            }
+            separateFlagsIntoFieldTrialsAndOtherFlags(
+                    initialFlags, sOrigFieldTrials, new ArrayList<>());
         }
     }
 
-    private static void processAnnotations(Annotation[] annotations, List<String> flags) {
+    private static void processAnnotationsIntoFlags(
+            Annotation[] annotations, List<String> outputFlags) {
         for (Annotation annotation : annotations) {
             if (annotation instanceof CommandLineFlags.Add addAnnotation) {
-                Collections.addAll(flags, addAnnotation.value());
+                Collections.addAll(outputFlags, addAnnotation.value());
             } else if (annotation instanceof CommandLineFlags.Remove removeAnnotation) {
-                flags.removeAll(Arrays.asList(removeAnnotation.value()));
-            } else if (annotation instanceof EnableFeatures) {
-                for (String featureName : ((EnableFeatures) annotation).value()) {
-                    flags.add(ENABLE_FEATURES + "=" + featureName);
+                outputFlags.removeAll(Arrays.asList(removeAnnotation.value()));
+            } else if (annotation instanceof EnableFeatures enableAnnotation) {
+                for (String featureSpec : enableAnnotation.value()) {
+                    outputFlags.add(ENABLE_FEATURES + "=" + featureSpec);
                 }
-            } else if (annotation instanceof DisableFeatures) {
-                for (String featureName : ((DisableFeatures) annotation).value()) {
-                    flags.add(DISABLE_FEATURES + "=" + featureName);
+            } else if (annotation instanceof DisableFeatures disableAnnotation) {
+                for (String featureSpec : disableAnnotation.value()) {
+                    outputFlags.add(DISABLE_FEATURES + "=" + featureSpec);
                 }
             }
         }
@@ -103,18 +112,31 @@ public final class CommandLineFlags {
     public static void reset(
             Annotation[] classAnnotations, @Nullable Annotation[] methodAnnotations) {
         Features.resetCachedFlags();
-        List<String> newFlags = new ArrayList<>();
-        processAnnotations(classAnnotations, newFlags);
+
+        // Collect @CommandLineFlags, @EnableFeatures and @DisableFeatures.
+        List<String> flagsFromAnnotations = new ArrayList<>();
+        processAnnotationsIntoFlags(classAnnotations, flagsFromAnnotations);
         if (methodAnnotations != null) {
-            processAnnotations(methodAnnotations, newFlags);
+            processAnnotationsIntoFlags(methodAnnotations, flagsFromAnnotations);
         }
-        Map<String, Boolean> flagStates = collectFeaturesFromFlags(newFlags);
-        newFlags = updateFeatureFlags(newFlags, flagStates);
+
+        // Synchronize |fieldTrials| with |newFlags|.
+        FieldTrials fieldTrials = sOrigFieldTrials.createCopy();
+        List<String> otherFlags = new ArrayList<>();
+        separateFlagsIntoFieldTrialsAndOtherFlags(flagsFromAnnotations, fieldTrials, otherFlags);
+        List<String> newFlags = mergeCurrentFlagsWithFieldTrials(otherFlags, fieldTrials);
+
+        // Apply changes to the CommandLine.
         boolean anyChanges = applyChanges(newFlags);
+
+        // Apply changes to FeatureList.
+        TestValues testValues = fieldTrials.createTestValues();
         // If flags did not change, and no feature-related flags are present, then do not clobber
         // flag values so that a test can use FeatureList.setTestValues() in @BeforeClass.
-        if (anyChanges || !flagStates.isEmpty()) {
-            Features.reset(flagStates);
+        if (anyChanges || !testValues.isEmpty()) {
+            // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
+            //     native feature list has been initialized.
+            FeatureList.setTestValuesNoResetForTesting(testValues);
         }
     }
 
@@ -179,50 +201,125 @@ public final class CommandLineFlags {
         return sb.toString();
     }
 
-    private static Map<String, Boolean> collectFeaturesFromFlags(List<String> flags) {
+    private static void separateFlagsIntoFieldTrialsAndOtherFlags(
+            List<String> flags, FieldTrials outputFieldTrials, List<String> outputOtherFlags) {
         // Collect via a Map rather than two lists to correctly handle the a feature being enabled
         // via class flags and disabled via method flags (or vice versa).
-        Map<String, Boolean> flagStates = new HashMap<>(sOrigFeatures);
         for (String flag : flags) {
             String[] keyValue = flag.split("=", 2);
-            boolean enable = ENABLE_FEATURES.equals(keyValue[0]);
-            if (!enable && !DISABLE_FEATURES.equals(keyValue[0])) {
-                continue;
-            }
             if (keyValue.length == 1 || keyValue[1].isEmpty()) {
+                outputOtherFlags.add(flag);
                 continue;
             }
-            for (String featureName : keyValue[1].split(",")) {
-                flagStates.put(featureName, enable);
+            if (ENABLE_FEATURES.equals(keyValue[0])) {
+                for (String featureSpec : keyValue[1].split(",")) {
+                    outputFieldTrials.incorporateEnableFeaturesFlag(featureSpec);
+                }
+            } else if (DISABLE_FEATURES.equals(keyValue[0])) {
+                for (String feature : keyValue[1].split(",")) {
+                    outputFieldTrials.incorporateDisableFeaturesFlag(feature);
+                }
+            } else if (FORCE_FIELDTRIALS.equals(keyValue[0])) {
+                outputFieldTrials.incorporateForceFieldTrialsFlag(keyValue[1]);
+            } else if (FORCE_FIELDTRIAL_PARAMS.equals(keyValue[0])) {
+                for (String paramSpec : keyValue[1].split(",")) {
+                    outputFieldTrials.incorporateForceFieldTrialParamsFlag(paramSpec);
+                }
+            } else {
+                outputOtherFlags.add(flag);
             }
         }
-        return flagStates;
     }
 
-    private static List<String> updateFeatureFlags(
-            List<String> curFlags, Map<String, Boolean> flagStates) {
-        List<String> newFlags = new ArrayList<>();
-        for (String flag : curFlags) {
-            String flagName = flag.split("=", 2)[0];
-            if (!ENABLE_FEATURES.equals(flagName) && !DISABLE_FEATURES.equals(flagName)) {
-                newFlags.add(flag);
-            }
-        }
+    private static List<String> mergeCurrentFlagsWithFieldTrials(
+            List<String> otherFlags, FieldTrials fieldTrials) {
+        // Copy over flags that are not merged with special handling logic below.
+        List<String> newFlags = new ArrayList<>(otherFlags);
 
         List<String> enabledFlags = new ArrayList<>();
         List<String> disabledFlags = new ArrayList<>();
-        for (var entry : flagStates.entrySet()) {
-            var target = entry.getValue() ? enabledFlags : disabledFlags;
-            target.add(entry.getKey());
+        for (var entry : fieldTrials.getFeatureFlags().entrySet()) {
+            String feature = entry.getKey();
+            boolean enabled = entry.getValue();
+            List<String> target = enabled ? enabledFlags : disabledFlags;
+            target.add(feature);
         }
+
+        // Add --enable-features
         if (!enabledFlags.isEmpty()) {
+            List<String> featureSpecs = new ArrayList<>();
+            for (String feature : enabledFlags) {
+                String params = "";
+                String paramPairSeparator = "";
+                if (fieldTrials.getFeatureToParams().containsKey(feature)) {
+                    StringBuilder sb = new StringBuilder(":");
+                    for (var e : fieldTrials.getFeatureToParams().get(feature).entrySet()) {
+                        String param = e.getKey();
+                        String paramValue = FieldTrials.escapeParam(e.getValue());
+                        sb.append(paramPairSeparator).append(param).append("/").append(paramValue);
+                        paramPairSeparator = "/";
+                    }
+                    params = sb.toString();
+                }
+
+                String fieldTrial = fieldTrials.getFeatureToTrial().getOrDefault(feature, null);
+
+                if (fieldTrial != null) {
+                    String group = fieldTrials.getTrialToGroup().get(fieldTrial);
+                    featureSpecs.add(feature + "<" + fieldTrial + "." + group + params);
+                } else {
+                    featureSpecs.add(feature + params);
+                }
+            }
             newFlags.add(
-                    String.format("%s=%s", ENABLE_FEATURES, TextUtils.join(",", enabledFlags)));
+                    String.format("%s=%s", ENABLE_FEATURES, TextUtils.join(",", featureSpecs)));
         }
+
+        // Add --disable-features
         if (!disabledFlags.isEmpty()) {
             newFlags.add(
                     String.format("%s=%s", DISABLE_FEATURES, TextUtils.join(",", disabledFlags)));
         }
+
+        // Add --force-fieldtrial-params
+        if (!fieldTrials.getTrialAndGroupToParams().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            String trialSeparator = "";
+            for (var e : fieldTrials.getTrialAndGroupToParams().entrySet()) {
+                String trialAndGroup = e.getKey();
+                Map<String, String> paramNameToValue = e.getValue();
+                if (paramNameToValue.isEmpty()) {
+                    throw new IllegalStateException("No params for trial " + trialAndGroup);
+                }
+                sb.append(trialSeparator).append(trialAndGroup).append(":");
+                trialSeparator = ",";
+
+                String paramPairSeparator = "";
+                for (var f : paramNameToValue.entrySet()) {
+                    String param = f.getKey();
+                    String paramValue = FieldTrials.escapeParam(f.getValue());
+                    sb.append(paramPairSeparator).append(param).append("/").append(paramValue);
+                    paramPairSeparator = "/";
+                }
+            }
+
+            newFlags.add(String.format("%s=%s", FORCE_FIELDTRIAL_PARAMS, sb));
+        }
+
+        // Add --force-fieldtrials
+        if (!fieldTrials.getTrialToGroup().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            String trialSeparator = "";
+            for (var e : fieldTrials.getTrialToGroup().entrySet()) {
+                String trial = e.getKey();
+                String group = e.getValue();
+                sb.append(trialSeparator).append(trial).append("/").append(group);
+                trialSeparator = ",";
+            }
+
+            newFlags.add(String.format("%s=%s", FORCE_FIELDTRIALS, sb));
+        }
+
         return newFlags;
     }
 

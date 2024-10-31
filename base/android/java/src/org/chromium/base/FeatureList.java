@@ -104,6 +104,56 @@ public class FeatureList {
                 }
             }
         }
+
+        /**
+         * Returns a representation of the TestValues.
+         *
+         * <p>The format returned is:
+         *
+         * <pre>{FeatureA=true} + {FeatureA.Param1=Value1, FeatureA.ParamB=ValueB}</pre>
+         */
+        public String toDebugString() {
+            StringBuilder stringBuilder = new StringBuilder();
+            String separator = "";
+            stringBuilder.append("{");
+            for (var e : mFeatureFlags.entrySet()) {
+                String featureName = e.getKey();
+                boolean featureValue = e.getValue();
+                stringBuilder
+                        .append(separator)
+                        .append(featureName)
+                        .append("=")
+                        .append(featureValue);
+                separator = ", ";
+            }
+            stringBuilder.append("}");
+            if (!mFieldTrialParams.isEmpty()) {
+                stringBuilder.append(" + {");
+                for (var e : mFieldTrialParams.entrySet()) {
+                    String paramsAndValuesSeparator = "";
+                    String featureName = e.getKey();
+                    Map<String, String> paramsAndValues = e.getValue();
+                    for (var paramAndValue : paramsAndValues.entrySet()) {
+                        String paramName = paramAndValue.getKey();
+                        String paramValue = paramAndValue.getValue();
+                        stringBuilder
+                                .append(paramsAndValuesSeparator)
+                                .append(featureName)
+                                .append(".")
+                                .append(paramName)
+                                .append("=")
+                                .append(paramValue);
+                        paramsAndValuesSeparator = ", ";
+                    }
+                }
+                stringBuilder.append("}");
+            }
+            return stringBuilder.toString();
+        }
+
+        public boolean isEmpty() {
+            return mFeatureFlags.isEmpty() && mFieldTrialParams.isEmpty();
+        }
     }
 
     /** Map that stores substitution feature flags for tests. */
@@ -174,9 +224,7 @@ public class FeatureList {
     }
 
     /** For use by test runners. */
-    public static void setTestFeaturesNoResetForTesting(Map<String, Boolean> testFeatures) {
-        TestValues testValues = new TestValues();
-        testValues.setFeatureFlagsOverride(testFeatures);
+    public static void setTestValuesNoResetForTesting(TestValues testValues) {
         sTestFeatures = testValues;
     }
 
