@@ -92,6 +92,7 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
+  layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
