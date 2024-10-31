@@ -2196,6 +2196,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MaybeCopyContentAreaAsBitmap.Time" units="ms"
+    expires_after="2025-05-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures how long the MaybeCopyContentAreaAsBitmap function takes. This is
+    emitted only when a navigation entry screenshot is captured.
+  </summary>
+</histogram>
+
 <histogram name="Android.MediaPickerShown" enum="MediaPickerShown"
     expires_after="2025-02-10">
   <owner>finnur@chromium.org</owner>

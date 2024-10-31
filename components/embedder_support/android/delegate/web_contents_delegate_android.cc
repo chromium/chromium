@@ -9,6 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/embedder_support/android/delegate/color_picker_bridge.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
@@ -460,11 +462,14 @@ void WebContentsDelegateAndroid::DidChangeCloseSignalInterceptStatus() {
 
 bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
     base::OnceCallback<void(const SkBitmap&)> callback) {
+  TRACE_EVENT("content",
+              "WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap");
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null()) {
     return false;
   }
+  base::TimeTicks start_time = base::TimeTicks::Now();
   std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> wrapped_callback =
       std::make_unique<base::OnceCallback<void(const SkBitmap&)>>(
           std::move(callback));
@@ -473,6 +478,8 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
     // Ownership of callback has been transferred to java side and will be
     // transferred back in |MaybeCopyContentAreaAsBitmapOutcome|.
     wrapped_callback.release();
+    base::UmaHistogramTimes("Android.MaybeCopyContentAreaAsBitmap.Time",
+                            base::TimeTicks::Now() - start_time);
     return true;
   }
   return false;
@@ -534,6 +541,9 @@ void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
     JNIEnv* env,
     jlong callback_ptr,
     const base::android::JavaParamRef<jobject>& bitmap) {
+  TRACE_EVENT(
+      "content",
+      "JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome");
   std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> callback(
       reinterpret_cast<base::OnceCallback<void(const SkBitmap&)>*>(
           callback_ptr));
