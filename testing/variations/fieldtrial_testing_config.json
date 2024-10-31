@@ -6764,7 +6764,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledEarlyDiscard_20240918",
+                    "name": "EnabledEarlyDiscard_20241031",
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
@@ -6773,32 +6773,6 @@
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
                         "CrOSLateBootOverrideLmkdPsiDefaults"
-                    ],
-                    "disable_features": [
-                        "CrOSLockMainProgramText"
-                    ]
-                },
-                {
-                    "name": "EnabledMlockChrome_20240918",
-                    "enable_features": [
-                        "CrOSLockMainProgramText"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults"
-                    ]
-                },
-                {
-                    "name": "EnabledEarlyDiscardAndMlockChrome_20240918",
-                    "params": {
-                        "CompleteStallMs": "700",
-                        "PartialStallMs": "20",
-                        "VmmmsReclaimProportion": "0"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLockMainProgramText"
                     ]
                 }
             ]
