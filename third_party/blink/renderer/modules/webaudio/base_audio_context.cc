@@ -643,6 +643,10 @@ V8AudioContextState BaseAudioContext::state() const {
 
 void BaseAudioContext::SetContextState(V8AudioContextState::Enum new_state) {
   DCHECK(IsMainThread());
+  if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
+      new_state == V8AudioContextState::Enum::kInterrupted) {
+    return;
+  }
 
   // If there's no change in the current state, there's nothing that needs to be
   // done.
@@ -650,17 +654,26 @@ void BaseAudioContext::SetContextState(V8AudioContextState::Enum new_state) {
     return;
   }
 
-  // Validate the transitions.  The valid transitions are Suspended->Running,
-  // Running->Suspended, and anything->Closed.
+  // Validate the transitions.  The valid transitions are:
+  // Suspended ---> Running or Interrupted,
+  // Running -----> Suspended or Interrupted,
+  // Interrupted -> Running or Suspended,
+  // anything ----> Closed.
   switch (new_state) {
     case V8AudioContextState::Enum::kSuspended:
-      DCHECK_EQ(control_thread_state_, V8AudioContextState::Enum::kRunning);
+      DCHECK(control_thread_state_ == V8AudioContextState::Enum::kRunning ||
+             control_thread_state_ == V8AudioContextState::Enum::kInterrupted);
       break;
     case V8AudioContextState::Enum::kRunning:
-      DCHECK_EQ(control_thread_state_, V8AudioContextState::Enum::kSuspended);
+      DCHECK(control_thread_state_ == V8AudioContextState::Enum::kSuspended ||
+             control_thread_state_ == V8AudioContextState::Enum::kInterrupted);
       break;
     case V8AudioContextState::Enum::kClosed:
       DCHECK_NE(control_thread_state_, V8AudioContextState::Enum::kClosed);
+      break;
+    case V8AudioContextState::Enum::kInterrupted:
+      DCHECK(control_thread_state_ == V8AudioContextState::Enum::kSuspended ||
+             control_thread_state_ == V8AudioContextState::Enum::kRunning);
       break;
   }
 
@@ -881,11 +894,12 @@ void BaseAudioContext::NotifyWorkletIsReady() {
       destination()->GetAudioDestinationHandler().RestartRendering();
       break;
     case V8AudioContextState::Enum::kSuspended:
-      // For the suspended context, the destination will use the worklet task
-      // runner for rendering. This also prevents the regular audio thread from
-      // touching worklet-related objects by blocking an invalid transitory
-      // state where the context state is suspended and the destination state is
-      // running. See: crbug.com/1403515
+    case V8AudioContextState::Enum::kInterrupted:
+      // For suspended and interrupted contexts, the destination will use the
+      // worklet task runner for rendering. This also prevents the regular audio
+      // thread from touching worklet-related objects by blocking an invalid
+      // transitory state where the context state is suspended or interrupted
+      // and the destination state is running. See: crbug.com/1403515
       destination()->GetAudioDestinationHandler().PrepareTaskRunnerForWorklet();
       break;
     case V8AudioContextState::Enum::kClosed:

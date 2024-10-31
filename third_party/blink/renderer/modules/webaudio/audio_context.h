@@ -158,6 +158,9 @@ class MODULES_EXPORT AudioContext final
   // are pending.
   int PendingDeviceListUpdates();
 
+  void StartContextInterruption();
+  void EndContextInterruption();
+
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
@@ -370,6 +373,19 @@ class MODULES_EXPORT AudioContext final
   // If a sink ID is given via the constructor or `setSinkId()` method,
   // this is set to `true`.
   bool is_sink_id_given_ = false;
+
+  // The suspended->interrupted transition should not happen immediately when
+  // an interruption occurs.  If an interruption happens in
+  // the suspended state, we store this state in the
+  // `is_interrupted_while_suspended_` flag.  Then, if resume() is called while
+  // the context is suspended and the flag is set, we transition to the
+  // interrupted state.  This variable should only be modified by
+  // StartContextInterruption() and EndContextInterruption().
+  bool is_interrupted_while_suspended_ = false;
+
+  // True if the context should transition to running after an interruption
+  // ends.
+  bool should_transition_to_running_after_interruption_ = false;
 
   // The number of pending device list updates, to allow waiting until the
   // device list is refrehsed before using it.  A value of 0 means no updates

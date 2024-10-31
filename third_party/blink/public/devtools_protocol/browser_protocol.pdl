@@ -11720,6 +11720,7 @@ experimental domain WebAudio
       suspended
       running
       closed
+      interrupted
 
   # Enum of AudioNode types
   type NodeType extends string

@@ -435,6 +435,10 @@
       base_feature: "none",
     },
     {
+      name: "AudioContextInterruptedState",
+      status: "test",
+    },
+    {
       name: "AudioContextOnError",
       status: "stable",
     },

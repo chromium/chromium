@@ -417,6 +417,20 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot resume a closed AudioContext."));
+  } else if (ContextState() == V8AudioContextState::Enum::kInterrupted) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "Cannot resume an interrupted AudioContext."));
+  } else if (ContextState() == V8AudioContextState::Enum::kSuspended &&
+             is_interrupted_while_suspended_) {
+    // When the interruption ends, the context should be in the running state.
+    should_transition_to_running_after_interruption_ = true;
+    SetContextState(V8AudioContextState::Enum::kInterrupted);
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "Cannot resume an interrupted AudioContext."));
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -584,7 +598,11 @@ void AudioContext::SuspendRendering() {
   DCHECK(destination());
   SendLogMessage(__func__, "");
 
-  if (ContextState() == V8AudioContextState::Enum::kRunning) {
+  if (ContextState() == V8AudioContextState::Enum::kRunning ||
+      ContextState() == V8AudioContextState::Enum::kInterrupted) {
+    if (is_interrupted_while_suspended_) {
+      should_transition_to_running_after_interruption_ = false;
+    }
     destination()->GetAudioDestinationHandler().StopRendering();
     SetContextState(V8AudioContextState::Enum::kSuspended);
   }
@@ -1245,6 +1263,11 @@ void AudioContext::ResumeOnPrerenderActivation() {
     case V8AudioContextState::Enum::kRunning:
       NOTREACHED();
     case V8AudioContextState::Enum::kClosed:
+    // Prerender activation doesn't automatically resume audio playback
+    // when the context is in the `interrupted` state.
+    // TODO(crbug.com/374805121): Add the spec URL for this interruption
+    // behavior when it has been published.
+    case V8AudioContextState::Enum::kInterrupted:
       break;
   }
 }
@@ -1259,6 +1282,51 @@ int AudioContext::PendingDeviceListUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   return pending_device_list_updates_;
+}
+
+void AudioContext::StartContextInterruption() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled()) {
+    return;
+  }
+
+  SendLogMessage(__func__, "");
+  V8AudioContextState::Enum context_state = ContextState();
+  if (context_state == V8AudioContextState::Enum::kClosed ||
+      context_state == V8AudioContextState::Enum::kInterrupted) {
+    return;
+  }
+
+  if (context_state == V8AudioContextState::Enum::kRunning) {
+    // The context is running, so we need to stop the rendering.
+    destination()->GetAudioDestinationHandler().StopRendering();
+    should_transition_to_running_after_interruption_ = true;
+    SetContextState(V8AudioContextState::Enum::kInterrupted);
+  }
+
+  // If the context is suspended, we don't make the transition to interrupted
+  // state, because of privacy reasons. The suspended->interrupted transition is
+  // only made when resumeContext() is called during an ongoing interruption.
+  is_interrupted_while_suspended_ = true;
+}
+
+void AudioContext::EndContextInterruption() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled()) {
+    return;
+  }
+
+  SendLogMessage(__func__, "");
+  is_interrupted_while_suspended_ = false;
+  if (ContextState() == V8AudioContextState::Enum::kClosed) {
+    return;
+  }
+
+  if (should_transition_to_running_after_interruption_) {
+    destination()->GetAudioDestinationHandler().StartRendering();
+    should_transition_to_running_after_interruption_ = false;
+    SetContextState(V8AudioContextState::Enum::kRunning);
+  }
 }
 
 void AudioContext::HandleRenderError() {

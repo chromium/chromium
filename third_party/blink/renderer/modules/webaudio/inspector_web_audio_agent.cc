@@ -33,6 +33,8 @@ String GetContextStateEnum(BaseAudioContext* context) {
       return protocol::WebAudio::ContextStateEnum::Running;
     case V8AudioContextState::Enum::kClosed:
       return protocol::WebAudio::ContextStateEnum::Closed;
+    case V8AudioContextState::Enum::kInterrupted:
+      return protocol::WebAudio::ContextStateEnum::Interrupted;
   }
   NOTREACHED();
 }
