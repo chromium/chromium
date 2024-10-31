@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
+#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"

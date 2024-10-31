@@ -714,9 +714,7 @@ test("components_unittests") {
   }
 
   if (!is_android && !is_ios && (!is_fuchsia || !optimize_for_size)) {
-    deps += [
-      "//components/autofill_prediction_improvements/core/browser:unit_tests",
-    ]
+    deps += [ "//components/autofill_ai/core/browser:unit_tests" ]
   }
 
   if (!is_android) {

@@ -151,8 +151,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"  // nogncheck
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"  // nogncheck
+#include "components/autofill_ai/core/browser/autofill_ai_features.h"  // nogncheck
+#include "components/autofill_ai/core/browser/autofill_ai_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

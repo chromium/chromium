@@ -2049,7 +2049,7 @@ if (!is_android) {
       "//components/autofill/content/common:features",
       "//components/autofill/content/common/mojom",
       "//components/autofill/content/renderer:test_support",
-      "//components/autofill_prediction_improvements/core/browser:browser",
+      "//components/autofill_ai/core/browser:browser",
       "//components/back_forward_cache",
       "//components/background_fetch",
       "//components/background_sync",
@@ -7632,7 +7632,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:unit_tests",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
-      "//components/autofill_prediction_improvements/core/browser:browser",
+      "//components/autofill_ai/core/browser:browser",
     ]
 
     if (is_chrome_branded) {
@@ -10554,7 +10554,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/accessibility:reading",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:credit_card_number_validation",
-      "//components/autofill_prediction_improvements/core/browser:browser",
+      "//components/autofill_ai/core/browser:browser",
       "//components/back_forward_cache",
       "//components/blocked_content",
       "//components/bookmarks/browser",

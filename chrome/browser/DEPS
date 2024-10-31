@@ -106,7 +106,7 @@ include_rules = [
   "+components/component_updater",
   "+components/component_updater/installer_policies",
   "+components/compose",
-  "+components/autofill_prediction_improvements",
+  "+components/autofill_ai",
   "+components/consent_auditor",
   "+components/constrained_window",
   "+components/content_capture/browser",

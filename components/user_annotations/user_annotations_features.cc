@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
+#include "components/autofill_ai/core/browser/autofill_ai_features.h"
 
 namespace user_annotations {
 
