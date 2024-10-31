@@ -125,6 +125,24 @@ void ScannerKeyedService::FetchActionsForImage(
   scanner_provider_->Call(scanner_input, std::move(callback));
 }
 
+void ScannerKeyedService::FetchActionDetailsForImage(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+    manta::proto::ScannerAction selected_action,
+    manta::ScannerProvider::ScannerProtoResponseCallback callback) {
+  if (!scanner_provider_) {
+    // `scanner_provider_` can only be nullptr when there is no identity
+    // manager to instantiate the provider.
+    std::move(callback).Run(
+        nullptr,
+        manta::MantaStatus(manta::MantaStatusCode::kNoIdentityManager));
+    return;
+  }
+  manta::proto::ScannerInput scanner_input;
+  scanner_input.set_image(std::string(base::as_string_view(*jpeg_bytes)));
+  *scanner_input.mutable_selected_action() = std::move(selected_action);
+  scanner_provider_->Call(scanner_input, std::move(callback));
+}
+
 drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {
   return drive_service_.get();
 }

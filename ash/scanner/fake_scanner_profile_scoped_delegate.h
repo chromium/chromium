@@ -54,6 +54,12 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
               (scoped_refptr<base::RefCountedMemory> jpeg_bytes,
                manta::ScannerProvider::ScannerProtoResponseCallback callback),
               (override));
+  MOCK_METHOD(void,
+              FetchActionDetailsForImage,
+              (scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+               manta::proto::ScannerAction selected_action,
+               manta::ScannerProvider::ScannerProtoResponseCallback callback),
+              (override));
   drive::DriveServiceInterface* GetDriveService() override;
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
 

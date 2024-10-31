@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/scanner/scanner_system_state_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
 #include "google_apis/common/request_sender.h"
 
@@ -55,6 +56,10 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
   ash::ScannerSystemState GetSystemState() const override;
   void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+      manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
+  void FetchActionDetailsForImage(
+      scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+      manta::proto::ScannerAction selected_action,
       manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
   drive::DriveServiceInterface* GetDriveService() override;
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
