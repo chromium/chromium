@@ -304,8 +304,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
   // This is only called on non-incognito pathways.
   CHECK(!tab->IsIncognito());
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  content::WebContents::CreateParams params(profile);
+  content::WebContents::CreateParams params(tab->profile());
   params.initially_hidden = true;
   params.desired_renderer_state =
       content::WebContents::CreateParams::kNoRendererProcess;
