@@ -397,7 +397,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 110,
+          'shards': 140,
         },
       },
       'linux-chromeos-dbg-oslogin': {
@@ -1329,7 +1329,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 6,
+          'shards': 12,
         },
       },
       'linux-chromeos-dbg-oslogin': {
