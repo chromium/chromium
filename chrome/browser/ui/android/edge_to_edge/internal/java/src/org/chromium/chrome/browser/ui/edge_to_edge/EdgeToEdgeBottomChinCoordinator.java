@@ -35,6 +35,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
      * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
      *     visibility events.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
+     * @param requestRenderRunnable Runnable that requests a re-render of the scene overlay.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
      * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
@@ -47,6 +48,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
             View androidView,
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull LayoutManager layoutManager,
+            @NonNull Runnable requestRenderRunnable,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker,
@@ -58,7 +60,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
                 edgeToEdgeController,
                 navigationBarColorProvider,
                 bottomControlsStacker,
-                new EdgeToEdgeBottomChinSceneLayer(),
+                new EdgeToEdgeBottomChinSceneLayer(requestRenderRunnable),
                 fullscreenManager);
     }
 

@@ -1177,6 +1177,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
                 mWindowAndroid.getKeyboardDelegate(),
                 mLayoutManager,
+                mLayoutManager::requestUpdate,
                 mEdgeToEdgeControllerSupplier.get(),
                 mSystemUiCoordinator.getNavigationBarColorController(),
                 mBottomControlsStacker,

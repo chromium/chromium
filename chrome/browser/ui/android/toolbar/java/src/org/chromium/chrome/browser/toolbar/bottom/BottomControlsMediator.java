@@ -166,6 +166,7 @@ class BottomControlsMediator
 
     void setBottomControlsColor(@ColorInt int color) {
         mBottomControlsColor = color;
+        mBottomControlsStacker.notifyBackgroundColor(mBottomControlsColor);
     }
 
     /** Clean up anything that needs to be when the bottom controls component is destroyed. */
