@@ -175,7 +175,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private initializeCards_() {
-    // TODO(crbug.com/40267370): Add listeners for Password and Version cards.
+    // TODO(crbug.com/40267370): Add a listener for the Password card.
     this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
       this.passwordCardData_ = data;
     });
@@ -184,6 +184,10 @@ export class SettingsSafetyHubPageElement extends
       this.safeBrowsingCardData_ = data;
     });
 
+    this.addWebUiListener(
+        SafetyHubEvent.CHROME_VERSION_MAYBE_CHANGED, (data: CardInfo) => {
+          this.versionCardData_ = data;
+        });
     this.browserProxy_.getVersionCardData().then((data: CardInfo) => {
       this.versionCardData_ = data;
     });

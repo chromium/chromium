@@ -399,6 +399,39 @@ suite('SafetyHubPage', function() {
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
   });
 
+  test('Version Card updates upon Chrome version change', async function() {
+    const safeCardData = versionCardMockData;
+    const warningCardData: CardInfo = {
+      header: 'Chrome is not up to date',
+      subheader: 'Relaunch to update',
+      state: CardState.WARNING,
+    };
+
+    // Assert that Version card's initial state says Chrome is up to date.
+    assertEquals(
+        safeCardData.header,
+        testElement.$.version.shadowRoot!.querySelector(
+                                             '#header')!.textContent!.trim());
+    assertEquals(
+        safeCardData.subheader,
+        testElement.$.version.shadowRoot!.querySelector('#subheader')!
+            .textContent!.trim());
+
+    // Chrome version changes.
+    webUIListenerCallback(
+        SafetyHubEvent.CHROME_VERSION_MAYBE_CHANGED, warningCardData);
+
+    // Assert that Version card's new state says Chrome needs an update.
+    assertEquals(
+        warningCardData.header,
+        testElement.$.version.shadowRoot!.querySelector(
+                                             '#header')!.textContent!.trim());
+    assertEquals(
+        warningCardData.subheader,
+        testElement.$.version.shadowRoot!.querySelector('#subheader')!
+            .textContent!.trim());
+  });
+
   test('Safe Browsing Card', async function() {
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
 

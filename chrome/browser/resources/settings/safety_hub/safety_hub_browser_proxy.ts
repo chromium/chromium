@@ -25,6 +25,7 @@ export enum SafetyHubEvent {
   NOTIFICATION_PERMISSIONS_MAYBE_CHANGED =
       'notification-permission-review-list-maybe-changed',
   EXTENSIONS_CHANGED = 'extensions-review-list-maybe-changed',
+  CHROME_VERSION_MAYBE_CHANGED = 'chrome-version-maybe-changed',
 }
 
 // The notification permission information passed from safety_hub_handler.cc.
