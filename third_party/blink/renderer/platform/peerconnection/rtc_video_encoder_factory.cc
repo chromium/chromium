@@ -232,6 +232,45 @@ struct SupportedFormats {
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
 };
 
+#if BUILDFLAG(RTC_USE_H265)
+// Insert or replace the H.265 format in |supported_formats| with the higher
+// level for the same profile. Assume VEA always reports same scalability modes
+// for the same video profile, the scalability mode of the highest level format
+// will be used, and we don't handle the case that same profile has different
+// scalability modes.
+void InsertOrReplaceWithHigherLevelH265Format(
+    SupportedFormats* supported_formats,
+    const webrtc::SdpVideoFormat& format,
+    media::VideoCodecProfile profile) {
+  std::optional<webrtc::H265ProfileTierLevel> new_profile_tier_level =
+      webrtc::ParseSdpForH265ProfileTierLevel(format.parameters);
+  if (!new_profile_tier_level.has_value()) {
+    return;
+  }
+
+  DCHECK_EQ(supported_formats->profiles.size(),
+            supported_formats->sdp_formats.size());
+
+  std::optional<webrtc::H265ProfileTierLevel> existing_profile_tier_level;
+  auto profile_it = std::find(supported_formats->profiles.begin(),
+                              supported_formats->profiles.end(), profile);
+
+  if (profile_it != supported_formats->profiles.end()) {
+    auto index = std::distance(supported_formats->profiles.begin(), profile_it);
+    existing_profile_tier_level = webrtc::ParseSdpForH265ProfileTierLevel(
+        supported_formats->sdp_formats[index].parameters);
+
+    if (existing_profile_tier_level.has_value() &&
+        new_profile_tier_level->level > existing_profile_tier_level->level) {
+      supported_formats->sdp_formats[index] = format;
+    }
+  } else {
+    supported_formats->sdp_formats.push_back(format);
+    supported_formats->profiles.push_back(profile);
+  }
+}
+#endif
+
 SupportedFormats GetSupportedFormatsInternal(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const std::vector<media::VideoCodecProfile>& disabled_profiles) {
@@ -257,26 +296,11 @@ SupportedFormats GetSupportedFormatsInternal(
       // Supported H.265 formats must be added to the end of supported codecs.
 #if BUILDFLAG(RTC_USE_H265)
       if (format->name == cricket::kH265CodecName) {
-        const std::optional<webrtc::H265ProfileTierLevel> profile_tier_level =
-            webrtc::ParseSdpForH265ProfileTierLevel(format->parameters);
-        // https://datatracker.ietf.org/doc/draft-ietf-avtcore-hevc-webrtc/:
-        // according to above spec, level 3.1 is mandatory to support. So
-        // unlike H.264 which has level-asymmetry-allowed parameter in SDP to
-        // signal support for asymmetric levels, we need to add level 3.1
-        // explicitly if GPU factory reports supporting of level higher than
-        // 3.1, to make sure that if remote only supports level 3.1, we still
-        // allow the SDP negotiation to succeed.
-        if (profile_tier_level &&
-            profile_tier_level->level > webrtc::H265Level::kLevel3_1) {
-          webrtc::SdpVideoFormat level_3_1_format(*format);
-          format->parameters[cricket::kH265FmtpLevelId] =
-              webrtc::H265LevelToString(webrtc::H265Level::kLevel3_1);
-          low_priority_formats.profiles.push_back(profile.profile);
-          low_priority_formats.sdp_formats.push_back(level_3_1_format);
-        }
-
-        low_priority_formats.profiles.push_back(profile.profile);
-        low_priority_formats.sdp_formats.push_back(std::move(*format));
+        // Avoid having duplicated formats reported via GetSupportedFormats().
+        // Also ensure only the highest level format is reported for the same
+        // H.265 profile.
+        InsertOrReplaceWithHigherLevelH265Format(
+            &low_priority_formats, format.value(), profile.profile);
         continue;
       }
 #endif  // BUILDFLAG(RTC_USE_H265)
@@ -444,6 +468,26 @@ RTCVideoEncoderFactory::QueryCodecSupport(
 
   for (size_t i = 0; i < supported_formats.sdp_formats.size(); ++i) {
     if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
+#if BUILDFLAG(RTC_USE_H265)
+      // For H.265 we further check that the level-id supported is no smaller
+      // than that being queried.
+      if (format.name == cricket::kH265CodecName) {
+        const std::optional<webrtc::H265ProfileTierLevel> profile_tier_level =
+            webrtc::ParseSdpForH265ProfileTierLevel(format.parameters);
+        if (profile_tier_level) {
+          const std::optional<webrtc::H265ProfileTierLevel> supported_profile =
+              webrtc::ParseSdpForH265ProfileTierLevel(
+                  supported_formats.sdp_formats[i].parameters);
+          if (supported_profile &&
+              profile_tier_level->level > supported_profile->level) {
+            return {/*is_supported=*/false, /*is_power_efficient=*/false};
+          }
+        } else {
+          // If invalid format parameters are passed, we should not support it.
+          break;
+        }
+      }
+#endif  // BUILDFLAG(RTC_USE_H265)
       std::optional<webrtc::ScalabilityMode> mode =
           scalability_mode.has_value()
               ? webrtc::ScalabilityModeFromString(scalability_mode.value())
