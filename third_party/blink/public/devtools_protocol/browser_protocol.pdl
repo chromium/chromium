@@ -1951,6 +1951,8 @@ experimental domain CSS
       optional DOM.PhysicalAxes physicalAxes
       # Optional logical axes queried for the container.
       optional DOM.LogicalAxes logicalAxes
+      # true if the query contains scroll-state() queries.
+      optional boolean queriesScrollState
 
   # CSS Supports at-rule descriptor.
   experimental type CSSSupports extends object
@@ -3387,15 +3389,17 @@ domain DOM
       optional NodeId nodeId
 
   # Returns the query container of the given node based on container query
-  # conditions: containerName, physical, and logical axes. If no axes are
-  # provided, the style container is returned, which is the direct parent or the
-  # closest element with a matching container-name.
+  # conditions: containerName, physical and logical axes, and whether it queries
+  # scroll-state. If no axes are provided and queriesScrollState is false, the
+  # style container is returned, which is the direct parent or the closest
+  # element with a matching container-name.
   experimental command getContainerForNode
     parameters
       NodeId nodeId
       optional string containerName
       optional PhysicalAxes physicalAxes
       optional LogicalAxes logicalAxes
+      optional boolean queriesScrollState
     returns
       # The container node for the given node, or null if not found.
       optional NodeId nodeId

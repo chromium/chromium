@@ -2770,6 +2770,9 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
     }
     container_query_object->setLogicalAxes(logical_proto);
   }
+  if (rule->Selector().SelectsScrollStateContainers()) {
+    container_query_object->setQueriesScrollState(true);
+  }
   return container_query_object;
 }
 

@@ -1669,6 +1669,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     protocol::Maybe<String> container_name,
     protocol::Maybe<protocol::DOM::PhysicalAxes> physical_axes,
     protocol::Maybe<protocol::DOM::LogicalAxes> logical_axes,
+    protocol::Maybe<bool> queries_scroll_state,
     Maybe<int>* container_node_id) {
   Element* element = nullptr;
   protocol::Response response = AssertElement(node_id, element);
@@ -1706,7 +1707,8 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   Element* container = style_resolver.FindContainerForElement(
       element,
       ContainerSelector(AtomicString(container_name.value_or(g_null_atom)),
-                        physical, logical),
+                        physical, logical,
+                        queries_scroll_state.value_or(false)),
       nullptr /* selector_tree_scope */);
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
