@@ -339,18 +339,21 @@ VideoFrameCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->presented_frames = presentation_counter_;
   }
 
-  frame_metadata->width = last_frame->visible_rect().width();
-  frame_metadata->height = last_frame->visible_rect().height();
-
-  frame_metadata->media_time = last_frame->timestamp();
-
-  frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
+  if (last_frame) {
+    frame_metadata->width = last_frame->visible_rect().width();
+    frame_metadata->height = last_frame->visible_rect().height();
+    frame_metadata->media_time = last_frame->timestamp();
+    frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
+  }
 
   {
     base::AutoLock lock(callback_lock_);
     if (callback_) {
       frame_metadata->average_frame_duration =
           callback_->GetPreferredRenderInterval();
+    } else if (last_frame && last_frame->metadata().frame_duration) {
+      frame_metadata->average_frame_duration =
+          *last_frame->metadata().frame_duration;
     }
     frame_metadata->rendering_interval = last_interval_;
   }

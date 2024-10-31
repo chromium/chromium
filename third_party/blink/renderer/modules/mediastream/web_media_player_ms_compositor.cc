@@ -980,15 +980,15 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->presentation_time = last_presentation_time_;
     frame_metadata->expected_display_time = last_expected_display_time_;
     frame_metadata->presented_frames = static_cast<uint32_t>(presented_frames_);
-
     frame_metadata->average_frame_duration = last_preferred_render_interval_;
     frame_metadata->rendering_interval = last_render_length_;
   }
 
-  frame_metadata->width = last_frame->visible_rect().width();
-  frame_metadata->height = last_frame->visible_rect().height();
-
-  frame_metadata->media_time = last_frame->timestamp();
+  if (last_frame) {
+    frame_metadata->width = last_frame->visible_rect().width();
+    frame_metadata->height = last_frame->visible_rect().height();
+    frame_metadata->media_time = last_frame->timestamp();
+  }
 
   frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
 
