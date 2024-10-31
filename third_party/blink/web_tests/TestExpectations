@@ -8220,3 +8220,6 @@ crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html 
 # Gardener 2024-10-29
 # TODO(crbug.com/376320405): Fails inconsistently on Win10.
 crbug.com/376320405 [ Win10.20h2 ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
+
+# Gardener 2024-10-31
+crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
