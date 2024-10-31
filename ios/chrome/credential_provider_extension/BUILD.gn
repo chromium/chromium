@@ -163,7 +163,7 @@ source_set("metrics_util") {
 
 source_set("font_provider") {
   public_deps = [ ":font_provider_header" ]
-  deps = [ ":font_provider_implementation" ]
+  deps = [ ios_font_provider_target ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
