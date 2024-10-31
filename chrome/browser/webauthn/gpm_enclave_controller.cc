@@ -565,6 +565,8 @@ void GPMEnclaveController::DownloadAccountState() {
 
 void GPMEnclaveController::OnAccountStateTimeOut() {
   FIDO_LOG(ERROR) << "Fetching the account state timed out.";
+  device::enclave::RecordEvent(
+      device::enclave::Event::kDownloadAccountStateTimeout);
   download_account_state_request_.reset();
   if (enclave_manager_->is_ready()) {
     // If we were checking the security domain just to check whether the epoch

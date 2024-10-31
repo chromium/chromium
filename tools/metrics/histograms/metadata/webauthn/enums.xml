@@ -166,6 +166,7 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="User backed out of create passkey priority mechanism screen"/>
   <int value="9" label="User recovered from an iCloud Keychain recovery key"/>
+  <int value="10" label="Downloading the account state timed out"/>
 </enum>
 
 <enum name="WebAuthenticationEnclaveRequestResult">
