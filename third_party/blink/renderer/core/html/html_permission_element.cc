@@ -465,51 +465,7 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
 Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
-  if (permission_descriptors_.empty()) {
-    return kInsertionDone;
-  }
-
-  if (LocalFrame* frame = GetDocument().GetFrame()) {
-    if (frame->IsInFencedFrameTree()) {
-      AddConsoleError(
-          String::Format("The permission '%s' is not allowed in fenced frame",
-                         GetType().Utf8().c_str()));
-      return kInsertionDone;
-    }
-
-    if (frame->IsCrossOriginToOutermostMainFrame() &&
-        !GetExecutionContext()
-             ->GetContentSecurityPolicy()
-             ->HasEnforceFrameAncestorsDirectives()) {
-      AddConsoleError(
-          String::Format("The permission '%s' is not allowed without the CSP "
-                         "'frame-ancestors' directive present.",
-                         GetType().Utf8().c_str()));
-      return kInsertionDone;
-    }
-
-    for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
-      if (!GetExecutionContext()->IsFeatureEnabled(
-              PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
-        AddConsoleError(String::Format(
-            "The permission '%s' is not allowed in the current context due to "
-            "PermissionsPolicy",
-            PermissionNameToString(descriptor->name).Utf8().c_str()));
-        return kInsertionDone;
-      }
-    }
-  }
-
-  if (embedded_permission_control_receiver_.is_bound()) {
-    return kInsertionDone;
-  }
-  mojo::PendingRemote<EmbeddedPermissionControlClient> client;
-  embedded_permission_control_receiver_.Bind(
-      client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
-  GetPermissionService()->RegisterPageEmbeddedPermissionControl(
-      mojo::Clone(permission_descriptors_), std::move(client));
-  CHECK(GetDocument().View());
-  GetDocument().View()->RegisterForLifecycleNotifications(this);
+  MaybeRegisterPageEmbeddedPermissionControl();
   return kInsertionDone;
 }
 
@@ -517,6 +473,15 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
   Element::AttachLayoutTree(context);
   DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
                              kDefaultDisableTimeout);
+  CHECK(GetDocument().View());
+  GetDocument().View()->RegisterForLifecycleNotifications(this);
+}
+
+void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
+  Element::DetachLayoutTree(performing_reattach);
+  if (auto* view = GetDocument().View()) {
+    view->UnregisterFromLifecycleNotifications(this);
+  }
 }
 
 void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
@@ -532,9 +497,6 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
     disable_reason_expire_timer_.Stop();
   }
   intersection_rect_ = std::nullopt;
-  if (auto* view = GetDocument().View()) {
-    view->UnregisterFromLifecycleNotifications(this);
-  }
 }
 
 void HTMLPermissionElement::Focus(const FocusParams& params) {
@@ -674,6 +636,54 @@ void HTMLPermissionElement::OnPermissionServiceConnectionFailed() {
   permission_service_.reset();
 }
 
+bool HTMLPermissionElement::MaybeRegisterPageEmbeddedPermissionControl() {
+  if (embedded_permission_control_receiver_.is_bound()) {
+    return true;
+  }
+
+  if (permission_descriptors_.empty()) {
+    return false;
+  }
+
+  if (LocalFrame* frame = GetDocument().GetFrame()) {
+    if (frame->IsInFencedFrameTree()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed in fenced frame",
+                         GetType().Utf8().c_str()));
+      return false;
+    }
+
+    if (frame->IsCrossOriginToOutermostMainFrame() &&
+        !GetExecutionContext()
+             ->GetContentSecurityPolicy()
+             ->HasEnforceFrameAncestorsDirectives()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed without the CSP "
+                         "'frame-ancestors' directive present.",
+                         GetType().Utf8().c_str()));
+      return false;
+    }
+
+    for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
+      if (!GetExecutionContext()->IsFeatureEnabled(
+              PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
+        AddConsoleError(String::Format(
+            "The permission '%s' is not allowed in the current context due to "
+            "PermissionsPolicy",
+            PermissionNameToString(descriptor->name).Utf8().c_str()));
+        return false;
+      }
+    }
+  }
+
+  mojo::PendingRemote<EmbeddedPermissionControlClient> client;
+  embedded_permission_control_receiver_.Bind(
+      client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
+  GetPermissionService()->RegisterPageEmbeddedPermissionControl(
+      mojo::Clone(permission_descriptors_), std::move(client));
+  return true;
+}
+
 void HTMLPermissionElement::AttributeChanged(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
@@ -704,6 +714,8 @@ void HTMLPermissionElement::AttributeChanged(
             << "Unexpected permissions size " << permission_descriptors_.size();
     }
   }
+
+  MaybeRegisterPageEmbeddedPermissionControl();
 
   if (params.name == html_names::kPreciselocationAttr) {
     // This attribute can only be set once, and can not be modified afterwards.

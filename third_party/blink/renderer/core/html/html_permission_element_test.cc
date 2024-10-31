@@ -623,6 +623,52 @@ TEST_F(HTMLPemissionElementTest, AfterDetachLayoutTreeCrashTest) {
   // We end up here if the renderer process did not crash.
 }
 
+TEST_F(HTMLPemissionElementTest, SetTypeAfterInsertedInto) {
+  const struct {
+    const char* type;
+    MojoPermissionStatus status;
+    String expected_text;
+    bool precise_location = false;
+  } kTestData[] = {
+      {"geolocation", MojoPermissionStatus::ASK, kGeolocationString},
+      {"microphone", MojoPermissionStatus::ASK, kMicrophoneString},
+      {"camera", MojoPermissionStatus::ASK, kCameraString},
+      {"geolocation", MojoPermissionStatus::DENIED, kGeolocationString},
+      {"microphone", MojoPermissionStatus::DENIED, kMicrophoneString},
+      {"camera", MojoPermissionStatus::DENIED, kCameraString},
+      {"geolocation", MojoPermissionStatus::GRANTED, kGeolocationAllowedString},
+      {"microphone", MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
+      {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString},
+      {"geolocation", MojoPermissionStatus::ASK, kPreciseGeolocationString,
+       true},
+      {"geolocation", MojoPermissionStatus::DENIED, kPreciseGeolocationString,
+       true},
+      {"geolocation", MojoPermissionStatus::GRANTED,
+       kPreciseGeolocationAllowedString, true},
+
+      // Only affects geolocation.
+      {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString, true},
+      {"microphone", MojoPermissionStatus::ASK, kMicrophoneString, true},
+  };
+  for (const auto& data : kTestData) {
+    auto* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+    permission_element->GetPermissionService();
+    GetDocument().body()->AppendChild(permission_element);
+    permission_service()->set_initial_statuses({data.status});
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(data.type));
+    if (data.precise_location) {
+      permission_element->setAttribute(html_names::kPreciselocationAttr,
+                                       AtomicString(""));
+    }
+    RegistrationWaiter(permission_element).Wait();
+    EXPECT_EQ(
+        data.expected_text,
+        permission_element->permission_text_span_for_testing()->innerText());
+  }
+}
+
 TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
   const struct {
     const char* type;
@@ -998,7 +1044,7 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
         static_cast<frame_test_helpers::TestWebFrameClient*>(
             first_child_frame->Client())
             ->ConsoleMessages();
-    EXPECT_EQ(first_console_messages.size(), 1u);
+    EXPECT_EQ(first_console_messages.size(), 2u);
     EXPECT_TRUE(first_console_messages.front().Contains(
         "is not allowed in the current context due to PermissionsPolicy"));
     first_console_messages.clear();
@@ -1422,7 +1468,7 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
         static_cast<frame_test_helpers::TestWebFrameClient*>(
             first_child_frame->Client())
             ->ConsoleMessages();
-    EXPECT_EQ(first_console_messages.size(), 1u);
+    EXPECT_EQ(first_console_messages.size(), 2u);
     EXPECT_TRUE(first_console_messages.front().Contains(
         "is not allowed without the CSP 'frame-ancestors' directive present."));
     first_console_messages.clear();

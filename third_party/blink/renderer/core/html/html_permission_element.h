@@ -61,6 +61,7 @@ class CORE_EXPORT HTMLPermissionElement final
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   void AttachLayoutTree(AttachContext& context) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   void Focus(const FocusParams& params) override;
   FocusableState SupportsFocus(UpdateBehavior) const override;
   int DefaultTabIndex() const override;
@@ -135,6 +136,7 @@ class CORE_EXPORT HTMLPermissionElement final
                            DisableEnableClickingDifferentReasons);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementTestBase,
                            SetPreciseLocationAttribute);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementTest, SetTypeAfterInsertedInto);
 
   enum class DisableReason {
     kUnknown,
@@ -286,6 +288,13 @@ class CORE_EXPORT HTMLPermissionElement final
   // Ensure there is a connection to the permission service and return it.
   mojom::blink::PermissionService* GetPermissionService();
   void OnPermissionServiceConnectionFailed();
+
+  // Register the permission element, which will trigger an IPC registration
+  // call from `permission_service_`.
+  // Return false if this element is not allowed to call registration,
+  // otherwise, return true and might trigger registration IPC call to browser
+  // process.
+  bool MaybeRegisterPageEmbeddedPermissionControl();
 
   // blink::Element implements
   void AttributeChanged(const AttributeModificationParams& params) override;
