@@ -23,6 +23,70 @@
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+std::string ToString(const blink::InterestGroupKey& key) {
+  return "(" + key.owner.Serialize() + ", " + key.name + ")";
+}
+}  // namespace
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const BiddingAndAuctionResponse::ReportingURLs& reporting) {
+  os << "ReportingURLs("
+     << "reporting_url: " << base::ToString(reporting.reporting_url) << ", "
+     << "beacon_urls: " << base::ToString(reporting.beacon_urls) << ")";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const BiddingAndAuctionResponse& response) {
+  os << "BiddingAndAuctionResponse(";
+  os << "is_chaff: " << (response.is_chaff ? "true" : "false") << ", ";
+  os << "ad_render_url: " << response.ad_render_url << ", ";
+  os << "ad_components: [";
+  for (const auto& component : response.ad_components) {
+    os << component << ", ";
+  }
+  os << "], ";
+  os << "interest_group_name: " << response.interest_group_name << ", ";
+  os << "interest_group_owner: " << response.interest_group_owner.Serialize()
+     << ", ";
+  os << "bidding_groups: [";
+  for (const auto& group : response.bidding_groups) {
+    os << ToString(group) << ", ";
+  }
+  os << "], ";
+  os << "score:" << testing::PrintToString(response.score) << ", ";
+  os << "bid:" << testing::PrintToString(response.bid) << ", ";
+  os << "error:" << testing::PrintToString(response.error) << ", ";
+  os << "buyer_reporting: " << testing::PrintToString(response.buyer_reporting)
+     << ", ";
+  os << "top_level_seller_reporting: "
+     << testing::PrintToString(response.top_level_seller_reporting) << ", ";
+  os << "component_seller_reporting: "
+     << testing::PrintToString(response.component_seller_reporting) << ", ";
+  os << "component_win_pagg_requests: "
+     << testing::PrintToString(response.component_win_pagg_requests) << ", ";
+  os << "server_filtered_pagg_requests_reserved: "
+     << testing::PrintToString(response.server_filtered_pagg_requests_reserved)
+     << ", ";
+  os << "component_win_debugging_only_reports: "
+     << testing::PrintToString(response.component_win_debugging_only_reports)
+     << ", ";
+  os << "server_filtered_debugging_only_reports: "
+     << testing::PrintToString(response.server_filtered_debugging_only_reports)
+     << ", ";
+  os << "debugging_only_report_origins: "
+     << testing::PrintToString(response.debugging_only_report_origins) << ", ";
+  os << "triggered_updates: [";
+  for (const auto& update : response.triggered_updates) {
+    os << ToString(update.first) << ": " << update.second << ", ";
+  }
+  os << "])";
+  return os;
+}
+
 namespace {
 
 const char kOwnerOrigin[] = "https://owner.example.com";
@@ -158,63 +222,6 @@ base::Value::Dict CreateResponseDictWithDebugReports(
               .Set("reports", base::Value::List().Append(std::move(report)))));
 }
 
-std::string ToString(
-    const BiddingAndAuctionResponse::ReportingURLs& reporting) {
-  return std::string("ReportingURLs(") +
-         "reporting_url: " + testing::PrintToString(reporting.reporting_url) +
-         ", " +
-         "beacon_urls: " + testing::PrintToString(reporting.beacon_urls) + ")";
-}
-
-std::string ToString(const BiddingAndAuctionResponse& response) {
-  return std::string("BiddingAndAuctionResponse(") +
-         "is_chaff: " + (response.is_chaff ? "true" : "false") + ", " +
-         "ad_render_url: " + response.ad_render_url.spec() + ", " +
-         "ad_components: " + testing::PrintToString(response.ad_components) +
-         ", " + "interest_group_name: " + response.interest_group_name + ", " +
-         "interest_group_owner: " + response.interest_group_owner.Serialize() +
-         ", " +
-         "bidding_groups: " + testing::PrintToString(response.bidding_groups) +
-         ", " + "score: " + testing::PrintToString(response.score) + ", " +
-         "bid: " + testing::PrintToString(response.bid) + ", " +
-         "bid_currency: " + testing::PrintToString(response.bid_currency) +
-         ", " + "top_level_seller: " +
-         testing::PrintToString(response.top_level_seller) + ", " +
-         "ad_metadata: " + testing::PrintToString(response.ad_metadata) + ", " +
-         "buyer_reporting_id: " +
-         testing::PrintToString(response.buyer_reporting_id) + ", " +
-         "error:" + testing::PrintToString(response.error) + ", " +
-         "buyer_reporting: " +
-         (response.buyer_reporting.has_value()
-              ? ToString(*response.buyer_reporting)
-              : "nullopt") +
-         ", " + "top_level_seller_reporting: " +
-         (response.top_level_seller_reporting.has_value()
-              ? ToString(*response.top_level_seller_reporting)
-              : "nullopt") +
-         ", " + "component_seller_reporting: " +
-         (response.component_seller_reporting.has_value()
-              ? ToString(*response.component_seller_reporting)
-              : "nullopt") +
-         ", " + "component_win_pagg_requests: " +
-         testing::PrintToString(response.component_win_pagg_requests) + ", " +
-         "server_filtered_pagg_requests_reserved: " +
-         testing::PrintToString(
-             response.server_filtered_pagg_requests_reserved) +
-         ", " + "server_filtered_pagg_requests_non_reserved: " +
-         testing::PrintToString(
-             response.server_filtered_pagg_requests_non_reserved) +
-         ", " + "component_win_debugging_only_reports: " +
-         testing::PrintToString(response.component_win_debugging_only_reports) +
-         ", " + "server_filtered_debugging_only_reports: " +
-         testing::PrintToString(
-             response.server_filtered_debugging_only_reports) +
-         ", " + "debugging_only_report_origins: " +
-         testing::PrintToString(response.debugging_only_report_origins) + ", " +
-         "triggered_updates: " +
-         testing::PrintToString(response.triggered_updates) + ")";
-}
-
 auction_worklet::mojom::EventTypePtr CreateReservedEventType(
     auction_worklet::mojom::ReservedEventType reserved_event_type) {
   return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
@@ -288,7 +295,8 @@ auto ElementsAreRequests(Ts&... requests) {
 
 MATCHER_P(EqualsBiddingAndAuctionResponse,
           other,
-          "EqualsBiddingAndAuctionResponse(" + ToString(other.get()) + ")") {
+          "EqualsBiddingAndAuctionResponse(" +
+              testing::PrintToString(other.get()) + ")") {
   std::vector<testing::Matcher<BiddingAndAuctionResponse>> matchers = {
       testing::Field("is_chaff", &BiddingAndAuctionResponse::is_chaff,
                      testing::Eq(other.get().is_chaff)),
