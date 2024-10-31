@@ -8875,6 +8875,21 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_WebOptInAndKeyNativePages_131",
+                    "params": {
+                        "disable_bottom_controls_stacker_y_offset": "false"
+                    },
+                    "enable_features": [
+                        "BottomBrowserControlsRefactor",
+                        "DrawCutoutEdgeToEdge",
+                        "DrawKeyNativeEdgeToEdge",
+                        "DynamicSafeAreaInsets",
+                        "DynamicSafeAreaInsetsOnScroll",
+                        "EdgeToEdgeBottomChin",
+                        "EdgeToEdgeWebOptIn"
+                    ]
+                },
+                {
                     "name": "Enabled_BottomChin",
                     "params": {
                         "disable_bottom_controls_stacker_y_offset": "false"
