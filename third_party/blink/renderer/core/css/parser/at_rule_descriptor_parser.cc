@@ -506,7 +506,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
   return parsed_value;
 }
 
-bool AtRuleDescriptorParser::ParseAtRule(
+bool AtRuleDescriptorParser::ParseDescriptorValue(
     StyleRule::RuleType rule_type,
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,

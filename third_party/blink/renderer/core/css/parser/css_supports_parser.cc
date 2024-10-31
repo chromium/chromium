@@ -336,9 +336,9 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
 
   // The descriptor value.
   HeapVector<CSSPropertyValue, 64> parsed_descriptors;
-  bool ok = AtRuleDescriptorParser::ParseAtRule(rule_type, descriptor_id,
-                                                stream, *parser_.GetContext(),
-                                                parsed_descriptors);
+  bool ok = AtRuleDescriptorParser::ParseDescriptorValue(
+      rule_type, descriptor_id, stream, *parser_.GetContext(),
+      parsed_descriptors);
 
   return ok && guard.Release();
 }
