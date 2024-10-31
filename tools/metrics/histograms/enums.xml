@@ -34223,6 +34223,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="405280734" label="chrome://data-sharing-internals/"/>
   <int value="435700552" label="chrome-untrusted://scalable-iph-debug/"/>
   <int value="436626245" label="chrome://settings/content/cookies/"/>
+  <int value="440216167" label="chrome://commerce-internals/"/>
   <int value="454041716" label="chrome://new-tab-page-third-party/"/>
   <int value="459058510" label="chrome://status-area-internals/"/>
   <int value="460232055" label="chrome://lens-search-bubble/"/>

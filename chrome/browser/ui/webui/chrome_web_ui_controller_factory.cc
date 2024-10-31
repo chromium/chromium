@@ -20,7 +20,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -39,7 +38,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/favicon/core/favicon_service.h"
@@ -191,17 +189,6 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
 }
 
 template <>
-WebUIController* NewWebUI<commerce::CommerceInternalsUI>(WebUI* web_ui,
-                                                         const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  return new commerce::CommerceInternalsUI(
-      web_ui,
-      base::BindOnce(&SetUpWebUIDataSource, web_ui,
-                     commerce::kChromeUICommerceInternalsHost),
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
-}
-
-template <>
 WebUIController* NewWebUI<OptimizationGuideInternalsUI>(WebUI* web_ui,
                                                         const GURL& url) {
   return OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
@@ -243,9 +230,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   //
   // We must compare hosts only since some of the Web UIs append extra stuff
   // after the host name.
-  if (url.host_piece() == commerce::kChromeUICommerceInternalsHost) {
-    return &NewWebUI<commerce::CommerceInternalsUI>;
-  }
   if (url.host_piece() ==
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
     return &NewWebUI<OptimizationGuideInternalsUI>;

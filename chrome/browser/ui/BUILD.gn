@@ -164,6 +164,8 @@ static_library("ui") {
     "webui/browsing_topics/browsing_topics_internals_ui.h",
     "webui/chrome_web_ui_controller_factory.cc",
     "webui/chrome_web_ui_controller_factory.h",
+    "webui/commerce/commerce_internals_ui_config.cc",
+    "webui/commerce/commerce_internals_ui_config.h",
     "webui/components/components_handler.cc",
     "webui/components/components_handler.h",
     "webui/components/components_ui.cc",
