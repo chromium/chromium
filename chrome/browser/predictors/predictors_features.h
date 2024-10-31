@@ -54,6 +54,8 @@ BASE_DECLARE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup);
 
 BASE_DECLARE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount);
 
+BASE_DECLARE_FEATURE(kPrefetchManagerUseNetworkContextPrefetch);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PREDICTORS_PREDICTORS_FEATURES_H_

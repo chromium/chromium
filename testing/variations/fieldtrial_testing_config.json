@@ -17401,6 +17401,25 @@
             ]
         }
     ],
+    "PrefetchManagerUseNetworkContextPrefetch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "//0": "Required features LoadingPredictorPrefetch and ",
+                    "//1": "LoadingPredictorUseOptimizationGuide are enabled by ",
+                    "//2": "default on Android.",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NetworkContextPrefetch",
+                        "PrefetchManagerUseNetworkContextPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrefetchNewWaitLoop": [
         {
             "platforms": [

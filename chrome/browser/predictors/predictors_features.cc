@@ -111,4 +111,8 @@ BASE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount,
              "LoadingPredictorLimitPreconnectSocketCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchManagerUseNetworkContextPrefetch,
+             "PrefetchManagerUseNetworkContextPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

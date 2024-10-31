@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_REDUCE_ACCEPT_LANGUAGE_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
-#define CONTENT_BROWSER_REDUCE_ACCEPT_LANGUAGE_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
+#ifndef CONTENT_PUBLIC_BROWSER_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
+#define CONTENT_PUBLIC_BROWSER_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
 
 #include "content/common/content_export.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -109,6 +109,12 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node);
 
+  // A variant of LookupReducedAcceptLanguage() that uses the top frame origin.
+  // The comments above also apply to this version.
+  std::optional<std::string> LookupReducedAcceptLanguage(
+      const url::Origin& request_origin,
+      const url::Origin& top_frame_origin);
+
   // Remove the persisted language for the given top-level document's `origin`.
   void RemoveReducedAcceptLanguage(const url::Origin& origin,
                                    FrameTreeNode* frame_tree_node);
@@ -159,4 +165,4 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_REDUCE_ACCEPT_LANGUAGE_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
+#endif  // CONTENT_PUBLIC_BROWSER_REDUCE_ACCEPT_LANGUAGE_UTILS_H_

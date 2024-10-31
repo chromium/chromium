@@ -154,12 +154,14 @@ PrefetchManagerTest::PrefetchManagerTest()
         /*enabled_features=*/
         {features::kLoadingPredictorPrefetch,
          features::kLoadingPredictorPrefetchUseReadAndDiscardBody},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            features::kPrefetchManagerUseNetworkContextPrefetch});
   } else {
     features_.InitWithFeatures(
         /*enabled_features=*/{features::kLoadingPredictorPrefetch},
         /*disabled_features=*/{
-            features::kLoadingPredictorPrefetchUseReadAndDiscardBody});
+            features::kLoadingPredictorPrefetchUseReadAndDiscardBody,
+            features::kPrefetchManagerUseNetworkContextPrefetch});
   }
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kLoadingPredictorAllowLocalRequestForTesting);
