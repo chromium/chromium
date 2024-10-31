@@ -75,7 +75,9 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter<D
      * Forces the parameter to return a specific value for testing.
      *
      * @param overrideValue the value to be returned
+     * @deprecated use <code>@EnableFeatures("Feature:param/value")</code> instead.
      */
+    @Deprecated
     public void setForTesting(double overrideValue) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(this, String.valueOf(overrideValue));

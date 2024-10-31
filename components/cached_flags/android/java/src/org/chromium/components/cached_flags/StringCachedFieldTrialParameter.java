@@ -75,7 +75,9 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter<S
      * Forces the parameter to return a specific value for testing.
      *
      * @param overrideValue the value to be returned
+     * @deprecated use <code>@EnableFeatures("Feature:param/value")</code> instead.
      */
+    @Deprecated
     public void setForTesting(String overrideValue) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(this, overrideValue);
