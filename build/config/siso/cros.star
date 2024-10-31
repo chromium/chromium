@@ -190,7 +190,7 @@ def __step_config(ctx, step_config):
         step_config["rules"].extend([
             {
                 "name": "clang-cros/nacl_helper_arm32_cxx",
-                "action": "(.*_)?cxx",
+                "action": "nacl_helper_arm32_cxx",
                 "command_prefix": path.join("../../", cros_nacl_helper_arm32_cxx),
                 "remote": True,
                 "canonicalize_dir": True,
@@ -203,7 +203,7 @@ def __step_config(ctx, step_config):
         step_config["rules"].extend([
             {
                 "name": "clang-cros/nacl_helper_arm32_cc",
-                "action": "(.*_)?cxx",
+                "action": "nacl_helper_arm32_cc",
                 "command_prefix": path.join("../../", cros_nacl_helper_arm32_cc),
                 "remote": True,
                 "canonicalize_dir": True,
