@@ -206,8 +206,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void OnReceiverDisconnected();
 
   struct HeaderPendingDecode;
-  struct RegistrationDataHeaders;
-  struct PendingRegistrationData;
+  class PendingRegistrationData;
 
   void HandleRegistrationData(base::flat_set<Registrations>::iterator,
                               PendingRegistrationData);
