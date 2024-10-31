@@ -277,6 +277,7 @@ public class ToolbarManager
     private final TabObscuringHandler mTabObscuringHandler;
     private ToolbarDragDropCoordinator mToolbarDragDropCoordinator;
     private OnAttachStateChangeListener mAttachStateChangeListener;
+    private final BackPressHandler mBackPressHandler;
     private final BackPressManager mBackPressManager;
     private final UserEducationHelper mUserEducationHelper;
     private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
@@ -709,10 +710,11 @@ public class ToolbarManager
                         this::updateButtonStatus,
                         mActivityTabProvider);
         if (backPressManager != null && BackPressManager.isEnabled()) {
-            OnBackPressHandler handler = new OnBackPressHandler();
-            backPressManager.addHandler(handler, BackPressHandler.Type.TAB_HISTORY);
+            mBackPressHandler = new OnBackPressHandler();
+            backPressManager.addHandler(mBackPressHandler, BackPressHandler.Type.TAB_HISTORY);
             mBackPressManager = backPressManager;
         } else {
+            mBackPressHandler = null;
             mBackPressManager = null;
         }
 
@@ -2331,6 +2333,8 @@ public class ToolbarManager
         assert profile != null
                 : "Failed to get Profile when offTheRecord = "
                         + mTabModelSelector.isOffTheRecordModelSelected();
+
+        if (mBackPressHandler != null) mBackPressHandler.handleOnBackCancelled();
 
         mLocationBarModel.setTab(tab, profile);
         updateTabLoadingState(true);
