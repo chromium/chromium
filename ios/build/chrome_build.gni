@@ -57,7 +57,7 @@ declare_args() {
       "//ios/chrome/credential_provider_extension:font_provider_implementation"
 
   # Enable passkey capabilities in the Credential Provider Extension (CPE).
-  ios_cpe_enable_passkey_capabilities = false
+  ios_cpe_enable_passkey_capabilities = true
 
   # Label of the target providing implementation for the PushNotificationServiceExtension.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
