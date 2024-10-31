@@ -397,10 +397,23 @@ gfx::RectF FragmentItem::ObjectBoundingBox(const FragmentItems& items) const {
     ink_bounds.Offset(0.0f, font_data->GetFontMetrics().FloatAscent());
   ink_bounds.Scale(GetSvgFragmentData()->length_adjust_scale, 1.0f);
   const gfx::RectF& scaled_rect = GetSvgFragmentData()->rect;
-  if (!IsHorizontal()) {
-    ink_bounds =
-        gfx::RectF(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
-                   ink_bounds.height(), ink_bounds.width());
+  // Convert a logical ink_bounds to physical. We don't use WiringModeConverter,
+  // which has no ToPhysical() for gfx::RectF.
+  switch (GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      break;
+    case WritingMode::kVerticalLr:
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      ink_bounds =
+          gfx::RectF(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
+                     ink_bounds.height(), ink_bounds.width());
+      break;
+    case WritingMode::kSidewaysLr:
+      ink_bounds =
+          gfx::RectF(ink_bounds.y(), scaled_rect.height() - ink_bounds.right(),
+                     ink_bounds.height(), ink_bounds.width());
+      break;
   }
   ink_bounds.Offset(scaled_rect.OffsetFromOrigin());
   ink_bounds.Union(scaled_rect);
