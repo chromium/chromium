@@ -351,7 +351,7 @@ public class OptionalButtonCoordinatorTest {
         doReturn(true).when(mMockTracker).isInitialized();
         doReturn(false)
                 .when(mMockTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+                .shouldTriggerHelpUi(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
 
         Drawable iconDrawable = mock(Drawable.class);
         OnClickListener clickListener = view -> {};
@@ -394,7 +394,7 @@ public class OptionalButtonCoordinatorTest {
         doReturn(true).when(mMockTracker).isInitialized();
         doReturn(true)
                 .when(mMockTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+                .shouldTriggerHelpUi(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
 
         Drawable iconDrawable = mock(Drawable.class);
         OnClickListener clickListener = view -> {};

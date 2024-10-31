@@ -141,7 +141,7 @@ public class UserEducationHelper {
         mTextBubble = null;
         TriggerDetails triggerDetails =
                 new TriggerDetails(
-                        tracker.shouldTriggerHelpUI(featureName), /* shouldShowSnooze= */ false);
+                        tracker.shouldTriggerHelpUi(featureName), /* shouldShowSnooze= */ false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {

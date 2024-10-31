@@ -43,7 +43,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
                         + " prevent any IPH from showing. See crbug.com/342240475.");
         Tracker tracker = Mockito.mock(Tracker.class);
         // Disable IPH to prevent it from interfering with the tests.
-        when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
+        when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(tracker);
     }
 

@@ -52,8 +52,8 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public void showPasswordCheckUI(Context context) {
-        SafetyHubUtils.showPasswordCheckUI(context, mProfile, mModalDialogManagerSupplier);
+    public void showPasswordCheckUi(Context context) {
+        SafetyHubUtils.showPasswordCheckUi(context, mProfile, mModalDialogManagerSupplier);
     }
 
     @Override

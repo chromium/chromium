@@ -274,7 +274,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         boolean mCalled;
 
                         @Override
-                        public void onShowLoadingUIComplete() {
+                        public void onShowLoadingUiComplete() {
                             if (mCalled) {
                                 return;
                             }
@@ -283,7 +283,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         }
 
                         @Override
-                        public void onHideLoadingUIComplete() {}
+                        public void onHideLoadingUiComplete() {}
                     });
         }
         postDelayed(
@@ -304,10 +304,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         boolean mCalled;
 
                         @Override
-                        public void onShowLoadingUIComplete() {}
+                        public void onShowLoadingUiComplete() {}
 
                         @Override
-                        public void onHideLoadingUIComplete() {
+                        public void onHideLoadingUiComplete() {
                             if (mCalled) {
                                 return;
                             }

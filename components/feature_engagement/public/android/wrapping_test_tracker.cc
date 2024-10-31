@@ -34,7 +34,7 @@ bool WrappingTestTracker::ShouldTriggerHelpUI(const base::Feature& feature) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jfeature(
       base::android::ConvertUTF8ToJavaString(env, feature.name));
-  return Java_CppWrappedTestTracker_shouldTriggerHelpUI(
+  return Java_CppWrappedTestTracker_shouldTriggerHelpUi(
       base::android::AttachCurrentThread(), java_tracker_, jfeature);
 }
 
@@ -48,7 +48,7 @@ bool WrappingTestTracker::WouldTriggerHelpUI(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jfeature(
       base::android::ConvertUTF8ToJavaString(env, feature.name));
-  return Java_CppWrappedTestTracker_wouldTriggerHelpUI(
+  return Java_CppWrappedTestTracker_wouldTriggerHelpUi(
       base::android::AttachCurrentThread(), java_tracker_, jfeature);
 }
 

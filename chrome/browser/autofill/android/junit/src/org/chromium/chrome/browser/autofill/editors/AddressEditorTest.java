@@ -465,7 +465,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_NewAddressProfile() {
+    public void validateUiStrings_NewAddressProfile() {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -488,7 +488,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_NewAddressProfile_EligibleForAddressAccountStorage() {
+    public void validateUiStrings_NewAddressProfile_EligibleForAddressAccountStorage() {
         setUpAddressUiComponents(new ArrayList());
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         mAddressEditor =
@@ -519,7 +519,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_LocalOrSyncAddressProfile_AddressSyncDisabled() {
+    public void validateUiStrings_LocalOrSyncAddressProfile_AddressSyncDisabled() {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -547,7 +547,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_LocalOrSyncAddressProfile_AddressSyncEnabled() {
+    public void validateUiStrings_LocalOrSyncAddressProfile_AddressSyncEnabled() {
         setUpAddressUiComponents(new ArrayList());
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
@@ -578,7 +578,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_UpdateLocalOrSyncAddressProfile_AddressSyncDisabled() {
+    public void validateUiStrings_UpdateLocalOrSyncAddressProfile_AddressSyncDisabled() {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -606,7 +606,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_UpdateLocalOrSyncAddressProfile_AddressSyncEnabled() {
+    public void validateUiStrings_UpdateLocalOrSyncAddressProfile_AddressSyncEnabled() {
         setUpAddressUiComponents(new ArrayList());
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
@@ -637,7 +637,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_LocalAddressProfile_MigrationToAccount() {
+    public void validateUiStrings_LocalAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -673,7 +673,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_SyncAddressProfile_MigrationToAccount() {
+    public void validateUiStrings_SyncAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(new ArrayList());
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
@@ -711,7 +711,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_AccountAddressProfile_SaveInAccountFlow() {
+    public void validateUiStrings_AccountAddressProfile_SaveInAccountFlow() {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -746,7 +746,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateUIStrings_AccountAddressProfile_UpdateAccountProfileFlow() {
+    public void validateUiStrings_AccountAddressProfile_UpdateAccountProfileFlow() {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(

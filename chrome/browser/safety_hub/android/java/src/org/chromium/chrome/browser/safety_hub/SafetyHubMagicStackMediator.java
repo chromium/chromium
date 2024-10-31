@@ -261,7 +261,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
                     mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.PASSWORDS);
-                    SafetyHubUtils.showPasswordCheckUI(
+                    SafetyHubUtils.showPasswordCheckUi(
                             mContext, mProfile, mModalDialogManagerSupplier);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);
                     mMagicStackBridge.dismissCompromisedPasswordsModule();

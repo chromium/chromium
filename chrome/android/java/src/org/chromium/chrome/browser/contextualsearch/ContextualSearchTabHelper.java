@@ -464,10 +464,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      * coordinates.
      */
     @CalledByNative
-    void onShowUnhandledTapUIIfNeeded(int x, int y) {
+    void onShowUnhandledTapUiIfNeeded(int x, int y) {
         // Only notify the manager if we currently have a valid listener.
         if (mGestureStateListener != null && getContextualSearchManager(mTab) != null) {
-            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(x, y);
+            getContextualSearchManager(mTab).onShowUnhandledTapUiIfNeeded(x, y);
         }
     }
 

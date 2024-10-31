@@ -249,7 +249,7 @@ public class ContextualSearchInstrumentationBase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextualSearchManager.getGestureStateListener().onTouchDown();
-                    mContextualSearchManager.onShowUnhandledTapUIIfNeeded(0, 0);
+                    mContextualSearchManager.onShowUnhandledTapUiIfNeeded(0, 0);
                 });
     }
 
@@ -257,7 +257,7 @@ public class ContextualSearchInstrumentationBase {
     protected void mockTapEmptySpace() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mContextualSearchManager.onShowUnhandledTapUIIfNeeded(0, 0);
+                    mContextualSearchManager.onShowUnhandledTapUiIfNeeded(0, 0);
                     mContextualSearchClient.onSelectionEvent(
                             SelectionEventType.SELECTION_HANDLES_CLEARED, 0, 0);
                 });

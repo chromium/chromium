@@ -638,7 +638,7 @@ public class NavigateTest {
                         final Tab tab = TabModelUtils.getCurrentTab(model);
 
                         // Make sure that we are showing the spoofed data and a blank URL.
-                        String url = getTabUrlOnUIThread(tab);
+                        String url = getTabUrlOnUiThread(tab);
                         boolean spoofedUrl = "".equals(url) || "about:blank".equals(url);
                         Assert.assertTrue("URL Spoofed", spoofedUrl);
                         Assert.assertEquals(
@@ -681,7 +681,7 @@ public class NavigateTest {
             mActivityTestRule.assertWaitForPageScaleFactorMatch(0.75f);
             CriteriaHelper.pollInstrumentationThread(
                     () -> {
-                        Criteria.checkThat(getTabUrlOnUIThread(tab), Matchers.is(mockedUrl));
+                        Criteria.checkThat(getTabUrlOnUiThread(tab), Matchers.is(mockedUrl));
                     },
                     5000,
                     50);
@@ -765,9 +765,8 @@ public class NavigateTest {
         ChromeTabUtils.waitForTabPageLoaded(tab, finalUrl);
     }
 
-    private String getTabUrlOnUIThread(final Tab tab) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeTabUtils.getUrlStringOnUiThread(tab));
+    private String getTabUrlOnUiThread(final Tab tab) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.getUrlStringOnUiThread(tab));
     }
 
     private String getTabBodyText(Tab tab) {

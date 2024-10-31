@@ -369,7 +369,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
 
-    private boolean mUIWithNativeInitialized;
+    private boolean mUiWithNativeInitialized;
 
     private LocaleManager mLocaleManager;
 
@@ -1061,7 +1061,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         this, mLayoutManager, mTabModelSelector, getLifecycleDispatcher());
             }
 
-            mUIWithNativeInitialized = true;
+            mUiWithNativeInitialized = true;
 
             // The dataset has already been created, we need to initialize our state.
             mTabModelSelector.notifyChanged();
@@ -3157,15 +3157,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     /**
      * Launch a URL from an intent.
+     *
      * @param loadUrlParams Parameters specifying the url to load.
      * @param externalAppId External app id.
-     * @param forceNewTab   Whether to force the URL to be launched in a new tab or to fall
-     *                      back to the default behavior for making that determination.
-     * @param intent        The original intent.
+     * @param forceNewTab Whether to force the URL to be launched in a new tab or to fall back to
+     *     the default behavior for making that determination.
+     * @param intent The original intent.
      */
     private Tab launchIntent(
             LoadUrlParams loadUrlParams, String externalAppId, boolean forceNewTab, Intent intent) {
-        if (mUIWithNativeInitialized && !UrlUtilities.isNtpUrl(loadUrlParams.getUrl())) {
+        if (mUiWithNativeInitialized && !UrlUtilities.isNtpUrl(loadUrlParams.getUrl())) {
             getLayoutManager().showLayout(LayoutType.BROWSING, false);
             getToolbarManager().finishAnimations();
         }
@@ -3402,7 +3403,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Boolean result =
                 KeyboardShortcuts.dispatchKeyEvent(
                         event,
-                        mUIWithNativeInitialized,
+                        mUiWithNativeInitialized,
                         getFullscreenManager(),
                         /* menuOrKeyboardActionController= */ this);
         return result != null ? result : super.dispatchKeyEvent(event);
@@ -3410,7 +3411,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (!mUIWithNativeInitialized) {
+        if (!mUiWithNativeInitialized) {
             return super.onKeyDown(keyCode, event);
         }
         // Detecting a long press of the back button via onLongPress is broken in Android N.
@@ -3499,7 +3500,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public boolean canShowAppMenu() {
         // The popup menu relies on the model created during the full UI initialization, so do not
         // attempt to show the menu until the UI creation has finished.
-        if (!mUIWithNativeInitialized) return false;
+        if (!mUiWithNativeInitialized) return false;
 
         // If the current active tab is showing a tab modal dialog, an app menu shouldn't be shown
         // in any cases, e.g. when a hardware menu button is clicked.

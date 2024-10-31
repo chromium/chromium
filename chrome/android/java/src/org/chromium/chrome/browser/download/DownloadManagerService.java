@@ -133,7 +133,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     private DownloadMessageUiController mMessageUiController;
     private long mNativeDownloadManagerService;
     // Flag to track if we need to post a task to update download notifications.
-    private boolean mIsUIUpdateScheduled;
+    private boolean mIsUiUpdateScheduled;
     private int mAutoResumptionLimit = -1;
     private DownloadManagerRequestInterceptor mDownloadManagerRequestInterceptor;
 
@@ -494,9 +494,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     /** Schedule an update if there is no update scheduled. */
     @VisibleForTesting
     protected void scheduleUpdateIfNeeded() {
-        if (mIsUIUpdateScheduled) return;
+        if (mIsUiUpdateScheduled) return;
 
-        mIsUIUpdateScheduled = true;
+        mIsUiUpdateScheduled = true;
         final List<DownloadProgress> progressPendingUpdate = new ArrayList<DownloadProgress>();
         Iterator<DownloadProgress> iter = mDownloadProgressMap.values().iterator();
         while (iter.hasNext()) {
@@ -506,14 +506,14 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             }
         }
         if (progressPendingUpdate.isEmpty()) {
-            mIsUIUpdateScheduled = false;
+            mIsUiUpdateScheduled = false;
             return;
         }
         updateAllNotifications(progressPendingUpdate);
 
         Runnable scheduleNextUpdateTask =
                 () -> {
-                    mIsUIUpdateScheduled = false;
+                    mIsUiUpdateScheduled = false;
                     scheduleUpdateIfNeeded();
                 };
         mHandler.postDelayed(scheduleNextUpdateTask, mUpdateDelayInMillis);

@@ -244,7 +244,7 @@ public interface DataSharingService {
             GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback);
 
     /** Returns The current instance of {@link DataSharingUIDelegate}. */
-    DataSharingUIDelegate getUIDelegate();
+    DataSharingUIDelegate getUiDelegate();
 
     /** Returns the current {@link ServiceStatus} of the service. */
     @NonNull

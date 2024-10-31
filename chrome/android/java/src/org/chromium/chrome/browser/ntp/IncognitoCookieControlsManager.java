@@ -99,7 +99,7 @@ public class IncognitoCookieControlsManager
     }
 
     @Override
-    public void sendCookieControlsUIChanges(
+    public void sendCookieControlsUiChanges(
             boolean checked, @CookieControlsEnforcement int enforcement) {
         mChecked = checked;
         mEnforcement = enforcement;

@@ -103,7 +103,7 @@ public class DataSharingTabManagerUnitTest {
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
-    @Mock private DataSharingUIDelegate mDataSharingUIDelegate;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
     @Mock private Profile mProfile;
     @Mock private BottomSheetController mBottomSheetController;
@@ -159,7 +159,7 @@ public class DataSharingTabManagerUnitTest {
         savedTabGroupTab.localId = TAB_ID;
         mSavedTabGroup.savedTabs.add(savedTabGroupTab);
 
-        when(mDataSharingService.getUIDelegate()).thenReturn(mDataSharingUIDelegate);
+        when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
 
@@ -293,7 +293,7 @@ public class DataSharingTabManagerUnitTest {
 
         ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
-        verify(mDataSharingUIDelegate).showJoinFlow(uiConfigCaptor.capture());
+        verify(mDataSharingUiDelegate).showJoinFlow(uiConfigCaptor.capture());
         verify(mTabGroupSyncService).addObserver(any());
 
         DataSharingJoinUiConfig uiConfig = uiConfigCaptor.getValue();
@@ -371,7 +371,7 @@ public class DataSharingTabManagerUnitTest {
 
         ArgumentCaptor<DataSharingManageUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingManageUiConfig.class);
-        verify(mDataSharingUIDelegate).showManageFlow(uiConfigCaptor.capture());
+        verify(mDataSharingUiDelegate).showManageFlow(uiConfigCaptor.capture());
 
         DataSharingManageUiConfig uiConfig = uiConfigCaptor.getValue();
         Assert.assertEquals(GROUP_ID, uiConfig.getGroupToken().groupId);
@@ -465,7 +465,7 @@ public class DataSharingTabManagerUnitTest {
 
         ArgumentCaptor<DataSharingCreateUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.class);
-        verify(mDataSharingUIDelegate).showCreateFlow(uiConfigCaptor.capture());
+        verify(mDataSharingUiDelegate).showCreateFlow(uiConfigCaptor.capture());
 
         DataSharingCreateUiConfig uiConfig = uiConfigCaptor.getValue();
 
@@ -513,7 +513,7 @@ public class DataSharingTabManagerUnitTest {
 
         ArgumentCaptor<DataSharingCreateUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.class);
-        verify(mDataSharingUIDelegate).showCreateFlow(uiConfigCaptor.capture());
+        verify(mDataSharingUiDelegate).showCreateFlow(uiConfigCaptor.capture());
 
         DataSharingCreateUiConfig uiConfig = uiConfigCaptor.getValue();
 

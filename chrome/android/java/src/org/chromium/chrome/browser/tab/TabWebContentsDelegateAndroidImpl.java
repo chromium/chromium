@@ -145,14 +145,14 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public void loadingStateChanged(boolean shouldShowLoadingUI) {
+    public void loadingStateChanged(boolean shouldShowLoadingUi) {
         boolean isLoading = mTab.getWebContents() != null && mTab.getWebContents().isLoading();
         if (isLoading) {
-            mTab.onLoadStarted(shouldShowLoadingUI);
+            mTab.onLoadStarted(shouldShowLoadingUi);
         } else {
             mTab.onLoadStopped();
         }
-        mDelegate.loadingStateChanged(shouldShowLoadingUI);
+        mDelegate.loadingStateChanged(shouldShowLoadingUi);
     }
 
     @Override

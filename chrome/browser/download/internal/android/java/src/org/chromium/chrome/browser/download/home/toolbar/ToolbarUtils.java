@@ -49,7 +49,7 @@ public class ToolbarUtils {
         if (dirs.size() < 2) return;
 
         // Check to see if the help UI should be triggered.
-        if (!tracker.shouldTriggerHelpUI(FeatureConstants.DOWNLOAD_SETTINGS_FEATURE)) return;
+        if (!tracker.shouldTriggerHelpUi(FeatureConstants.DOWNLOAD_SETTINGS_FEATURE)) return;
 
         // Build and show text bubble.
         View anchorView = rootView.findViewById(R.id.settings_menu_id);

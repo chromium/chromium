@@ -214,7 +214,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordManagerHandler.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordManagerHandlerProvider.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUiView.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordsPreference.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ProgressBarDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
@@ -243,7 +243,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUiView.java",
   ]
 }
 

@@ -64,7 +64,7 @@ public class PaymentRequestIncompleteEmailTest {
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buy();", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
@@ -97,7 +97,7 @@ public class PaymentRequestIncompleteEmailTest {
     @Feature({"Payments"})
     public void testAddIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buy();", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
@@ -130,7 +130,7 @@ public class PaymentRequestIncompleteEmailTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buy();", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());

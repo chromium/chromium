@@ -28,7 +28,7 @@ class SafetyHubUtils {
      *
      * @param context used to show the dialog.
      */
-    static void showPasswordCheckUI(
+    static void showPasswordCheckUi(
             Context context,
             Profile profile,
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {

@@ -423,7 +423,7 @@ public class TabDragSource implements View.OnDragListener {
                 && tabBeingDragged != null) {
             // Following call is device specific and is intended for specific platform
             // SysUI.
-            sendPositionInfoToSysUI(view, mStartScreenPos.x, mStartScreenPos.y, xPx, yPx);
+            sendPositionInfoToSysUi(view, mStartScreenPos.x, mStartScreenPos.y, xPx, yPx);
 
             // Record user action if a grouped tab is moved to a new window.
             recordTabRemovedFromGroupUserAction();
@@ -654,7 +654,7 @@ public class TabDragSource implements View.OnDragListener {
         return new TabDragShadowBuilder(dragSourceView, imageView, dragShadowOffset, mAppIcon);
     }
 
-    private void sendPositionInfoToSysUI(
+    private void sendPositionInfoToSysUi(
             View view,
             float startXInView,
             float startYInView,

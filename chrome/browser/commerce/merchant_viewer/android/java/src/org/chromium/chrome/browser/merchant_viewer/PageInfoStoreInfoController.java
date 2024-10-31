@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUI;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUi;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
@@ -99,7 +99,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         if (merchantInfo.starRating > 0) {
             CharSequence subTitle =
                     MerchantTrustMessageViewModel.getMessageDescription(
-                            mContext, merchantInfo, MessageDescriptionUI.RATING_AND_REVIEWS);
+                            mContext, merchantInfo, MessageDescriptionUi.RATING_AND_REVIEWS);
             if (subTitle != null) return subTitle;
         } else if (merchantInfo.hasReturnPolicy) {
             return mContext.getString(R.string.page_info_store_info_description_with_no_rating);

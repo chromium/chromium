@@ -124,7 +124,7 @@ public class DefaultBrowserPromoUtils {
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (shouldShowNonRoleManagerPromo(context)
-                && tracker.shouldTriggerHelpUI(FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES)) {
+                && tracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES)) {
             DefaultBrowserPromoMessageController messageController =
                     new DefaultBrowserPromoMessageController(context, tracker);
             messageController.promo(dispatcher);

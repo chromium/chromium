@@ -46,7 +46,7 @@ public class TabGroupSyncIphControllerUnitTest {
     @Before
     public void setUp() {
         when(mTracker.isInitialized()).thenReturn(true);
-        when(mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE))
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE))
                 .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         mController = new TabGroupSyncIphController(mResources, mUserEducationHelper, 0, mTracker);

@@ -252,14 +252,14 @@ public class PaymentRequestIntegrationTest {
         PaymentRequest request =
                 defaultBuilder(
                                 defaultUiServiceBuilder()
-                                        .setBuildPaymentRequestUIResult(
-                                                "Error_BuildPaymentRequestUIResult")
+                                        .setBuildPaymentRequestUiResult(
+                                                "Error_BuildPaymentRequestUiResult")
                                         .build())
                         .buildAndInit();
         assertNoError();
 
         show(request);
-        assertError("Error_BuildPaymentRequestUIResult", PaymentErrorReason.NOT_SUPPORTED);
+        assertError("Error_BuildPaymentRequestUiResult", PaymentErrorReason.NOT_SUPPORTED);
     }
 
     @Test

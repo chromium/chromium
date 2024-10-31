@@ -112,7 +112,7 @@ public class ReengagementNotificationController {
             return false;
         }
 
-        if (!mTracker.shouldTriggerHelpUI(feature)) return false;
+        if (!mTracker.shouldTriggerHelpUi(feature)) return false;
         mTracker.dismissed(feature);
 
         NotificationMetadata metadata =

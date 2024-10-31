@@ -162,7 +162,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
             // Check if we need to setup logic for policy loading.
             if (mSkipTosDialogPolicyListener.get() == null) {
                 mLoadingView.addObserver(this);
-                mLoadingView.showLoadingUI();
+                mLoadingView.showLoadingUi();
                 setTosComponentVisibility(false);
             } else if (mSkipTosDialogPolicyListener.get()) {
                 setTosComponentVisibility(false);
@@ -178,16 +178,16 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
     }
 
     private void onPolicyLoadListenerAvailable() {
-        if (mViewCreated) mLoadingView.hideLoadingUI();
+        if (mViewCreated) mLoadingView.hideLoadingUi();
     }
 
     @Override
-    public void onShowLoadingUIComplete() {
+    public void onShowLoadingUiComplete() {
         mLoadingViewContainer.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onHideLoadingUIComplete() {
+    public void onHideLoadingUiComplete() {
         assert mSkipTosDialogPolicyListener != null && mSkipTosDialogPolicyListener.get() != null;
         if (mSkipTosDialogPolicyListener.get()) {
             skipTosByPolicy();

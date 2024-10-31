@@ -50,7 +50,7 @@ class CredentialEditBridge {
   void DeleteCredential(JNIEnv* env);
 
   // Called by Java to signal that the UI was dismissed.
-  void OnUIDismissed(JNIEnv* env);
+  void OnUiDismissed(JNIEnv* env);
 
  private:
   CredentialEditBridge(

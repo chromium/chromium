@@ -90,7 +90,7 @@ public class SelectableListLayout<E> extends FrameLayout
                     // At inflation, the RecyclerView is set to gone, and the loading view is
                     // visible. As long as the adapter data changes, we show the recycler view,
                     // and hide loading view.
-                    mLoadingView.hideLoadingUI();
+                    mLoadingView.hideLoadingUi();
                 }
 
                 @Override
@@ -100,7 +100,7 @@ public class SelectableListLayout<E> extends FrameLayout
                     // At inflation, the RecyclerView is set to gone, and the loading view is
                     // visible. As long as the adapter data changes, we show the recycler view,
                     // and hide loading view.
-                    mLoadingView.hideLoadingUI();
+                    mLoadingView.hideLoadingUi();
                 }
 
                 @Override
@@ -124,7 +124,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyView = findViewById(R.id.empty_view);
         mEmptyViewWrapper = findViewById(R.id.empty_view_wrapper);
         mLoadingView = findViewById(R.id.loading_view);
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
 
         mToolbarStub = findViewById(R.id.action_bar_stub);
 

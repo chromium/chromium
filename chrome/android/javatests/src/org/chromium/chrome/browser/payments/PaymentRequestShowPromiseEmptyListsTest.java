@@ -58,7 +58,7 @@ public class PaymentRequestShowPromiseEmptyListsTest {
     public void testResolveWithEmptyLists() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.triggerUIAndWait("buy", mRule.getReadyForInput());
+        mRule.triggerUiAndWait("buy", mRule.getReadyForInput());
 
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
 

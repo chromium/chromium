@@ -74,7 +74,7 @@ public class IphMessageService extends MessageService {
     @SuppressLint("CheckResult")
     @VisibleForTesting
     protected void dismiss() {
-        mTracker.shouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+        mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
         mTracker.dismissed(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
     }
 
@@ -98,7 +98,7 @@ public class IphMessageService extends MessageService {
      */
     private boolean wouldTriggerIph() {
         boolean wouldTriggerIph =
-                mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+                mTracker.wouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
         boolean skipForTests = BuildConfig.IS_FOR_TEST && sSkipIphInTests;
         return wouldTriggerIph && !skipForTests;
     }

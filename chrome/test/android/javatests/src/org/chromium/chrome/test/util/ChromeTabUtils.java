@@ -266,9 +266,9 @@ public class ChromeTabUtils {
 
     private static String tabDebugInfo(final Tab tab, @Nullable final String url) {
         WebContents webContents = tab.getWebContents();
-        boolean shouldShowLoadingUI = false;
+        boolean shouldShowLoadingUi = false;
         if (webContents != null) {
-            shouldShowLoadingUI =
+            shouldShowLoadingUi =
                     ThreadUtils.runOnUiThreadBlocking(() -> webContents.shouldShowLoadingUI());
         }
         return String.format(
@@ -281,17 +281,17 @@ public class ChromeTabUtils {
                 Math.round(100 * tab.getProgress()),
                 tab.isLoading(),
                 webContents != null,
-                shouldShowLoadingUI);
+                shouldShowLoadingUi);
     }
 
     /**
      * Waits for the given tab to start loading its current page.
      *
      * @param tab The tab to wait for the page loading to be started.
-     * @param expectedUrl The expected url of the started page load.  Pass in null if starting
-     *                    any load is sufficient.
-     * @param loadTrigger The trigger action that will result in a page load started event
-     *                    to be fired (not run on the UI thread by default).
+     * @param expectedUrl The expected url of the started page load. Pass in null if starting any
+     *     load is sufficient.
+     * @param loadTrigger The trigger action that will result in a page load started event to be
+     *     fired (not run on the UI thread by default).
      */
     public static void waitForTabPageLoadStart(
             final Tab tab, @Nullable final String expectedUrl, Runnable loadTrigger) {

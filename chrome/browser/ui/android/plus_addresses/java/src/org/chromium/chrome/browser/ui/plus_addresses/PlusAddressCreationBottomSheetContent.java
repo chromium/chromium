@@ -104,10 +104,10 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
         mProposedPlusAddressLoadingView.addObserver(
                 new LoadingView.Observer() {
                     @Override
-                    public void onShowLoadingUIComplete() {}
+                    public void onShowLoadingUiComplete() {}
 
                     @Override
-                    public void onHideLoadingUIComplete() {
+                    public void onHideLoadingUiComplete() {
                         if (mDelegate != null) {
                             mContentView.post(mDelegate::onPlusAddressLoadingViewHidden);
                         }
@@ -131,10 +131,10 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
         mLoadingView.addObserver(
                 new LoadingView.Observer() {
                     @Override
-                    public void onShowLoadingUIComplete() {}
+                    public void onShowLoadingUiComplete() {}
 
                     @Override
-                    public void onHideLoadingUIComplete() {
+                    public void onHideLoadingUiComplete() {
                         if (mDelegate != null) {
                             mDelegate.onConfirmationLoadingViewHidden();
                         }
@@ -193,9 +193,9 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
 
     void setPlusAddressLoadingViewVisible(boolean visible) {
         if (visible) {
-            mProposedPlusAddressLoadingView.showLoadingUI(/* skipDelay= */ true);
+            mProposedPlusAddressLoadingView.showLoadingUi(/* skipDelay= */ true);
         } else {
-            mProposedPlusAddressLoadingView.hideLoadingUI();
+            mProposedPlusAddressLoadingView.hideLoadingUi();
         }
     }
 
@@ -238,9 +238,9 @@ public class PlusAddressCreationBottomSheetContent extends EmptyBottomSheetObser
             // We skip the delay because otherwise the height of the bottomsheet
             // is adjusted once on hiding the confirm button and then again after
             // the loading view appears.
-            mLoadingView.showLoadingUI(/* skipDelay= */ true);
+            mLoadingView.showLoadingUi(/* skipDelay= */ true);
         } else {
-            mLoadingView.hideLoadingUI();
+            mLoadingView.hideLoadingUi();
         }
     }
 

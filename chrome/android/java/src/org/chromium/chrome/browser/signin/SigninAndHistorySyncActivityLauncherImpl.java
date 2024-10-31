@@ -85,8 +85,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             Profile profile,
             @HistorySyncConfig.OptInMode int historyOptInMode,
             @SigninAccessPoint int accessPoint) {
-        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
-                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+        if (SigninAndHistorySyncCoordinator.willShowSigninUi(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUi(
                         profile, historyOptInMode)) {
             return true;
         }
@@ -108,8 +108,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             Profile profile,
             FullscreenSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
-        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
-                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+        if (SigninAndHistorySyncCoordinator.willShowSigninUi(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUi(
                         profile, config.historyOptInMode)) {
             return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                     context, config, signinAccessPoint);

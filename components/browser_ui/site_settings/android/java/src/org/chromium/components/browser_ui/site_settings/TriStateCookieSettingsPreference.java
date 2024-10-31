@@ -35,7 +35,7 @@ public class TriStateCookieSettingsPreference extends Preference
     /** Signals used to determine the view and button states. */
     public static class Params {
         // Whether the PrivacySandboxFirstPartySetsUI feature is enabled.
-        public boolean isPrivacySandboxFirstPartySetsUIEnabled;
+        public boolean isPrivacySandboxFirstPartySetsUiEnabled;
 
         // An enum indicating when to block third-party cookies.
         public @CookieControlsMode int cookieControlsMode;
@@ -134,7 +134,7 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private void setRadioButtonsVisibility(Params params) {
-        if (params.isPrivacySandboxFirstPartySetsUIEnabled) {
+        if (params.isPrivacySandboxFirstPartySetsUiEnabled) {
             mViewHolder.findViewById(R.id.block_third_party_incognito).setVisibility(View.GONE);
             mViewHolder.findViewById(R.id.block_third_party).setVisibility(View.GONE);
 

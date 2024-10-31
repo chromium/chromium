@@ -69,8 +69,8 @@ public class RestoreTabsFeatureHelperUnitTest {
     public void setUp() {
         jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
         TrackerFactory.setTrackerForTests(mMockTracker);
-        when(mMockTracker.wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE))).thenReturn(true);
-        when(mMockTracker.shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE))).thenReturn(true);
+        when(mMockTracker.wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE))).thenReturn(true);
+        when(mMockTracker.shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE))).thenReturn(true);
         when(mForeignSessionHelperJniMock.init(any(Profile.class))).thenReturn(1L);
         when(mForeignSessionHelperJniMock.isTabSyncEnabled(1L)).thenReturn(true);
 

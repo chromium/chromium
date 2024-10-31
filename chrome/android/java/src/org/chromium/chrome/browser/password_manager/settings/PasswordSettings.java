@@ -543,7 +543,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         if (preference == mLinkPref) {
             Intent intent =
                     new Intent(
-                            Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
+                            Intent.ACTION_VIEW, Uri.parse(PasswordUiView.getAccountDashboardURL()));
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else {
@@ -744,7 +744,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         Intent intent =
                 new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
+                        Uri.parse(PasswordUiView.getTrustedVaultLearnMoreURL()));
         intent.setPackage(getActivity().getPackageName());
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.

@@ -66,7 +66,7 @@ public class ChromeBaseAppCompatActivityUnitTest {
 
     @Test
     @MediumTest
-    public void testApplyOverridesForAutomotive_onAutomotiveDevice_scaleUpUI() {
+    public void testApplyOverridesForAutomotive_onAutomotiveDevice_scaleUpUi() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
 
         Configuration config = new Configuration();
@@ -101,7 +101,7 @@ public class ChromeBaseAppCompatActivityUnitTest {
 
     @Test
     @MediumTest
-    public void testApplyOverridesForAutomotive_onNonAutomotiveDevice_noUIScaleUp() {
+    public void testApplyOverridesForAutomotive_onNonAutomotiveDevice_noUiScaleUp() {
         Configuration config = new Configuration();
         config.densityDpi = MOCK_REAL_DISPLAY_DENSITY_DPI;
         config.screenWidthDp = MOCK_REAL_DISPLAY_WIDTH_PIXELS;

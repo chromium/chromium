@@ -329,7 +329,7 @@ public class RequestDesktopUtils {
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        if (!tracker.shouldTriggerHelpUI(
+        if (!tracker.shouldTriggerHelpUi(
                 FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE)) {
             return false;
         }

@@ -51,7 +51,7 @@ public class TabGroupSyncIphController {
         if (mTracker == null) {
             return;
         }
-        if (!mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE)) {
+        if (!mTracker.wouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE)) {
             return;
         }
         IphCommand iphCommand =

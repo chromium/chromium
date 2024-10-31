@@ -47,7 +47,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
         mOnDisplayStateChanged = onDisplayStateChanged;
 
         if (mPromoUtils.shouldShowNonRoleManagerPromo(context)
-                && tracker.shouldTriggerHelpUI(
+                && tracker.shouldTriggerHelpUi(
                         FeatureConstants.DEFAULT_BROWSER_PROMO_SETTING_CARD)) {
             mState = State.PROMO_SHOWING;
         }

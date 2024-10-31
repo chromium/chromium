@@ -77,7 +77,7 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
@@ -95,7 +95,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments"})
     public void testRetryWithDefaultError() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
@@ -112,7 +112,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments"})
     public void testRetryWithCustomError() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
@@ -128,7 +128,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments", "RenderTest"})
     public void testRetryWithShippingAddressErrors() throws Throwable {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
@@ -176,7 +176,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments", "RenderTest"})
     public void testRetryWithPayerErrors() throws Throwable {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
@@ -214,7 +214,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments"})
     public void testRetryWithShippingAddressErrorsAndPayerErrors() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
@@ -251,7 +251,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments"})
     public void testRetryAndPayerDetailChangeEvent() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
@@ -280,7 +280,7 @@ public class PaymentRequestRetryTest {
     @MediumTest
     @Feature({"Payments"})
     public void testRetryAndReselectContactDetail() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());

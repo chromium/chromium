@@ -14,7 +14,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java",
     ]
 
@@ -247,7 +247,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
     ]
   }
 }

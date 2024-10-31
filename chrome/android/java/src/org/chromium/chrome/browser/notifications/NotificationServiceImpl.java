@@ -207,7 +207,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    dispatchIntentOnUIThread(intent);
+                    dispatchIntentOnUiThread(intent);
                 });
 
         PostTask.runOrPostTask(
@@ -223,7 +223,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
      *
      * @param intent The intent containing the notification's information.
      */
-    static void dispatchIntentOnUIThread(Intent intent) {
+    static void dispatchIntentOnUiThread(Intent intent) {
         final BrowserParts parts =
                 new EmptyBrowserParts() {
                     @Override

@@ -33,10 +33,10 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
 
     private final Profile mProfile;
 
-    // The production implementation of PasswordManagerHandler is |sPasswordUIView|, instantiated on
+    // The production implementation of PasswordManagerHandler is |sPasswordUiView|, instantiated on
     // demand. Tests might want to override that by providing a fake implementation through
     // setPasswordManagerHandlerForTest, which is then kept in |mTestPasswordManagerHandler|.
-    private PasswordUIView mPasswordUIView;
+    private PasswordUiView mPasswordUiView;
     private PasswordManagerHandler mTestPasswordManagerHandler;
 
     // This class is itself a PasswordListObserver, listening directly to a PasswordManagerHandler
@@ -69,17 +69,17 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
         ThreadUtils.assertOnUiThread();
         mObservers.clear();
         mTestPasswordManagerHandler = null;
-        if (mPasswordUIView != null) {
-            mPasswordUIView.destroy();
-            mPasswordUIView = null;
+        if (mPasswordUiView != null) {
+            mPasswordUiView.destroy();
+            mPasswordUiView = null;
         }
     }
 
     @Override
     public void destroy() {
-        if (mPasswordUIView != null) {
-            mPasswordUIView.destroy();
-            mPasswordUIView = null;
+        if (mPasswordUiView != null) {
+            mPasswordUiView.destroy();
+            mPasswordUiView = null;
         }
     }
 
@@ -90,17 +90,17 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
     public PasswordManagerHandler getPasswordManagerHandler() {
         ThreadUtils.assertOnUiThread();
         if (mTestPasswordManagerHandler != null) return mTestPasswordManagerHandler;
-        return mPasswordUIView;
+        return mPasswordUiView;
     }
 
     /**
      * This method creates the production implementation of PasswordManagerHandler and saves it into
-     * mPasswordUIView.
+     * mPasswordUiView.
      */
     private void createPasswordManagerHandler() {
         ThreadUtils.assertOnUiThread();
-        assert mPasswordUIView == null;
-        mPasswordUIView = new PasswordUIView(this, mProfile);
+        assert mPasswordUiView == null;
+        mPasswordUiView = new PasswordUiView(this, mProfile);
     }
 
     /** Starts forwarding events from the PasswordManagerHandler implementation to |observer|. */
@@ -116,8 +116,8 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
         // If this was the last observer of the production implementation of PasswordManagerHandler,
         // call destroy on it to close the connection to the native C++ code.
         if (mObservers.isEmpty() && mTestPasswordManagerHandler == null) {
-            mPasswordUIView.destroy();
-            mPasswordUIView = null;
+            mPasswordUiView.destroy();
+            mPasswordUiView = null;
         }
     }
 

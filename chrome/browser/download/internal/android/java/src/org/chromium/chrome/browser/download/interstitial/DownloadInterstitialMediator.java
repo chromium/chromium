@@ -114,7 +114,7 @@ class DownloadInterstitialMediator {
 
         mObserver = getOfflineContentProviderObserver();
         mProvider.addObserver(mObserver);
-        UmaHelper.logUIAction(UmaHelper.Action.INITIATED);
+        UmaHelper.logUiAction(UmaHelper.Action.INITIATED);
     }
 
     void setModalDialogManager(ModalDialogManager modalDialogManager) {
@@ -160,7 +160,7 @@ class DownloadInterstitialMediator {
                         SECONDARY_BUTTON_TEXT, mContextSupplier.get().getString(R.string.delete));
                 mModel.set(SECONDARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_REMOVE));
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, true);
-                UmaHelper.logUIAction(UmaHelper.Action.COMPLETED);
+                UmaHelper.logUiAction(UmaHelper.Action.COMPLETED);
                 break;
             case State.CANCELLED:
                 mModel.set(TITLE_TEXT, mContextSupplier.get().getString(R.string.menu_download));
@@ -191,30 +191,30 @@ class DownloadInterstitialMediator {
     private void onOpenItem(OfflineItem item) {
         OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_INTERSTITIAL);
         mProvider.openItem(openParams, mModel.get(DOWNLOAD_ITEM).id);
-        UmaHelper.logUIAction(UmaHelper.Action.OPENED);
+        UmaHelper.logUiAction(UmaHelper.Action.OPENED);
     }
 
     private void onPauseItem(OfflineItem item) {
         mProvider.pauseDownload(mModel.get(DOWNLOAD_ITEM).id);
-        UmaHelper.logUIAction(UmaHelper.Action.PAUSED);
+        UmaHelper.logUiAction(UmaHelper.Action.PAUSED);
     }
 
     private void onResumeItem(OfflineItem item) {
         if (mModel.get(STATE) == State.PAUSED) {
             mProvider.resumeDownload(mModel.get(DOWNLOAD_ITEM).id);
-            UmaHelper.logUIAction(UmaHelper.Action.RESUMED);
+            UmaHelper.logUiAction(UmaHelper.Action.RESUMED);
         } else {
             mModel.set(STATE, State.PENDING);
             mModel.get(DownloadInterstitialProperties.RELOAD_TAB).run();
             mModel.set(DOWNLOAD_ITEM, null);
-            UmaHelper.logUIAction(UmaHelper.Action.REINITIATED);
+            UmaHelper.logUiAction(UmaHelper.Action.REINITIATED);
         }
     }
 
     private void onCancelItem(OfflineItem item) {
         setState(State.CANCELLED);
         mProvider.cancelDownload(mModel.get(DOWNLOAD_ITEM).id);
-        UmaHelper.logUIAction(UmaHelper.Action.CANCELLED);
+        UmaHelper.logUiAction(UmaHelper.Action.CANCELLED);
     }
 
     private void onDeleteItem(OfflineItem item) {
@@ -226,7 +226,7 @@ class DownloadInterstitialMediator {
                                 showDeletedSnackbar();
                                 setState(State.CANCELLED);
                                 mProvider.removeItem(mModel.get(DOWNLOAD_ITEM).id);
-                                UmaHelper.logUIAction(UmaHelper.Action.DELETED);
+                                UmaHelper.logUiAction(UmaHelper.Action.DELETED);
                             }
                         });
         PropertyModel properties =
@@ -279,7 +279,7 @@ class DownloadInterstitialMediator {
 
     private void shareItemsInternal(Collection<OfflineItem> items) {
         ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
-        UmaHelper.logUIAction(UmaHelper.Action.SHARED);
+        UmaHelper.logUiAction(UmaHelper.Action.SHARED);
 
         final Collection<Pair<OfflineItem, OfflineItemShareInfo>> shareInfo = new ArrayList<>();
         for (OfflineItem item : items) {
@@ -318,7 +318,7 @@ class DownloadInterstitialMediator {
         RenameDialogManager mRenameDialogManager =
                 new RenameDialogManager(mContextSupplier.get(), mModalDialogManager);
         mRenameDialogManager.startRename(name, callback);
-        UmaHelper.logUIAction(UmaHelper.Action.RENAMED);
+        UmaHelper.logUiAction(UmaHelper.Action.RENAMED);
     }
 
     private OfflineContentProvider.Observer getOfflineContentProviderObserver() {
@@ -414,7 +414,7 @@ class DownloadInterstitialMediator {
             int NUM_ENTRIES = 10;
         }
 
-        public static void logUIAction(@Action int action) {
+        public static void logUiAction(@Action int action) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Download.Interstitial.UIAction", action, Action.NUM_ENTRIES);
         }

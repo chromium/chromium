@@ -69,7 +69,7 @@ class WebFeedFollowIntroView {
             Runnable introShownCallback,
             Runnable introNotShownCallback) {
         if (mFeatureEngagementTracker != null
-                && !mFeatureEngagementTracker.shouldTriggerHelpUI(
+                && !mFeatureEngagementTracker.shouldTriggerHelpUi(
                         FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
             introNotShownCallback.run();
             return;
@@ -129,15 +129,15 @@ class WebFeedFollowIntroView {
         mIntroDismissedCallback.run();
     }
 
-    void showLoadingUI() {
+    void showLoadingUi() {
         if (mFollowBubble != null) {
-            mFollowBubble.showLoadingUI(R.string.web_feed_follow_loading_description);
+            mFollowBubble.showLoadingUi(R.string.web_feed_follow_loading_description);
         }
     }
 
-    void hideLoadingUI(LoadingView.Observer loadingViewObserver) {
+    void hideLoadingUi(LoadingView.Observer loadingViewObserver) {
         if (mFollowBubble != null) {
-            mFollowBubble.hideLoadingUI(loadingViewObserver);
+            mFollowBubble.hideLoadingUi(loadingViewObserver);
         }
     }
 

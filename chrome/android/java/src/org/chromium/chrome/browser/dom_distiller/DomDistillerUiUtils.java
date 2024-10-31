@@ -19,9 +19,10 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Java implementation of dom_distiller::android::DistillerUIHandleAndroid. */
 @JNINamespace("dom_distiller::android")
-public final class DomDistillerUIUtils {
+public final class DomDistillerUiUtils {
     /**
      * A static method for native code to call to open the distiller UI settings.
+     *
      * @param webContents The WebContents containing the distilled content.
      */
     @CalledByNative
@@ -43,5 +44,5 @@ public final class DomDistillerUIUtils {
         builder.show();
     }
 
-    private DomDistillerUIUtils() {}
+    private DomDistillerUiUtils() {}
 }

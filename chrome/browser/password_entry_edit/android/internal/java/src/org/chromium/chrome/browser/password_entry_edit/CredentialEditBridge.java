@@ -94,7 +94,7 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     @Override
     public void onUiDismissed() {
         if (mNativeCredentialEditBridge != 0) {
-            CredentialEditBridgeJni.get().onUIDismissed(mNativeCredentialEditBridge);
+            CredentialEditBridgeJni.get().onUiDismissed(mNativeCredentialEditBridge);
         }
         mNativeCredentialEditBridge = 0;
         sCredentialEditBridge = null;
@@ -128,6 +128,6 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
         void deleteCredential(long nativeCredentialEditBridge);
 
-        void onUIDismissed(long nativeCredentialEditBridge);
+        void onUiDismissed(long nativeCredentialEditBridge);
     }
 }

@@ -85,7 +85,7 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         ThreadUtils.runOnUiThreadBlocking(
@@ -112,7 +112,7 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         ThreadUtils.runOnUiThreadBlocking(
@@ -135,7 +135,7 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         ThreadUtils.runOnUiThreadBlocking(

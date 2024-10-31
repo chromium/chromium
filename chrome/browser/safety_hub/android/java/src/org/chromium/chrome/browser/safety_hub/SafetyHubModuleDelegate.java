@@ -19,7 +19,7 @@ public interface SafetyHubModuleDelegate {
      *
      * @param context used to show the dialog.
      */
-    void showPasswordCheckUI(Context context);
+    void showPasswordCheckUi(Context context);
 
     /**
      * @return The last fetched update status from Omaha if available.

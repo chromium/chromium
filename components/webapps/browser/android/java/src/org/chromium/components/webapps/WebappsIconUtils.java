@@ -211,7 +211,7 @@ public class WebappsIconUtils {
      * @return the dimensions in pixels which the prompt UI should use as the corner radius.
      */
     @CalledByNative
-    public static int getIdealIconCornerRadiusPxForPromptUI() {
+    public static int getIdealIconCornerRadiusPxForPromptUi() {
         Context context = ContextUtils.getApplicationContext();
         return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
     }

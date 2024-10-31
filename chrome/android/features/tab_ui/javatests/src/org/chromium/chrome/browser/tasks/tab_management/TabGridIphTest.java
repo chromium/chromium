@@ -133,7 +133,7 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(mTracker::isInitialized);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mTracker.wouldTriggerHelpUI(
+                    return mTracker.wouldTriggerHelpUi(
                             FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
                 });
     }

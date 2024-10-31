@@ -75,7 +75,7 @@ public class SafetyHubModuleDelegateTest {
         mSafetyHubTestRule.setUPMStatus(true);
 
         Context context = ContextUtils.getApplicationContext();
-        mSafetyHubModuleDelegate.showPasswordCheckUI(context);
+        mSafetyHubModuleDelegate.showPasswordCheckUi(context);
         verify(mPasswordCheckIntentForAccountCheckup, times(1)).send();
     }
 

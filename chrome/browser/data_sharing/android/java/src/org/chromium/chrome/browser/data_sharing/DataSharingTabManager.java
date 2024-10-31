@@ -215,7 +215,7 @@ public class DataSharingTabManager {
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
-            DataSharingUIDelegate uiDelegate = dataSharingService.getUIDelegate();
+            DataSharingUIDelegate uiDelegate = dataSharingService.getUiDelegate();
             assert uiDelegate != null;
 
             // TODO(ssid): Fill in tab group name and learn more URLs.
@@ -376,7 +376,7 @@ public class DataSharingTabManager {
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
-            DataSharingUIDelegate uiDelegate = dataSharingService.getUIDelegate();
+            DataSharingUIDelegate uiDelegate = dataSharingService.getUiDelegate();
             DataSharingUiConfig commonConfig =
                     new DataSharingUiConfig.Builder()
                             // TODO(ssid): All the configs should take Activity instead of
@@ -513,7 +513,7 @@ public class DataSharingTabManager {
         assert profile != null;
         DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
 
-        DataSharingUIDelegate uiDelegate = dataSharingService.getUIDelegate();
+        DataSharingUIDelegate uiDelegate = dataSharingService.getUiDelegate();
         assert uiDelegate != null;
 
         DataSharingUiConfig commonConfig =

@@ -59,14 +59,14 @@ public class LinkToTextIphController {
                             return;
                         }
                         mTracker = TrackerFactory.getTrackerForProfile(profile);
-                        if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
+                        if (!mTracker.wouldTriggerHelpUi(FEATURE_NAME)) {
                             return;
                         }
 
                         LinkToTextHelper.hasExistingSelectors(
                                 tab,
                                 (hasSelectors) -> {
-                                    if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
+                                    if (mTracker.shouldTriggerHelpUi(FEATURE_NAME)) {
                                         showMessageIph(tab);
                                     }
                                 });

@@ -1216,7 +1216,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testDefaultBrowserPromoCard() throws InterruptedException {
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTestTracker);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);

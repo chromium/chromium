@@ -389,7 +389,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable private final Network mNetwork;
 
     /** Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome. */
-    public static void addReaderModeUIExtras(Intent intent) {
+    public static void addReaderModeUiExtras(Intent intent) {
         intent.putExtra(EXTRA_UI_TYPE, CustomTabsUiType.READER_MODE);
         IntentUtils.addTrustedIntentExtras(intent);
     }

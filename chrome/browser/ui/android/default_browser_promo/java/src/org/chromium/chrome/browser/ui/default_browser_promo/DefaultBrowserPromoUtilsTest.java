@@ -249,7 +249,7 @@ public class DefaultBrowserPromoUtilsTest {
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testNoMessagePromo_featureEngagementBlocker() {
         when(mProvider.isRoleAvailable(any())).thenReturn(false);
-        when(mMockTracker.shouldTriggerHelpUI(any())).thenReturn(false);
+        when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(false);
 
         Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity, false));
         Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
@@ -263,7 +263,7 @@ public class DefaultBrowserPromoUtilsTest {
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testShowMessagePromo() {
         when(mProvider.isRoleAvailable(any())).thenReturn(false);
-        when(mMockTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(true);
 
         Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity, false));
         Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));

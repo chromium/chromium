@@ -534,7 +534,7 @@ public class ShowNtpAtStartupTest {
     private void verifyTabCountAndActiveTabUrl(
             ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
-        Tab tab = HomeSurfaceTestUtils.getCurrentTabFromUIThread(cta);
+        Tab tab = HomeSurfaceTestUtils.getCurrentTabFromUiThread(cta);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec()));

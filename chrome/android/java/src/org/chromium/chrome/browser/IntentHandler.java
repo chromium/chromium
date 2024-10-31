@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.renderer_host.ChromeNavigationUIData;
+import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -1430,7 +1430,7 @@ public class IntentHandler {
      * initially.
      *
      * @return the provided intent, if the intent is not from Android Recents. Otherwise, rewrites
-     *         the intent to be a consistent MAIN intent from recents.
+     *     the intent to be a consistent MAIN intent from recents.
      */
     public static Intent rewriteFromHistoryIntent(Intent intent) {
         // When a self-finished Activity is created from recents, Android launches it with its
@@ -1520,7 +1520,7 @@ public class IntentHandler {
                             intent, IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID);
             if (!TextUtils.isEmpty(bookmarkIdString)) {
                 BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(bookmarkIdString);
-                ChromeNavigationUIData navData = new ChromeNavigationUIData();
+                ChromeNavigationUiData navData = new ChromeNavigationUiData();
                 navData.setBookmarkId(
                         bookmarkId.getType() == BookmarkType.NORMAL ? bookmarkId.getId() : -1);
                 loadUrlParams.setNavigationUIDataSupplier(navData::createUnownedNativeCopy);

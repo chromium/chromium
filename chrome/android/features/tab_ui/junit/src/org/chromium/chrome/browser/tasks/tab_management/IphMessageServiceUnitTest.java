@@ -59,7 +59,7 @@ public class IphMessageServiceUnitTest {
     public void testDismiss() {
         mIphMessageService.dismiss();
         verify(mTracker, times(1))
-                .shouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
         verify(mTracker, times(1)).dismissed(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
     }
 
@@ -77,7 +77,7 @@ public class IphMessageServiceUnitTest {
     public void testAddObserver_Initialized() {
         doReturn(true)
                 .when(mTracker)
-                .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
+                .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
         Assert.assertTrue(
@@ -90,7 +90,7 @@ public class IphMessageServiceUnitTest {
     public void testCallbackWouldTriggerDragDrop() {
         doReturn(true)
                 .when(mTracker)
-                .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
+                .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(false).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
         doReturn(true).when(mTracker).isInitialized();
@@ -103,7 +103,7 @@ public class IphMessageServiceUnitTest {
     public void testCallbackWouldNotTriggerDragDrop() {
         doReturn(false)
                 .when(mTracker)
-                .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
+                .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         mIphMessageService.addObserver(mMessageObserver);
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
         verify(mMessageObserver, times(0))

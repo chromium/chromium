@@ -105,7 +105,7 @@ public class CustomTabHistoryIphController {
 
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         return (tracker.isInitialized()
-                && tracker.wouldTriggerHelpUI(FeatureConstants.CCT_HISTORY_FEATURE));
+                && tracker.wouldTriggerHelpUi(FeatureConstants.CCT_HISTORY_FEATURE));
     }
 
     private void turnOnHighlightForMenuItem() {

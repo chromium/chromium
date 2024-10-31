@@ -28,10 +28,10 @@ import org.chromium.ui.widget.RectProvider;
  *   <li>Optional loading UI
  * </ul>
  *
- * <p>A loading UI using {@link LoadingView} can be shown using {@link #showLoadingUI(int)}. This
+ * <p>A loading UI using {@link LoadingView} can be shown using {@link #showLoadingUi(int)}. This
  * should be used if there is a possibility of a response time >500ms, after which the loading view
  * will show. To hide the LoadingView and dismiss the bubble, call {@link
- * #hideLoadingUI(LoadingView.Observer)}, which takes in a {@link LoadingView.Observer}, for when
+ * #hideLoadingUi(LoadingView.Observer)}, which takes in a {@link LoadingView.Observer}, for when
  * further actions should be taken after the UI is hidden (such as showing another UI element).
  * Example below:
  *
@@ -39,12 +39,12 @@ import org.chromium.ui.widget.RectProvider;
  * ClickableTextBubble clickableTextBubble;
  * OnTouchListener onTouchListener = (view, motionEvent) -> {
  *     performPotentiallyLongRequest();
- *     clickableTextBubble.showLoadingUI(loadingViewContentDescriptionId);
+ *     clickableTextBubble.showLoadingUi(loadingViewContentDescriptionId);
  * };
  *
  * void potentiallyLongRequestFinished() {
- *     clickableTextBubble.hideLoadingUI(new LoadingView.Observer() {
- *         public void onHideLoadingUIComplete() {
+ *     clickableTextBubble.hideLoadingUi(new LoadingView.Observer() {
+ *         public void onHideLoadingUiComplete() {
  *             // show another UI element (eg. bubble, snackbar)
  *         }
  *     }
@@ -110,11 +110,11 @@ public class ClickableTextBubble extends TextBubble {
      *
      * @param loadingViewContentDescriptionId ID of the ContentDescription for the loading spinner.
      */
-    public void showLoadingUI(@StringRes int loadingViewContentDescriptionId) {
+    public void showLoadingUi(@StringRes int loadingViewContentDescriptionId) {
         mLoadingView.addObserver(
                 new LoadingView.Observer() {
                     @Override
-                    public void onShowLoadingUIComplete() {
+                    public void onShowLoadingUiComplete() {
                         View loadingViewContainer =
                                 mContentView.findViewById(R.id.loading_view_container);
                         loadingViewContainer.setVisibility(View.VISIBLE);
@@ -125,22 +125,22 @@ public class ClickableTextBubble extends TextBubble {
                     }
 
                     @Override
-                    public void onHideLoadingUIComplete() {
+                    public void onHideLoadingUiComplete() {
                         dismiss();
                     }
                 });
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
     }
 
     /**
-     * Exposes {@link LoadingView#hideLoadingUI()} and adds a {@link LoadingView.Observer} to the
+     * Exposes {@link LoadingView#hideLoadingUi()} and adds a {@link LoadingView.Observer} to the
      * {@link LoadingView}.
      *
      * @param loadingViewObserver Observer to add to the {@link LoadingView}.
      */
-    public void hideLoadingUI(LoadingView.Observer loadingViewObserver) {
+    public void hideLoadingUi(LoadingView.Observer loadingViewObserver) {
         mLoadingView.addObserver(loadingViewObserver);
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
     }
 
     public void destroy() {

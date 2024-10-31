@@ -235,7 +235,7 @@ public class TabGroupVisualDataDialogManager {
             if (!tabModel.isIncognitoBranded()
                     && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)
                     && ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()
-                    && tracker.shouldTriggerHelpUI(
+                    && tracker.shouldTriggerHelpUi(
                             FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE)) {
                 descriptionView.setVisibility(View.VISIBLE);
                 SyncService syncService = SyncServiceFactory.getForProfile(profile);

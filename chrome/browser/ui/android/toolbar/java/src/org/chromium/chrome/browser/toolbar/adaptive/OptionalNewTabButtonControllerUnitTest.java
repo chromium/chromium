@@ -118,7 +118,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(
+                .shouldTriggerHelpUi(
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE);
 

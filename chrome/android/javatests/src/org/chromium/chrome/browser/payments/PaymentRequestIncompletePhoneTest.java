@@ -64,7 +64,7 @@ public class PaymentRequestIncompletePhoneTest {
     @Feature({"Payments"})
     public void testEditIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
@@ -96,7 +96,7 @@ public class PaymentRequestIncompletePhoneTest {
     @Feature({"Payments"})
     public void testAddIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
@@ -128,7 +128,7 @@ public class PaymentRequestIncompletePhoneTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompletePhoneAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(

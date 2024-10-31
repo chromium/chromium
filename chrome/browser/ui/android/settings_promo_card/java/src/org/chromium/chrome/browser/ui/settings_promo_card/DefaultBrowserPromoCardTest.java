@@ -75,7 +75,7 @@ public class DefaultBrowserPromoCardTest {
 
     @Test
     public void testShowPromo() {
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true).thenReturn(false);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true).thenReturn(false);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
         DefaultBrowserPromoCard card = initializePromoCard();
         Assert.assertTrue(card.isPromoShowing());
@@ -88,7 +88,7 @@ public class DefaultBrowserPromoCardTest {
 
     @Test
     public void testPromoNotShown() {
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(false);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(false);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
         DefaultBrowserPromoCard card =
@@ -99,7 +99,7 @@ public class DefaultBrowserPromoCardTest {
 
     @Test
     public void testClickingDismissButton() {
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
         DefaultBrowserPromoCard card = initializePromoCard();
@@ -113,7 +113,7 @@ public class DefaultBrowserPromoCardTest {
 
     @Test
     public void testClickingPrimaryButton() {
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
         DefaultBrowserPromoCard card = initializePromoCard();

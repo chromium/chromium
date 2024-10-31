@@ -45,7 +45,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     /** Sets whether any filter chips are |selected| in the dialog. */
     public void setFilterChipsSelected(boolean selected) {
         mFilterChipsSelected = selected;
-        updateToolbarUI();
+        updateToolbarUi();
     }
 
     // SelectableListToolbar:
@@ -75,11 +75,13 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     @Override
     public void onSelectionStateChange(List<ContactDetails> selectedItems) {
         super.onSelectionStateChange(selectedItems);
-        updateToolbarUI();
+        updateToolbarUi();
     }
 
-    /** Update the UI elements of the toolbar, based on whether contacts & filter chips are selected. */
-    private void updateToolbarUI() {
+    /**
+     * Update the UI elements of the toolbar, based on whether contacts & filter chips are selected.
+     */
+    private void updateToolbarUi() {
         boolean contactsSelected = !mSelectionDelegate.getSelectedItems().isEmpty();
 
         boolean doneEnabled = contactsSelected && mFilterChipsSelected;

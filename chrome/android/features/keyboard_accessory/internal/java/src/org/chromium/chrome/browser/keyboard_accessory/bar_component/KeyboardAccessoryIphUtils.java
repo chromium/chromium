@@ -183,7 +183,7 @@ class KeyboardAccessoryIphUtils {
             View rootView,
             @Nullable String helpText) {
         if (!tracker.isInitialized()) return null;
-        if (!tracker.shouldTriggerHelpUI(feature)) return null; // This call records the IPH intent.
+        if (!tracker.shouldTriggerHelpUi(feature)) return null; // This call records the IPH intent.
         TextBubble helpBubble;
         // If the help text is provided, then use it directly to generate the text bubble.
         if (helpText != null && !helpText.isEmpty()) {

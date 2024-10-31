@@ -80,7 +80,7 @@ public class CustomTabActivityIncognitoMetricTest {
                         .expectBooleanRecord(IS_TRUSTED_UMA_KEY, true)
                         .build()) {
             Intent intent = createMinimalIncognitoCustomTabIntent();
-            CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
+            CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
 

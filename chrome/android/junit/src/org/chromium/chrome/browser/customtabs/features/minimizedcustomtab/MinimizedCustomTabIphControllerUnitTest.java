@@ -72,7 +72,7 @@ public class MinimizedCustomTabIphControllerUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mTracker.isInitialized()).thenReturn(true);
-        when(mTracker.wouldTriggerHelpUI(FeatureConstants.CCT_MINIMIZED_FEATURE)).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         mController =

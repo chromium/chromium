@@ -170,9 +170,9 @@ public class LogoView extends FrameLayout implements OnClickListener {
         return mAnimatedLogoDrawable != null;
     }
 
-    /** Starts playing the given animated GIF logo.*/
+    /** Starts playing the given animated GIF logo. */
     void playAnimatedLogo(BaseGifImage gifImage) {
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
         mAnimatedLogoDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
         mAnimatedLogoMatrix = new Matrix();
         setMatrix(
@@ -189,7 +189,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     void showLoadingView() {
         mLogo = null;
         invalidate();
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
     }
 
     /**
@@ -256,7 +256,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
         if (mFadeAnimation != null) mFadeAnimation.end();
 
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
 
         // Don't crossfade if the new logo is the same as the old one.
         if (mLogo == logo) return;

@@ -75,16 +75,16 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
   virtual void NotifyEvent(JNIEnv* env,
                            const base::android::JavaRef<jobject>& jobj,
                            const base::android::JavaParamRef<jstring>& jevent);
-  virtual bool ShouldTriggerHelpUI(
+  virtual bool ShouldTriggerHelpUi(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
   virtual base::android::ScopedJavaLocalRef<jobject>
-  ShouldTriggerHelpUIWithSnooze(
+  ShouldTriggerHelpUiWithSnooze(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
-  virtual bool WouldTriggerHelpUI(
+  virtual bool WouldTriggerHelpUi(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);

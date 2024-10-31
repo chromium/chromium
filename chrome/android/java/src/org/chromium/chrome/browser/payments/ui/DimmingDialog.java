@@ -45,7 +45,7 @@ import java.util.Collection;
 /* package */ class DimmingDialog {
     /**
      * Length of the animation to either show the UI or expand it to full height. Note that click of
-     * 'Pay' button in PaymentRequestUI is not accepted until the animation is done, so this
+     * 'Pay' button in PaymentRequestUi is not accepted until the animation is done, so this
      * duration also serves the function of preventing the user from accidentally double-clicking on
      * the screen when triggering payment and thus authorizing unwanted transaction.
      */

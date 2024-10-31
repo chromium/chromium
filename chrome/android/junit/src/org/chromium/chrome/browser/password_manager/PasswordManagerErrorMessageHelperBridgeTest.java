@@ -122,7 +122,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     }
 
     @Test
-    public void testNotEnoughTimeSinceLastUI() {
+    public void testNotEnoughTimeSinceLastUi() {
         final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
         final long timeOfSyncPrompt =
                 timeOfFirstUpmPrompt
@@ -133,11 +133,11 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUi(mProfile));
     }
 
     @Test
-    public void testNotEnoughTimeSinceLastSyncUI() {
+    public void testNotEnoughTimeSinceLastSyncUi() {
         final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
@@ -148,7 +148,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUi(mProfile));
     }
 
     @Test
@@ -164,7 +164,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
-        assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+        assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUi(mProfile));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
         assertTrue(
-                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUI(mProfile));
+                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUi(mProfile));
     }
 
     @Test
@@ -184,11 +184,11 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         assertFalse(
-                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUI(mProfile));
+                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUi(mProfile));
     }
 
     @Test
-    public void testSaveErrorUIShownTimestamp() {
+    public void testSaveErrorUiShownTimestamp() {
         final long currentTimeMs = TimeUtils.currentTimeMillis();
         final long timeIncrementMs = 30;
         mFakeTimeTestRule.advanceMillis(timeIncrementMs);
@@ -269,13 +269,13 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
 
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUi(mProfile));
     }
 
     @Test
     public void testDontShowMessageWithtoutAccount() {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUi(mProfile));
     }
 
     @Test

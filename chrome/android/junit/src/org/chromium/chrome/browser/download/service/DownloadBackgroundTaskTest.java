@@ -194,7 +194,7 @@ public class DownloadBackgroundTaskTest {
 
     @Test
     @Feature({"Download"})
-    public void testScheduleTaskForUITask() {
+    public void testScheduleTaskForUiTask() {
         int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
         DownloadTaskScheduler.scheduleTask(taskType, true, false, 0, 60, 120);
         Mockito.verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCapture.capture());
@@ -213,7 +213,7 @@ public class DownloadBackgroundTaskTest {
 
     @Test
     @Feature({"Download"})
-    public void testScheduleTaskForNonUITask() {
+    public void testScheduleTaskForNonUiTask() {
         int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK;
         DownloadTaskScheduler.scheduleTask(taskType, true, false, 0, 60, 120);
         Mockito.verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCapture.capture());

@@ -70,20 +70,20 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         private final CallbackHelper mOnHideHelper = new CallbackHelper();
 
         @Override
-        public void onShowLoadingUIComplete() {
+        public void onShowLoadingUiComplete() {
             mOnShowHelper.notifyCalled();
         }
 
         @Override
-        public void onHideLoadingUIComplete() {
+        public void onHideLoadingUiComplete() {
             mOnHideHelper.notifyCalled();
         }
 
-        public CallbackHelper getOnShowLoadingUICompleteHelper() {
+        public CallbackHelper getOnShowLoadingUiCompleteHelper() {
             return mOnShowHelper;
         }
 
-        public CallbackHelper getOnHideLoadingUICompleteHelper() {
+        public CallbackHelper getOnHideLoadingUiCompleteHelper() {
             return mOnHideHelper;
         }
     }
@@ -446,21 +446,21 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
 
-        int onShowLoadingUICompleteCount =
-                observer.getOnShowLoadingUICompleteHelper().getCallCount();
+        int onShowLoadingUiCompleteCount =
+                observer.getOnShowLoadingUiCompleteHelper().getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true));
-        observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
+        observer.getOnShowLoadingUiCompleteHelper().waitForCallback(onShowLoadingUiCompleteCount);
         assertEquals(View.VISIBLE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
         assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
         assertEquals(View.GONE, mView.mCancelButton.getVisibility());
 
-        int onHideLoadingUICompleteCount =
-                observer.getOnHideLoadingUICompleteHelper().getCallCount();
+        int onHideLoadingUiCompleteCount =
+                observer.getOnHideLoadingUiCompleteHelper().getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false));
-        observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
+        observer.getOnHideLoadingUiCompleteHelper().waitForCallback(onHideLoadingUiCompleteCount);
         assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());

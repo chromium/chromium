@@ -34,11 +34,11 @@ import java.util.List;
  * Implementation of {@link DataSharingUIDelegate} that implements some methods while delegating
  * some to the internal delegate.
  */
-class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
+class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
 
     private final @Nullable DataSharingUIDelegate mInternalDelegate;
 
-    DataSharingUIDelegateAndroid(Profile profile) {
+    DataSharingUiDelegateAndroid(Profile profile) {
         DataSharingImplFactory factory =
                 ServiceLoaderUtil.maybeCreate(DataSharingImplFactory.class);
         if (factory != null) {
@@ -49,8 +49,8 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
     }
 
     @CalledByNative
-    private static DataSharingUIDelegateAndroid create(Profile profile) {
-        return new DataSharingUIDelegateAndroid(profile);
+    private static DataSharingUiDelegateAndroid create(Profile profile) {
+        return new DataSharingUiDelegateAndroid(profile);
     }
 
     @Override

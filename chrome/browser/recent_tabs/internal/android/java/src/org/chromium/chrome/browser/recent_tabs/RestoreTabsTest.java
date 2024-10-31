@@ -131,8 +131,8 @@ public class RestoreTabsTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(session);
 
-        doReturn(true).when(mMockTracker).wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
-        doReturn(true).when(mMockTracker).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
+        doReturn(true).when(mMockTracker).wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        doReturn(true).when(mMockTracker).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         doAnswer(
                         invocation -> {
                             List<ForeignSession> invoked_sessions = invocation.getArgument(1);
@@ -162,7 +162,7 @@ public class RestoreTabsTest {
     @MediumTest
     public void testRestoreTabsPromo_noSyncedDevicesNoTrigger() {
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        verify(mMockTracker, never()).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
+        verify(mMockTracker, never()).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         Assert.assertFalse(mBottomSheetController.isSheetOpen());
         verify(mMockTracker, never()).dismissed(eq(RESTORE_TABS_FEATURE));
     }
@@ -431,8 +431,8 @@ public class RestoreTabsTest {
         sessions.add(session1);
         sessions.add(session2);
 
-        doReturn(true).when(mMockTracker).wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
-        doReturn(true).when(mMockTracker).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
+        doReturn(true).when(mMockTracker).wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        doReturn(true).when(mMockTracker).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         doAnswer(
                         invocation -> {
                             List<ForeignSession> invoked_sessions = invocation.getArgument(1);

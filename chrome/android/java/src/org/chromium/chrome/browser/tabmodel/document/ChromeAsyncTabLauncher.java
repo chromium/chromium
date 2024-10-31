@@ -131,14 +131,14 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     }
 
     private Intent createNewTabIntent(
-            AsyncTabCreationParams asyncParams, int parentId, boolean isChromeUI) {
+            AsyncTabCreationParams asyncParams, int parentId, boolean isChromeUi) {
         int assignedTabId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
         AsyncTabParamsManagerSingleton.getInstance().add(assignedTabId, asyncParams);
 
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(asyncParams.getLoadUrlParams().getUrl()));
 
-        addAsyncTabExtras(asyncParams, parentId, isChromeUI, assignedTabId, intent);
+        addAsyncTabExtras(asyncParams, parentId, isChromeUi, assignedTabId, intent);
 
         return intent;
     }
@@ -146,7 +146,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     private void addAsyncTabExtras(
             AsyncTabCreationParams asyncParams,
             int parentId,
-            boolean isChromeUI,
+            boolean isChromeUi,
             int assignedTabId,
             Intent intent) {
         ComponentName componentName = asyncParams.getComponentName();
@@ -162,13 +162,13 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, mIsIncognito);
         intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, parentId);
 
-        if (mIsIncognito || isChromeUI) {
+        if (mIsIncognito || isChromeUi) {
             intent.putExtra(
                     Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
         }
 
-        if (isChromeUI) intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        if (isChromeUi) intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
 
         Activity parentActivity = getActivityForTabId(parentId);
         if (parentActivity != null && parentActivity.getIntent() != null) {

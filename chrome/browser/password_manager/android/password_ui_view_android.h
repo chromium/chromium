@@ -30,7 +30,7 @@ class CredentialProviderInterface;
 
 // PasswordUIView for Android, contains jni hooks that allows Android UI to
 // display passwords and route UI commands back to SavedPasswordsPresenter.
-class PasswordUIViewAndroid
+class PasswordUiViewAndroid
     : public password_manager::SavedPasswordsPresenter::Observer {
  public:
   // Result of transforming a vector of PasswordForms into their CSV
@@ -48,14 +48,14 @@ class PasswordUIViewAndroid
     std::string error;
   };
 
-  PasswordUIViewAndroid(JNIEnv* env,
+  PasswordUiViewAndroid(JNIEnv* env,
                         const jni_zero::JavaRef<jobject>& obj,
                         Profile* profile);
 
-  PasswordUIViewAndroid(const PasswordUIViewAndroid&) = delete;
-  PasswordUIViewAndroid& operator=(const PasswordUIViewAndroid&) = delete;
+  PasswordUiViewAndroid(const PasswordUiViewAndroid&) = delete;
+  PasswordUiViewAndroid& operator=(const PasswordUiViewAndroid&) = delete;
 
-  ~PasswordUIViewAndroid() override;
+  ~PasswordUiViewAndroid() override;
 
   // Calls from Java.
   base::android::ScopedJavaLocalRef<jobject> GetSavedPasswordEntry(
@@ -115,7 +115,7 @@ class PasswordUIViewAndroid
   }
 
  private:
-  // Possible states in the life of PasswordUIViewAndroid.
+  // Possible states in the life of PasswordUiViewAndroid.
   // ALIVE:
   //   * Destroy was not called and no background tasks are pending.
   //   * All data members can be used on the main task runner.

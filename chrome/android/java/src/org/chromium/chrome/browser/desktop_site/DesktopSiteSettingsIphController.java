@@ -149,7 +149,7 @@ public class DesktopSiteSettingsIphController {
         if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) return true;
 
         // Return early when the IPH triggering criteria is not satisfied.
-        if (!tracker.wouldTriggerHelpUI(featureName)) {
+        if (!tracker.wouldTriggerHelpUi(featureName)) {
             return true;
         }
 
@@ -171,7 +171,7 @@ public class DesktopSiteSettingsIphController {
         // Return early when the IPH triggering criteria is not satisfied.
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE;
-        if (!tracker.wouldTriggerHelpUI(featureName)) return false;
+        if (!tracker.wouldTriggerHelpUi(featureName)) return false;
 
         Resources resources = mContext.getResources();
         String titleText = resources.getString(R.string.rds_window_setting_message_title);

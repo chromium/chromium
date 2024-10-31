@@ -452,7 +452,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testLogFailToShowHomeSurfaceUI() {
+    public void testLogFailToShowHomeSurfaceUi() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(

@@ -77,10 +77,10 @@ public class PasswordCheckupLauncher {
     }
 
     private static boolean tryLaunchingNativePasswordCheckup(Activity activity) {
-        GooglePasswordManagerUIProvider googlePasswordManagerUIProvider =
+        GooglePasswordManagerUIProvider googlePasswordManagerUiProvider =
                 ServiceLoaderUtil.maybeCreate(GooglePasswordManagerUIProvider.class);
-        if (googlePasswordManagerUIProvider == null) return false;
-        return googlePasswordManagerUIProvider.launchPasswordCheckup(activity);
+        if (googlePasswordManagerUiProvider == null) return false;
+        return googlePasswordManagerUiProvider.launchPasswordCheckup(activity);
     }
 
     private static ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier(

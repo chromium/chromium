@@ -506,8 +506,8 @@ public class AppLanguagePromoDialog {
             uiLanguagesMap.put(item.getCode(), item);
         }
 
-        String originalSystemLocalAsUILanguage =
-                getPotentialUILanguage(
+        String originalSystemLocalAsUiLanguage =
+                getPotentialUiLanguage(
                         originalSystemLocale.toLanguageTag(), uiLanguagesMap.keySet());
 
         // The system default language should always be at the top of the list unless the current
@@ -516,7 +516,7 @@ public class AppLanguagePromoDialog {
         if (currentOverrideLanguage.isSystemDefault()) {
             topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
         } else if (TextUtils.equals(
-                currentOverrideLanguage.getCode(), originalSystemLocalAsUILanguage)) {
+                currentOverrideLanguage.getCode(), originalSystemLocalAsUiLanguage)) {
             // The override language is set to original system language, this can only happen if
             // the App Language has been changed in settings. In this case the option to track the
             // system language is not given in the app language promo - but can be reset from
@@ -532,7 +532,7 @@ public class AppLanguagePromoDialog {
             // Check for exact match
             LanguageItem item = uiLanguagesMap.get(code);
             if (item != null) {
-                if (!TextUtils.equals(item.getCode(), originalSystemLocalAsUILanguage)) {
+                if (!TextUtils.equals(item.getCode(), originalSystemLocalAsUiLanguage)) {
                     topLanguages.add(item);
                 }
                 continue;
@@ -540,7 +540,7 @@ public class AppLanguagePromoDialog {
             // Check for base match
             item = uiLanguagesMap.get(LocaleUtils.toBaseLanguage(code));
             if (item != null
-                    && !LocaleUtils.isBaseLanguageEqual(code, originalSystemLocalAsUILanguage)) {
+                    && !LocaleUtils.isBaseLanguageEqual(code, originalSystemLocalAsUiLanguage)) {
                 topLanguages.add(item);
             }
         }
@@ -548,14 +548,15 @@ public class AppLanguagePromoDialog {
     }
 
     /**
-     * If |language| is in |uiLanguages| return it otherwise return the base language. If the
-     * return value is a country specific language that means it is a UI variant.
+     * If |language| is in |uiLanguages| return it otherwise return the base language. If the return
+     * value is a country specific language that means it is a UI variant.
+     *
      * @param language ISO 639 language code (e.g. en-US or en).
      * @param uiLanguages Set of ISO 639 languages that are potential UI languages.
      * @return |language| converted to a potential UI language.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static String getPotentialUILanguage(String language, Set<String> uiLanguages) {
+    static String getPotentialUiLanguage(String language, Set<String> uiLanguages) {
         if (uiLanguages.contains(language)) {
             return language;
         }
@@ -589,8 +590,8 @@ public class AppLanguagePromoDialog {
             mModalDialogManager.showDialog(mLoadingModal, ModalDialogManager.ModalDialogType.APP);
         }
 
-        boolean isSelectedCurrentUI = AppLocaleUtils.isAppLanguagePref(selectedLanguage.getCode());
-        if (!isSelectedCurrentUI) {
+        boolean isSelectedCurrentUi = AppLocaleUtils.isAppLanguagePref(selectedLanguage.getCode());
+        if (!isSelectedCurrentUi) {
             // Only record isTopLanguage if the app language has changed.
             recordIsTopLanguage(mAdapter.isTopLanguageSelected());
         }
@@ -602,7 +603,7 @@ public class AppLanguagePromoDialog {
                 selectedLanguage.getCode(),
                 (success) -> {
                     if (success) {
-                        if (!isSelectedCurrentUI) {
+                        if (!isSelectedCurrentUi) {
                             // Only restart if the new language is different than the current UI.
                             mRestartAction.restart();
                         }

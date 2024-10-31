@@ -160,7 +160,7 @@ public class OptionalButtonCoordinator {
                     isActionChipVariant
                             && featureEngagementTracker != null
                             && featureEngagementTracker.isInitialized()
-                            && featureEngagementTracker.shouldTriggerHelpUI(
+                            && featureEngagementTracker.shouldTriggerHelpUi(
                                     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
 
             if (!shouldShowActionChip) {

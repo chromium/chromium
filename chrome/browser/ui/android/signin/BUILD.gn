@@ -250,7 +250,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerUITest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerUiTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTestUtil.java",

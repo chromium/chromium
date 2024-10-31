@@ -692,13 +692,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                     v -> {
-                        mDelegate.showPasswordCheckUI(getContext());
+                        mDelegate.showPasswordCheckUi(getContext());
                         recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
                     });
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                     v -> {
-                        mDelegate.showPasswordCheckUI(getContext());
+                        mDelegate.showPasswordCheckUi(getContext());
                         recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
                     });
         } else {

@@ -51,7 +51,7 @@ public class WebContentsDelegateAndroid {
     public void closeContents() {}
 
     @CalledByNative
-    public void loadingStateChanged(boolean shouldShowLoadingUI) {}
+    public void loadingStateChanged(boolean shouldShowLoadingUi) {}
 
     @CalledByNative
     public void navigationStateChanged(int flags) {}

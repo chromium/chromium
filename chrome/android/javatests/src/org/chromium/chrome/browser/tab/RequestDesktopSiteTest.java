@@ -66,7 +66,7 @@ public class RequestDesktopSiteTest {
         TrackerFactory.setTrackerForTests(mMockTracker);
         Mockito.doReturn(false)
                 .when(mMockTracker)
-                .shouldTriggerHelpUI(ArgumentMatchers.anyString());
+                .shouldTriggerHelpUi(ArgumentMatchers.anyString());
         mActivityTestRule.startMainActivityOnBlankPage();
         mMenuObserver = new CallbackHelper();
         mActivityTestRule

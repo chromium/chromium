@@ -171,22 +171,22 @@ public class AppLanguagePromoDialogTest {
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangZu));
     }
 
-    // Test getPotentialUILanguage
+    // Test getPotentialUiLanguage
     @Test
     @SmallTest
-    public void testGetPotentialUILanguage() {
+    public void testGetPotentialUiLanguage() {
         LinkedHashSet<String> uiLanguages =
                 new LinkedHashSet<>(Arrays.asList("af", "en-US", "en-GB", "es", "es-419"));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("af-ZA", uiLanguages), "af");
+                AppLanguagePromoDialog.getPotentialUiLanguage("af-ZA", uiLanguages), "af");
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("en-GB", uiLanguages), "en-GB");
+                AppLanguagePromoDialog.getPotentialUiLanguage("en-GB", uiLanguages), "en-GB");
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("en-ZA", uiLanguages), "en");
+                AppLanguagePromoDialog.getPotentialUiLanguage("en-ZA", uiLanguages), "en");
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("es-AR", uiLanguages), "es");
+                AppLanguagePromoDialog.getPotentialUiLanguage("es-AR", uiLanguages), "es");
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("es-419", uiLanguages), "es-419");
+                AppLanguagePromoDialog.getPotentialUiLanguage("es-419", uiLanguages), "es-419");
     }
 
     // Test LanguageItemAdapter getItemCount

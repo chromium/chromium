@@ -73,7 +73,7 @@ public class AppSpecificHistoryIphController {
 
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         return (tracker.isInitialized()
-                && tracker.wouldTriggerHelpUI(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE));
+                && tracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE));
     }
 
     void setUserEducationHelperForTesting(UserEducationHelper userEducationHelper) {

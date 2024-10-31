@@ -59,7 +59,7 @@ public class SettingsPromoCardPreferenceTest {
     @Test
     public void testDefaultBrowserPromoNotShown() {
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(false);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(false);
 
         SettingsPromoCardPreference preference =
                 new SettingsPromoCardPreference(mActivity, null, mTestTracker);
@@ -72,7 +72,7 @@ public class SettingsPromoCardPreferenceTest {
 
     @Test
     public void testDefaultBrowserPromoShown() {
-        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
         SettingsPromoCardPreference preference =

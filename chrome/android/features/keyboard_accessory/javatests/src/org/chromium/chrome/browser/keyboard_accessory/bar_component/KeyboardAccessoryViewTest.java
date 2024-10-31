@@ -141,17 +141,17 @@ public class KeyboardAccessoryViewTest {
         }
 
         @Override
-        public boolean shouldTriggerHelpUI(String feature) {
+        public boolean shouldTriggerHelpUi(String feature) {
             return true;
         }
 
         @Override
-        public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+        public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
             return null;
         }
 
         @Override
-        public boolean wouldTriggerHelpUI(String feature) {
+        public boolean wouldTriggerHelpUi(String feature) {
             return true;
         }
 

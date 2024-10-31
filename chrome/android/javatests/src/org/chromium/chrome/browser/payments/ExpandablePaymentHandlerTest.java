@@ -225,7 +225,7 @@ public class ExpandablePaymentHandlerTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1191988")
     @Feature({"Payments"})
-    public void testSwipeDownCloseUI() throws Throwable {
+    public void testSwipeDownCloseUi() throws Throwable {
         startDefaultServer();
         createPaymentHandlerAndShow();
 
@@ -254,7 +254,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    public void testClickCloseButtonCloseUI() throws Throwable {
+    public void testClickCloseButtonCloseUi() throws Throwable {
         startDefaultServer();
         createPaymentHandlerAndShow();
         waitForUiShown();

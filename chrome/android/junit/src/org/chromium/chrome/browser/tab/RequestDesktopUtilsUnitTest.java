@@ -691,7 +691,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
                 .thenReturn(true);
 
         // Default-enable the global setting before the message is shown.
@@ -728,7 +728,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage_DoNotShowIfSettingIsDisabled() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
                 .thenReturn(true);
 
         // Preference is set when the setting is default-enabled.

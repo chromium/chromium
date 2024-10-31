@@ -39,7 +39,7 @@ class IphBubbleDelegateImpl implements IphInfoBarSupport.IphBubbleDelegate {
     @Override
     public PopupState createStateForInfoBar(View anchorView, @InfoBarIdentifier int infoBarId) {
         TrackerParameters params = getTrackerParameters(infoBarId);
-        if (params == null || !mTracker.shouldTriggerHelpUI(params.feature)) return null;
+        if (params == null || !mTracker.shouldTriggerHelpUi(params.feature)) return null;
 
         PopupState state = new PopupState();
         state.view = anchorView;

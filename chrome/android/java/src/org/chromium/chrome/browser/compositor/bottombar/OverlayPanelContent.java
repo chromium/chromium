@@ -253,7 +253,7 @@ public class OverlayPanelContent {
                     private boolean mIsFullscreen;
 
                     @Override
-                    public void loadingStateChanged(boolean shouldShowLoadingUI) {
+                    public void loadingStateChanged(boolean shouldShowLoadingUi) {
                         boolean isLoading = mWebContents != null && mWebContents.isLoading();
                         if (isLoading) {
                             mProgressObserver.onProgressBarStarted();

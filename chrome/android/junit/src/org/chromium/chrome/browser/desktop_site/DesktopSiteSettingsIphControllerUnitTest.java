@@ -107,10 +107,10 @@ public class DesktopSiteSettingsIphControllerUnitTest {
         doReturn(mContext).when(mToolbarMenuButton).getContext();
 
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mTracker.wouldTriggerHelpUI(
+        when(mTracker.wouldTriggerHelpUi(
                         FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
                 .thenReturn(true);
-        when(mTracker.wouldTriggerHelpUI(
+        when(mTracker.wouldTriggerHelpUi(
                         FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE))
                 .thenReturn(true);
 
@@ -166,7 +166,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testPerSiteIphPreChecksFailed_TrackerWouldNotTrigger() {
-        when(mTracker.wouldTriggerHelpUI(
+        when(mTracker.wouldTriggerHelpUi(
                         FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
                 .thenReturn(false);
         boolean failed =
@@ -175,10 +175,10 @@ public class DesktopSiteSettingsIphControllerUnitTest {
                         mTracker,
                         FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
         verify(mTracker)
-                .wouldTriggerHelpUI(
+                .wouldTriggerHelpUi(
                         FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE);
         Assert.assertTrue(
-                "Generic site IPH should not trigger when Tracker#wouldTriggerHelpUI returns"
+                "Generic site IPH should not trigger when Tracker#wouldTriggerHelpUi returns"
                         + " false.",
                 failed);
     }
@@ -283,7 +283,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
     @Test
     public void testShowWindowSettingIph_TrackerWouldNotTrigger() {
         simulateActiveWindowSetting();
-        when(mTracker.wouldTriggerHelpUI(
+        when(mTracker.wouldTriggerHelpUi(
                         FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE))
                 .thenReturn(false);
         mController.showWindowSettingIph(mTab, mProfile);

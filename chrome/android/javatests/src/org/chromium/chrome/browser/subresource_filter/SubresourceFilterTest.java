@@ -123,22 +123,22 @@ public final class SubresourceFilterTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
-    public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnPhoneOnBackPress()
+    public void resourceFilteredClickLearnMore_MessagesUi_ReshowDialogOnPhoneOnBackPress()
             throws Exception {
-        testResourceFilteredClickLearnMore_MessagesUIFlow();
+        testResourceFilteredClickLearnMore_MessagesUiFlow();
     }
 
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET)
-    public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnTabletOnBackPress()
+    public void resourceFilteredClickLearnMore_MessagesUi_ReshowDialogOnTabletOnBackPress()
             throws Exception {
-        testResourceFilteredClickLearnMore_MessagesUIFlow();
+        testResourceFilteredClickLearnMore_MessagesUiFlow();
     }
 
     @Test
     @LargeTest
-    public void resourceFilteredReload_MessagesUI() throws Exception {
+    public void resourceFilteredReload_MessagesUi() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
 
@@ -166,7 +166,7 @@ public final class SubresourceFilterTest {
         verifyNoMessageShown();
     }
 
-    private void testResourceFilteredClickLearnMore_MessagesUIFlow()
+    private void testResourceFilteredClickLearnMore_MessagesUiFlow()
             throws TimeoutException, ExecutionException, InterruptedException {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));

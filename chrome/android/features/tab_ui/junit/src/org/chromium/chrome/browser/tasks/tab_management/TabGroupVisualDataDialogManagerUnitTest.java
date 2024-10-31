@@ -148,7 +148,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         doReturn(true).when(mTabModel).isIncognitoBranded();
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+                .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
 
         mTabGroupVisualDataDialogManager.showDialog(
                 TAB1_ID, mTabGroupModelFilter, mDialogController);
@@ -171,7 +171,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         doReturn(false).when(mTabModel).isIncognitoBranded();
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+                .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
         when(mSyncService.getActiveDataTypes()).thenReturn(Collections.emptySet());
 
         mTabGroupVisualDataDialogManager.showDialog(
@@ -200,7 +200,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         doReturn(false).when(mTabModel).isIncognitoBranded();
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+                .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
         when(mSyncService.getActiveDataTypes())
                 .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
 

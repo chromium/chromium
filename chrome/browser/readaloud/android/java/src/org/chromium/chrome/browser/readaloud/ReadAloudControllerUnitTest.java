@@ -363,7 +363,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testDontHidePlayerWithNoPlayback_tabSwitcherUI() {
+    public void testDontHidePlayerWithNoPlayback_tabSwitcherUi() {
         mLayoutStateObserver.getValue().onStartedShowing(LayoutType.TAB_SWITCHER);
         verify(mPlayerCoordinator, never()).hidePlayers();
 
@@ -372,7 +372,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testDontHidePlayer_nonTabSwitcherUI() {
+    public void testDontHidePlayer_nonTabSwitcherUi() {
         requestAndStartPlayback();
         mLayoutStateObserver.getValue().onStartedShowing(LayoutType.START_SURFACE);
         verify(mPlayerCoordinator, never()).hidePlayers();

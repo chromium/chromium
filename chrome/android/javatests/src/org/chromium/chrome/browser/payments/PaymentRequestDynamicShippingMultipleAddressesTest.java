@@ -180,7 +180,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -219,7 +219,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -255,7 +255,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -306,7 +306,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -345,7 +345,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
         // Click on the unacceptable shipping address.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -384,7 +384,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(

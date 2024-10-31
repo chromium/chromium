@@ -128,7 +128,7 @@ public class CustomTabActivityRenderTest {
         mEmbeddedTestServerRule.setServerPort(PORT_NO);
         prepareCctIntent();
         // Disable IPH to prevent the highlight showing in the renders.
-        when(mTracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
+        when(mTracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(mTracker);
     }
 

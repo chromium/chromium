@@ -3638,7 +3638,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     }
 
     private void invokeOnInputUIShown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mTestAutofillManagerWrapper.notifyInputUIChange());
+        ThreadUtils.runOnUiThreadBlocking(() -> mTestAutofillManagerWrapper.notifyInputUiChange());
     }
 
     private int getCallbackCount() {

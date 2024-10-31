@@ -97,7 +97,7 @@ public class PaymentRequestNoShippingOptionsTest {
     @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAllShippingAddressesInvalid() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
 
         // Focus on the shipping addresses section to enter expanded mode.
         mPaymentRequestTestRule.clickInShippingAddressAndWait(

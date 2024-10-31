@@ -467,7 +467,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsSyncingPasswordsLaunchesNewUIForAccount() {
+    public void testShowPasswordSettingsSyncingPasswordsLaunchesNewUiForAccount() {
         chooseToSyncPasswords();
 
         mPasswordManagerHelper.showPasswordSettings(
@@ -487,7 +487,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsSyncingUserNotSyncingPasswordsLaunchesOldUI() {
+    public void testShowPasswordSettingsSyncingUserNotSyncingPasswordsLaunchesOldUi() {
         chooseToSyncButNotSyncPasswords();
         Context mockContext = mock(Context.class);
         // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
@@ -510,7 +510,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsNotSyncingPasswordsCanNotUseUPMLaunchesOldUI() {
+    public void testShowPasswordSettingsNotSyncingPasswordsCanNotUseUPMLaunchesOldUi() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         Context mockContext = mock(Context.class);
 
@@ -529,7 +529,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsNotSyncingPasswordsCanUseUPMLaunchesNewUIForLocal() {
+    public void testShowPasswordSettingsNotSyncingPasswordsCanUseUPMLaunchesNewUiForLocal() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
                 .thenReturn(true);

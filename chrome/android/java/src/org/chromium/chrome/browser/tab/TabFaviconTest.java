@@ -92,9 +92,9 @@ public class TabFaviconTest {
     }
 
     private void onFaviconAvailable(Bitmap bitmap) {
-        // Mimic the behavior of the native call, where `TabFavicon#shouldUpdateFaviconForBrowserUI`
+        // Mimic the behavior of the native call, where `TabFavicon#shouldUpdateFaviconForBrowserUi`
         // is checked first before sending the bitmap into Java layer.
-        if (mTabFavicon.shouldUpdateFaviconForBrowserUI(bitmap.getWidth(), bitmap.getHeight())) {
+        if (mTabFavicon.shouldUpdateFaviconForBrowserUi(bitmap.getWidth(), bitmap.getHeight())) {
             mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
         }
     }

@@ -94,7 +94,7 @@ public class ReadLaterContextMenuTest {
                 .when(mTracker)
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(any()))
+        when(mTracker.shouldTriggerHelpUiWithSnooze(any()))
                 .thenReturn(new TriggerDetails(false, false));
         mActivityTestRule.startMainActivityOnBlankPage();
         mocker.mock(RequestCoordinatorBridgeJni.TEST_HOOKS, mRequestCoordinatorBridgeJniMock);
@@ -105,10 +105,10 @@ public class ReadLaterContextMenuTest {
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "https://crbug.com/358177365")
     public void testShowIphOnContextMenuLinkCopied() throws Throwable {
-        when(mTracker.shouldTriggerHelpUI(
+        when(mTracker.shouldTriggerHelpUi(
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(
+        when(mTracker.shouldTriggerHelpUiWithSnooze(
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
 

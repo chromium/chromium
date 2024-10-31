@@ -78,7 +78,7 @@ public interface SigninAndHistorySyncCoordinator {
      *
      * @param profile The current profile.
      */
-    public static boolean willShowSigninUI(Profile profile) {
+    public static boolean willShowSigninUi(Profile profile) {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         return signinManager.isSigninAllowed();
     }
@@ -93,11 +93,11 @@ public interface SigninAndHistorySyncCoordinator {
      * @param historyOptInMode Whether the history opt-in should be always, optionally or never
      *     shown.
      */
-    public static boolean willShowHistorySyncUI(
+    public static boolean willShowHistorySyncUi(
             Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        if (!willShowSigninUI(profile) && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (!willShowSigninUi(profile) && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Signin is suppressed because of something other than the user being signed in. Since
             // the user cannot sign in, we should not show history sync either.
             return false;

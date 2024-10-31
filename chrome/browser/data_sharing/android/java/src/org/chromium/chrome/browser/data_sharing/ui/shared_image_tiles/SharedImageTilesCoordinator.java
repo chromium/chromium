@@ -111,7 +111,7 @@ public class SharedImageTilesCoordinator {
         updateMembersCount(emails.size());
 
         // Let the UI delegate draw the icon tiles.
-        DataSharingUIDelegate dataSharingUiDelegate = mDataSharingService.getUIDelegate();
+        DataSharingUIDelegate dataSharingUiDelegate = mDataSharingService.getUiDelegate();
         assert dataSharingUiDelegate != null;
 
         Callback<Boolean> successCallback =

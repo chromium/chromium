@@ -119,9 +119,9 @@ public final class WebFeedFollowIntroControllerTest {
         // Required for resolving an attribute used in AppMenuItemText.
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mClock = new FakeClock();
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
         doAnswer(
                         invocation -> {
@@ -415,9 +415,9 @@ public final class WebFeedFollowIntroControllerTest {
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);
         setVisitCounts(3, 3);
         invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /* isRecommended= */ true);
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(false);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(new TriggerDetails(false, false));
         advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
 

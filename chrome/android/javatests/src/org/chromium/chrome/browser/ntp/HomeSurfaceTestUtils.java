@@ -195,7 +195,7 @@ public class HomeSurfaceTestUtils {
      *
      * @param cta The ChromeTabbedActivity under test.
      */
-    public static Tab getCurrentTabFromUIThread(ChromeTabbedActivity cta) {
+    public static Tab getCurrentTabFromUiThread(ChromeTabbedActivity cta) {
         AtomicReference<Tab> tab = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> tab.set(TabModelUtils.getCurrentTab(cta.getCurrentTabModel())));

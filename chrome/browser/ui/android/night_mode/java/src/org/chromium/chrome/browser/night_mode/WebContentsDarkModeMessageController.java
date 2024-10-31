@@ -70,11 +70,11 @@ public class WebContentsDarkModeMessageController {
                         true);
         if (optOut) {
             return featureEnabled
-                    && tracker.shouldTriggerHelpUI(
+                    && tracker.shouldTriggerHelpUi(
                             FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
         } else {
             return !featureEnabled
-                    && tracker.shouldTriggerHelpUI(
+                    && tracker.shouldTriggerHelpUi(
                             FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE);
         }
     }
@@ -268,7 +268,7 @@ public class WebContentsDarkModeMessageController {
             Activity activity, Profile profile, String url, ModalDialogManager modalDialogManager) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.AUTO_DARK_DISABLED_IN_APP_MENU);
-        if (!tracker.shouldTriggerHelpUI(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE)) return;
+        if (!tracker.shouldTriggerHelpUi(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE)) return;
 
         // Set values and click action based on whether or not the feedback flow is enabled.
         Resources resources = activity.getResources();

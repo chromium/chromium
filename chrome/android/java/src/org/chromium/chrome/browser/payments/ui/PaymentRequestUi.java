@@ -66,7 +66,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The PaymentRequest UI. */
-public class PaymentRequestUI
+public class PaymentRequestUi
         implements DimmingDialog.OnDismissListener,
                 View.OnClickListener,
                 PaymentRequestSection.SectionDelegate,
@@ -101,6 +101,7 @@ public class PaymentRequestUI
     public interface Client {
         /**
          * Asynchronously returns the default payment information.
+         *
          * @param waitForUpdatedDetails Whether the payment details is pending for updating.
          * @param callback Retrieves the data to show in the initial PaymentRequest UI.
          */
@@ -117,31 +118,29 @@ public class PaymentRequestUI
          * Asynchronously returns the full list of options for the given type.
          *
          * @param optionType Data being updated.
-         * @param callback   Callback to run when the data has been fetched.
+         * @param callback Callback to run when the data has been fetched.
          */
         void getSectionInformation(@DataType int optionType, Callback<SectionInformation> callback);
 
         /**
          * Called when the user changes one of their payment options.
          *
-         * If this method returns {@link SelectionResult.ASYNCHRONOUS_VALIDATION}, then:
-         * + The added option should be asynchronously verified.
-         * + The section should be disabled and a progress spinny should be shown while the option
-         *   is being verified.
-         * + The checkedCallback will be invoked with the results of the check and updated
-         *   information.
+         * <p>If this method returns {@link SelectionResult.ASYNCHRONOUS_VALIDATION}, then: + The
+         * added option should be asynchronously verified. + The section should be disabled and a
+         * progress spinny should be shown while the option is being verified. + The checkedCallback
+         * will be invoked with the results of the check and updated information.
          *
-         * If this method returns {@link SelectionResult.EDITOR_LAUNCH}, then:
-         * + Interaction with UI should be disabled until updateSection() is called.
+         * <p>If this method returns {@link SelectionResult.EDITOR_LAUNCH}, then: + Interaction with
+         * UI should be disabled until updateSection() is called.
          *
-         * For example, if the website needs a shipping address to calculate shipping options, then
-         * calling onSectionOptionSelected(DataType.SHIPPING_ADDRESS, option, checkedCallback) will
-         * return true. When the website updates the shipping options, the checkedCallback will be
-         * invoked.
+         * <p>For example, if the website needs a shipping address to calculate shipping options,
+         * then calling onSectionOptionSelected(DataType.SHIPPING_ADDRESS, option, checkedCallback)
+         * will return true. When the website updates the shipping options, the checkedCallback will
+         * be invoked.
          *
-         * @param optionType        Data being updated.
-         * @param option            Value of the data being updated.
-         * @param checkedCallback   The callback after an asynchronous check has completed.
+         * @param optionType Data being updated.
+         * @param option Value of the data being updated.
+         * @param checkedCallback The callback after an asynchronous check has completed.
          * @return The result of the selection.
          */
         @SelectionResult
@@ -153,18 +152,16 @@ public class PaymentRequestUI
         /**
          * Called when the user clicks edit icon (pencil icon) on the payment option in a section.
          *
-         * If this method returns {@link SelectionResult.ASYNCHRONOUS_VALIDATION}, then:
-         * + The edited option should be asynchronously verified.
-         * + The section should be disabled and a progress spinny should be shown while the option
-         *   is being verified.
-         * + The checkedCallback will be invoked with the results of the check and updated
-         *   information.
+         * <p>If this method returns {@link SelectionResult.ASYNCHRONOUS_VALIDATION}, then: + The
+         * edited option should be asynchronously verified. + The section should be disabled and a
+         * progress spinny should be shown while the option is being verified. + The checkedCallback
+         * will be invoked with the results of the check and updated information.
          *
-         * If this method returns {@link SelectionResult.EDITOR_LAUNCH}, then:
-         * + Interaction with UI should be disabled until updateSection() is called.
+         * <p>If this method returns {@link SelectionResult.EDITOR_LAUNCH}, then: + Interaction with
+         * UI should be disabled until updateSection() is called.
          *
-         * @param optionType      Data being updated.
-         * @param option          The option to be edited.
+         * @param optionType Data being updated.
+         * @param option The option to be edited.
          * @param checkedCallback The callback after an asynchronous check has completed.
          * @return The result of the edit request.
          */
@@ -177,17 +174,15 @@ public class PaymentRequestUI
         /**
          * Called when the user clicks on the "Add" button for a section.
          *
-         * If this method returns {@link SelectionResult.ASYNCHRONOUS_VALIDATION}, then:
-         * + The added option should be asynchronously verified.
-         * + The section should be disabled and a progress spinny should be shown while the option
-         *   is being verified.
-         * + The checkedCallback will be invoked with the results of the check and updated
-         *   information.
+         * <p>If this method returns {@link SelectionResult.ASYNCHRONOUS_VALIDATION}, then: + The
+         * added option should be asynchronously verified. + The section should be disabled and a
+         * progress spinny should be shown while the option is being verified. + The checkedCallback
+         * will be invoked with the results of the check and updated information.
          *
-         * If this method returns {@link SelectionResult.EDITOR_LAUNCH}, then:
-         * + Interaction with UI should be disabled until updateSection() is called.
+         * <p>If this method returns {@link SelectionResult.EDITOR_LAUNCH}, then: + Interaction with
+         * UI should be disabled until updateSection() is called.
          *
-         * @param optionType      Data being updated.
+         * @param optionType Data being updated.
          * @param checkedCallback The callback after an asynchronous check has completed.
          * @return The result of the selection.
          */
@@ -205,8 +200,8 @@ public class PaymentRequestUI
                 EditableOption selectedPaymentMethod);
 
         /**
-         * Called when the user dismisses the UI via the “back” button on their phone
-         * or the “X” button in UI.
+         * Called when the user dismisses the UI via the “back” button on their phone or the “X”
+         * button in UI.
          */
         void onDismiss();
 
@@ -228,20 +223,20 @@ public class PaymentRequestUI
 
     /** A test-only observer for PaymentRequest UI. */
     public interface PaymentRequestObserverForTest {
-        /** Called immediately when PaymentRequestUI#show() is called. */
-        void onPaymentRequestUIShow(PaymentRequestUI ui);
+        /** Called immediately when PaymentRequestUi#show() is called. */
+        void onPaymentRequestUiShow(PaymentRequestUi ui);
 
         /** Called when clicks on the UI are possible. */
-        void onPaymentRequestReadyForInput(PaymentRequestUI ui);
+        void onPaymentRequestReadyForInput(PaymentRequestUi ui);
 
         /** Called when clicks on the PAY button are possible. */
-        void onPaymentRequestReadyToPay(PaymentRequestUI ui);
+        void onPaymentRequestReadyToPay(PaymentRequestUi ui);
 
         /** Called when the UI has been updated to reflect checking a selected option. */
-        void onPaymentRequestSelectionChecked(PaymentRequestUI ui);
+        void onPaymentRequestSelectionChecked(PaymentRequestUi ui);
 
         /** Called when the result UI is showing. */
-        void onPaymentRequestResultReady(PaymentRequestUI ui);
+        void onPaymentRequestResultReady(PaymentRequestUi ui);
     }
 
     /** Helper to notify tests of an event only once. */
@@ -276,10 +271,10 @@ public class PaymentRequestUI
     }
 
     /**
-     * Length of the animation to either show the UI or expand it to full height.
-     * Note that click of 'Pay' button is not accepted until the animation is done, so this duration
-     * also serves the function of preventing the user from accidentally double-clicking on the
-     * screen when triggering payment and thus authorizing unwanted transaction.
+     * Length of the animation to either show the UI or expand it to full height. Note that click of
+     * 'Pay' button is not accepted until the animation is done, so this duration also serves the
+     * function of preventing the user from accidentally double-clicking on the screen when
+     * triggering payment and thus authorizing unwanted transaction.
      */
     private static final int DIALOG_ENTER_ANIMATION_MS = 225;
 
@@ -346,21 +341,21 @@ public class PaymentRequestUI
     /**
      * Builds the UI for PaymentRequest.
      *
-     * @param activity              The activity on top of which the UI should be displayed.
-     * @param client                The consumer of the PaymentRequest UI.
-     * @param showDataSource        Whether the UI should describe the source of Autofill data.
-     * @param title                 The title to show at the top of the UI. This can be, for
-     *                              example, the &lt;title&gt; of the merchant website. If the
-     *                              string is too long for UI, it elides at the end.
-     * @param origin                The origin (https://tools.ietf.org/html/rfc6454) to show under
-     *                              the title. For example, "https://shop.momandpop.com". If the
-     *                              origin is too long for the UI, it should elide according to:
-     * https://www.chromium.org/Home/chromium-security/enamel#TOC-Eliding-Origin-Names-And-Hostnames
-     * @param securityLevel   The security level of the page that invoked PaymentRequest.
+     * @param activity The activity on top of which the UI should be displayed.
+     * @param client The consumer of the PaymentRequest UI.
+     * @param showDataSource Whether the UI should describe the source of Autofill data.
+     * @param title The title to show at the top of the UI. This can be, for example, the
+     *     &lt;title&gt; of the merchant website. If the string is too long for UI, it elides at the
+     *     end.
+     * @param origin The origin (https://tools.ietf.org/html/rfc6454) to show under the title. For
+     *     example, "https://shop.momandpop.com". If the origin is too long for the UI, it should
+     *     elide according to:
+     *     https://www.chromium.org/Home/chromium-security/enamel#TOC-Eliding-Origin-Names-And-Hostnames
+     * @param securityLevel The security level of the page that invoked PaymentRequest.
      * @param shippingStrings The string resource identifiers to use in the shipping sections.
-     * @param profile         The current profile that creates the PaymentRequestUI.
+     * @param profile The current profile that creates the PaymentRequestUi.
      */
-    public PaymentRequestUI(
+    public PaymentRequestUi(
             Activity activity,
             Client client,
             boolean showDataSource,
@@ -386,7 +381,7 @@ public class PaymentRequestUI
                                         && isAcceptingUserInput()
                                         && mPayButton.isEnabled()) {
                                     sPaymentRequestObserverForTest.onPaymentRequestReadyToPay(
-                                            PaymentRequestUI.this);
+                                            PaymentRequestUi.this);
                                 }
                             }
                         });
@@ -433,6 +428,7 @@ public class PaymentRequestUI
 
     /**
      * Shows the PaymentRequest UI. This will dim the background behind the PaymentRequest UI.
+     *
      * @param waitForUpdatedDetails Whether the payment details is pending to be updated.
      */
     public void show(boolean waitForUpdatedDetails) {
@@ -468,7 +464,7 @@ public class PaymentRequestUI
                     }
                 });
         if (sPaymentRequestObserverForTest != null) {
-            sPaymentRequestObserverForTest.onPaymentRequestUIShow(PaymentRequestUI.this);
+            sPaymentRequestObserverForTest.onPaymentRequestUiShow(PaymentRequestUi.this);
         }
     }
 
@@ -485,16 +481,16 @@ public class PaymentRequestUI
     }
 
     /**
-     * Prepares the PaymentRequestUI for initial display.
+     * Prepares the PaymentRequestUi for initial display.
      *
-     * TODO(dfalcantara): Ideally, everything related to the request and its views would just be put
-     *                    into its own class but that'll require yanking out a lot of this class.
+     * <p>TODO(dfalcantara): Ideally, everything related to the request and its views would just be
+     * put into its own class but that'll require yanking out a lot of this class.
      *
-     * @param context       The application context.
-     * @param title         Title of the page.
-     * @param origin        The RFC6454 origin of the page.
+     * @param context The application context.
+     * @param title Title of the page.
+     * @param origin The RFC6454 origin of the page.
      * @param securityLevel The security level of the page that invoked PaymentRequest.
-     * @param profile       The current profile to pass PaymentRequestHeader.
+     * @param profile The current profile to pass PaymentRequestHeader.
      */
     private void prepareRequestView(
             Context context, String title, String origin, int securityLevel, Profile profile) {
@@ -603,16 +599,17 @@ public class PaymentRequestUI
 
     /**
      * Closes the UI. Can be invoked in response to, for example:
+     *
      * <ul>
-     *  <li>Successfully processing the payment.</li>
-     *  <li>Failure to process the payment.</li>
-     *  <li>The JavaScript calling the abort() method in PaymentRequest API.</li>
-     *  <li>The PaymentRequest JavaScript object being destroyed.</li>
+     *   <li>Successfully processing the payment.
+     *   <li>Failure to process the payment.
+     *   <li>The JavaScript calling the abort() method in PaymentRequest API.
+     *   <li>The PaymentRequest JavaScript object being destroyed.
      * </ul>
      *
      * Does not call Client.onDismissed().
      *
-     * Should not be called multiple times.
+     * <p>Should not be called multiple times.
      */
     public void close() {
         mIsClientClosing = true;
@@ -728,7 +725,7 @@ public class PaymentRequestUI
                 new LinearLayout.LayoutParams(
                         LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         ViewUtils.requestLayout(
-                mPaymentContainerLayout, "PaymentRequestUI.addShippingOptionSectionIfNecessary");
+                mPaymentContainerLayout, "PaymentRequestUi.addShippingOptionSectionIfNecessary");
     }
 
     /**
@@ -791,7 +788,7 @@ public class PaymentRequestUI
         }
 
         ViewUtils.requestLayout(
-                mPaymentContainerLayout, "PaymentRequestUI.selectedPaymentMethodUpdated");
+                mPaymentContainerLayout, "PaymentRequestUi.selectedPaymentMethodUpdated");
     }
 
     @Override
@@ -887,7 +884,9 @@ public class PaymentRequestUI
         return section == mShippingAddressSection;
     }
 
-    /** @return The common editor user interface. */
+    /**
+     * @return The common editor user interface.
+     */
     public EditorDialogView getEditorDialog() {
         return mEditorDialog;
     }
@@ -977,8 +976,8 @@ public class PaymentRequestUI
     }
 
     /**
-     *  Called to show the processing message after payment details have been loaded in the case the
-     *  payment request UI has been skipped.
+     * Called to show the processing message after payment details have been loaded in the case the
+     * payment request UI has been skipped.
      */
     public void showProcessingMessageAfterUiSkip() {
         // Button was clicked before but not marked as clicked because we skipped the UI.
@@ -1011,7 +1010,7 @@ public class PaymentRequestUI
             // TODO(dfalcantara): Animate this: https://crbug.com/621955
             ((FrameLayout.LayoutParams) mRequestView.getLayoutParams()).height =
                     LayoutParams.WRAP_CONTENT;
-            ViewUtils.requestLayout(mRequestView, "PaymentRequestUI.changeSpinnerVisibility show");
+            ViewUtils.requestLayout(mRequestView, "PaymentRequestUi.changeSpinnerVisibility show");
         } else {
             mPaymentContainer.setVisibility(View.VISIBLE);
             mBottomBar.setVisibility(View.VISIBLE);
@@ -1023,7 +1022,7 @@ public class PaymentRequestUI
                         LayoutParams.MATCH_PARENT;
                 ViewUtils.requestLayout(
                         mRequestView,
-                        "PaymentRequestUI.changeSpinnerVisibility expanded to full height");
+                        "PaymentRequestUi.changeSpinnerVisibility expanded to full height");
             }
         }
     }
@@ -1054,7 +1053,9 @@ public class PaymentRequestUI
         mReadyToPayNotifierForTest.run();
     }
 
-    /** @return Whether or not the dialog can be closed via the X close button. */
+    /**
+     * @return Whether or not the dialog can be closed via the X close button.
+     */
     private boolean isAcceptingCloseButton() {
         assert mInputProtector != null;
         return !mDialog.isAnimatingDisappearance()
@@ -1066,7 +1067,9 @@ public class PaymentRequestUI
                 && mInputProtector.shouldInputBeProcessed();
     }
 
-    /** @return Whether or not the dialog is accepting user input. */
+    /**
+     * @return Whether or not the dialog is accepting user input.
+     */
     @Override
     public boolean isAcceptingUserInput() {
         return isAcceptingCloseButton()
@@ -1100,7 +1103,7 @@ public class PaymentRequestUI
 
             // Expand all the dividers.
             for (int i = 0; i < mSectionSeparators.size(); i++) mSectionSeparators.get(i).expand();
-            ViewUtils.requestLayout(mPaymentContainerLayout, "PaymentRequestUI.expand");
+            ViewUtils.requestLayout(mPaymentContainerLayout, "PaymentRequestUi.expand");
 
             // Switch the 'edit' button to a 'cancel' button.
             mEditButton.setText(mContext.getString(R.string.cancel));
@@ -1233,7 +1236,7 @@ public class PaymentRequestUI
     /**
      * Updates the enabled/disabled state of each section's edit button.
      *
-     * Only the top-most button is enabled -- the others are disabled so the user is directed
+     * <p>Only the top-most button is enabled -- the others are disabled so the user is directed
      * through the form from top to bottom.
      */
     private void updateSectionButtons() {
@@ -1251,16 +1254,16 @@ public class PaymentRequestUI
 
     /**
      * Called when the dialog is dismissed. Can be caused by:
+     *
      * <ul>
-     *  <li>User click on the "back" button on the phone.</li>
-     *  <li>User click on the "X" button in the top-right corner of the dialog.</li>
-     *  <li>User click on the "CANCEL" button on the bottom of the dialog.</li>
-     *  <li>Successfully processing the payment.</li>
-     *  <li>Failure to process the payment.</li>
-     *  <li>The JavaScript calling the abort() method in PaymentRequest API.</li>
-     *  <li>The PaymentRequest JavaScript object being destroyed.</li>
-     *  <li>User closing all incognito windows with PaymentRequest UI open in an incognito
-     *      window.</li>
+     *   <li>User click on the "back" button on the phone.
+     *   <li>User click on the "X" button in the top-right corner of the dialog.
+     *   <li>User click on the "CANCEL" button on the bottom of the dialog.
+     *   <li>Successfully processing the payment.
+     *   <li>Failure to process the payment.
+     *   <li>The JavaScript calling the abort() method in PaymentRequest API.
+     *   <li>The PaymentRequest JavaScript object being destroyed.
+     *   <li>User closing all incognito windows with PaymentRequest UI open in an incognito window.
      * </ul>
      */
     // DimmingDialog.OnDismissListener implementation.
@@ -1331,8 +1334,8 @@ public class PaymentRequestUI
     }
 
     /**
-     * Animates the bottom sheet UI translating upwards from the bottom of the screen.
-     * Can be canceled when a {@link SheetEnlargingAnimator} starts and expands the dialog.
+     * Animates the bottom sheet UI translating upwards from the bottom of the screen. Can be
+     * canceled when a {@link SheetEnlargingAnimator} starts and expands the dialog.
      */
     private class PeekingAnimator extends AnimatorListenerAdapter
             implements OnLayoutChangeListener {
@@ -1377,7 +1380,7 @@ public class PaymentRequestUI
         /**
          * Updates the animation.
          *
-         * @param progress How far along the animation is.  In the range [0,1], with 1 being done.
+         * @param progress How far along the animation is. In the range [0,1], with 1 being done.
          */
         private void update(float progress) {
             // The dialog container initially starts off translated downward, gradually decreasing
@@ -1440,7 +1443,7 @@ public class PaymentRequestUI
             mRequestView.setTranslationY(0);
             mBottomBar.setTranslationY(0);
             ViewUtils.requestLayout(
-                    mRequestView, "PaymentRequestUI.SheetEnlargingAnimator.onAnimationEnd");
+                    mRequestView, "PaymentRequestUi.SheetEnlargingAnimator.onAnimationEnd");
 
             // Indicate that the dialog is ready to use.
             mSheetAnimator = null;
@@ -1508,6 +1511,7 @@ public class PaymentRequestUI
      * Set the visibility state of the dialog. Use {@link PaymentUisShowStateReconciler}'s
      * showPaymentRequestDialogWhenNoBottomSheet() and hidePaymentRequestDialog() instead of calling
      * this method directly.
+     *
      * @param visible True to show the dialog, false to hide the dialog.
      * @return Whether setting visibility is successful.
      */

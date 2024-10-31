@@ -144,7 +144,7 @@ public class SharedImageTilesCoordinatorUnitTest {
                         })
                 .when(mDataSharingService)
                 .readGroup(eq(COLLABORATION_ID), any(Callback.class));
-        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUIDelegate();
+        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
 
         mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID);
 

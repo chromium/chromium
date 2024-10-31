@@ -87,7 +87,7 @@ public class SnackbarManager
 
     private final Activity mActivity;
     private final @NonNull WindowAndroid mWindowAndroid;
-    private final @NonNull Handler mUIThreadHandler;
+    private final @NonNull Handler mUiThreadHandler;
     private final Runnable mHideRunnable =
             new Runnable() {
                 @Override
@@ -122,7 +122,7 @@ public class SnackbarManager
             @NonNull ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid) {
         mActivity = activity;
-        mUIThreadHandler = new Handler();
+        mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
         mWindowAndroid = windowAndroid;
 
@@ -306,7 +306,7 @@ public class SnackbarManager
         if (!mActivityInForeground) return;
         Snackbar currentSnackbar = mSnackbars.getCurrent();
         if (currentSnackbar == null) {
-            mUIThreadHandler.removeCallbacks(mHideRunnable);
+            mUiThreadHandler.removeCallbacks(mHideRunnable);
             if (mView != null) {
                 mView.dismiss();
                 mView = null;
@@ -336,10 +336,10 @@ public class SnackbarManager
             }
 
             if (viewChanged) {
-                mUIThreadHandler.removeCallbacks(mHideRunnable);
+                mUiThreadHandler.removeCallbacks(mHideRunnable);
                 if (!currentSnackbar.isTypePersistent()) {
                     int durationMs = getDuration(currentSnackbar);
-                    mUIThreadHandler.postDelayed(mHideRunnable, durationMs);
+                    mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
                 }
                 mView.updateAccessibilityPaneTitle();
             }

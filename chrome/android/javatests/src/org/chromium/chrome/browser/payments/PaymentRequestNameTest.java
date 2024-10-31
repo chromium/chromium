@@ -122,7 +122,7 @@ public class PaymentRequestNameTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -137,7 +137,7 @@ public class PaymentRequestNameTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddInvalidNameAndCancel() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -164,7 +164,7 @@ public class PaymentRequestNameTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddNameAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -190,7 +190,7 @@ public class PaymentRequestNameTest {
     @MediumTest
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -222,7 +222,7 @@ public class PaymentRequestNameTest {
                         .build();
 
         // Start and complete the Payment Request.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(

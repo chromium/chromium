@@ -62,7 +62,7 @@ public class AppSpecificHistoryIphControllerUnitTest {
     @Before
     public void setUp() {
         when(mTracker.isInitialized()).thenReturn(true);
-        when(mTracker.wouldTriggerHelpUI(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE))
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE))
                 .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mProfileSupplier.hasValue()).thenReturn(true);

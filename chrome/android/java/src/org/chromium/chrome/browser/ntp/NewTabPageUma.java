@@ -102,17 +102,17 @@ public class NewTabPageUma {
 
     /**
      * Possible results when updating content suggestions list in the UI. Keep in sync with the
-     * ContentSuggestionsUIUpdateResult2 enum in enums.xml. Do not remove or change existing
-     * values other than NUM_UI_UPDATE_RESULTS.
+     * ContentSuggestionsUiUpdateResult2 enum in enums.xml. Do not remove or change existing values
+     * other than NUM_UI_UPDATE_RESULTS.
      */
     @IntDef({
-        ContentSuggestionsUIUpdateResult.SUCCESS_APPENDED,
-        ContentSuggestionsUIUpdateResult.SUCCESS_REPLACED,
-        ContentSuggestionsUIUpdateResult.FAIL_ALL_SEEN,
-        ContentSuggestionsUIUpdateResult.FAIL_DISABLED
+        ContentSuggestionsUiUpdateResult.SUCCESS_APPENDED,
+        ContentSuggestionsUiUpdateResult.SUCCESS_REPLACED,
+        ContentSuggestionsUiUpdateResult.FAIL_ALL_SEEN,
+        ContentSuggestionsUiUpdateResult.FAIL_DISABLED
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ContentSuggestionsUIUpdateResult {
+    public @interface ContentSuggestionsUiUpdateResult {
         /**
          * The content suggestions are successfully appended (because they are set for the first
          * time or explicitly marked to be appended).

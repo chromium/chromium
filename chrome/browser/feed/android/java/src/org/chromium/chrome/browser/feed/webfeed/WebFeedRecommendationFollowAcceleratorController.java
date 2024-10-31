@@ -168,7 +168,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
     }
 
     private void performFollowWithAccelerator(byte[] webFeedId) {
-        mWebFeedFollowIntroView.showLoadingUI();
+        mWebFeedFollowIntroView.showLoadingUi();
         Tab currentTab = mTabSupplier.get();
         FeedServiceBridge.reportOtherUserAction(
                 StreamKind.UNKNOWN,
@@ -179,13 +179,13 @@ public class WebFeedRecommendationFollowAcceleratorController {
                 /* isDurable= */ true,
                 WebFeedBridge.CHANGE_REASON_RECOMMENDATION_WEB_PAGE_ACCELERATOR,
                 results ->
-                        mWebFeedFollowIntroView.hideLoadingUI(
+                        mWebFeedFollowIntroView.hideLoadingUi(
                                 new LoadingView.Observer() {
                                     @Override
-                                    public void onShowLoadingUIComplete() {}
+                                    public void onShowLoadingUiComplete() {}
 
                                     @Override
-                                    public void onHideLoadingUIComplete() {
+                                    public void onHideLoadingUiComplete() {
                                         mWebFeedFollowIntroView.dismissBubble();
                                         if (results.requestStatus
                                                 == WebFeedSubscriptionRequestStatus.SUCCESS) {

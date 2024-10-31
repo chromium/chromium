@@ -87,7 +87,7 @@ public class MinimizedCustomTabIphController
     private void showIph(View button) {
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         if (!tracker.isInitialized()) return;
-        if (!tracker.wouldTriggerHelpUI(FeatureConstants.CCT_MINIMIZED_FEATURE)) return;
+        if (!tracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)) return;
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
                                 mActivity.getResources(),

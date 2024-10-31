@@ -124,8 +124,8 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
-    public DataSharingUIDelegate getUIDelegate() {
-        return DataSharingServiceImplJni.get().getUIDelegate(mNativePtr);
+    public DataSharingUIDelegate getUiDelegate() {
+        return DataSharingServiceImplJni.get().getUiDelegate(mNativePtr);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 String accessToken,
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
 
-        DataSharingUIDelegate getUIDelegate(long nativeDataSharingServiceAndroid);
+        DataSharingUIDelegate getUiDelegate(long nativeDataSharingServiceAndroid);
 
         ServiceStatus getServiceStatus(long nativeDataSharingServiceAndroid);
     }

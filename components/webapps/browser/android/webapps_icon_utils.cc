@@ -186,7 +186,7 @@ SkBitmap WebappsIconUtils::GenerateAdaptiveIconBitmap(const SkBitmap& bitmap) {
 }
 
 int WebappsIconUtils::GetIdealIconCornerRadiusPxForPromptUI() {
-  return Java_WebappsIconUtils_getIdealIconCornerRadiusPxForPromptUI(
+  return Java_WebappsIconUtils_getIdealIconCornerRadiusPxForPromptUi(
       base::android::AttachCurrentThread());
 }
 
