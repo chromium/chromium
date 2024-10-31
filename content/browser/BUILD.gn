@@ -1387,8 +1387,6 @@ source_set("browser") {
     "media_session/media_session_service.cc",
     "memory/swap_metrics_driver_impl.cc",
     "memory/swap_metrics_driver_impl.h",
-    "memory_pressure/user_level_memory_pressure_signal_generator.cc",
-    "memory_pressure/user_level_memory_pressure_signal_generator.h",
     "message_port_provider.cc",
     "metrics/histogram_shared_memory_config.cc",
     "metrics/histogram_shared_memory_config.h",
@@ -2379,6 +2377,13 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.cc",
     "worker_host/worker_script_loader_factory.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "memory_pressure/user_level_memory_pressure_signal_generator.cc",
+      "memory_pressure/user_level_memory_pressure_signal_generator.h",
+    ]
+  }
 
   if (enable_bluetooth_emulation) {
     deps += [

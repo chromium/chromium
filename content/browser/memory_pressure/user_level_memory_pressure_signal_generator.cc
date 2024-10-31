@@ -9,7 +9,6 @@
 
 #include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
 
-#if BUILDFLAG(IS_ANDROID)
 #include <fcntl.h>
 #include <inttypes.h>
 #include <unistd.h>
@@ -399,4 +398,3 @@ UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
 
 }  // namespace memory_pressure
 
-#endif  // BUILDFLAG(IS_ANDROID)
