@@ -8883,12 +8883,6 @@ const FeatureEntry kFeatureEntries[] = {
     },
 
 #endif
-    {"http-cache-partitioning",
-     flag_descriptions::kSplitCacheByNetworkIsolationKeyName,
-     flag_descriptions::kSplitCacheByNetworkIsolationKeyDescription,
-     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"optimization-guide-personalized-fetching",
      flag_descriptions::kOptimizationGuidePersonalizedFetchingName,

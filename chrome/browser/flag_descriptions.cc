@@ -3569,11 +3569,6 @@ const char kSmoothScrollingName[] = "Smooth Scrolling";
 const char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";
 
-const char kSplitCacheByNetworkIsolationKeyName[] = "HTTP Cache Partitioning";
-const char kSplitCacheByNetworkIsolationKeyDescription[] =
-    "Partitions the HTTP Cache by (top-level site, current-frame site) to "
-    "disallow cross-site tracking.";
-
 const char kStorageAccessHeadersName[] = "Storage Access Headers";
 const char kStorageAccessHeadersDescription[] =
     "Enables HTTP headers related to the Storage Access API.";

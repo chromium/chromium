@@ -5050,11 +5050,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "http-cache-partitioning",
-    "owners": [ "shivanisha@chromium.org" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "https-first-balanced-mode",
     "owners": [
       "jdeblasio@chromium.org",

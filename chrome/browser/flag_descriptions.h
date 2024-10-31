@@ -2030,9 +2030,6 @@ extern const char kBackdropFilterMirrorEdgeDescription[];
 extern const char kSmoothScrollingName[];
 extern const char kSmoothScrollingDescription[];
 
-extern const char kSplitCacheByNetworkIsolationKeyName[];
-extern const char kSplitCacheByNetworkIsolationKeyDescription[];
-
 extern const char kStorageAccessHeadersName[];
 extern const char kStorageAccessHeadersDescription[];
 
