@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.AppLauncher.AppURLHasChromeLaunchScheme" enum="Boolean"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1576,7 +1576,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.MainFrame2" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
