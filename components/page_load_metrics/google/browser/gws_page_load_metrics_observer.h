@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -135,7 +135,9 @@ class GWSPageLoadMetricsObserver
   // Records the histograms for possible connection reuse.
   void RecordConnectionReuseHistograms();
 
-  bool IsFromNewTabPage(content::NavigationHandle* navigation_handle);
+  virtual bool IsFromNewTabPage(
+      content::NavigationHandle* navigation_handle) = 0;
+  virtual bool IsBrowserStartupComplete() = 0;
   std::string AddHistogramSuffix(const std::string& histogram_name);
 
   content::NavigationHandleTiming navigation_handle_timing_;
@@ -155,4 +157,4 @@ class GWSPageLoadMetricsObserver
   int64_t navigation_id_;
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
