@@ -32,25 +32,6 @@ class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static AuthenticationService* GetForProfile(ProfileIOS* profile);
   static AuthenticationServiceFactory* GetInstance();
 
-  // Force the instantiation of AuthenticationService and initialize it with
-  // the given delegate. Must be called before GetForProfile (not doing
-  // so is a security issue and the app will terminate).
-  // DEPRECATED: install a factory returned by GetFactoryWithDelegate()
-  // or GetFactoryWithDelegateFactory() instead of calling this method.
-  static void CreateAndInitializeForProfile(
-      ProfileIOS* profile,
-      std::unique_ptr<AuthenticationServiceDelegate> delegate);
-
-  // DEPRECATED: install a factory returned by GetFactoryWithDelegate()
-  // or GetFactoryWithDelegateFactory() instead of calling this method.
-  static void CreateAndInitializeForBrowserState(
-      ProfileIOS* profile,
-      std::unique_ptr<AuthenticationServiceDelegate> delegate);
-
-  // Returns the default factory used to build AuthenticationServices. Can be
-  // registered with SetTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
-
   // Returns a factory that builds an AuthenticationService using a custom
   // delegate instance (needs to be constructible before the profile).
   static TestingFactory GetFactoryWithDelegate(

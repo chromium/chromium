@@ -59,28 +59,6 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
   return instance.get();
 }
 
-void AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-    ProfileIOS* profile,
-    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  CreateAndInitializeForProfile(profile, std::move(delegate));
-}
-
-// static
-void AuthenticationServiceFactory::CreateAndInitializeForProfile(
-    ProfileIOS* profile,
-    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  GetInstance()->SetTestingFactory(profile,
-                                   GetFactoryWithDelegate(std::move(delegate)));
-  std::ignore = GetForProfile(profile);
-}
-
-// static
-AuthenticationServiceFactory::TestingFactory
-AuthenticationServiceFactory::GetDefaultFactory() {
-  return GetFactoryWithDelegateFactory(
-      base::BindOnce(&BuildAuthenticationServiceDelegate));
-}
-
 // static
 AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegate(
