@@ -197,10 +197,13 @@ void SecurityInterstitialTabHelper::SetBlockingPage(
 
 SecurityInterstitialPage*
 SecurityInterstitialTabHelper::GetBlockingPageForCurrentTargetFrame() {
-  CHECK(!blocking_documents_for_committed_navigations_.empty());
   auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   content::FrameTreeNodeId id = render_frame_host->GetFrameTreeNodeId();
-  CHECK(IsInterstitialCommittedForFrame(id));
+  if (!IsInterstitialCommittedForFrame(id)) {
+    // TODO(crbug.com/376688788): Remove this condition. This method should not
+    // be invoked if there is no blocking page for the current target frame.
+    return nullptr;
+  }
   return blocking_documents_for_committed_navigations_.find(id)->second.get();
 }
 
@@ -225,8 +228,13 @@ void SecurityInterstitialTabHelper::HandleCommand(
   // HandleCommand is only called in response to a Mojo message sent from frames
   // that have a committed interstitial. This ensures that the current target
   // frame is present and can process the corresponding command received.
-  GetBlockingPageForCurrentTargetFrame()->CommandReceived(
-      base::NumberToString(cmd));
+  SecurityInterstitialPage* blocking_page =
+      GetBlockingPageForCurrentTargetFrame();
+  // TODO(crbug.com/376688788): Remove this check once the statement above is
+  // guaranteed.
+  if (blocking_page) {
+    blocking_page->CommandReceived(base::NumberToString(cmd));
+  }
 }
 
 void SecurityInterstitialTabHelper::DontProceed() {
