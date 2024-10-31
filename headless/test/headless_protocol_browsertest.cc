@@ -344,13 +344,7 @@ HEADLESS_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
 
 HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 
-// https://crbug.com/375425824
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ScreenOrientationLock DISABLED_ScreenOrientationLock
-#else
-#define MAYBE_ScreenOrientationLock ScreenOrientationLock
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_ScreenOrientationLock,
+HEADLESS_PROTOCOL_TEST(ScreenOrientationLock,
                        "sanity/screen_orientation_lock.js")
 
 #if !defined(HEADLESS_USE_EMBEDDED_RESOURCES)
