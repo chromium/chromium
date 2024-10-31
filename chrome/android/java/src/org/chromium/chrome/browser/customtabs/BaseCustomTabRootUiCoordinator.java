@@ -99,6 +99,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -297,20 +298,20 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     MismatchNotificationChecker createMismatchNotificationChecker(String appId) {
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        Intent intent = mIntentDataProvider.get().getIntent();
+        if (!connection.isAppForAccountMismatchNotification(intent)) return null;
+
         // MismatchNotificationChecker requires Profile which becomes available after
         // native init. This method is expected to be called lazily, when it is actually
         // needed.
         boolean signInPromptEnabled =
                 appId != null
                         && FeatureList.isInitialized()
-                        && SigninFeatureMap.sCctSignInPrompt.isEnabled();
+                        && SigninFeatureMap.isEnabled(SigninFeatures.CCT_SIGN_IN_PROMPT);
         if (!signInPromptEnabled) return null;
 
         if (isMismatchNotificationSuppressed()) return null;
-
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        Intent intent = mIntentDataProvider.get().getIntent();
-        if (!connection.isAppForAccountMismatchNotification(intent)) return null;
 
         Profile profile = mProfileSupplier.get();
         if (profile == null) return null;
