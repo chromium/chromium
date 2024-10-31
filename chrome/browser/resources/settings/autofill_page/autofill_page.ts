@@ -87,7 +87,7 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      userEligbleForAutofillPredictionImprovements_: {
+      userEligibleForAutofillPredictionImprovements_: {
         type: Boolean,
         value: false,
       },
@@ -101,14 +101,14 @@ export class SettingsAutofillPageElement extends
       autofillPredictionImprovementsAvailable_: {
         type: Boolean,
         computed: 'computeAutofillPredictionImprovementsAvailable_(' +
-            'userEligbleForAutofillPredictionImprovements_, ' +
+            'userEligibleForAutofillPredictionImprovements_, ' +
             'userHasAutofillPredictionImprovementsEntries_)',
       },
     };
   }
 
   private passkeyFilter_: string;
-  private userEligbleForAutofillPredictionImprovements_: boolean;
+  private userEligibleForAutofillPredictionImprovements_: boolean;
   private userHasAutofillPredictionImprovementsEntries_: boolean;
   private autofillPredictionImprovementsAvailable_: boolean;
   private focusConfig_: Map<string, string>;
@@ -117,8 +117,8 @@ export class SettingsAutofillPageElement extends
     super.connectedCallback();
     // TODO(crbug.com/368565649): Consider updating on sign-in state changes.
     UserAnnotationsManagerProxyImpl.getInstance().isUserEligible().then(
-        eliglble => {
-          this.userEligbleForAutofillPredictionImprovements_ = eliglble;
+        eligible => {
+          this.userEligibleForAutofillPredictionImprovements_ = eligible;
         });
     UserAnnotationsManagerProxyImpl.getInstance().hasEntries().then(value => {
       this.userHasAutofillPredictionImprovementsEntries_ = value;
@@ -130,7 +130,7 @@ export class SettingsAutofillPageElement extends
    */
   private computeAutofillPredictionImprovementsAvailable_(): boolean {
     return loadTimeData.getBoolean('autofillPredictionImprovementsEnabled') &&
-        (this.userEligbleForAutofillPredictionImprovements_ ||
+        (this.userEligibleForAutofillPredictionImprovements_ ||
          this.userHasAutofillPredictionImprovementsEntries_);
   }
 
