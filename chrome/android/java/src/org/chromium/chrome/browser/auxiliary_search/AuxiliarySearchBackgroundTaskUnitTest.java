@@ -12,8 +12,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.PersistableBundle;
 
@@ -72,6 +74,7 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     private static final GURL URL_2 = JUnitTestGURLs.URL_2;
 
     @Mock private Context mContext;
+    @Mock private Resources mResources;
     @Mock private Profile mProfile;
     @Mock private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
     @Mock private FaviconHelper mFaviconHelper;
@@ -87,6 +90,7 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     public void setUp() throws Exception {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
+        when(mContext.getResources()).thenReturn(mResources);
         long now = TimeUtils.uptimeMillis();
         mEntries = new ArrayList<>();
         mEntries.add(

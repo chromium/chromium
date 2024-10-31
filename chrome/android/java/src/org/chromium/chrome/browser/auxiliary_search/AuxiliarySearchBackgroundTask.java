@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.USE_LARGE_FAVICON;
+
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
@@ -97,12 +100,17 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                 .getLong(AuxiliarySearchProvider.TASK_CREATED_TIME);
         RecordHistogram.recordLongTimesHistogram(SCHEDULE_DELAY_TIME_UMA, delayFromExpectedMs);
 
+        Resources resources = mContext.getResources();
+        int faviconSize =
+                USE_LARGE_FAVICON.getValue()
+                        ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
+                        : resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
+
         readTabDonateMetadataAsync(
                 (tabs) ->
                         onTabDonateMetadataRead(
                                 profile,
-                                mContext.getResources()
-                                        .getDimensionPixelSize(R.dimen.tab_grid_favicon_size),
+                                faviconSize,
                                 startTimeMs,
                                 taskFinishedCallback,
                                 new FaviconHelper(),
