@@ -297,8 +297,9 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
     int process_id = mojom::kBrowserProcessId,
     mojom::URLLoaderFactoryParamsPtr params = nullptr) {
   mojo::Remote<mojom::URLLoaderFactory> loader_factory;
-  if (!params)
+  if (!params) {
     params = mojom::URLLoaderFactoryParams::New();
+  }
   params->process_id = process_id;
   params->is_orb_enabled = false;
 
@@ -560,13 +561,16 @@ class NetworkContextTest : public testing::Test {
     base::StringPairs stats;
     backend->GetStats(&stats);
     for (const auto& pair : stats) {
-      if (pair.first != "Cache type")
+      if (pair.first != "Cache type") {
         continue;
+      }
 
-      if (pair.second == "Simple Cache")
+      if (pair.second == "Simple Cache") {
         return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
-      if (pair.second == "Blockfile Cache")
+      }
+      if (pair.second == "Blockfile Cache") {
         return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
+      }
       break;
     }
 
@@ -649,13 +653,15 @@ class NetworkContextTest : public testing::Test {
 
     const base::Value::List* idle_sockets =
         group_dict->FindList("idle_sockets");
-    if (idle_sockets)
+    if (idle_sockets) {
       count += idle_sockets->size();
+    }
 
     const base::Value::List* connect_jobs =
         group_dict->FindList("connect_jobs");
-    if (idle_sockets)
+    if (idle_sockets) {
       count += connect_jobs->size();
+    }
 
     return count;
   }
@@ -1768,8 +1774,9 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
     task_environment_.RunUntilIdle();
     state = network_context->url_request_context()->transport_security_state();
     ASSERT_EQ(on_disk, state->GetDynamicSTSState(kDomain, &sts_state));
-    if (on_disk)
+    if (on_disk) {
       EXPECT_EQ(kDomain, sts_state.domain);
+    }
   }
 }
 
@@ -2091,8 +2098,9 @@ TEST_F(NetworkContextTest, ClearHttpCache) {
           result = std::move(got_result);
           run_loop.Quit();
         }));
-    if (result.net_error() == net::ERR_IO_PENDING)
+    if (result.net_error() == net::ERR_IO_PENDING) {
       run_loop.Run();
+    }
 
     result.ReleaseEntry()->Close();
   }
@@ -2222,8 +2230,9 @@ TEST_F(NetworkContextTest, CountHttpCache) {
         EXPECT_EQ(false, upper_bound);
         EXPECT_EQ(0, size_or_error);
         ++responses;
-        if (responses == 2)
+        if (responses == 2) {
           run_loop.Quit();
+        }
       });
 
   network_context->ComputeHttpCacheSize(base::Time(), base::Time::Max(),
@@ -3651,8 +3660,9 @@ net::IPEndPoint GetLocalHostWithAnyPort() {
 
 std::vector<uint8_t> CreateTestMessage(uint8_t initial, size_t size) {
   std::vector<uint8_t> array(size);
-  for (size_t i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i) {
     array[i] = static_cast<uint8_t>((i + initial) % 256);
+  }
   return array;
 }
 
@@ -6042,8 +6052,9 @@ class TestProxyErrorClient final : public mojom::ProxyErrorClient {
 
   // Runs until the message pipe is closed due to an error.
   void RunUntilMojoPipeError() {
-    if (has_received_mojo_pipe_error_)
+    if (has_received_mojo_pipe_error_) {
       return;
+    }
     base::RunLoop run_loop;
     quit_closure_for_on_mojo_pipe_error_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -6051,11 +6062,13 @@ class TestProxyErrorClient final : public mojom::ProxyErrorClient {
 
  private:
   void OnMojoPipeError() {
-    if (has_received_mojo_pipe_error_)
+    if (has_received_mojo_pipe_error_) {
       return;
+    }
     has_received_mojo_pipe_error_ = true;
-    if (quit_closure_for_on_mojo_pipe_error_)
+    if (quit_closure_for_on_mojo_pipe_error_) {
       std::move(quit_closure_for_on_mojo_pipe_error_).Run();
+    }
   }
 
   mojo::Receiver<mojom::ProxyErrorClient> receiver_{this};
@@ -8515,7 +8528,7 @@ TEST_F(NetworkContextTest,
        NoAvailableRedemptionRecordsWhenTrustTokensAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enable_features=*/{}, /*disable_features=*/{
+      /*enabled_features=*/{}, /*disabled_features=*/{
           features::kPrivateStateTokens, features::kFledgePst});
 
   std::unique_ptr<NetworkContext> network_context =
@@ -8941,7 +8954,7 @@ TEST_F(NetworkContextTest,
         base::ReplaceStringPlaceholders(R"( {"$1": { "PrivateStateTokenV3PMB": {
           "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
           "batchsize": 5 } } } )",
-                                        {test_origin}, /*offset=*/nullptr);
+                                        {test_origin}, /*offsets=*/nullptr);
     network_service_->SetTrustTokenKeyCommitments(
         key_commitment,
         base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
@@ -9020,7 +9033,7 @@ TEST_F(NetworkContextTest,
         base::ReplaceStringPlaceholders(R"( {"$1": { "PrivateStateTokenV3PMB": {
           "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
           "batchsize": 5 } } } )",
-                                        {test_origin}, /*offset=*/nullptr);
+                                        {test_origin}, /*offsets=*/nullptr);
     network_service_->SetTrustTokenKeyCommitments(
         key_commitment,
         base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));

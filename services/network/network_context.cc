@@ -221,14 +221,16 @@ class WrappedTestingCertVerifier : public net::CertVerifier {
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override {
     verify_result->Reset();
-    if (!g_cert_verifier_for_testing)
+    if (!g_cert_verifier_for_testing) {
       return net::ERR_FAILED;
+    }
     return g_cert_verifier_for_testing->Verify(
         params, verify_result, std::move(callback), out_req, net_log);
   }
   void SetConfig(const Config& config) override {
-    if (!g_cert_verifier_for_testing)
+    if (!g_cert_verifier_for_testing) {
       return;
+    }
     g_cert_verifier_for_testing->SetConfig(config);
   }
   void AddObserver(Observer* observer) override {
@@ -342,8 +344,9 @@ bool MatchesDomainFilter(mojom::ClearDataFilter_Type filter_type,
 // must contain no origins. A null filter matches everything.
 base::RepeatingCallback<bool(const std::string& host_name)> MakeDomainFilter(
     mojom::ClearDataFilter* filter) {
-  if (!filter)
+  if (!filter) {
     return base::BindRepeating([](const std::string&) { return true; });
+  }
 
   DCHECK(filter->origins.empty())
       << "Origin filtering not allowed in a domain-only filter";
@@ -432,8 +435,9 @@ class NetworkContextApplicationStatusListener
   }
 
   void Notify(base::android::ApplicationState state) override {
-    if (callback_)
+    if (callback_) {
       callback_.Run(state);
+    }
   }
 
  private:
@@ -503,8 +507,9 @@ void SCTAuditingDelegate::MaybeEnqueueReport(
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
-  if (!context_)
+  if (!context_) {
     return;
+  }
   context_->MaybeEnqueueSCTReport(host_port_pair, validated_certificate_chain,
                                   signed_certificate_timestamps);
 }
@@ -518,13 +523,15 @@ bool GetFullDataFilePath(
     std::optional<base::FilePath> network::mojom::NetworkContextFilePaths::*
         field_name,
     base::FilePath& full_path) {
-  if (!file_paths)
+  if (!file_paths) {
     return false;
+  }
 
   std::optional<base::FilePath> relative_file_path =
       file_paths.get()->*field_name;
-  if (!relative_file_path.has_value())
+  if (!relative_file_path.has_value()) {
     return false;
+  }
 
   // Path to a data file should always be a plain filename.
   DCHECK_EQ(relative_file_path->BaseName(), *relative_file_path);
@@ -772,8 +779,9 @@ NetworkContext::NetworkContext(
       params_->split_auth_cache_by_network_anonymization_key);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  if (params_->ct_policy)
+  if (params_->ct_policy) {
     SetCTPolicy(std::move(params_->ct_policy));
+  }
 
   base::FilePath sct_auditing_path;
   GetFullDataFilePath(params_->file_paths,
@@ -786,8 +794,9 @@ NetworkContext::NetworkContext(
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_ANDROID)
-  if (params_->cookie_manager)
+  if (params_->cookie_manager) {
     GetCookieManager(std::move(params_->cookie_manager));
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   CreateURLLoaderFactoryForCertNetFetcher(
@@ -838,12 +847,14 @@ NetworkContext::NetworkContext(
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr) {
   // May be nullptr in tests.
-  if (network_service_)
+  if (network_service_) {
     network_service_->RegisterNetworkContext(this);
+  }
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
 
-  for (const auto& key : cors_exempt_header_list)
+  for (const auto& key : cors_exempt_header_list) {
     cors_exempt_header_list_.insert(key);
+  }
 
   acam_preflight_spec_conformant_ = base::FeatureList::IsEnabled(
       network::features::
@@ -862,8 +873,9 @@ NetworkContext::~NetworkContext() {
     network_service_->DeregisterNetworkContext(this);
   }
 
-  if (domain_reliability_monitor_)
+  if (domain_reliability_monitor_) {
     domain_reliability_monitor_->Shutdown();
+  }
   // Because of the order of declaration in the class,
   // domain_reliability_monitor_ will be destroyed before
   // |url_loader_factories_| which could own URLLoader's whose destructor call
@@ -1006,10 +1018,12 @@ void NetworkContext::ResetURLLoaderFactories() {
   // invalidate the iterator if the factory gets deleted.
   std::vector<PrefetchMatchingURLLoaderFactory*> factories;
   factories.reserve(url_loader_factories_.size());
-  for (const auto& factory : url_loader_factories_)
+  for (const auto& factory : url_loader_factories_) {
     factories.push_back(factory.get());
-  for (auto* factory : factories)
+  }
+  for (auto* factory : factories) {
     factory->ClearBindings();
+  }
 }
 
 void NetworkContext::GetViaObliviousHttp(
@@ -1206,8 +1220,9 @@ void NetworkContext::LoaderDestroyed(uint32_t process_id) {
   auto it = loader_count_per_process_.find(process_id);
   CHECK(it != loader_count_per_process_.end(), base::NotFatalUntil::M130);
   it->second -= 1;
-  if (it->second == 0)
+  if (it->second == 0) {
     loader_count_per_process_.erase(it);
+  }
 }
 
 bool NetworkContext::CanCreateLoader(uint32_t process_id) {
@@ -1218,10 +1233,12 @@ bool NetworkContext::CanCreateLoader(uint32_t process_id) {
 
 size_t NetworkContext::GetNumOutstandingResolveHostRequestsForTesting() const {
   size_t sum = 0;
-  if (internal_host_resolver_)
+  if (internal_host_resolver_) {
     sum += internal_host_resolver_->GetNumOutstandingRequestsForTesting();
-  for (const auto& host_resolver : host_resolvers_)
+  }
+  for (const auto& host_resolver : host_resolvers_) {
     sum += host_resolver->GetNumOutstandingRequestsForTesting();  // IN-TEST
+  }
   return sum;
 }
 
@@ -1290,8 +1307,9 @@ void NetworkContext::ClearNetworkingHistoryBetween(
   // commited to disk. They probably should, as most similar methods net/
   // exposes do.
   // May not be set in all tests.
-  if (network_qualities_pref_delegate_)
+  if (network_qualities_pref_delegate_) {
     network_qualities_pref_delegate_->ClearPrefs();
+  }
 
   url_request_context_->http_server_properties()->Clear(barrier);
 }
@@ -1446,8 +1464,9 @@ void NetworkContext::SendReportsAndRemoveSource(
   DCHECK(!reporting_source.is_empty());
   net::ReportingService* reporting_service =
       url_request_context()->reporting_service();
-  if (reporting_service)
+  if (reporting_service) {
     reporting_service->SendReportsAndRemoveSource(reporting_source);
+  }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
@@ -1523,8 +1542,9 @@ void NetworkContext::QueueSignedExchangeReport(
 
   net::NetworkErrorLoggingService* logging_service =
       url_request_context_->network_error_logging_service();
-  if (!logging_service)
+  if (!logging_service) {
     return;
+  }
   std::string user_agent;
   if (url_request_context_->http_user_agent_settings() != nullptr) {
     user_agent =
@@ -1684,8 +1704,9 @@ void NetworkContext::SetEnableReferrers(bool enable_referrers) {
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
-  if (!require_ct_delegate_)
+  if (!require_ct_delegate_) {
     return;
+  }
 
   require_ct_delegate_->UpdateCTPolicies(ct_policy->excluded_hosts,
                                          ct_policy->excluded_spkis);
@@ -1715,8 +1736,9 @@ int NetworkContext::CheckCTRequirementsForSignedExchange(
     case net::TransportSecurityState::CT_NOT_REQUIRED:
       // CT is not required if the certificate does not chain to a publicly
       // trusted root certificate.
-      if (!cert_verify_result.is_issued_by_known_root)
+      if (!cert_verify_result.is_issued_by_known_root) {
         return net::OK;
+      }
       // For old certificates (issued before 2018-05-01),
       // CheckCTRequirements() may return CT_NOT_REQUIRED, so we check the
       // compliance status here.
@@ -1886,8 +1908,9 @@ void NetworkContext::CreateWebSocket(
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id) {
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
-  if (!websocket_factory_)
+  if (!websocket_factory_) {
     websocket_factory_ = std::make_unique<WebSocketFactory>(this);
+  }
 
   DCHECK_GE(process_id, 0);
 
@@ -2017,8 +2040,9 @@ void NetworkContext::VerifyCertForSignedExchange(
                                   net::NetLogSourceType::CERT_VERIFIER_JOB));
   cert_verifier_requests_[cert_verify_id] = std::move(pending_cert_verify);
 
-  if (result != net::ERR_IO_PENDING)
+  if (result != net::ERR_IO_PENDING) {
     OnVerifyCertForSignedExchangeComplete(cert_verify_id, result);
+  }
 }
 
 void NetworkContext::NotifyExternalCacheHit(const GURL& url,
@@ -2027,8 +2051,9 @@ void NetworkContext::NotifyExternalCacheHit(const GURL& url,
                                             bool include_credentials) {
   net::HttpCache* cache =
       url_request_context_->http_transaction_factory()->GetCache();
-  if (!cache)
+  if (!cache) {
     return;
+  }
   cache->OnExternalCacheHit(url, http_method, key, include_credentials);
 }
 
@@ -2201,8 +2226,9 @@ void NetworkContext::PreconnectSockets(
 
   // |PreconnectSockets| may receive arguments from the renderer, which is not
   // guaranteed to validate them.
-  if (num_streams == 0)
+  if (num_streams == 0) {
     return;
+  }
 
   // Preconnect is disallowed if network access is disabled for the nonce.
   if (network_anonymization_key.GetNonce().has_value() &&
@@ -2276,8 +2302,9 @@ void NetworkContext::CreateP2PSocketManager(
 void NetworkContext::CreateMdnsResponder(
     mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) {
 #if BUILDFLAG(ENABLE_MDNS)
-  if (!mdns_responder_manager_)
+  if (!mdns_responder_manager_) {
     mdns_responder_manager_ = std::make_unique<MdnsResponderManager>();
+  }
 
   mdns_responder_manager_->CreateMdnsResponder(std::move(responder_receiver));
 #else
@@ -2377,10 +2404,11 @@ void NetworkContext::LookupServerBasicAuthCredentials(
   net::HttpAuthCache::Entry* entry = http_auth_cache->LookupByPath(
       url::SchemeHostPort(url), net::HttpAuth::AUTH_SERVER,
       network_anonymization_key, url.path());
-  if (entry && entry->scheme() == net::HttpAuth::AUTH_SCHEME_BASIC)
+  if (entry && entry->scheme() == net::HttpAuth::AUTH_SCHEME_BASIC) {
     std::move(callback).Run(entry->credentials());
-  else
+  } else {
     std::move(callback).Run(std::nullopt);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2415,10 +2443,11 @@ void NetworkContext::LookupProxyAuthCredentials(
   net::HttpAuthCache::Entry* entry = http_auth_cache->Lookup(
       scheme_host_port, net::HttpAuth::AUTH_PROXY, realm, net_scheme,
       net::NetworkAnonymizationKey());
-  if (entry)
+  if (entry) {
     std::move(callback).Run(entry->credentials());
-  else
+  } else {
     std::move(callback).Run(std::nullopt);
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -2613,8 +2642,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<net::CookieMonster> cookie_store =
         std::make_unique<net::CookieMonster>(session_cleanup_cookie_store.get(),
                                              net_log);
-    if (params_->persist_session_cookies)
+    if (params_->persist_session_cookies) {
       cookie_store->SetPersistSessionCookies(true);
+    }
 
     builder.SetCookieStore(std::move(cookie_store));
   }
@@ -2816,8 +2846,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   net::HttpNetworkSessionParams session_params;
   bool is_quic_force_disabled = false;
-  if (network_service_ && network_service_->quic_disabled())
+  if (network_service_ && network_service_->quic_disabled()) {
     is_quic_force_disabled = true;
+  }
 
   auto quic_context = std::make_unique<net::QuicContext>();
   network_session_configurator::ParseCommandLineAndFieldTrials(
@@ -3027,8 +3058,9 @@ void NetworkContext::OnHttpCacheSizeComputed(
 
 void NetworkContext::OnConnectionError() {
   // If owned by the network service, this call will delete |this|.
-  if (on_connection_close_callback_)
+  if (on_connection_close_callback_) {
     std::move(on_connection_close_callback_).Run(this);
+  }
 }
 
 GURL NetworkContext::GetHSTSRedirectForPreconnect(const GURL& original_url) {
@@ -3115,8 +3147,9 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
     }
 #if BUILDFLAG(IS_CT_SUPPORTED)
     if (result != net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN &&
-        ct_result != net::OK)
+        ct_result != net::OK) {
       result = ct_result;
+    }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   }
 
@@ -3145,8 +3178,9 @@ void NetworkContext::InitializeCorsParams() {
     cors_origin_access_list_.SetBlockListForOrigin(pattern->source_origin,
                                                    pattern->block_patterns);
   }
-  for (const auto& key : params_->cors_exempt_header_list)
+  for (const auto& key : params_->cors_exempt_header_list) {
     cors_exempt_header_list_.insert(key);
+  }
 
   acam_preflight_spec_conformant_ =
       base::FeatureList::IsEnabled(

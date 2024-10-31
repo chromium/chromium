@@ -1563,13 +1563,15 @@ class TestNetworkChangeManagerClient
 
   // NetworkChangeManagerClient implementation:
   void OnInitialConnectionType(mojom::ConnectionType type) override {
-    if (type == connection_type_)
+    if (type == connection_type_) {
       run_loop_.Quit();
+    }
   }
 
   void OnNetworkChanged(mojom::ConnectionType type) override {
-    if (type == connection_type_)
+    if (type == connection_type_) {
       run_loop_.Quit();
+    }
   }
 
   // Waits for the desired |connection_type| notification.
