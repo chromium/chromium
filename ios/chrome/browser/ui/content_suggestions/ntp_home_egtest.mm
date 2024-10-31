@@ -12,6 +12,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
@@ -187,6 +188,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     "doodle_test/ddljson_android0.json"));
   }
   config.features_disabled.push_back(kEnableFeedAblation);
+  config.features_disabled.push_back(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);

@@ -118,6 +118,7 @@ source_set("eg2_tests") {
     ":constants",
     ":prefs",
     "//base/test:test_support",
+    "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

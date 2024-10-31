@@ -37,7 +37,9 @@ class HomeModulesCardRegistryTest : public testing::Test {
 // when its feature is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestPriceTrackingNotificationPromoCard) {
 #if BUILDFLAG(IS_IOS)
-  feature_list_.InitWithFeatures({commerce::kPriceTrackingPromo}, {});
+  feature_list_.InitWithFeatures(
+      {commerce::kPriceTrackingPromo},
+      {features::kSegmentationPlatformTipsEphemeralCard});
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   ASSERT_EQ(2u, registry_->all_output_labels().size());
