@@ -17812,57 +17812,6 @@
             ]
         }
     ],
-    "Prerender2WarmUpCompositor": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "DidCommitLoad_20240626",
-                    "params": {
-                        "trigger_point": "did_commit_load"
-                    },
-                    "enable_features": [
-                        "Prerender2WarmUpCompositor",
-                        "WarmUpCompositor"
-                    ]
-                },
-                {
-                    "name": "DidDispatchDOMContentLoadedEvent_20240626",
-                    "params": {
-                        "trigger_point": "did_dispatch_dom_content_loaded_event"
-                    },
-                    "enable_features": [
-                        "Prerender2WarmUpCompositor",
-                        "WarmUpCompositor"
-                    ]
-                },
-                {
-                    "name": "DidFinishLoad_20240626",
-                    "params": {
-                        "trigger_point": "did_finish_load"
-                    },
-                    "enable_features": [
-                        "Prerender2WarmUpCompositor",
-                        "WarmUpCompositor"
-                    ]
-                },
-                {
-                    "name": "Control_20240626",
-                    "disable_features": [
-                        "Prerender2WarmUpCompositor",
-                        "WarmUpCompositor"
-                    ]
-                }
-            ]
-        }
-    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
