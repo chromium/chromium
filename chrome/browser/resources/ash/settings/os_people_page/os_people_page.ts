@@ -23,8 +23,10 @@ import './account_manager_settings_card.js';
 import './additional_accounts_settings_card.js';
 import './graduation/graduation_settings_card.js';
 
-import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
-import {SignedInState, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
@@ -38,9 +40,11 @@ import {LockStateMixin} from '../lock_state_mixin.js';
 import {type GraduationHandlerInterface, GraduationObserverReceiver} from '../mojom-webui/graduation_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import type {Account} from './account_manager_browser_proxy.js';
+import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 import {getGraduationHandlerProvider} from './graduation/mojo_interface_provider.js';
 import {getTemplate} from './os_people_page.html.js';
 
