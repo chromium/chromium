@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/blink_buildflags.h"
-#include "build/build_config.h"
 
 namespace payments {
 namespace features {
@@ -45,12 +44,6 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // Used to control whether SecurePaymentConfirmation is able to rely on OS-level
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
-
-#if !BUILDFLAG(IS_ANDROID)
-// Desktop only, if enabled the Task Manager will show the PaymentHandler
-// window.
-BASE_DECLARE_FEATURE(kPaymentHandlerWindowInTaskManager);
-#endif
 
 // If enabled, the web-app manifest for already-installed service-worker apps
 // will always be refetched for every Payment Request, in order to potentially

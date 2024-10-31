@@ -229,11 +229,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
 
   web_view->LoadInitialURL(target_);
 
-  if (base::FeatureList::IsEnabled(
-          features::kPaymentHandlerWindowInTaskManager)) {
-    // Make the web view show up in the task manager.
-    task_manager::WebContentsTags::CreateForTabContents(web_contents());
-  }
+  // Make the web view show up in the task manager.
+  task_manager::WebContentsTags::CreateForTabContents(web_contents());
 
   // Enable modal dialogs for web-based payment handlers.
   dialog_manager_delegate_.SetWebContents(web_contents());
