@@ -25,6 +25,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -207,6 +208,11 @@ public class SearchActivityTest {
 
         mTestDelegate = new TestDelegate();
         SearchActivity.setDelegateForTests(mTestDelegate);
+    }
+
+    @After
+    public void tearDown() {
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
     }
 
     private AutocompleteMatch buildSimpleAutocompleteMatch(String url) {

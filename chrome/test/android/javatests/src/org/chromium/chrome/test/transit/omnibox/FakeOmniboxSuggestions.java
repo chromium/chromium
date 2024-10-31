@@ -37,6 +37,7 @@ public class FakeOmniboxSuggestions {
     @Mock AutocompleteController mController;
     @Mock AutocompleteControllerJni mControllerJni;
 
+    private final JniMocker mJniMocker;
     private AutocompleteController.OnSuggestionsReceivedListener mListener;
 
     public FakeOmniboxSuggestions(JniMocker jniMocker) {
@@ -46,7 +47,8 @@ public class FakeOmniboxSuggestions {
         sInstance = this;
         mController = mock(AutocompleteController.class);
         mControllerJni = mock(AutocompleteControllerJni.class);
-        jniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJni);
+        mJniMocker = jniMocker;
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJni);
 
         when(mControllerJni.getForProfile(any())).thenReturn(mController);
         doAnswer(
@@ -58,6 +60,11 @@ public class FakeOmniboxSuggestions {
                         })
                 .when(mController)
                 .addOnSuggestionsReceivedListener(any());
+    }
+
+    public void destroy() {
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
+        sInstance = null;
     }
 
     /**

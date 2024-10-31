@@ -25,6 +25,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -130,6 +131,11 @@ public class MostVisitedTilesTest {
         setUpSuggestionsToShow();
 
         mCarousel = mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
+    }
+
+    @After
+    public void tearDown() {
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
     }
 
     /**

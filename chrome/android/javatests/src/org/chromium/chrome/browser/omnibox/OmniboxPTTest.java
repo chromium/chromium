@@ -8,6 +8,7 @@ import android.util.Pair;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +51,11 @@ public class OmniboxPTTest {
 
     ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
             new ChromeTabbedActivityPublicTransitEntryPoints(sChromeTabbedActivityTestRule);
+
+    @AfterClass
+    public static void tearDownClass() {
+        sFakeSuggestions.destroy();
+    }
 
     @LargeTest
     @Test
