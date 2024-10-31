@@ -62,8 +62,8 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
     }
 
     return extensions::storage_utils::CanRendererAccessExtensionStorage(
-        *context, extension, storage_area, /*render_frame_host=*/nullptr,
-        *host->GetProcessHost());
+        *context, extension, /*storage_area=*/std::nullopt,
+        /*render_frame_host=*/nullptr, *host->GetProcessHost());
   }
 
   // Allow a page or frame target to access extension storage if it is
@@ -87,11 +87,11 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
     host->GetWebContents()
         ->GetPrimaryMainFrame()
         ->ForEachRenderFrameHostWithAction(
-            [&storage_area, &extension,
+            [&extension,
              &can_access_storage](content::RenderFrameHost* render_frame_host) {
               if (extensions::storage_utils::CanRendererAccessExtensionStorage(
                       *render_frame_host->GetBrowserContext(), extension,
-                      storage_area, render_frame_host,
+                      /*storage_area=*/std::nullopt, render_frame_host,
                       *render_frame_host->GetProcess())) {
                 can_access_storage = true;
                 return content::RenderFrameHost::FrameIterationAction::kStop;

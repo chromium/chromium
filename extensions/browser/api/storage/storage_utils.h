@@ -33,11 +33,13 @@ base::Value ValueChangeToValue(
     std::vector<SessionStorageManager::ValueChange> changes);
 
 // Returns true if `render_frame_host` should be able to access `storage_area`
-// for `extension`.
+// for `extension`. If `storage_area` is not present, skips access level checks
+// and only checks that the extension has the storage permission and has run in
+// this context.
 bool CanRendererAccessExtensionStorage(
     content::BrowserContext& browser_context,
     const Extension& extension,
-    StorageAreaNamespace storage_area,
+    std::optional<StorageAreaNamespace> storage_area,
     content::RenderFrameHost* render_frame_host,
     content::RenderProcessHost& render_process_host);
 

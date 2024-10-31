@@ -73,7 +73,7 @@ base::Value ValueChangeToValue(
 bool CanRendererAccessExtensionStorage(
     content::BrowserContext& browser_context,
     const Extension& extension,
-    StorageAreaNamespace storage_area,
+    std::optional<StorageAreaNamespace> storage_area,
     content::RenderFrameHost* render_frame_host,
     content::RenderProcessHost& render_process_host) {
   if (!extension.permissions_data()->HasAPIPermission(
