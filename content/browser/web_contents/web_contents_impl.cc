@@ -861,16 +861,13 @@ bool WebContentsImpl::IsPopup() const {
 bool WebContentsImpl::IsPartitionedPopin() const {
   // The feature must be enabled if a popin was opened.
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-         !is_partitioned_popin_);
+         !partitioned_popin_opener_);
 
-  // We should detect if it's relevant that this window is a popin in the span
-  // of time between when the opener frame closes and this popin closes. If this truly
-  // is an invariant, then it should be upgraded to a `CHECK`. If this is not an invariant
-  // we either need to fix it to be one or stop reading any data from
-  // `partitioned_popin_opener_` after the initial `WebContentsImpl` construction.
-  DUMP_WILL_BE_CHECK(!is_partitioned_popin_ || partitioned_popin_opener_);
-
-  return is_partitioned_popin_;
+  // TODO(crbug.com/340606651): Store a boolean telling if `this` is a
+  // partitioned popin, do not imply from the opener. Since the opener's
+  // lifetime is not bound to the popin, it might be gone by the time we're
+  // checking it here.
+  return !!partitioned_popin_opener_;
 }
 
 RenderFrameHostImpl* WebContentsImpl::PartitionedPopinOpener() const {
@@ -11497,7 +11494,6 @@ void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
   PartitionedPopinsController::CreateForWebContents(
       static_cast<WebContentsImpl*>(opener->delegate()));
   new_window->partitioned_popin_opener_ = opener->GetWeakPtr();
-  new_window->is_partitioned_popin_ = true;
   opened_partitioned_popin_ = new_window->GetWeakPtr();
 }
 

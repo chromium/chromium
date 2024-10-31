@@ -2590,17 +2590,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
 
-  // Whether this contents represents a window opened as a partitioned popin.
-  // This should only ever be true if `is_popup_` is true. This is stored
-  // independently of `partitioned_popin_opener_` as it's possible the opener
-  // frame is closed before the popin is closed. In the time between the two
-  // closures, this window should still be considered a popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  bool is_partitioned_popin_{false};
-
   // If this window was opened as a new partitioned popin this will be the
-  // frame of the opener. This will only have a value if `is_partitioned_popin_`
-  // is true. If the opener frame is deleted the popin should be closed by
+  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // If the opener frame is deleted the popin should be closed by
   // `PartitionedPopinsController`.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   base::WeakPtr<RenderFrameHostImpl> partitioned_popin_opener_;
