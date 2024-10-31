@@ -161,10 +161,6 @@ bool IsLacrosOnlyFlagAllowed() {
          (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
 }
 
-bool IsLacrosAllowedToLaunch() {
-  return UserManager::Get()->GetLoggedInUsers().size() == 1;
-}
-
 bool IsLacrosChromeAppsEnabled() {
   return false;
 }

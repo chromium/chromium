@@ -27361,7 +27361,7 @@ Called by update_net_error_codes.py.-->
   <int value="112" label="VM Camera Mic"/>
   <int value="113" label="Security Token"/>
   <int value="114" label="Crostini Export Import"/>
-  <int value="115" label="Lacros Cannot Launch"/>
+  <int value="115" label="(deprecated) Lacros Cannot Launch"/>
   <int value="116" label="Request File System"/>
   <int value="117" label="Network Portal Detector"/>
   <int value="118" label="Crostini Package"/>

@@ -132,43 +132,9 @@ constexpr base::TimeDelta kDailyLaunchModeTimeDelta = base::Minutes(30);
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-constexpr char kLacrosCannotLaunchNotificationID[] =
-    "lacros_cannot_launch_notification_id";
-constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
-
-
-bool GetLaunchOnLoginPref() {
-  return ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
-      browser_util::kLaunchOnLoginPref);
-}
-
 bool IsKeepAliveDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kDisableLacrosKeepAliveForTesting);
-}
-
-bool IsLoginLacrosOpeningDisabledForTesting() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kDisableLoginLacrosOpening);
-}
-
-void WarnThatLacrosNotAllowedToLaunch() {
-  LOG(WARNING) << "Lacros enabled but not allowed to launch";
-  message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE,
-      kLacrosCannotLaunchNotificationID,
-      /*title=*/std::u16string(),
-      l10n_util::GetStringUTF16(IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE),
-      /* display_source= */ std::u16string(), GURL(),
-      message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT,
-          kLacrosLauncherNotifierID,
-          ash::NotificationCatalogName::kLacrosCannotLaunch),
-      message_center::RichNotificationData(),
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::RepeatingClosure()),
-      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::NORMAL);
-  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 bool RemoveLacrosUserDataDir() {
@@ -178,8 +144,6 @@ bool RemoveLacrosUserDataDir() {
          base::DeletePathRecursively(lacros_data_dir);
 }
 
-// TODO(b/330659545): Investigate why we cannot run this inside
-// OnUserProfileCreated.
 void PrepareLacrosPolicies(BrowserManager* manager) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
@@ -246,11 +210,6 @@ BrowserManager::BrowserManager(
         ->AddObserver(this);
   } else {
     CHECK_IS_TEST();
-  }
-
-  // UserManager may not be initialized for unit tests.
-  if (user_manager::UserManager::IsInitialized()) {
-    user_manager_observation_.Observe(user_manager::UserManager::Get());
   }
 
   std::string socket_path =
@@ -358,34 +317,10 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   // Perform the UMA recording for the current Lacros launch mode.
   RecordLacrosLaunchMode();
 
-  // As a switch between Ash and Lacros mode requires an Ash restart plus
-  // profile migration, the state will not change while the system is up.
-  // At this point we are starting Lacros for the first time and with that the
-  // operation mode is 'locked in'.
-  const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
-  crosapi::lacros_startup_state::SetLacrosStartupState(is_lacros_enabled);
-
-  if (is_lacros_enabled) {
-    if (browser_util::IsLacrosAllowedToLaunch()) {
-      // Start Lacros automatically on login, if
-      // 1) Lacros was opened in the previous session; or
-      // 2) Lacros is the primary web browser.
-      //    This can be suppressed via commandline flag for testing.
-      if (GetLaunchOnLoginPref() || !IsLoginLacrosOpeningDisabledForTesting()) {
-        pending_actions_.Push(BrowserAction::GetActionForSessionStart());
-      }
-      SetState(State::MOUNTING);
-      browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                           weak_factory_.GetWeakPtr()));
-    } else {
-      SetState(State::UNAVAILABLE);
-      WarnThatLacrosNotAllowedToLaunch();
-    }
-  } else {
-    SetState(State::UNAVAILABLE);
-    browser_loader_->Unload();
-    ClearLacrosData();
-  }
+  crosapi::lacros_startup_state::SetLacrosStartupState(false);
+  SetState(State::UNAVAILABLE);
+  browser_loader_->Unload();
+  ClearLacrosData();
 }
 
 void BrowserManager::GetBrowserInformation(
@@ -446,10 +381,6 @@ BrowserManager::BrowserServiceInfo&
 BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
     default;
 BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
-
-void BrowserManager::Start() {
-  NOTREACHED();
-}
 
 void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
   BrowserAction* action_raw = action.get();  // We're `move`ing action below.
@@ -607,50 +538,6 @@ void BrowserManager::OnRefreshSchedulerDestruction(
   scheduler->RemoveObserver(this);
 }
 
-void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
-  // Ignore if `user` is not primary.
-  if (!user_manager::UserManager::Get()->IsPrimaryUser(&user)) {
-    return;
-  }
-
-  // Check if Lacros is enabled for crash reporting. This must happen after the
-  // primary user has been set as priamry user state is used in when evaluating
-  // the correct value for IsLacrosEnabled().
-  constexpr char kLacrosEnabledDataKey[] = "lacros-enabled";
-  static crash_reporter::CrashKeyString<4> key(kLacrosEnabledDataKey);
-  key.Set(crosapi::browser_util::IsLacrosEnabled() ? "yes" : "no");
-}
-
-void BrowserManager::OnLoadComplete(const base::FilePath& path,
-                                    LacrosSelection selection,
-                                    base::Version version) {
-  if (shutdown_requested_) {
-    LOG(ERROR) << "Load completed after Shutdown() called.";
-    return;
-  }
-  DCHECK_EQ(state_, State::MOUNTING);
-
-  lacros_path_ = path;
-  lacros_selection_ = std::optional<LacrosSelection>(selection);
-  const bool success = !path.empty();
-  SetState(success ? State::STOPPED : State::UNAVAILABLE);
-  // TODO(crbug.com/40801829): In the event the load operation failed, we should
-  // launch the last successfully loaded image.
-  for (auto& observer : observers_) {
-    observer.OnLoadComplete(success, version);
-  }
-
-  StartIfNeeded();
-}
-
-void BrowserManager::StartIfNeeded() {
-  if (state_ == State::STOPPED && !shutdown_requested_) {
-    if (!pending_actions_.IsEmpty() || IsKeepAliveEnabled()) {
-      Start();
-    }
-  }
-}
-
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
   if (browser_service_.has_value()) {
     browser_service_->service->UpdateDeviceAccountPolicy(
@@ -677,7 +564,6 @@ void BrowserManager::StartKeepAlive(Feature feature) {
   if (keep_alive_features_.size() == 1) {
     UpdateKeepAliveInBrowserIfNecessary(true);
   }
-  StartIfNeeded();
 }
 
 void BrowserManager::StopKeepAlive(Feature feature) {
@@ -786,18 +672,9 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
       return;
 
     case State::NOT_INITIALIZED:
-    case State::MOUNTING:
       LOG(WARNING) << "lacros component image not yet available";
       pending_actions_.PushOrCancel(std::move(action),
                                     mojom::CreationResult::kBrowserNotRunning);
-      return;
-
-    case State::STOPPED:
-      DCHECK(!IsKeepAliveEnabled());
-      DCHECK(pending_actions_.IsEmpty());
-      pending_actions_.PushOrCancel(std::move(action),
-                                    mojom::CreationResult::kBrowserNotRunning);
-      StartIfNeeded();
       return;
   }
 }

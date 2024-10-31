@@ -65,10 +65,6 @@ FakeBrowserManager::FakeBrowserManager()
 
 FakeBrowserManager::~FakeBrowserManager() = default;
 
-void FakeBrowserManager::StopRunning() {
-  SetState(State::STOPPED);
-}
-
 void FakeBrowserManager::OnSessionStateChanged() {}
 
 }  // namespace crosapi

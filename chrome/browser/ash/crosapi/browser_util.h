@@ -101,11 +101,6 @@ bool IsLacrosOnlyBrowserAllowed();
 // allowed to be configured on about:flags page.
 bool IsLacrosOnlyFlagAllowed();
 
-// Returns true if Lacros is allowed to launch and show a window. This can
-// return false if the user is using multi-signin, which is mutually exclusive
-// with Lacros.
-bool IsLacrosAllowedToLaunch();
-
 // Returns true if chrome apps should be routed through Lacros instead of ash.
 bool IsLacrosChromeAppsEnabled();
 

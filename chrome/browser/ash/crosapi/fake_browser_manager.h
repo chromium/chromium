@@ -19,10 +19,6 @@ class FakeBrowserManager : public BrowserManager {
 
   ~FakeBrowserManager() override;
 
-  // Sets the state of `BrowserManager` to `Stopped`, and triggers all
-  // registered observers.
-  void StopRunning();
-
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 };

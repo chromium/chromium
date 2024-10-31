@@ -83,7 +83,6 @@ class Crosapi;
 
 class BrowserAction;
 class BrowserLoader;
-class FilesAppLauncher;
 class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
 
@@ -97,8 +96,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                        public policy::CloudPolicyCore::Observer,
                        public policy::CloudPolicyStore::Observer,
                        public policy::ComponentCloudPolicyServiceObserver,
-                       public policy::CloudPolicyRefreshSchedulerObserver,
-                       public user_manager::UserManager::Observer {
+                       public policy::CloudPolicyRefreshSchedulerObserver {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -265,23 +263,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // for user session.
     NOT_INITIALIZED,
 
-    // User session started, and now it's mounting lacros-chrome.
-    MOUNTING,
-
     // Lacros-chrome is unavailable. I.e., failed to load for some reason
     // or disabled.
     UNAVAILABLE,
-
-    // Lacros-chrome is loaded and ready for launching.
-    STOPPED,
   };
   // Changes |state| value and potentially notify observers of the change.
   void SetState(State state);
-
-  // Posts CreateLogFile() and StartWithLogFile() to the thread pool.
-  // Also takes care of loading an update first, if available.
-  // Virtual for tests.
-  virtual void Start();
 
   // BrowserServiceHostObserver:
   void OnBrowserServiceConnected(CrosapiId id,
@@ -375,8 +362,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // marked as friends of this class so that lacros owners can audit usage.
   std::unique_ptr<BrowserManagerScopedKeepAlive> KeepAlive(Feature feature);
 
-  void StartIfNeeded();
-
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
@@ -407,14 +392,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnFetchAttempt(policy::CloudPolicyRefreshScheduler* scheduler) override;
   void OnRefreshSchedulerDestruction(
       policy::CloudPolicyRefreshScheduler* scheduler) override;
-
-  // user_manager::UserManager::Observer:
-  void OnUserProfileCreated(const user_manager::User& user) override;
-
-  // crosapi::BrowserManagerObserver:
-  void OnLoadComplete(const base::FilePath& path,
-                      LacrosSelection selection,
-                      base::Version version);
 
   // Methods for features to register and de-register for needing to keep Lacros
   // alive.
@@ -459,9 +436,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
 
-  // Whether we are starting "rootfs" or "stateful" lacros.
-  std::optional<LacrosSelection> lacros_selection_;
-
   // Time when the lacros process was launched.
   base::TimeTicks lacros_launch_time_;
 
@@ -477,10 +451,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // The features that are currently registered to keep Lacros alive.
   std::set<Feature> keep_alive_features_;
 
-  // Used to launch files.app when user clicked "Go to files" on the migration
-  // error screen.
-  std::unique_ptr<FilesAppLauncher> files_app_launcher_;
-
   // The queue of actions to be performed when Lacros becomes ready.
   BrowserActionQueue pending_actions_;
 
@@ -492,10 +462,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // deciding if Lacros should be used or not.
   std::optional<LacrosLaunchMode> lacros_mode_;
   std::optional<LacrosLaunchModeAndSource> lacros_mode_and_source_;
-
-  base::ScopedObservation<user_manager::UserManager,
-                          user_manager::UserManager::Observer>
-      user_manager_observation_{this};
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

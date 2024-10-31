@@ -131,7 +131,7 @@ enum class NotificationCatalogName {
   kVMCameraMic = 112,
   kSecurityToken = 113,
   kCrostiniExportImport = 114,
-  kLacrosCannotLaunch = 115,
+  // [Deprecated] kLacrosCannotLaunch = 115,
   kRequestFileSystem = 116,
   kNetworkPortalDetector = 117,
   kCrostiniPackage = 118,
