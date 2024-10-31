@@ -7976,6 +7976,7 @@ crbug.com/352831220 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after
 
 # Temporarily disable to land front-end change
 crbug.com/368238837 http/tests/devtools/a11y-axe-core/settings/ignorelist-a11y-test.js [ Failure Pass ]
+crbug.com/368238837 http/tests/devtools/workspace-view-file-system-header.js [ Failure Pass ]
 
 # Gardener 2024-07-30
 crbug.com/356177815 [ Win11-arm64 ] http/tests/cookies/partitioned-cookies/partitioned-cookies-in-parallel-frames.https.html [ Failure Pass Timeout ]
