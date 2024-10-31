@@ -93,6 +93,13 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query,
                                      LobsterEntryPoint entry_point,
                                      LobsterMode mode) {
+  // Before creating a new session, we need to inform the lobster client and
+  // lobster session to clear their pointer to the session that is about to be
+  // destroyed. This is to prevent them from holding a dangling pointer to the
+  // old session when a new session is created.
+  // TODO: crbug.com/371484317 - refactors the following logic to handle the
+  // session creation better.
+  client->SetActiveSession(nullptr);
   LobsterClient* lobster_client_ptr = client.get();
   active_session_ =
       std::make_unique<LobsterSessionImpl>(std::move(client), entry_point);
