@@ -13,7 +13,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -27,10 +26,7 @@ NSString* const kDeferredInitializationBlocksComplete =
     @"DeferredInitializationBlocksComplete";
 }  // namespace
 
-@interface AppMetricsAppStateAgent () <SceneStateObserver>
-
-// Observed app state.
-@property(nonatomic, weak) AppState* appState;
+@interface AppMetricsAppStateAgent ()
 
 // This flag is set when the first scene has activated since the startup, and
 // never reset during the app's lifetime.
@@ -44,24 +40,12 @@ NSString* const kDeferredInitializationBlocksComplete =
 
 @implementation AppMetricsAppStateAgent
 
-#pragma mark - AppStateAgent
-
-- (void)setAppState:(AppState*)appState {
-  // This should only be called once!
-  DCHECK(!_appState);
-
-  _appState = appState;
-  [appState addObserver:self];
-}
-
 #pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
-}
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  [super appState:appState didTransitionFromInitStage:previousInitStage];
+
   if (appState.initStage ==
       AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     // Log session start if the app is already foreground.
@@ -75,6 +59,8 @@ NSString* const kDeferredInitializationBlocksComplete =
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  [super sceneState:sceneState transitionedToActivationLevel:level];
+
   if (!self.firstSceneHasConnected) {
     self.appState.startupInformation.firstSceneConnectionTime =
         base::TimeTicks::Now();
@@ -130,7 +116,7 @@ NSString* const kDeferredInitializationBlocksComplete =
   }
 }
 
-#pragma mark - private
+#pragma mark - Private
 
 - (void)handleSessionStart {
   self.appState.lastTimeInForeground = base::TimeTicks::Now();
