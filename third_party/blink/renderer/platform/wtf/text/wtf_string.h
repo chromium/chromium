@@ -84,7 +84,6 @@ class WTF_EXPORT String {
 
   // Construct a string with latin1 data.
   explicit String(base::span<const LChar> latin1_data);
-  String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
   explicit String(const std::string& s) : String(base::as_byte_span(s)) {}
 

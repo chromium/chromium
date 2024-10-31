@@ -75,9 +75,6 @@ String::String(const UChar* str) {
 String::String(base::span<const LChar> latin1_data)
     : impl_(latin1_data.data() ? StringImpl::Create(latin1_data) : nullptr) {}
 
-String::String(const LChar* characters, unsigned length)
-    : impl_(characters ? StringImpl::Create(characters, length) : nullptr) {}
-
 String::String(const char* characters, unsigned length)
     : impl_(characters
                 ? StringImpl::Create(reinterpret_cast<const LChar*>(characters),
@@ -245,8 +242,8 @@ String String::Format(const char* format, ...) {
     va_end(args);
   }
 
-  CHECK_LT(static_cast<unsigned>(length), buffer.size());
-  return String(reinterpret_cast<const LChar*>(buffer.data()), length);
+  return String(base::as_bytes(
+      base::span(buffer).first(base::checked_cast<size_t>(length))));
 }
 
 String String::EncodeForDebugging() const {
@@ -521,7 +518,7 @@ String String::FromUTF8(const char* s) {
 String String::FromUTF8WithLatin1Fallback(const uint8_t* string, size_t size) {
   String utf8 = FromUTF8(string, size);
   if (!utf8)
-    return String(string, base::checked_cast<wtf_size_t>(size));
+    return String(base::span(string, size));
   return utf8;
 }
 

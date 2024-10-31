@@ -172,8 +172,7 @@ std::pair<UDPMessage*, bool> UnpackPromiseResult(const V8TestingScope& scope,
 
 String UDPMessageDataToString(const UDPMessage* message) {
   DOMArrayPiece array_piece{message->data()};
-  return String{static_cast<const uint8_t*>(array_piece.Bytes()),
-                static_cast<wtf_size_t>(array_piece.ByteLength())};
+  return String{array_piece.ByteSpan()};
 }
 
 TEST(UDPReadableStreamWrapperTest, Create) {

@@ -1160,7 +1160,7 @@ class HTMLFastPathParser {
       // This handles uncommon named references.
       // This does not use `reference` as `reference` does not contain the `;`,
       // which impacts behavior of ConsumeHTMLEntity().
-      String input_string{start, static_cast<unsigned>(pos_ - start)};
+      String input_string{base::span(start, pos_)};
       SegmentedString input_segmented{input_string};
       DecodedHTMLEntity entity;
       bool not_enough_characters = false;

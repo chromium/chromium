@@ -74,8 +74,8 @@ String StringBuilder::Substring(unsigned start, unsigned length) const {
     return string_.Substring(start, length);
   length = std::min(length, length_ - start);
   if (is_8bit_)
-    return String(Characters8() + start, length);
-  return String(Characters16() + start, length);
+    return String(Span8().subspan(start, length));
+  return String(Span16().subspan(start, length));
 }
 
 StringView StringBuilder::SubstringView(unsigned start, unsigned length) const {

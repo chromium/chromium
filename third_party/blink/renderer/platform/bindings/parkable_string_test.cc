@@ -242,7 +242,7 @@ TEST_P(ParkableStringTest, DontCompressRandomString) {
   // test deterministic.
   Vector<unsigned char> data(kSizeKb * 1000);
   base::RandBytes(data);
-  ParkableString parkable(String(data.data(), data.size()).ReleaseImpl());
+  ParkableString parkable(String(base::span(data)).ReleaseImpl());
 
   EXPECT_TRUE(
       parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
@@ -1332,7 +1332,7 @@ TEST_P(ParkableStringTest, EncodingAndDeduplication) {
   for (size_t i = 0; i < 2 * size_in_chars; ++i) {
     data_8[i] = 0x20;
   }
-  String large_string_8 = String(&data_8[0], 2 * size_in_chars);
+  String large_string_8 = String(base::span(data_8));
 
   ParkableString parkable_8(large_string_8.Impl());
   ASSERT_TRUE(parkable_8.Impl()->digest());

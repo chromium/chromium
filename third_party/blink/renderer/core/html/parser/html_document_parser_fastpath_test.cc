@@ -88,7 +88,7 @@ TEST(HTMLDocumentParserFastpathTest, LongTextIsSplit) {
   document->write("<body></body>");
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
   std::vector<LChar> chars(Text::kDefaultLengthLimit + 1, 'a');
-  div->setInnerHTML(String(chars.data(), static_cast<unsigned>(chars.size())));
+  div->setInnerHTML(String(base::span(chars)));
   Text* text_node = To<Text>(div->firstChild());
   ASSERT_TRUE(text_node);
   // Text is split at 64k for performance. See

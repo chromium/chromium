@@ -109,8 +109,7 @@ std::string WebString::Latin1() const {
 }
 
 WebString WebString::FromLatin1(std::string_view s) {
-  return String(reinterpret_cast<const WebLChar*>(s.data()),
-                base::checked_cast<wtf_size_t>(s.length()));
+  return String(base::as_bytes(base::span(s)));
 }
 
 std::string WebString::Ascii() const {

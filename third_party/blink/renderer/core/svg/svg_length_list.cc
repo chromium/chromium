@@ -58,7 +58,7 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
       ptr++;
     if (ptr == start)
       break;
-    String value_string(start, static_cast<wtf_size_t>(ptr - start));
+    String value_string(base::span(start, ptr));
     if (value_string.empty())
       break;
 

@@ -64,7 +64,7 @@ void SVGStringListBase::ParseInternal(const CharType* ptr,
       ptr++;
     if (ptr == start)
       break;
-    values_.push_back(String(start, static_cast<wtf_size_t>(ptr - start)));
+    values_.push_back(String(base::span(start, ptr)));
     SkipOptionalSVGSpacesOrDelimiter(ptr, end, list_delimiter);
   }
 }
