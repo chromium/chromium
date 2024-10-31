@@ -320,6 +320,8 @@ void SessionService::SetTabGroupMetadata(
 void SessionService::AddSavedTabGroupsMapping(
     const tab_groups::TabGroupId& group_id,
     const std::string& saved_guid) {
+  // TODO(crbug.com/376733439): Clear mapping when TabGroupSyncService has
+  // finished initializing.
   CHECK(!local_to_sync_id_mapping_.contains(group_id));
   local_to_sync_id_mapping_.emplace(group_id, saved_guid);
 }
