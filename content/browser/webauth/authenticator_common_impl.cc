@@ -1929,6 +1929,11 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         options->current_user_details->name,
         options->current_user_details->display_name);
   } else if (options->unknown_credential_id) {
+#if BUILDFLAG(IS_WIN)
+    device::WinWebAuthnApiAuthenticator::SignalUnknownCredential(
+        device::WinWebAuthnApi::GetDefault(), *options->unknown_credential_id,
+        req_state_->relying_party_id);
+#endif  // BUILDFLAG(IS_WIN)
     DeleteVirtualAuthenticatorCreds(render_frame_host,
                                     *options->unknown_credential_id,
                                     req_state_->relying_party_id);

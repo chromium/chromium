@@ -33,6 +33,18 @@ class WinWebAuthnApi;
 class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
     : public FidoAuthenticator {
  public:
+  // Global observer for tests.
+  class TestObserver {
+   public:
+    virtual void OnSignalUnknownCredential() {}
+  };
+
+  // SetGlobalObserverForTesting sets the single |TestObserver| that is active
+  // at a given time. Call be called with |nullptr| to unregister a
+  // |TestObserver|. It is a fatal error to try and register a |TestObserver|
+  // while one is still installed.
+  static void SetGlobalObserverForTesting(TestObserver* observer);
+
   // This method is safe to call without checking WinWebAuthnApi::IsAvailable().
   // Returns false if |api| is nullptr.
   static void IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -58,6 +70,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   static void DeletePlatformCredential(WinWebAuthnApi* api,
                                        base::span<const uint8_t> credential_id,
                                        base::OnceCallback<void(bool)> callback);
+
+  // If the Windows Hello version supports it, checks that |credential_id|
+  // exists and is scoped to |relying_party_id|. If so, deletes the credential.
+  // Otherwise, does nothing.
+  static void SignalUnknownCredential(WinWebAuthnApi* api,
+                                      const std::vector<uint8_t>& credential_id,
+                                      const std::string& relying_party_id);
 
   // Instantiates an authenticator that uses the default WinWebAuthnApi.
   //

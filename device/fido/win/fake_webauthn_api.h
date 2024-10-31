@@ -104,6 +104,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     preferred_attachment_ = preferred_attachment;
   }
 
+  const std::map<std::vector<uint8_t>,
+                 RegistrationData,
+                 fido_parsing_utils::RangeLess>&
+  registrations() {
+    return registrations_;
+  }
+
   // WinWebAuthnApi:
   bool IsAvailable() const override;
   bool SupportsSilentDiscovery() const override;

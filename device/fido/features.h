@@ -110,6 +110,10 @@ BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSecurityKeyAndQrCodeUiRefresh);
 
+// Enables the WebAuthn Signal API for Windows Hello.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnHelloSignal);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

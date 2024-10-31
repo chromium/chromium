@@ -11,6 +11,8 @@
 #include <sstream>
 #include <vector>
 
+#include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -70,6 +72,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "device/fido/win/authenticator.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -86,6 +89,24 @@ constexpr char kUsername1[] = "flandre";
 constexpr char kDisplayName1[] = "Flandre Scarlet";
 constexpr char kUsername2[] = "sakuya";
 constexpr char kDisplayName2[] = "Sakuya Izayoi";
+
+static constexpr char kSignalUnknownCredentialId[] = R"(
+PublicKeyCredential.signalUnknownCredential({
+  rpId: "www.example.com",
+  credentialId: "$1",
+}).then(c => 'webauthn: OK', e => 'error ' + e);
+)";
+
+std::string GetSignalUnknownCredentialScript(
+    base::span<const uint8_t> credential_id) {
+  std::string b64_credential_id;
+  base::Base64UrlEncode(credential_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &b64_credential_id);
+  return base::ReplaceStringPlaceholders(kSignalUnknownCredentialId,
+                                         {b64_credential_id},
+                                         /*offsets=*/nullptr);
+}
 
 sync_pb::WebauthnCredentialSpecifics CreateWebAuthnCredentialSpecifics(
     base::span<const uint8_t> credential_id,
@@ -298,20 +319,51 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
 }
 
 #if BUILDFLAG(IS_WIN)
+
+class WinWebAuthnBrowserTest
+    : public WebAuthnBrowserTest,
+      device::WinWebAuthnApiAuthenticator::TestObserver {
+ public:
+  void SetUpOnMainThread() override {
+    WebAuthnBrowserTest::SetUpOnMainThread();
+    signal_unknown_credential_run_loop_ = std::make_unique<base::RunLoop>();
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+    virtual_device_factory->set_discover_win_webauthn_api_authenticator(true);
+    auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+            std::move(virtual_device_factory));
+    device::WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(this);
+  }
+
+  void TearDownOnMainThread() override {
+    device::WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(nullptr);
+    WebAuthnBrowserTest::TearDownOnMainThread();
+  }
+
+  void WaitForSignalUnknownCredential() {
+    signal_unknown_credential_run_loop_->Run();
+  }
+
+  // device::WinWebAuthnApiAuthenticator::TestObserver:
+  void OnSignalUnknownCredential() override {
+    signal_unknown_credential_run_loop_->Quit();
+  }
+
+ protected:
+  std::unique_ptr<base::RunLoop> signal_unknown_credential_run_loop_;
+  device::FakeWinWebAuthnApi win_api_;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{&win_api_};
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHelloSignal};
+};
+
 // Integration test for Large Blob on Windows.
-IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinLargeBlob) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
-
-  device::FakeWinWebAuthnApi fake_api;
-  fake_api.set_version(WEBAUTHN_API_VERSION_3);
-  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
-
-  auto virtual_device_factory =
-      std::make_unique<device::test::VirtualFidoDeviceFactory>();
-  virtual_device_factory->set_discover_win_webauthn_api_authenticator(true);
-  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
-      std::move(virtual_device_factory));
+  win_api_.set_version(WEBAUTHN_API_VERSION_3);
 
   constexpr char kMakeCredentialLargeBlob[] = R"(
     let cred_id;
@@ -369,6 +421,30 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kMakeCredentialLargeBlob));
 }
+
+// Integration test for signalUnknownCredentialId on Windows.
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinSignalUnknownCredential) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  win_api_.set_version(WEBAUTHN_API_VERSION_4);
+  win_api_.set_supports_silent_discovery(true);
+
+  // Set up a Windows Hello passkey.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeDiscoverableCredential));
+  ASSERT_EQ(win_api_.registrations().size(), 1u);
+  const std::vector<uint8_t> credential_id =
+      win_api_.registrations().begin()->first;
+
+  // Signal the passkey as unknown, which should delete it.
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     GetSignalUnknownCredentialScript(credential_id)));
+  WaitForSignalUnknownCredential();
+  EXPECT_TRUE(win_api_.registrations().empty());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
@@ -522,12 +598,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
 
   // Reports the credential ID matching the passkey created.
   EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     R"(
-  PublicKeyCredential.signalUnknownCredential({
-    rpId: "www.example.com",
-    credentialId: "AQIDBAUGBwgJCgsMDQ4PEA",
-  }).then(c => 'webauthn: OK', e => 'error ' + e);
-  )"));
+                     GetSignalUnknownCredentialScript(kCredentialID)));
 
   // After reporting the passkey, it should be deleted from the credentials
   // list, so the vector of passkeys matching the relying party should be empty.
@@ -659,13 +730,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
   // This should fail with a TypeError due to an invalid base64url
   // string in the credentialId report.
   EXPECT_THAT(
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      R"(
-  PublicKeyCredential.signalUnknownCredential({
-    rpId: "www.example.com",
-    credentialId: "A+/+A",
-  }).then(c => 'webauthn: OK', e => 'error ' + e);
-  )")
+      content::EvalJs(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          base::ReplaceStringPlaceholders(kSignalUnknownCredentialId, {"A+/+A"},
+                                          /*offsets=*/nullptr))
           .ExtractString(),
       testing::HasSubstr("Invalid base64url string for credentialId."));
 }

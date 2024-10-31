@@ -136,4 +136,9 @@ BASE_FEATURE(kWebAuthnSecurityKeyAndQrCodeUiRefresh,
              "WebAuthenticationSecurityKeyAndQrCodeUiRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disabled by default.
+BASE_FEATURE(kWebAuthnHelloSignal,
+             "WebAuthenticationHelloSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

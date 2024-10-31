@@ -255,6 +255,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
                                 /*counter=*/1);
   bool resident_key =
       options->bRequireResidentKey || options->bPreferResidentKey;
+  registration.is_resident = resident_key;
   if (resident_key) {
     registration.rp =
         PublicKeyCredentialRpEntity(rp_id, base::WideToUTF8(rp->pwszName));
@@ -545,8 +546,11 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
 
 HRESULT FakeWinWebAuthnApi::DeletePlatformCredential(
     base::span<const uint8_t> credential_id) {
-  // TODO: not yet implemented.
-  CHECK(false);
+  const auto registration_it = registrations_.find(credential_id);
+  if (registration_it == registrations_.end()) {
+    return NTE_NOT_FOUND;
+  }
+  registrations_.erase(registration_it);
   return S_OK;
 }
 
