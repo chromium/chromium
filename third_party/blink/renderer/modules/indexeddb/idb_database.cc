@@ -742,6 +742,7 @@ void IDBDatabase::OnSchedulerLifecycleStateChanged(
   if (new_priority == scheduling_priority_) {
     return;
   }
+  scheduling_priority_ = new_priority;
   if (database_remote_) {
     database_remote_->UpdatePriority(scheduling_priority_);
   }
