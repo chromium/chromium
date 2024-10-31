@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Accelerators.WindowSnap"
     enum="WindowSnapAcceleratorAction" expires_after="2025-04-13">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Captures usage of Alt+[ and Alt+].</summary>
 </histogram>
 
@@ -2119,6 +2119,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioRecordingMode" expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the end of a capture mode session in {TabletOrClamshell} to
     report the user's audio recording mode setting, only if video recording was
@@ -2131,6 +2132,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeBarButtonType" expires_after="2025-04-27">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a button from the bar widget displayed in Capture mode is
     pressed in {TabletOrClamshell}. The recorded enum value indicates the type
@@ -2144,6 +2146,7 @@ chromium-metrics-reviews@google.com.
     units="camera disconnections" expires_after="2025-07-03">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of camera disconnections in {TabletOrClamshell} during
     recording.
@@ -2156,6 +2159,7 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2024-12-24">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records how many seconds it takes a camera that got disconnected to get
     reconnected again within the grace period in {TabletOrClamshell}.
@@ -2168,6 +2172,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeConfiguration" expires_after="2025-04-27">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user performs a screen capture in {TabletOrClamshell}.
     The recorded enum indicates the configuration used for the capture. I.e. the
@@ -2181,6 +2186,7 @@ chromium-metrics-reviews@google.com.
     units="adjustments" expires_after="2025-02-23">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
     {TabletOrClamshell} and performs a capture or they switch the capture
@@ -2195,6 +2201,7 @@ chromium-metrics-reviews@google.com.
     units="consecutive screenshots" expires_after="2025-03-02">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of consecutive screenshots the user takes within 5s of
     each other, regardless of capture options.
@@ -2206,6 +2213,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanEnabled" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a capture mode video recording starts with demo tools
     feature enabled or not in {TabletOrClamshell}.
@@ -2218,6 +2226,7 @@ chromium-metrics-reviews@google.com.
     enum="EndRecordingReason" expires_after="2025-08-25">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever capture mode screen recording is ended in
     {TabletOrClamshell}. The recorded enum value indicates the reason that lead
@@ -2230,6 +2239,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeEntryType" expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever Capture mode is entered from {TabletOrClamshell}. The
     recorded enum value indicates the method used to enter Capture mode.
@@ -2242,6 +2252,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeSaveToLocation" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever the screen capture is saved in {TabletOrClamshell} when
     captured by the Game Dashboard intiated capture session. The recorded enum
@@ -2255,6 +2266,7 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="2025-05-15">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded WebM file by the Game Dahboard
     initiated capture mode in {TabletOrClamshell}. This metric will not be
@@ -2268,6 +2280,7 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="2025-04-20">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded GIF file by capture mode in
     {TabletOrClamshell}. This metric will not be recorded if a file was not
@@ -2281,6 +2294,7 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2025-02-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful GIF recording in capture mode in
     {TabletOrClamshell}. This metric will not be recorded if a file was not
@@ -2294,6 +2308,7 @@ chromium-metrics-reviews@google.com.
     units="% of fullscreen area" expires_after="2025-02-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the percent ratio between the area of the user selected region for
     GIF recording to the area of the full screen in {TabletOrClamshell}. Emitted
@@ -2304,8 +2319,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
     units="connected cameras" expires_after="2025-02-13">
-  <owner>conniekxu@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of connected cameras to the device whenever it changes.
   </summary>
@@ -2316,6 +2332,7 @@ chromium-metrics-reviews@google.com.
     units="adjustments" expires_after="2025-03-23">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
     {TabletOrClamshell} entered from the projector app and performs a capture or
@@ -2329,7 +2346,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.QuickAction"
     enum="CaptureQuickAction" expires_after="2025-04-13">
-  <owner>shidi@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Track all quick actions on screenshot notification. Including: Edit in
     backlight, Go to Files, Delete File.
@@ -2341,6 +2359,7 @@ chromium-metrics-reviews@google.com.
     enum="CameraPreviewSnapPosition" expires_after="2025-06-21">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the camera preview position when the recording is started in
     {TabletOrClamshell}.
@@ -2353,6 +2372,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeCameraSize" expires_after="2025-02-10">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the camera size when the recording is started in
     {TabletOrClamshell}.
@@ -2365,6 +2385,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanEnabled" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a capture mode video recording starts with camera or not in
     {TabletOrClamshell}.
@@ -2376,6 +2397,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeSaveToLocation" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever screen capture is saved in {TabletOrClamshell}. The
     recorded enum value indicates the location that the screen capture is saved.
@@ -2388,6 +2410,7 @@ chromium-metrics-reviews@google.com.
     units="KB" expires_after="2025-02-22">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded WebM file by capture mode in
     {TabletOrClamshell}. This metric will not be recorded if a file was not
@@ -2401,6 +2424,7 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2025-03-02">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode in
     {TabletOrClamshell}. This metric will not be recorded if a file was not
@@ -2413,6 +2437,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-09">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of screenshots that have been taken via the
     CaptureModeController every 24 hours. Note that counts are not persisted
@@ -2425,6 +2450,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-20">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of screenshots that have been taken via the
     CaptureModeController every 7 days. Note that counts are not persisted
@@ -2438,6 +2464,7 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-01-08">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if a user has switched capture modes (fullscreen, region, window)
     while in a capture mode session, false otherwise.
@@ -2446,9 +2473,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshell}"
-    enum="CaptureModeSwitchToDefaultReason" expires_after="2024-12-08">
+    enum="CaptureModeSwitchToDefaultReason" expires_after="2025-10-30">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever the capture folder is switched to default downloads folder
     in {TabletOrClamshell}. The recorded enum value indicates the reason that
@@ -2462,6 +2490,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioRecordingMode" expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the end of a {Client}-initiated capture mode session in
     {TabletOrClamshell} to report the user's audio recording mode setting, only
@@ -2477,6 +2506,7 @@ chromium-metrics-reviews@google.com.
     enum="CaptureModeConfiguration" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a {Client}-initiated a screen capture is performed in
     {TabletOrClamshell}. The recorded enum indicates the configuration used for
@@ -2492,6 +2522,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanEnabled" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a {Client}-initiated recording starts with demo tools
     feature enabled or not in {TabletOrClamshell}.
@@ -2505,6 +2536,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanEnabled" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a {Client}-initiated recording starts with camera on or not
     in {TabletOrClamshell}.
@@ -2518,6 +2550,7 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2025-04-13">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode entered
     from the client session in {TabletOrClamshell}. This metric will not be
@@ -2621,7 +2654,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the virtual desks activation animation begins, to report the
     latency of starting this animation. In a continuous desk animation, this
@@ -2633,7 +2666,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the virtual desks removal animation begins, to report the
     latency of starting this animation. In a continuous desk animation, this
@@ -2645,6 +2678,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-01-05">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the virtual desks activation animation completes to report the
     smoothness of this animation when running on the display on which the active
@@ -2658,6 +2692,7 @@ chromium-metrics-reviews@google.com.
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When a four finger touchpad swipe has ended, an animation to the nearest
     desk will occur. This histogram is emitted when that animation finishes.
@@ -2669,6 +2704,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-01">
   <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the virtual desks removal animation completes to report the
     smoothness of this animation when running on the display on which the active
@@ -2681,6 +2717,7 @@ chromium-metrics-reviews@google.com.
     enum="DesksAssignToAllDesksSource" expires_after="2025-04-13">
   <owner>zxdan@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a window is assigned to all desks. E.g. `Move to Desks menu`
     which can be accessed from a window's context menu or keyboard shortcuts.
@@ -2694,6 +2731,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted after a virtual desk being removed with close all option and undo
     toast being shown. This metric describes the total number of times the user
@@ -2706,6 +2744,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-02-10">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted after a virtual desk being removed with close all option and undo
     toast being clicked.
@@ -2716,6 +2755,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-09">
   <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a desk is destroyed or a user activates a desk they haven't
     visited the prior day. In the former case, reports the number of consecutive
@@ -2729,9 +2769,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.CustomNameCount" units="desks"
-    expires_after="2024-11-01">
-  <owner>benbecker@google.com</owner>
+    expires_after="2025-10-30">
+  <owner>dandersson@google.com</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user with more than one desk changes the name of a desk to
     specify how many of the user's desks have custom names.
@@ -2739,9 +2780,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.CustomNameCreated" enum="BooleanHit"
-    expires_after="2025-03-23">
-  <owner>benbecker@google.com</owner>
-  <owner>janetmac@chromium.org</owner>
+    expires_after="2025-10-30">
+  <owner>dandersson@google.com</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user with more than one desk confirms the name of a desk to
     specify how often users create custom names.
@@ -2749,9 +2791,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.CustomNamePercentage" units="%"
-    expires_after="2025-04-13">
-  <owner>benbecker@google.com</owner>
-  <owner>janetmac@chromium.org</owner>
+    expires_after="2025-10-30">
+  <owner>dandersson@google.com</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user with more than one desk changes the name of a desk to
     specify the percentage of the user's desks that have custom names.
@@ -2763,7 +2806,7 @@ chromium-metrics-reviews@google.com.
   <owner>sammiequon@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the desk button desk bar enter event was received and successfully
@@ -2776,7 +2819,7 @@ chromium-metrics-reviews@google.com.
   <owner>sammiequon@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the desk button desk bar exit event was received and successfully
@@ -2788,7 +2831,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-30">
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user decides to hide the desk button to specify how often
     users are deliberately choosing to hide the button.
@@ -2799,7 +2842,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-30">
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user presses on the central button on the desk button to
     specify how often users are using the center button to open or close the
@@ -2811,7 +2854,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-12-21">
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Variant of Ash.Desks.DeskLifetime that is emitted if the closed desk has a
     desk profile assigned to it. It has the same semantics as DeskLifetime.
@@ -2832,6 +2875,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-20">
   <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The lifetime of the desk at index {DeskIndex} (1-indexed). Emitted when a
     desk is removed. This metric is persisted across multiple sessions and
@@ -2887,7 +2931,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.DesksCount3" units="units"
     expires_after="2025-03-09">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when there's a change in the virtual desks count whether due to desk
     creation or removal in Bento. Specifies the number of available desks. It is
@@ -2898,7 +2942,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.DesksSwitch" enum="DesksSwitchSource"
     expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the active desk is changed to specify the source of this
     action, i.e. whether due to new-desk shortcut, desk removed, window
@@ -2912,8 +2956,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.DesksSwitchScreenshotResult" enum="BooleanSuccess"
     expires_after="2025-01-11">
-  <owner>andp@chromium.org</owner>
   <owner>dandersson@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a starting or ending screenshot succeeded or failed.
   </summary>
@@ -2922,7 +2966,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.MoveWindowFromActiveDesk"
     enum="DesksMoveWindowFromActiveDeskSource" expires_after="2025-02-25">
   <owner>dandersson@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a window is moved from the current active desk to another desk.
     Specifies the source of this action, i.e. whether to window drag-and-drop,
@@ -2939,7 +2983,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.NewDesk2" enum="DesksCreationRemovalSource"
     expires_after="2025-04-27">
   <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a virtual desk is created to specify the source of this action,
     i.e. whether from the new-desk button, keyboard shortcut, or due to desks
@@ -2951,7 +2995,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-23">
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Tracks the number of times a desk (virtual workspace) has visibly changed in
     a time span of five seconds. This counts the number of total traversals; for
@@ -2963,8 +3007,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed2" units="units"
     expires_after="2025-04-01">
-  <owner>aprilzhou@google.com</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a virtual desk is removed and all windows on the desk being
     closed to record the total number of windows being closed by this operation.
@@ -2974,8 +3019,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed2.{RemovalSource}"
     units="windows" expires_after="2025-04-01">
-  <owner>aprilzhou@google.com</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a virtual desk is removed and all windows on the desk being
     closed by {RemovalSource} to record the total number of windows being closed
@@ -2992,6 +3038,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the first desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3002,6 +3049,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the tenth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3012,6 +3060,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the eleventh desk. Emitted when a desk is removed,
     or a window is moved to another desk.
@@ -3022,6 +3071,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the twelfth desk. Emitted when a desk is removed,
     or a window is moved to another desk.
@@ -3032,6 +3082,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the thirteenth desk. Emitted when a desk is
     removed, or a window is moved to another desk.
@@ -3042,6 +3093,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the fourteenth desk. Emitted when a desk is
     removed, or a window is moved to another desk.
@@ -3052,6 +3104,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the fifteenth desk. Emitted when a desk is removed,
     or a window is moved to another desk.
@@ -3062,6 +3115,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-20">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the sixteenth desk. Emitted when a desk is removed,
     or a window is moved to another desk.
@@ -3072,6 +3126,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the second desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3082,6 +3137,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the third desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3092,6 +3148,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the fourth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3102,6 +3159,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the fifth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3112,6 +3170,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the sixth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3122,6 +3181,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the seventh desk. Emitted when a desk is removed,
     or a window is moved to another desk.
@@ -3132,6 +3192,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the eighth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3142,6 +3203,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-06">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows on the ninth desk. Emitted when a desk is removed, or
     a window is moved to another desk.
@@ -3153,6 +3215,7 @@ chromium-metrics-reviews@google.com.
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Presentation time in ms when a four finger swipe is being used to change
     desks. One full swipe results in multiple emissions of this metric; once
@@ -3167,6 +3230,7 @@ chromium-metrics-reviews@google.com.
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The largest presentation time value in ms for a single four finger swipe to
     change desks. One full swipe results in one emission of this metric; its the
@@ -3181,6 +3245,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-01">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a virtual desk is removed to specify the source of this remove
     operation, i.e. whether from the close-desk button, or keyboard shortcut.
@@ -3191,6 +3256,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-07-21">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a virtual desk is removed to specify the category of this
     remove operation among close all, combine desk, and close all and wait.
@@ -3201,6 +3267,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-09">
   <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of unique weekly active desks a user has interacted with in a
     week. A desk is considered interacted with if a window is moved to it, it is
@@ -3217,7 +3284,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanHit" expires_after="2025-03-30">
   <owner>dandersson@chromium.org</owner>
   <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user {BarAction} using the {EntryPoint} desk bar to specify
     how often users are using the {EntryPoint} desk bar to perform these
@@ -3925,9 +3992,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.FloatWindowCountsPerSession" units="windows"
     expires_after="2025-02-10">
-  <owner>nupurjain@google.com</owner>
-  <owner>shidi@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of floating windows per session, which is from the time a user
     logs in to the time they log off. This counts how many times any window
@@ -3938,9 +4004,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.FloatWindowDuration" units="minutes"
     expires_after="2025-04-13">
-  <owner>nupurjain@google.com</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>shidi@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The amount of time a user keeps a floating window open and visible. Open and
     visible means the window is in float state and is on the active desk. If a
@@ -3953,9 +4018,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.FloatWindowMoveToAnotherDeskCounts" units="windows"
     expires_after="2025-01-05">
-  <owner>nupurjain@google.com</owner>
-  <owner>shidi@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The counts of how many times floated windows moved to another desk per
     session, which is from the time a user logs in to the time they log off.
@@ -3964,9 +4028,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.MultitaskMenuActionType.{TabletOrClamshell}"
     enum="MultitaskMenuActionType" expires_after="2025-03-09">
-  <owner>nupurjain@google.com</owner>
-  <owner>shidi@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Recorded whatever action is taken on the {TabletOrClamshell} multitask menu.
   </summary>
@@ -3975,9 +4038,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Float.MultitaskMenuEntryType.{TabletOrClamshell}"
     enum="MultitaskMenuEntryType" expires_after="2025-03-23">
-  <owner>nupurjain@google.com</owner>
-  <owner>shidi@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Recorded whenever the multitask menu is opened from {TabletOrClamshell}. The
     recorded enum value indicates the method used to open the menu.
@@ -4289,7 +4351,6 @@ chromium-metrics-reviews@google.com.
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
-  <owner>nupurjain@google.com</owner>
   <owner>chromeos-wms@google.com</owner>
   <summary>
     Records how many milliseconds the user waited for a soundscape playlist to
@@ -5409,7 +5470,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="Ash.LoginAnimation.Jank" units="%"
     expires_after="2025-04-13">
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -5422,7 +5483,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="Ash.LoginAnimation.Smoothness" units="%"
     expires_after="2025-04-13">
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -5842,7 +5903,7 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     After a display rotation, the existing app windows will get remapped. A one
     minute timer then runs. If any of the app windows are moved or resized by
@@ -5857,7 +5918,7 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     After a display work area change, the existing app windows will get
     remapped. A one minute timer then runs. If any of the app windows are moved
@@ -6654,7 +6715,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
     expires_after="2025-06-21">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The number of times the arrow keys are pressed in overview mode per session,
     i.e. between bringing up overview mode and ending it. This is only measured
@@ -6665,7 +6726,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.DelayedDeskBar.PresentationTime" units="ms"
     expires_after="2025-03-02">
   <owner>esum@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the enter-overview animation has finished/the desk bar is opened
@@ -6763,7 +6824,7 @@ chromium-metrics-reviews@google.com.
   <owner>sammiequon@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>esum@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the overview enter event was received and successfully processed
@@ -6809,7 +6870,7 @@ chromium-metrics-reviews@google.com.
   <owner>sammiequon@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>esum@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the overview exit event was received and successfully processed to
@@ -6819,7 +6880,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.Items" units="units" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of items (single windows or groups of windows such as panels) in
     the overview mode, present at the start of each session.
@@ -6829,7 +6890,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The ratio between the arrow key presses and the number of overview items,
     expressed as a percentage for a single session. Recorded when an overview
@@ -6840,7 +6901,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of items closed from the window overview for a single session.
     Recorded when exiting an overview session.
@@ -6871,7 +6932,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.SelectionDepth" units="items"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When a window is selected in overview mode, records that window's position
     in the global MRU ordering. 1 represents the most-recently used window, 2
@@ -6898,7 +6959,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time between endings of overview mode sessions which were
     caused by the user selecting a window which was not previously active. Only
@@ -6910,7 +6971,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.TimeBetweenUse" units="ms"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time between uses of overview mode, recorded when overview
     mode is entered. Only recorded on the second and later times after startup
@@ -6921,7 +6982,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.TimeInOverview" units="ms"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time spent in overview mode. Overview mode is engaged by
     pressing the overview accelerator, overview button tray or swiping up from
@@ -6938,7 +6999,7 @@ chromium-metrics-reviews@google.com.
      name="TabletOrClamshellMode" -->
 
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Presentation time for dragging a window in overview mode.</summary>
 </histogram>
 
@@ -6949,7 +7010,7 @@ chromium-metrics-reviews@google.com.
      name="TabletOrClamshellMode" -->
 
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Maximum latency of the presentation time for dragging a window in overview
     mode.
@@ -6959,7 +7020,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.WindowDrag.Workflow" enum="OverviewDragAction"
     expires_after="2025-04-13">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded when a drag from overview (not from the top or shelf) is completed,
     and when an overview item is closed by vertically swiping or flinging (even
@@ -6970,7 +7031,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.WindowOcclusionCalculator.EnterLatency"
     units="ms" expires_after="2025-04-13">
   <owner>esum@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the amount of time window occlusion calculations take when entering
     overview mode. The window occlusion calculations are used to optimize the
@@ -6983,7 +7044,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Overview.WindowOcclusionCalculator.ExitLatency" units="ms"
     expires_after="2025-04-13">
   <owner>esum@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the amount of time window occlusion calculations take when exiting
     overview mode. The window occlusion calculations are used to optimize the
@@ -7012,11 +7073,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded"
-    units="units" expires_after="2024-07-28">
+    units="units" expires_after="2025-10-30">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows restored in multi-display scenario, such as due to
     disconnecting and reconnecting display, enabling and disabling mirror mode,
@@ -7025,11 +7086,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnScreenRotation"
-    units="units" expires_after="2024-01-20">
+    units="units" expires_after="2025-10-30">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits the number of windows bounds restored when rotating the screen back to
     the previous screen orientation. Zero is not recorded.
@@ -7281,7 +7342,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when show phantom window was received and successfully processed to
@@ -7402,7 +7463,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Emitted whenever the informed restore dialog closes.</summary>
 </histogram>
 
@@ -7410,7 +7471,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if the informed restore dialog is shown with a shutdown
     screenshot inside. Emits false if the informed restore dialog is shown with
@@ -7422,7 +7483,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The action taken by the user when the onboarding dialog is shown and the
     user had Restore off. Emits true if the user accepted the dialog and turned
@@ -7434,7 +7495,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time it took to fetch the shutdown screenshot from the disk
     and decode it.
@@ -7444,7 +7505,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Pine.ScreenshotEncodeAndSaveDuration" units="ms"
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time it took to encode and save the screenshot to the disk
     that we captured on shutdown.
@@ -7455,7 +7516,7 @@ chromium-metrics-reviews@google.com.
     enum="ScreenshotOnShutdownStatus" expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded the status on taking the screenshot on shutdown. The recorded enum
     indicates it succeededs or failed with specific reason.
@@ -7465,7 +7526,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Pine.ScreenshotTakenDuration" units="ms"
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time it took to capture a screenshot of the active desk on
     shutdown. This screenshot will only be taken if there are windows opened in
@@ -7477,7 +7538,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time in ms that user takes from when they see the pine
     contents view begin to fade in, to when they click the restore or cancel
@@ -8981,8 +9042,7 @@ chromium-metrics-reviews@google.com.
     enum="DeviceOrientation" expires_after="2025-01-05">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Emitted at the entry point of split view mode, to report the device
     orientation is in landscape mode (left and right) or portrait mode (top and
@@ -8991,11 +9051,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.EntryPoint.DeviceUIMode" enum="DeviceMode"
-    expires_after="2024-08-21">
+    expires_after="2025-10-30">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Emitted at the entry point of split view mode, to report the device is in
     clamshell mode or tablet mode.
@@ -9006,8 +9065,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-11">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Emitted when device orientation changes in split view, to report the device
     orientation is in landscape mode (left and right) or portrait mode (top and
@@ -9017,11 +9075,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.ResizeWindowCount.{DeviceUIMode}" units="count"
-    expires_after="2024-10-06">
+    expires_after="2025-10-30">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
   <summary>
     Emitted at the end of split view mode to report the number of resizing
     window operations in split view mode session for both clamshell and tablet
@@ -9048,7 +9104,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SplitView.TimeInMultiDisplaySplitView" units="ms"
     expires_after="2025-05-21">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The amount of time that the user spent in multi-display split view mode,
     meaning that split view is active on more than one display. The time is
@@ -9060,8 +9116,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SplitView.TimeInSplitView" units="ms"
     expires_after="2025-04-13">
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromim.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm@chromim.org</owner>
   <summary>
     The amount of time that the user spent in split view mode. The time is
     measured from the moment a window is snapped to one side of the screen to
@@ -9328,7 +9383,7 @@ chromium-metrics-reviews@google.com.
      name="TabletOrClamshellMode" -->
 
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Presentation time in ms when a tab is dragged. In clamshell mode, each time
     a tab is dragged within a display, the time it takes to present the new
@@ -9344,7 +9399,7 @@ chromium-metrics-reviews@google.com.
      name="TabletOrClamshellMode" -->
 
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Maximum presentation time recorded during a tab dragging session in both
     clamshell and tablet mode.
@@ -9404,7 +9459,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.TouchView.TouchViewActive" units="ms"
     expires_after="2025-10-28">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The length of time that TouchView is active, for each activation.
   </summary>
@@ -9413,21 +9468,21 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.TouchView.TouchViewActivePercentage" units="%"
     expires_after="2025-10-28">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>The proportion of time spent in TouchView during a session.</summary>
 </histogram>
 
 <histogram name="Ash.TouchView.TouchViewActiveTotal" units="minutes"
     expires_after="2025-10-28">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>The total time that TouchView is active during a session.</summary>
 </histogram>
 
 <histogram name="Ash.TouchView.TouchViewInactive" units="ms"
     expires_after="2025-10-28">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The length of time between TouchView activations. Warning: this histogram
     was expired from 2023-03-19 to 2023-11-06; data may be missing.
@@ -9437,7 +9492,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.TouchView.TouchViewInactiveTotal" units="minutes"
     expires_after="2025-10-28">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The total time that TouchView is not active during a session. Warning: this
     histogram was expired from 2023-03-19 to 2023-11-06; data may be missing.
@@ -9447,7 +9502,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="Ash.UnlockAnimation.Smoothness" units="%"
     expires_after="2025-03-23">
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -10027,7 +10082,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
     units="%" expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
     Dragging the window back to the top of the screen will expand the window.
@@ -10043,7 +10098,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
     units="%" expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
     This histogram is fired everytime we drag a maximized window to normal
@@ -10057,7 +10112,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Window.AnimationSmoothness.Hide" units="%"
     expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of hiding window animation. 100% represents ideally
     smooth 60 frames per second. 50% represents when only 30 frames per second
@@ -10070,7 +10125,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Window.AnimationSmoothness.Minimize" units="%"
     expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of minimizing window animation. 100% represents ideally
     smooth 60 frames per second. 50% represents when only 30 frames per second
@@ -10083,7 +10138,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
     expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of snapping window animation. 100% represents ideally
     smooth 60 frames per second. 50% represents when only 30 frames per second
@@ -10097,7 +10152,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Window.AnimationSmoothness.Unminimize" units="%"
     expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of unminimizing window animation. 100% represents
     ideally smooth 60 frames per second. 50% represents when only 30 frames per
@@ -10109,9 +10164,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.DragMaximized.NumberOfMisTriggers" units="units"
     expires_after="2025-04-11">
-  <owner>conniekxu@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Emitted when a window state is being destroyed. Records number of
     mis-triggers of the drag to maximize behavior for a window during its
@@ -10121,9 +10175,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.DragMaximized.Valid" enum="Boolean"
     expires_after="2025-01-05">
-  <owner>conniekxu@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     This boolean keeps tracking if a drag to maximize behavior is valid or not.
     Emits true if a window is dragged to maximized and stays maximized status
@@ -10135,8 +10188,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.PartialSplitDuration" units="minutes"
     expires_after="2025-04-13">
-  <owner>nupurjain@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The amount of time a user keeps a partial split window open and visible.
     Starts recording when a user partial splits through the multitask menu, or
@@ -10184,10 +10237,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.InitialMode" enum="AltTabMode"
-    expires_after="2024-12-08">
+    expires_after="2025-10-30">
   <owner>afakhry@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user starts Alt-Tab, if and only if user had 2 or more
     desks and Bento is not disabled, to report the initial alt-tab mode, which
@@ -10199,7 +10252,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
   <summary>
     The number of windows in the Alt+Tab selector. Only recorded once when
     cycling starts, not every time when Tab is pressed without releasing Alt.
@@ -10210,7 +10262,6 @@ chromium-metrics-reviews@google.com.
     enum="AltTabModeSwitchSource" expires_after="2025-03-30">
   <owner>afakhry@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
   <summary>
     Emitted when the user switches the Alt-Tab mode, if and only if user had 2
     or more desks and Bento is not disabled, to report whether the user switches
@@ -10231,9 +10282,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleController.SameApp.IsSameApp" enum="Boolean"
     expires_after="2025-04-13">
-  <owner>andp@chromium.org</owner>
-  <owner>benbecker@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true when a same-app cycling session is started and false when a
     normal cycling session is started.
@@ -10256,7 +10306,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
   <summary>
     Emitted when the user switches the Alt-Tab mode from a click or keyboard, if
     and only if user had 2 or more desks and Bento is not disabled, to report
@@ -10268,7 +10317,6 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2025-04-13">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
   <summary>
     The number of seconds between task switches triggered by the next window and
     previous window accelerator keys (ie Alt+Tab, Alt+Shift+Tab).
@@ -10278,7 +10326,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Container" units="%"
     expires_after="2025-02-27">
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of showing window animation when the window cycle view
     moves the next window into position when alt + tab is pressed. 100%
@@ -10293,7 +10341,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Show" units="%"
     expires_after="2025-02-27">
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Relative smoothness of showing window animation when the window cycle view
     starts. 100% represents ideally smooth 60 frames per second. 50% represents
@@ -10379,7 +10427,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowAppType"
     enum="WindowAppType" expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of the active
     application windows.
@@ -10389,7 +10437,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowSize"
     enum="WindowSizeRange" expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window bounds type of the active
     application windows.
@@ -10399,7 +10447,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.ActiveWindowState"
     enum="WindowStateType" expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of the active
     application windows.
@@ -10409,7 +10457,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.AllAppTypes" enum="WindowAppType"
     expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of all opened
     application windows.
@@ -10419,7 +10467,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.AllWindowSizes"
     enum="WindowSizeRange" expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window bounds type of all opened
     application windows.
@@ -10429,7 +10477,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.AllWindowStates"
     enum="WindowStateType" expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of all opened
     application windows.
@@ -10439,7 +10487,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.FreeformedWindowSizes"
     enum="WindowSizeRange" expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window bounds type of freeformed
     application windows.
@@ -10449,7 +10497,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutState.WindowNumbers" units="int"
     expires_after="2025-04-27">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the number of opened application windows.
   </summary>
@@ -10458,7 +10506,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateActiveWindowAppType"
     enum="WindowAppType" expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of the active
     application windows. This metrics should be removed after M127 stable is
@@ -10469,7 +10517,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateActiveWindowSize"
     enum="WindowSizeRange" expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window bounds type of the active
     application windows. This metrics should be removed after M127 stable is
@@ -10480,7 +10528,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateActiveWindowState"
     enum="WindowStateType" expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of the active
     application windows. This metrics should be removed after M127 stable is
@@ -10491,7 +10539,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateAllAppTypes" enum="WindowAppType"
     expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of all opened
     application windows. This metrics should be removed after M127 stable is
@@ -10502,7 +10550,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateAllWindowSizes" enum="WindowSizeRange"
     expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window bounds type of all opened
     application windows. This metrics should be removed after M127 stable is
@@ -10513,7 +10561,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateAllWindowStates"
     enum="WindowStateType" expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window states type of all opened
     application windows. This metrics should be removed after M127 stable is
@@ -10524,7 +10572,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateFreeformedWindowSizes"
     enum="WindowSizeRange" expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the window bounds type of freeformed
     application windows. This metrics should be removed after M127 stable is
@@ -10535,7 +10583,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowLayoutStateWindowNumbers" units="int"
     expires_after="2025-02-26">
   <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits every 30 minutes to report the number of opened application windows.
     This metrics should be removed after M127 stable is released.
@@ -10545,7 +10593,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Wm.WindowSnapActionSource2" enum="WindowSnapActionSource"
     expires_after="2025-03-11">
   <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Emitted when a window is to be snapped. Records different ways for a user to
     snap a window.
