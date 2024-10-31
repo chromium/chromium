@@ -207,6 +207,18 @@ if (android_64bit_target_cpu) {
 base_webview_instrumentation_apk("webview_instrumentation_apk") {
   deps = [
     "//android_webview:platform_service_bridge_upstream_implementation_java",
+    # Note: you probably don't want to add any more deps here. This is the
+    # upstream instantiation of 'base_webview_instrumentation_apk', however
+    # there is also another instance of 'base_webview_instrumentation_apk'
+    # defined in downstream code.
+    # * If you need to add deps to the AW test runner, then add the dep to
+    #   "base_webview_instrumentation_apk" in //android_webview/test/shared.gni.
+    # * If you need to add deps for the actual javatest code, then add the dep
+    #   to "webview_instrumentation_test_apk" in the current file.
+    # * You should only add a dep here if the testrunner depends on the target
+    #   AND you want to provide a different implementation for the downstream
+    #   vs. upstream instantiations of 'base_webview_instrumentation_apk'.
+    #   PlatformServiceBridge is the typical example for when you want this.
   ]
   apk_name = "WebViewInstrumentation"
 }
