@@ -358,13 +358,14 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // closing the Widget when Esc is pressed. Called by DialogClientView.
   bool EscShouldCancelDialog() const;
 
+  // Returns the corner radius that is used for this dialog.
+  int GetCornerRadius() const;
+
  protected:
   // Overridden from WidgetDelegate:
   ax::mojom::Role GetAccessibleWindowRole() override;
 
   const Params& GetParams() const { return params_; }
-
-  int GetCornerRadius() const;
 
   // Return ownership of the footnote view for this dialog. Only use this in
   // subclass overrides of CreateNonClientFrameView.

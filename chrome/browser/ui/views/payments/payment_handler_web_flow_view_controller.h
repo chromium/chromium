@@ -59,6 +59,8 @@ class PaymentHandlerWebFlowViewController
   ~PaymentHandlerWebFlowViewController() override;
 
  private:
+  class RoundedCornerViewClipper;
+
   // PaymentRequestSheetController:
   std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
@@ -108,6 +110,12 @@ class PaymentHandlerWebFlowViewController
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  // Helper which clips the views::WebView created by this class so that it has
+  // rounded corners matching its parent dialog.
+  //
+  // TODO(crbug.com/344626785): Remove once WebViews obey parent clips.
+  std::unique_ptr<RoundedCornerViewClipper> rounded_corner_clipper_;
 
   // Must be the last member of a leaf class.
   base::WeakPtrFactory<PaymentHandlerWebFlowViewController> weak_ptr_factory_{
