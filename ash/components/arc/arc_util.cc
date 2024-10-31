@@ -657,8 +657,7 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
 }
 
 bool IsReadOnlyPermissionsEnabled() {
-  return base::FeatureList::IsEnabled(arc::kEnableReadOnlyPermissions) &&
-         GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
+  return GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
 }
 
 void EnsureStaleArcVmAndArcVmUpstartJobsStopped(

@@ -153,12 +153,6 @@ BASE_FEATURE(kEnablePerVmCoreScheduling,
              "ArcEnablePerVmCoreScheduling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether app permissions are read-only in the App Management page.
-// Only applies on Android T+.
-BASE_FEATURE(kEnableReadOnlyPermissions,
-             "ArcEnableReadOnlyPermissions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether ARC handles unmanaged->managed account transition.
 BASE_FEATURE(kEnableUnmanagedToManagedTransitionFeature,
              "ArcEnableUnmanagedToManagedTransitionFeature",
