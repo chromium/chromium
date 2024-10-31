@@ -20,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
-#include "base/values.h"
 #include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"

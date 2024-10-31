@@ -10,7 +10,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "content/common/content_export.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
@@ -67,7 +66,6 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   bool installed() const { return installed_; }
 
  private:
-  void Setup(const base::Value::Dict& dict);
   void Setup(const perfetto::protos::gen::TriggerRule& config);
 
   RuleTriggeredCallback trigger_callback_;
