@@ -21,6 +21,8 @@ using ::payments::mojom::PaymentInstrumentPtr;
 
 const char kServiceWorkerScope[] = "https://example.test/a/";
 const char kServiceWorkerScript[] = "https://example.test/a/script.js";
+const char kServiceWorkerScope2[] = "https://example.test/b/";
+const char kServiceWorkerScript2[] = "https://example.test/b/script.js";
 
 void DeletePaymentInstrumentCallback(PaymentHandlerStatus* out_status,
                                      PaymentHandlerStatus status) {
@@ -120,7 +122,7 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
+ protected:
   // Owned by payment_app_context_.
   raw_ptr<PaymentManager> manager_;
 };
@@ -280,6 +282,33 @@ TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {
   EXPECT_EQ("ChromePay: chrome@chromepay.test", read_details->name);
   EXPECT_EQ("https://www.chromium.org", read_details->method);
   EXPECT_EQ("", read_details->stringified_capabilities);
+}
+
+TEST_F(PaymentManagerTest, UninitializedPaymentManager) {
+  manager_ = CreateUninitializedPaymentManager(GURL(kServiceWorkerScope2),
+                                               GURL(kServiceWorkerScript2));
+
+  // Test that calling the payment manager does not crash, and instead
+  // disconnects due to the invalid state (Init not called).
+  PaymentHandlerStatus status = PaymentHandlerStatus::NOT_FOUND;
+  DeletePaymentInstrument("test_key", &status);
+  ASSERT_EQ(PaymentHandlerStatus::NOT_FOUND, status);
+
+  PaymentInstrumentPtr instrument;
+  GetPaymentInstrument("test_key", &instrument, &status);
+  ASSERT_EQ(PaymentHandlerStatus::NOT_FOUND, status);
+
+  std::vector<std::string> keys;
+  KeysOfPaymentInstruments(&keys, &status);
+
+  HasPaymentInstrument("test_key", &status);
+  ASSERT_EQ(PaymentHandlerStatus::NOT_FOUND, status);
+
+  SetPaymentInstrument("test_key", PaymentInstrument::New(), &status);
+  ASSERT_EQ(PaymentHandlerStatus::NOT_FOUND, status);
+
+  ClearPaymentInstruments(&status);
+  ASSERT_EQ(PaymentHandlerStatus::NOT_FOUND, status);
 }
 
 }  // namespace content
