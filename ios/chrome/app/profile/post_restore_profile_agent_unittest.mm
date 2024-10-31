@@ -49,15 +49,14 @@ class PostRestoreProfileAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
                               base::BindOnce(&CreateMockPromosManager));
     profile_ = std::move(builder).Build();
 
     promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
         PromosManagerFactory::GetForProfile(profile_.get()));
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];

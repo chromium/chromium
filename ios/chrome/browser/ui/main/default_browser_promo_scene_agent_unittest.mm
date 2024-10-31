@@ -70,15 +70,14 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildMockFeatureEngagementTracker));
     builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
                               base::BindOnce(&BuildMockPromosManager));
     profile_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
         PromosManagerFactory::GetForProfile(profile_.get()));

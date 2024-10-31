@@ -159,7 +159,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_cbs_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
@@ -178,8 +179,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
 
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
     histogram_tester_ = std::make_unique<base::HistogramTester>();

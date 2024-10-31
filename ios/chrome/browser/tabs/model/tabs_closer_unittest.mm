@@ -139,7 +139,8 @@ class TabsCloserTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
@@ -152,10 +153,6 @@ class TabsCloserTest : public PlatformTest {
 
     fake_tab_group_service_ = static_cast<tab_groups::FakeTabGroupSyncService*>(
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
-
-    // Initialize the AuthenticationService.
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([scene_state_ sceneSessionID]).andReturn(@(kSceneSessionID));

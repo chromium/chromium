@@ -192,12 +192,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
                             password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
 
     profile_ = std::move(builder).Build();
-
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     web::test::OverrideJavaScriptFeatures(
         profile_.get(),

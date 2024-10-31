@@ -39,8 +39,6 @@ class NotificationsOptInMediatorTest : public PlatformTest {
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
 
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile, std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile);
     prefs_ = profile->GetPrefs();
     scoped_feature_list_.InitWithFeatures(
@@ -77,7 +75,8 @@ class NotificationsOptInMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     return builder;
   }
 

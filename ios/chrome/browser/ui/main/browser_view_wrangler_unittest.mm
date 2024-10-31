@@ -74,7 +74,8 @@ class BrowserViewWranglerTest : public PlatformTest {
         ios::BookmarkModelFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_cbs_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
@@ -85,9 +86,6 @@ class BrowserViewWranglerTest : public PlatformTest {
             SessionRestorationServiceFactory::GetInstance(),
             TestSessionRestorationService::GetTestingFactory(),
         }});
-
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     scoped_session_restoration_observation_.AddObservation(
         SessionRestorationServiceFactory::GetForProfile(profile_.get()));

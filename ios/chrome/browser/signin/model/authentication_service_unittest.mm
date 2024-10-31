@@ -113,15 +113,15 @@ class AuthenticationServiceTest : public PlatformTest {
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
 
     account_manager_ =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
 
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    // Force explicit instantiation of the AuthenticationService.
+    std::ignore = authentication_service();
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {

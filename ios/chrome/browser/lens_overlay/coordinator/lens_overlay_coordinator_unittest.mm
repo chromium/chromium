@@ -72,11 +72,9 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
-
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_, std::make_unique<FakeAuthenticationServiceDelegate>());
 
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_);

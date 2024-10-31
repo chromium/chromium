@@ -235,7 +235,8 @@ class MagicStackRankingModelTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
@@ -274,8 +275,6 @@ class MagicStackRankingModelTest : public PlatformTest {
         std::make_unique<IOSChromeScopedTestingVariationsService>();
     scoped_variations_service_->Get()->OverrideStoredPermanentCountry("us");
 
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
     syncer::SyncService* syncService =
         SyncServiceFactory::GetForProfile(GetProfile());
     AuthenticationService* authenticationService =

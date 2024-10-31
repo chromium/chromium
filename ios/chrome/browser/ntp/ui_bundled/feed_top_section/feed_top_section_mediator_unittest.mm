@@ -37,11 +37,9 @@ class FeedTopSectionMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     fake_profile_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        fake_profile_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
     fake_authentication_service_ = GetAuthenticationService();
     fake_pref_service_ = fake_profile_->GetPrefs();
     feature_list_.InitAndEnableFeatureWithParameters(

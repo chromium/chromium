@@ -62,17 +62,14 @@ class TabsClosureUtilTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
     profile_ = std::move(builder).Build();
-
-    // Initialize the AuthenticationService.
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([scene_state_ sceneSessionID]).andReturn(@(kSceneSessionID));

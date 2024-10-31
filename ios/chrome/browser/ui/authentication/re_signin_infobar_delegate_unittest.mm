@@ -44,7 +44,8 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     auto fake_web_state = std::make_unique<web::FakeWebState>();
@@ -53,8 +54,6 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         std::move(fake_web_state),
         WebStateList::InsertionParams::Automatic().Activate());
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     InfoBarManagerImpl::CreateForWebState(web_state());
   }
 

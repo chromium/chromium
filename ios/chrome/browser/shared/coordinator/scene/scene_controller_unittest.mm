@@ -124,14 +124,12 @@ class SceneControllerTest : public PlatformTest {
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
     profile_ = std::move(builder).Build();
-
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());

@@ -37,13 +37,11 @@ class ReportGeneratorIOSTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
         CreateMockPolicyService(), &schema_registry_));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
-
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   ReportGeneratorIOSTest(const ReportGeneratorIOSTest&) = delete;

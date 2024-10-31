@@ -25,19 +25,14 @@
 class PriceAlertUtilTest : public PlatformTest {
  public:
   void SetUp() override {
-    profile_ = BuildProfileIOS();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
-    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
-  }
-
-  std::unique_ptr<TestProfileIOS> BuildProfileIOS() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    return std::move(builder).Build();
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+    fake_identity_ = [FakeSystemIdentity fakeIdentity1];
   }
 
   void SetMSBB(bool enabled) {

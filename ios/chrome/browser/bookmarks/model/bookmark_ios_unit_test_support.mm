@@ -32,7 +32,8 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   TestProfileIOS::Builder test_profile_builder;
   test_profile_builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
-      AuthenticationServiceFactory::GetDefaultFactory());
+      AuthenticationServiceFactory::GetFactoryWithDelegate(
+          std::make_unique<FakeAuthenticationServiceDelegate>()));
   test_profile_builder.AddTestingFactory(
       ios::BookmarkModelFactory::GetInstance(),
       ios::BookmarkModelFactory::GetDefaultFactory());
@@ -43,9 +44,6 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   profile_ = std::move(test_profile_builder).Build();
 
   SetUpBrowserStateBeforeCreatingServices();
-
-  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
   bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
   if (wait_for_initialization_) {

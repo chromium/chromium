@@ -45,10 +45,9 @@ class IdleActionTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile(), std::make_unique<FakeAuthenticationServiceDelegate>());
     main_browsing_data_remover_ = std::make_unique<FakeBrowsingDataRemover>();
     incognito_browsing_data_remover_ =
         std::make_unique<FakeBrowsingDataRemover>();

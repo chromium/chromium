@@ -87,8 +87,10 @@ void GridMediatorTestClass::SetUp() {
                             FakeTabRestoreService::GetTestingFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateMockSyncService));
-  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
-                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
+      AuthenticationServiceFactory::GetInstance(),
+      AuthenticationServiceFactory::GetFactoryWithDelegate(
+          std::make_unique<FakeAuthenticationServiceDelegate>()));
   builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                             ios::HistoryServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SessionRestorationServiceFactory::GetInstance(),
@@ -97,8 +99,6 @@ void GridMediatorTestClass::SetUp() {
       tab_groups::TabGroupSyncServiceFactory::GetInstance(),
       base::BindRepeating(&CreateMockTabGroupSyncService));
   profile_ = std::move(builder).Build();
-  AuthenticationServiceFactory::CreateAndInitializeForProfile(
-      profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   // Price Drops are only available to signed in MSBB users.
   profile_->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);

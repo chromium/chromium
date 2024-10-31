@@ -145,7 +145,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                               ios::FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
@@ -167,9 +168,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     FakeStartupInformation* startup_information_ =
         [[FakeStartupInformation alloc] init];

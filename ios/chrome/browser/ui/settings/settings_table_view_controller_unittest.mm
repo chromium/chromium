@@ -155,7 +155,8 @@ class SettingsTableViewControllerTest
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -166,8 +167,6 @@ class SettingsTableViewControllerTest
     // Prepare mocks for PushNotificationClient dependency
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
 

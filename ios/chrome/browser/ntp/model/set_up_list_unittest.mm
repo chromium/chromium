@@ -50,11 +50,10 @@ class SetUpListTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     prefs_ = GetProfile()->GetPrefs();
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ = AuthenticationServiceFactory::GetForProfile(GetProfile());
     content_notification_feature_enabled_ = false;
   }

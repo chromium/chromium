@@ -65,7 +65,8 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
@@ -94,8 +95,6 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
             }));
 
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_, std::make_unique<FakeAuthenticationServiceDelegate>());
 
     browser_ = std::make_unique<TestBrowser>(profile_);
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());

@@ -141,10 +141,9 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     session_identifier_ = [[NSUUID UUID] UUIDString];
   }

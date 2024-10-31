@@ -27,21 +27,16 @@
 class ParcelTrackingUtilTest : public PlatformTest {
  protected:
   void SetUp() override {
-    profile_ = BuildProfile();
-    AuthenticationServiceFactory::CreateAndInitializeForProfile(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     shopping_service_->SetIsParcelTrackingEligible(true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
-  }
-
-  std::unique_ptr<TestProfileIOS> BuildProfile() {
-    TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    return std::move(builder).Build();
   }
 
   void SignIn() {

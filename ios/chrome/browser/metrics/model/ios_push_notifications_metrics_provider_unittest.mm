@@ -69,13 +69,11 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
     builder.SetName(name);
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile, std::make_unique<FakeAuthenticationServiceDelegate>());
 
     if (identity) {
       FakeSystemIdentityManager::FromSystemIdentityManager(

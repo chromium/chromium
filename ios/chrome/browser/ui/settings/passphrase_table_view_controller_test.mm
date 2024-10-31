@@ -73,15 +73,15 @@ void PassphraseTableViewControllerTest::SetUp() {
   DefaultValue<syncer::SyncCycleSnapshot>::Set(default_sync_cycle_snapshot_);
 
   TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
-                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
+      AuthenticationServiceFactory::GetInstance(),
+      AuthenticationServiceFactory::GetFactoryWithDelegate(
+          std::make_unique<FakeAuthenticationServiceDelegate>()));
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateNiceMockSyncService));
   RegisterTestingFactories(builder);
   builder.SetPrefService(CreatePrefService());
   profile_ = std::move(builder).Build();
-  AuthenticationServiceFactory::CreateAndInitializeForProfile(
-      profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   app_state_ = [[AppState alloc] initWithStartupInformation:nil];
   scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
   browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
