@@ -339,9 +339,25 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         mAllowMultiple = multiple;
         mWindowAndroid = (sWindowAndroidForTesting == null) ? window : sWindowAndroidForTesting;
 
-        // No mime types or extra choosers needed for open-directory.
-        if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(mIntentAction)) {
+        // FileSystemAccess API uses intent actions OPEN_DOCUMENT (showOpenFilePicker),
+        // OPEN_DOCUMENT_TREE (showDirectoryPicker), and CREATE_DOCUMENT (showSaveFilePicker),
+        // and launches the intents directoy without the chooser or media pickers.
+        // All other code uses GET_CONTENT and CHOOSER.
+        if (Intent.ACTION_OPEN_DOCUMENT.equals(mIntentAction)
+                || Intent.ACTION_OPEN_DOCUMENT_TREE.equals(mIntentAction)
+                || Intent.ACTION_CREATE_DOCUMENT.equals(mIntentAction)) {
             Intent intent = new Intent(mIntentAction);
+            // No mime types for open-directory.
+            if (!Intent.ACTION_OPEN_DOCUMENT_TREE.equals(mIntentAction)) {
+                intent.setType(ALL_TYPES);
+                if (!mMimeTypes.isEmpty()) {
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mMimeTypes.toArray(new String[0]));
+                }
+                if (mAllowMultiple) {
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                }
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+            }
             if (!mWindowAndroid.showIntent(intent, this, R.string.low_memory_error)) {
                 onFileNotSelected();
             }

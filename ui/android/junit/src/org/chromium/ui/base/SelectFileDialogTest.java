@@ -97,22 +97,22 @@ public class SelectFileDialogTest {
         shadowOf(Looper.getMainLooper()).idle();
     }
 
-    /** Argument matcher that matches Intents using |filterEquals| method. */
+    /** Argument matcher that matches Intents with the same action. */
     private static class IntentArgumentMatcher implements ArgumentMatcher<Intent> {
-        private final Intent mIntent;
+        private final String mAction;
 
-        public IntentArgumentMatcher(Intent intent) {
-            mIntent = intent;
+        public IntentArgumentMatcher(String action) {
+            mAction = action;
         }
 
         @Override
         public boolean matches(Intent other) {
-            return mIntent.filterEquals(other);
+            return mAction.equals(other.getAction());
         }
 
         @Override
         public String toString() {
-            return mIntent.toString();
+            return mAction;
         }
     }
 
@@ -176,7 +176,7 @@ public class SelectFileDialogTest {
 
         // Now setup WindowAndroid#showIntent to succeed for our next run.
         IntentArgumentMatcher chooserIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
         Mockito.doAnswer(
                         (invocation) -> {
                             // When showIntent is called, we use the opportunity to check on the
@@ -266,41 +266,41 @@ public class SelectFileDialogTest {
         verifyExternalPickerWithFileExtensions(Intent.ACTION_GET_CONTENT);
     }
 
-    @Test
-    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
-    public void testMimeTypesWithExternalPickerOpenDocument() throws Exception {
-        testMimeTypesWithExternalPicker(Intent.ACTION_OPEN_DOCUMENT);
-    }
-
-    @Test
-    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
-    public void testMimeTypesWithExternalPickerOpenDocumentTree() throws Exception {
+    public void verifyFileSystemAccessIntent(String intentAction) throws Exception {
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        String[] fileTypes = {"image/jpeg", "image/png"};
 
         // Setup WindowAndroid#showIntent to succeed (and validate the call).
-        IntentArgumentMatcher chooserIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+        IntentArgumentMatcher intentArgumentMatcher = new IntentArgumentMatcher(intentAction);
         Mockito.doAnswer(
                         (invocation) -> {
-                            // Validate open-dir intent has no extra choosers, mimes, etc.
+                            // Validate intent.
                             Intent intent = (Intent) invocation.getArguments()[0];
                             assertEquals(null, intent.getExtra(Intent.EXTRA_INTENT));
-                            assertEquals(null, intent.getType());
-                            assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
-                            assertFalse(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(intentAction)) {
+                                assertEquals(null, intent.getType());
+                                assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                                assertFalse(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            } else {
+                                assertEquals("*/*", intent.getType());
+                                assertArrayEquals(
+                                        fileTypes,
+                                        (String[]) intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                                assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            }
                             return true;
                         })
                 .when(windowAndroid)
                 .showIntent(
-                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        ArgumentMatchers.argThat(intentArgumentMatcher),
                         (WindowAndroid.IntentCallback) any(),
                         anyInt());
 
         // Simulate showing the dialog, allowing a directory to be selected.
         selectFileDialog.selectFile(
-                Intent.ACTION_OPEN_DOCUMENT_TREE,
-                /* fileTypes= */ new String[] {},
+                intentAction,
+                fileTypes,
                 /* capture= */ false,
                 /* multiple= */ false,
                 windowAndroid);
@@ -310,13 +310,31 @@ public class SelectFileDialogTest {
     }
 
     @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testFileSystemAccessOpenDocument() throws Exception {
+        verifyFileSystemAccessIntent(Intent.ACTION_OPEN_DOCUMENT);
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testFileSystemAccessCreateDocument() throws Exception {
+        verifyFileSystemAccessIntent(Intent.ACTION_CREATE_DOCUMENT);
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testFileSystemAccessOpenDocumentTree() throws Exception {
+        verifyFileSystemAccessIntent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+    }
+
+    @Test
     public void testMimeTypesWithExternalPickerNoAcceptList() throws Exception {
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
 
         // Setup WindowAndroid#showIntent to succeed (and validate the call).
         IntentArgumentMatcher chooserIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
         Mockito.doAnswer(
                         (invocation) -> {
                             // When showIntent is called, we use the opportunity to check on the
@@ -376,7 +394,7 @@ public class SelectFileDialogTest {
 
         // Now setup WindowAndroid#showIntent to succeed for our next run.
         IntentArgumentMatcher chooserIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
         Mockito.doAnswer(
                         (invocation) -> {
                             // When showIntent is called, we use the opportunity to check on the
@@ -600,7 +618,7 @@ public class SelectFileDialogTest {
         // Force WindowAndroid#showIntent to succeed and make sure the pipeline remains open when
         // the test reruns.
         IntentArgumentMatcher chooserIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
         Mockito.doAnswer(
                         (invocation) -> {
                             Intent chooserIntent = (Intent) invocation.getArguments()[0];
@@ -642,7 +660,7 @@ public class SelectFileDialogTest {
         when(windowAndroid.hasPermission(Manifest.permission.CAMERA)).thenReturn(false);
 
         IntentArgumentMatcher imageCaptureIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
+                new IntentArgumentMatcher(MediaStore.ACTION_IMAGE_CAPTURE);
         when(windowAndroid.canResolveActivity(
                         ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
                 .thenReturn(true);
@@ -694,7 +712,7 @@ public class SelectFileDialogTest {
                 .thenReturn(true);
 
         IntentArgumentMatcher videoCaptureIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(MediaStore.ACTION_VIDEO_CAPTURE));
+                new IntentArgumentMatcher(MediaStore.ACTION_VIDEO_CAPTURE);
         when(windowAndroid.canResolveActivity(
                         ArgumentMatchers.argThat(videoCaptureIntentArgumentMatcher)))
                 .thenReturn(true);
@@ -716,7 +734,7 @@ public class SelectFileDialogTest {
 
         AtomicBoolean cameraIntentShow = new AtomicBoolean(false);
         IntentArgumentMatcher chooserIntentArgumentMatcher =
-                new IntentArgumentMatcher(new Intent(MediaStore.ACTION_VIDEO_CAPTURE));
+                new IntentArgumentMatcher(MediaStore.ACTION_VIDEO_CAPTURE);
         Mockito.doAnswer(
                         (invocation) -> {
                             cameraIntentShow.set(true);
