@@ -186,6 +186,10 @@ BASE_DECLARE_FEATURE(kSeamlessRenderFrameSwap);
 // non unimportant frames.
 BASE_DECLARE_FEATURE(kUnimportantFramesPriority);
 
+// When enabled, the begin frame rate of visible unimportant frames would be
+// reduced to half of normal frame rate.
+BASE_DECLARE_FEATURE(kThrottleUnimportantFrameRate);
+
 // When enabled, PerformanceManager will update
 // blink::performance_scenarios::LoadingScenario.
 BASE_DECLARE_FEATURE(kLoadingPerformanceScenario);

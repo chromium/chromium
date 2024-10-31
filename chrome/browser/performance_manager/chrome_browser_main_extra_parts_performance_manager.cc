@@ -20,6 +20,7 @@
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
+#include "chrome/browser/performance_manager/policies/frame_throttling_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
@@ -216,6 +217,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   graph->PassToGraph(
       std::make_unique<performance_manager::metrics::PageResourceMonitor>());
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kThrottleUnimportantFrameRate)) {
+    graph->PassToGraph(std::make_unique<
+                       performance_manager::policies::FrameThrottlingPolicy>());
+  }
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kBFCachePerformanceManagerPolicy)) {

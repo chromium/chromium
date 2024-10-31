@@ -997,6 +997,8 @@ static_library("browser") {
     "performance_manager/metrics/metrics_provider_common.h",
     "performance_manager/observers/page_load_metrics_observer.cc",
     "performance_manager/observers/page_load_metrics_observer.h",
+    "performance_manager/policies/frame_throttling_policy.cc",
+    "performance_manager/policies/frame_throttling_policy.h",
     "performance_manager/policies/policy_features.cc",
     "performance_manager/policies/policy_features.h",
     "performance_manager/policies/working_set_trimmer_policy.cc",

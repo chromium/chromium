@@ -278,9 +278,8 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Notifications of property changes.
 
   // Invoked when the current frame changes. Both arguments can be nullptr.
-  virtual void OnCurrentFrameChanged(
-      const FrameNode* previous_frame_node,
-      const FrameNode* current_current_frame) = 0;
+  virtual void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
+                                     const FrameNode* current_frame_node) = 0;
 
   // Invoked when the NetworkAlmostIdle property changes.
   virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) = 0;
