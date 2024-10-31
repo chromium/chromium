@@ -43,7 +43,7 @@ const char kAuthUrl[] =
     "https://accounts.google.com/"
     "AddSession?Email=user%40example.com&continue=https%3A%2F%2Fwww.google.com%"
     "2F";
-const char kExampleUrl[] = "http://example.com/";
+const char kExampleUrl[] = "https://example.com/";
 
 // A boolean with a more explicit meaning.
 enum Activation {
