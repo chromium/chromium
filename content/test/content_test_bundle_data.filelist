@@ -895,6 +895,8 @@ data/accessibility/aria/aria-hidden-focused-button-expected-blink.txt
 data/accessibility/aria/aria-hidden-focused-button-expected-mac.txt
 data/accessibility/aria/aria-hidden-focused-button-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-focused-button-expected-win.txt
+data/accessibility/aria/aria-hidden-focused-button-owned-expected-blink.txt
+data/accessibility/aria/aria-hidden-focused-button-owned.html
 data/accessibility/aria/aria-hidden-focused-button-uia-win.txt
 data/accessibility/aria/aria-hidden-focused-button.html
 data/accessibility/aria/aria-hidden-focused-input-expected-android.txt
