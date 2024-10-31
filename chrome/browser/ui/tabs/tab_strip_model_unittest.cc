@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -256,6 +257,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
+    latest_selection_change = selection;
     switch (change.type()) {
       case TabStripModelChange::kInserted: {
         for (const auto& contents : change.GetInsert()->contents) {
@@ -334,6 +336,10 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
   }
 
+  TabStripSelectionChange GetLatestSelectionChange() {
+    return latest_selection_change;
+  }
+
   void TabChangedAt(WebContents* contents,
                     int index,
                     TabChangeType change_type) override {
@@ -363,6 +369,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
  private:
   std::vector<State> states_;
+  TabStripSelectionChange latest_selection_change;
   std::map<tab_groups::TabGroupId, TabGroupUpdate> group_updates_;
 };
 
@@ -4753,6 +4760,63 @@ TEST_P(TabStripModelTest, AppendTab) {
   EXPECT_EQ(nullptr, tabstrip->GetTabHandleAt(3).Get()->opener());
   EXPECT_EQ(tab_model_with_foreground_false_ptr->owning_model(),
             tabstrip.get());
+}
+
+TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
+  TestTabStripModelDelegate delegate;
+  MockTabStripModelObserver observer;
+
+  std::unique_ptr<TabStripModel> tabstrip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+  tabstrip->AddObserver(&observer);
+  ASSERT_TRUE(tabstrip->empty());
+
+  // Add 4 tabs to the tabstrip model
+  PrepareTabs(tabstrip.get(), 4);
+  ASSERT_EQ(4, tabstrip->count());
+  tabstrip->ActivateTabAt(0);
+
+  // Check selection change after insertion.
+  tabstrip->InsertWebContentsAt(0, CreateWebContentsWithID(5),
+                                AddTabTypes::ADD_NONE);
+  TabStripSelectionChange change = observer.GetLatestSelectionChange();
+
+  // Active webcontents should not change but selection list changes.
+  EXPECT_EQ(change.old_contents, tabstrip->GetWebContentsAt(1));
+  EXPECT_EQ(change.new_contents, tabstrip->GetWebContentsAt(1));
+
+  EXPECT_EQ(change.old_model.active(), 0u);
+  EXPECT_EQ(change.old_model.size(), 1u);
+
+  EXPECT_EQ(change.new_model.active(), 1u);
+  EXPECT_EQ(change.new_model.size(), 1u);
+
+  // Check selection change after move.
+  tabstrip->MoveWebContentsAt(0, 2, false);
+  change = observer.GetLatestSelectionChange();
+
+  // Active webcontents should not change but selection list changes.
+  EXPECT_EQ(change.old_contents, tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(change.new_contents, tabstrip->GetWebContentsAt(0));
+
+  EXPECT_EQ(change.old_model.active(), 1u);
+  EXPECT_EQ(change.old_model.size(), 1u);
+
+  EXPECT_EQ(change.new_model.active(), 0u);
+  EXPECT_EQ(change.new_model.size(), 1u);
+
+  // Check selection change after move with select_after_move as true.
+  tabstrip->MoveWebContentsAt(1, 0, true);
+  change = observer.GetLatestSelectionChange();
+
+  EXPECT_EQ(change.old_contents, tabstrip->GetWebContentsAt(1));
+  EXPECT_EQ(change.new_contents, tabstrip->GetWebContentsAt(0));
+
+  EXPECT_EQ(change.old_model.active(), 0u);
+  EXPECT_EQ(change.old_model.size(), 1u);
+
+  EXPECT_EQ(change.new_model.active(), 0u);
+  EXPECT_EQ(change.new_model.size(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TabStripModelTest, ::testing::Bool());

@@ -85,6 +85,7 @@
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
 
@@ -2639,23 +2640,25 @@ void TabStripModel::InsertTabAtIndexImpl(
   WebContents* web_contents = tab_model->contents();
   tabs::TabModel* tab_ptr = tab_model.get();
 
+  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
   contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
 
   // Update selection model and send the notification.
-  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
   selection_model_.IncrementFrom(index);
   if (active) {
     ui::ListSelectionModel new_model = selection_model_;
     new_model.SetSelectedIndex(index);
-    selection = SetSelection(std::move(new_model),
-                             TabStripModelObserver::CHANGE_REASON_NONE,
-                             /*triggered_by_other_operation=*/true);
+    SetSelection(std::move(new_model),
+                 TabStripModelObserver::CHANGE_REASON_NONE,
+                 /*triggered_by_other_operation=*/true);
   }
 
   ValidateTabStripModel();
 
   tab_ptr->DidInsert(base::PassKey<TabStripModel>());
 
+  selection.new_model = selection_model_;
+  selection.new_contents = GetActiveWebContents();
   TabStripModelChange::Insert insert;
   insert.contents.push_back({web_contents, index});
   TabStripModelChange change(std::move(insert));
@@ -2727,10 +2730,12 @@ void TabStripModel::MoveTabToIndexImpl(
     FixOpeners(initial_index);
   }
 
-  contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
-
+  // Update the selection model before the contents data so there is access to
+  // the right initial active index.
   TabStripSelectionChange selection =
       MaybeUpdateSelectionModel(initial_index, final_index, select_after_move);
+
+  contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
 
   ValidateTabStripModel();
 
@@ -2895,6 +2900,9 @@ TabStripSelectionChange TabStripModel::MaybeUpdateSelectionModel(
   selection_model_.Move(initial_index, final_index, 1);
   if (!selection_model_.IsSelected(final_index) && select_after_move) {
     selection_model_.SetSelectedIndex(final_index);
+    // This means that the tab at the initial index currently in the tabstrip is
+    // the new active webcontents.
+    selection.new_contents = GetWebContentsAt(initial_index);
   }
   selection.new_model = selection_model_;
   return selection;
