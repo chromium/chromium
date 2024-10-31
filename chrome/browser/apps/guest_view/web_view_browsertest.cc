@@ -1671,6 +1671,8 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestExecuteScriptFail) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestExecuteScript) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   TestHelper("testExecuteScript", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -2250,36 +2252,26 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadAbortEmptyResponse) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadAbortIllegalChromeURL) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAbortIllegalChromeURL",
              "web_view/shim",
              NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadAbortIllegalFileURL) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAbortIllegalFileURL", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadAbortIllegalJavaScriptURL) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAbortIllegalJavaScriptURL",
              "web_view/shim",
              NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadAbortInvalidNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAbortInvalidNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadAbortNonWebSafeScheme) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAbortNonWebSafeScheme", "web_view/shim", NO_TEST_SERVER);
 }
 

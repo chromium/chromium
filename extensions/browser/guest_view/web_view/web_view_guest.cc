@@ -898,7 +898,8 @@ void WebViewGuest::DidFinishNavigation(
 
   base::Value::Dict args;
   args.Set(guest_view::kUrl, navigation_handle->GetURL().spec());
-  args.Set(kInternalVisibleUrl, web_contents()->GetVisibleURL().spec());
+  args.Set(kInternalVisibleUrl,
+           GetController().GetVisibleEntry()->GetVirtualURL().spec());
   args.Set(guest_view::kIsTopLevel,
            IsObservedNavigationWithinGuestMainFrame(navigation_handle));
   args.Set(
