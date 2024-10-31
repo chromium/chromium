@@ -33,16 +33,4 @@ void RunScheduledLayout(View* view) {
     parent_view->DeprecatedLayoutImmediately();
 }
 
-bool IsOzoneBubblesUsingPlatformWidgets() {
-#if BUILDFLAG(IS_OZONE)
-  return base::FeatureList::IsEnabled(
-             features::kOzoneBubblesUsePlatformWidgets) &&
-         ui::OzonePlatform::GetInstance()
-             ->GetPlatformRuntimeProperties()
-             .supports_subwindows_as_accelerated_widgets;
-#else
-  return false;
-#endif
-}
-
 }  // namespace views::test
