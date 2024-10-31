@@ -112,14 +112,8 @@ template("rust_bindgen_generator") {
     # allow a rust_bindgen_generator to be used by 1P folks.
     visibility = [ "//third_party/*" ]
     if (defined(_library_name)) {
-      # Allow both the rust target and the copy target to be able to depend on
-      # the rust_bindgen_generator.
-      visibility += [
-        # This can be deleted once boringssl and crabbyavif switch
-        # rust_bindgen_generator targets from `deps` to `bindgen_deps`.
-        ":${_library_name}",
-        ":${_library_name}_${_bindgen_target_name}_copy",
-      ]
+      # Allow the copy target to be able to depend on the generated file.
+      visibility += [ ":${_library_name}_${_bindgen_target_name}_copy" ]
     }
 
     if (_wrap_static_fns) {

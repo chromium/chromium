@@ -79,7 +79,6 @@ if (enable_rust) {
     edition = "2021"
     deps = [
       ":boringssl",
-      ":raw_bssl_sys_bindings",  # Delete once the source code has changed.
       ":raw_bssl_sys_bindings_static_fns",
     ]
 
@@ -88,14 +87,6 @@ if (enable_rust) {
     ]
 
     bindgen_deps = [ ":raw_bssl_sys_bindings" ]
-
-    # This is no longer necessary and can be deleted once the source
-    # code is changed to use `OUT_DIR` always.
-    bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
-    inputs = bindgen_output
-    rustenv =
-        [ "BINDGEN_RS_FILE=" +
-          rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
   }
 
   # Rust bindings to boringssl
