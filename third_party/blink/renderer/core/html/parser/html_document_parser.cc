@@ -566,10 +566,11 @@ void HTMLDocumentParser::PrepareToStopParsing() {
 
   AttemptToRunDeferredScriptsAndEnd();
 
-  base::UmaHistogramTimes("Blink.PrepareToStopParsingTime", timer.Elapsed());
+  base::TimeDelta elapsed_time = timer.Elapsed();
+  base::UmaHistogramTimes("Blink.PrepareToStopParsingTime", elapsed_time);
   if (metrics_reporter_) {
     metrics_reporter_->AddPrepareToStopParsingTime(
-        timer.Elapsed().InMicroseconds());
+        elapsed_time.InMicroseconds());
   }
 }
 
@@ -821,11 +822,12 @@ bool HTMLDocumentParser::PumpTokenizer() {
     }
   }
 
+  base::TimeDelta pump_tokenizer_elapsed_time = pump_tokenizer_timer.Elapsed();
   base::UmaHistogramTimes("Blink.PumpTokenizerTime",
-                          pump_tokenizer_timer.Elapsed());
+                          pump_tokenizer_elapsed_time);
   if (metrics_reporter_) {
     metrics_reporter_->AddPumpTokenizerTime(
-        pump_tokenizer_timer.Elapsed().InMicroseconds());
+        pump_tokenizer_elapsed_time.InMicroseconds());
   }
 
   if (is_tracing) {
@@ -1578,12 +1580,13 @@ void HTMLDocumentParser::MaybeFetchQueuedPreloads() {
 
   base::ElapsedTimer timer;
   preloader_->TakeAndPreload(queued_preloads_);
+  base::TimeDelta elapsed_time = timer.Elapsed();
   base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
                                         GetPreloadHistogramSuffix()}),
-                          timer.Elapsed());
+                          elapsed_time);
   if (metrics_reporter_) {
     metrics_reporter_->AddFetchQueuedPreloadsTime(
-        timer.Elapsed().InMicroseconds());
+        elapsed_time.InMicroseconds());
   }
 }
 
