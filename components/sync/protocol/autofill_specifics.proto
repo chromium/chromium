@@ -447,7 +447,9 @@ message WalletMaskedCreditCard {
   // terms and conditions regarding the credit card product and its benefits.
   optional string product_terms_url = 21;
 
-  // The state of enrollement for runtime card info retrieval.
+  // The state of enrollement for runtime card info retrieval. Enrollment in
+  // 'CardInfoRetrieval' will enable runtime retrieval of card information from
+  // card issuer including card number, expiry and CVC.
   optional CardInfoRetrievalEnrollmentState
       card_info_retrieval_enrollment_state = 22;
 }

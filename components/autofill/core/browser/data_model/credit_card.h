@@ -109,6 +109,19 @@ class CreditCard : public AutofillDataModel {
   };
 
   // Whether the card has been enrolled in the card info retrieval feature.
+  //
+  // 'CardInfoRetrieval' is a Payments server-side feature where some
+  // card information (such as card number, expiry, or CVC) may be
+  // dynamically retrieved from the card issuer during an unmasking call.
+  // From the Chrome client side this looks the same (the UnmaskCardRequest
+  // API call returns the full card number and CVC for use by the client),
+  // however whether or not a card is enrolled in this feature may affect
+  // some UX, authentication methods, feature offerings, user guidance, and
+  // logging.
+  //
+  // Local cards cannot be enrolled in `CardInfoRetrieval`, and always have
+  // their card information stored locally.
+  //
   // This must stay in sync with the proto enum in autofill_specifics.proto.
   // A java IntDef@ is generated from this.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
@@ -637,7 +650,9 @@ class CreditCard : public AutofillDataModel {
   // date independently. The timestamp `is_null()` for cards without CVC.
   base::Time cvc_modification_date_;
 
-  // The card info retrieval enrollment state of this card.
+  // The card info retrieval enrollment state of this card. Enrollment in
+  // 'CardInfoRetrieval' will enable runtime retrieval of card information from
+  // card issuer including card number, expiry and CVC.
   CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state_ =
       CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
 };
