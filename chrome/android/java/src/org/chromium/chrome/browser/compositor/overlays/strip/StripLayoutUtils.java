@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.view.HapticFeedbackConstants;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -192,5 +195,12 @@ public class StripLayoutUtils {
             array[i + 1] = array[i];
         }
         array[newIndex] = elem;
+    }
+
+    // Other methods.
+
+    static void performHapticFeedback(View view) {
+        if (view == null) return;
+        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
     }
 }

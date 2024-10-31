@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ public class ReorderDelegate {
     // Tab Strip State.
     private AnimationHost mAnimationHost;
     private ScrollDelegate mScrollDelegate;
+    private View mContainerView;
 
     // Internal State.
     private boolean mInitialized;
@@ -127,13 +130,60 @@ public class ReorderDelegate {
     void initialize(
             AnimationHost animationHost,
             TabGroupModelFilter tabGroupModelFilter,
-            ScrollDelegate scrollDelegate) {
+            ScrollDelegate scrollDelegate,
+            View containerView) {
         mAnimationHost = animationHost;
         mTabGroupModelFilter = tabGroupModelFilter;
         mScrollDelegate = scrollDelegate;
+        mContainerView = containerView;
 
         mModel = mTabGroupModelFilter.getTabModel();
         mInitialized = true;
+    }
+
+    // ============================================================================================
+    // Reorder API
+    // ============================================================================================
+
+    /**
+     * Begin reordering the interacting tab.
+     *
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param interactingTab The interacting {@link StripLayoutTab}.
+     * @param effectiveTabWidth The width of a tab, accounting for overlap.
+     * @param x The x coordinate that the reorder action began at.
+     */
+    void startReorderTab(
+            StripLayoutTab[] stripTabs,
+            StripLayoutTab interactingTab,
+            float effectiveTabWidth,
+            float x) {
+        RecordUserAction.record("MobileToolbarStartReorderTab");
+        mInteractingTab = interactingTab;
+
+        // 1. Set reorder mode to true before selecting this tab to prevent unnecessary triggering
+        // of #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
+        mInReorderMode = true;
+
+        // 2. Select this tab so that it is always in the foreground.
+        TabModelUtils.setIndex(
+                mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getTabId()));
+
+        // 3. Set initial state.
+        prepareStripForReorder(stripTabs, effectiveTabWidth, x);
+
+        // 4. Lift the container off the toolbar and perform haptic feedback.
+        ArrayList<Animator> animationList =
+                mAnimationsDisabledForTesting ? null : new ArrayList<>();
+        updateTabAttachState(mInteractingTab, /* attached= */ false, animationList);
+        StripLayoutUtils.performHapticFeedback(mContainerView);
+
+        // 5. Kick-off animations and request an update.
+        if (animationList != null) {
+            mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        }
+        // TODO(crbug.com/372546700): Clean-up when mAnimationsDisabledForTesting is removed.
+        mAnimationHost.requestUpdate();
     }
 
     // ============================================================================================
@@ -261,8 +311,7 @@ public class ReorderDelegate {
     // Tab reorder helpers
     // ============================================================================================
 
-    void updateStripForTabReorder(
-            StripLayoutTab[] stripTabs, float effectiveTabWidth, float startX) {
+    void prepareStripForReorder(StripLayoutTab[] stripTabs, float effectiveTabWidth, float startX) {
         // 1. Set initial state parameters.
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         mLastReorderScrollTime = INVALID_TIME;

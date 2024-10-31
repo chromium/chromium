@@ -1231,20 +1231,18 @@ public class StripLayoutHelperTest {
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
         int y = (int) closeButton.getDrawY();
-        StripLayoutHelper stripLayoutHelper = spy(mStripLayoutHelper);
-        when(stripLayoutHelper.getTabAtPosition(x)).thenReturn(tab);
-        stripLayoutHelper.setTabAtPositionForTesting(tab);
+        mStripLayoutHelper.setTabAtPositionForTesting(tab);
         tab.setCloseButtonForTesting(closeButton);
         tab.setShowingCloseButtonForTesting(true);
 
         // Verify close button is hovered on.
-        stripLayoutHelper.onHoverEnter(
+        mStripLayoutHelper.onHoverEnter(
                 x + 1,
                 y + 1); // mouse position within close button range(24dp width + 12dp click slop)
         assertTrue("Close button should be hovered", tab.isCloseHovered());
 
         // Verify close button is NOT hovered on.
-        stripLayoutHelper.onHoverEnter(
+        mStripLayoutHelper.onHoverEnter(
                 x + 37,
                 y); // mouse position out of close button range(24dp width + 12dp click slop).
         assertFalse("Close button should NOT be hovered on", tab.isCloseHovered());
@@ -3357,7 +3355,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabModelStartupInfo(5, 2, false);
 
         // Attempt to start a reorder and verify that we don't start it.
-        mStripLayoutHelper.startReorderTab(TIMESTAMP, 0, 100);
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
         assertFalse(
                 "Should not start reorder mode before tab restore finishes.",
                 mStripLayoutHelper.getInReorderModeForTesting());
