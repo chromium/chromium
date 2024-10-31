@@ -758,7 +758,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 -->
 
 <histogram name="UserEducation.MessageAction.{IPHFeature}" enum="MessageAction"
-    expires_after="2025-03-09">
+    expires_after="2025-04-30">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>Records what action was taken to close the In-Product Help.</summary>
@@ -766,7 +766,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown.{IPHFeature}"
-    enum="PromoFailure" expires_after="2025-04-06">
+    enum="PromoFailure" expires_after="2025-04-30">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -779,7 +779,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.RotatingPromoIndex.{IPHFeature}" units="Index"
-    expires_after="2025-03-02">
+    expires_after="2025-04-30">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
