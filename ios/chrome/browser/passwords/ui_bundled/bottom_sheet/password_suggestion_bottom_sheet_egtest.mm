@@ -477,7 +477,8 @@ id<GREYMatcher> OpenKeyboardButton() {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
-- (void)testOpenPasswordBottomSheetOpenPasswordDetails {
+// Disabled due to flakes across builders; see https://crbug.com/374961324.
+- (void)DISABLED_testOpenPasswordBottomSheetOpenPasswordDetails {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
