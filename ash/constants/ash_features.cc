@@ -4692,7 +4692,8 @@ bool IsScalableShelfPodsEnabled() {
 }
 
 bool IsScannerEnabled() {
-  return base::FeatureList::IsEnabled(kScannerUpdate);
+  return base::FeatureList::IsEnabled(kScannerUpdate) ||
+         base::FeatureList::IsEnabled(kScannerDogfood);
 }
 
 bool IsSeaPenDemoModeEnabled() {
