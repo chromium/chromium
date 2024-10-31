@@ -4,6 +4,7 @@
 
 #include "net/cookies/test_cookie_access_delegate.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -67,11 +67,9 @@ TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
     base::OnceCallback<void(FirstPartySetMetadata,
                             FirstPartySetsCacheFilter::MatchInfo)> callback)
     const {
-  std::optional<FirstPartySetEntry> top_frame_owner =
-      top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : std::nullopt;
   FirstPartySetMetadata metadata(
-      base::OptionalToPtr(FindFirstPartySetEntry(site)),
-      base::OptionalToPtr(top_frame_owner));
+      FindFirstPartySetEntry(site),
+      top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : std::nullopt);
   FirstPartySetsCacheFilter::MatchInfo match_info(
       first_party_sets_cache_filter_.GetMatchInfo(site));
 

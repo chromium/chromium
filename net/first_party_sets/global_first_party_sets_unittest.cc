@@ -837,31 +837,30 @@ TEST_F(
 
 TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
   SchemefulSite nonmember(GURL("https://nonmember.test"));
-  SchemefulSite nonmember1(GURL("https://nonmember1.test"));
   FirstPartySetEntry primary_entry(kPrimary, SiteType::kPrimary, std::nullopt);
   FirstPartySetEntry associated_entry(kPrimary, SiteType::kAssociated, 0);
 
   // Works as usual for sites that are in First-Party sets.
   EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kAssociated1,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(&associated_entry, &associated_entry));
+            FirstPartySetMetadata(associated_entry, associated_entry));
   EXPECT_EQ(global_sets().ComputeMetadata(kPrimary, &kAssociated1,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(&primary_entry, &associated_entry));
+            FirstPartySetMetadata(primary_entry, associated_entry));
   EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kPrimary,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(&associated_entry, &primary_entry));
+            FirstPartySetMetadata(associated_entry, primary_entry));
 
   EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &kAssociated1,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(nullptr, &associated_entry));
+            FirstPartySetMetadata(std::nullopt, associated_entry));
   EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &nonmember,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(&associated_entry, nullptr));
+            FirstPartySetMetadata(associated_entry, std::nullopt));
 
   EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &nonmember,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(nullptr, nullptr));
+            FirstPartySetMetadata(std::nullopt, std::nullopt));
 }
 
 TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
@@ -1433,21 +1432,18 @@ class GlobalFirstPartySetsWithConfigTest
 };
 
 TEST_F(GlobalFirstPartySetsWithConfigTest, ComputeMetadata) {
-  FirstPartySetEntry example_primary_entry(kPrimary, SiteType::kPrimary,
-                                           std::nullopt);
-  FirstPartySetEntry foo_primary_entry(kPrimary3, SiteType::kPrimary,
-                                       std::nullopt);
-  FirstPartySetEntry foo_associated_entry(kPrimary3, SiteType::kAssociated, 0);
-
   // kAssociated1 has been removed from its set.
   EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kPrimary, config()),
-            FirstPartySetMetadata(nullptr, &example_primary_entry));
+            FirstPartySetMetadata(
+                std::nullopt, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
+                                                 std::nullopt)));
 
   // kAssociated3 and kPrimary3 are sites in a new set.
-  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated3, &kPrimary3, config()),
-            FirstPartySetMetadata(
-
-                &foo_associated_entry, &foo_primary_entry));
+  EXPECT_EQ(
+      global_sets().ComputeMetadata(kAssociated3, &kPrimary3, config()),
+      FirstPartySetMetadata(
+          FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0),
+          FirstPartySetEntry(kPrimary3, SiteType::kPrimary, std::nullopt)));
 }
 
 }  // namespace net
