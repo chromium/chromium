@@ -76,7 +76,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/aura/window_tree_host.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #endif
 
 namespace {
@@ -1430,20 +1429,6 @@ void VideoOverlayWindowViews::Close() {
 void VideoOverlayWindowViews::ShowInactive() {
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros is based on Ozone/Wayland, which uses ui::PlatformWindow and
-  // views::DesktopWindowTreeHostLinux.
-  auto* desktop_window_tree_host =
-      views::DesktopWindowTreeHostLacros::From(GetNativeWindow()->GetHost());
-
-  // At this point, the aura surface will be created so we can set it to pip and
-  // its aspect ratio. Let Exo handle adding a rounded corner decorartor.
-  desktop_window_tree_host->GetWaylandToplevelExtension()->SetPip();
-  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_),
-                                           /*excluded_margin=*/gfx::Size());
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   non_client_view()->frame_view()->UpdateWindowRoundedCorners();
 #endif

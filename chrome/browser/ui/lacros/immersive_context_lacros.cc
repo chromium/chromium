@@ -9,7 +9,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/menu/menu_controller.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
 ImmersiveContextLacros::ImmersiveContextLacros() = default;
 

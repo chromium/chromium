@@ -907,18 +907,6 @@ component("views") {
           "//ui/base:ozone_buildflags",
         ]
       }
-      if (is_chromeos_lacros) {
-        public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
-        sources += [
-          "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
-          "widget/desktop_aura/window_event_filter_lacros.cc",
-          "widget/desktop_aura/window_event_filter_lacros.h",
-        ]
-        deps += [
-          "//chromeos/ui/base",
-          "//ui/base:hit_test",
-        ]
-      }
       if (is_linux || is_chromeos_lacros || is_fuchsia) {
         public += [
           "widget/desktop_aura/desktop_window_tree_host_platform.h",

@@ -10,15 +10,9 @@
 #include "ui/base/class_property.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
-
-ui::DeskExtension* GetDeskExtension(aura::Window* window) {
-  return views::DesktopWindowTreeHostLacros::From(window->GetHost())
-      ->GetDeskExtension();
-}
 
 //////////////////////////////////////////////////////////////////////
 // DesksHelperLacros implementation:
@@ -47,18 +41,10 @@ class DesksHelperLacros : public chromeos::DesksHelper {
       return false;
     return GetActiveDeskIndex() == desk_index;
   }
-  int GetActiveDeskIndex() const override {
-    return GetDeskExtension(window_)->GetActiveDeskIndex();
-  }
-  std::u16string GetDeskName(int index) const override {
-    return GetDeskExtension(window_)->GetDeskName(index);
-  }
-  int GetNumberOfDesks() const override {
-    return GetDeskExtension(window_)->GetNumberOfDesks();
-  }
-  void SendToDeskAtIndex(aura::Window* window, int desk_index) override {
-    GetDeskExtension(window)->SendToDeskAtIndex(desk_index);
-  }
+  int GetActiveDeskIndex() const override { return -1; }
+  std::u16string GetDeskName(int index) const override { return {}; }
+  int GetNumberOfDesks() const override { return -1; }
+  void SendToDeskAtIndex(aura::Window* window, int desk_index) override {}
 
  private:
   raw_ptr<aura::Window> window_;
