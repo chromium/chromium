@@ -760,7 +760,8 @@ URLLoader::URLLoader(
           ? std::make_optional(
                 shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
                     request.load_flags, request_destination_))
-          : std::nullopt);
+          : std::nullopt,
+      request.socket_tag);
 
   if (context.ShouldRequireIsolationInfo()) {
     DCHECK(!url_request_->isolation_info().IsEmpty());
@@ -811,7 +812,8 @@ void URLLoader::ConfigureRequest(
     int request_load_flags,
     bool priority_incremental,
     net::CookieSettingOverrides cookie_setting_overrides,
-    std::optional<net::SharedDictionaryGetter> shared_dictionary_getter) {
+    std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
+    net::SocketTag socket_tag) {
   url_request_->set_method(method);
   url_request_->set_site_for_cookies(site_for_cookies);
   url_request_->set_force_ignore_site_for_cookies(
@@ -879,6 +881,11 @@ void URLLoader::ConfigureRequest(
   if (shared_dictionary_getter) {
     url_request_->SetSharedDictionaryGetter(
         std::move(shared_dictionary_getter).value());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kUseSocketTag) &&
+      socket_tag != net::SocketTag()) {
+    url_request_->set_socket_tag(std::move(socket_tag));
   }
 }
 

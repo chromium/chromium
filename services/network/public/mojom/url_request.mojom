@@ -543,6 +543,10 @@ struct URLRequest {
   // TODO(crbug.com/40255884): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
+
+  // The socket tag to associate this request with. This is typically set by the
+  // embedder.
+  SocketTag socket_tag;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.
@@ -599,4 +603,12 @@ union DataElement {
   DataElementFile file;
   DataElementDataPipe data_pipe;
   DataElementChunkedDataPipe chunked_data_pipe;
+};
+
+// Typemapped to net::SocketTag.
+struct SocketTag {
+  [EnableIf=is_android]
+  uint32 uid;
+  [EnableIf=is_android]
+  int32 tag;
 };

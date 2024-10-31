@@ -33,6 +33,7 @@
 #include "net/base/upload_progress.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_request_helper.h"
@@ -392,7 +393,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       int request_load_flags,
       bool priority_incremental,
       net::CookieSettingOverrides cookie_setting_overrides,
-      std::optional<net::SharedDictionaryGetter> shared_dictionary_getter);
+      std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
+      net::SocketTag socket_tag);
 
   void OpenFilesForUpload(const ResourceRequest& request);
   void SetUpUpload(const ResourceRequest& request,

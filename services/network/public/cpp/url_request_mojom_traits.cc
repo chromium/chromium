@@ -178,7 +178,8 @@ bool StructTraits<
       !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain) ||
       !data.ReadAttributionReportingSrcToken(
           &out->attribution_reporting_src_token) ||
-      !data.ReadStorageAccessApiStatus(&out->storage_access_api_status)) {
+      !data.ReadStorageAccessApiStatus(&out->storage_access_api_status) ||
+      !data.ReadSocketTag(&out->socket_tag)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -335,6 +336,18 @@ bool UnionTraits<network::mojom::DataElementDataView, network::DataElement>::
     }
   }
   return false;
+}
+
+// static
+bool StructTraits<network::mojom::SocketTagDataView, net::SocketTag>::Read(
+    network::mojom::SocketTagDataView data,
+    net::SocketTag* out) {
+#if BUILDFLAG(IS_ANDROID)
+  *out = net::SocketTag(data.uid(), data.tag());
+#else
+  *out = net::SocketTag();
+#endif  // BUILDFLAG(IS_ANDROID)
+  return true;
 }
 
 }  // namespace mojo

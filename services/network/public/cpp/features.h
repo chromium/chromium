@@ -204,6 +204,9 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kStorageAccessHeaders);
 // Enables the Storage Access Headers Origin Trial.
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kStorageAccessHeadersTrial);
 
+// Enables socket tagging
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kUseSocketTag);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

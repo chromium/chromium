@@ -135,7 +135,11 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       mojom::TrustTokenSignRequestData::kInclude;
   original.trust_token_params->additional_signed_headers.push_back(
       "some_header");
-
+#if BUILDFLAG(IS_ANDROID)
+  original.socket_tag = net::SocketTag(1, 2);
+#else
+  original.socket_tag = net::SocketTag();
+#endif
   network::ResourceRequest copied;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));

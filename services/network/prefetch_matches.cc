@@ -110,7 +110,8 @@ namespace {
   DO_FIELD(shared_dictionary_writer_enabled) __VA_ARGS__       \
   DO_FIELD(attribution_reporting_src_token) __VA_ARGS__        \
   DO_FIELD(is_ad_tagged) __VA_ARGS__                           \
-  DO_FIELD(prefetch_token)
+  DO_FIELD(prefetch_token) __VA_ARGS__                         \
+  DO_FIELD(socket_tag)
 
 // clang-format on
 
@@ -321,6 +322,9 @@ constexpr std::array kIgnoredFields = {
 
     // Currently ignored.
     Fields::kprefetch_token,
+
+    // It doesn't matter if they match.
+    Fields::ksocket_tag,
 };
 
 // These headers are completely ignored for the purposes of matching when they

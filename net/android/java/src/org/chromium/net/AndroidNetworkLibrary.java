@@ -659,7 +659,7 @@ class AndroidNetworkLibrary {
         if (tag != oldTag) {
             TrafficStats.setThreadStatsTag(tag);
         }
-        if (uid != TrafficStatsUid.UNSET) {
+        if (uid != TrafficStatsUid.UNSET_UID) {
             ThreadStatsUid.set(uid);
         }
 
@@ -695,7 +695,7 @@ class AndroidNetworkLibrary {
         if (tag != oldTag) {
             TrafficStats.setThreadStatsTag(oldTag);
         }
-        if (uid != TrafficStatsUid.UNSET) {
+        if (uid != TrafficStatsUid.UNSET_UID) {
             ThreadStatsUid.clear();
         }
     }

@@ -12,7 +12,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <stdint.h>
 #include <sys/types.h>
-#include <unistd.h>
 #endif
 
 namespace net {
@@ -51,6 +50,9 @@ class NET_EXPORT SocketTag {
   // http://androidxref.com/4.4_r1/xref/frameworks/base/core/java/android/net/TrafficStats.java#169
   static const uid_t UNSET_UID = -1;
   static const int32_t UNSET_TAG = -1;
+
+  uid_t uid() const { return uid_; }
+  int32_t traffic_stats_tag() const { return traffic_stats_tag_; }
 
  private:
   // UID to tag with.

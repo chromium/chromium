@@ -1430,6 +1430,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Online"/>
 </enum>
 
+<!-- LINT.IfChange(PrefetchMatchesResourceRequestField) -->
+
 <enum name="PrefetchMatchesResourceRequestField">
   <int value="1" label="method"/>
   <int value="2" label="url"/>
@@ -1494,6 +1496,8 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="attribution_reporting_src_token"/>
   <int value="62" label="is_ad_tagged"/>
 </enum>
+
+<!-- LINT.ThenChange() -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
