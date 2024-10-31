@@ -17249,22 +17249,6 @@
             ]
         }
     ],
-    "PostPowerMonitorBroadcastReceiverInitToBackground": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PostPowerMonitorBroadcastReceiverInitToBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "PostQuantumKyber": [
         {
             "platforms": [
