@@ -1807,19 +1807,20 @@ def Bisect(archive_build,
       else:
         pivot = len(rev_list) // 2
         fetch = archive_build.get_download_job(rev_list[pivot], 'fetch').start()
-      # prefetch left_pivot = len(rev_list[:pivot+1]) // 2
-      left_revision = rev_list[(pivot + 1) // 2]
-      if left_revision != rev_list[0] and left_revision not in prefetch:
-        prefetch[left_revision] = archive_build.get_download_job(
-            left_revision, 'prefetch').start()
-      # prefetch right_pivot = len(rev_list[pivot:]) // 2
-      right_revision = rev_list[(len(rev_list) + pivot) // 2]
-      if right_revision != rev_list[-1] and right_revision not in prefetch:
-        prefetch[right_revision] = archive_build.get_download_job(
-            right_revision, 'prefetch').start()
+
       try:
-        # evaluate the revision
         download = fetch.wait_for()
+        # prefetch left_pivot = len(rev_list[:pivot+1]) // 2
+        left_revision = rev_list[(pivot + 1) // 2]
+        if left_revision != rev_list[0] and left_revision not in prefetch:
+          prefetch[left_revision] = archive_build.get_download_job(
+              left_revision, 'prefetch').start()
+        # prefetch right_pivot = len(rev_list[pivot:]) // 2
+        right_revision = rev_list[(len(rev_list) + pivot) // 2]
+        if right_revision != rev_list[-1] and right_revision not in prefetch:
+          prefetch[right_revision] = archive_build.get_download_job(
+              right_revision, 'prefetch').start()
+        # evaluate the revision
         answer = EvaluateRevision(archive_build, download, rev_list[pivot],
                                   try_args, evaluate)
         # Ensure rev_list[0] is good and rev_list[-1] is bad after adjust.
