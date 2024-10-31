@@ -49,6 +49,9 @@ constexpr char kFullSessionResponse[] = R"(
               }
          }
         }
+    },
+    "22": {
+      "state": "ADDED"
     }
   },
   "roster": {
@@ -324,7 +327,7 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
   ParseRosterProtoFromJson(session_dict_full->GetIfDict(), session_full.get());
   ParseStudentStatusProtoFromJson(session_dict_full->GetIfDict(),
                                   session_full.get());
-  ASSERT_EQ(2u, session_full->student_statuses().size());
+  ASSERT_EQ(3u, session_full->student_statuses().size());
   EXPECT_EQ(::boca::StudentStatus::ADDED,
             session_full->student_statuses().at("2").state());
   EXPECT_EQ(::boca::StudentStatus::ACTIVE,
@@ -337,6 +340,8 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                           .activity()
                           .active_tab()
                           .title());
+  EXPECT_EQ(::boca::StudentStatus::ADDED,
+            session_full->student_statuses().at("22").state());
   ParseStudentStatusProtoFromJson(session_dict_partial->GetIfDict(),
                                   session_partial.get());
   EXPECT_EQ(0u, session_partial->student_statuses().size());

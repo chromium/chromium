@@ -254,34 +254,36 @@ void ParseStudentStatusProtoFromJson(
   }
   // Roster feature is disabled, always fetch the first item.
   if (session->roster().student_groups().size() > 0) {
-    for (auto id : session->roster().student_groups()[0].students()) {
-      if (auto* ptr = student_status_dict->FindDict(id.gaia_id())) {
-        auto* student_statuses = session->mutable_student_statuses();
-        ::boca::StudentStatus student_status;
-        // Set the student state
-        if (auto* state_ptr = ptr->FindString(kStudentStatusState)) {
-          student_status.set_state(StudentStatusJsonToProto(*state_ptr));
-        }
-        // Parse and set the devices
-        if (auto* devices_ptr = ptr->FindDict(kDevices)) {
-          for (auto device_iter : *devices_ptr) {
-            if (auto* device_dict = device_iter.second.GetIfDict()) {
-              auto& device_entry =
-                  (*student_status.mutable_devices())[device_iter.first];
-              // Parse and set ActiveTab from StudentDeviceActivity
-              if (auto* activity = device_dict->FindDict(kActivity)) {
-                if (auto* active_tab_ptr = activity->FindDict(kActiveTab)) {
-                  device_entry.mutable_activity()
-                      ->mutable_active_tab()
-                      ->set_title(active_tab_ptr->FindString(kTitle)
-                                      ? *active_tab_ptr->FindString(kTitle)
-                                      : "");
+    for (auto group : session->roster().student_groups()) {
+      for (auto id : group.students()) {
+        if (auto* ptr = student_status_dict->FindDict(id.gaia_id())) {
+          auto* student_statuses = session->mutable_student_statuses();
+          ::boca::StudentStatus student_status;
+          // Set the student state
+          if (auto* state_ptr = ptr->FindString(kStudentStatusState)) {
+            student_status.set_state(StudentStatusJsonToProto(*state_ptr));
+          }
+          // Parse and set the devices
+          if (auto* devices_ptr = ptr->FindDict(kDevices)) {
+            for (auto device_iter : *devices_ptr) {
+              if (auto* device_dict = device_iter.second.GetIfDict()) {
+                auto& device_entry =
+                    (*student_status.mutable_devices())[device_iter.first];
+                // Parse and set ActiveTab from StudentDeviceActivity
+                if (auto* activity = device_dict->FindDict(kActivity)) {
+                  if (auto* active_tab_ptr = activity->FindDict(kActiveTab)) {
+                    device_entry.mutable_activity()
+                        ->mutable_active_tab()
+                        ->set_title(active_tab_ptr->FindString(kTitle)
+                                        ? *active_tab_ptr->FindString(kTitle)
+                                        : "");
+                  }
                 }
               }
             }
           }
+          (*student_statuses)[id.gaia_id()] = std::move(student_status);
         }
-        (*student_statuses)[id.gaia_id()] = std::move(student_status);
       }
     }
   }
