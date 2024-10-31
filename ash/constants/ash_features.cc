@@ -131,10 +131,6 @@ BASE_FEATURE(kAssistMultiWord,
              "AssistMultiWord",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAssistantNativeIcons,
-             "AssistantNativeIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the ui to show the toggle for controlling hfp-mic-sr.
 BASE_FEATURE(kAudioHFPMicSRToggle,
              "AudioHFPMicSRToggle",
@@ -3539,10 +3535,6 @@ bool IsApnRevampAndPoliciesEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
-}
-
-bool IsAssistantNativeIconsEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantNativeIcons);
 }
 
 bool IsAutoNightLightEnabled() {
