@@ -22583,6 +22583,8 @@ from previous Chrome versions.
   <int value="996701528" label="SystemKeyboardLock:enabled"/>
   <int value="996987392" label="SearchNavigationPrefetch:disabled"/>
   <int value="997264173" label="MacLoopbackAudioForCast:disabled"/>
+  <int value="998317588"
+      label="SegmentationPlatformEphemeralCardRanker:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="998799701" label="BypassAppBannerEngagementChecks:disabled"/>
   <int value="998857679" label="DiscardExceptionsImprovements:enabled"/>
@@ -24114,6 +24116,8 @@ from previous Chrome versions.
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>
   <int value="1610616569"
       label="AutofillEnableSaveCardLocalSaveFallback:enabled"/>
+  <int value="1610905768"
+      label="SegmentationPlatformEphemeralCardRanker:enabled"/>
   <int value="1611265771" label="Win10TabSearchCaptionButton:enabled"/>
   <int value="1611522475" label="AutofillPrimaryInfoStyleExperiment:disabled"/>
   <int value="1612206633" label="CCTModuleCustomHeader:enabled"/>

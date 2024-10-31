@@ -3844,6 +3844,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-segmentation-platform-ephemeral_card_ranker",
+    "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "ssid@chromium.org","xinyiji@chromium.org","clank-start@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-service-workers-for-chrome-untrusted",
     "owners": [ "ortuno@chromium.org", "cros-web-apps-team@google.com" ],
     "expiry_milestone": 110

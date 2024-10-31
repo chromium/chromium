@@ -4610,6 +4610,12 @@ const char kSegmentationPlatformAndroidHomeModuleRankerV2Description[] =
     "Enable on-demand segmentation platform service to rank home modules on "
     "Android.";
 
+const char kSegmentationPlatformEphemeralCardRankerName[] =
+    "Segmentation platform ephemeral card ranker";
+const char kSegmentationPlatformEphemeralCardRankerDescription[] =
+    "Enable the Emphemeral Card ranker for the segmentation platform service "
+    "to rank home modules on Android.";
+
 const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
 const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "
