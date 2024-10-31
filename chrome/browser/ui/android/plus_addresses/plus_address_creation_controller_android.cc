@@ -8,18 +8,22 @@
 
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
+#include "base/time/time.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -309,6 +313,9 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
       }
       const bool was_notice_shown = ShouldShowNotice();
       if (was_notice_shown) {
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
+            ->GetPrefs()
+            ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
         GetPlusAddressSettingService()->SetHasAcceptedNotice();
       }
       std::move(callback_).Run(*maybe_plus_profile->plus_address);

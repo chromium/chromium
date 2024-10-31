@@ -20,8 +20,10 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/mock_plus_address_setting_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
@@ -153,6 +155,11 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
           /*notice_shown=*/false),
       0, 1);
+  // The pref is not set if the first time onboarding notice has been already
+  // shown.
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetTime(prefs::kFirstPlusAddressCreationTime),
+      base::Time());
 }
 
 // Tests that no notice is shown if the onboarding feature is disabled.
@@ -220,6 +227,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
           /*notice_shown=*/true),
       0, 1);
+  // The pref is set only when the first time onboarding notice is shown.
+  EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
+                prefs::kFirstPlusAddressCreationTime),
+            base::Time::Now());
 }
 
 // Tests that the notice is shown if the  `kPlusAddressUserOnboardingEnabled`,
