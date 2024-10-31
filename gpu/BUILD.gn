@@ -145,11 +145,7 @@ static_library("test_support") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 }
 
 if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
@@ -335,11 +331,7 @@ test("gl_tests") {
     "//ui/gl/init",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -669,11 +661,7 @@ test("gpu_unittests") {
     "//url",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (is_android) {
     deps += [ "//ui/android:ui_java" ]
