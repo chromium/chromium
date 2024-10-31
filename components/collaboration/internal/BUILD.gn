@@ -8,7 +8,14 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-static_library("internal") {
+group("internal") {
+  public_deps = [
+    ":core_internal",
+    ":messaging_internal",
+  ]
+}
+
+static_library("core_internal") {
   visibility = [
     ":*",
     "//chrome/browser",
@@ -40,16 +47,57 @@ static_library("internal") {
     ]
 
     deps += [
-      ":jni_headers",
-      "//components/collaboration/public:jni_headers",
+      ":core_jni_headers",
+      "//components/collaboration/public:core_jni_headers",
     ]
   }
 }
 
-source_set("unit_tests") {
+static_library("messaging_internal") {
+  sources = [
+    "messaging/configuration.cc",
+    "messaging/configuration.h",
+    "messaging/messaging_backend_service_impl.cc",
+    "messaging/messaging_backend_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/collaboration/public:messaging_public",
+    "//components/saved_tab_groups/public",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/messaging/conversion_utils.cc",
+      "android/messaging/conversion_utils.h",
+      "android/messaging/messaging_backend_service_bridge.cc",
+      "android/messaging/messaging_backend_service_bridge.h",
+    ]
+
+    deps += [
+      ":messaging_jni_headers",
+      "//components/data_sharing/public:android_utils",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+group("unit_tests") {
   testonly = true
 
   visibility = [ "//components/collaboration:unit_tests" ]
+
+  deps = [
+    ":core_unit_tests",
+    ":messaging_unit_tests",
+  ]
+}
+
+source_set("core_unit_tests") {
+  testonly = true
+
+  visibility = [ ":*" ]
 
   sources = [
     "collaboration_service_impl_unittest.cc",
@@ -66,10 +114,44 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("messaging_unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_android) {
+    sources +=
+        [ "android/messaging/messaging_backend_service_bridge_unittest.cc" ]
+
+    deps += [
+      ":messaging_internal",
+      ":messaging_native_j_unittests_jni_headers",
+      ":messaging_native_java_unittests_java",
+      "//base",
+      "//base/test:test_support",
+      "//components/collaboration/public:messaging_public",
+      "//components/data_sharing/public",
+      "//components/saved_tab_groups/public",
+      "//components/saved_tab_groups/public:conversion_utils",
+      "//components/tab_groups",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
 if (is_android) {
-  android_library("java") {
-    visibility = [ "//chrome/android:chrome_all_java" ]
-    srcjar_deps = [ ":jni_headers" ]
+  java_group("java") {
+    visibility = [ "//chrome/android:*" ]
+    deps = [
+      ":core_java",
+      ":messaging_java",
+    ]
+  }
+
+  android_library("core_java") {
+    visibility = [ ":*" ]
+    srcjar_deps = [ ":core_jni_headers" ]
     sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
 
     deps = [
@@ -81,12 +163,67 @@ if (is_android) {
     ]
   }
 
-  generate_jni("jni_headers") {
+  android_library("messaging_java") {
+    visibility = [ ":*" ]
+    srcjar_deps = [ ":messaging_jni_headers" ]
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridge.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/bridge/ConversionUtils.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("messaging_native_java_unittests_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridgeUnitTestCompanion.java" ]
+    deps = [
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/collaboration/internal:messaging_java",
+      "//components/collaboration/public:messaging_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [ ":messaging_native_j_unittests_jni_headers" ]
+  }
+
+  generate_jni("messaging_native_j_unittests_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridgeUnitTestCompanion.java" ]
+  }
+
+  generate_jni("core_jni_headers") {
     visibility = [
       ":*",
       "//chrome/browser",
     ]
 
     sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
+  }
+
+  generate_jni("messaging_jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridge.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/bridge/ConversionUtils.java",
+    ]
   }
 }

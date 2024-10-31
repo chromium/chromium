@@ -12,9 +12,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.tab_group_sync.messaging.MessageUtils;
-import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
-import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
+import org.chromium.components.collaboration.messaging.MessageUtils;
+import org.chromium.components.collaboration.messaging.PersistentMessage;
+import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 
 import java.util.List;
 import java.util.Optional;

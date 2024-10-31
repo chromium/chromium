@@ -12,11 +12,11 @@
 class FaviconLoader;
 class TabGroup;
 @protocol RecentActivityConsumer;
+namespace collaboration::messaging {
+class MessagingBackendService;
+}  // namespace collaboration::messaging
 namespace tab_groups {
 class TabGroupSyncService;
-namespace messaging {
-class MessagingBackendService;
-}  // namespace messaging
 }  // namespace tab_groups
 
 // A mediator to control the recent activity logs in a shared tab group.
@@ -28,7 +28,7 @@ class MessagingBackendService;
 // Designated initializer.
 - (instancetype)initWithtabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                 messagingService:
-                    (tab_groups::messaging::MessagingBackendService*)
+                    (collaboration::messaging::MessagingBackendService*)
                         messagingService
                    faviconLoader:(FaviconLoader*)faviconLoader
                      syncService:(tab_groups::TabGroupSyncService*)syncService

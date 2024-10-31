@@ -124,22 +124,6 @@ if (is_android) {
     testonly = true
     sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
   }
-
-  robolectric_library("junit") {
-    include_android_sdk = false
-    sources = [ "//components/saved_tab_groups/messaging/android/java/src/org/chromium/components/tab_group_sync/messaging/EitherIdTest.java" ]
-
-    deps = [
-      ":java",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//base:base_junit_test_support",
-      "//components/saved_tab_groups/messaging/android:java",
-      "//components/saved_tab_groups/public:java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/junit",
-    ]
-  }
 }
 
 source_set("service_test_utils") {

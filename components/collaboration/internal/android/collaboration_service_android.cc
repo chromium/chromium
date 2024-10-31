@@ -8,11 +8,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/collaboration/internal/jni_headers/CollaborationServiceImpl_jni.h"
+#include "components/collaboration/internal/core_jni_headers/CollaborationServiceImpl_jni.h"
 #include "components/collaboration/public/collaboration_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/collaboration/public/jni_headers/ServiceStatus_jni.h"
+#include "components/collaboration/public/core_jni_headers/ServiceStatus_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

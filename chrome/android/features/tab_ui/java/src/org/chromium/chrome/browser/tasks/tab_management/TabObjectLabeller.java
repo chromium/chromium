@@ -9,7 +9,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
-import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
+import org.chromium.components.collaboration.messaging.PersistentMessage;
 
 import java.util.Collections;
 import java.util.HashMap;

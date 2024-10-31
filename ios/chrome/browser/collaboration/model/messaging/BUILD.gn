@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("messaging") {
+  sources = [
+    "messaging_backend_service_factory.h",
+    "messaging_backend_service_factory.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/collaboration/internal:messaging_internal",
+    "//components/collaboration/public",
+    "//components/saved_tab_groups/public:features",
+    "//ios/chrome/browser/collaboration/model:features",
+    "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "messaging_backend_service_factory_unittest.mm" ]
+  deps = [
+    ":messaging",
+    "//base",
+    "//base/test:test_support",
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test",
+  ]
+}

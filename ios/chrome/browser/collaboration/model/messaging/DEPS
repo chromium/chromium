@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/collaboration/public",
+  "+ios/chrome/browser/collaboration/model/features.h",
+  "+ios/chrome/browser/data_sharing/model",
+
+  # Allows service construction.
+  "+components/collaboration/internal/messaging/messaging_backend_service_impl.h",
+]

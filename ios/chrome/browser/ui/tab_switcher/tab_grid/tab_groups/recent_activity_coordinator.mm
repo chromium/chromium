@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_coordinator.h"
 
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/saved_tab_groups/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -42,8 +42,9 @@
   ProfileIOS* profile = self.browser->GetProfile();
   _mediator = [[RecentActivityMediator alloc]
       initWithtabGroup:_tabGroup
-      messagingService:tab_groups::messaging::MessagingBackendServiceFactory::
-                           GetForProfile(profile)
+      messagingService:collaboration::messaging::
+                           MessagingBackendServiceFactory::GetForProfile(
+                               profile)
          faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(profile)
            syncService:tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                            profile)];

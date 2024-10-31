@@ -76,7 +76,6 @@ if (is_android) {
       "//components/embedder_support/android:util_java",
       "//components/feature_engagement/public:public_java",
       "//components/prefs/android:java",
-      "//components/saved_tab_groups/messaging/android:java",
       "//components/saved_tab_groups/public:java",
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
