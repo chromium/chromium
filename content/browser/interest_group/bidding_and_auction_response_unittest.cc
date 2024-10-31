@@ -59,6 +59,13 @@ std::ostream& operator<<(std::ostream& os,
   os << "], ";
   os << "score:" << testing::PrintToString(response.score) << ", ";
   os << "bid:" << testing::PrintToString(response.bid) << ", ";
+  os << "buyer_reporting_id:"
+     << testing::PrintToString(response.buyer_reporting_id) << ", ";
+  os << "buyer_and_seller_reporting_id:"
+     << testing::PrintToString(response.buyer_and_seller_reporting_id) << ", ";
+  os << "selected_buyer_and_seller_reporting_id:"
+     << testing::PrintToString(response.selected_buyer_and_seller_reporting_id)
+     << ", ";
   os << "error:" << testing::PrintToString(response.error) << ", ";
   os << "buyer_reporting: " << testing::PrintToString(response.buyer_reporting)
      << ", ";
@@ -331,6 +338,10 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
       testing::Field("buyer_and_seller_reporting_id",
                      &BiddingAndAuctionResponse::buyer_and_seller_reporting_id,
                      testing::Eq(other.get().buyer_and_seller_reporting_id)),
+      testing::Field(
+          "selected_buyer_and_seller_reporting_id",
+          &BiddingAndAuctionResponse::selected_buyer_and_seller_reporting_id,
+          testing::Eq(other.get().selected_buyer_and_seller_reporting_id)),
       testing::Field("error", &BiddingAndAuctionResponse::error,
                      testing::Eq(other.get().error)),
       // buyer_reporting handled below
@@ -966,6 +977,62 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
     EXPECT_THAT(*result,
                 EqualsBiddingAndAuctionResponse(std::ref(test_case.output)));
   }
+}
+
+TEST(BiddingAndAuctionResponseTest, SelectedBuyerAndSellerReportingId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {blink::features::kFledgeAuctionDealSupport,
+       features::kEnableBandADealSupport},
+      /*disabled_features=*/{});
+
+  base::Value::Dict response = CreateValidResponseDict().Set(
+      "selectedBuyerAndSellerReportingId", "selectable");
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          /*group_pagg_coordinators=*/{});
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  output.selected_buyer_and_seller_reporting_id = "selectable";
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+}
+
+TEST(BiddingAndAuctionResponseTest, DealsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kEnableBandADealSupport},
+      /*disabled_features=*/{blink::features::kFledgeAuctionDealSupport});
+
+  base::Value::Dict response = CreateValidResponseDict().Set(
+      "selectedBuyerAndSellerReportingId", "selectable");
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          /*group_pagg_coordinators=*/{});
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+}
+
+TEST(BiddingAndAuctionResponseTest, BAndADealsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {blink::features::kFledgeAuctionDealSupport},
+      /*disabled_features=*/{features::kEnableBandADealSupport});
+
+  base::Value::Dict response = CreateValidResponseDict().Set(
+      "selectedBuyerAndSellerReportingId", "selectable");
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          /*group_pagg_coordinators=*/{});
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
 }
 
 TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {

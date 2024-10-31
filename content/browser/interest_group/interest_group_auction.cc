@@ -1784,6 +1784,7 @@ class InterestGroupAuction::BuyerHelper
       const std::optional<std::string>& ad_metadata,
       const std::optional<std::string>& buyer_reporting_id,
       const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       blink::AdDescriptor ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::map<PrivateAggregationPhaseKey, PrivateAggregationRequests>&
@@ -1812,13 +1813,19 @@ class InterestGroupAuction::BuyerHelper
     // 1. Ads must be in the interest group (at specified k-anon level)
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
         *interest_group.ads, bid_state->kanon_keys, interest_group, bid_role,
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+        selected_buyer_and_seller_reporting_id,
         /*is_component_ad=*/false, ad_descriptor);
     if (!matching_ad) {
       // Bid render url must match the interest group.
       return nullptr;
     }
     // Reporting IDs used by the server (if any) must match the ad on device.
+    if (selected_buyer_and_seller_reporting_id.has_value() &&
+        !IsSelectedReportingIdValid(
+            matching_ad->selectable_buyer_and_seller_reporting_ids,
+            *selected_buyer_and_seller_reporting_id)) {
+      return nullptr;
+    }
     if (buyer_and_seller_reporting_id &&
         matching_ad->buyer_and_seller_reporting_id !=
             *buyer_and_seller_reporting_id) {
@@ -1832,6 +1839,7 @@ class InterestGroupAuction::BuyerHelper
     for (const auto& ad_component_descriptor : ad_component_descriptors) {
       const blink::InterestGroup::Ad* matching_ad_component = nullptr;
       if (interest_group.ad_components.has_value()) {
+        // selected_buyer_and_seller_reporting_id is ignored in ad components
         matching_ad_component = FindMatchingAd(
             *interest_group.ad_components, bid_state->kanon_keys,
             interest_group, bid_role,
@@ -1883,8 +1891,7 @@ class InterestGroupAuction::BuyerHelper
         /*modeling_signals=*/std::nullopt,
         /*bid_duration=*/base::Seconds(0),
         /*bidding_signals_data_version=*/std::nullopt, matching_ad,
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt, bid_state,
-        auction_);
+        selected_buyer_and_seller_reporting_id, bid_state, auction_);
   }
 
  private:
@@ -6129,6 +6136,7 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
           saved_response_->bid.value_or(0.0001), saved_response_->bid_currency,
           saved_response_->ad_metadata, saved_response_->buyer_reporting_id,
           saved_response_->buyer_and_seller_reporting_id,
+          saved_response_->selected_buyer_and_seller_reporting_id,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
           /*ad_component_descriptors=*/std::move(ad_components),

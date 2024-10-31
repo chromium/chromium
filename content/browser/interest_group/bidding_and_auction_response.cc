@@ -231,6 +231,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     output.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeAuctionDealSupport) &&
+      base::FeatureList::IsEnabled(features::kEnableBandADealSupport)) {
+    std::string* maybe_selected_buyer_and_seller_reporting_id =
+        input_dict->FindString("selectedBuyerAndSellerReportingId");
+    if (maybe_selected_buyer_and_seller_reporting_id) {
+      output.selected_buyer_and_seller_reporting_id =
+          *maybe_selected_buyer_and_seller_reporting_id;
+    }
+  }
+
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
       blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
       base::FeatureList::IsEnabled(features::kEnableBandAPrivateAggregation)) {
