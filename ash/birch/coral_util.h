@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/values.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace aura {
@@ -38,6 +39,11 @@ bool CanMoveToNewDesk(aura::Window* window);
 // This is so we can use EXPECT_THAT in tests.
 TabsAndApps ASH_EXPORT
 SplitContentData(const std::vector<coral::mojom::EntityPtr>& content);
+
+// For debugging logs.
+base::Value::List EntitiesToListValue(
+    const std::vector<coral::mojom::EntityPtr>& entities);
+std::string GroupToString(const coral::mojom::GroupPtr& group);
 
 }  // namespace ash::coral_util
 

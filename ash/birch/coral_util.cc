@@ -75,4 +75,33 @@ TabsAndApps SplitContentData(
   return split;
 }
 
+base::Value::List EntitiesToListValue(
+    const std::vector<coral::mojom::EntityPtr>& entities) {
+  auto list = base::Value::List();
+  for (const coral::mojom::EntityPtr& entity : entities) {
+    auto entity_value = base::Value::Dict();
+    if (entity->is_tab()) {
+      entity_value.Set("Tab", base::Value::Dict()
+                                  .Set("Title", entity->get_tab()->title)
+                                  .Set("Url", entity->get_tab()->url.spec()));
+    }
+    if (entity->is_app()) {
+      entity_value.Set("App", base::Value::Dict()
+                                  .Set("Title", entity->get_app()->title)
+                                  .Set("Id", entity->get_app()->id));
+    }
+    list.Append(std::move(entity_value));
+  }
+  return list;
+}
+
+std::string GroupToString(const coral::mojom::GroupPtr& group) {
+  auto root = base::Value::Dict().Set(
+      "Group",
+      base::Value::Dict()
+          .Set("Title", group->title.value_or("No title"))
+          .Set("Entities", coral_util::EntitiesToListValue(group->entities)));
+  return root.DebugString();
+}
+
 }  // namespace ash::coral_util
