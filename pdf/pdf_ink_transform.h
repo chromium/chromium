@@ -9,13 +9,17 @@
 #include "pdf/page_orientation.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace gfx {
-class Rect;
 class Vector2dF;
 }  // namespace gfx
+
+namespace ink {
+class Envelope;
+}  // namespace ink
 
 namespace chrome_pdf {
 
@@ -41,7 +45,7 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
                                              const gfx::Rect& page_content_rect,
                                              float scale_factor);
 
-// Generate the affine transformation for rendering a page's strokes to the
+// Generates the affine transformation for rendering a page's strokes to the
 // screen, based on the page and its position within the viewport.  Parameters
 // are the same as for `EventPositionToCanonicalPosition()`, with the addition
 // of:
@@ -91,6 +95,17 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
 //
 ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor);
+
+// Converts `ink::Envelope` to screen coordinates as needed for invalidation.
+// Uses the same `orientation`, `page_content_rect`, and `scale_factor`
+// parameters as used in `EventPositionToCanonicalPosition()`.  This function
+// uses them in reverse, to convert canonical coordinates back to screen
+// coordinates.  The caller must provide a non-empty `envelope`.
+gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
+    const ink::Envelope& envelope,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
     float scale_factor);

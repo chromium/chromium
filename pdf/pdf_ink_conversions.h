@@ -6,6 +6,7 @@
 #define PDF_PDF_INK_CONVERSIONS_H_
 
 #include "base/time/time.h"
+#include "third_party/ink/src/ink/geometry/point.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -24,6 +25,8 @@ ink::StrokeInput CreateInkStrokeInput(ink::StrokeInput::ToolType tool_type,
                                       base::TimeDelta elapsed_time);
 
 SkColor GetSkColorFromInkBrush(const ink::Brush& brush);
+
+ink::Point InkPointFromGfxPoint(const gfx::PointF& point);
 
 }  // namespace chrome_pdf
 

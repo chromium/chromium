@@ -4,11 +4,61 @@
 
 #include "pdf/pdf_ink_transform.h"
 
+#include <algorithm>
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/ink/src/ink/geometry/envelope.h"
+#include "third_party/ink/src/ink/geometry/rect.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
+
+namespace {
+
+// Performs what is mostly an inverse operation of
+// `EventPositionToCanonicalPosition()`, to convert from canonical coordinates
+// to screen coordinates.  This is not a strict inverse because it
+// intentionally does not adjust for `page_content_rect` offset from origin.
+// This is due to its usage for invalidation calculations, where clients account
+// for that offset separately.
+gfx::PointF CanonicalPositionToScreenPosition(
+    const gfx::PointF& canonical_position,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor) {
+  CHECK_GT(scale_factor, 0.0f);
+  CHECK(!page_content_rect.IsEmpty());
+  gfx::PointF screen_position = canonical_position;
+  screen_position.Scale(scale_factor);
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+      // No further modification needed.
+      break;
+    case PageOrientation::kClockwise90:
+      screen_position.SetPoint(
+          page_content_rect.width() - screen_position.y() - 1,
+          screen_position.x());
+      break;
+    case PageOrientation::kClockwise180:
+      screen_position.SetPoint(
+          page_content_rect.width() - screen_position.x() - 1,
+          page_content_rect.height() - screen_position.y() - 1);
+      break;
+    case PageOrientation::kClockwise270:
+      screen_position.SetPoint(
+          screen_position.y(),
+          page_content_rect.height() - screen_position.x() - 1);
+      break;
+  }
+  return screen_position;
+}
+
+}  // namespace
 
 gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
                                              PageOrientation orientation,
@@ -69,6 +119,30 @@ ink::AffineTransform GetInkRenderTransform(
                                   dy + page_content_rect.height() - 1);
   }
   NOTREACHED();
+}
+
+gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
+    const ink::Envelope& envelope,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor) {
+  const std::optional<ink::Rect>& ink_rect = envelope.AsRect();
+  CHECK(ink_rect.has_value());
+
+  gfx::PointF p1 = CanonicalPositionToScreenPosition(
+      gfx::PointF(ink_rect->XMin(), ink_rect->YMin()), orientation,
+      page_content_rect, scale_factor);
+  gfx::PointF p2 = CanonicalPositionToScreenPosition(
+      gfx::PointF(ink_rect->XMax(), ink_rect->YMax()), orientation,
+      page_content_rect, scale_factor);
+
+  // Width and height get +1 since both of the points are to be included in the
+  // area; otherwise it would be an open rectangle on two edges.
+  float x = std::min(p1.x(), p2.x());
+  float y = std::min(p1.y(), p2.y());
+  float w = std::max(p1.x(), p2.x()) - x + 1;
+  float h = std::max(p1.y(), p2.y()) - y + 1;
+  return gfx::ToEnclosingRect(gfx::RectF(x, y, w, h));
 }
 
 }  // namespace chrome_pdf

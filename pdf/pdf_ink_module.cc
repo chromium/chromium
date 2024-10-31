@@ -50,7 +50,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -90,11 +89,6 @@ ink::Rect GetEraserRect(const gfx::PointF& center, int distance_to_center) {
   return ink::Rect::FromTwoPoints(
       {center.x() - distance_to_center, center.y() - distance_to_center},
       {center.x() + distance_to_center, center.y() + distance_to_center});
-}
-
-gfx::Rect InkRectToEnclosingGfxRect(const ink::Rect& rect) {
-  return gfx::ToEnclosingRect(
-      gfx::RectF(rect.XMin(), rect.YMin(), rect.Width(), rect.Height()));
 }
 
 SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
@@ -582,14 +576,14 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
     CHECK(undo_redo_success);
   }
 
-  const std::optional<ink::Rect>& invalidate_rect =
-      invalidate_envelope.AsRect();
-  if (!invalidate_rect.has_value()) {
+  if (invalidate_envelope.IsEmpty()) {
     return false;
   }
 
-  // If `invalidate_rect` has a value, then something got erased.
-  client_->Invalidate(InkRectToEnclosingGfxRect(invalidate_rect.value()));
+  // If `invalidate_envelope` isn't empty, then something got erased.
+  client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
+      invalidate_envelope, client_->GetOrientation(),
+      client_->GetPageContentsRect(page_index), client_->GetZoom()));
   return true;
 }
 
@@ -837,10 +831,9 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
       ids.erase(id);
     }
 
-    const std::optional<ink::Rect>& invalidate_rect =
-        invalidate_envelope.AsRect();
-    CHECK(invalidate_rect.has_value());
-    client_->Invalidate(InkRectToEnclosingGfxRect(invalidate_rect.value()));
+    client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
+        invalidate_envelope, client_->GetOrientation(),
+        client_->GetPageContentsRect(page_index), client_->GetZoom()));
     client_->UpdateThumbnail(page_index);
 
     if (ids.empty()) {

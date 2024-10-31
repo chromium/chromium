@@ -1240,7 +1240,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
   // `ink::ModeledShape::Bounds()` looks like it is smaller than what would be
   // expected given the inputs.
   const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(8.0f, 13.0f),
-                                            gfx::Size(24.0f, 6.0f));
+                                            gfx::Size(25.0f, 7.0f));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1277,11 +1277,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
   // entire stroke makes sense.  What is being returned by
   // `ink::ModeledShape::Bounds()` looks like it is smaller than what would be
   // expected given the inputs.
-  // TODO(crbug.com/375445386): Invalidation area for undo/redo should be
-  // similar to location & combined size of the invalidation areas that happened
-  // while stroking.
-  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(6.0f, 43.0f),
-                                            gfx::Size(4.0f, 13.0f));
+  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(7.0f, 12.0f),
+                                            gfx::Size(27.0f, 9.0f));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
