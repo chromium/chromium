@@ -202,6 +202,11 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     int plane_index = 0,
     bool mipmapped = false);
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(SKIA_USE_DAWN)
+GPU_GLES2_EXPORT wgpu::YCbCrVkDescriptor ToDawnYCbCrVkDescriptor(
+    const VulkanYCbCrInfo& ycbcr_info);
+#endif
+
 #if BUILDFLAG(SKIA_USE_DAWN)
 GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     viz::SharedImageFormat format,

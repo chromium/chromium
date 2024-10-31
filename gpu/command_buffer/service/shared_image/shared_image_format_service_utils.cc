@@ -702,23 +702,8 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 #if BUILDFLAG(ENABLE_VULKAN)
     if (ycbcr_info) {
       // Populate the YCbCr info of the DawnTextureInfo from the Chromium info.
-      wgpu::YCbCrVkDescriptor ycbcr_desc = {};
-      ycbcr_desc.vkFormat = ycbcr_info->image_format;
-      ycbcr_desc.vkYCbCrModel = ycbcr_info->suggested_ycbcr_model;
-      ycbcr_desc.vkYCbCrRange = ycbcr_info->suggested_ycbcr_range;
-      ycbcr_desc.vkXChromaOffset = ycbcr_info->suggested_xchroma_offset;
-      ycbcr_desc.vkYChromaOffset = ycbcr_info->suggested_ychroma_offset;
-      ycbcr_desc.vkChromaFilter =
-          ycbcr_info->format_features &
-                  VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT
-              ? wgpu::FilterMode::Linear
-              : wgpu::FilterMode::Nearest;
-      ycbcr_desc.externalFormat = ycbcr_info->external_format;
-
-      // NOTE: Chromium does not use this feature.
-      ycbcr_desc.forceExplicitReconstruction = false;
-
-      dawn_texture_info.fYcbcrVkDescriptor = ycbcr_desc;
+      dawn_texture_info.fYcbcrVkDescriptor =
+          ToDawnYCbCrVkDescriptor(ycbcr_info.value());
     }
 #endif
 
@@ -728,6 +713,30 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 #endif
   }
 }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(SKIA_USE_DAWN)
+wgpu::YCbCrVkDescriptor ToDawnYCbCrVkDescriptor(
+    const VulkanYCbCrInfo& ycbcr_info) {
+  wgpu::YCbCrVkDescriptor ycbcr_desc = {};
+
+  ycbcr_desc.vkFormat = ycbcr_info.image_format;
+  ycbcr_desc.vkYCbCrModel = ycbcr_info.suggested_ycbcr_model;
+  ycbcr_desc.vkYCbCrRange = ycbcr_info.suggested_ycbcr_range;
+  ycbcr_desc.vkXChromaOffset = ycbcr_info.suggested_xchroma_offset;
+  ycbcr_desc.vkYChromaOffset = ycbcr_info.suggested_ychroma_offset;
+  ycbcr_desc.vkChromaFilter =
+      ycbcr_info.format_features &
+              VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT
+          ? wgpu::FilterMode::Linear
+          : wgpu::FilterMode::Nearest;
+  ycbcr_desc.externalFormat = ycbcr_info.external_format;
+
+  // NOTE: Chromium does not use this feature.
+  ycbcr_desc.forceExplicitReconstruction = false;
+
+  return ycbcr_desc;
+}
+#endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
