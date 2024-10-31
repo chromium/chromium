@@ -15,13 +15,11 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
-                "attribution_scopes": [],
-                "debug_reporting": true
+                "attribution_scopes": []
               }
             }
           }
@@ -37,7 +35,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -45,8 +42,7 @@
                 "attribution_scopes": {
                   "limit": 3,
                   "values": "2"
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -62,7 +58,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -72,8 +67,7 @@
                   "values": [
                     3
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -89,7 +83,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -99,8 +92,7 @@
                   "values": [
                     "3"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -116,7 +108,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -127,8 +118,7 @@
                   "values": [
                     "3"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -144,7 +134,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -154,8 +143,7 @@
                   "values": [
                     "3"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -171,7 +159,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -181,8 +168,7 @@
                   "values": [
                     "3"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -198,7 +184,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -208,8 +193,7 @@
                   "values": [
                     "3"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -225,7 +209,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -236,8 +219,7 @@
                   "values": [
                     "4"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -253,7 +235,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -264,8 +245,7 @@
                   "values": [
                     "4"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -281,7 +261,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -292,8 +271,7 @@
                   "values": [
                     "4"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -309,7 +287,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -320,8 +297,7 @@
                   "values": [
                     "4"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -337,7 +313,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -348,8 +323,7 @@
                   "values": [
                     "4"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -365,7 +339,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -373,8 +346,7 @@
                 "attribution_scopes": {
                   "limit": 3,
                   "max_event_states": 3
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -390,7 +362,6 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
-            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
@@ -400,8 +371,7 @@
                   "values": [
                     "4"
                   ]
-                },
-                "debug_reporting": true
+                }
               }
             }
           }
@@ -416,7 +386,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":[],\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":[],\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -428,7 +398,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"values\":\"2\"},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"values\":\"2\"},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -440,7 +410,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"values\":[3]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"values\":[3]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -452,7 +422,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":\"3\",\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":\"3\",\"values\":[\"3\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -464,7 +434,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scope_limit\":0,\"attribution_scopes\":{\"limit\":0,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scope_limit\":0,\"attribution_scopes\":{\"limit\":0,\"values\":[\"3\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -476,7 +446,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":-3,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":-3,\"values\":[\"3\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -488,7 +458,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":4294967296.0,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":4294967296.0,\"values\":[\"3\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -500,7 +470,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3.5,\"values\":[\"3\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3.5,\"values\":[\"3\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -512,7 +482,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":\"3\",\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":\"3\",\"values\":[\"4\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -524,7 +494,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":0,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":0,\"values\":[\"4\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -536,7 +506,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":-3,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":-3,\"values\":[\"4\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -548,7 +518,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":4294967296.0,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":4294967296.0,\"values\":[\"4\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -560,7 +530,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":3.5,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":3.5,\"values\":[\"4\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -572,7 +542,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":3},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"limit\":3,\"max_event_states\":3},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
@@ -584,7 +554,7 @@
         "body": {
            "context_site": "https://source.test",
            "header": "Attribution-Reporting-Register-Source",
-           "value": "{\"attribution_scopes\":{\"max_event_states\":3,\"values\":[\"4\"]},\"debug_reporting\":true,\"destination\":\"https://destination.test\"}"
+           "value": "{\"attribution_scopes\":{\"max_event_states\":3,\"values\":[\"4\"]},\"destination\":\"https://destination.test\"}"
         },
         "type": "header-parsing-error"
       } ],
