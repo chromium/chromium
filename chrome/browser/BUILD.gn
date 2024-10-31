@@ -1146,6 +1146,7 @@ static_library("browser") {
     "predictors/predictors_features.h",
     "predictors/predictors_switches.cc",
     "predictors/predictors_switches.h",
+    "predictors/predictors_traffic_annotations.h",
     "predictors/prefetch_manager.cc",
     "predictors/prefetch_manager.h",
     "predictors/prefetch_traffic_annotation.h",

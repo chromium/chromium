@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -864,14 +865,17 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHost) {
 
   // PreconnectFinished shouldn't be called.
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
-  preconnect_manager_->StartPreresolveHost(url, network_anonymization_key);
+  preconnect_manager_->StartPreresolveHost(
+      url, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
   mock_network_context_->CompleteHostLookup(origin.host(),
                                             network_anonymization_key, net::OK);
 
   // Non http url shouldn't be preresovled.
   GURL non_http_url("file:///tmp/index.html");
-  preconnect_manager_->StartPreresolveHost(non_http_url,
-                                           network_anonymization_key);
+  preconnect_manager_->StartPreresolveHost(
+      non_http_url, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreresolveHostDisabledViaUI) {
@@ -884,7 +888,9 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHostDisabledViaUI) {
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
-  preconnect_manager_->StartPreresolveHost(url, network_anonymization_key);
+  preconnect_manager_->StartPreresolveHost(
+      url, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
@@ -895,8 +901,9 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.host()));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
-  preconnect_manager_->StartPreresolveHosts({cdn, fonts},
-                                            network_anonymization_key);
+  preconnect_manager_->StartPreresolveHosts(
+      {cdn, fonts}, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
   mock_network_context_->CompleteHostLookup(cdn.host(),
                                             network_anonymization_key, net::OK);
   mock_network_context_->CompleteHostLookup(fonts.host(),
@@ -913,8 +920,9 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHostsDisabledViaUI) {
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
-  preconnect_manager_->StartPreresolveHosts({cdn, fonts},
-                                            network_anonymization_key);
+  preconnect_manager_->StartPreresolveHosts(
+      {cdn, fonts}, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
@@ -925,8 +933,9 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   bool allow_credentials = false;
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
-  preconnect_manager_->StartPreconnectUrl(url, allow_credentials,
-                                          network_anonymization_key);
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 
   EXPECT_CALL(
       *mock_network_context_,
@@ -937,8 +946,9 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
 
   // Non http url shouldn't be preconnected.
   GURL non_http_url("file:///tmp/index.html");
-  preconnect_manager_->StartPreconnectUrl(non_http_url, allow_credentials,
-                                          network_anonymization_key);
+  preconnect_manager_->StartPreconnectUrl(
+      non_http_url, allow_credentials, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
@@ -952,8 +962,9 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
 
   // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
   // will raise an error if it happens.
-  preconnect_manager_->StartPreconnectUrl(url, allow_credentials,
-                                          network_anonymization_key);
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
@@ -966,8 +977,9 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
       net::NetworkAnonymizationKey::CreateSameSite(requesting_site);
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
-  preconnect_manager_->StartPreconnectUrl(url, allow_credentials,
-                                          network_anonymization_key);
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 
   EXPECT_CALL(
       *mock_network_context_,
@@ -1001,8 +1013,9 @@ TEST_F(PreconnectManagerTest, TestDetachedRequestHasHigherPriority) {
 
   // This url should come to the front of the queue.
   GURL detached_preresolve("http://ads.google.com");
-  preconnect_manager_->StartPreresolveHost(detached_preresolve,
-                                           network_anonymization_key);
+  preconnect_manager_->StartPreresolveHost(
+      detached_preresolve, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
   Mock::VerifyAndClearExpectations(preconnect_manager_.get());
 
   EXPECT_CALL(*mock_network_context_,

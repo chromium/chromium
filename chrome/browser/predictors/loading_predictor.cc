@@ -18,6 +18,7 @@
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
@@ -462,8 +463,9 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
     if (is_new_origin || now - preconnect_data.last_preconnect_time_ >=
                              kMinDelayBetweenPreconnectRequests) {
       preconnect_data.last_preconnect_time_ = now;
-      preconnect_manager()->StartPreconnectUrl(url, true,
-                                               network_anonymization_key);
+      preconnect_manager()->StartPreconnectUrl(
+          url, true, network_anonymization_key,
+          kLoadingPredictorPreconnectTrafficAnnotation);
     }
     return true;
   }
@@ -471,7 +473,9 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
   if (is_new_origin || now - preconnect_data.last_preresolve_time_ >=
                            kMinDelayBetweenPreresolveRequests) {
     preconnect_data.last_preresolve_time_ = now;
-    preconnect_manager()->StartPreresolveHost(url, network_anonymization_key);
+    preconnect_manager()->StartPreresolveHost(
+        url, network_anonymization_key,
+        kLoadingPredictorPreconnectTrafficAnnotation);
     return true;
   }
 
@@ -538,8 +542,9 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     return;
   }
 
-  preconnect_manager()->StartPreconnectUrl(url, allow_credentials,
-                                           network_anonymization_key);
+  preconnect_manager()->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 void LoadingPredictor::MaybePrewarmResources(
