@@ -105,8 +105,6 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
     return;
   }
 
-  CHECK(is_in_progress_);
-
   content::WebContents* web_contents = tab_android_->web_contents();
   AssertHasWindowAndCompositor(web_contents);
 
@@ -122,7 +120,13 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
 }
 
 void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
-  CHECK(is_in_progress_);
+  if (!is_in_progress_) {
+    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
+      base::debug::DumpWithoutCrashing();
+    }
+    return;
+  }
+
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -133,7 +137,13 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
 }
 
 void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
-  CHECK(is_in_progress_);
+  if (!is_in_progress_) {
+    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
+      base::debug::DumpWithoutCrashing();
+    }
+    return;
+  }
+
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
