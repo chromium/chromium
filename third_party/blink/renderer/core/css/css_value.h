@@ -180,6 +180,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsGridIntegerRepeatValue() const {
     return class_type_ == kGridIntegerRepeatClass;
   }
+  bool IsGridRepeatValue() const {
+    return IsGridAutoRepeatValue() || IsGridIntegerRepeatValue();
+  }
   bool IsPendingSubstitutionValue() const {
     return class_type_ == kPendingSubstitutionValueClass;
   }

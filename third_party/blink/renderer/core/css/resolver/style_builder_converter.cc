@@ -1521,8 +1521,7 @@ NGGridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
   Vector<GridTrackSize, 1> track_sizes;
   for (auto& curr_value : To<CSSValueList>(value)) {
     DCHECK(!curr_value->IsGridLineNamesValue());
-    DCHECK(!curr_value->IsGridAutoRepeatValue());
-    DCHECK(!curr_value->IsGridIntegerRepeatValue());
+    DCHECK(!curr_value->IsGridRepeatValue());
     track_sizes.push_back(ConvertGridTrackSize(state, *curr_value));
   }
 

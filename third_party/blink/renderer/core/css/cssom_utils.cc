@@ -69,9 +69,7 @@ bool CSSOMUtils::IsEmptyValueList(const CSSValue* value) {
 bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
   if (value_list) {
     for (const auto& value : *value_list) {
-      // TODO(kschmi): Move these to a common base class so there's only one
-      // condition to check.
-      if (value->IsGridAutoRepeatValue() || value->IsGridIntegerRepeatValue()) {
+      if (value->IsGridRepeatValue()) {
         return true;
       }
     }
