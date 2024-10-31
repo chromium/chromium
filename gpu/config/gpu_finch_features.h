@@ -75,6 +75,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
 
 GPU_EXPORT BASE_DECLARE_FEATURE(
+    kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage);
+GPU_EXPORT BASE_DECLARE_FEATURE(
     kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage);
 GPU_EXPORT BASE_DECLARE_FEATURE(
     kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage);

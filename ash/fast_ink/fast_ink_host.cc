@@ -21,7 +21,9 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -135,10 +137,24 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   // This SharedImage will be used by the display compositor, will be updated
   // in parallel with being read, and will potentially be used in overlays.
-  constexpr gpu::SharedImageUsageSet usage =
+  gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+
+  bool add_scanout_usage = true;
+
+  // Scanout usage should be added only if scanout of SharedImages is supported.
+  // However, historically this was not checked.
+  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+  if (base::FeatureList::IsEnabled(
+          ::features::
+              kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+    add_scanout_usage &= sii->GetCapabilities().supports_scanout_shared_images;
+  }
+
+  if (add_scanout_usage) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
 
   CHECK(!client_shared_image_);
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(

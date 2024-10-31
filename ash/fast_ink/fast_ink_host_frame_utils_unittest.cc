@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -67,12 +68,17 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
     host_window_ = host_window.release();
     buffer_size_ = BufferSizeForHostWindow(host_window_.get());
 
-    shared_image_ = fast_ink_internal::CreateMappableSharedImage(
-        buffer_size_,
+    gpu::SharedImageUsageSet usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-            gpu::SHARED_IMAGE_USAGE_SCANOUT,
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+    if (shared_image_interface()
+            ->GetCapabilities()
+            .supports_scanout_shared_images) {
+      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+
+    shared_image_ = fast_ink_internal::CreateMappableSharedImage(
+        buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     ASSERT_TRUE(shared_image_);
   }
 
