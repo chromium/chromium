@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
+#include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,11 +39,11 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
   ~PresentationAvailabilityState();
 
-  // Requests availability for the given URLs and invokes the given callbacks
-  // with the determined availability value. The callbacks will only be invoked
+  // Requests availability for the given URLs and invokes the given promise
+  // with the determined availability value. The promise will only be invoked
   // once and will be deleted afterwards.
   void RequestAvailability(const Vector<KURL>&,
-                           PresentationAvailabilityCallbacks* callbacks);
+                           PresentationAvailabilityProperty* promise);
 
   // Starts/stops listening for availability with the given observer.
   void AddObserver(PresentationAvailabilityObserver*);
@@ -75,9 +75,8 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
     ~AvailabilityListener();
 
-    const Vector<KURL> urls;
-    HeapVector<Member<PresentationAvailabilityCallbacks>>
-        availability_callbacks;
+    const WTF::Vector<KURL> urls;
+    HeapVector<Member<PresentationAvailabilityProperty>> availability_promises;
     HeapVector<Member<PresentationAvailabilityObserver>> availability_observers;
 
     void Trace(Visitor*) const;
@@ -124,7 +123,7 @@ class MODULES_EXPORT PresentationAvailabilityState final
   ListeningStatus* GetListeningStatus(const KURL&) const;
 
   // ListeningStatus for known URLs.
-  Vector<std::unique_ptr<ListeningStatus>> availability_listening_status_;
+  WTF::Vector<std::unique_ptr<ListeningStatus>> availability_listening_status_;
 
   // Set of AvailabilityListener for known PresentationRequests.
   HeapVector<Member<AvailabilityListener>> availability_listeners_;

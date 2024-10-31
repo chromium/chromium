@@ -10,8 +10,6 @@ blink_modules_sources("presentation") {
     "presentation.h",
     "presentation_availability.cc",
     "presentation_availability.h",
-    "presentation_availability_callbacks.cc",
-    "presentation_availability_callbacks.h",
     "presentation_availability_observer.h",
     "presentation_availability_state.cc",
     "presentation_availability_state.h",

@@ -6,8 +6,9 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/presentation/mock_presentation_service.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
+#include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -33,17 +34,6 @@ class MockPresentationAvailabilityObserver
 
  private:
   const Vector<KURL> urls_;
-};
-
-class MockPresentationAvailabilityCallbacks
-    : public PresentationAvailabilityCallbacks {
- public:
-  MockPresentationAvailabilityCallbacks()
-      : PresentationAvailabilityCallbacks(nullptr, WTF::Vector<KURL>()) {}
-  ~MockPresentationAvailabilityCallbacks() override = default;
-
-  MOCK_METHOD1(Resolve, void(bool value));
-  MOCK_METHOD0(RejectAvailabilityNotSupported, void());
 };
 
 class PresentationAvailabilityStateTest : public testing::Test {
@@ -73,26 +63,27 @@ class PresentationAvailabilityStateTest : public testing::Test {
   ~PresentationAvailabilityStateTest() override = default;
 
   void ChangeURLState(const KURL& url, ScreenAvailability state) {
-    if (state != ScreenAvailability::UNKNOWN)
+    if (state != ScreenAvailability::UNKNOWN) {
       state_->UpdateAvailability(url, state);
+    }
   }
 
-  void RequestAvailabilityAndAddObservers() {
+  void RequestAvailabilityAndAddObservers(V8TestingScope& scope) {
     for (auto& mock_observer : mock_observers_) {
       state_->RequestAvailability(
           mock_observer->Urls(),
-          MakeGarbageCollected<MockPresentationAvailabilityCallbacks>());
+          MakeGarbageCollected<PresentationAvailabilityProperty>(
+              scope.GetExecutionContext()));
       state_->AddObserver(mock_observer);
     }
   }
 
   // Tests that PresenationService is called for getAvailability(urls), after
-  // |urls| change state to |states|. This function takes ownership of
-  // |mock_callback|.
-  void TestRequestAvailability(
-      const Vector<KURL>& urls,
-      const Vector<ScreenAvailability>& states,
-      MockPresentationAvailabilityCallbacks* mock_callback) {
+  // `urls` change state to `states`. This function takes ownership of
+  // `promise`.
+  void TestRequestAvailability(const Vector<KURL>& urls,
+                               const Vector<ScreenAvailability>& states,
+                               PresentationAvailabilityProperty* promise) {
     DCHECK_EQ(urls.size(), states.size());
 
     for (const auto& url : urls) {
@@ -103,9 +94,10 @@ class PresentationAvailabilityStateTest : public testing::Test {
           .Times(1);
     }
 
-    state_->RequestAvailability(urls, mock_callback);
-    for (wtf_size_t i = 0; i < urls.size(); i++)
+    state_->RequestAvailability(urls, promise);
+    for (wtf_size_t i = 0; i < urls.size(); i++) {
       ChangeURLState(urls[i], states[i]);
+    }
   }
 
  protected:
@@ -126,6 +118,7 @@ class PresentationAvailabilityStateTest : public testing::Test {
 };
 
 TEST_F(PresentationAvailabilityStateTest, RequestAvailability) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url));
     EXPECT_CALL(mock_presentation_service_,
@@ -133,11 +126,13 @@ TEST_F(PresentationAvailabilityStateTest, RequestAvailability) {
   }
 
   state_->RequestAvailability(
-      urls_, MakeGarbageCollected<MockPresentationAvailabilityCallbacks>());
+      urls_, MakeGarbageCollected<PresentationAvailabilityProperty>(
+                 scope.GetExecutionContext()));
   state_->UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
 
-  for (const auto& url : urls_)
+  for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url));
+  }
 
   state_->AddObserver(mock_observer_all_urls_);
 
@@ -163,8 +158,9 @@ TEST_F(PresentationAvailabilityStateTest, RequestAvailability) {
 
 TEST_F(PresentationAvailabilityStateTest,
        ScreenAvailabilitySourceNotSupported) {
-  for (const auto& url : urls_)
+  for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url));
+  }
 
   state_->AddObserver(mock_observer_all_urls_);
 
@@ -181,137 +177,144 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlNoAvailabilityChange) {
-  auto* mock_callback = MakeGarbageCollected<
-      testing::StrictMock<MockPresentationAvailabilityCallbacks>>();
-
+  V8TestingScope scope;
   EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
       .Times(1);
 
-  state_->RequestAvailability(Vector<KURL>({url1_}), mock_callback);
+  state_->RequestAvailability(
+      Vector<KURL>({url1_}),
+      MakeGarbageCollected<PresentationAvailabilityProperty>(
+          scope.GetExecutionContext()));
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesAvailable) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, Resolve(true));
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::AVAILABLE},
-                          mock_callback);
+  TestRequestAvailability({url1_}, {ScreenAvailability::AVAILABLE}, promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesNotCompatible) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, Resolve(false));
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
   TestRequestAvailability({url1_}, {ScreenAvailability::SOURCE_NOT_SUPPORTED},
-                          mock_callback);
+                          promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesUnavailable) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, Resolve(false));
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::UNAVAILABLE},
-                          mock_callback);
+  TestRequestAvailability({url1_}, {ScreenAvailability::UNAVAILABLE}, promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesUnsupported) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, RejectAvailabilityNotSupported());
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::DISABLED},
-                          mock_callback);
+  TestRequestAvailability({url1_}, {ScreenAvailability::DISABLED}, promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kRejected, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesAvailable) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, Resolve(true)).Times(1);
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
   TestRequestAvailability(
       {url1_, url2_},
-      {ScreenAvailability::AVAILABLE, ScreenAvailability::AVAILABLE},
-      mock_callback);
+      {ScreenAvailability::AVAILABLE, ScreenAvailability::AVAILABLE}, promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesUnavailable) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, Resolve(false)).Times(1);
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
   TestRequestAvailability(
       {url1_, url2_},
       {ScreenAvailability::UNAVAILABLE, ScreenAvailability::UNAVAILABLE},
-      mock_callback);
+      promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesNotCompatible) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, Resolve(false)).Times(1);
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
   TestRequestAvailability({url1_, url2_},
                           {ScreenAvailability::SOURCE_NOT_SUPPORTED,
                            ScreenAvailability::SOURCE_NOT_SUPPORTED},
-                          mock_callback);
+                          promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesUnsupported) {
-  auto* mock_callback =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback, RejectAvailabilityNotSupported()).Times(1);
+  V8TestingScope scope;
+  auto* promise = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
   TestRequestAvailability(
       {url1_, url2_},
-      {ScreenAvailability::DISABLED, ScreenAvailability::DISABLED},
-      mock_callback);
+      {ScreenAvailability::DISABLED, ScreenAvailability::DISABLED}, promise);
+  EXPECT_EQ(PresentationAvailabilityProperty::kRejected, promise->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityReturnsDirectlyForAlreadyListeningUrls) {
   // First getAvailability() call.
-  auto* mock_callback_1 =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback_1, Resolve(false)).Times(1);
+  V8TestingScope scope;
+  auto* promise1 = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
 
   Vector<ScreenAvailability> state_seq = {ScreenAvailability::UNAVAILABLE,
                                           ScreenAvailability::AVAILABLE,
                                           ScreenAvailability::UNAVAILABLE};
-  TestRequestAvailability({url1_, url2_, url3_}, state_seq, mock_callback_1);
+  TestRequestAvailability({url1_, url2_, url3_}, state_seq, promise1);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise1->GetState());
 
   // Second getAvailability() call.
   for (const auto& url : mock_observer3_->Urls()) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
   }
-  auto* mock_callback_2 =
-      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
-  EXPECT_CALL(*mock_callback_2, Resolve(true)).Times(1);
 
-  state_->RequestAvailability(mock_observer3_->Urls(), mock_callback_2);
+  auto* promise2 = MakeGarbageCollected<PresentationAvailabilityProperty>(
+      scope.GetExecutionContext());
+  state_->RequestAvailability(mock_observer3_->Urls(), promise2);
+  EXPECT_EQ(PresentationAvailabilityProperty::kResolved, promise2->GetState());
 }
 
 TEST_F(PresentationAvailabilityStateTest, StartListeningListenToEachURLOnce) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
   }
 
-  RequestAvailabilityAndAddObservers();
+  RequestAvailabilityAndAddObservers(scope);
 }
 
 TEST_F(PresentationAvailabilityStateTest, StopListeningListenToEachURLOnce) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
@@ -327,17 +330,19 @@ TEST_F(PresentationAvailabilityStateTest, StopListeningListenToEachURLOnce) {
   EXPECT_CALL(*mock_observer3_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
 
-  RequestAvailabilityAndAddObservers();
+  RequestAvailabilityAndAddObservers(scope);
 
   // Clean up callbacks.
   ChangeURLState(url2_, ScreenAvailability::UNAVAILABLE);
 
-  for (auto& mock_observer : mock_observers_)
+  for (auto& mock_observer : mock_observers_) {
     state_->RemoveObserver(mock_observer);
+  }
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        StopListeningDoesNotStopIfURLListenedByOthers) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
@@ -354,10 +359,11 @@ TEST_F(PresentationAvailabilityStateTest,
               StopListeningForScreenAvailability(url3_))
       .Times(0);
 
-  RequestAvailabilityAndAddObservers();
+  RequestAvailabilityAndAddObservers(scope);
 
-  for (auto& mock_observer : mock_observers_)
+  for (auto& mock_observer : mock_observers_) {
     state_->AddObserver(mock_observer);
+  }
 
   EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
@@ -373,6 +379,7 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        UpdateAvailabilityInvokesAvailabilityChanged) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
@@ -381,7 +388,7 @@ TEST_F(PresentationAvailabilityStateTest,
   EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::AVAILABLE));
 
-  RequestAvailabilityAndAddObservers();
+  RequestAvailabilityAndAddObservers(scope);
 
   ChangeURLState(url1_, ScreenAvailability::AVAILABLE);
 
@@ -396,6 +403,7 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        UpdateAvailabilityInvokesMultipleAvailabilityChanged) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
@@ -406,7 +414,7 @@ TEST_F(PresentationAvailabilityStateTest,
                 AvailabilityChanged(ScreenAvailability::AVAILABLE));
   }
 
-  RequestAvailabilityAndAddObservers();
+  RequestAvailabilityAndAddObservers(scope);
 
   ChangeURLState(url2_, ScreenAvailability::AVAILABLE);
 
@@ -419,12 +427,13 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        SourceNotSupportedPropagatedToMultipleObservers) {
+  V8TestingScope scope;
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
   }
 
-  RequestAvailabilityAndAddObservers();
+  RequestAvailabilityAndAddObservers(scope);
   for (auto& mock_observer : mock_observers_) {
     EXPECT_CALL(*mock_observer,
                 AvailabilityChanged(ScreenAvailability::SOURCE_NOT_SUPPORTED));

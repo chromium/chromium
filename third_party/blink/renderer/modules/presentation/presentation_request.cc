@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_callbacks.h"
@@ -150,8 +149,9 @@ PresentationRequest* PresentationRequest::Create(
       return nullptr;
     }
 
-    if (IsKnownProtocolForPresentationUrl(parsed_url))
+    if (IsKnownProtocolForPresentationUrl(parsed_url)) {
       parsed_urls.push_back(parsed_url);
+    }
   }
 
   if (parsed_urls.empty()) {
@@ -187,11 +187,13 @@ void PresentationRequest::AddedEventListener(
 bool PresentationRequest::HasPendingActivity() const {
   // Prevents garbage collecting of this object when not hold by another
   // object but still has listeners registered.
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return false;
+  }
 
-  if (HasEventListeners())
+  if (HasEventListeners()) {
     return true;
+  }
 
   return availability_property_ &&
          availability_property_->GetState() ==
@@ -284,8 +286,7 @@ ScriptPromise<PresentationAvailability> PresentationRequest::getAvailability(
             ExecutionContext::From(script_state));
 
     controller->GetAvailabilityState()->RequestAvailability(
-        urls_, MakeGarbageCollected<PresentationAvailabilityCallbacks>(
-                   availability_property_, urls_));
+        urls_, availability_property_);
   }
   return availability_property_->Promise(script_state->World());
 }
