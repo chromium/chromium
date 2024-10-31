@@ -12,14 +12,13 @@ const CROSSMARK_HTML = html`<span class="red">&#10006;</span>`;
 export function getHtml(this: EligibilityListElement) {
   // clang-format off
   return html`
-  <span>Shopping list eligible?
-    ${this.details_.every(detail => detail.value === detail.expectedValue) ?
-          CHECKMARK_HTML : CROSSMARK_HTML}</span>
-  <button @click="${this.refreshDetails_}">Refresh</button>
+  <button @click="${this.refreshDetails_}">Refresh eligibility details</button>
   <ul>
+    <li><b>Country</b>: ${this.country_}</li>
+    <li><b>Locale</b>: ${this.locale_}</li>
     ${this.details_.map(detail => html`
       <li>
-        ${detail.name}: ${detail.value}
+        <b>${detail.name}</b>: ${detail.value}
         ${detail.value === detail.expectedValue ? CHECKMARK_HTML :
             CROSSMARK_HTML}
       </li>`)}

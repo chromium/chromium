@@ -9,6 +9,7 @@ import type {CommerceInternalsAppElement} from './app.js';
 export function getHtml(this: CommerceInternalsAppElement) {
   return html`
   <h1>Commerce Internals</h1>
+  <h2>Shopping feature eligibility</h2>
   <commerce-internals-eligibility-list></commerce-internals-eligibility-list>
   <h2>Subscriptions</h2>
   <subscription-list></subscription-list>

@@ -4,15 +4,10 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {EligibilityDetail} from './commerce_internals.mojom-webui.js';
 import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 import {getCss} from './eligibility_list.css.js';
 import {getHtml} from './eligibility_list.html.js';
-
-interface EligibilityDetail {
-  name: string;
-  value: boolean;
-  expectedValue: boolean;
-}
 
 export class EligibilityListElement extends CrLitElement {
   static get is() {
@@ -29,11 +24,21 @@ export class EligibilityListElement extends CrLitElement {
 
   static override get properties() {
     return {
-      details_: {type: Array},
+      country_: {
+        type: String,
+      },
+      details_: {
+        type: Array,
+      },
+      locale_: {
+        type: String,
+      },
     };
   }
 
+  protected country_: string = '';
   protected details_: EligibilityDetail[] = [];
+  protected locale_: string = '';
 
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();
@@ -53,46 +58,13 @@ export class EligibilityListElement extends CrLitElement {
   }
 
   protected async refreshDetails_() {
-    const detail =
-        (await this.commerceInternalsApi_.getShoppingListEligibleDetails())
-            .detail;
+    const details =
+        (await this.commerceInternalsApi_.getShoppingEligibilityDetails())
+            .details;
 
-    this.details_ = [];
-    this.details_.push({
-      name: 'isRegionLockedFeatureEnabled',
-      value: detail.isRegionLockedFeatureEnabled.value,
-      expectedValue: detail.isRegionLockedFeatureEnabled.expectedValue,
-    });
-    this.details_.push({
-      name: 'isShoppingListAllowedForEnterprise',
-      value: detail.isShoppingListAllowedForEnterprise.value,
-      expectedValue: detail.isShoppingListAllowedForEnterprise.expectedValue,
-    });
-    this.details_.push({
-      name: 'IsAccountCheckerValid',
-      value: detail.isAccountCheckerValid.value,
-      expectedValue: detail.isAccountCheckerValid.expectedValue,
-    });
-    this.details_.push({
-      name: 'IsSignedIn',
-      value: detail.isSignedIn.value,
-      expectedValue: detail.isSignedIn.expectedValue,
-    });
-    this.details_.push({
-      name: 'IsSyncingBookmarks',
-      value: detail.isSyncingBookmarks.value,
-      expectedValue: detail.isSyncingBookmarks.expectedValue,
-    });
-    this.details_.push({
-      name: 'IsAnonymizedUrlDataCollectionEnabled',
-      value: detail.isAnonymizedUrlDataCollectionEnabled.value,
-      expectedValue: detail.isAnonymizedUrlDataCollectionEnabled.expectedValue,
-    });
-    this.details_.push({
-      name: 'IsSubjectToParentalControls',
-      value: detail.isSubjectToParentalControls.value,
-      expectedValue: detail.isSubjectToParentalControls.expectedValue,
-    });
+    this.country_ = details.country;
+    this.locale_ = details.locale;
+    this.details_ = details.details;
   }
 }
 

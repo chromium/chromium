@@ -137,50 +137,6 @@ void CommerceInternalsHandler::GetIsShoppingListEligible(
       shopping_service_ ? shopping_service_->IsShoppingListEligible() : false);
 }
 
-void CommerceInternalsHandler::GetShoppingListEligibleDetails(
-    GetShoppingListEligibleDetailsCallback callback) {
-  mojom::ShoppingListEligibleDetailPtr detail =
-      mojom::ShoppingListEligibleDetail::New();
-
-  if (!shopping_service_) {
-    std::move(callback).Run(std::move(detail));
-    return;
-  }
-
-  detail->is_region_locked_feature_enabled = mojom::EligibleEntry::New(
-      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
-                                   shopping_service_->country_on_startup_,
-                                   shopping_service_->locale_on_startup_),
-      /*expected_value=*/true);
-  detail->is_shopping_list_allowed_for_enterprise = mojom::EligibleEntry::New(
-      shopping_service_->pref_service_ &&
-          IsShoppingListAllowedForEnterprise(shopping_service_->pref_service_),
-      /*expected_value=*/true);
-
-  auto* account_checker = shopping_service_->account_checker_.get();
-  if (!account_checker) {
-    detail->is_account_checker_valid =
-        mojom::EligibleEntry::New(false, /*expected_value=*/true);
-    std::move(callback).Run(std::move(detail));
-    return;
-  }
-  detail->is_account_checker_valid =
-      mojom::EligibleEntry::New(true, /*expected_value=*/true);
-  detail->is_signed_in =
-      mojom::EligibleEntry::New(account_checker->IsSignedIn(),
-                                /*expected_value=*/true);
-  detail->is_syncing_bookmarks = mojom::EligibleEntry::New(
-      account_checker->IsSyncingBookmarks(), /*expected_value=*/true);
-  detail->is_anonymized_url_data_collection_enabled = mojom::EligibleEntry::New(
-      account_checker->IsAnonymizedUrlDataCollectionEnabled(),
-      /*expected_value=*/true);
-  detail->is_subject_to_parental_controls =
-      mojom::EligibleEntry::New(account_checker->IsSubjectToParentalControls(),
-                                /*expected_value=*/false);
-
-  std::move(callback).Run(std::move(detail));
-}
-
 void CommerceInternalsHandler::ResetPriceTrackingEmailPref() {
   if (!shopping_service_) {
     return;
@@ -291,4 +247,68 @@ void CommerceInternalsHandler::DeleteAllProductSpecificationSets(
         set.uuid().AsLowercaseString());
   }
 }
+
+void CommerceInternalsHandler::GetShoppingEligibilityDetails(
+    GetShoppingEligibilityDetailsCallback callback) {
+  auto details = mojom::ShoppingEligibilityDetails::New();
+
+  if (!shopping_service_) {
+    std::move(callback).Run(std::move(details));
+    return;
+  }
+
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsShoppingListEligible", shopping_service_->IsShoppingListEligible(),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsRegionLockedFeatureEnabled(kShoppingList)",
+      IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
+                                   shopping_service_->country_on_startup_,
+                                   shopping_service_->locale_on_startup_),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsShoppingListAllowedForEnterprise",
+      shopping_service_->pref_service_ &&
+          IsShoppingListAllowedForEnterprise(shopping_service_->pref_service_),
+      /*expected_value=*/true));
+
+  auto account_checker = shopping_service_->account_checker_.get();
+  if (!account_checker) {
+    details->details.push_back(mojom::EligibilityDetail::New(
+        "IsAccountCheckerValid", false, /*expected_value=*/true));
+    return;
+  }
+
+  details->country = account_checker->GetCountry();
+  details->locale = account_checker->GetLocale();
+
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSignedIn", account_checker->IsSignedIn(), /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSyncingBookmarks", account_checker->IsSyncingBookmarks(),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSyncTypeEnabled(kProductComparison)",
+      account_checker->IsSyncTypeEnabled(
+          syncer::UserSelectableType::kProductComparison),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsAnonymizedUrlDataCollectionEnabled",
+      account_checker->IsAnonymizedUrlDataCollectionEnabled(),
+      /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsSubjectToParentalControls",
+      account_checker->IsSubjectToParentalControls(),
+      /*expected_value=*/false));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "IsDefaultSearchEngineGoogle",
+      account_checker->IsDefaultSearchEngineGoogle(), /*expected_value=*/true));
+  details->details.push_back(mojom::EligibilityDetail::New(
+      "CanUseModelExecutionFeatures",
+      account_checker->CanUseModelExecutionFeatures(),
+      /*expected_value=*/true));
+
+  std::move(callback).Run(std::move(details));
+}
+
 }  // namespace commerce
