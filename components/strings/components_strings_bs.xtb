@@ -214,7 +214,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1358223345833465883">Vaš pretraživač u Chromiumu</translation>
 <translation id="1359836962251219822">Kuhinjski i pribor za jelo</translation>
 <translation id="1360955481084547712">Otvorite novi anonimni prozor da privatno pretražujete</translation>
-<translation id="1361528602584216624">Ograničenje po Pix računu:<ph name="TRANSACTION_LIMIT" /> BRL</translation>
+<translation id="1361528602584216624">Ograničenje po Pix računu je <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Načini plaćanja koji su dostupni za odabir za nastavak s plaćanjem su otvoreni u punoj visini.</translation>
 <translation id="1363028406613469049">Numera</translation>
 <translation id="1364822246244961190">Ovo pravilo je blokirano. Njegova vrijednost će se ignorirati.</translation>

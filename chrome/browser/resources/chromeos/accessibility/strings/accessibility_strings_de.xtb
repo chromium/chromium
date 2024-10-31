@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="100421257800558142">Drücke die Rechtspfeiltaste</translation>
 <translation id="100506692671054486">Kein vorheriger Befehl</translation>
 <translation id="1009046985747440431">Aufwärts- oder Abwärtspfeil drücken, um Elemente auszuwählen, und die Auswahl mit der Eingabetaste bestätigen</translation>
 <translation id="1011903154582639569">Um auf die gewählte Taste zu tippen, hebe den Finger an</translation>
@@ -59,6 +60,7 @@
 <translation id="1291286136605998134">Ein-/Aus-Schaltfläche</translation>
 <translation id="1299774449519412690">Helles Himmelblau</translation>
 <translation id="1303806948938513162">Tippe mit vier Fingern, um die ChromeVox-Menüs aufzurufen</translation>
+<translation id="1304162325618937178">Drücke die Leertaste</translation>
 <translation id="1313373992684326101">Zum vorherigen Bereich wechseln, beispielsweise zur Statusleiste oder zum Launcher.</translation>
 <translation id="1315077335264761176">Einführung in die Verwendung von Touch-Gesten</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, Optionsfeld für Menüpunkt, nicht ausgewählt</translation>
@@ -112,6 +114,7 @@
 <translation id="1616111909442424068">Weizen</translation>
 <translation id="1618597272655350600">Vollständige Beschreibung der aktuellen Position ansagen</translation>
 <translation id="1627222324347828322">Geisterweiß</translation>
+<translation id="1632810692616643246">Scrollmodus wird gestartet oder beendet</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{Größer-als-Zeichen}other{# Größer-als-Zeichen}}</translation>
 <translation id="1653266918374749391">Vorherige Überschrift der Ebene 3</translation>
 <translation id="1657616855184033958">Filter für Ereignisstreams einblenden</translation>
@@ -165,6 +168,7 @@
 <translation id="2045055672832940894">Kein vorheriges Steuerelement</translation>
 <translation id="2045606329038304310">Formularfeldsteuerung</translation>
 <translation id="2063539687800151747">Motto</translation>
+<translation id="2067158561093481039">Führe eine benutzerdefinierte Tastenkombination aus</translation>
 <translation id="2086961585857038472">Nächstes Wort</translation>
 <translation id="2087981446621639008">Beschreibungslistendetail</translation>
 <translation id="2089387485033699258">de</translation>
@@ -184,9 +188,11 @@
 <translation id="2197863150503783129">Sattelbraun</translation>
 <translation id="2199994615414171367">Vorheriger mathematischer Ausdruck</translation>
 <translation id="2203046366315513658">Wert verringern</translation>
+<translation id="2206580811360135054">Fensterübersicht wird ein- oder ausgeblendet</translation>
 <translation id="2216790501338699346">Link-URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Ein Zeichen zurück</translation>
 <translation id="2220529011494928058">Problem melden</translation>
+<translation id="2239819015858077439">Drücke die Abwärtspfeiltaste</translation>
 <translation id="2243633977138166243">Mit Links- und Rechtspfeil navigieren; mit Eingabetaste aktivieren</translation>
 <translation id="224426591676115802">Für diese Sprache ist keine Stimme verfügbar: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Der Lernmodus wird beendet</translation>
@@ -535,6 +541,7 @@
 <translation id="4432457053224379116">Indischrot</translation>
 <translation id="4432896207833262240">Markierte Inhalte</translation>
 <translation id="4437615272777527928">Gib etwas ein, um die Menüs zu durchsuchen. Verwende die Nach-oben- und die Nach-unten-Taste, um die Ergebnisse durchzugehen. Verwende die Nach-links- und die Nach-rechts-Taste, um den Textcursor zu bewegen und zwischen Menüs zu wechseln.</translation>
+<translation id="4441677939526091190">Drücke die Aufwärtspfeiltaste</translation>
 <translation id="4453530046591759283">Du gelangst zu anderen Bildschirmbereichen, z. B. zu den Symbolleisten oder zur Taskleiste, indem du Strg + F1 drückst. Die Taste „F1“ befindet sich gleich rechts neben der Esc‑Taste.</translation>
 <translation id="4457472090507035117">Aktuelle Stimme auswählen:</translation>
 <translation id="4476183483923481720">Neue Zeile</translation>
@@ -713,6 +720,7 @@
 <translation id="5653397561111110475">Bedienungshilfen für den Chromebook-Touchscreen verwenden</translation>
 <translation id="5655682562155942719">Zwischen Befehlen wechseln</translation>
 <translation id="56637627897541303">Textbereich</translation>
+<translation id="5666746275818170484">Drücke die Linkspfeiltaste</translation>
 <translation id="5669637233317991674">Drücke „Suchtaste + Rechtspfeil“ oder „Suchtaste + Linkspfeil“, um dich durch diese Lektion zu bewegen</translation>
 <translation id="5677240841070992068">Aktueller Standort</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -917,6 +925,7 @@
 <translation id="7161771961008409533">Pop-up-Schaltfläche</translation>
 <translation id="7167657087543110">Zeichenecho</translation>
 <translation id="7173102181852295013">Mitternachtsblau</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Erweitert</translation>
 <translation id="7209751026933045237">Kein nächster Schieberegler</translation>
 <translation id="7218782500591078391">Goldrute</translation>
@@ -1090,6 +1099,7 @@
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Inline-Autovervollständigung und Liste</translation>
 <translation id="8394908167088220973">Medien – Wiedergabe/Pause</translation>
+<translation id="8409502156784390079">Scrollmodus aktiv</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8428603554127842284">Ebene <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1167,6 +1177,7 @@
 <translation id="8986362086234534611">Entfernen</translation>
 <translation id="8989104346085848538">Wenn du die ChromeVox-Sprachausgabe anhalten möchtest, drücke die Steuerung-Taste.</translation>
 <translation id="9014206344398081366">ChromeVox-Anleitung</translation>
+<translation id="9034592733577768445">Mimik-Steuerung pausiert</translation>
 <translation id="9040132695316389094">Überschrift 1</translation>
 <translation id="9061884144798498064">8-Punkt-Braille-Tabelle auswählen:</translation>
 <translation id="9063946545000394379">zum vorherigen Zeichen wechseln</translation>

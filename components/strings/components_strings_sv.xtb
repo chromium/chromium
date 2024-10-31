@@ -1541,7 +1541,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3727309136762649052">Namnrymd</translation>
 <translation id="3727850735097852673">Om du vill använda Google Lösenordshantering med en macOS-nyckelring ska du starta om Chrome och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="3728173127485570463">Du behöver inte längre registrera ditt fingeravtryck för att Chrome-webbläsaren ska fylla i lösenord automatiskt</translation>
-<translation id="3735143108516366187">Tryck på Retur för att hantera förbättringar av förutsägelser</translation>
+<translation id="3735143108516366187">Tryck på Retur för att hantera förbättringar av förslag</translation>
 <translation id="3736739313435669994">Du blockerade webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Webbläsaren hanteras av administratören.</translation>
 <translation id="3738428049780661523">Skapades <ph name="DATE" /></translation>

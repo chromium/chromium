@@ -214,7 +214,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1358223345833465883">Twoja wyszukiwarka w Chromium</translation>
 <translation id="1359836962251219822">Kuchnia i jadalnia</translation>
 <translation id="1360955481084547712">Otwórz nowe okno incognito, aby przeglądać w trybie prywatnym</translation>
-<translation id="1361528602584216624">Limit płatności Pix: <ph name="TRANSACTION_LIMIT" /> BRL</translation>
+<translation id="1361528602584216624">Limit płatności Pix <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Formy płatności, które można wybrać w celu dokonania płatności, są otwarte na całą wysokość.</translation>
 <translation id="1363028406613469049">Utwór</translation>
 <translation id="1364822246244961190">Ta zasada jest zablokowana. Jej wartość będzie ignorowana.</translation>

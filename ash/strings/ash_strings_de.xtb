@@ -445,6 +445,7 @@ Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</trans
 <translation id="2530896289327917474">Tastaturnavigation aktivieren oder deaktivieren</translation>
 <translation id="2531025035050312891">Gerät ist langsam</translation>
 <translation id="2531107890083353124">Beim Ziehen des Tabs <ph name="KEY_ONE" /> drücken</translation>
+<translation id="2545334090614121435">Möchtest du Google Home verwenden? Verwenden</translation>
 <translation id="254900897760075745">Ausgewählte Inhalte in Zwischenablage kopieren</translation>
 <translation id="2549711466868162843">Verbesserte Belichtung</translation>
 <translation id="2549985041256363841">Aufnahme starten</translation>
@@ -563,6 +564,7 @@ Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</trans
 <translation id="2985148236010982088">Alle Apps anzeigen</translation>
 <translation id="2992272421330787632">Alle Medienvorschläge ausblenden</translation>
 <translation id="2992327365391326550">Das Mikrofon des Geräts ist ausgeschaltet.</translation>
+<translation id="2993956882370897557">Möchtest du „Ende“ verwenden? Verwenden</translation>
 <translation id="3000461861112256445">Mono-Audio</translation>
 <translation id="3001391739687111021">Displaygröße bearbeiten</translation>
 <translation id="3009178788565917040">Ausgang</translation>
@@ -615,6 +617,7 @@ Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</trans
 <translation id="316356270129335934"><ph name="MANAGER" /> führt ein Rollback für dein Gerät (<ph name="DEVICE_TYPE" />) durch. Das Gerät wird zurückgesetzt und alle Daten werden gelöscht.</translation>
 <translation id="316798519864381606">Google-Präsentation</translation>
 <translation id="3171170659304083361">Einstellungen für Eingabemethoden</translation>
+<translation id="3174897399179348329">Möchtest du die Seite‑nach‑oben‑Taste verwenden? Verwenden</translation>
 <translation id="3176221688814061633">Auf deinem Chromebook oder Bluetooth-Gerät wird eine ältere Bluetooth-Version genutzt. Für eine bessere Audioqualität kannst du „Bluetooth Super Resolution“ aktivieren oder ein internes Mikrofon verwenden.</translation>
 <translation id="3181441307743005334">Der Neustart kann etwas dauern</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Mit einem Gerät verbunden}other{Mit # Geräten verbunden}}</translation>
@@ -1261,6 +1264,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5297704307811127955">Aus</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5302048478445481009">Sprache</translation>
+<translation id="5302531370473608800">Aktualisiere dein <ph name="DEVICE_TYPE" />, um YouTube Music zu verwenden</translation>
 <translation id="5303319262469238330">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> %.
 Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</translation>
 <translation id="5308380583665731573">Verbinden</translation>
@@ -1820,6 +1824,7 @@ Neuinstallation</translation>
 <translation id="7144942256906679589">Akkustand</translation>
 <translation id="7145639536026937076">Der Akkustand ist <ph name="PERCENTAGE" /> %. Der Akku wird aufgeladen. Der Energiesparmodus ist aktiviert.</translation>
 <translation id="7147587499155271409">Kein Browserverlauf</translation>
+<translation id="7147657298465433425">Drücke die Funktionstaste und die Tasten der obersten Reihe, um auf die Funktionstasten zuzugreifen</translation>
 <translation id="7149149900052329230">Du kannst lokale Dateien und Google Drive-Dateien in der App „Dateien“ verwalten.</translation>
 <translation id="7165278925115064263">Alt + Umschalttaste + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> verwendet gerade dein Mikrofon</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
 <translation id="7564874036684306347">Das Verschieben von Fenstern auf einen anderen Desktop kann zu unerwartetem Verhalten führen. Nachfolgende Benachrichtigungen, Fenster und Dialogfelder werden unter Umständen zwischen den Desktops aufgeteilt.</translation>
+<translation id="7568154670718626683">Möchtest du etwas löschen? Verwenden</translation>
 <translation id="7568790562536448087">Aktualisierung läuft</translation>
 <translation id="7569509451529460200">Braille und ChromeVox sind aktiviert</translation>
 <translation id="7569886975397378678">Anzeige der Benachrichtigungen und Apps auf deinem Smartphone nicht einrichten</translation>
@@ -2131,6 +2137,7 @@ Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</trans
 <translation id="820256110035940528"><ph name="TITLE" /> Du hast dich <ph name="FOCUSED_TIME" /> lang konzentriert. Über die Schnelleinstellungen kannst du den Konzentrationsmodus neu starten.</translation>
 <translation id="8203224998425013577">Mehr Emojis und GIFs anzeigen</translation>
 <translation id="8203795194971602413">Rechtsklick</translation>
+<translation id="8205469348819768313">Möchtest du die Seite‑nach‑unten‑Taste verwenden? Verwenden</translation>
 <translation id="8214996719228530800">Canary-Version</translation>
 <translation id="8219451629189078428">Dein Chromebook muss während dieses Zeitraums eingeschaltet und an eine Steckdose angeschlossen sein. Achte darauf, dass die Kabel des Ladegeräts oder Adapters ordnungsgemäß in dein Chromebook und die Steckdose eingesteckt sind. Schalte dein Chromebook nicht aus.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> hinzufügen</translation>
@@ -2323,6 +2330,7 @@ Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</trans
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant spricht diese Sprache nicht.</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
+<translation id="8929566928381252430">Möchtest du die Feststelltaste verwenden? Verwenden</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 Datei}other{# Dateien}}</translation>
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>

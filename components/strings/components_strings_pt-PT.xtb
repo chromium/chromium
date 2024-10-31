@@ -214,7 +214,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1358223345833465883">O seu motor de pesquisa no Chromium</translation>
 <translation id="1359836962251219822">Cozinha e sala de jantar</translation>
 <translation id="1360955481084547712">Abra uma nova janela de navegação anónima para navegar em privado</translation>
-<translation id="1361528602584216624">Limite por Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
+<translation id="1361528602584216624">Limite por Pix <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Métodos de pagamento disponíveis para seleção para continuar com o pagamento abertos à altura total.</translation>
 <translation id="1363028406613469049">Faixa</translation>
 <translation id="1364822246244961190">Esta política está bloqueada e o valor será ignorado.</translation>

@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
 <translation id="1908394185991500139">Pfeil nach links</translation>
+<translation id="1914144885717544695">am Freitag</translation>
 <translation id="1923388006036088459">Akzentfarben</translation>
 <translation id="1945403655450283000">Rekorder</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">Einfach treiben lassen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Heute</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
 <translation id="2154460308960858308">Suche löschen</translation>
 <translation id="2157660087437850958">Emoji-Auswahl</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2715723665057727940">Fluss</translation>
 <translation id="2717139507051041123">Dunklen Farbmodus aktivieren</translation>
+<translation id="2726755229438917165">am Montag</translation>
 <translation id="2728460467788544679">Gesamten Druckverlauf löschen</translation>
 <translation id="2731700343119398978">Bitte warten...</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3060579846059757016">Übersicht</translation>
 <translation id="3061850252076394168">Funktion „Vorlesen“ aktivieren</translation>
+<translation id="3066772729299747758">am Dienstag</translation>
 <translation id="3069085583900247081">Fehler beim Test</translation>
 <translation id="3078740164268491126">Tabelle</translation>
 <translation id="3081652522083185657">hell</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">Sushi</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Earth Flow-Bildschirmschoner</translation>
 <translation id="33736539805963175">Hintergrund in <ph name="LETTERS_COLOR" /> mit dem Buchstaben „<ph name="LETTERS_LETTER" />“</translation>
 <translation id="3383623117265110236">Exklusiv</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">Für weitere Layoutoptionen Mauszeiger weiter darauf halten</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
+<translation id="4137700675046373159">am Samstag</translation>
 <translation id="4143226836069425823">Zum Ersetzen andere Taste drücken</translation>
 <translation id="4145784616224233563">HTTP-Firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">am Sonntag</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Elegantes Büro</translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
 <translation id="6535178685492749208">Du bist offline. Dein Feedback wird später gesendet.</translation>
 <translation id="6543412779435705598">Tacos</translation>
+<translation id="6550369542114086980">am Donnerstag</translation>
 <translation id="6551839203326557324">Äpfel</translation>
 <translation id="65526652485742171">Schaltfläche „Bestätigen“ ist jetzt aktiviert</translation>
 <translation id="6557784757915238407">APN hat den Typ „<ph name="ATTACH" />“.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7182063559013288142">Instant-Hotspot</translation>
 <translation id="7184043045742675738">Klicke auf eine beliebige Taste, um deine Schaltfläche zu personalisieren. Du kannst die Taste mit der Maus oder den Pfeiltasten neu positionieren.</translation>
+<translation id="7187669805838282391">am Mittwoch</translation>
 <translation id="7206979415662233817">Nutzungsbedingungen</translation>
 <translation id="7210635925306941239">türkisen</translation>
 <translation id="7212547870105584639">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7388959671917308825">Eingebautes Touchpad</translation>
 <translation id="7397270852490618635">Helles Design ausschalten</translation>
 <translation id="7401543881546089382">Verknüpfung löschen</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> kann aktualisiert werden</translation>
 <translation id="741244894080940828">Umrechnung</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
 <translation id="7425037327577270384">Formuliere für mich</translation>
@@ -1325,6 +1335,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7500205272584643581">Willst du der Rekorder App erlauben, Sprecher zu erkennen und mit Labels zu versehen?</translation>
 <translation id="7501957181231305652">oder</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
+<translation id="7503342217608032738">Gerät kann nicht verwendet werden</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> in einem strahlenden <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">unten</translation>
 <translation id="7514365320538308">Herunterladen</translation>
@@ -1337,6 +1348,8 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7544853251252956727">Zufallsmix</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7551123448725492271">Das Gerät ist ein Audiogerät.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Der Administrator von <ph name="MANAGER" /> gibt vor, wann dieser Gerätetyp (<ph name="DEVICE_TYPE" />) verwendet werden kann.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Du kannst dieses Gerät am <ph name="DAY" /> um <ph name="TIME" /> wieder verwenden.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Screenshot in der Vorschau anzeigen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von deinem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> wurde automatisch gestartet}other{# Apps wurden automatisch gestartet}}</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8010765388850538088">Weitere Informationen zu generativer KI</translation>
 <translation id="8017679124341497925">Verknüpfung bearbeitet</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8028993641010258682">Größe</translation>
@@ -1434,6 +1448,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8045012663542226664">Mikrofon stummschalten</translation>
 <translation id="8054112564438735763">beigen</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> auf einem <ph name="CHARACTERS_BACKGROUND" /> Hintergrund</translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN ist verbunden.</translation>
 <translation id="8067208048261192356">braunen</translation>
 <translation id="8067224607978179455">„<ph name="ACTION_NAME" />“ löschen</translation>
@@ -1537,6 +1552,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
+<translation id="8584654835905316966">Ein Neustart ist erforderlich, um die Installation der Firmware für <ph name="DEVICE_NAME" /> auf Version <ph name="VERSION" /> abzuschließen. Möglicherweise startet dein Computer mehrmals neu. Dieses Verhalten ist so vorgesehen.</translation>
 <translation id="8593058461203131755">Medienwiedergabe pausieren</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
 <translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
@@ -1671,6 +1687,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="917720651393141712">Testen</translation>
 <translation id="9188992814426075118">Die Tastatur kann automatisch an den Hintergrund angepasst werden</translation>
 <translation id="9189000703457422362">Über automatisch erkannte APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">Ausgewählte Joysticktasten: <ph name="KEYS" />. Wenn du das Steuerelement bearbeiten möchtest, tippe auf die Schaltfläche.</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>

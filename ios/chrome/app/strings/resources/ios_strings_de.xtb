@@ -38,6 +38,7 @@
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
+<translation id="1172240852337942024">Auswahl verwerfen</translation>
 <translation id="1172898394251786223">Nächstes Feld</translation>
 <translation id="1179890706672152411">Dein Speicher ist voll</translation>
 <translation id="1181037720776840403">Entfernen</translation>
@@ -189,6 +190,7 @@
 <translation id="1854463785401910334">In geöffneten Tabs suchen</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} von {count} Passwort}other{{position} von {count} Passwörtern}}</translation>
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
+<translation id="1864266050569350424">Tippe auf einer Website, für die du ein Passwort gespeichert hast, auf das Feld für das Anmeldepasswort.</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Familienmitglieder einladen</translation>
@@ -199,6 +201,8 @@
 <translation id="1890237935065108104">Diese Einstellung ist nicht verfügbar.</translation>
 <translation id="1894023287452300670">Hier den Preis beobachten</translation>
 <translation id="189531189292803889">Dein iPad wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
+<translation id="1901366738768303267">Wie verwende ich diese Funktion?</translation>
+<translation id="1901600657316773839">Auswahl beibehalten</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
@@ -508,6 +512,8 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3443810440409579745">Tab erhalten.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Weitere Informationen zu Google Lens</translation>
+<translation id="3447332786336558089">Nachdem du dich abmeldest, werden Tabs geschlossen und nicht gespeicherte Kontodaten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
+<translation id="3449016921756175697">Hilfreiche Vorschläge, die das Surfen verbessern und vereinfachen.</translation>
 <translation id="345348365500626747">Adresse gefunden</translation>
 <translation id="3464194322481586217">Preis kann nicht beobachtet werden.</translation>
 <translation id="3469117812148449995">Optionen zum Speichern von Passwörtern</translation>
@@ -688,6 +694,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4320848494125124980">Zuletzt verwendet</translation>
 <translation id="4322394346347055525">Andere Tabs schließen</translation>
 <translation id="4324735664183300693">Benachrichtigungen aktivieren</translation>
+<translation id="4326912346867677256">Tippe auf „Passwort verwenden“, um dich sicher anzumelden.</translation>
 <translation id="4328843285884395590">Meine Ablage</translation>
 <translation id="4331177082088332784">Du kannst diese Option in den BEGIN_LINK Inhaltseinstellungen END_LINK verwalten</translation>
 <translation id="4334428914252001502">1 ungelesener Artikel.</translation>
@@ -975,6 +982,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5652623411397330904">Hier werden die von dir beobachteten Produkte angezeigt.</translation>
 <translation id="5657156137487675418">Alle Cookies zulassen</translation>
 <translation id="5659593005791499971">E-Mail</translation>
+<translation id="5666313630530585305">Melde dich auf einer Website an.</translation>
 <translation id="5669335982068190158">Du wurdest beim Zurücksetzen deines iPhones abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
@@ -1037,6 +1045,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="594324569139756587">Drittanbieter-Cookies blockieren</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
 <translation id="5948291296578561264">Dadurch kannst du Fotos in der Fotogalerie speichern.</translation>
+<translation id="5952641243319721872">Möchtest du deine Auswahl wirklich verwerfen?</translation>
 <translation id="5956112131836209882">Tabgruppen-Tab. <ph name="TAB_INDEX_IN_GROUP" /> von <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Mit <ph name="SEARCH_PROVIDER" /> suchen</translation>
 <translation id="5963939892571022323">Zum markierten Text kann kein Link erstellt werden.</translation>
@@ -1124,6 +1133,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6301104306974789820">Benachrichtigungen zum Preis-Tracking erhalten</translation>
 <translation id="6303969859164067831">Abmelden und die Synchronisierung ausschalten</translation>
 <translation id="6310451064941005489">Passwortoptionen</translation>
+<translation id="6316141353357700666">Wähle das gewünschte Passwort aus der angezeigten Liste aus.</translation>
 <translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
 <translation id="633809752005859102">Es ist ein schwerwiegendes Problem aufgetreten. Wir arbeiten daran.</translation>
@@ -1543,6 +1553,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8173034266693057059">Länge</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8182037667962849780">{count,plural, =1{Für {website_1}}=2{Für {website_1} und {website_2}}=3{Für {website_1}, {website_2} und 1 weitere}other{Für {website_1}, {website_2} und {more_count} weitere}}</translation>
+<translation id="8189615296021678665">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Passwort hinzufügen</translation>
 <translation id="8202744799033457229">Verlauf anzeigen</translation>
@@ -1556,12 +1567,14 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8219424187226230983">Offlineversion in einem neuen Tab ansehen</translation>
 <translation id="8230355548492839438">Vorherige suchen</translation>
 <translation id="8232956427053453090">Daten aufbewahren</translation>
+<translation id="8242644458318193141">Zum Schutz deiner Organisation werden Tabs geschlossen und nicht gespeicherte Kontodaten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="82619448491672958">Andere Tabs anzeigen</translation>
 <translation id="8263809106706527890">Möglicherweise wurden deine Einstellungen für den Standardbrowser geändert. Das kannst du in den Einstellungen prüfen.</translation>
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="8273982424131314219">Du gibst Informationen in <ph name="URL" /> ein</translation>
+<translation id="827464923811805683">Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, wem du den Link sendest. Der Link ist 48 Stunden gültig. <ph name="BEGIN_LINK" />Informationen zu geteilten Tabgruppen<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">Mehr…</translation>
 <translation id="8278488584187265939">Startseite anpassen</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
@@ -1574,6 +1587,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8299613349954694191">Öffnet einen Inkognitotab zum anonymen Surfen im Web.</translation>
 <translation id="8307481894409578819">Diese Datei konnte nicht hochgeladen werden</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
+<translation id="8320212361750431956">Letzte Aktivität</translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
 <translation id="8366466717204352506">Sicherheitscheck wurde noch nie durchgeführt</translation>
@@ -1754,6 +1768,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Du nutzt {count} schwaches Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} schwache Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>
+<translation id="9084369964545892485">Neuer Inkognitotab in Gruppe</translation>
 <translation id="9087339162317338348">Es wird nach Möglichkeit HTTPS verwendet und du erhältst eine Warnung, bevor Websites geladen werden, die das Protokoll nicht unterstützen.</translation>
 <translation id="9090979472668095374">Per Stimme antworten</translation>
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
