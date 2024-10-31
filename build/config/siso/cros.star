@@ -82,6 +82,10 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.so", "*.so.*", "*.a", "*.o"],
         }
+        fg[path.join(toolchain, "usr/armv7a-cros-linux-gnueabihf") + ":libs"] = {
+            "type": "glob",
+            "includes": ["*.so", "*.so.*", "*.a", "*.o"],
+        }
         fg[path.join(toolchain, "usr/bin") + ":clang"] = {
             "type": "glob",
             "includes": [
@@ -110,15 +114,7 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.h"],
         }
-        fg[path.join(sysroot, "usr/lib") + ":libs"] = {
-            "type": "glob",
-            "includes": ["*.so", "*.so.*", "*.a", "*.o"],
-        }
-        fg[path.join(sysroot, "usr/lib64") + ":libs"] = {
-            "type": "glob",
-            "includes": ["*.so", "*.so.*", "*.a", "*.o"],
-        }
-        fg[path.join(sysroot, "lib64") + ":libs"] = {
+        fg[sysroot + ":libs"] = {
             "type": "glob",
             "includes": ["*.so", "*.so.*", "*.a", "*.o"],
         }
@@ -128,6 +124,8 @@ def __filegroups(ctx):
 def __step_config(ctx, step_config):
     cros_args = __cros_gn_args(ctx)
     toolchain = cros_args.get("cros_toolchain")
+    cros_nacl_helper_arm32_toolchain = cros_args.get("cros_nacl_helper_arm32_toolchain")
+    cros_nacl_helper_arm32_sysroot = cros_args.get("cros_nacl_helper_arm32_sysroot")
     sysroot = cros_args.get("target_sysroot")
     if not (toolchain and sysroot):
         return step_config
@@ -184,6 +182,13 @@ def __step_config(ctx, step_config):
                 "accumulate": True,
             },
         ])
+        step_config["input_deps"].update({
+            cros_target_ar: [
+                path.join(toolchain, "bin/llvm-ar.elf"),
+                path.join(toolchain, "lib") + ":libs",
+                path.join(toolchain, "usr/lib64") + ":libs",
+            ],
+        })
 
     cros_nacl_helper_arm32_cxx = cros_args.get("cros_nacl_helper_arm32_cxx")
     if cros_nacl_helper_arm32_cxx:
@@ -210,6 +215,40 @@ def __step_config(ctx, step_config):
                 "timeout": "5m",
             },
         ])
+
+    cros_nacl_helper_arm32_ar = cros_args.get("cros_nacl_helper_arm32_ar")
+    if cros_nacl_helper_arm32_ar:
+        step_config["rules"].extend([
+            {
+                "name": "clang-cros/alink/nacl_helper_arm32_llvm-ar",
+                # Other alink steps should use clang/alink/llvm-ar rule or a
+                # nacl rule.
+                "action": "nacl_helper_arm32_alink",
+                "inputs": [
+                    cros_nacl_helper_arm32_ar,
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                    "*.stamp",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "canonicalize_dir": True,
+                "timeout": "5m",
+                "platform_ref": "large",
+                "accumulate": True,
+            },
+        ])
+        step_config["input_deps"].update({
+            cros_nacl_helper_arm32_ar: [
+                path.join(cros_nacl_helper_arm32_toolchain, "bin/llvm-ar.elf"),
+                path.join(cros_nacl_helper_arm32_toolchain, "lib") + ":libs",
+                path.join(cros_nacl_helper_arm32_toolchain, "usr/lib64") + ":libs",
+            ],
+        })
 
     step_config["rules"].extend([
         {
@@ -258,10 +297,6 @@ def __step_config(ctx, step_config):
             "timeout": "10m",
         },
     ])
-
-    # TODO: crbug.com/376103200 - Support remote nacl_helper_arm32
-    # alink/solink/link steps.
-
     step_config["input_deps"].update({
         sysroot + ":headers": [
             path.join(sysroot, "usr/include") + ":include",
@@ -279,11 +314,81 @@ def __step_config(ctx, step_config):
             path.join(toolchain, "lib64") + ":libs",
             path.join(toolchain, "usr/bin:clang"),
             path.join(toolchain, "usr/lib64") + ":libs",
-            path.join(sysroot, "lib64") + ":libs",
-            path.join(sysroot, "usr/lib") + ":libs",
-            path.join(sysroot, "usr/lib64") + ":libs",
+            sysroot + ":libs",
         ],
     })
+
+    if cros_nacl_helper_arm32_toolchain and cros_nacl_helper_arm32_sysroot:
+        step_config["rules"].extend([
+            {
+                "name": "clang-cros/nacl_helper_arm32_solink/gcc_solink_wrapper",
+                "action": "nacl_helper_arm32_solink",
+                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
+                "inputs": [
+                    "build/toolchain/gcc_solink_wrapper.py",
+                    path.join(cros_nacl_helper_arm32_toolchain, "bin/ld.lld"),
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                    "*.stamp",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                # TODO: Do not use absolute paths for custom toolchain/sysroot GN
+                # args.
+                "input_root_absolute_path": True,
+                "platform_ref": "large",
+                "timeout": "2m",
+            },
+            {
+                "name": "clang-cros/nacl_helper_arm32_link/gcc_link_wrapper",
+                "action": "nacl_helper_arm32_link",
+                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
+                "handler": "clang_link",
+                "inputs": [
+                    "build/toolchain/gcc_link_wrapper.py",
+                    path.join(cros_nacl_helper_arm32_toolchain, "bin/ld.lld"),
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                    "*.stamp",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "canonicalize_dir": True,
+                "platform_ref": "large",
+                "timeout": "10m",
+            },
+        ])
+        step_config["input_deps"].update({
+            cros_nacl_helper_arm32_sysroot + ":headers": [
+                path.join(cros_nacl_helper_arm32_sysroot, "usr/include") + ":include",
+                path.join(cros_nacl_helper_arm32_sysroot, "usr/lib") + ":headers",
+                path.join(cros_nacl_helper_arm32_sysroot, "usr/lib64") + ":headers",
+            ],
+            path.join(cros_nacl_helper_arm32_toolchain, "bin/llvm-ar"): [
+                path.join(cros_nacl_helper_arm32_toolchain, "bin/llvm-ar.elf"),
+                path.join(cros_nacl_helper_arm32_toolchain, "lib") + ":libs",
+                path.join(cros_nacl_helper_arm32_toolchain, "usr/lib64") + ":libs",
+            ],
+            path.join(cros_nacl_helper_arm32_toolchain, "bin/ld.lld"): [
+                path.join(cros_nacl_helper_arm32_toolchain, "bin:llddeps"),
+                path.join(cros_nacl_helper_arm32_toolchain, "lib") + ":libs",
+                path.join(cros_nacl_helper_arm32_toolchain, "lib64") + ":libs",
+                path.join(cros_nacl_helper_arm32_toolchain, "usr/bin:clang"),
+                path.join(cros_nacl_helper_arm32_toolchain, "usr/lib64") + ":libs",
+                path.join(cros_nacl_helper_arm32_toolchain, "usr/armv7a-cros-linux-gnueabihf") + ":libs",
+                path.join(cros_nacl_helper_arm32_toolchain, "lib64") + ":libs",
+                cros_nacl_helper_arm32_sysroot + ":libs",
+            ],
+        })
+
     return step_config
 
 cros = module(

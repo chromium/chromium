@@ -216,60 +216,50 @@ def __step_config(ctx, step_config):
             "name": "nacl/saigo_newlib/alink",
             "action": "(.*_)?irt_(x64|arm)_alink",
             "remote": False,
+            "impure": True,
         },
         {
             "name": "nacl/saigo_newlib/solink",
             "action": "(.*_)?irt_(x64|arm)_solink",
             "remote": False,
+            "impure": True,
         },
         {
             "name": "nacl/saigo_newlib/link",
             "action": "(.*_)?irt_(x64|arm)_link",
             "remote": False,
-        },
-        # nacl_helper_arm32
-        # TODO: crbug.com/376103200 - Support remote nacl_helper_arm32
-        # alink/solink/link steps.
-        {
-            "name": "nacl/helper_arm32/alink",
-            "action": "nacl_helper_arm32_alink",
-            "remote": False,
-        },
-        {
-            "name": "nacl/helper_arm32/solink",
-            "action": "nacl_helper_arm32_solink",
-            "remote": False,
-        },
-        {
-            "name": "nacl/helper_arm32/link",
-            "action": "nacl_helper_arm32_link",
-            "remote": False,
+            "impure": True,
         },
         # nacl bootstrap
         {
             "name": "nacl/bootstrap/cc",
             "action": "nacl_bootstrap_cc",
             "remote": False,
+            "impure": True,
         },
         {
             "name": "nacl/bootstrap/cxx",
             "action": "nacl_bootstrap_cxx",
             "remote": False,
+            "impure": True,
         },
         {
             "name": "nacl/bootstrap/alink",
             "action": "nacl_bootstrap_alink",
             "remote": False,
+            "impure": True,
         },
         {
             "name": "nacl/bootstrap/solink",
             "action": "nacl_bootstrap_solink",
             "remote": False,
+            "impure": True,
         },
         {
             "name": "nacl/bootstrap/link",
             "action": "nacl_bootstrap_link",
             "remote": False,
+            "impure": True,
         },
     ])
 
