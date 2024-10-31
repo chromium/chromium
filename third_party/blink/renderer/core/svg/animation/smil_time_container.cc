@@ -648,8 +648,9 @@ bool NonRenderedElementThatAffectsContent(const SVGElement& target) {
 }
 
 bool CanThrottleTarget(const SVGElement& target) {
-  // Don't throttle if the target is in the layout tree.
-  if (target.GetLayoutObject()) {
+  // Don't throttle if the target is in the layout tree or needs to
+  // recalc style.
+  if (target.GetLayoutObject() || target.NeedsStyleRecalc()) {
     return false;
   }
   // Don't throttle if the target has computed style (for example <stop>
