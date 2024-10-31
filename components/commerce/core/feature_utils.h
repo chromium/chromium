@@ -20,6 +20,11 @@ class ProductSpecificationsService;
 // whether to create critical, feature-related infrastructure.
 bool IsShoppingListEligible(AccountChecker* account_checker);
 
+// Returns whether the subscriptions API is available for use. This considers
+// the user's region and locale and is not necessarily bound to any specific
+// user-facing feature.
+bool IsSubscriptionsApiEnabled(AccountChecker* account_checker);
+
 // Check if the product specifications feature is allowed for enterprise.
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs);
 

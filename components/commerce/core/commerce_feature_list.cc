@@ -50,6 +50,12 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kSubscriptionsApiRegionLaunched] = {
+        {"us", {"en", "en-gb", "en-us"}},
+        {"au", {"en", "en-au", "en-gb", "en-us"}},
+        {"ca", {"en", "en-ca", "en-gb", "en-us"}},
+        {"in", {"en", "en-gb", "en-in", "en-us"}},
+        {"jp", {"ja", "ja-jp"}}};
 
     return map;
   }());
@@ -308,6 +314,17 @@ BASE_FEATURE(kShoppingPDPMetrics,
 
 BASE_FEATURE(kShoppingPDPMetricsRegionLaunched,
              "ShoppingPDPMetricsRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_DECLARE_FEATURE(kSubscriptionsApi);
+BASE_DECLARE_FEATURE(kSubscriptionsApiRegionLaunched);
+
+BASE_FEATURE(kSubscriptionsApi,
+             "SubscriptionsApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSubscriptionsApiRegionLaunched,
+             "SubscriptionsApiRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackByDefaultOnMobile,

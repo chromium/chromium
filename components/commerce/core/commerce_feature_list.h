@@ -92,6 +92,8 @@ BASE_DECLARE_FEATURE(kShoppingPageTypes);
 BASE_DECLARE_FEATURE(kShoppingPageTypesRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
+BASE_DECLARE_FEATURE(kSubscriptionsApi);
+BASE_DECLARE_FEATURE(kSubscriptionsApiRegionLaunched);
 BASE_DECLARE_FEATURE(kTrackByDefaultOnMobile);
 
 #if BUILDFLAG(IS_IOS)

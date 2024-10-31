@@ -4,19 +4,20 @@
 
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 
+#include <queue>
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#include <queue>
-#include <string>
 
 namespace commerce {
 
@@ -72,6 +73,12 @@ SubscriptionsManager::Request::~Request() = default;
 void SubscriptionsManager::Subscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  if (!IsSubscriptionsApiEnabled(account_checker_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
   CHECK(subscriptions->size() > 0);
 
   SyncIfNeeded();
@@ -87,6 +94,12 @@ void SubscriptionsManager::Subscribe(
 void SubscriptionsManager::Unsubscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  if (!IsSubscriptionsApiEnabled(account_checker_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
   CHECK(subscriptions->size() > 0);
 
   SyncIfNeeded();
@@ -100,6 +113,10 @@ void SubscriptionsManager::Unsubscribe(
 }
 
 void SubscriptionsManager::SyncSubscriptions() {
+  if (!IsSubscriptionsApiEnabled(account_checker_)) {
+    return;
+  }
+
   pending_requests_.emplace(AsyncOperation::kSync,
                             base::BindOnce(&SubscriptionsManager::HandleSync,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -109,6 +126,12 @@ void SubscriptionsManager::SyncSubscriptions() {
 void SubscriptionsManager::IsSubscribed(
     CommerceSubscription subscription,
     base::OnceCallback<void(bool)> callback) {
+  if (!IsSubscriptionsApiEnabled(account_checker_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
   SyncIfNeeded();
 
   pending_requests_.emplace(
@@ -127,6 +150,13 @@ bool SubscriptionsManager::IsSubscribedFromCache(
 void SubscriptionsManager::GetAllSubscriptions(
     SubscriptionType type,
     base::OnceCallback<void(std::vector<CommerceSubscription>)> callback) {
+  if (!IsSubscriptionsApiEnabled(account_checker_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<CommerceSubscription>()));
+    return;
+  }
+
   SyncIfNeeded();
 
   pending_requests_.emplace(AsyncOperation::kGetAll,
