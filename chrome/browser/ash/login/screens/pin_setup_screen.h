@@ -46,7 +46,6 @@ class PinSetupScreen : public BaseScreen {
     kUsupportedHardware,
     kNotSupportedAsPrimaryFactor,
     kNotSupportedAsPrimaryFactorForManagedUsers,
-    kPinAlreadySet,
   };
 
   // This enum is tied directly to a UMA enum defined in

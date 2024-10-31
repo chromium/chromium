@@ -1199,10 +1199,21 @@ void WizardController::ShowFingerprintSetupScreen() {
   SetCurrentScreen(GetScreen(FingerprintSetupScreenView::kScreenId));
 }
 
-void WizardController::ShowPinSetupScreen() {
-  // The PIN Setup screen can be used for setting up PIN as a main factor, or as
-  // a secondary one. At this point, the mode must be known.
-  CHECK(wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
+void WizardController::ShowPinSetupScreenAsSecondaryFactor() {
+  wizard_context_->knowledge_factor_setup.pin_setup_mode =
+      WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
+  SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowPinSetupScreenAsMainFactor() {
+  wizard_context_->knowledge_factor_setup.pin_setup_mode =
+      WizardContext::PinSetupMode::kSetupAsPrimaryFactor;
+  SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowPinSetupScreenForRecovery() {
+  wizard_context_->knowledge_factor_setup.pin_setup_mode =
+      WizardContext::PinSetupMode::kRecovery;
   SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
 }
 
@@ -2426,10 +2437,7 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
   if (features::IsAllowPasswordlessSetupEnabled()) {
     // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
     // there isn't hardware support, the screen exits gracefully.
-    CHECK(!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
-    wizard_context_->knowledge_factor_setup.pin_setup_mode =
-        WizardContext::PinSetupMode::kSetupAsPrimaryFactor;
-    ShowPinSetupScreen();
+    ShowPinSetupScreenAsMainFactor();
   } else {
     ShowPasswordSelectionScreen();
   }
@@ -2455,9 +2463,7 @@ void WizardController::OnPasswordSelectionScreenExit(
       // Check that this is a valid transition and set the PIN screen for main
       // factor setup again.
       CHECK(could_go_back);
-      wizard_context_->knowledge_factor_setup.pin_setup_mode =
-          WizardContext::PinSetupMode::kSetupAsPrimaryFactor;
-      ShowPinSetupScreen();
+      ShowPinSetupScreenAsMainFactor();
       return;
     }
     case PasswordSelectionScreen::Result::PIN_RESET: {
@@ -2466,9 +2472,7 @@ void WizardController::OnPasswordSelectionScreenExit(
                WizardContext::AuthChangeFlow::kRecovery)
           << "PasswordSelection exited with PIN_RESET result outside recovery.";
       CHECK(features::IsAllowPasswordlessRecoveryEnabled());
-      wizard_context_->knowledge_factor_setup.pin_setup_mode =
-          WizardContext::PinSetupMode::kRecovery;
-      ShowPinSetupScreen();
+      ShowPinSetupScreenForRecovery();
       return;
     }
     case PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE:
@@ -2598,13 +2602,15 @@ void WizardController::OnFingerprintSetupScreenExit(
     FingerprintSetupScreen::Result result) {
   OnScreenExit(FingerprintSetupScreenView::kScreenId,
                FingerprintSetupScreen::GetResultString(result));
-  if (!features::IsAllowPasswordlessSetupEnabled()) {
-    // First time surfacing the screen for the non PIN-only OOBE.
-    CHECK(!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
-    wizard_context_->knowledge_factor_setup.pin_setup_mode =
-        WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
+  const bool pin_was_already_set =
+      wizard_context_->knowledge_factor_setup.pin_setup_mode ==
+      WizardContext::PinSetupMode::kAlreadyPerformed;
+
+  if (pin_was_already_set) {
+    FinishAuthFactorsSetup();
+  } else {
+    ShowPinSetupScreenAsSecondaryFactor();
   }
-  ShowPinSetupScreen();
 }
 
 void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
@@ -2621,8 +2627,6 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
             .password_selection_can_go_back_to_pin_setup = true;
         [[fallthrough]];
       case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
-        wizard_context_->knowledge_factor_setup.pin_setup_mode =
-            WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
         ShowPasswordSelectionScreen();
         return;
       case PinSetupScreen::Result::kDoneAsMainFactor:
@@ -2643,7 +2647,6 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
         CHECK_EQ(wizard_context_->knowledge_factor_setup.auth_setup_flow,
                  WizardContext::AuthChangeFlow::kRecovery);
         CHECK(features::IsAllowPasswordlessRecoveryEnabled());
-        wizard_context_->knowledge_factor_setup.pin_setup_mode.reset();
         ObtainContextAndLoginAuthenticated();
         return;
     }
@@ -3233,7 +3236,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
   } else if (screen_id == GestureNavigationScreenView::kScreenId) {
     ShowGestureNavigationScreen();
   } else if (screen_id == PinSetupScreenView::kScreenId) {
-    ShowPinSetupScreen();
+    ShowPinSetupScreenAsSecondaryFactor();
   } else if (screen_id == FingerprintSetupScreenView::kScreenId) {
     ShowFingerprintSetupScreen();
   } else if (screen_id == MarketingOptInScreenView::kScreenId) {

@@ -679,10 +679,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, MainFactorSet) {
   ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsMainFactor);
   ExpectFingerprintScreenExitedAndContinue();
 
-  // When the PIN is surfaced at the end of the flow for a second time, it exits
-  // properly, since a PIN has already been set.
-  ExpectSkipReason(PinSetupScreen::SkipReason::kPinAlreadySet);
-  ExpectExitResult(PinSetupScreen::Result::kNotApplicable);
+  // Flow must have finished.
   CheckCredentialsWereCleared();
 }
 

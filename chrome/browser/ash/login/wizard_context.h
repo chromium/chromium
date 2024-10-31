@@ -125,7 +125,7 @@ class WizardContext {
 
     AuthFactorsSet modified_factors;
 
-    std::optional<PinSetupMode> pin_setup_mode = std::nullopt;
+    PinSetupMode pin_setup_mode = PinSetupMode::kSetupAsSecondaryFactor;
 
     // The PasswordSelectionScreeen only has a 'Back' button when the PinSetup
     // screen was shown before it.

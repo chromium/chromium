@@ -324,7 +324,9 @@ class WizardController : public OobeUI::Observer {
   void ShowAssistantOptInFlowScreen();
   void ShowMultiDeviceSetupScreen();
   void ShowGestureNavigationScreen();
-  void ShowPinSetupScreen();
+  void ShowPinSetupScreenAsSecondaryFactor();
+  void ShowPinSetupScreenAsMainFactor();
+  void ShowPinSetupScreenForRecovery();
   void ShowMarketingOptInScreen();
   void ShowPackagedLicenseScreen();
   void ShowEduCoexistenceLoginScreen();

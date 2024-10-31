@@ -77,9 +77,8 @@ void RecordUserAction(const std::string& action_id) {
 // is only available between the Show/Hide calls. During `MaybeSkip`
 // WizardController provides a reference to it.
 bool IsInSetupMode(PinSetupMode mode, WizardContext& context) {
-  CHECK(context.knowledge_factor_setup.pin_setup_mode.has_value());
   const bool mode_matches =
-      context.knowledge_factor_setup.pin_setup_mode.value() == mode;
+      context.knowledge_factor_setup.pin_setup_mode == mode;
   if (mode == PinSetupMode::kSetupAsPrimaryFactor ||
       mode == PinSetupMode::kAlreadyPerformed) {
     // These modes are only available when PasswordlessSetup is enabled.
@@ -186,11 +185,6 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
     if (IsUserEnterpriseManaged()) {
       return SkipReason::kNotSupportedAsPrimaryFactorForManagedUsers;
     }
-  }
-
-  // Second surfacing of the PIN setup screen after setting a PIN as primary.
-  if (IsInSetupMode(PinSetupMode::kAlreadyPerformed, context)) {
-    return SkipReason::kPinAlreadySet;
   }
 
   // Will not be skipped.
