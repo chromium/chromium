@@ -4260,23 +4260,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.SafeAreaInsets.SendSafeAreaToFrame.Optimized"
-    enum="Boolean" expires_after="2025-04-01">
-  <owner>clhager@google.com</owner>
-  <owner>wenyufu@google.com</owner>
-  <summary>
-    Records true when a call to send safe area insets to the renderer was
-    skipped due to matching the previous sent insets, in order to avoid sending
-    unnecessary, duplicate data. If false, the call was not skipped and the safe
-    area insets were sent.
-
-    Evaluating the proportion of true (skipped) to false (sent) values relative
-    to the total record count will measure how common the redundant inset
-    updates were, in order to give better insight into the regressions
-    associated with sending safe area insets.
-  </summary>
-</histogram>
-
 <histogram name="Android.SearchEngineChoice.ChosenSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="never">
 <!-- expires-never: Continuously monitored by Android partner team. -->

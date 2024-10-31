@@ -84,12 +84,7 @@ void SafeAreaInsetsHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
     // Skip sending the safe area to frame if the values match the latest sent
     // values.
     if (insets != insets_) {
-      base::UmaHistogramBoolean(
-          "Android.SafeAreaInsets.SendSafeAreaToFrame.Optimized", false);
       SendSafeAreaToFrame(rfh, insets);
-    } else {
-      base::UmaHistogramBoolean(
-          "Android.SafeAreaInsets.SendSafeAreaToFrame.Optimized", true);
     }
   }
   insets_ = insets;
