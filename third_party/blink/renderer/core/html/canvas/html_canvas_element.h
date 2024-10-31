@@ -59,6 +59,7 @@
 
 namespace blink {
 
+class CanvasHibernationHandler;
 class Canvas2DLayerBridge;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
@@ -330,7 +331,10 @@ class CORE_EXPORT HTMLCanvasElement final
  private:
   void Dispose();
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderFor2DContext();
+  // TODO(crbug.com/40280152): Remove parameter once the hibernation handler is
+  // an instance variable of this class.
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderFor2DContext(
+      CanvasHibernationHandler& hibernation_handler);
 
   void ColorSchemeMayHaveChanged();
 

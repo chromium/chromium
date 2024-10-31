@@ -1884,7 +1884,8 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   // If PaintCanvas cannot be get from the new layer bridge, revert the
   // replacement.
   CanvasResourceProvider* new_provider =
-      GetOrCreateCanvasResourceProviderFor2DContext();
+      GetOrCreateCanvasResourceProviderFor2DContext(
+          canvas2d_bridge_->GetHibernationHandler());
   if (!new_provider) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
@@ -1922,14 +1923,16 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     if (bridge == nullptr) {
       return nullptr;
     }
-    return GetOrCreateCanvasResourceProviderFor2DContext();
+    return GetOrCreateCanvasResourceProviderFor2DContext(
+        canvas2d_bridge_->GetHibernationHandler());
   }
 
   return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(hint);
 }
 
 CanvasResourceProvider*
-HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext() {
+HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext(
+    CanvasHibernationHandler& hibernation_handler) {
   CanvasResourceProvider* resource_provider = ResourceProvider();
 
   if (context_lost()) {
@@ -1949,8 +1952,6 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext() {
   RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
                                                    : RasterModeHint::kPreferCPU;
 
-  CanvasHibernationHandler& hibernation_handler =
-      canvas2d_bridge_->GetHibernationHandler();
   // Re-creation will happen through Restore().
   // If the Canvas2DLayerBridge has just been created, possibly due to failed
   // attempts of Restore(), the layer would not exist, therefore, it will not
