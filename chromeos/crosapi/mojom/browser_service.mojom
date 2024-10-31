@@ -202,9 +202,7 @@ interface BrowserService {
   [MinVersion=7]
   GetHistograms@4() => (mojo_base.mojom.BigString compressed_histograms);
 
-  // Returns Url of the active tab from the browser if there is any.
-  [MinVersion=8]
-  GetActiveTabUrl@5() => (url.mojom.Url? url);
+  // GetActiveTabUrl@5 was removed.
 
   // Notifies Lacros to update the policy data from the device account with the
   // new data from input. The data is serialized blob of PolicyFetchResponse

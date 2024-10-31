@@ -277,17 +277,8 @@ void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
     FetchEnabledSuggestionsCallback callback,
     const TextInputMethod::InputContext& context) {
   WindowProperties window_properties = get_window_properties_.Run();
-  get_url_.Run(
-      base::BindOnce(&AssistiveSuggesterClientFilter::ReturnEnabledSuggestions,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     window_properties, context));
-}
+  std::optional<GURL> current_url = get_url_.Run();
 
-void AssistiveSuggesterClientFilter::ReturnEnabledSuggestions(
-    AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
-    WindowProperties window_properties,
-    const TextInputMethod::InputContext& context,
-    const std::optional<GURL>& current_url) {
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
       !IsMatchedSubDomain(kDeniedDomainsForDiacritics, current_url) &&

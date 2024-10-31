@@ -16,8 +16,7 @@ namespace input_method {
 
 class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
  public:
-  using GetUrlCallback =
-      base::RepeatingCallback<void(GetFocusedTabUrlCallback)>;
+  using GetUrlCallback = base::RepeatingCallback<std::optional<GURL>(void)>;
 
   using GetFocusedWindowPropertiesCallback =
       base::RepeatingCallback<WindowProperties(void)>;
@@ -34,12 +33,6 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
       const TextInputMethod::InputContext& context) override;
 
  private:
-  void ReturnEnabledSuggestions(
-      AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
-      WindowProperties window_properties,
-      const TextInputMethod::InputContext& context,
-      const std::optional<GURL>& current_url);
-
   // Used to fetch the url from the current browser instance.
   GetUrlCallback get_url_;
   GetFocusedWindowPropertiesCallback get_window_properties_;

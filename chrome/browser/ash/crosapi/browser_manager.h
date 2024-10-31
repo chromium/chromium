@@ -200,14 +200,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Returns true if keep-alive is enabled.
   bool IsKeepAliveEnabled() const;
 
-  // Returns true if crosapi interface supports GetActiveTabUrl API.
-  bool GetActiveTabUrlSupported() const;
-
-  using GetActiveTabUrlCallback =
-      base::OnceCallback<void(const std::optional<GURL>&)>;
-  // Gets Url of the active tab from lacros if there is any.
-  void GetActiveTabUrl(GetActiveTabUrlCallback callback);
-
   using GetBrowserInformationCallback =
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)>;
   // Gets URLs and active indices of the tab strip models from the Lacros

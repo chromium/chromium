@@ -388,17 +388,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   }
 }
 
-bool BrowserManager::GetActiveTabUrlSupported() const {
-  return browser_service_.has_value() &&
-         browser_service_->interface_version >=
-             crosapi::mojom::BrowserService::kGetActiveTabUrlMinVersion;
-}
-
-void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
-  DCHECK(GetActiveTabUrlSupported());
-  browser_service_->service->GetActiveTabUrl(std::move(callback));
-}
-
 void BrowserManager::GetBrowserInformation(
     const std::string& window_unique_id,
     GetBrowserInformationCallback callback) {
