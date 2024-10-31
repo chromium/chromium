@@ -12,11 +12,14 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
@@ -24,6 +27,7 @@
 #include "base/ranges/functional.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -559,23 +563,37 @@ RateLimitTable::SourceAllowedForDestinationRateLimit(
   statement.BindTime(1, source_time);
   statement.BindTime(2, source_time - destination_rate_limit.rate_limit_window);
 
-  base::flat_set<net::SchemefulSite> destination_sites =
-      source.registration().destination_set.destinations();
-  base::flat_set<net::SchemefulSite> same_reporting_destination_sites =
-      destination_sites;
+  // Value is true if the reporting site matched, false otherwise.
+  using DestinationSiteMap = base::flat_map<net::SchemefulSite, bool>;
+
+  DestinationSiteMap destination_sites = [&]() {
+    const base::flat_set<net::SchemefulSite>& destinations =
+        source.registration().destination_set.destinations();
+
+    DestinationSiteMap::container_type pairs;
+    pairs.reserve(destinations.size());
+
+    for (const net::SchemefulSite& site : destinations) {
+      pairs.emplace_back(site, true);
+    }
+
+    return DestinationSiteMap(base::sorted_unique, std::move(pairs));
+  }();
+
+  size_t num_with_same_reporting_site = destination_sites.size();
 
   const std::string serialized_reporting_site =
       net::SchemefulSite(common_info.reporting_origin()).Serialize();
 
   while (statement.Step()) {
-    net::SchemefulSite destination_site =
-        net::SchemefulSite::Deserialize(statement.ColumnStringView(0));
+    auto [it, _] = destination_sites.try_emplace(
+        net::SchemefulSite::Deserialize(statement.ColumnStringView(0)), false);
 
-    if (serialized_reporting_site == statement.ColumnStringView(1)) {
-      same_reporting_destination_sites.insert(destination_site);
+    if (!it->second &&
+        serialized_reporting_site == statement.ColumnStringView(1)) {
+      it->second = true;
+      ++num_with_same_reporting_site;
     }
-
-    destination_sites.insert(std::move(destination_site));
   }
 
   if (!statement.Succeeded()) {
@@ -590,8 +608,9 @@ RateLimitTable::SourceAllowedForDestinationRateLimit(
 
   bool global_limit_hit =
       destination_sites.size() > static_cast<size_t>(global_limit);
-  bool reporting_limit_hit = same_reporting_destination_sites.size() >
-                             static_cast<size_t>(reporting_limit);
+
+  bool reporting_limit_hit =
+      num_with_same_reporting_site > static_cast<size_t>(reporting_limit);
 
   if (global_limit_hit && reporting_limit_hit) {
     return DestinationRateLimitResult::kHitBothLimits;
