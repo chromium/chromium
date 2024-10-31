@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_navigation_flow_detector.h"
 
+#include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -122,7 +123,8 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
     const content::CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
-  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy) {
+  if (!dips::IsOrWasInPrimaryPage(render_frame_host) ||
+      details.blocked_by_policy) {
     return;
   }
   // Attribute accesses by iframes to the first-party page they're embedded in.
