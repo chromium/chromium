@@ -2201,6 +2201,49 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
   }
 }
 
+// Regression test for crbug.com/376461709
+TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = BucketLocator();
+  bucket_locator.storage_key = storage_key;
+
+  // Bind the IDBFactory.
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote.BindNewPipeAndPassReceiver(),
+              ToBucketInfo(bucket_locator));
+
+  // Bind a connection/database.
+  MockMojoFactoryClient client;
+  MockMojoDatabaseCallbacks database_callbacks;
+  base::RunLoop run_loop;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+  EXPECT_CALL(client, MockedOpenSuccess)
+      .WillOnce(
+          testing::DoAll(MoveArgPointee<0>(&pending_database),
+                         ::base::test::RunClosure(run_loop.QuitClosure())));
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+  factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                       database_callbacks.CreateInterfacePtrAndBind(), u"db",
+                       /*version=*/0,
+                       transaction_remote.BindNewEndpointAndPassReceiver(),
+                       /*transaction_id=*/1, /*priority=*/0);
+  run_loop.Run();
+
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection(
+      std::move(pending_database));
+  // Simulate force closing the context while `UpdatePriority` is in flight.
+  context_->ForceClose(bucket_locator.id, {}, base::DoNothing());
+  // Call this second in the unit test context to simulate losing the race.
+  connection->UpdatePriority(1);
+  connection.FlushForTesting();
+
+  // Not crashing indicates success.
+}
+
 TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
   leveldb_env::SetDBFactoryForTesting(base::BindRepeating(
       [](const leveldb_env::Options& options, const std::string& name,
