@@ -3679,6 +3679,22 @@
             ]
         }
     ],
+    "CCTNavigationalPrefetch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTNavigationalPrefetch",
+                        "PrefetchBrowserInitiatedTriggers"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTPrewarmTab": [
         {
             "platforms": [
