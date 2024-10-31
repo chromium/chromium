@@ -994,6 +994,12 @@ const IDNTestCase kIdnCases[] = {
     {"xn--googlecom-lg9q.com", u"google\u5de5com.com", kUnsafe},
     {"xn--googlecom-g040a.com", u"google\u8ba0com.com", kUnsafe},
     {"xn--googlecom-b85n.com", u"google\u4e01com.com", kUnsafe},
+    // 丶google.com
+    {"xn--google-2x7i.com", u"\u4e36google.com", kUnsafe},
+    // google丶.com
+    {"xn--google-8x7i.com", u"google\u4e36.com", kUnsafe},
+    // google丶example.com
+    {"xn--googleexample-1m1u.com", u"google\u4e36example.com", kUnsafe},
 
     // Whole-script-confusables. Cyrillic is sufficiently handled in cases above
     // so it's not included here.

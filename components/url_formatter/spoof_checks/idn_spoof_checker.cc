@@ -515,7 +515,8 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
             // U+4E00 (一), U+3127 (ㄧ), U+4E28 (丨), U+4E5B (乛), U+4E03 (七),
             // U+4E05 (丅), U+5341 (十), U+3007 (〇), U+3112 (ㄒ), U+311A (ㄚ),
             // U+311F (ㄟ), U+3128 (ㄨ), U+3129 (ㄩ), U+3108 (ㄈ), U+31BA (ㆺ),
-            // U+31B3 (ㆳ), U+5DE5 (工), U+31B2 (ㆲ), U+8BA0 (讠), U+4E01 (丁)
+            // U+31B3 (ㆳ), U+5DE5 (工), U+31B2 (ㆲ), U+8BA0 (讠), U+4E01 (丁),
+            // U+4E36 (丶)
             // These characters are already blocked:
             // U+2F00 (⼀) (normalized to U+4E00), U+3192 (㆒), U+2F02 (⼂),
             // U+2F17 (⼗) and U+3038 (〸) (both normalized to U+5341 (十)).
@@ -524,12 +525,12 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
             R"([^\p{scx=kana}\p{scx=hira}\p{scx=hani}\p{scx=bopo}])"
             R"([\u4e00\u3127\u4e28\u4e5b\u4e03\u4e05\u5341\u3007\u3112)"
             R"(\u311a\u311f\u3128\u3129\u3108\u31ba\u31b3\u5dE5)"
-            R"(\u31b2\u8ba0\u4e01]|)"
+            R"(\u31b2\u8ba0\u4e01\u4e36]|)"
             // Check if there is non-{Hiragana, Katagana, Han, Bopomofo} on the
-            // right.
+            // right. This must be synced with the previous pattern.
             R"([\u4e00\u3127\u4e28\u4e5b\u4e03\u4e05\u5341\u3007\u3112)"
             R"(\u311a\u311f\u3128\u3129\u3108\u31ba\u31b3\u5de5)"
-            R"(\u31b2\u8ba0\u4e01])"
+            R"(\u31b2\u8ba0\u4e01\u4e36])"
             R"([^\p{scx=kana}\p{scx=hira}\p{scx=hani}\p{scx=bopo}]|)"
 
             // Disallow combining diacritical mark (U+0300-U+0339) after a
