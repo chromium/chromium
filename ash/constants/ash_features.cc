@@ -114,12 +114,6 @@ BASE_FEATURE(kArcAdbSideloadingFeature,
              "ArcAdbSideloading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether files shared from ARC apps to Web Apps should be shared
-// through the FuseBox service.
-BASE_FEATURE(kArcFuseBoxFileSharing,
-             "ArcFuseBoxFileSharing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable support for ARC ADB sideloading for managed
 // accounts and/or devices.
 BASE_FEATURE(kArcManagedAdbSideloadingSupport,
@@ -3546,10 +3540,6 @@ bool IsApnRevampAndPoliciesEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
-}
-
-bool IsArcFuseBoxFileSharingEnabled() {
-  return base::FeatureList::IsEnabled(kArcFuseBoxFileSharing);
 }
 
 bool IsAssistantNativeIconsEnabled() {
