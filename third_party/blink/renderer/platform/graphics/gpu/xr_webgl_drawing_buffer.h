@@ -49,7 +49,9 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
 
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 
-  void UseSharedBuffer(const gpu::MailboxHolder&);
+  void UseSharedBuffer(
+      const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
+      const gpu::SyncToken& buffer_sync_token);
   void DoneWithSharedBuffer();
 
   // Prepare for destruction by breaking reference loops. This must be called to

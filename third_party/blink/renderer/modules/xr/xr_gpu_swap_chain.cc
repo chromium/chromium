@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
-#include "third_party/blink/renderer/modules/xr/xr_layer_mailbox_manager.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 
 namespace blink {
 
@@ -191,16 +191,16 @@ XRGPUMailboxSwapChain::XRGPUMailboxSwapChain(
 }
 
 GPUTexture* XRGPUMailboxSwapChain::ProduceTexture() {
-  const XRLayerMailboxes& mailboxes = layer()->GetMailboxes();
+  const XRLayerSharedImages& shared_images = layer()->GetSharedImages();
 
   // TODO(crbug.com/359418629): Allow for other mailboxes as well?
-  CHECK(mailboxes.color_mailbox_holder);
+  CHECK(shared_images.content_image_data.shared_image);
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromExistingMailbox(
           device()->GetDawnControlClient(), device()->GetHandle(), descriptor_,
-          mailboxes.color_mailbox_holder->mailbox,
-          mailboxes.color_mailbox_holder->sync_token);
+          shared_images.content_image_data.shared_image->mailbox(),
+          shared_images.content_image_data.sync_token);
 
   return MakeGarbageCollected<GPUTexture>(
       device(), descriptor_.format, descriptor_.usage,

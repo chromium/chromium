@@ -1963,8 +1963,10 @@ void XRSession::SetMetricsReporter(std::unique_ptr<MetricsReporter> reporter) {
 
 void XRSession::OnFrame(
     double timestamp,
-    const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
-    const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+    scoped_refptr<gpu::ClientSharedImage> output_shared_image,
+    const gpu::SyncToken& output_sync_token,
+    scoped_refptr<gpu::ClientSharedImage> camera_image_shared_image,
+    const gpu::SyncToken& camera_image_sync_token) {
   TRACE_EVENT0("gpu", __func__);
   DVLOG(2) << __func__ << ": ended_=" << ended_
            << ", pending_frame_=" << pending_frame_;
@@ -1972,7 +1974,7 @@ void XRSession::OnFrame(
   if (ended_)
     return;
 
-  layer_mailbox_manager_.Reset();
+  layer_shared_image_manager_.Reset();
 
   if (pending_frame_) {
     pending_frame_ = false;
@@ -1986,9 +1988,9 @@ void XRSession::OnFrame(
       // submit a frame back to the runtime, as all "GetFrameData" calls need a
       // matching submit.
       if (prev_base_layer_) {
-        layer_mailbox_manager_.SetLayerMailboxes(prev_base_layer_,
-                                                 output_mailbox_holder,
-                                                 camera_image_mailbox_holder);
+        layer_shared_image_manager_.SetLayerSharedImages(
+            prev_base_layer_, output_shared_image, output_sync_token,
+            camera_image_shared_image, camera_image_sync_token);
 
         DVLOG(2) << __func__
                  << ": prev_base_layer_ is valid, submitting frame to it";
@@ -2009,8 +2011,9 @@ void XRSession::OnFrame(
     }
 
     XRLayer* frame_base_layer = render_state_->GetFirstLayer();
-    layer_mailbox_manager_.SetLayerMailboxes(
-        frame_base_layer, output_mailbox_holder, camera_image_mailbox_holder);
+    layer_shared_image_manager_.SetLayerSharedImages(
+        frame_base_layer, output_shared_image, output_sync_token,
+        camera_image_shared_image, camera_image_sync_token);
 
     frame_base_layer->OnFrameStart();
 

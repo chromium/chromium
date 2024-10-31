@@ -342,48 +342,53 @@ void XRWebGLLayer::OnFrameStart() {
     framebuffer_->MarkOpaqueBufferComplete(true);
     framebuffer_->SetContentsChanged(false);
 
-    const XRLayerMailboxes& layer_mailboxes = GetMailboxes();
-    if (layer_mailboxes.color_mailbox_holder) {
-      drawing_buffer_->UseSharedBuffer(
-          layer_mailboxes.color_mailbox_holder.value());
-      DVLOG(3) << __func__ << ": color_mailbox_holder->mailbox="
-               << layer_mailboxes.color_mailbox_holder->mailbox.ToDebugString();
+    const XRLayerSharedImages& layer_shared_images = GetSharedImages();
+    const XRSharedImageData& content_image_data =
+        layer_shared_images.content_image_data;
+    const XRSharedImageData& camera_image_data =
+        layer_shared_images.camera_image_data;
+
+    if (content_image_data.shared_image) {
+      drawing_buffer_->UseSharedBuffer(content_image_data.shared_image,
+                                       content_image_data.sync_token);
+      DVLOG(3) << __func__ << ": content_image_data.shared_image->mailbox()="
+               << content_image_data.shared_image->mailbox().ToDebugString();
       is_direct_draw_frame = true;
     } else {
       is_direct_draw_frame = false;
     }
 
-    if (layer_mailboxes.camera_image_mailbox_holder) {
-      DVLOG(3) << __func__ << ":camera_image_mailbox_holder->mailbox="
-               << layer_mailboxes.camera_image_mailbox_holder->mailbox
-                      .ToDebugString();
-      camera_image_texture_id_ =
-          GetBufferTextureId(layer_mailboxes.camera_image_mailbox_holder);
+    if (camera_image_data.shared_image) {
+      DVLOG(3) << __func__ << ": camera_image_data.shared_image->mailbox()"
+               << camera_image_data.shared_image->mailbox().ToDebugString();
+      camera_image_texture_id_ = GetBufferTextureId(
+          camera_image_data.shared_image, camera_image_data.sync_token);
       DVLOG(3) << __func__
                << ": camera_image_texture_id_=" << camera_image_texture_id_;
-      BindCameraBufferTexture(layer_mailboxes.camera_image_mailbox_holder);
+      BindCameraBufferTexture(camera_image_data.shared_image);
     }
   }
 }
 
 uint32_t XRWebGLLayer::GetBufferTextureId(
-    const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
+    const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
+    const gpu::SyncToken& buffer_sync_token) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(buffer_mailbox_holder->sync_token.GetConstData());
-  DVLOG(3) << __func__ << ": buffer_mailbox_holder->sync_token="
-           << buffer_mailbox_holder->sync_token.ToDebugString();
+  gl->WaitSyncTokenCHROMIUM(buffer_sync_token.GetConstData());
+  DVLOG(3) << __func__
+           << ": buffer_sync_token=" << buffer_sync_token.ToDebugString();
   GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      buffer_mailbox_holder->mailbox.name);
+      buffer_shared_image->mailbox().name);
   DVLOG(3) << __func__ << ": texture_id=" << texture_id;
   return texture_id;
 }
 
 void XRWebGLLayer::BindCameraBufferTexture(
-    const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
+    const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
 
-  if (buffer_mailbox_holder) {
-    uint32_t texture_target = buffer_mailbox_holder->texture_target;
+  if (buffer_shared_image) {
+    uint32_t texture_target = buffer_shared_image->GetTextureTarget();
     gl->BindTexture(texture_target, camera_image_texture_id_);
     gl->BeginSharedImageAccessDirectCHROMIUM(
         camera_image_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
@@ -427,9 +432,9 @@ void XRWebGLLayer::OnFrameEnd() {
       // `SubmitWebGLLayer` so that we stop using it before the sync token
       // that `SubmitWebGLLayer` will generate.
       if (camera_image_texture_id_) {
-        const XRLayerMailboxes& layer_mailboxes = GetMailboxes();
+        const XRLayerSharedImages& layer_shared_images = GetSharedImages();
         // We shouldn't ever have a camera texture if the holder wasn't present:
-        CHECK(layer_mailboxes.camera_image_mailbox_holder);
+        CHECK(layer_shared_images.camera_image_data.shared_image);
 
         DVLOG(3) << __func__
                  << ": deleting camera image texture, camera_image_texture_id_="

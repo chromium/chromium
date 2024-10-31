@@ -13,7 +13,7 @@
 namespace blink {
 
 class XRSession;
-struct XRLayerMailboxes;
+struct XRLayerSharedImages;
 
 class XRLayer : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,7 +33,7 @@ class XRLayer : public EventTarget {
   const AtomicString& InterfaceName() const override;
 
   uint32_t layer_id() const { return layer_id_; }
-  const XRLayerMailboxes& GetMailboxes() const;
+  const XRLayerSharedImages& GetSharedImages() const;
 
   void Trace(Visitor*) const override;
 

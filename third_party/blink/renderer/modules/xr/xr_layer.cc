@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/modules/xr/xr_layer_mailbox_manager.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
 namespace blink {
@@ -21,8 +21,8 @@ const AtomicString& XRLayer::InterfaceName() const {
   return event_target_names::kXRLayer;
 }
 
-const XRLayerMailboxes& XRLayer::GetMailboxes() const {
-  return session_->LayerMailboxManager().GetLayerMailboxes(this);
+const XRLayerSharedImages& XRLayer::GetSharedImages() const {
+  return session_->LayerSharedImageManager().GetLayerSharedImages(this);
 }
 
 void XRLayer::Trace(Visitor* visitor) const {

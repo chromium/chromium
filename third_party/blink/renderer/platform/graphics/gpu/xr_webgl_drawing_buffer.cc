@@ -248,29 +248,29 @@ gfx::Size XRWebGLDrawingBuffer::AdjustSize(const gfx::Size& new_size) {
 }
 
 void XRWebGLDrawingBuffer::UseSharedBuffer(
-    const gpu::MailboxHolder& buffer_mailbox_holder) {
+    const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
+    const gpu::SyncToken& buffer_sync_token) {
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(
       drawing_buffer_->client());
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
 
-  // Ensure that the mailbox holder is ready to use, the following actions need
+  // Ensure that the shared image is ready to use, the following actions need
   // to be sequenced after setup steps that were done through a different
   // process's GPU command buffer context.
   //
   // TODO(https://crbug.com/1111526): Investigate handling context loss and
   // recovery for cases where these assumptions may not be accurate.
-  DCHECK(buffer_mailbox_holder.sync_token.HasData());
-  DCHECK(!buffer_mailbox_holder.mailbox.IsZero());
+  DCHECK(buffer_sync_token.HasData());
+  DCHECK(buffer_shared_image);
   DVLOG(3) << __func__
-           << ": mailbox=" << buffer_mailbox_holder.mailbox.ToDebugString()
-           << ", SyncToken="
-           << buffer_mailbox_holder.sync_token.ToDebugString();
-  gl->WaitSyncTokenCHROMIUM(buffer_mailbox_holder.sync_token.GetConstData());
+           << ": mailbox=" << buffer_shared_image->mailbox().ToDebugString()
+           << ", SyncToken=" << buffer_sync_token.ToDebugString();
+  gl->WaitSyncTokenCHROMIUM(buffer_sync_token.GetConstData());
 
   // Create a texture backed by the shared buffer image.
   DCHECK(!shared_buffer_texture_id_);
   shared_buffer_texture_id_ = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      buffer_mailbox_holder.mailbox.name);
+      buffer_shared_image->mailbox().name);
 
   gl->BeginSharedImageAccessDirectCHROMIUM(
       shared_buffer_texture_id_,

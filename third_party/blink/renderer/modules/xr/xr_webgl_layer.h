@@ -86,10 +86,11 @@ class XRWebGLLayer final : public XRLayer {
 
  private:
   uint32_t GetBufferTextureId(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
+      const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
+      const gpu::SyncToken& buffer_sync_token);
 
   void BindCameraBufferTexture(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
+      const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image);
 
   Member<XRViewport> left_viewport_;
   Member<XRViewport> right_viewport_;

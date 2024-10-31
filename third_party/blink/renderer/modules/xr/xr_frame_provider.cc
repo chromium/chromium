@@ -506,19 +506,6 @@ void XRFrameProvider::ProcessScheduledFrame(
     }
 #endif
 
-    // TODO(crbug.com/1494911): Use ClientSharedImage to replace all mailbox
-    // holder usage along the call hierarchy starting at XRSession::OnFrame().
-    std::optional<gpu::MailboxHolder> buffer_mailbox_holder;
-    if (buffer_shared_image_) {
-      buffer_mailbox_holder = gpu::MailboxHolder{
-          buffer_shared_image_->mailbox(), buffer_sync_token_, GL_TEXTURE_2D};
-    }
-    std::optional<gpu::MailboxHolder> camera_image_mailbox_holder;
-    if (camera_image_shared_image_) {
-      camera_image_mailbox_holder =
-          gpu::MailboxHolder{camera_image_shared_image_->mailbox(),
-                             camera_image_sync_token_, GL_TEXTURE_2D};
-    }
     // Run immersive_session_->OnFrame() in a posted task to ensure that
     // createAnchor promises get a chance to run - the presentation frame state
     // is already updated.
@@ -526,8 +513,9 @@ void XRFrameProvider::ProcessScheduledFrame(
         ->PostTask(FROM_HERE,
                    WTF::BindOnce(&XRSession::OnFrame,
                                  WrapWeakPersistent(immersive_session_.Get()),
-                                 high_res_now_ms, buffer_mailbox_holder,
-                                 camera_image_mailbox_holder));
+                                 high_res_now_ms, buffer_shared_image_,
+                                 buffer_sync_token_, camera_image_shared_image_,
+                                 camera_image_sync_token_));
   } else {
     // In the process of fulfilling the frame requests for each session they are
     // extremely likely to request another frame. Work off of a separate list
@@ -564,20 +552,17 @@ void XRFrameProvider::ProcessScheduledFrame(
       // a helper method who can determine if the state requirements are still
       // met that would allow the frame to be served.
       window->GetTaskRunner(blink::TaskType::kInternalMedia)
-          ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
-                                   WrapWeakPersistent(this),
-                                   WrapWeakPersistent(session), high_res_now_ms,
-                                   std::nullopt, std::nullopt));
+          ->PostTask(
+              FROM_HERE,
+              WTF::BindOnce(&XRFrameProvider::OnPreDispatchInlineFrame,
+                            WrapWeakPersistent(this),
+                            WrapWeakPersistent(session), high_res_now_ms));
     }
   }
 }
 
-void XRFrameProvider::OnPreDispatchInlineFrame(
-    XRSession* session,
-    double timestamp,
-    const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
-    const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+void XRFrameProvider::OnPreDispatchInlineFrame(XRSession* session,
+                                               double timestamp) {
   // Do nothing if the session was cleaned up or ended before we were schedueld.
   if (!session || session->ended())
     return;
@@ -592,8 +577,8 @@ void XRFrameProvider::OnPreDispatchInlineFrame(
 
   // If we still have the session and don't have an immersive session, then we
   // should serve the frame.
-  session->OnFrame(timestamp, output_mailbox_holder,
-                   camera_image_mailbox_holder);
+  session->OnFrame(timestamp, nullptr, gpu::SyncToken(), nullptr,
+                   gpu::SyncToken());
 }
 
 double XRFrameProvider::UpdateImmersiveFrameTime(
