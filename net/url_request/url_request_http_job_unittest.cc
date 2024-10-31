@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -82,8 +83,11 @@ namespace net {
 namespace {
 
 using ::testing::_;
+using ::testing::InSequence;
+using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+using ::testing::Unused;
 
 const char kSimpleGetMockWrite[] =
     "GET / HTTP/1.1\r\n"
@@ -1337,8 +1341,69 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
+  EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
+      .WillOnce(Return(std::nullopt));
   request_->Start();
   EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(1);
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
+       DeferRequestIfNeeded) {
+  const MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n")};
+
+  const MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                                     "Accept-Ranges: bytes\r\n"
+                                     "Content-Length: 12\r\n\r\n"),
+                            MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  {
+    InSequence s;
+    EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
+        .WillOnce(Invoke([](Unused) {
+          std::optional<device_bound_sessions::Session::Id> tag("test");
+          return tag;
+        }));
+    EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
+        .WillOnce(base::test::RunOnceClosure<3>());
+  }
+
+  request_->Start();
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
+       DontDeferRequestIfNotNeeded) {
+  const MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n")};
+
+  const MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                                     "Accept-Ranges: bytes\r\n"
+                                     "Content-Length: 12\r\n\r\n"),
+                            MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
+      .WillOnce(Invoke([](Unused) { return std::nullopt; }));
+  request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
 }
@@ -1361,8 +1426,13 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
+  {
+    InSequence s;
+    EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
+        .WillOnce(Return(std::nullopt));
+    EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(0);
+  }
   request_->Start();
-  EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(0);
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
 }
@@ -1388,8 +1458,13 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
+  {
+    InSequence s;
+    EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
+        .WillOnce(Return(std::nullopt));
+    EXPECT_CALL(GetMockService(), SetChallengeForBoundSession).Times(1);
+  }
   request_->Start();
-  EXPECT_CALL(GetMockService(), SetChallengeForBoundSession).Times(1);
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
 }
