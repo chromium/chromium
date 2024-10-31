@@ -118,7 +118,7 @@ export class TestHelper {
    */
   static installTranscriptionModel(): void {
     // TODO(hsuanling): Support testing different languages
-    usePlatformHandler().installSoda(LanguageCode.EN_US);
+    void usePlatformHandler().installSoda(LanguageCode.EN_US);
   }
 
   /**

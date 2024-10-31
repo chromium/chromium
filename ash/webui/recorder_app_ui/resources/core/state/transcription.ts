@@ -34,7 +34,7 @@ export function enableTranscription(): void {
   settings.mutate((s) => {
     s.transcriptionLanguage = LanguageCode.EN_US;
   });
-  usePlatformHandler().installSoda(LanguageCode.EN_US);
+  void usePlatformHandler().installSoda(LanguageCode.EN_US);
 }
 
 /**

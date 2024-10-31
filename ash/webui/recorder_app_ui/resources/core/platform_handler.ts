@@ -59,7 +59,7 @@ export abstract class PlatformHandler {
    *
    * Installation state and error will be reported through the `sodaState`.
    */
-  abstract installSoda(language: LanguageCode): void;
+  abstract installSoda(language: LanguageCode): Promise<void>;
 
   /**
    * Returns whether SODA is available on the device.

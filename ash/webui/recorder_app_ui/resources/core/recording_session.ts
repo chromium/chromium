@@ -292,10 +292,12 @@ export class RecordingSession {
       sodaState.value.kind !== 'unavailable',
       `Trying to install SODA when it's unavailable`,
     );
-    if (sodaState.value.kind === 'installed') {
-      return;
-    }
-    platformHandler.installSoda(language);
+    // Because there's no `OnSodaUninstalled` event, `installed` state may be
+    // outdated when other process removes the library. Always try installing
+    // SODA and wait for status update to avoid state inconstency.
+    // TODO: b/375306309 - Remove "await" when soda states are always consistent
+    // after the `OnSodaUninstalled` event is implemented.
+    await platformHandler.installSoda(language);
     await new Promise<void>((resolve, reject) => {
       effect(({dispose}) => {
         switch (sodaState.value.kind) {
@@ -382,11 +384,9 @@ export class RecordingSession {
     await this.audioCtx.suspend();
 
     if (transcriptionEnabled && language !== null) {
-      // If the transcription is enabled from the beginning, await for the soda
-      // session to start to avoid having start of audio not transcribed.
-      // TODO(pihsun): Should this be happened asynchronously and have the
-      // audio buffered?
-      await this.startNewSodaSession(language).result;
+      // Do not wait for session start to avoid install failure hangs recording.
+      // TODO(hsuanling): Have the audio buffered and send to recognizer later?
+      this.startNewSodaSession(language);
     }
 
     await Promise.all([
