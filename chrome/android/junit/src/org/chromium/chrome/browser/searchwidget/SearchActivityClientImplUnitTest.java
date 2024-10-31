@@ -51,10 +51,6 @@ public class SearchActivityClientImplUnitTest {
     private static final GURL EMPTY_URL = GURL.emptyGURL();
     private static final ComponentName COMPONENT_TRUSTED =
             new ComponentName(ContextUtils.getApplicationContext(), SearchActivity.class);
-    private static final ComponentName COMPONENT_TRUSTED_TRANSPARENT_BACKGROUND =
-            new ComponentName(
-                    ContextUtils.getApplicationContext(),
-                    SearchActivityTransparentBackground.class);
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
@@ -181,16 +177,6 @@ public class SearchActivityClientImplUnitTest {
             assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
         }
-    }
-
-    @Test
-    public void intentBuilder_forHubSearch() {
-        @IntentOrigin int origin = IntentOrigin.HUB;
-        var client = new SearchActivityClientImpl(mActivity, origin);
-        var builder = client.newIntentBuilder().setTransparentBackground(true);
-        var intent = builder.build();
-        assertEquals(COMPONENT_TRUSTED_TRANSPARENT_BACKGROUND, intent.getComponent());
-        assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
     }
 
     @Test

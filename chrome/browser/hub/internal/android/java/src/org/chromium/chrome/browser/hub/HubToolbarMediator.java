@@ -239,7 +239,6 @@ public class HubToolbarMediator {
                         .setPageUrl(new GURL(UrlConstants.NTP_NON_NATIVE_URL))
                         .setIncognito(mPropertyModel.get(IS_INCOGNITO))
                         .setResolutionType(ResolutionType.SEND_TO_CALLER)
-                        .setTransparentBackground(true)
                         .build());
     }
 }

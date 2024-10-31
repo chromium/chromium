@@ -71,14 +71,6 @@ public interface SearchActivityClient {
          */
         IntentBuilder setResolutionType(@ResolutionType int resolutionType);
 
-        /**
-         * Sets whether the search activity should have a transparent background.
-         *
-         * @param hasTransparentBackground The type of background the intent should use.
-         * @return The IntentBuilder instance for method chaining.
-         */
-        IntentBuilder setTransparentBackground(boolean hasTransparentBackground);
-
         /** Returns the intent capturing all the relevant details. */
         Intent build();
     }

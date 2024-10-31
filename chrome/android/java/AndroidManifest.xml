@@ -950,19 +950,6 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
             android:hardwareAccelerated="false" />
 
-        <!-- Search Activity Transparent Background -->
-        <activity android:name="org.chromium.chrome.browser.searchwidget.SearchActivityTransparentBackground"
-            android:theme="@style/Theme.BrowserUI.Translucent"
-            android:label="SearchTransparent"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-            android:hardwareAccelerated="false" />
-
         <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
         <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
             android:exported="true"

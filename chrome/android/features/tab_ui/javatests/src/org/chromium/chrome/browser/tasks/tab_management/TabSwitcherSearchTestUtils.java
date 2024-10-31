@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
-import org.chromium.chrome.browser.searchwidget.SearchActivityTransparentBackground;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -28,7 +27,7 @@ public class TabSwitcherSearchTestUtils {
         SearchActivity searchActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
-                        SearchActivityTransparentBackground.class,
+                        SearchActivity.class,
                         () -> onView(withId(R.id.search_box_text)).perform(click()));
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);

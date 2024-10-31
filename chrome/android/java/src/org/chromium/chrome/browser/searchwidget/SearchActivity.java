@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.searchwidget;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -15,7 +14,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,13 +68,11 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -667,16 +663,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void setHubSearchBoxVisualElements() {
         mLocationBarCoordinator.getStatusCoordinator().setShowStatusView(false);
-
-        // Set the background translucency with an alpha value correlated to 70%.
-        @ColorInt
-        int backgroundColor =
-                mSearchBoxDataProvider.isIncognitoBranded()
-                        ? this.getColor(R.color.default_bg_color_dark_elev_3_baseline)
-                        : SemanticColorUtils.getDefaultBgColor(this);
-        getWindow()
-                .setBackgroundDrawable(
-                        new ColorDrawable(ColorUtils.setAlphaComponent(backgroundColor, 180)));
     }
 
     @VisibleForTesting

@@ -348,19 +348,6 @@
         android:theme="@style/Theme.Chromium.SearchActivity"
         android:windowSoftInputMode="adjustResize">
     </activity>  # DIFF-ANCHOR: 7468a722
-    <activity  # DIFF-ANCHOR: 2fdb8345
-        android:name="org.chromium.chrome.browser.searchwidget.SearchActivityTransparentBackground"
-        android:clearTaskOnLaunch="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:hardwareAccelerated="false"
-        android:label="SearchTransparent"
-        android:launchMode="singleTask"
-        android:taskAffinity=""
-        android:theme="@style/Theme.BrowserUI.Translucent"
-        android:windowSoftInputMode="adjustResize">
-    </activity>  # DIFF-ANCHOR: 2fdb8345
     <activity  # DIFF-ANCHOR: d32b85df
         android:name="org.chromium.chrome.browser.settings.SettingsActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"

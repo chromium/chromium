@@ -51,13 +51,11 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     private final @IntentOrigin int mOrigin;
 
     private static class IntentBuilderImpl implements IntentBuilder {
-        private Context mContext;
         private Intent mIntent;
         private @IntentOrigin int mOrigin;
         private @SearchType int mSearchType;
 
         IntentBuilderImpl(Context context, int origin) {
-            mContext = context;
             mOrigin = origin;
             mIntent = new Intent();
             mIntent.setComponent(new ComponentName(context, SearchActivity.class));
@@ -113,18 +111,6 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         @Override
         public IntentBuilder setResolutionType(@ResolutionType int resolutionType) {
             mIntent.putExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE, resolutionType);
-            return this;
-        }
-
-        // TODO(crbug.com/371351154): Explore ways to use #setTheme() rather than create a new class
-        // for setting a transparent background on search activity intents.
-        @Override
-        public IntentBuilder setTransparentBackground(boolean hasTransparentBackground) {
-            ComponentName componentName =
-                    hasTransparentBackground
-                            ? new ComponentName(mContext, SearchActivityTransparentBackground.class)
-                            : new ComponentName(mContext, SearchActivity.class);
-            mIntent.setComponent(componentName);
             return this;
         }
 
