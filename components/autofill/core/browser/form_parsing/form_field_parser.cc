@@ -64,6 +64,27 @@ AutofillRegexCache& GetAutofillRegexCache() {
   return *cache;
 }
 
+void MaybePrintMatchLogs(LogManager* log_manager,
+                         std::string_view regex_name,
+                         std::string_view match_attribute_str,
+                         std::u16string_view value,
+                         const std::vector<std::u16string>& matches) {
+  if (!log_manager || !IsLoggingActive(log_manager)) {
+    return;
+  }
+  CHECK(!matches.empty());
+  LogBuffer table_rows;
+  LOG_AF(table_rows) << Tr{} << "Match type: Match in " << match_attribute_str;
+  LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name;
+  LOG_AF(table_rows) << Tr{} << "Value: " << HighlightValue(value, matches[0]);
+  // The matched substring is reported once more as the highlighting is not
+  // particularly copy&paste friendly.
+  LOG_AF(table_rows) << Tr{} << "Matched substring: " << matches[0];
+  LOG_AF(log_manager) << LoggingScope::kParsing
+                      << LogMessage::kLocalHeuristicRegExMatched << Tag{"table"}
+                      << std::move(table_rows) << CTag{"table"};
+}
+
 }  // namespace
 
 RegexMatchesCache::RegexMatchesCache(int capacity) : cache_(capacity) {}
@@ -568,9 +589,6 @@ bool FormFieldParser::Match(ParsingContext& context,
                             std::u16string_view pattern,
                             DenseSet<MatchAttribute> match_attributes,
                             const char* regex_name) {
-  bool found_match = false;
-  std::string_view match_type_string;
-  std::u16string_view value;
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches
@@ -586,32 +604,17 @@ bool FormFieldParser::Match(ParsingContext& context,
 
   if (match_attributes.contains(MatchAttribute::kLabel) &&
       MatchesRegexWithCache(context, label, pattern, capture_destination)) {
-    found_match = true;
-    match_type_string = "Match in label";
-    value = label;
-  } else if (match_attributes.contains(MatchAttribute::kName) &&
-             MatchesRegexWithCache(context, name, pattern,
-                                   capture_destination)) {
-    found_match = true;
-    match_type_string = "Match in name";
-    value = name;
+    MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
+                        matches);
+    return true;
+  }
+  if (match_attributes.contains(MatchAttribute::kName) &&
+      MatchesRegexWithCache(context, name, pattern, capture_destination)) {
+    MaybePrintMatchLogs(context.log_manager, regex_name, "name", name, matches);
+    return true;
   }
 
-  if (found_match && capture_destination) {
-    LogBuffer table_rows(IsLoggingActive(context.log_manager));
-    LOG_AF(table_rows) << Tr{} << "Match type:" << match_type_string;
-    LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name;
-    LOG_AF(table_rows) << Tr{}
-                       << "Value: " << HighlightValue(value, matches[0]);
-    // The matched substring is reported once more as the highlighting is not
-    // particularly copy&paste friendly.
-    LOG_AF(table_rows) << Tr{} << "Matched substring: " << matches[0];
-    LOG_AF(context.log_manager)
-        << LoggingScope::kParsing << LogMessage::kLocalHeuristicRegExMatched
-        << Tag{"table"} << std::move(table_rows) << CTag{"table"};
-  }
-
-  return found_match;
+  return false;
 }
 
 // static
