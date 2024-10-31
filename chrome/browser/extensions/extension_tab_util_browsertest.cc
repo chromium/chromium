@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Start a regular browser window with two tabs, one that is non-options,
   // non-newtab and the other that is the options page.
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com/")));
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
   EXPECT_TRUE(
       ExtensionTabUtil::OpenOptionsPage(options_spanning_extension, browser()));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
   // Switch to tab containing google.com such that it is the active tab.
   browser()->tab_strip_model()->SelectPreviousTab();
-  EXPECT_EQ(GURL("http://www.google.com/"), GetActiveUrl(browser()));
+  EXPECT_EQ(GURL("https://www.google.com/"), GetActiveUrl(browser()));
 
   // Spanning mode extensions can never open pages in incognito so a regular
   // (non-OTR) profile must be used. If the options page is already opened from
