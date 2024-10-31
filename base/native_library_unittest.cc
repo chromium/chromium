@@ -48,7 +48,7 @@ TEST(NativeLibraryTest, GetNativeLibraryName) {
 #if BUILDFLAG(IS_WIN)
       "mylib.dll";
 #elif BUILDFLAG(IS_IOS)
-      "Frameworks/mylib.framework/mylib";
+      "mylib.framework/mylib";
 #elif BUILDFLAG(IS_MAC)
       "libmylib.dylib";
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -62,7 +62,7 @@ TEST(NativeLibraryTest, GetLoadableModuleName) {
 #if BUILDFLAG(IS_WIN)
       "mylib.dll";
 #elif BUILDFLAG(IS_IOS)
-      "Frameworks/mylib.framework";
+      "mylib.framework";
 #elif BUILDFLAG(IS_MAC)
       "mylib.so";
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
