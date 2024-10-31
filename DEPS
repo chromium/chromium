@@ -1504,7 +1504,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/error_prone',
-               'version': 'UjGttcYTK-ZSaN7RGPeMgrKSoILefrOVj_hGUoxDRAIC',
+               'version': '3zTFLL4NFj7XAPOk4R4n7NeKcfFA-9Q7VRZgxODOGUIC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
