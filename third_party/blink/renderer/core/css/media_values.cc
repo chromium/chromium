@@ -41,8 +41,7 @@ ForcedColors CSSValueIDToForcedColors(CSSValueID id) {
     case CSSValueID::kNone:
       return ForcedColors::kNone;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ForcedColors::kNone;
+      NOTREACHED();
   }
 }
 
@@ -54,8 +53,7 @@ mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     case CSSValueID::kDark:
       return mojom::blink::PreferredColorScheme::kDark;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::blink::PreferredColorScheme::kLight;
+      NOTREACHED();
   }
 }
 
@@ -70,8 +68,7 @@ mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID id) {
     case CSSValueID::kCustom:
       return mojom::blink::PreferredContrast::kCustom;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::blink::PreferredContrast::kNoPreference;
+      NOTREACHED();
   }
 }
 

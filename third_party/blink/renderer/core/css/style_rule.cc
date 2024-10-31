@@ -267,7 +267,7 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       To<StyleRulePositionTry>(this)->~StyleRulePositionTry();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 StyleRuleBase* StyleRuleBase::Copy() const {
@@ -298,8 +298,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleSupports>(this)->Copy();
     case kImport:
       // FIXME: Copy import rules.
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case kKeyframes:
       return To<StyleRuleKeyframes>(this)->Copy();
     case kLayerBlock:
@@ -313,8 +312,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kFunction:
     case kMixin:
     case kApplyMixin:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case kContainer:
       return To<StyleRuleContainer>(this)->Copy();
     case kCounterStyle:
@@ -326,8 +324,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kPositionTry:
       return To<StyleRulePositionTry>(this)->Copy();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
@@ -431,8 +428,7 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kFunction:
     case kMixin:
     case kApplyMixin:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   if (parent_rule) {
     rule->SetParentRule(parent_rule);

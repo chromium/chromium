@@ -306,8 +306,7 @@ void CSSParserToken::Serialize(StringBuilder& builder) const {
 
     case kEOFToken:
     case kCommentToken:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

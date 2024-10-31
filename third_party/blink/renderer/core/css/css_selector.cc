@@ -288,13 +288,11 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
       return kTagSpecificity;
     case kInvalidList:
     case kPagePseudoClass:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     case kUnknown:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 unsigned CSSSelector::SpecificityForPage() const {
@@ -317,7 +315,7 @@ unsigned CSSSelector::SpecificityForPage() const {
             s += 1;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       default:
@@ -518,8 +516,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdNone;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kPseudoIdNone;
+  NOTREACHED();
 }
 
 void CSSSelector::Reparent(StyleRule* new_parent) {
@@ -1220,8 +1217,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
         }
         break;
       case kPseudoRelativeAnchor:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
       case kPseudoActiveViewTransitionType: {
         CHECK(!IdentList().empty());
         String separator = "(";
@@ -1406,8 +1402,7 @@ String CSSSelector::SelectorTextInternal() const {
         break;
       case kSubSelector:
       case kScopeActivation:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case kShadowPart:
       case kUAShadow:
       case kShadowSlot:
@@ -1423,8 +1418,7 @@ String CSSSelector::SelectorTextInternal() const {
         return "~ " + builder.ReleaseString() + result;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String CSSSelector::SimpleSelectorTextForDebug() const {
@@ -1485,7 +1479,7 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoClass:
       break;
     case CSSSelector::kInvalidList:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   switch (selector->GetPseudoType()) {
@@ -2026,8 +2020,7 @@ CSSSelector::RelationType ConvertRelationToRelative(
     case CSSSelector::kIndirectAdjacent:
       return CSSSelector::kRelativeIndirectAdjacent;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 

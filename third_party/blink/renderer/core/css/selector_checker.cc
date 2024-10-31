@@ -664,8 +664,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kScopeActivation:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kSelectorFailsCompletely;
+  NOTREACHED();
 }
 
 static bool AttributeValueMatches(const Attribute& attribute_item,
@@ -746,8 +745,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       }
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -869,8 +867,7 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
       return CheckPseudoElement(context, result);
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -995,8 +992,7 @@ inline bool CacheMatchedElementsAndReturnMatchedResult(
           has_anchor_element, has_argument_leftmost_compound_matches,
           cache_scope_context, TraverseToPreviousSibling);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1063,8 +1059,7 @@ void SetAffectedByHasFlagsForHasAnchorElement(
           argument_context.GetSiblingsAffectedByHasFlags());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1351,8 +1346,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   bool match_in_shadow_tree = context.selector->HasArgumentMatchInShadowTree();
 
   if (match_in_shadow_tree && !has_anchor_element->GetShadowRoot()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   DCHECK(context.selector->SelectorList());
@@ -2310,8 +2304,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return context.search_text_request_is_current;
     case CSSSelector::kPseudoUnknown:
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return false;
 }
@@ -2350,9 +2343,8 @@ bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
     case CSSSelector::kPseudoAutofillSelected:
       return form_control_element->IsAutofilled();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,

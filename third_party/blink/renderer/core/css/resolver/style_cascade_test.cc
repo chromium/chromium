@@ -296,8 +296,7 @@ class TestCascade {
       case CascadeOrigin::kAnimation:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

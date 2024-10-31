@@ -485,8 +485,6 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             paint_filter_builder::BuildBoxReflectFilter(reflection, nullptr));
         break;
       }
-      case FilterOperation::OperationType::kNone:
-        break;
     }
     // TODO(fs): When transitioning from a reference filter using "linearRGB"
     // to a filter function we should insert a conversion (like the one below)

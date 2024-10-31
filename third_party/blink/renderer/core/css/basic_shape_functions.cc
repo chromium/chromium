@@ -60,8 +60,7 @@ static StyleRay::RaySize KeywordToRaySize(CSSValueID id) {
     case CSSValueID::kSides:
       return StyleRay::RaySize::kSides;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return StyleRay::RaySize::kClosestSide;
+      NOTREACHED();
   }
 }
 
@@ -78,8 +77,7 @@ static CSSValueID RaySizeToKeyword(StyleRay::RaySize size) {
     case StyleRay::RaySize::kSides:
       return CSSValueID::kSides;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kInvalid;
+  NOTREACHED();
 }
 
 static CSSValue* ValueForCenterCoordinate(
@@ -119,8 +117,7 @@ static CSSValue* BasicShapeRadiusToCSSValue(const ComputedStyle& style,
       return CSSIdentifierValue::Create(CSSValueID::kFarthestSide);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 template <typename BasicShapeClass, typename CSSValueClass>
@@ -299,9 +296,7 @@ static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
       offset = Length::Percent(50);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      direction = BasicShapeCenterCoordinate::kTopLeft;
-      break;
+      NOTREACHED();
   }
 
   return BasicShapeCenterCoordinate(direction, offset);
@@ -321,8 +316,7 @@ static BasicShapeRadius CssValueToBasicShapeRadius(
       case CSSValueID::kFarthestSide:
         return BasicShapeRadius(BasicShapeRadius::kFarthestSide);
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -461,7 +455,7 @@ scoped_refptr<BasicShape> BasicShapeForValue(
                  DynamicTo<cssvalue::CSSPathValue>(basic_shape_value)) {
     basic_shape = path_value->GetStylePath();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return basic_shape;

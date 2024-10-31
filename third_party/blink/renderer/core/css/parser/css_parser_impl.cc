@@ -166,9 +166,8 @@ std::optional<StyleRuleFontFeature::FeatureType> ToStyleRuleFontFeatureType(
     case CSSAtRuleID::kCSSAtRuleAnnotation:
       return StyleRuleFontFeature::FeatureType::kAnnotation;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::nullopt;
 }
 
 }  // namespace
@@ -696,7 +695,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
       allowed_rules = kFontFeatureRules;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   bool seen_rule = false;
@@ -1010,8 +1009,7 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
@@ -1197,8 +1195,7 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
 
   switch (nesting_type) {
     case CSSNestingType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case CSSNestingType::kNesting:
       // kPseudoParent
       selectors.push_back(CSSSelector(parent_rule_for_nesting, kNotImplicit));
@@ -1282,8 +1279,7 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
 
   switch (nesting_type) {
     case CSSNestingType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case CSSNestingType::kNesting:
       // For regular nesting, the nested declarations rule should match
       // exactly what the parent rule matches, with top-level specificity

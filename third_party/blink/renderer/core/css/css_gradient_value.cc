@@ -178,7 +178,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
           conversion_data, size, document, style);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   scoped_refptr<Image> new_image =
@@ -632,8 +632,7 @@ void CSSGradientValue::AddStops(
       gradient_length = 1;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      gradient_length = 0;
+      NOTREACHED();
   }
 
   bool has_hints = false;
@@ -666,8 +665,7 @@ void CSSGradientValue::AddStops(
         stops[i].offset =
             stop.offset_->ComputeDegrees(conversion_data) / 360.0f;
       } else {
-        NOTREACHED_IN_MIGRATION();
-        stops[i].offset = 0;
+        NOTREACHED();
       }
       stops[i].specified = true;
     } else {
@@ -786,7 +784,7 @@ void CSSGradientValue::AddStops(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -828,8 +826,7 @@ static float PositionFromValue(const CSSValue* value,
       case CSSValueID::kCenter:
         return origin + sign * .5f * edge_distance;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -904,9 +901,8 @@ CSSGradientValue* CSSGradientValue::ComputedCSSValue(
       return To<CSSConstantGradientValue>(this)->ComputedCSSValue(
           style, allow_visited_style, value_phase);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 Vector<Color> CSSGradientValue::GetStopColors(
@@ -1196,7 +1192,7 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

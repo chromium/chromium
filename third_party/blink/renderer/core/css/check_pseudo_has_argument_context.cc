@@ -327,8 +327,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
   }
   DCHECK_NE(leftmost_relation_, CSSSelector::kSubSelector);
@@ -375,8 +374,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (match_in_shadow_tree_) {

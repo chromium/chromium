@@ -267,11 +267,9 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kRubyText:
       return EDisplay::kBlock;
     case EDisplay::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return display;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return EDisplay::kBlock;
+  NOTREACHED();
 }
 
 // https://drafts.csswg.org/css-display/#inlinify
@@ -327,11 +325,9 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
       return display;
 
     case EDisplay::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return display;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return EDisplay::kBlock;
+  NOTREACHED();
 }
 
 static bool IsOutermostSVGElement(const Element* element) {

@@ -104,8 +104,7 @@ struct ContextWithStyleScopeFrame {
         context.search_text_request_is_current = false;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

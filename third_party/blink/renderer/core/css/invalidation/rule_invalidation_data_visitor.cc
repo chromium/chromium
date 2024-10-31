@@ -28,13 +28,11 @@ bool SupportsInvalidation(CSSSelector::MatchType match) {
     case CSSSelector::kUnknown:
     case CSSSelector::kPagePseudoClass:
       // These should not appear in StyleRule selectors.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     default:
       // New match type added. Figure out if it needs a subtree invalidation or
       // not.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -185,13 +183,11 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoRightPage:
     case CSSSelector::kPseudoFirstPage:
       // These should not appear in StyleRule selectors.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     default:
       // New pseudo type added. Figure out if it needs a subtree invalidation or
       // not.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1408,8 +1404,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
       combinator = CSSSelector::kIndirectAdjacent;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   UpdateFeaturesFromCombinator(combinator, last_compound_in_adjacent_chain,

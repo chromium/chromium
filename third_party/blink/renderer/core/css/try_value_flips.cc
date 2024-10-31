@@ -173,8 +173,7 @@ LogicalAxis DeterminePropertyAxis(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LogicalAxis::kInline;
+  NOTREACHED();
 }
 
 std::optional<LogicalAxis> DetermineValueAxis(

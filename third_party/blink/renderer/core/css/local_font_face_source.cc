@@ -59,8 +59,7 @@ const SimpleFontData* LocalFontFaceSource::CreateLoadingFallbackFontData(
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
       this, CSSCustomFontData::kVisibleFallback);

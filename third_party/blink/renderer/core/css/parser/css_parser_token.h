@@ -205,8 +205,7 @@ class CORE_EXPORT CSSParserToken {
       case kLeftBraceToken:
         return kRightBraceToken;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return kEOFToken;
+        NOTREACHED();
     }
   }
 

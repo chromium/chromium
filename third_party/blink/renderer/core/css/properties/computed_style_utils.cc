@@ -158,17 +158,15 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
       return result;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
 }  // namespace
 
 static Length Negate(const Length& length) {
   if (length.IsCalculated()) {
-    NOTREACHED_IN_MIGRATION();
-    return length;
+    NOTREACHED();
   }
 
   Length ret = Length(-length.GetFloatValue(), length.GetType());
@@ -774,8 +772,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       is_horizontal_property = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   DCHECK(positions.first && positions.second);
 
@@ -809,7 +806,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
         inset = insets.bottom;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return ZoomAdjustedPixelValue(inset, style);
   }
@@ -1117,8 +1114,7 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontVariantCaps(
     case FontDescription::kTitlingCaps:
       return CSSIdentifierValue::Create(CSSValueID::kTitlingCaps);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -1294,8 +1290,7 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontVariantPosition(
     case FontDescription::kSuperVariantPosition:
       return CSSIdentifierValue::Create(CSSValueID::kSuper);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+      NOTREACHED();
   }
 }
 
@@ -1310,8 +1305,7 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontKerning(
     case FontDescription::kNoneKerning:
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+      NOTREACHED();
   }
 }
 
@@ -1399,7 +1393,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantEastAsian(
       value_list->Append(*CSSIdentifierValue::Create(CSSValueID::kTraditional));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (east_asian.Width()) {
     case FontVariantEastAsian::kNormalWidth:
@@ -1412,7 +1406,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantEastAsian(
           *CSSIdentifierValue::Create(CSSValueID::kProportionalWidth));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   if (east_asian.Ruby()) {
     value_list->Append(*CSSIdentifierValue::Create(CSSValueID::kRuby));
@@ -1602,8 +1596,7 @@ CSSValue* ComputedStyleUtils::SpecifiedValueForGridTrackSize(
       return fit_content_track_breadth;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 enum class NamedLinesType { kNamedLines, kAutoRepeatNamedLines };
@@ -2044,7 +2037,7 @@ void PopulateGridTrackListComputedValues(
         ++track_index;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   // Standalone grids can have line names after sizes and repeaters.
@@ -2297,8 +2290,7 @@ CSSValue* ComputedStyleUtils::ValueForTextDecorationStyle(
       return CSSIdentifierValue::Create(CSSValueID::kWavy);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CSSInitialValue::Create();
+  NOTREACHED();
 }
 
 CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipInk(
@@ -2406,8 +2398,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDirection(
     case Timing::PlaybackDirection::ALTERNATE_REVERSE:
       return CSSIdentifierValue::Create(CSSValueID::kAlternateReverse);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -2473,8 +2464,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationFillMode(
     case Timing::FillMode::BOTH:
       return CSSIdentifierValue::Create(CSSValueID::kBoth);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -2601,8 +2591,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
             value_id = CSSValueID::kEaseInOut;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            return nullptr;
+            NOTREACHED();
         }
         return CSSIdentifierValue::Create(value_id);
       }
@@ -3081,9 +3070,7 @@ CSSValue* ComputedStyleUtils::CreateTransitionBehaviorValue(
     case CSSTransitionData::TransitionBehavior::kAllowDiscrete:
       return CSSIdentifierValue::Create(CSSValueID::kAllowDiscrete);
   }
-  NOTREACHED_IN_MIGRATION()
-      << " Unrecognized type: " << static_cast<unsigned>(type);
-  return nullptr;
+  NOTREACHED() << " Unrecognized type: " << static_cast<unsigned>(type);
 }
 
 CSSValue* ComputedStyleUtils::ValueForTransitionProperty(
@@ -3124,8 +3111,7 @@ CSSValueID ValueForQuoteType(const QuoteType quote_type) {
     case QuoteType::kOpen:
       return CSSValueID::kOpenQuote;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kInvalid;
+  NOTREACHED();
 }
 
 CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
@@ -3172,7 +3158,7 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
           To<AltTextContentData>(content_data)->ConcatenateAltText());
       break;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   DCHECK(list->length());
@@ -3585,8 +3571,7 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     list->Append(*filter_value);
   }
@@ -4057,8 +4042,7 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
     case kEmptyString:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -4109,8 +4093,7 @@ CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
       return list;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -4315,8 +4298,7 @@ CSSIdentifierValue* PositionAreaSpanToCSSIdentifierValue(
     case PositionAreaRegion::kAll:
     case PositionAreaRegion::kCenter:
       // Should have been handled above
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return CSSIdentifierValue::Create(value_id);
 }

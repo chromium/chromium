@@ -187,9 +187,8 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
                               selector->Value(), case_insensitive);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool EasySelectorChecker::AttributeIsSet(const Element& element,

@@ -287,8 +287,7 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED_IN_MIGRATION();
-    return *this;
+    NOTREACHED();
   }
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -362,8 +361,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED_IN_MIGRATION();
-    return *this;
+    NOTREACHED();
   }
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -390,10 +388,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
       const CSSLengthResolver&) const final {
     return std::nullopt;
   }
-  double DoubleValue() const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  double DoubleValue() const final { NOTREACHED(); }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
@@ -402,8 +397,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {
@@ -430,8 +424,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
@@ -475,8 +468,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED_IN_MIGRATION();
-    return *this;
+    NOTREACHED();
   }
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -501,10 +493,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
-  double DoubleValue() const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  double DoubleValue() const final { NOTREACHED(); }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
@@ -513,8 +502,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
     NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {
@@ -792,10 +780,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
-  double DoubleValue() const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  double DoubleValue() const final { NOTREACHED(); }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
@@ -804,8 +789,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
     NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {
@@ -909,8 +893,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
       CSSPrimitiveValue::LengthTypeFlags& types) const final {
     // AccumulateLengthUnitTypes() is only used when interpolating the
     // 'transform' property, where anchor queries are not allowed.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   String CustomCSSText() const final;

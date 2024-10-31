@@ -141,8 +141,7 @@ StyleImage* StyleImageLoader::Load(
         style_image ? style_image->IsOriginClean() : true);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 StyleImage* StyleImageLoader::CrossfadeArgument(
@@ -227,8 +226,7 @@ bool ElementStyleResources::IsPending(const CSSValue& value) const {
     return img_set_value->IsCachePending(device_scale_factor_);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 StyleImage* ElementStyleResources::CachedStyleImage(
@@ -254,8 +252,7 @@ StyleImage* ElementStyleResources::CachedStyleImage(
     return img_set_value->CachedImage(device_scale_factor_);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 StyleImage* ElementStyleResources::GetStyleImage(CSSPropertyID property,
@@ -368,7 +365,7 @@ void ElementStyleResources::LoadPendingSVGResources(
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -521,7 +518,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

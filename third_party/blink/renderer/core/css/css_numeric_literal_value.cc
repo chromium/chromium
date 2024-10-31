@@ -88,8 +88,7 @@ double CSSNumericLiteralValue::ComputeSeconds() const {
   if (current_type == UnitType::kMilliseconds) {
     return num_ / 1000;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 double CSSNumericLiteralValue::ComputeDegrees() const {
@@ -105,8 +104,7 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kTurns:
       return Turn2deg(num_);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -314,8 +312,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       }
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return text;
 }

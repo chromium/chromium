@@ -268,8 +268,7 @@ MediaQueryOperator MediaQueryParser::ConsumeComparison(
       return MediaQueryOperator::kGt;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return MediaQueryOperator::kNone;
+  NOTREACHED();
 }
 
 String MediaQueryParser::ConsumeAllowedName(CSSParserTokenStream& stream,

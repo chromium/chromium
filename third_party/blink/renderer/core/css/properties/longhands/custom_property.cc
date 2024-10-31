@@ -226,8 +226,7 @@ const CSSValue* CustomProperty::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(

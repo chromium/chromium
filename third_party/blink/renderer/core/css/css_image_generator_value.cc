@@ -164,9 +164,8 @@ scoped_refptr<Image> CSSImageGeneratorValue::GetImage(
       return To<CSSConstantGradientValue>(this)->GetImage(
           client, document, style, container_sizes, target_size);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool CSSImageGeneratorValue::IsUsingCustomProperty(
@@ -222,9 +221,8 @@ bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
       return To<CSSConstantGradientValue>(this)->KnownToBeOpaque(document,
                                                                  style);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 }  // namespace blink

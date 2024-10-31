@@ -172,8 +172,7 @@ Color ResolveQuirkOrLinkOrFocusRingColor(
     case CSSValueID::kWebkitFocusRingColor:
       return LayoutTheme::GetTheme().FocusRingColor(used_color_scheme);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Color();
+      NOTREACHED();
   }
 }
 
@@ -490,8 +489,7 @@ FontDescription::Kerning StyleBuilderConverter::ConvertFontKerning(
     case CSSValueID::kNone:
       return FontDescription::kNoneKerning;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return FontDescription::kAutoKerning;
+      NOTREACHED();
   }
 }
 
@@ -516,8 +514,7 @@ StyleBuilderConverter::ConvertFontVariantPosition(StyleResolverState&,
     case CSSValueID::kSuper:
       return FontDescription::kSuperVariantPosition;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return FontDescription::kNormalVariantPosition;
+      NOTREACHED();
   }
 }
 
@@ -555,8 +552,7 @@ OpticalSizing StyleBuilderConverter::ConvertFontOpticalSizing(
     case CSSValueID::kNone:
       return kNoneOpticalSizing;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return kAutoOpticalSizing;
+      NOTREACHED();
   }
 }
 
@@ -770,8 +766,7 @@ static float ComputeFontSize(const CSSToLengthConversionData& conversion_data,
         .ToCalcValue(conversion_data)
         ->Evaluate(parent_size.value);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
@@ -791,8 +786,7 @@ FontDescription::Size StyleBuilderConverterBase::ConvertFontSize(
     if (value_id == CSSValueID::kLarger) {
       return FontDescription::LargerSize(parent_size);
     }
-    NOTREACHED_IN_MIGRATION();
-    return FontBuilder::InitialSize();
+    NOTREACHED();
   }
 
   if (const auto* system_font =
@@ -944,8 +938,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStretch(
     return kNormalWidthValue;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kNormalWidthValue;
+  NOTREACHED();
 }
 
 FontSelectionValue StyleBuilderConverter::ConvertFontStretch(
@@ -968,8 +961,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
       case CSSValueID::kNormal:
         return kNormalSlopeValue;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return kNormalSlopeValue;
+        NOTREACHED();
     }
   } else if (IsA<cssvalue::CSSPendingSystemFontValue>(value)) {
     return kNormalSlopeValue;
@@ -992,8 +984,7 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kNormalSlopeValue;
+  NOTREACHED();
 }
 
 FontSelectionValue StyleBuilderConverter::ConvertFontStyle(
@@ -1027,12 +1018,10 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontWeight(
       case CSSValueID::kLighter:
         return FontDescription::LighterWeight(parent_weight);
       default:
-        NOTREACHED_IN_MIGRATION();
-        return kNormalWeightValue;
+        NOTREACHED();
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kNormalWeightValue;
+  NOTREACHED();
 }
 
 FontSelectionValue StyleBuilderConverter::ConvertFontWeight(
@@ -1108,8 +1097,7 @@ StyleBuilderConverter::ConvertFontVariantLigatures(StyleResolverState&,
           ligatures.contextual = FontDescription::kEnabledLigaturesState;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     return ligatures;
@@ -1171,8 +1159,7 @@ FontVariantNumeric StyleBuilderConverter::ConvertFontVariantNumeric(
         variant_numeric.SetSlashedZero(FontVariantNumeric::kSlashedZeroOn);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return variant_numeric;
@@ -1225,7 +1212,7 @@ StyleBuilderConverter::ConvertFontVariantAlternates(StyleResolverState&,
               ValueListToAtomicStringVector(alternate_value->Aliases()));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
     const CSSIdentifierValue* alternate_value_ident =
@@ -1287,8 +1274,7 @@ FontVariantEastAsian StyleBuilderConverter::ConvertFontVariantEastAsian(
         variant_east_asian.SetRuby(true);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return variant_east_asian;
@@ -1382,8 +1368,7 @@ GridAutoFlow StyleBuilderConverter::ConvertGridAutoFlow(StyleResolverState&,
       }
       return kAutoFlowRowDense;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ComputedStyleInitialValues::InitialGridAutoFlow();
+      NOTREACHED();
   }
 }
 
@@ -1711,7 +1696,7 @@ StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
       values.push_back(0);
       continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   values.Grow(3);
   return StyleHyphenateLimitChars(values[0], values[1], values[2]);
@@ -1733,8 +1718,7 @@ int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
         result = 5;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     result = state.CssToLengthConversionData().ZoomedComputedPixels(
@@ -1811,8 +1795,7 @@ float StyleBuilderConverter::ConvertZoom(const StyleResolverState& state,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 1.0f;
+  NOTREACHED();
 }
 
 Length StyleBuilderConverter::ConvertLengthOrAuto(
@@ -1866,8 +1849,7 @@ Length StyleBuilderConverter::ConvertLengthSizing(StyleResolverState& state,
     case CSSValueID::kAuto:
       return Length::Auto();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Length();
+      NOTREACHED();
   }
 }
 
@@ -2099,8 +2081,7 @@ StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(
     if (sink_type->GetValueID() == CSSValueID::kRaise) {
       return StyleInitialLetter::Raise(size);
     }
-    NOTREACHED_IN_MIGRATION() << "Unexpected sink type " << sink_type;
-    return StyleInitialLetter::Normal();
+    NOTREACHED() << "Unexpected sink type " << sink_type;
   }
 
   if (auto* sink = DynamicTo<CSSPrimitiveValue>(second)) {
@@ -2214,8 +2195,7 @@ EPaintOrder StyleBuilderConverter::ConvertPaintOrder(
         return order_type_list->length() > 1 ? kPaintOrderMarkersStrokeFill
                                              : kPaintOrderMarkersFillStroke;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return kPaintOrderNormal;
+        NOTREACHED();
     }
   }
 
@@ -3345,8 +3325,7 @@ RubyPosition StyleBuilderConverter::ConvertRubyPosition(
     }
     return identifier_value->ConvertTo<blink::RubyPosition>();
   }
-  NOTREACHED_IN_MIGRATION();
-  return RubyPosition::kOver;
+  NOTREACHED();
 }
 
 StyleScrollbarColor* StyleBuilderConverter::ConvertScrollbarColor(
@@ -3476,7 +3455,7 @@ ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
           break;
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   return flags;
@@ -3523,7 +3502,7 @@ StyleBuilderConverter::ConvertOverflowClipMargin(StyleResolverState& state,
         reference_box = StyleOverflowClipMargin::ReferenceBox::kPaddingBox;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -3775,8 +3754,7 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
         end = PositionAreaRegion::kSelfEnd;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return std::make_pair(start, end);
   };

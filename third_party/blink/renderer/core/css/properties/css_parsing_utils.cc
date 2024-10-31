@@ -1063,14 +1063,12 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
   double minimum_value = -std::numeric_limits<double>::max();
   switch (value_range) {
     case CSSPrimitiveValue::ValueRange::kAll:
-      NOTREACHED_IN_MIGRATION() << "unexpected value range for integer parsing";
-      [[fallthrough]];
+      NOTREACHED() << "unexpected value range for integer parsing";
     case CSSPrimitiveValue::ValueRange::kInteger:
       minimum_value = -std::numeric_limits<double>::max();
       break;
     case CSSPrimitiveValue::ValueRange::kNonNegative:
-      NOTREACHED_IN_MIGRATION() << "unexpected value range for integer parsing";
-      [[fallthrough]];
+      NOTREACHED() << "unexpected value range for integer parsing";
     case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
       minimum_value = 0.0;
       break;
@@ -1928,8 +1926,7 @@ Color ResolveColor(CSSValue* value,
                                         color_provider, is_in_web_app_scope);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return Color();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -3349,8 +3346,7 @@ static CSSValue* ConsumeImageSet(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     guard.Release();
@@ -3578,7 +3574,7 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
           context.Count(WebFeature::kCSSValueUserModifyReadWritePlaintextOnly);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       break;
     }
@@ -3904,8 +3900,7 @@ CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
     case CSSValueID::kRevertLayer:
       return cssvalue::CSSRevertLayerValue::Create();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -5732,8 +5727,7 @@ bool IsSupportedKeywordTech(CSSValueID keyword) {
     default:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsSupportedKeywordFormat(CSSValueID keyword) {
@@ -5845,8 +5839,7 @@ bool IsGridBreadthFixedSized(const CSSValue& value) {
     return !primitive_value->IsFlex();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool IsGridTrackFixedSized(const CSSValue& value) {

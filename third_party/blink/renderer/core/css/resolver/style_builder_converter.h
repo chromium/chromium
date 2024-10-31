@@ -453,8 +453,7 @@ T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
         result = 5;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     result = state.CssToLengthConversionData().ZoomedComputedPixels(
         result, CSSPrimitiveValue::UnitType::kPixels);
@@ -498,7 +497,7 @@ Length StyleBuilderConverter::ConvertPositionLength(StyleResolverState& state,
       case CSSValueID::kCenter:
         return Length::Percent(50);
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

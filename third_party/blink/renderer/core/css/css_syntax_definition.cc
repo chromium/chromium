@@ -229,8 +229,7 @@ const CSSValue* ConsumeSingleTypeInternal(const CSSSyntaxComponent& syntax,
       DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
       return css_parsing_utils::ConsumeString(stream);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

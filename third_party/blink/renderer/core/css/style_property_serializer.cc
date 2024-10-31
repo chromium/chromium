@@ -439,8 +439,7 @@ String StylePropertySerializer::CommonShorthandChecks(
     const StylePropertyShorthand& shorthand) const {
   unsigned longhand_count = shorthand.length();
   if (!longhand_count || longhand_count > kMaxShorthandExpansion) {
-    NOTREACHED_IN_MIGRATION();
-    return g_empty_string;
+    NOTREACHED();
   }
 
   std::array<const CSSValue*, kMaxShorthandExpansion> longhands;
@@ -711,11 +710,10 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kPositionTry:
       return PositionTryValue(positionTryShorthand());
     default:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Shorthand property "
           << CSSPropertyName(property_id).ToAtomicString()
           << " must be handled in StylePropertySerializer::SerializeShorthand.";
-      return String();
   }
 }
 
@@ -818,7 +816,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
         result.Append(" / ");
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   result.Append(value);

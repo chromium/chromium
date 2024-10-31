@@ -354,8 +354,7 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   auto entry = fast_reject_filter_map_->insert(element, nullptr);

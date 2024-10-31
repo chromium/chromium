@@ -65,8 +65,7 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
     return MakeGarbageCollected<CSSKeywordValue>(
         getValueName(scoped_keyword_value->GetValueID()));
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 CSSKeywordValue* CSSKeywordValue::Create(const String& keyword) {

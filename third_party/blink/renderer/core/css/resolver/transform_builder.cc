@@ -56,8 +56,7 @@ static TransformOperation::OperationType GetTransformOperationType(
     CSSValueID type) {
   switch (type) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case CSSValueID::kScale:
       return TransformOperation::kScale;
     case CSSValueID::kScaleX:
@@ -343,8 +342,7 @@ TransformOperation* CreateTransformOperation(
       return MakeGarbageCollected<PerspectiveTransformOperation>(p);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

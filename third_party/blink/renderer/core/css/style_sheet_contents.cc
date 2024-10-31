@@ -658,8 +658,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kImport:
       case StyleRuleBase::kNamespace:
       case StyleRuleBase::kMixin:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case StyleRuleBase::kNestedDeclarations:
       case StyleRuleBase::kPage:
       case StyleRuleBase::kPageMargin:

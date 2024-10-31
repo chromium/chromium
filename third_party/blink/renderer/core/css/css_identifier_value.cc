@@ -71,8 +71,7 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
     case Length::kDeviceHeight:
     case Length::kMinIntrinsic:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

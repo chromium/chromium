@@ -81,8 +81,7 @@ inline CSSValueID PlatformEnumToCSSValueID(EffectModel::CompositeOperation v) {
     case EffectModel::kCompositeAccumulate:
       return CSSValueID::kAccumulate;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kReplace;
+  NOTREACHED();
 }
 
 template <>
@@ -95,8 +94,7 @@ inline EffectModel::CompositeOperation CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kAccumulate:
       return EffectModel::kCompositeAccumulate;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return EffectModel::kCompositeReplace;
+      NOTREACHED();
   }
 }
 
@@ -116,8 +114,7 @@ template <>
 inline EResize CssValueIDToPlatformEnum(CSSValueID v) {
   if (v == CSSValueID::kAuto) {
     // Depends on settings, thus should be handled by the caller.
-    NOTREACHED_IN_MIGRATION();
-    return EResize::kNone;
+    NOTREACHED();
   }
   return detail::cssValueIDToPlatformEnumGenerated<EResize>(v);
 }
@@ -249,8 +246,7 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
     return EDisplay::kInlineMasonry;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return EDisplay::kInline;
+  NOTREACHED();
 }
 
 template <>
@@ -348,8 +344,7 @@ inline CSSValueID PlatformEnumToCSSValueID(EDisplay v) {
     return CSSValueID::kInlineMasonry;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kInline;
+  NOTREACHED();
 }
 
 template <>
@@ -364,8 +359,7 @@ inline PageOrientation CssValueIDToPlatformEnum(CSSValueID v) {
     return PageOrientation::kRotateRight;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return PageOrientation::kUpright;
+  NOTREACHED();
 }
 
 template <>
@@ -380,8 +374,7 @@ inline ScrollbarGutter CssValueIDToPlatformEnum(CSSValueID v) {
     return kScrollbarGutterBothEdges;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kScrollbarGutterAuto;
+  NOTREACHED();
 }
 
 template <>
@@ -400,8 +393,7 @@ inline EWhiteSpace CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kBreakSpaces:
       return EWhiteSpace::kBreakSpaces;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return EWhiteSpace::kNormal;
+      NOTREACHED();
   }
 }
 
@@ -421,8 +413,7 @@ inline CSSValueID PlatformEnumToCSSValueID(EWhiteSpace v) {
     case EWhiteSpace::kBreakSpaces:
       return CSSValueID::kBreakSpaces;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kNone;
+  NOTREACHED();
 }
 
 template <>
@@ -437,8 +428,7 @@ inline WhiteSpaceCollapse CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kBreakSpaces:
       return WhiteSpaceCollapse::kBreakSpaces;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WhiteSpaceCollapse::kCollapse;
+      NOTREACHED();
   }
 }
 
@@ -454,8 +444,7 @@ inline CSSValueID PlatformEnumToCSSValueID(WhiteSpaceCollapse v) {
     case WhiteSpaceCollapse::kBreakSpaces:
       return CSSValueID::kBreakSpaces;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kNone;
+  NOTREACHED();
 }
 
 template <>
@@ -505,8 +494,7 @@ inline TextSpacingTrim CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kSpaceFirst:
       return TextSpacingTrim::kSpaceFirst;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return TextSpacingTrim::kNormal;
+      NOTREACHED();
   }
 }
 
@@ -522,8 +510,7 @@ inline CSSValueID PlatformEnumToCSSValueID(TextSpacingTrim v) {
     case TextSpacingTrim::kSpaceFirst:
       return CSSValueID::kSpaceFirst;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kNone;
+  NOTREACHED();
 }
 
 template <>
@@ -536,8 +523,7 @@ inline TryTactic CssValueIDToPlatformEnum(CSSValueID v) {
     case CSSValueID::kFlipStart:
       return TryTactic::kFlipStart;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return TryTactic::kNone;
+      NOTREACHED();
   }
 }
 
@@ -545,8 +531,7 @@ template <>
 inline CSSValueID PlatformEnumToCSSValueID(TryTactic v) {
   switch (v) {
     case TryTactic::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return CSSValueID::kNone;
+      NOTREACHED();
     case TryTactic::kFlipBlock:
       return CSSValueID::kFlipBlock;
     case TryTactic::kFlipInline:

@@ -126,8 +126,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       return kSwapPeriod;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kSwapPeriod;
+  NOTREACHED();
 }
 
 RemoteFontFaceSource::RemoteFontFaceSource(
@@ -526,8 +525,7 @@ RemoteFontFaceSource::FontLoadHistograms::DataSourceMetricsValue() {
     case kFromUnknown:
       return CacheHitMetrics::kMiss;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CacheHitMetrics::kMiss;
+  NOTREACHED();
 }
 
 }  // namespace blink

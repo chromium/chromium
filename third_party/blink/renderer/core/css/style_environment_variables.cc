@@ -91,7 +91,7 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const AtomicString StyleEnvironmentVariables::GetVariableName(
@@ -120,7 +120,7 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void StyleEnvironmentVariables::SetVariable(const AtomicString& name,

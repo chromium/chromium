@@ -644,8 +644,7 @@ CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
     case CSSValueID::kExtends:
       return CounterStyleSystem::kUnresolvedExtends;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CounterStyleSystem::kSymbolic;
+      NOTREACHED();
   }
 }
 
@@ -662,8 +661,7 @@ CounterStyleSpeakAs ToCounterStyleSpeakAsEnum(
     case CSSValueID::kWords:
       return CounterStyleSpeakAs::kWords;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CounterStyleSpeakAs::kAuto;
+      NOTREACHED();
   }
 }
 
@@ -846,8 +844,7 @@ bool CounterStyle::RangeContains(int value) const {
     case CounterStyleSystem::kUpperArmenian:
       return value >= 1 && value <= 99999999;
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -876,8 +873,7 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kFixed:
       return false;
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -978,8 +974,7 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
     case CounterStyleSystem::kEthiopicNumeric:
       return EthiopicNumericAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 
@@ -1059,8 +1054,7 @@ CounterStyleSpeakAs CounterStyle::EffectiveSpeakAs() const {
         case CounterStyleSystem::kEthiopicNumeric:
           return CounterStyleSpeakAs::kNumbers;
         case CounterStyleSystem::kUnresolvedExtends:
-          NOTREACHED_IN_MIGRATION();
-          return CounterStyleSpeakAs::kNumbers;
+          NOTREACHED();
       }
   }
 }
@@ -1102,8 +1096,7 @@ String CounterStyle::GenerateTextAlternativeWithoutPrefixSuffix(
       return GenerateRepresentation(value);
     case CounterStyleSpeakAs::kAuto:
     case CounterStyleSpeakAs::kReference:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 

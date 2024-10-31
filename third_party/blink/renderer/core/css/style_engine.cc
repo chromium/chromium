@@ -1252,9 +1252,8 @@ bool StyleEngine::ShouldSkipInvalidationFor(const Element& element) const {
   }
   if (!global_rule_set_) {
     // TODO(crbug.com/1175902): This is a speculative fix for a crash.
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "global_rule_set_ should only be null for inactive documents.";
-    return true;
   }
   if (GetDocument().InStyleRecalc()) {
 #if DCHECK_IS_ON()

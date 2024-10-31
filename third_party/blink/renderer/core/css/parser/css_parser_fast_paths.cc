@@ -1032,8 +1032,7 @@ static bool FastParseColorInternal(Color& color,
         hue *= 360.0;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
 
     // Deal with wraparound so that we end up in [0, 360],
@@ -1687,8 +1686,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kTrimEnd ||
              value_id == CSSValueID::kTrimBoth;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

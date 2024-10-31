@@ -147,8 +147,7 @@ FontFace* FontFace::Create(
                     descriptors);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 FontFace* FontFace::Create(ExecutionContext* context,
@@ -459,8 +458,7 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
       size_adjust_ = ConvertSizeAdjustValue(value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   return true;
 }
@@ -682,8 +680,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                             FontSelectionValue(stretch_value),
                             FontSelectionRange::RangeType::kSetExplicitly};
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return normal_capabilities;
+      NOTREACHED();
     }
   }
 
@@ -767,8 +764,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
         }
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return normal_capabilities;
+      NOTREACHED();
     }
   }
 
@@ -788,8 +784,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                                  FontSelectionRange::RangeType::kSetFromAuto};
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else if (const auto* weight_list =
                    DynamicTo<CSSValueList>(weight_.Get())) {
@@ -840,8 +835,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                              FontSelectionValue(weight_value),
                              FontSelectionRange::RangeType::kSetExplicitly};
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return normal_capabilities;
+      NOTREACHED();
     }
   }
 
@@ -891,7 +885,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
     } else if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
       font_selector = scope->GetFontSelector();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     if (!item.IsLocal()) {
       if (ContextAllowsDownload(context) && item.IsSupportedFormat()) {

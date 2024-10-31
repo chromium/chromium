@@ -145,8 +145,7 @@ CascadeOrigin TargetOriginForRevert(CascadeOrigin origin) {
   switch (origin) {
     case CascadeOrigin::kNone:
     case CascadeOrigin::kTransition:
-      NOTREACHED_IN_MIGRATION();
-      return CascadeOrigin::kNone;
+      NOTREACHED();
     case CascadeOrigin::kUserAgent:
       return CascadeOrigin::kNone;
     case CascadeOrigin::kUser:
@@ -1222,8 +1221,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return cssvalue::CSSUnsetValue::Create();
+  NOTREACHED();
 }
 
 const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,

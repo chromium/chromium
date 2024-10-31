@@ -105,8 +105,7 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
     case CSSValueID::kColorSbix:
       return CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown;
+      NOTREACHED();
   }
 }
 

@@ -122,10 +122,8 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
     case Length::kDeviceHeight:
     case Length::kMinIntrinsic:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool CSSValue::HasFailedOrCanceledSubresources() const {
@@ -351,8 +349,7 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kRepeatClass:
         return CompareCSSValues<cssvalue::CSSRepeatValue>(*this, other);
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   return false;
 }
@@ -511,8 +508,7 @@ String CSSValue::CssText() const {
     case kRepeatClass:
       return To<cssvalue::CSSRepeatValue>(this)->CustomCSSText();
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 unsigned CSSValue::Hash() const {
@@ -649,8 +645,7 @@ const CSSValue& CSSValue::PopulateWithTreeScope(
     case kValueListClass:
       return To<CSSValueList>(this)->PopulateWithTreeScope(tree_scope);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return *this;
+      NOTREACHED();
   }
 }
 
@@ -893,7 +888,7 @@ void CSSValue::Trace(Visitor* visitor) const {
       To<cssvalue::CSSRepeatValue>(this)->TraceAfterDispatch(visitor);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if DCHECK_IS_ON()
@@ -1050,8 +1045,7 @@ String CSSValue::ClassTypeToString() const {
     case kRepeatStyleClass:
       return "kRepeatStyleClass";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown ClassType";
+  NOTREACHED();
 }
 #endif
 

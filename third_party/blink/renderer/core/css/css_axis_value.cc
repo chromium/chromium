@@ -32,7 +32,7 @@ CSSAxisValue::CSSAxisValue(CSSValueID axis_name)
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   Append(
       *CSSNumericLiteralValue::Create(x, CSSPrimitiveValue::UnitType::kNumber));

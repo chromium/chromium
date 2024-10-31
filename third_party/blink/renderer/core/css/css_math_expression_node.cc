@@ -328,8 +328,7 @@ bool CheckProgressFunctionTypes(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return true;
 }
@@ -846,8 +845,7 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
                               /*has_explicit_pixels=*/true,
                               /*has_explicit_percent=*/false);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
@@ -919,11 +917,9 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
     case kCalcIntrinsicSize:
     case kCalcOther:
     case kCalcIdent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 double CSSMathExpressionNumericLiteral::ComputeLengthPx(
@@ -941,11 +937,9 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     case kCalcResolution:
     case kCalcOther:
     case kCalcIdent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool CSSMathExpressionNumericLiteral::AccumulateLengthArray(
@@ -1063,8 +1057,7 @@ static CalculationResultCategory DetermineCategory(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kCalcOther;
+  NOTREACHED();
 }
 
 static CalculationResultCategory DetermineComparisonCategory(
@@ -1697,8 +1690,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
           kCalcNumber, std::move(operands), CSSMathOperator::kSign);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -2293,7 +2285,7 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kContainerProgress:
       return std::nullopt;
     case CSSMathOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return result;
 }
@@ -2403,8 +2395,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
           std::move(operands), op);
     }
     case CSSMathOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -2540,8 +2531,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
     case CSSMathOperator::kContainerProgress:
       return false;
     case CSSMathOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -2680,8 +2670,7 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       return result.ReleaseString();
     }
     case CSSMathOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 }
 
@@ -2727,8 +2716,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           if (operands_[1]->Category() == kCalcNumber) {
             return operands_[0]->ResolvedUnitType();
           }
-          NOTREACHED_IN_MIGRATION();
-          return CSSPrimitiveValue::UnitType::kUnknown;
+          NOTREACHED();
         }
         case CSSMathOperator::kAdd:
         case CSSMathOperator::kSubtract:
@@ -2775,8 +2763,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           return CSSPrimitiveValue::UnitType::kUnknown;
         }
         case CSSMathOperator::kInvalid:
-          NOTREACHED_IN_MIGRATION();
-          return CSSPrimitiveValue::UnitType::kUnknown;
+          NOTREACHED();
       }
     case kCalcLengthFunction:
     case kCalcIntrinsicSize:
@@ -2786,8 +2773,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
       return CSSPrimitiveValue::UnitType::kIdent;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CSSPrimitiveValue::UnitType::kUnknown;
+  NOTREACHED();
 }
 
 void CSSMathExpressionOperation::Trace(Visitor* visitor) const {
@@ -2936,10 +2922,8 @@ double CSSMathExpressionOperation::EvaluateOperator(
       return operands[1];
     }
     case CSSMathOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return 0;
 }
 
 const CSSMathExpressionNode& CSSMathExpressionOperation::PopulateWithTreeScope(
@@ -3112,8 +3096,7 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
       fallback_(fallback) {}
 
 double CSSMathExpressionAnchorQuery::DoubleValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 double CSSMathExpressionAnchorQuery::ComputeLengthPx(
@@ -3201,8 +3184,7 @@ CSSAnchorValue CSSValueIDToAnchorValueEnum(CSSValueID value) {
     case CSSValueID::kCenter:
       return CSSAnchorValue::kCenter;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSAnchorValue::kCenter;
+      NOTREACHED();
   }
 }
 
@@ -3221,8 +3203,7 @@ CSSAnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
     case CSSValueID::kSelfInline:
       return CSSAnchorSizeValue::kSelfInline;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSAnchorSizeValue::kImplicit;
+      NOTREACHED();
   }
 }
 
@@ -3368,8 +3349,7 @@ CSSValueID TransformAnchorCSSValueID(
     case CSSValueID::kSelfInline:
       return transform.FlippedStart() ? CSSValueID::kSelfBlock : from;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return from;
+      NOTREACHED();
   }
 }
 
@@ -4453,8 +4433,7 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
           Create(*children.front()), Create(*children.back()));
     }
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
