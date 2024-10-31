@@ -130,7 +130,7 @@ Status FocusToElement(
 
   if (!is_focused) {
     base::Value::List args;
-    args.Append(CreateElement(element_id));
+    args.Append(CreateElement(element_id, session->w3c_compliant));
     std::unique_ptr<base::Value> unused;
     status = web_view->CallFunction(session->GetCurrentFrameId(), kFocusScript,
                                     args, &unused);
@@ -162,7 +162,7 @@ Status SendKeysToElement(Session* session,
   // element. keys if element's type is text-related
   if (is_text && !was_previously_focused) {
     base::Value::List args;
-    args.Append(CreateElement(element_id));
+    args.Append(CreateElement(element_id, session->w3c_compliant));
     std::unique_ptr<base::Value> unused;
     Status status = web_view->CallFunction(
         session->GetCurrentFrameId(),
@@ -229,7 +229,7 @@ Status ExecuteGetElementShadowRoot(Session* session,
                                    const base::Value::Dict& params,
                                    std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
 
   std::unique_ptr<base::Value> tmp;
 
@@ -472,7 +472,7 @@ Status ExecuteClearElement(Session* session,
   if (!is_text && !is_input_control) {
     std::unique_ptr<base::Value> get_content_editable;
     base::Value::List args;
-    args.Append(CreateElement(element_id));
+    args.Append(CreateElement(element_id, session->w3c_compliant));
     status = web_view->CallFunction(session->GetCurrentFrameId(),
                                     "element => element.isContentEditable",
                                     args, &get_content_editable);
@@ -521,7 +521,7 @@ Status ExecuteClearElement(Session* session,
     is_clear_warning_notified = true;
   }
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> unused;
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -615,7 +615,7 @@ Status ExecuteSendKeysToElement(Session* session,
                     "the element can not hold multiple files");
     }
 
-    base::Value element = CreateElement(element_id);
+    base::Value element = CreateElement(element_id, session->w3c_compliant);
     return web_view->SetFileInputFiles(session->GetCurrentFrameId(), element,
                                        paths, multiple);
   }
@@ -629,7 +629,7 @@ Status ExecuteSendKeysToElement(Session* session,
     // text is set only when session.w3c_compliant, so confirm here
     DCHECK(text != nullptr);
     base::Value::List args;
-    args.Append(CreateElement(element_id));
+    args.Append(CreateElement(element_id, session->w3c_compliant));
     args.Append(text->GetString());
     std::unique_ptr<base::Value> unused;
     // Set value to text as given by user; if this does not match the defined
@@ -641,7 +641,7 @@ Status ExecuteSendKeysToElement(Session* session,
 
   std::unique_ptr<base::Value> get_content_editable;
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   status = web_view->CallFunction(session->GetCurrentFrameId(),
                                   "element => element.isContentEditable", args,
                                   &get_content_editable);
@@ -683,7 +683,9 @@ Status ExecuteSendKeysToElement(Session* session,
       return status;
     const base::Value::Dict* element_dict = result->GetIfDict();
     const std::string* top_element_id =
-        element_dict ? element_dict->FindString(GetElementKey()) : nullptr;
+        element_dict
+            ? element_dict->FindString(GetElementKey(session->w3c_compliant))
+            : nullptr;
     if (!top_element_id)
       return Status(kUnknownError, "no element reference returned by script");
 
@@ -730,7 +732,7 @@ Status ExecuteSubmitElement(Session* session,
                             const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::SUBMIT),
@@ -744,7 +746,7 @@ Status ExecuteGetElementText(Session* session,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::GET_TEXT),
@@ -758,7 +760,7 @@ Status ExecuteGetElementValue(Session* session,
                               const base::Value::Dict& params,
                               std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       "function(elem) { return elem['value'] }",
@@ -772,7 +774,7 @@ Status ExecuteGetElementProperty(Session* session,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
 
   const std::string* name = params.FindString("name");
   if (!name)
@@ -792,7 +794,7 @@ Status ExecuteGetElementTagName(Session* session,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       "function(elem) { return elem.tagName.toLowerCase() }",
@@ -806,7 +808,7 @@ Status ExecuteIsElementSelected(Session* session,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::IS_SELECTED),
@@ -820,7 +822,7 @@ Status ExecuteIsElementEnabled(Session* session,
                                const base::Value::Dict& params,
                                std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
 
   bool is_xml = false;
   Status status = IsDocumentTypeXml(session, web_view, &is_xml);
@@ -898,7 +900,7 @@ Status ExecuteIsElementDisplayed(Session* session,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::IS_DISPLAYED),
@@ -912,7 +914,7 @@ Status ExecuteGetElementLocation(Session* session,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::GET_LOCATION),
@@ -926,7 +928,7 @@ Status ExecuteGetElementRect(Session* session,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
 
   std::unique_ptr<base::Value> location;
   Status status = web_view->CallFunction(
@@ -999,7 +1001,7 @@ Status ExecuteGetElementSize(Session* session,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::GET_SIZE),
@@ -1023,7 +1025,7 @@ Status ExecuteGetElementAttribute(Session* session,
   }
 
   base::Value::List args;
-  args.Append(CreateElement(element_id));
+  args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(*attribute_name);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),

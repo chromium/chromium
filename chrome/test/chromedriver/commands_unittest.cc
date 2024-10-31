@@ -586,6 +586,7 @@ TEST(CommandsTest, FailedFindElements) {
 TEST(CommandsTest, SuccessfulFindChildElement) {
   FindElementWebView web_view(true, kElementExistsQueryTwice);
   Session session("id");
+  session.w3c_compliant = false;
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id3", std::string());
   base::Value::Dict params;
@@ -622,6 +623,7 @@ TEST(CommandsTest, FailedFindChildElement) {
 TEST(CommandsTest, SuccessfulFindChildElements) {
   FindElementWebView web_view(false, kElementExistsQueryTwice);
   Session session("id");
+  session.w3c_compliant = false;
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id4", std::string());
   base::Value::Dict params;

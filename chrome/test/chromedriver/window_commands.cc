@@ -919,7 +919,8 @@ Status ExecuteSwitchToFrame(Session* session,
   base::Value::List args;
   const base::Value::Dict* id_dict = id->GetIfDict();
   if (id_dict) {
-    const std::string* element_id = id_dict->FindString(GetElementKey());
+    const std::string* element_id =
+        id_dict->FindString(GetElementKey(session->w3c_compliant));
     if (!element_id)
       return Status(kInvalidArgument, "missing 'ELEMENT'");
     bool is_displayed = false;
@@ -1517,13 +1518,13 @@ Status ProcessInputActionSequence(Session* session,
               return Status(kInvalidArgument,
                             "'origin' must be either a string or a dictionary");
             const std::string* element_id =
-                origin_dict->FindString(GetElementKey());
+                origin_dict->FindString(GetElementKey(session->w3c_compliant));
             if (!element_id)
               return Status(kInvalidArgument, "'element' is missing");
             base::Value* origin_result =
                 action_dict.Set("origin", base::Value(base::Value::Type::DICT));
-            origin_result->GetDict().SetByDottedPath(GetElementKey(),
-                                                     *element_id);
+            origin_result->GetDict().SetByDottedPath(
+                GetElementKey(session->w3c_compliant), *element_id);
           } else {
             const std::string& origin = origin_val->GetString();
             if (origin != "viewport" && origin != "pointer")
@@ -1782,7 +1783,9 @@ Status ExecutePerformActions(Session* session,
               if (const base::Value* origin_val = action.Find("origin")) {
                 if (const base::Value::Dict* origin_dict =
                         origin_val->GetIfDict()) {
-                  GetOptionalString(*origin_dict, GetElementKey(), &element_id);
+                  GetOptionalString(*origin_dict,
+                                    GetElementKey(session->w3c_compliant),
+                                    &element_id);
                   if (!element_id.empty()) {
                     int center_x = 0, center_y = 0;
                     Status status = ElementInViewCenter(

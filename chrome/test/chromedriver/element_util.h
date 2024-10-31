@@ -15,9 +15,9 @@ struct Session;
 class Status;
 class WebView;
 
-std::string GetElementKey();
+std::string GetElementKey(bool w3c_compliant);
 
-base::Value CreateElement(const std::string& element_id);
+base::Value CreateElement(const std::string& element_id, bool w3c_compliant);
 
 base::Value::Dict CreateValueFrom(const WebPoint& point);
 
