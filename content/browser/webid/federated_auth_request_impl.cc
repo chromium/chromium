@@ -1012,8 +1012,7 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   CHECK(!unique_idps.empty());
-  FetchEndpointsForIdps(std::move(unique_idps),
-                        /*num_fetches_for_idp_signin=*/0);
+  FetchEndpointsForIdps(std::move(unique_idps));
 }
 
 void FederatedAuthRequestImpl::RequestUserInfo(
@@ -1160,10 +1159,8 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
   for (const auto& [get_idp_config_url, get_info] : token_request_get_infos_) {
     if (url::Origin::Create(get_idp_config_url) == idp_config_origin) {
       permission_delegate_->RemoveIdpSigninStatusObserver(this);
-      FetchEndpointsForIdps({get_idp_config_url},
-                            /*num_fetches_for_idp_signin=*/fetch_data_
-                                    .num_fetches_for_idp_signin +
-                                1);
+      idps_user_tried_to_signin_to_.insert(get_idp_config_url);
+      FetchEndpointsForIdps({get_idp_config_url});
       break;
     }
   }
@@ -1177,8 +1174,7 @@ bool FederatedAuthRequestImpl::HasPendingRequest() const {
 }
 
 void FederatedAuthRequestImpl::FetchEndpointsForIdps(
-    const std::set<GURL>& idp_config_urls,
-    int num_fetches_for_idp_signin) {
+    const std::set<GURL>& idp_config_urls) {
   int icon_ideal_size =
       request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
   int icon_minimum_size =
@@ -1189,7 +1185,6 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     pending_idps.insert(idp_config_urls.begin(), idp_config_urls.end());
     fetch_data_ = FetchData();
     fetch_data_.pending_idps = std::move(pending_idps);
-    fetch_data_.num_fetches_for_idp_signin = num_fetches_for_idp_signin;
   }
 
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
@@ -1683,7 +1678,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // - If the FedCM dialog has not already been shown, do not show the dialog
   // if the RenderFrameHost is hidden because the user does not seem interested
   // in the contents of the current page.
-  if (!fetch_data_.num_fetches_for_idp_signin) {
+  if (idps_user_tried_to_signin_to_.empty()) {
     bool is_active = IsFrameActive(render_frame_host().GetMainFrame());
     fedcm_metrics_->RecordWebContentsStatusUponReadyToShowDialog(
         IsFrameVisible(render_frame_host().GetMainFrame()), is_active);
@@ -2035,7 +2030,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         return account->is_filtered_out;
       };
       if (!IsFedCmShowFilteredAccountsEnabled() ||
-          fetch_data_.num_fetches_for_idp_signin <= 1 ||
+          !idps_user_tried_to_signin_to_.contains(idp_config_url) ||
           login_url_ != idp_info->metadata.idp_login_url) {
         std::erase_if(accounts, filter);
       } else {
@@ -2827,6 +2822,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   idp_data_for_display_.clear();
   account_ids_before_login_.clear();
   fetch_data_ = FetchData();
+  idps_user_tried_to_signin_to_.clear();
   idp_order_.clear();
   metrics_endpoints_.clear();
   token_request_get_infos_.clear();

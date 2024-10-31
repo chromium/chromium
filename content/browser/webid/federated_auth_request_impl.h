@@ -223,6 +223,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // etc.)
   bool CanShowContinueOnPopup() const;
 
+  bool HasUserTriedToSignInToIdp(const GURL& idp_config_url) {
+    return idps_user_tried_to_signin_to_.contains(idp_config_url);
+  }
+
  private:
   friend class FederatedAuthRequestImplTest;
 
@@ -235,10 +239,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
     // Whether accounts endpoint fetch succeeded for at least one IdP.
     bool did_succeed_for_at_least_one_idp{false};
-
-    // How many fetches were triggered by an IdP sign-in status update from the
-    // start of the request. For the initial fetch, this is 0.
-    int num_fetches_for_idp_signin{0};
   };
 
   FederatedAuthRequestImpl(
@@ -253,10 +253,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
-  // `num_fetches_for_idp_signin` indicates the number of fetches triggered as a
-  // result of an IdP sign-in status update from the beginning of the request.
-  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls,
-                             int num_fetches_for_idp_signin);
+  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
@@ -570,6 +567,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Data related to in-progress FetchEndpointsForIdps() fetch.
   FetchData fetch_data_;
+
+  // The set of IDPs that the user has tried to sign in to since the start of
+  // the current request.
+  base::flat_set<GURL> idps_user_tried_to_signin_to_;
 
   // List of config URLs of IDPs in the same order as the providers specified in
   // the navigator.credentials.get call.

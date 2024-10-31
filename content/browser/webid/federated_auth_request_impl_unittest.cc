@@ -391,8 +391,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     MockIdpInfo info;
     for (const auto& idp_info : config_.idp_info) {
       info = idp_info.second;
-      if (GURL(info.config.client_metadata_endpoint) == endpoint)
+      if (GURL(info.config.client_metadata_endpoint) == endpoint) {
         break;
+      }
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -413,8 +414,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     MockIdpInfo info;
     for (const auto& idp_info : config_.idp_info) {
       info = idp_info.second;
-      if (GURL(info.config.accounts_endpoint) == accounts_url)
+      if (GURL(info.config.accounts_endpoint) == accounts_url) {
         break;
+      }
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -522,8 +524,9 @@ class IdpNetworkRequestManagerParamChecker
                            int rp_brand_icon_ideal_size,
                            int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override {
-    if (expected_client_id_)
+    if (expected_client_id_) {
       EXPECT_EQ(expected_client_id_, client_id);
+    }
     TestIdpNetworkRequestManager::FetchClientMetadata(
         endpoint, client_id, rp_brand_icon_ideal_size,
         rp_brand_icon_minimum_size, std::move(callback));
@@ -532,8 +535,9 @@ class IdpNetworkRequestManagerParamChecker
   void SendAccountsRequest(const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
-    if (expected_client_id_)
+    if (expected_client_id_) {
       EXPECT_EQ(expected_client_id_, client_id);
+    }
     TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
                                                       std::move(callback));
   }
@@ -545,10 +549,12 @@ class IdpNetworkRequestManagerParamChecker
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
-    if (expected_selected_account_id_)
+    if (expected_selected_account_id_) {
       EXPECT_EQ(expected_selected_account_id_, account);
-    if (expected_url_encoded_post_data_)
+    }
+    if (expected_url_encoded_post_data_) {
       EXPECT_EQ(expected_url_encoded_post_data_, url_encoded_post_data);
+    }
     TestIdpNetworkRequestManager::SendTokenRequest(
         token_url, account, url_encoded_post_data, std::move(callback),
         std::move(on_continue), std::move(record_error_metrics_callback));
@@ -793,8 +799,9 @@ class TestApiPermissionDelegate : public MockApiPermissionDelegate {
       const url::Origin& origin) override {
     ++api_invocation_counter;
 
-    if (embargoed_origins_.count(origin))
+    if (embargoed_origins_.count(origin)) {
       return ApiPermissionStatus::BLOCKED_EMBARGO;
+    }
 
     if (permission_override_for_nth_ &&
         permission_override_for_nth_->first == api_invocation_counter) {
@@ -1214,8 +1221,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       EXPECT_EQ(*standalone_console_message, messages[0]);
     }
 
-    if (!did_expect_any_messages)
+    if (!did_expect_any_messages) {
       EXPECT_EQ(0u, messages.size());
+    }
   }
 
   void PerformAuthRequest(
@@ -3674,8 +3682,9 @@ class IdpNetworkRequestManagerClientMetadataTaskRunner
     GURL client_metadata_endpoint_url_copy = client_metadata_endpoint_url;
     std::string client_id_copy = client_id;
 
-    if (client_metadata_task_)
+    if (client_metadata_task_) {
       std::move(client_metadata_task_).Run();
+    }
     TestIdpNetworkRequestManager::FetchClientMetadata(
         client_metadata_endpoint_url_copy, client_id_copy,
         rp_brand_icon_ideal_size, rp_brand_icon_minimum_size,
@@ -4508,6 +4517,10 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpLoginToOneIdp) {
   // The second IDP has 3 accounts, so those should be showing up.
   EXPECT_EQ(all_accounts_for_display().size(), 3u);
 
+  EXPECT_FALSE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+      GURL(kProviderUrlFull)));
+  EXPECT_FALSE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+      GURL(kProviderTwoUrlFull)));
   // First, simulate the user clicking on the sign in to IDP active.
   SimulateLoginToIdP();
   // Then, simulate user signing into IdP by updating the IdP signin status and
@@ -4528,6 +4541,10 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpLoginToOneIdp) {
   // now 4.
   EXPECT_EQ(all_accounts_for_display().size(), 4u);
   EXPECT_EQ(new_accounts().size(), 1u);
+  EXPECT_TRUE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+      GURL(kProviderUrlFull)));
+  EXPECT_FALSE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+      GURL(kProviderTwoUrlFull)));
 }
 
 // Test that API can succeed with multiple IdPs, if all IDPs have login status
@@ -5420,7 +5437,6 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
 }
-
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
@@ -7645,6 +7661,37 @@ TEST_F(FederatedAuthRequestImplTest, UseOtherAccountMultipleNewAccounts) {
   EXPECT_EQ(all_accounts_for_display()[2]->id, kSingleAccount[0]->id);
   EXPECT_EQ(new_accounts()[0]->id, kTwoAccounts[0]->id);
   EXPECT_EQ(new_accounts()[1]->id, kTwoAccounts[1]->id);
+}
+
+TEST_F(FederatedAuthRequestImplTest, MultipleIdpSigninDueToHint) {
+  url::Origin providerOrigin = OriginFromString(kProviderUrlFull);
+
+  // Use an invalid login hint so login to IDP URL is shown.
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = "not_a_valid_email";
+
+  MockConfiguration config = kConfigurationValid;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, config);
+
+  EXPECT_FALSE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+      GURL(kProviderUrlFull)));
+
+  for (int i = 0; i < 5; ++i) {
+    // First, simulate the user clicking on the sign in to IDP active.
+    SimulateLoginToIdP();
+    // Then, simulate user signing into IdP by updating the IdP signin status
+    // and calling the observer.
+    test_permission_delegate_->idp_signin_statuses_[providerOrigin] = true;
+    // We do not update the accounts so they would still be filtered out.
+    federated_auth_request_impl_->OnIdpSigninStatusReceived(
+        providerOrigin, /*idp_signin_status=*/true);
+
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+        GURL(kProviderUrlFull)));
+  }
 }
 
 }  // namespace content
