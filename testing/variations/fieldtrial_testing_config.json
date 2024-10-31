@@ -5175,7 +5175,9 @@
                 {
                     "name": "Enabled_M131",
                     "enable_features": [
-                        "LensOverlay"
+                        "EnableLensOverlay",
+                        "IPH_iOSLensOverlayEntrypointTip",
+                        "LensOverlayEnableLocationBarEntrypoint"
                     ]
                 }
             ]
