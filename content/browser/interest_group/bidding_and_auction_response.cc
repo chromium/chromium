@@ -58,6 +58,32 @@ ExtractCompressedBiddingAndAuctionResponse(
   return decrypted_data.subspan(kFramingHeaderSize, response_length);
 }
 
+BiddingAndAuctionResponse::KAnonJoinCandidate::KAnonJoinCandidate() = default;
+BiddingAndAuctionResponse::KAnonJoinCandidate::~KAnonJoinCandidate() = default;
+BiddingAndAuctionResponse::KAnonJoinCandidate::KAnonJoinCandidate(
+    KAnonJoinCandidate&&) = default;
+BiddingAndAuctionResponse::KAnonJoinCandidate&
+BiddingAndAuctionResponse::KAnonJoinCandidate::operator=(KAnonJoinCandidate&&) =
+    default;
+
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+    GhostWinnerForTopLevelAuction() = default;
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+    ~GhostWinnerForTopLevelAuction() = default;
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+    GhostWinnerForTopLevelAuction(GhostWinnerForTopLevelAuction&&) = default;
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction&
+BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::operator=(
+    GhostWinnerForTopLevelAuction&&) = default;
+
+BiddingAndAuctionResponse::KAnonGhostWinner::KAnonGhostWinner() = default;
+BiddingAndAuctionResponse::KAnonGhostWinner::~KAnonGhostWinner() = default;
+BiddingAndAuctionResponse::KAnonGhostWinner::KAnonGhostWinner(
+    KAnonGhostWinner&&) = default;
+BiddingAndAuctionResponse::KAnonGhostWinner&
+BiddingAndAuctionResponse::KAnonGhostWinner::operator=(KAnonGhostWinner&&) =
+    default;
+
 BiddingAndAuctionResponse::BiddingAndAuctionResponse(
     BiddingAndAuctionResponse&&) = default;
 BiddingAndAuctionResponse& BiddingAndAuctionResponse::operator=(
@@ -242,6 +268,22 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement)) {
+    base::Value::Dict* k_anon_winner_join_candidate =
+        input_dict->FindDict("kAnonWinnerJoinCandidates");
+    if (k_anon_winner_join_candidate) {
+      output.k_anon_join_candidate =
+          TryParseKAnonWinnerJoinCandidate(*k_anon_winner_join_candidate);
+    }
+
+    base::Value::List* k_anon_ghost_winners =
+        input_dict->FindList("kAnonGhostWinners");
+    if (k_anon_ghost_winners) {
+      output.k_anon_ghost_winner =
+          TryParseKAnonGhostWinner(*k_anon_ghost_winners, group_names);
+    }
+  }
+
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
       blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
       base::FeatureList::IsEnabled(features::kEnableBandAPrivateAggregation)) {
@@ -304,6 +346,193 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
 
   output.result = AuctionResult::kSuccess;
   return std::move(output);
+}
+
+std::optional<BiddingAndAuctionResponse::KAnonJoinCandidate>
+BiddingAndAuctionResponse::TryParseKAnonWinnerJoinCandidate(
+    base::Value::Dict& k_anon_join_candidate) {
+  KAnonJoinCandidate candidate;
+  std::vector<uint8_t>* ad_render_url_hash =
+      k_anon_join_candidate.FindBlob("adRenderURLHash");
+  if (!ad_render_url_hash) {
+    return std::nullopt;
+  }
+  candidate.ad_render_url_hash = std::move(*ad_render_url_hash);
+
+  base::Value* ad_component_render_urls_hash_value =
+      k_anon_join_candidate.Find("adComponentRenderURLsHash");
+  if (ad_component_render_urls_hash_value) {
+    base::Value::List* ad_component_render_urls_hash =
+        ad_component_render_urls_hash_value->GetIfList();
+    if (!ad_component_render_urls_hash) {
+      return std::nullopt;
+    }
+    for (auto& ad_component_hash_value : *ad_component_render_urls_hash) {
+      if (!ad_component_hash_value.is_blob()) {
+        return std::nullopt;
+      }
+      candidate.ad_component_render_urls_hash.emplace_back(
+          std::move(ad_component_hash_value).TakeBlob());
+    }
+  }
+
+  const std::vector<uint8_t>* reporting_id_hash =
+      k_anon_join_candidate.FindBlob("reportingIdHash");
+  if (!reporting_id_hash) {
+    return std::nullopt;
+  }
+  candidate.reporting_id_hash = std::move(*reporting_id_hash);
+
+  return candidate;
+}
+
+std::optional<BiddingAndAuctionResponse::KAnonGhostWinner>
+BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
+    base::Value::List& k_anon_ghost_winners,
+    const base::flat_map<url::Origin, std::vector<std::string>>& group_names) {
+  KAnonGhostWinner result;
+  if (k_anon_ghost_winners.empty()) {
+    return std::nullopt;
+  }
+  base::Value::Dict* k_anon_ghost_winner =
+      k_anon_ghost_winners.front().GetIfDict();
+  if (!k_anon_ghost_winner) {
+    return std::nullopt;
+  }
+
+  base::Value::Dict* k_anon_join_candidate =
+      k_anon_ghost_winner->FindDict("kAnonJoinCandidates");
+  if (!k_anon_join_candidate) {
+    return std::nullopt;
+  }
+  std::optional<KAnonJoinCandidate> candidate =
+      TryParseKAnonWinnerJoinCandidate(*k_anon_join_candidate);
+  if (!candidate) {
+    return std::nullopt;
+  }
+  result.candidate = std::move(candidate).value();
+
+  std::string* maybe_owner = k_anon_ghost_winner->FindString("owner");
+  if (!maybe_owner) {
+    return std::nullopt;
+  }
+  url::Origin owner = url::Origin::Create(GURL(*maybe_owner));
+  if (!network::IsOriginPotentiallyTrustworthy(owner)) {
+    return std::nullopt;
+  }
+  auto it = group_names.find(owner);
+  if (it == group_names.end()) {
+    return std::nullopt;
+  }
+  const std::vector<std::string>& names = it->second;
+  std::optional<int> maybe_group_idx =
+      k_anon_ghost_winner->FindInt("interestGroupIndex");
+  if (!maybe_group_idx) {
+    return std::nullopt;
+  }
+  if (maybe_group_idx.value() < 0 ||
+      static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+    return std::nullopt;
+  }
+  result.interest_group =
+      blink::InterestGroupKey(owner, names[*maybe_group_idx]);
+
+  base::Value* ghost_winner_for_top_level_auction_value =
+      k_anon_ghost_winner->Find("ghostWinnerForTopLevelAuction");
+  if (ghost_winner_for_top_level_auction_value) {
+    base::Value::Dict* ghost_winner_for_top_level_auction =
+        ghost_winner_for_top_level_auction_value->GetIfDict();
+    if (!ghost_winner_for_top_level_auction) {
+      return std::nullopt;
+    }
+    std::optional<GhostWinnerForTopLevelAuction> ghost_winner =
+        TryParseGhostWinnerForTopLevelAuction(
+            *ghost_winner_for_top_level_auction);
+    if (!ghost_winner) {
+      return std::nullopt;
+    }
+    result.ghost_winner = std::move(ghost_winner);
+  }
+
+  return result;
+}
+
+std::optional<BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction>
+BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
+    base::Value::Dict& ghost_winner_for_top_level_auction) {
+  GhostWinnerForTopLevelAuction result;
+
+  std::string* maybe_ad_render_url =
+      ghost_winner_for_top_level_auction.FindString("adRenderURL");
+  if (!maybe_ad_render_url) {
+    return std::nullopt;
+  }
+  result.ad_render_url = GURL(*maybe_ad_render_url);
+  if (!result.ad_render_url.is_valid() ||
+      !network::IsUrlPotentiallyTrustworthy(result.ad_render_url)) {
+    return std::nullopt;
+  }
+
+  base::Value* ad_components_value =
+      ghost_winner_for_top_level_auction.Find("adComponentRenderURLs");
+  if (ad_components_value) {
+    base::Value::List* ad_components = ad_components_value->GetIfList();
+    if (!ad_components) {
+      return std::nullopt;
+    }
+    for (const auto& component_val : *ad_components) {
+      const std::string* component_str = component_val.GetIfString();
+      if (!component_str) {
+        return std::nullopt;
+      }
+      GURL component(*component_str);
+      if (!component.is_valid() ||
+          !network::IsUrlPotentiallyTrustworthy(component)) {
+        return std::nullopt;
+      }
+      result.ad_components.emplace_back(std::move(component));
+    }
+  }
+
+  std::optional<double> modified_bid =
+      ghost_winner_for_top_level_auction.FindDouble("modifiedBid");
+  if (!modified_bid) {
+    return std::nullopt;
+  }
+  result.modified_bid = *modified_bid;
+
+  base::Value* bid_currency_value =
+      ghost_winner_for_top_level_auction.Find("bidCurrency");
+  if (bid_currency_value) {
+    std::string* bid_currency = bid_currency_value->GetIfString();
+    if (!bid_currency || !blink::IsValidAdCurrencyCode(*bid_currency)) {
+      return std::nullopt;
+    }
+    result.bid_currency = blink::AdCurrency::From(*bid_currency);
+  }
+
+  base::Value* buyer_reporting_id_value =
+      ghost_winner_for_top_level_auction.Find("buyerReportingId");
+  if (buyer_reporting_id_value) {
+    std::string* buyer_reporting_id = buyer_reporting_id_value->GetIfString();
+    if (!buyer_reporting_id) {
+      return std::nullopt;
+    }
+    result.buyer_reporting_id = std::move(*buyer_reporting_id);
+  }
+
+  base::Value* buyer_and_seller_reporting_id_value =
+      ghost_winner_for_top_level_auction.Find("buyerAndSellerReportingId");
+  if (buyer_and_seller_reporting_id_value) {
+    std::string* buyer_and_seller_reporting_id =
+        buyer_and_seller_reporting_id_value->GetIfString();
+    if (!buyer_and_seller_reporting_id) {
+      return std::nullopt;
+    }
+    result.buyer_and_seller_reporting_id =
+        std::move(*buyer_and_seller_reporting_id);
+  }
+  return result;
 }
 
 // static

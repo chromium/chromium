@@ -25,6 +25,7 @@
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/common/content_switches.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -98,6 +99,16 @@ struct SerializedBiddersMap {
   // coordinator origin, if the interest group has a not null coordinator.
   base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
+
+bool KAnonIsEnabled() {
+  // K-anonymity enforcement is always disabled for the testing population.
+  if (base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      blink::features::kFledgeConsiderKAnonymity);
+}
 
 constexpr std::size_t constexpr_strlen(const char* s) {
   return std::char_traits<char>::length(s);
@@ -943,6 +954,13 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("requestTimestampMs")) +
       TaggedSIntLength(timestamp);
+
+  if (base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement) &&
+      KAnonIsEnabled()) {
+    message_obj[cbor::Value("enforceKAnon")] = cbor::Value(true);
+    message_elements_size +=
+        TaggedStringLength(constexpr_strlen("enforceKAnon")) + 1;
+  }
 
   // Add a dummy element that we will overwrite later to help us estimate the
   // size of the message.

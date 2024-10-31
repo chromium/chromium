@@ -33,6 +33,44 @@ ExtractCompressedBiddingAndAuctionResponse(
     base::span<const uint8_t> decrypted_data);
 
 struct CONTENT_EXPORT BiddingAndAuctionResponse {
+  struct CONTENT_EXPORT KAnonJoinCandidate {
+    KAnonJoinCandidate();
+    ~KAnonJoinCandidate();
+    KAnonJoinCandidate(KAnonJoinCandidate&& other);
+    KAnonJoinCandidate& operator=(KAnonJoinCandidate&& other);
+
+    using ByteVector = std::vector<uint8_t>;
+    ByteVector ad_render_url_hash;
+    std::vector<ByteVector> ad_component_render_urls_hash;
+    ByteVector reporting_id_hash;
+  };
+
+  struct CONTENT_EXPORT GhostWinnerForTopLevelAuction {
+    GhostWinnerForTopLevelAuction();
+    ~GhostWinnerForTopLevelAuction();
+    GhostWinnerForTopLevelAuction(GhostWinnerForTopLevelAuction&& other);
+    GhostWinnerForTopLevelAuction& operator=(
+        GhostWinnerForTopLevelAuction&& other);
+
+    GURL ad_render_url;
+    std::vector<GURL> ad_components;
+    double modified_bid;
+    std::optional<blink::AdCurrency> bid_currency;
+    std::optional<std::string> buyer_reporting_id;
+    std::optional<std::string> buyer_and_seller_reporting_id;
+  };
+
+  struct CONTENT_EXPORT KAnonGhostWinner {
+    KAnonGhostWinner();
+    ~KAnonGhostWinner();
+    KAnonGhostWinner(KAnonGhostWinner&& other);
+    KAnonGhostWinner& operator=(KAnonGhostWinner&& other);
+
+    KAnonJoinCandidate candidate;
+    blink::InterestGroupKey interest_group;
+    std::optional<GhostWinnerForTopLevelAuction> ghost_winner;
+  };
+
   BiddingAndAuctionResponse();
   ~BiddingAndAuctionResponse();
 
@@ -44,6 +82,17 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
       const base::flat_map<blink::InterestGroupKey, url::Origin>&
           group_pagg_coordinators);
+
+  static std::optional<KAnonJoinCandidate> TryParseKAnonWinnerJoinCandidate(
+      base::Value::Dict& k_anon_join_candidate);
+
+  static std::optional<KAnonGhostWinner> TryParseKAnonGhostWinner(
+      base::Value::List& k_anon_ghost_winners,
+      const base::flat_map<url::Origin, std::vector<std::string>>& group_names);
+
+  static std::optional<GhostWinnerForTopLevelAuction>
+  TryParseGhostWinnerForTopLevelAuction(
+      base::Value::Dict& ghost_winner_for_top_level_auction);
 
   static void TryParsePAggResponse(
       const base::Value::List& pagg_response,
@@ -129,6 +178,9 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   std::optional<std::string> buyer_reporting_id;
   std::optional<std::string> buyer_and_seller_reporting_id;
   std::optional<std::string> selected_buyer_and_seller_reporting_id;
+
+  std::optional<KAnonJoinCandidate> k_anon_join_candidate;
+  std::optional<KAnonGhostWinner> k_anon_ghost_winner;
 
   std::optional<std::string> error;
   // The Bidding and Auction server uses the top_level_seller_reporting field

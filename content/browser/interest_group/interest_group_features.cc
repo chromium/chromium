@@ -17,6 +17,11 @@ BASE_FEATURE(kDetectInconsistentPageImpl,
              "DetectInconsistentPageImpl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable parsing and using K-Anonymity features for B&A.
+BASE_FEATURE(kEnableBandAKAnonEnforcement,
+             "EnableBandAKAnonEnforcement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable parsing private aggregation contributions from B&A response.
 BASE_FEATURE(kEnableBandAPrivateAggregation,
              "EnableBandAPrivateAggregation",
