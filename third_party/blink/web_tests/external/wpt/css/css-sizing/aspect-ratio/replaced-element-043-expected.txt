@@ -71,3 +71,4 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] canvas 177
   assert_equals: \n<canvas width="15" height="15" style="max-width: 50px; max-height: 10px" data-expected-width="15" data-expected-height="10"></canvas>\nwidth expected 15 but got 20
 Harness: the test ran to completion.
+

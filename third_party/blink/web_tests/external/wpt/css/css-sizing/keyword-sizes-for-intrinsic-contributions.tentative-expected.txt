@@ -20,3 +20,4 @@ This is a testharness.js-based test.
 [FAIL] .test 35
   assert_equals: \n<div class="test max-width" data-expected-width="150"><div class="stretch">XXX XXX</div></div>\nwidth expected 150 but got 210
 Harness: the test ran to completion.
+
