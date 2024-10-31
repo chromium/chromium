@@ -8652,7 +8652,7 @@
         ]
       },
       "chromeos-amd64-generic-cfi-thin-lto-rel": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8686,7 +8686,7 @@
         ]
       },
       "chromeos-amd64-generic-dbg": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8720,7 +8720,7 @@
         ]
       },
       "chromeos-amd64-generic-rel": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8754,7 +8754,7 @@
         ]
       },
       "chromeos-amd64-generic-rel-gtest": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8788,7 +8788,7 @@
         ]
       },
       "chromeos-amd64-generic-rel-tast": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8822,7 +8822,7 @@
         ]
       },
       "chromeos-arm-generic-dbg": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8856,7 +8856,7 @@
         ]
       },
       "chromeos-arm-generic-rel": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8890,7 +8890,7 @@
         ]
       },
       "chromeos-arm64-generic-rel": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8924,7 +8924,7 @@
         ]
       },
       "chromeos-jacuzzi-rel": {
-        "contact_team_email": "chromeos-velocity@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8978,7 +8978,7 @@
         ]
       },
       "chromeos-octopus-rel": {
-        "contact_team_email": "chromeos-velocity@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9988,7 +9988,7 @@
         ]
       },
       "linux-chromeos-dbg": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -10037,7 +10037,7 @@
         ]
       },
       "linux-chromeos-rel": {
-        "contact_team_email": "chromeos-sw-engprod@google.com",
+        "contact_team_email": "chromeos-chrome-build@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

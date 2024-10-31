@@ -156,7 +156,7 @@ ci.builder(
         short_name = "cfi",
     ),
     main_console_view = "main",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     health_spec = health_spec.modified_default({
         "Unhealthy": struct(
             build_time = struct(
@@ -214,7 +214,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -271,7 +271,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -321,7 +321,7 @@ ci.thin_tester(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     notifies = ["chrome-fake-vaapi-test"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
@@ -381,7 +381,7 @@ ci.thin_tester(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -430,7 +430,7 @@ ci.builder(
         short_name = "arm",
     ),
     main_console_view = "main",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -473,7 +473,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -524,7 +524,7 @@ ci.builder(
         short_name = "a64",
     ),
     main_console_view = "main",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     notifies = ["chrome-v4l2-visl-test"],
 )
 
@@ -584,7 +584,7 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
         short_name = "jcz",
     ),
     main_console_view = "main",
-    contact_team_email = "chromeos-velocity@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -644,7 +644,7 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
         short_name = "oct",
     ),
     main_console_view = "main",
-    contact_team_email = "chromeos-velocity@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -728,7 +728,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     # Inconsistent compile times can cause this builder to flakily hit the
     # default 3 hour timeout.
     execution_timeout = 6 * time.hour,
@@ -849,7 +849,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 

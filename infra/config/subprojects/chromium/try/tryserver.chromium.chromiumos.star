@@ -94,7 +94,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     main_list_view = "try",
 )
 
@@ -118,7 +118,7 @@ try_.orchestrator_builder(
         ],
     ),
     compilator = "chromeos-amd64-generic-rel-gtest-compilator",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
@@ -154,7 +154,7 @@ try_.orchestrator_builder(
         ],
     ),
     compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         omit_from_luci_cv = True,
@@ -175,7 +175,7 @@ try_.compilator_builder(
             wait_for_warm_cache = 4 * time.minute,
         ),
     ],
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     main_list_view = "try",
 )
 
@@ -191,7 +191,7 @@ try_.compilator_builder(
             wait_for_warm_cache = 4 * time.minute,
         ),
     ],
-    contact_team_email = "chromeos-sw-engprod@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     main_list_view = "try",
 )
 
@@ -304,7 +304,7 @@ try_.builder(
         "ci/chromeos-jacuzzi-rel",
     ],
     gn_args = "ci/chromeos-jacuzzi-rel",
-    contact_team_email = "chromeos-velocity@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
@@ -316,7 +316,7 @@ try_.builder(
         "ci/chromeos-octopus-rel",
     ],
     gn_args = "ci/chromeos-octopus-rel",
-    contact_team_email = "chromeos-velocity@google.com",
+    contact_team_email = "chromeos-chrome-build@google.com",
     execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
