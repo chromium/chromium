@@ -4273,6 +4273,12 @@ extern const char kSparkyServerUrlDescription[];
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
+extern const char kSunfishName[];
+extern const char kSunfishDescription[];
+
+extern const char kSunfishFeatureKeyName[];
+extern const char kSunfishFeatureKeyDescription[];
+
 extern const char kSystemJapanesePhysicalTypingName[];
 extern const char kSystemJapanesePhysicalTypingDescription[];
 

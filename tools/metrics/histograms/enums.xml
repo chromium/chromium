@@ -16631,6 +16631,7 @@ from previous Chrome versions.
       label="CompressionDictionaryTransportOverHttp1:disabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
   <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
+  <int value="-1434795339" label="SunfishFeature:disabled"/>
   <int value="-1433719718" label="enable-webrtc-stun-origin"/>
   <int value="-1433452630" label="AllowRemoteContextForNotifications:enabled"/>
   <int value="-1433156012" label="AppListDragAndDropRefactor:disabled"/>
@@ -23460,6 +23461,7 @@ from previous Chrome versions.
   <int value="1343516821" label="ignore-previews-blocklist"/>
   <int value="1343713259" label="ArcPrintSpoolerExperiment:disabled"/>
   <int value="1344833841" label="ImeThread:enabled"/>
+  <int value="1344947763" label="SunfishFeature:enabled"/>
   <int value="1345192233" label="VaapiVideoDecoder:enabled"/>
   <int value="1345482545" label="AlignSurfaceLayerImplToPixelGrid:disabled"/>
   <int value="1346018846"
