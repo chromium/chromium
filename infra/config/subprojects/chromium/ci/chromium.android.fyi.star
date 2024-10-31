@@ -426,8 +426,6 @@ ci.builder(
                 # webview instead of the full browser, so explicitly specify it here.
                 args = [
                     "--browser=android-chromium",
-                    # https://crbug.com/1342706 : Disable failing test
-                    "--gtest_filter=-core.perf_benchmark_unittest.PerfBenchmarkTest.testVariationArgs",
                 ],
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
