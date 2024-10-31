@@ -718,6 +718,13 @@ class LensOverlayController : public LensSearchboxClient,
   void UpdatePageContextualization(std::vector<uint8_t> bytes,
                                    lens::PageContentMimeType content_type);
 
+  // Updates state of the ghost loader. |suppress_ghost_loader| is true when
+  // the page bytes can't be uploaded. |reset_loading_state| is true whenever
+  // a user navigates to a new page (as this will lead to a new attempt at
+  // contextualization and suggestions).
+  void UpdateGhostLoaderState(bool suppress_ghost_loader,
+                              bool reset_loading_state);
+
   // Enables/disables the background blur updating live. This should be used to
   // save resources on blurring the background when not needed.
   void SetLiveBlur(bool enabled);

@@ -1353,6 +1353,8 @@ class LensOverlayController::UnderlyingWebContentsObserver
       return;
     }
     if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
+      lens_overlay_controller_->UpdateGhostLoaderState(
+          /*suppress_ghost_loader=*/false, /*reset_loading_state=*/true);
       return;
     }
     lens_overlay_controller_->CloseUISync(
@@ -1662,9 +1664,25 @@ void LensOverlayController::UpdatePageContextualization(
   initialization_data_->page_content_bytes_ = bytes;
   initialization_data_->page_content_type_ = content_type;
 
+  // If the PageContentMimeType is kNone we won't be able to contextualize the
+  // page. We should notify the side panel so the ghost loader isn't shown. We
+  // don't need to update the overlay as this update only happens on navigation
+  // where the side panel will already be open.
+  UpdateGhostLoaderState(/*suppress_ghost_loader=*/content_type ==
+                             lens::PageContentMimeType::kNone,
+                         /*reset_loading_state=*/false);
+
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
       initialization_data_->page_content_type_, GetPageURL());
+}
+
+void LensOverlayController::UpdateGhostLoaderState(bool suppress_ghost_loader,
+                                                   bool reset_loading_state) {
+  if (side_panel_page_) {
+    side_panel_page_->UpdateGhostLoaderState(suppress_ghost_loader,
+                                             reset_loading_state);
+  }
 }
 
 void LensOverlayController::SetLiveBlur(bool enabled) {

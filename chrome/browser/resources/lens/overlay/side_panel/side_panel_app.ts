@@ -86,6 +86,21 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         value: false,
         reflectToAttribute: true,
       },
+      suppressGhostLoader: {
+        type: Boolean,
+        value: true,
+      },
+      showGhostLoader: {
+        type: Boolean,
+        computed: `computeShowGhostLoader(isSearchboxFocused,
+              suppressGhostLoader, isContextualSearchbox)`,
+        reflectToAttribute: true,
+      },
+      showErrorState: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
     };
   }
 
@@ -98,6 +113,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private isLoadingResults: boolean;
   private isSearchboxFocused: boolean;
   private isContextualSearchbox: boolean;
+  private suppressGhostLoader: boolean;
+  private showErrorState: boolean;
   // The URL for the loading image shown when results frame is loading a new
   // page.
   private readonly loadingImageUrl: string;
@@ -146,6 +163,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.setBackArrowVisible.bind(this)),
       this.browserProxy.callbackRouter.setShowErrorPage.addListener(
           this.setShowErrorPage.bind(this)),
+      this.browserProxy.callbackRouter.updateGhostLoaderState.addListener(
+          this.updateGhostLoaderState.bind(this)),
     ];
   }
 
@@ -208,6 +227,27 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private onSearchboxFocusOut_() {
     this.isBackArrowVisible = this.wasBackArrowAvailable;
     this.isSearchboxFocused = false;
+  }
+
+  private computeShowGhostLoader(): boolean {
+    return this.isSearchboxFocused && !this.suppressGhostLoader &&
+        this.isContextualSearchbox;
+  }
+
+  private updateGhostLoaderState(
+      suppressGhostLoader: boolean, resetLoadingState: boolean) {
+    // If page bytes weren't successfully uploaded, ghost loader shouldn't be
+    // visible.
+    this.suppressGhostLoader = suppressGhostLoader;
+    if (resetLoadingState) {
+      this.showErrorState = false;
+    }
+  }
+
+  makeGhostLoaderVisibleForTesting() {
+    this.isContextualSearchbox = true;
+    this.suppressGhostLoader = false;
+    this.isSearchboxFocused = true;
   }
 }
 

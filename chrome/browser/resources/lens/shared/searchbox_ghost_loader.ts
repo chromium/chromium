@@ -26,8 +26,8 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
     return {
       showErrorState: {
         type: Boolean,
-        value: false,
         reflectToAttribute: true,
+        notify: true,
       },
     };
   }
@@ -54,6 +54,10 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+  }
+
+  showErrorStateForTesting() {
+    this.showErrorState = true;
   }
 }
 

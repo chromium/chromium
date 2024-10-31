@@ -183,7 +183,7 @@
    * dropdown isn't showing (no results available). Only show for contextual
    * searchboxes.
    */
-  :host([is-searchbox-focused][is-contextual-searchbox]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+  :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
   }
 </style>
@@ -194,7 +194,8 @@
     </cr-icon-button>
   </template>
   <cr-searchbox id="searchbox"></cr-searchbox>
-  <cr-searchbox-ghost-loader></cr-searchbox-ghost-loader>
+  <cr-searchbox-ghost-loader
+    show-error-state="{{showErrorState}}"></cr-searchbox-ghost-loader>
 </div>
 
 <!-- Network error UI that is initially hidden -->

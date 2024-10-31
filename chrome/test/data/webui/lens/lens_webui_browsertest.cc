@@ -215,6 +215,10 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, ErrorPage) {
   RunSidePanelTest("lens/side_panel/error_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, GhostLoaderState) {
+  RunSidePanelTest("lens/side_panel/ghost_loader_state_test.js", "mocha.run()");
+}
+
 using LensGhostLoaderTest = LensOverlayTest;
 IN_PROC_BROWSER_TEST_F(LensGhostLoaderTest, GhostLoaderState) {
   RunGhostLoaderTest("lens/ghost_loader/ghost_loader_state_test.js",
