@@ -367,7 +367,7 @@ void ClusterManager::OnAllCategoryDataRetrieved(
     const base::Uuid& uuid,
     const std::set<GURL>& urls,
     const std::vector<CategoryData>& category_data) {
-  if (!product_group_map_[uuid]) {
+  if (product_group_map_.find(uuid) == product_group_map_.end()) {
     return;
   }
 
