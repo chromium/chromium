@@ -1092,12 +1092,13 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   }
   version->set_script_response_time_for_devtools(data.script_response_time);
 
-  if (version->status() == ServiceWorkerVersion::ACTIVATED)
+  if (version->status() == ServiceWorkerVersion::ACTIVATED) {
     registration->SetActiveVersion(version);
-  else if (version->status() == ServiceWorkerVersion::INSTALLED)
+  } else if (version->status() == ServiceWorkerVersion::INSTALLED) {
     registration->SetWaitingVersion(version);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   registration->EnableNavigationPreload(data.navigation_preload_state->enabled);
   registration->SetNavigationPreloadHeader(

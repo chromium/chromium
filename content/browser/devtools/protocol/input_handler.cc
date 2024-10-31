@@ -1245,7 +1245,7 @@ void InputHandler::ImeSetComposition(
   // Currently no DevTools target for Prerender.
   if (host_->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPrerendering) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // |RenderFrameHostImpl::GetRenderWidgetHost| returns the RWHImpl of the
@@ -1870,8 +1870,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
     case SyntheticPointerActionParams::PointerActionType::LEAVE:
     case SyntheticPointerActionParams::PointerActionType::IDLE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return action_params;
 }

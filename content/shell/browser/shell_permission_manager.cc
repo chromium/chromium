@@ -79,8 +79,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace

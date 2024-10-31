@@ -780,8 +780,7 @@ std::string ReferrerPolicyToString(
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return "strict-origin-when-cross-origin";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
@@ -3807,7 +3806,7 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
         run_loop_disable_log_.Quit();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return;
   }

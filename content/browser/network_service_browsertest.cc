@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
     }
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     bool has_received_preflight() const { return has_received_preflight_; }

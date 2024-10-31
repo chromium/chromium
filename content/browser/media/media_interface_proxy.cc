@@ -586,16 +586,13 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kSoftwareSecure);
   if (!cdm_info) {
-    NOTREACHED_IN_MIGRATION() << "No valid CdmInfo for " << key_system;
-    return nullptr;
+    NOTREACHED() << "No valid CdmInfo for " << key_system;
   }
   if (cdm_info->path.empty()) {
-    NOTREACHED_IN_MIGRATION() << "CDM path for " << key_system << " is empty";
-    return nullptr;
+    NOTREACHED() << "CDM path for " << key_system << " is empty";
   }
   if (!IsValidCdmDisplayName(cdm_info->name)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid CDM display name " << cdm_info->name;
-    return nullptr;
+    NOTREACHED() << "Invalid CDM display name " << cdm_info->name;
   }
 
   auto& cdm_type = cdm_info->type;

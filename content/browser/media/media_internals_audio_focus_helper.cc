@@ -308,8 +308,7 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
               result.append(kMediaSessionHasAudioVideo);
               break;
             case media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown:
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
           }
         });
     result.append(" }");

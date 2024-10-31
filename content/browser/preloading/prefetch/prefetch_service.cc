@@ -132,8 +132,7 @@ bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
     case PreloadingEligibility::kEligible:
     default:
       // Other ineligible cases are not used in `PrefetchService`.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

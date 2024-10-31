@@ -1403,12 +1403,13 @@ void WebTestControlHost::ReportResults() {
 
   // Use the browser-generated |layout_dump_| if present, else use the
   // renderer's.
-  if (layout_dump_)
+  if (layout_dump_) {
     OnTextDump(*layout_dump_);
-  else if (renderer_dump_result_->layout)
+  } else if (renderer_dump_result_->layout) {
     OnTextDump(*renderer_dump_result_->layout);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   // Use the browser-generated |pixel_dump_| if present, else use the
   // renderer's.
@@ -1456,8 +1457,7 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
         pixel_format = gfx::PNGCodec::FORMAT_RGBA;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
 
     std::vector<gfx::PNGCodec::Comment> comments;
@@ -1561,8 +1561,7 @@ void WebTestControlHost::SetPermission(const std::string& name,
   } else if (name == "top-level-storage-access") {
     type = blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    type = blink::PermissionType::NOTIFICATIONS;
+    NOTREACHED();
   }
 
   WebTestContentBrowserClient::Get()

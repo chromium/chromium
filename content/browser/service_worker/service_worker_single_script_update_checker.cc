@@ -101,7 +101,7 @@ class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
   ~WrappedIOBuffer() override = default;
 
   // This is to make sure that the vtable is not merged with other classes.
-  virtual void dummy() { NOTREACHED_IN_MIGRATION(); }
+  virtual void dummy() { NOTREACHED(); }
 };
 
 ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
@@ -309,7 +309,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
   // The network request for update checking shouldn't have upload data.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
@@ -350,9 +350,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
         ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted;
     switch (header_writer_state_) {
       case ServiceWorkerUpdatedScriptLoader::WriterState::kNotStarted:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Response header should be received before OnComplete()";
-        break;
       case ServiceWorkerUpdatedScriptLoader::WriterState::kWriting:
         // Wait until it's written. OnWriteHeadersComplete() will call
         // Finish().
@@ -547,7 +546,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
       network_watcher_.ArmOrNotify();
       return;
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(result);
+  NOTREACHED() << static_cast<int>(result);
 }
 
 // |pending_buffer| is a buffer keeping a Mojo data pipe which is going to be

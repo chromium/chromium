@@ -220,11 +220,11 @@ std::unique_ptr<RenderProcess> RenderProcessImpl::Create() {
 }
 
 void RenderProcessImpl::AddRefProcess() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderProcessImpl::ReleaseProcess() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

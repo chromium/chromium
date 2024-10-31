@@ -1160,7 +1160,7 @@ class OriginTrialsControllerDelegateMock
       const base::span<const std::string> header_tokens,
       const base::Time current_time,
       std::optional<ukm::SourceId> source_id) override {
-    NOTREACHED_IN_MIGRATION() << "not used by test";
+    NOTREACHED() << "not used by test";
   }
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,

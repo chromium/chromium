@@ -496,7 +496,7 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
       UMA_HISTOGRAM_CUSTOM_TIMES("Navigation." histogram ".NewNavigation",    \
                                  duration, kMinTime, kMaxTime, kBuckets);     \
     } else {                                                                  \
-      NOTREACHED_IN_MIGRATION() << "Invalid page transition: " << transition; \
+      NOTREACHED() << "Invalid page transition: " << transition;              \
     }                                                                         \
     if (priority.has_value()) {                                               \
       if (priority.value() == base::Process::Priority::kBestEffort) {         \
@@ -747,12 +747,10 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
       return network::mojom::RequestDestination::kFrame;
     // Main frames are handled above.
     case blink::FrameOwnerElementType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return network::mojom::RequestDestination::kDocument;
-      // Fenced frames are handled above.
+      NOTREACHED();
     case blink::FrameOwnerElementType::kFencedframe:
-      NOTREACHED_IN_MIGRATION();
-      return network::mojom::RequestDestination::kFencedframe;
+      // Fenced frames are handled above.
+      NOTREACHED();
   }
 }
 
@@ -2779,8 +2777,7 @@ void NavigationRequest::BeginNavigationImpl() {
     // - MHTML document, not supported by CSPEE (https://crbug.com/1164353).
     if (CheckCSPEmbeddedEnforcement() ==
         CSPEmbeddedEnforcementResult::BLOCK_RESPONSE) {
-      NOTREACHED_IN_MIGRATION();
-      base::debug::DumpWithoutCrashing();
+      NOTREACHED();
     }
 
     ComputePoliciesToCommit();
@@ -5033,8 +5030,7 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
       break;
     case ErrorPageProcess::kNotErrorPage:
     case ErrorPageProcess::kPostCommitErrorPage:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   RenderFrameHostImpl* render_frame_host = nullptr;
@@ -7297,7 +7293,7 @@ void NavigationRequest::OnNavigationEventProcessed(
       OnWillCommitWithoutUrlLoaderProcessed(result);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationRequest::OnWillStartRequestProcessed(
@@ -7530,7 +7526,7 @@ void NavigationRequest::CancelDeferredNavigationInternal(
       OnWillCommitWithoutUrlLoaderChecksComplete(result);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
   // deleted by the previous calls.
@@ -9351,9 +9347,7 @@ bool NavigationRequest::CoopCoepSanityCheck() {
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
       !CompatibleWithCrossOriginIsolated(
           policies.cross_origin_embedder_policy)) {
-    NOTREACHED_IN_MIGRATION();
-    base::debug::DumpWithoutCrashing();
-    return false;
+    NOTREACHED();
   }
   return true;
 }

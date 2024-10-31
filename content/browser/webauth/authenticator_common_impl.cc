@@ -1390,8 +1390,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bool is_cross_origin_iframe = false;
   blink::mojom::AuthenticatorStatus status =
@@ -2635,8 +2634,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
       case RequestExtension::kLargeBlobRead:
       case RequestExtension::kLargeBlobWrite:
       case RequestExtension::kGetCredBlob:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -2779,8 +2777,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
       case RequestExtension::kLargeBlobEnable:
       case RequestExtension::kCredBlob:
       case RequestExtension::kMinPINLength:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   response->extensions = std::move(response_extensions);

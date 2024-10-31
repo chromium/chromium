@@ -93,8 +93,7 @@ void ReportInternalError(const char* type, BackingStoreErrorSource location) {
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s) {
   if (s.ok()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   enum {
     LEVEL_DB_NOT_FOUND,

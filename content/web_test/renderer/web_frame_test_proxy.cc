@@ -721,8 +721,7 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     case ax::mojom::Event::kWindowDeactivated:
     case ax::mojom::Event::kWindowVisibilityChanged:
       // Never fired from Blink.
-      NOTREACHED_IN_MIGRATION()
-          << "Event not expected from Blink: " << event.event_type;
+      NOTREACHED() << "Event not expected from Blink: " << event.event_type;
   }
 
   blink::WebDocument document = GetWebFrame()->GetDocument();

@@ -230,8 +230,7 @@ ServiceWorkerVersion* ServiceWorkerRegisterJob::new_version() {
 void ServiceWorkerRegisterJob::SetPhase(Phase phase) {
   switch (phase) {
     case INITIAL:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case START:
       DCHECK(phase_ == INITIAL) << phase_;
       break;

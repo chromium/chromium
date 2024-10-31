@@ -629,13 +629,11 @@ void Navigator::DidNavigate(
   const UrlInfo& url_info = navigation_request->GetUrlInfo();
   if (!site_instance->HasSite() &&
       SiteInstanceImpl::ShouldAssignSiteForUrlInfo(url_info)) {
-    NOTREACHED_IN_MIGRATION()
-        << "SiteInstance should have already set a site: " << params.url;
     // TODO(alexmos): convert this to a CHECK and remove the fallback call to
     // ConvertToDefaultOrSetSite() after verifying that this doesn't happen in
     // practice.
-    base::debug::DumpWithoutCrashing();
-    site_instance->ConvertToDefaultOrSetSite(url_info);
+    NOTREACHED() << "SiteInstance should have already set a site: "
+                 << params.url;
   }
 
   // Need to update MIME type here because it's referred to in
@@ -1048,8 +1046,7 @@ void Navigator::NavigateFromFrameProxy(
     std::optional<std::u16string> embedder_shared_storage_context) {
   // |method != "POST"| should imply absence of |post_body|.
   if (method != "POST" && post_body) {
-    NOTREACHED_IN_MIGRATION();
-    post_body = nullptr;
+    NOTREACHED();
   }
 
   // Allow the delegate to cancel the cross-process navigation.

@@ -184,8 +184,7 @@ ui::SelectFileDialog::Type ValidateType(ui::SelectFileDialog::Type type) {
     case ui::SelectFileDialog::SELECT_FOLDER:
       return type;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::SelectFileDialog::SELECT_NONE;
+      NOTREACHED();
   }
 }
 

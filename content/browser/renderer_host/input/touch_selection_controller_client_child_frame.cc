@@ -120,12 +120,11 @@ gfx::Point TouchSelectionControllerClientChildFrame::ConvertFromRoot(
 }
 
 bool TouchSelectionControllerClientChildFrame::SupportsAnimation() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientChildFrame::SetNeedsAnimate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientChildFrame::MoveCaret(
@@ -153,19 +152,18 @@ void TouchSelectionControllerClientChildFrame::SelectBetweenCoordinates(
 
 void TouchSelectionControllerClientChildFrame::OnSelectionEvent(
     ui::SelectionEventType event) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientChildFrame::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientChildFrame::CreateDrawable() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
@@ -237,8 +235,7 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
           /*should_show_context_menu=*/false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

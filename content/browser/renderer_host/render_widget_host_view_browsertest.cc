@@ -1321,9 +1321,8 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
         CASE_LOG_READBACK_WARNING(READBACK_NO_TEST_COLORS);
         CASE_LOG_READBACK_WARNING(READBACK_INCORRECT_RESULT_SIZE);
         default:
-          LOG(ERROR)
+          NOTREACHED()
               << "Invalid readback response value: " << readback_result_;
-          NOTREACHED_IN_MIGRATION();
       }
       // clang-format on
     } while (readback_result_ != READBACK_SUCCESS &&

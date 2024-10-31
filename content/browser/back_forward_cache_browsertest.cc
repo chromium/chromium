@@ -2902,7 +2902,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
               kUnloadHandlerExistsInSubFrame);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // 2) Navigate to B.

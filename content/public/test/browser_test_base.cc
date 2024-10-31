@@ -397,10 +397,9 @@ void BrowserTestBase::SetUp() {
     enable_pixel_output_ = true;
 
   if (command_line->HasSwitch(switches::kDisableGLDrawingForTests)) {
-    NOTREACHED_IN_MIGRATION()
-        << "kDisableGLDrawingForTests should not be used as it "
-           "is chosen by tests. Use kEnablePixelOutputInTests "
-           "to enable pixel output.";
+    NOTREACHED() << "kDisableGLDrawingForTests should not be used as it "
+                    "is chosen by tests. Use kEnablePixelOutputInTests "
+                    "to enable pixel output.";
   }
 
   // Don't enable pixel output for browser tests unless they override and force

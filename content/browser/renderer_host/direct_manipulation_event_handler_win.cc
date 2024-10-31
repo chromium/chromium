@@ -86,7 +86,7 @@ void DirectManipulationEventHandler::TransitionToState(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Start the new sequence.
@@ -115,7 +115,7 @@ void DirectManipulationEventHandler::TransitionToState(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

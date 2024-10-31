@@ -117,7 +117,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
       // Same document navigations should already be excluded by
       // `ShouldDispatchPageSwapEvent`.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return base::WrapUnique(

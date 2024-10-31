@@ -147,7 +147,7 @@ class SaveFileManager::SimpleURLLoaderHelper
 
   void OnRetry(base::OnceClosure start_retry) override {
     // Retries are not enabled.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   raw_ptr<SaveFileManager> save_file_manager_;

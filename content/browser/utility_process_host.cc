@@ -288,8 +288,7 @@ bool UtilityProcessHost::StartProcess() {
 
     base::FilePath exe_path = ChildProcessHost::GetChildPath(child_flags);
     if (exe_path.empty()) {
-      NOTREACHED_IN_MIGRATION() << "Unable to get utility process binary name.";
-      return false;
+      NOTREACHED() << "Unable to get utility process binary name.";
     }
 
     std::unique_ptr<base::CommandLine> cmd_line =

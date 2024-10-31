@@ -150,8 +150,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown Termination Status.";
-  return "unknown";
+  NOTREACHED() << "Unknown Termination Status.";
 }
 
 class BrowserToPageConnector;

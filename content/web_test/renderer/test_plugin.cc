@@ -439,12 +439,13 @@ TestPlugin::Primitive TestPlugin::ParsePrimitive(
       "triangle");
 
   Primitive primitive = PrimitiveNone;
-  if (string == *kPrimitiveNone)
+  if (string == *kPrimitiveNone) {
     primitive = PrimitiveNone;
-  else if (string == *kPrimitiveTriangle)
+  } else if (string == *kPrimitiveTriangle) {
     primitive = PrimitiveTriangle;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
   return primitive;
 }
 
@@ -455,14 +456,15 @@ void TestPlugin::ParseColor(const blink::WebString& string, uint8_t color[3]) {
   if (string == "black")
     return;
 
-  if (string == "red")
+  if (string == "red") {
     color[0] = 255;
-  else if (string == "green")
+  } else if (string == "green") {
     color[1] = 255;
-  else if (string == "blue")
+  } else if (string == "blue") {
     color[2] = 255;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 }
 
 float TestPlugin::ParseOpacity(const blink::WebString& string) {
@@ -712,7 +714,7 @@ bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
       drag_status_name = "DragDrop";
       break;
     case blink::kWebDragStatusUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   test_runner_->PrintMessage(
       std::string("Plugin received event: ") + drag_status_name + "\n",

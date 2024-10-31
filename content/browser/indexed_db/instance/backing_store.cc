@@ -2800,8 +2800,7 @@ Status BackingStore::Transaction::GetExternalObjectsForRecord(
   std::string_view leveldb_key_piece(object_store_data_key);
   if (!BlobEntryKey::FromObjectStoreDataKey(&leveldb_key_piece,
                                             &blob_entry_key)) {
-    NOTREACHED_IN_MIGRATION();
-    return InternalInconsistencyStatus();
+    NOTREACHED();
   }
   std::string encoded_key = blob_entry_key.Encode();
   bool found;
@@ -3606,10 +3605,7 @@ class ObjectStoreKeyCursorImpl : public BackingStore::Cursor {
   }
 
   // BackingStore::Cursor
-  IndexedDBValue* value() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  IndexedDBValue* value() override { NOTREACHED(); }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3620,8 +3616,7 @@ class ObjectStoreKeyCursorImpl : public BackingStore::Cursor {
   }
   std::string EncodeKey(const IndexedDBKey& key,
                         const IndexedDBKey& primary_key) override {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
 
  private:
@@ -3716,8 +3711,7 @@ class ObjectStoreCursorImpl : public BackingStore::Cursor {
   }
   std::string EncodeKey(const IndexedDBKey& key,
                         const IndexedDBKey& primary_key) override {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
 
  private:
@@ -3793,17 +3787,13 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
   }
 
   // BackingStore::Cursor
-  IndexedDBValue* value() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  IndexedDBValue* value() override { NOTREACHED(); }
   const IndexedDBKey& primary_key() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return *primary_key_;
   }
   const BackingStore::RecordIdentifier& record_identifier() const override {
-    NOTREACHED_IN_MIGRATION();
-    return record_identifier_;
+    NOTREACHED();
   }
   bool LoadCurrentRow(Status* s) override;
 
@@ -3938,8 +3928,7 @@ class IndexCursorImpl : public BackingStore::Cursor {
     return *primary_key_;
   }
   const BackingStore::RecordIdentifier& record_identifier() const override {
-    NOTREACHED_IN_MIGRATION();
-    return record_identifier_;
+    NOTREACHED();
   }
   bool LoadCurrentRow(Status* s) override;
 
@@ -4351,10 +4340,7 @@ bool BackingStore::Transaction::CollectBlobFilesToRemove() {
     BlobEntryKey blob_entry_key;
     std::string_view key_piece(iter.second->object_store_data_key());
     if (!BlobEntryKey::FromObjectStoreDataKey(&key_piece, &blob_entry_key)) {
-      NOTREACHED_IN_MIGRATION();
-      INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
-      transaction_ = nullptr;
-      return false;
+      NOTREACHED();
     }
     if (database_id_ < 0) {
       database_id_ = blob_entry_key.database_id();
@@ -4474,8 +4460,7 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
         std::string_view key_piece(iter.second->object_store_data_key());
         if (!BlobEntryKey::FromObjectStoreDataKey(&key_piece,
                                                   &blob_entry_key)) {
-          NOTREACHED_IN_MIGRATION();
-          return InternalInconsistencyStatus();
+          NOTREACHED();
         }
         // Add the new blob-table entry for each blob to the main transaction,
         // or remove any entry that may exist if there's no new one.
@@ -4794,8 +4779,7 @@ Status BackingStore::Transaction::PutExternalObjectsIfNeeded(
     std::string_view leveldb_key_piece(object_store_data_key);
     if (!BlobEntryKey::FromObjectStoreDataKey(&leveldb_key_piece,
                                               &blob_entry_key)) {
-      NOTREACHED_IN_MIGRATION();
-      return InternalInconsistencyStatus();
+      NOTREACHED();
     }
     std::string value;
     bool found = false;

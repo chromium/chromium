@@ -57,8 +57,7 @@ std::string GetConsoleErrorMessage(FederatedAuthUserInfoRequestResult error) {
     }
     case FederatedAuthUserInfoRequestResult::kUnhandledRequest:
     case FederatedAuthUserInfoRequestResult::kSuccess: {
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     }
   }
 }

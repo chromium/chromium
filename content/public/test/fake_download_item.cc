@@ -279,28 +279,27 @@ void FakeDownloadItem::SetOpenWhenComplete(bool open) {
 
 // The methods below are not supported and are not expected to be called.
 void FakeDownloadItem::ValidateDangerousDownload() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::ValidateInsecureDownload() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::CopyDownload(AcquireFileCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::FilePath());
+  NOTREACHED();
 }
 
 void FakeDownloadItem::Pause() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::Resume(bool user_resume) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::Cancel(bool user_cancel) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::Remove() {
@@ -308,21 +307,21 @@ void FakeDownloadItem::Remove() {
 }
 
 void FakeDownloadItem::OpenDownload() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::ShowDownloadInShell() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::Rename(const base::FilePath& name,
                               RenameDownloadCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::OnAsyncScanningCompleted(
     download::DownloadDangerType danger_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::IsPaused() const {
@@ -330,43 +329,35 @@ bool FakeDownloadItem::IsPaused() const {
 }
 
 bool FakeDownloadItem::AllowMetered() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::IsTemporary() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::RequireSafetyChecks() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::CanResume() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int64_t FakeDownloadItem::GetBytesWasted() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int32_t FakeDownloadItem::GetAutoResumeCount() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const GURL& FakeDownloadItem::GetReferrerUrl() const {
-  NOTREACHED_IN_MIGRATION();
-  return dummy_url;
+  NOTREACHED();
 }
 
 const std::string& FakeDownloadItem::GetSerializedEmbedderDownloadData() const {
-  NOTREACHED_IN_MIGRATION();
-  return serialized_embedder_download_data;
+  NOTREACHED();
 }
 
 const GURL& FakeDownloadItem::GetTabUrl() const {
@@ -374,49 +365,40 @@ const GURL& FakeDownloadItem::GetTabUrl() const {
 }
 
 const GURL& FakeDownloadItem::GetTabReferrerUrl() const {
-  NOTREACHED_IN_MIGRATION();
-  return dummy_url;
+  NOTREACHED();
 }
 
 const std::optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
     const {
-  NOTREACHED_IN_MIGRATION();
-  return dummy_origin;
+  NOTREACHED();
 }
 
 std::string FakeDownloadItem::GetSuggestedFilename() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string FakeDownloadItem::GetContentDisposition() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string FakeDownloadItem::GetOriginalMimeType() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string FakeDownloadItem::GetRemoteAddress() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::HasUserGesture() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ui::PageTransition FakeDownloadItem::GetTransitionType() const {
-  NOTREACHED_IN_MIGRATION();
-  return ui::PageTransition();
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::IsSavePackageDownload() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 download::DownloadSource FakeDownloadItem::GetDownloadSource() const {
@@ -428,24 +410,20 @@ const base::FilePath& FakeDownloadItem::GetFullPath() const {
 }
 
 const base::FilePath& FakeDownloadItem::GetForcedFilePath() const {
-  NOTREACHED_IN_MIGRATION();
-  return dummy_file_path;
+  NOTREACHED();
 }
 
 base::FilePath FakeDownloadItem::GetTemporaryFilePath() const {
-  NOTREACHED_IN_MIGRATION();
-  return dummy_file_path;
+  NOTREACHED();
 }
 
 base::FilePath FakeDownloadItem::GetFileNameToReportUser() const {
-  NOTREACHED_IN_MIGRATION();
-  return base::FilePath();
+  NOTREACHED();
 }
 
 download::DownloadItem::TargetDisposition
 FakeDownloadItem::GetTargetDisposition() const {
-  NOTREACHED_IN_MIGRATION();
-  return TargetDisposition();
+  NOTREACHED();
 }
 
 const std::string& FakeDownloadItem::GetHash() const {
@@ -453,7 +431,7 @@ const std::string& FakeDownloadItem::GetHash() const {
 }
 
 void FakeDownloadItem::DeleteFile(base::OnceCallback<void(bool)> callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 download::DownloadFile* FakeDownloadItem::GetDownloadFile() {
@@ -492,18 +470,15 @@ FakeDownloadItem::GetInsecureDownloadStatus() const {
 }
 
 bool FakeDownloadItem::TimeRemaining(base::TimeDelta* remaining) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int64_t FakeDownloadItem::CurrentSpeed() const {
-  NOTREACHED_IN_MIGRATION();
-  return 1;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::AllDataSaved() const {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 int64_t FakeDownloadItem::GetTotalBytes() const {
@@ -512,9 +487,7 @@ int64_t FakeDownloadItem::GetTotalBytes() const {
 
 const std::vector<download::DownloadItem::ReceivedSlice>&
 FakeDownloadItem::GetReceivedSlices() const {
-  NOTREACHED_IN_MIGRATION();
-  static const std::vector<download::DownloadItem::ReceivedSlice> slices;
-  return slices;
+  NOTREACHED();
 }
 
 int64_t FakeDownloadItem::GetUploadedBytes() const {
@@ -522,57 +495,50 @@ int64_t FakeDownloadItem::GetUploadedBytes() const {
 }
 
 bool FakeDownloadItem::CanShowInFolder() {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::CanOpenDownload() {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::ShouldOpenFileBasedOnExtension() {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::ShouldOpenFileByPolicyBasedOnExtension() {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::GetAutoOpened() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool FakeDownloadItem::GetOpened() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FakeDownloadItem::OnContentCheckCompleted(
     download::DownloadDangerType danger_type,
     download::DownloadInterruptReason reason) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::SetOpened(bool opened) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::SetDisplayName(const base::FilePath& name) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string FakeDownloadItem::DebugString(bool verbose) const {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void FakeDownloadItem::SimulateErrorForTesting(
     download::DownloadInterruptReason reason) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

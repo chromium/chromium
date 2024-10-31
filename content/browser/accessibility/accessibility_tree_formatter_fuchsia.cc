@@ -90,8 +90,7 @@ std::string FuchsiaRoleToString(const FuchsiaRole role) {
     case FuchsiaRole::kUnknown:
       return "UNKNOWN";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -112,8 +111,7 @@ std::string FuchsiaActionToString(FuchsiaAction action) {
     case FuchsiaAction::kShowOnScreen:
       return "SHOW_ON_SCREEN";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -141,8 +139,7 @@ std::string CheckedStateToString(const FuchsiaCheckedState checked_state) {
     case FuchsiaCheckedState::kMixed:
       return "MIXED";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -155,8 +152,7 @@ std::string ToggledStateToString(const FuchsiaToggledState toggled_state) {
     case FuchsiaToggledState::kIndeterminate:
       return "INDETERMINATE";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

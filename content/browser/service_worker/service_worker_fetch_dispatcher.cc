@@ -435,9 +435,11 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       FetchEventResult fetch_result,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
-    if (!version->FinishRequest(fetch_event_id.value(),
-                                fetch_result == FetchEventResult::kGotResponse))
-      NOTREACHED_IN_MIGRATION() << "Should only receive one reply per event";
+    if (!version->FinishRequest(
+            fetch_event_id.value(),
+            fetch_result == FetchEventResult::kGotResponse)) {
+      NOTREACHED() << "Should only receive one reply per event";
+    }
     // |fetch_dispatcher| is null if the URLRequest was killed.
     if (!fetch_dispatcher)
       return;
@@ -745,9 +747,8 @@ const char* ServiceWorkerFetchDispatcher::FetchEventResultToSuffix(
     case ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse:
       return "_GOT_RESPONSE";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Got unexpected fetch event result:" << static_cast<int>(result);
-  return "error";
+  NOTREACHED() << "Got unexpected fetch event result:"
+               << static_cast<int>(result);
 }
 
 bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(

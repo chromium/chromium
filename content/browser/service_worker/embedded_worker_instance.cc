@@ -93,7 +93,7 @@ bool HasSentStartWorker(EmbeddedWorkerInstance::StartingPhase phase) {
     case EmbeddedWorkerInstance::SCRIPT_EVALUATION:
       return true;
     case EmbeddedWorkerInstance::STARTING_PHASE_MAX_VALUE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return false;
 }
@@ -1064,8 +1064,7 @@ std::string EmbeddedWorkerInstance::StatusToString(
     case blink::EmbeddedWorkerStatus::kStopping:
       return "STOPPING";
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(status);
-  return std::string();
+  NOTREACHED() << static_cast<int>(status);
 }
 
 // static
@@ -1086,10 +1085,9 @@ std::string EmbeddedWorkerInstance::StartingPhaseToString(StartingPhase phase) {
     case SCRIPT_EVALUATION:
       return "Script evaluation";
     case STARTING_PHASE_MAX_VALUE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << phase;
-  return std::string();
+  NOTREACHED() << phase;
 }
 
 void EmbeddedWorkerInstance::NotifyForegroundServiceWorkerAdded() {

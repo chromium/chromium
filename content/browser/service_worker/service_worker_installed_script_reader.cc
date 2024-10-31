@@ -58,8 +58,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
       case MOJO_RESULT_INVALID_ARGUMENT:
       case MOJO_RESULT_OUT_OF_RANGE:
       case MOJO_RESULT_BUSY:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case MOJO_RESULT_FAILED_PRECONDITION:
         OnCompleted(false);
         return;

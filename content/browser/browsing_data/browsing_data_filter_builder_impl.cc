@@ -120,10 +120,7 @@ bool MatchesPluginSiteForRegisterableDomainsAndIPs(
 
 template <typename T>
 base::RepeatingCallback<bool(const T&)> NotReachedFilter() {
-  return base::BindRepeating([](const T&) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  });
+  return base::BindRepeating([](const T&) -> bool { NOTREACHED(); });
 }
 
 bool StorageKeyInCookiePartitionKeyCollection(

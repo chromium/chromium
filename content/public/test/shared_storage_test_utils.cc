@@ -45,9 +45,8 @@ std::string SharedStorageOperationTypeToString(OperationType operation_type) {
     case OperationType::kClear:
       return "Clear";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "None";
 }
 
 std::string SharedStorageOperationResultToString(OperationResult result) {
@@ -73,9 +72,8 @@ std::string SharedStorageOperationResultToString(OperationResult result) {
     case OperationResult::kExpired:
       return "Expired";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "None";
 }
 
 std::string OptionalStringToString(const std::optional<std::string>& str) {

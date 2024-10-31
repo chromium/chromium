@@ -116,8 +116,7 @@ void ServiceWorkerRegistration::SetStatus(Status status) {
       // - To kUninstalled: finished uninstalling.
       break;
     case Status::kUninstalled:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 #endif  // DCHECK_IS_ON()
 
@@ -392,9 +391,8 @@ void ServiceWorkerRegistration::AbortPendingClear(StatusCallback callback) {
     case Status::kUninstalling:
       break;
     case Status::kUninstalled:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "attempt to resurrect a completely uninstalled registration";
-      break;
   }
 
   context_->registry()->NotifyDoneUninstallingRegistration(this,

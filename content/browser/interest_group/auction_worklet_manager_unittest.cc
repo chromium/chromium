@@ -224,7 +224,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       mojo::PendingAssociatedReceiver<
           auction_worklet::mojom::GenerateBidFinalizer> bid_finalizer)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SendPendingSignalsRequests() override {
@@ -269,7 +269,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       std::optional<uint32_t> bidding_signals_data_version,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ConnectDevToolsAgent(
@@ -408,7 +408,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const url::Origin& bidder_joining_origin,
       mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
           score_ad_client) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SendPendingSignalsRequests() override {
@@ -447,7 +447,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       std::optional<uint32_t> browser_signal_data_version,
       uint64_t trace_id,
       ReportResultCallback report_result_callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ConnectDevToolsAgent(

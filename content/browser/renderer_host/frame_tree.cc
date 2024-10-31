@@ -483,8 +483,7 @@ FrameTreeNode* FrameTree::AddFrame(
 void FrameTree::RemoveFrame(FrameTreeNode* child) {
   RenderFrameHostImpl* parent = child->parent();
   if (!parent) {
-    NOTREACHED_IN_MIGRATION() << "Unexpected RemoveFrame call for main frame.";
-    return;
+    NOTREACHED() << "Unexpected RemoveFrame call for main frame.";
   }
 
   parent->RemoveChild(child);

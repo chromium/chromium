@@ -868,8 +868,7 @@ bool ConsumeEncodedIDBKey(std::string_view* slice) {
       slice->remove_prefix(sizeof(double));
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ExtractEncodedIDBKey(std::string_view* slice, std::string* result) {
@@ -1044,8 +1043,7 @@ int CompareEncodedIDBKeys(std::string_view* slice_a,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 namespace {
@@ -1078,8 +1076,7 @@ int CompareSuffix(std::string_view* a,
                   std::string_view* b,
                   bool only_compare_index_keys,
                   bool* ok) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 template <>
@@ -1291,9 +1288,7 @@ int Compare(std::string_view a,
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  *ok = false;
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -1749,8 +1744,7 @@ KeyPrefix::Type KeyPrefix::type() const {
   if (index_id_ >= kMinimumIndexId)
     return INDEX_DATA;
 
-  NOTREACHED_IN_MIGRATION();
-  return INVALID_TYPE;
+  NOTREACHED();
 }
 
 std::string SchemaVersionKey::Encode() {

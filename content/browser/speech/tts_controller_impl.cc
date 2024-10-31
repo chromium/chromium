@@ -391,8 +391,7 @@ void TtsControllerImpl::OnTtsEvent(int utterance_id,
       metric = UMATextToSpeechEvent::RESUME;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   UMA_HISTOGRAM_ENUMERATION("TextToSpeech.Event", metric,
                             UMATextToSpeechEvent::COUNT);
@@ -410,7 +409,7 @@ void TtsControllerImpl::OnTtsUtteranceBecameInvalid(int utterance_id) {
   // browser becomes invalid, we need to stop
   RemoveUtteranceAndStopIfNeeded(utterance_id);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

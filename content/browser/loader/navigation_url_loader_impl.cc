@@ -462,10 +462,9 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->observe_browsing_topics));
   CHECK(mojo::Equals(adjusted_lhs->allow_cross_origin_event_reporting,
                      rhs->allow_cross_origin_event_reporting));
-  NOTREACHED_IN_MIGRATION()
-      << "The parsed headers don't match, but we don't know which "
-         "field does not match. Please add a DCHECK before this one "
-         "checking for the missing field.";
+  NOTREACHED() << "The parsed headers don't match, but we don't know which "
+                  "field does not match. Please add a DCHECK before this one "
+                  "checking for the missing field.";
 }
 #endif  // NDEBUG
 
@@ -1174,7 +1173,7 @@ void NavigationURLLoaderImpl::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationURLLoaderImpl::OnTransferSizeUpdated(

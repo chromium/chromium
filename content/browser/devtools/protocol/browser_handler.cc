@@ -585,7 +585,7 @@ void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {
       state = Browser::DownloadProgress::StateEnum::Canceled;
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   frontend_->DownloadProgress(item->GetGuid(), item->GetTotalBytes(),
                               item->GetReceivedBytes(), state);

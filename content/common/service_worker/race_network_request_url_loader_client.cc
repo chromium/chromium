@@ -71,7 +71,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnTransferSizeUpdated(
@@ -443,8 +443,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     case MOJO_RESULT_SHOULD_WAIT:
       return;
     default:
-      NOTREACHED_IN_MIGRATION() << "ReadData result:" << read_result;
-      return;
+      NOTREACHED() << "ReadData result:" << read_result;
   }
 }
 

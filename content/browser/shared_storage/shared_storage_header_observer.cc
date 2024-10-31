@@ -287,9 +287,8 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
     case OperationType::kClear:
       return Clear(request_origin, main_frame_id);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool SharedStorageHeaderObserver::Set(

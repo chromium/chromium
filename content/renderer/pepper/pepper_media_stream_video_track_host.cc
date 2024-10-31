@@ -159,7 +159,7 @@ void ConvertFromMediaVideoFrame(const media::VideoFrame& src,
                        src_halfheight, dst, dst_halfwidth, dst_halfwidth,
                        dst_halfheight, kFilterMode);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

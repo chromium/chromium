@@ -303,15 +303,13 @@ base::TimeTicks WebContentsDevToolsAgentHost::GetLastActivityTime() {
 std::optional<network::CrossOriginEmbedderPolicy>
 WebContentsDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<network::CrossOriginOpenerPolicy>
 WebContentsDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 DevToolsAgentHostImpl* WebContentsDevToolsAgentHost::GetPrimaryFrameAgent() {

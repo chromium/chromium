@@ -147,15 +147,13 @@ std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {
 
   switch (ocsp_result.revocation_status) {
     case bssl::OCSPRevocationStatus::GOOD:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case bssl::OCSPRevocationStatus::REVOKED:
       return "OCSP response indicates that the certificate is revoked.";
     case bssl::OCSPRevocationStatus::UNKNOWN:
       return "OCSP responder doesn't know about the certificate.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -317,7 +315,7 @@ void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
         result = ParseHeadersAndFetchCertificate();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     if (result != SignedExchangeLoadResult::kSuccess) {
       RunErrorCallback(result, net::ERR_INVALID_SIGNED_EXCHANGE);

@@ -439,8 +439,7 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityRandomized) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Noise not added to the network quality estimates";
+  NOTREACHED() << "Noise not added to the network quality estimates";
 }
 
 // Make sure the minor changes (<10%) in the network quality are not notified.

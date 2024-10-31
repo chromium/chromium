@@ -550,8 +550,9 @@ void VideoCaptureManager::PauseCaptureForClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(controller);
   DCHECK(client_handler);
-  if (!IsControllerPointerValid(controller))
-    NOTREACHED_IN_MIGRATION() << "Got Null controller while pausing capture";
+  if (!IsControllerPointerValid(controller)) {
+    NOTREACHED() << "Got Null controller while pausing capture";
+  }
 
   const bool had_active_client = controller->HasActiveClient();
   controller->PauseClient(client_id, client_handler);
@@ -572,8 +573,9 @@ void VideoCaptureManager::ResumeCaptureForClient(
   DCHECK(controller);
   DCHECK(client_handler);
 
-  if (!IsControllerPointerValid(controller))
-    NOTREACHED_IN_MIGRATION() << "Got Null controller while resuming capture";
+  if (!IsControllerPointerValid(controller)) {
+    NOTREACHED() << "Got Null controller while resuming capture";
+  }
 
   if (!controller->ResumeClient(client_id, client_handler)) {
     return;

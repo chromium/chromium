@@ -329,8 +329,7 @@ std::string GetDisconnectConsoleErrorMessage(
     FedCmDisconnectStatus disconnect_status_for_metrics) {
   switch (disconnect_status_for_metrics) {
     case FedCmDisconnectStatus::kSuccess: {
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     }
     case FedCmDisconnectStatus::kTooManyRequests: {
       return "There is a pending disconnect() call.";

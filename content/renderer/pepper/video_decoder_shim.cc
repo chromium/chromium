@@ -384,8 +384,7 @@ void VideoDecoderShim::DecoderImpl::OnOutputComplete(
   if (it != timestamp_to_id_cache_.end()) {
     decode_id = it->second;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   auto pending_frame =

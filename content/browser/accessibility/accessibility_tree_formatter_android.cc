@@ -103,8 +103,7 @@ base::Value::Dict AccessibilityTreeFormatterAndroid::BuildTree(
 
 base::Value::Dict AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  NOTREACHED_IN_MIGRATION();
-  return base::Value::Dict();
+  NOTREACHED();
 }
 
 base::Value::Dict AccessibilityTreeFormatterAndroid::BuildNode(

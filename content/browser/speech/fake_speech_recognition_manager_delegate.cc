@@ -100,13 +100,12 @@ void MockOnDeviceWebSpeechRecognitionService::
 void FakeSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
     int session_id,
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 SpeechRecognitionEventListener*
 FakeSpeechRecognitionManagerDelegate::GetEventListener() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void FakeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(

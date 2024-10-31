@@ -49,8 +49,7 @@ std::string WriteBlobToFileResultToString(
     case storage::mojom::WriteBlobToFileResult::kSuccess:
       return "Success";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Disabled in some tests.
@@ -86,9 +85,8 @@ UmaIDBException ExceptionCodeToUmaEnum(blink::mojom::IDBException code) {
     case blink::mojom::IDBException::kTimeoutError:
       return UmaIDBExceptionTimeoutError;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return UmaIDBExceptionUnknownError;
 }
 
 }  // namespace
@@ -555,7 +553,7 @@ Status Transaction::BlobWriteComplete(
       return CommitPhaseTwo();
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 Status Transaction::DoPendingCommit() {
@@ -667,7 +665,7 @@ Status Transaction::CommitPhaseTwo() {
             active_time2);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     committed = s.ok();

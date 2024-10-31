@@ -173,8 +173,7 @@ gfx::Rect BoundsForCharacter(const blink::WebAXObject& object,
                          inline_text_box_rect.width(), character_offsets[0]);
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        return gfx::Rect();
+        NOTREACHED();
     }
   }
 

@@ -2352,8 +2352,7 @@ class ServiceWorkerSha256ScriptChecksumBrowserTest
           return "03DCAF85CA3E2B73158B9C43FAC7086BAA6AE9B83B503E389F4323660F58D"
                  "D09";
         }
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
       case ServiceWorkerScriptImportType::kStaticImport:
         if (before_script_update) {
           return "0ACE52F5894454C80C36A4C6D49F0B33DC177A69AE79F785C008FE63BDECB"
@@ -2369,8 +2368,7 @@ class ServiceWorkerSha256ScriptChecksumBrowserTest
           return "3E6C3E5F3C40F87B69D1913FD7201760BD3C8824026837D4BFB4828811F60"
                  "3D7";
         }
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
     }
   }
 
@@ -2796,15 +2794,15 @@ class CacheStorageControlForBadOrigin
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
     // The CodeCacheHostImpl should not try to add a receiver if the StorageKey
     // is bad.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 

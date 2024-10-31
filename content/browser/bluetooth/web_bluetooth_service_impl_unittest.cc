@@ -187,7 +187,7 @@ class FakeWebBluetoothCharacteristicClient : WebBluetoothCharacteristicClient {
   // WebBluetoothCharacteristicClient implementation:
   void RemoteCharacteristicValueChanged(
       base::span<const uint8_t> value) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

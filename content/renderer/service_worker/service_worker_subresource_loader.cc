@@ -1046,8 +1046,7 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
       case FetchResponseFrom::kNoResponseYet:
       case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       case FetchResponseFrom::kAutoPreloadHandlingFallback:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FetchResponseFrom::kServiceWorker:
         RecordTimingMetricsForFetchHandlerHandledCase();
         break;

@@ -156,8 +156,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
   switch (gpu_mode) {
     // TODO(rivr): Add separate histograms for the different hardware modes.
     case gpu::GpuMode::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case gpu::GpuMode::HARDWARE_GL:
     case gpu::GpuMode::HARDWARE_GRAPHITE:
     case gpu::GpuMode::HARDWARE_VULKAN:
@@ -231,12 +230,10 @@ GpuTerminationStatus ConvertToGpuTerminationStatus(
     case base::TERMINATION_STATUS_OOM:
       return GpuTerminationStatus::OOM;
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
-      return GpuTerminationStatus::MAX_ENUM;
+      NOTREACHED();
       // Do not add default.
   }
-  NOTREACHED_IN_MIGRATION();
-  return GpuTerminationStatus::ABNORMAL_TERMINATION;
+  NOTREACHED();
 }
 
 // Command-line switches to propagate to the GPU process.
@@ -873,8 +870,7 @@ GpuProcessHost::~GpuProcessHost() {
         break;
 #endif
       case base::TERMINATION_STATUS_MAX_ENUM:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kForceBrowserCrashOnGpuCrash)) {

@@ -35,10 +35,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kLinux:
       return std::make_unique<ui::AXTreeFormatterAuraLinux>();
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
-  return nullptr;
 }
 
 // static
@@ -57,10 +55,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<ui::AXEventRecorderAuraLinux>(
           manager->GetWeakPtr(), pid, selector);
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
-  return nullptr;
 }
 
 // static

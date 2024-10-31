@@ -125,8 +125,7 @@ void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
                                 : TAB_VIDEO_CAPTURER_CREATED_WITHOUT_AUDIO);
       break;
     case DesktopMediaID::TYPE_NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -362,13 +361,17 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
     default:
-      NOTREACHED_IN_MIGRATION() << "unsupported stream type=" << stream_type;
-      start_capture_closure =
-          base::BindOnce(std::move(after_start_capture_callback), nullptr);
+      NOTREACHED() << "unsupported stream type=" << stream_type;
   }
 
+// TODO(pbos): Should this entire method be gone when
+// !BUILDFLAG(ENABLE_SCREEN_CAPTURE)? Right now we're getting dead-code warnings
+// if we include below code outside ENABLE_SCREEN_CAPTURE builds as all cases
+// above are NOTREACHED() then.
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
   state_ = State::DEVICE_START_IN_PROGRESS;
   device_task_runner_->PostTask(FROM_HERE, std::move(start_capture_closure));
+#endif
 }
 
 void InProcessVideoCaptureDeviceLauncher::AbortLaunch() {

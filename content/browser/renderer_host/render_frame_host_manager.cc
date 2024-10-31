@@ -1949,12 +1949,11 @@ RenderFrameHostManager::GetFrameHostForNavigation(
                             frame_tree_node_->IsMainFrame());
       SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "use_current_rfh",
                             use_current_rfh);
-      NOTREACHED_IN_MIGRATION()
-          << "Picked an incompatible process for origin: "
-          << process_lock.ToString() << " lock vs "
-          << origin_to_commit.GetDebugString()
-          << ", request_is_sandboxed = " << request->GetUrlInfo().is_sandboxed;
-      base::debug::DumpWithoutCrashing();
+      NOTREACHED() << "Picked an incompatible process for origin: "
+                   << process_lock.ToString() << " lock vs "
+                   << origin_to_commit.GetDebugString()
+                   << ", request_is_sandboxed = "
+                   << request->GetUrlInfo().is_sandboxed;
     }
   }
 
@@ -3044,8 +3043,7 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
   }
 
   if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   EnsureRenderFrameHostPageFocusConsistent();
@@ -5533,10 +5531,7 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   if (current_frame_host()->HasPendingCommitNavigation() ||
       frame_tree_node_->navigation_request() ||
       speculative_render_frame_host_) {
-    NOTREACHED_IN_MIGRATION();
-    base::debug::DumpWithoutCrashing();
-    NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
-    return;
+    NOTREACHED();
   }
   // Reset the loading state. Even though there should be no navigations in the
   // injected frame, it might not have received a DidStopLoading call.

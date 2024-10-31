@@ -741,8 +741,7 @@ void FindRequestManager::SendFindRequest(const FindRequest& request,
 
 void FindRequestManager::NotifyFindReply(int request_id, bool final_update) {
   if (request_id == kInvalidId) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Ensure that replies are not reported with IDs lower than the ID of the

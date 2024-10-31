@@ -73,8 +73,7 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
 
   base::FilePath dir_exe;
   if (!base::PathService::Get(base::DIR_EXE, &dir_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return GURL();
+    NOTREACHED();
   }
 #if BUILDFLAG(IS_MAC)
   // On Mac, the executable is in

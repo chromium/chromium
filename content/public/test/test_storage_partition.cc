@@ -53,7 +53,7 @@ TestStoragePartition::GetCookieManagerForBrowserProcess() {
 void TestStoragePartition::CreateTrustTokenQueryAnswerer(
     mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
     const url::Origin& top_frame_origin) {
-  NOTREACHED_IN_MIGRATION() << "Not implemented.";
+  NOTREACHED() << "Not implemented.";
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>

@@ -143,7 +143,7 @@ void ShellFileSelectHelper::RunFileChooser(
     default:
       // Prevent warning.
       dialog_type_ = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   gfx::NativeWindow owning_window = web_contents_->GetTopLevelNativeWindow();

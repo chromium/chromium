@@ -256,8 +256,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
           options->GetDefaultBackupState(/*defaultValue=*/false);
       break;
     case device::ProtocolVersion::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   VirtualAuthenticator* const authenticator =

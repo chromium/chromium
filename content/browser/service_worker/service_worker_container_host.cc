@@ -40,8 +40,7 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
     case blink::mojom::ControllerServiceWorkerPurpose::FETCH_SUB_RESOURCE:
       return ServiceWorkerMetrics::EventType::FETCH_SUB_RESOURCE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ServiceWorkerMetrics::EventType::UNKNOWN;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -1341,7 +1340,7 @@ void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
 
     // Web workers don't yet have access to ServiceWorker objects, so they
     // can't postMessage to one (https://crbug.com/371690).
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

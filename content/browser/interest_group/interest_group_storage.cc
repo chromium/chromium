@@ -3064,9 +3064,9 @@ bool UpgradeDB(sql::Database& db,
     return true;
   }
 
-  NOTREACHED_IN_MIGRATION();  // Only versions 6 up to the current version
-                              // should have passed RazeIfIncompatible.
-  return false;
+  // Only versions 6 up to the current version should have passed
+  // RazeIfIncompatible.
+  NOTREACHED();
 }
 
 bool RemoveJoinHistory(sql::Database& db,
@@ -5749,9 +5749,7 @@ void InterestGroupStorage::ReportUpdateFailed(
     bool parse_failure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    NOTREACHED_IN_MIGRATION();  // We already fetched interest groups to
-                                // update...
-    return;
+    NOTREACHED();  // We already fetched interest groups to update...
   }
 
   if (!DoReportUpdateFailed(*db_, group_key, parse_failure,

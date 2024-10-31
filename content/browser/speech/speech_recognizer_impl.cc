@@ -746,9 +746,8 @@ SpeechRecognizerImpl::DoNothing(const FSMEventArgs&) const {
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::NotFeasible(const FSMEventArgs& event_args) {
-  NOTREACHED_IN_MIGRATION()
-      << "Unfeasible event " << event_args.event << " in state " << state_;
-  return state_;
+  NOTREACHED() << "Unfeasible event " << event_args.event << " in state "
+               << state_;
 }
 
 void SpeechRecognizerImpl::CloseAudioCapturerSource() {

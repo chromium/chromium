@@ -29,8 +29,7 @@ const char* StartSituationToSuffix(
   // logs.
   switch (situation) {
     case ServiceWorkerMetrics::StartSituation::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return ".Unknown";
+      NOTREACHED();
     case ServiceWorkerMetrics::StartSituation::DURING_STARTUP:
       return ".DuringStartup";
     case ServiceWorkerMetrics::StartSituation::NEW_PROCESS:
@@ -40,8 +39,7 @@ const char* StartSituationToSuffix(
     case ServiceWorkerMetrics::StartSituation::EXISTING_READY_PROCESS:
       return ".ExistingReadyProcess";
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(situation);
-  return ".Unknown";
+  NOTREACHED() << static_cast<int>(situation);
 }
 
 // TODO(falken): Remove this when the associated UMA are removed.
@@ -51,8 +49,7 @@ const char* StartSituationToDeprecatedSuffix(
   // logs.
   switch (situation) {
     case ServiceWorkerMetrics::StartSituation::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return "_Unknown";
+      NOTREACHED();
     case ServiceWorkerMetrics::StartSituation::DURING_STARTUP:
       return "_DuringStartup";
     case ServiceWorkerMetrics::StartSituation::NEW_PROCESS:
@@ -62,8 +59,7 @@ const char* StartSituationToDeprecatedSuffix(
     case ServiceWorkerMetrics::StartSituation::EXISTING_READY_PROCESS:
       return "_ExistingReadyProcess";
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(situation);
-  return "_Unknown";
+  NOTREACHED() << static_cast<int>(situation);
 }
 
 const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
@@ -209,9 +205,7 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
     case ServiceWorkerMetrics::EventType::STATIC_ROUTER:
       return "Static Routing";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Got unexpected event type: " << static_cast<int>(event_type);
-  return "error";
+  NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
 }
 
 const char* ServiceWorkerMetrics::StartSituationToString(
@@ -228,9 +222,8 @@ const char* ServiceWorkerMetrics::StartSituationToString(
     case StartSituation::EXISTING_READY_PROCESS:
       return "Existing ready process";
   }
-  NOTREACHED_IN_MIGRATION() << "Got unexpected start situation: "
-                            << static_cast<int>(start_situation);
-  return "error";
+  NOTREACHED() << "Got unexpected start situation: "
+               << static_cast<int>(start_situation);
 }
 
 void ServiceWorkerMetrics::CountReadResponseResult(
@@ -402,8 +395,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     case EventType::STATIC_ROUTER:
     // Static Routing should not be sent as an event.
     case EventType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION() << "Invalid event type";
-      break;
+      NOTREACHED() << "Invalid event type";
   }
 }
 

@@ -232,12 +232,9 @@ void PushMessagingRouter::DeliverMessageEnd(
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
     case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
-      NOTREACHED_IN_MIGRATION()
-          << "Got unexpected error code: "
-          << static_cast<uint32_t>(service_worker_status) << " "
-          << blink::ServiceWorkerStatusToString(service_worker_status);
-      push_event_status = blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR;
-      break;
+      NOTREACHED() << "Got unexpected error code: "
+                   << static_cast<uint32_t>(service_worker_status) << " "
+                   << blink::ServiceWorkerStatusToString(service_worker_status);
   }
   RunPushEventCallback(std::move(deliver_message_callback), push_event_status);
 

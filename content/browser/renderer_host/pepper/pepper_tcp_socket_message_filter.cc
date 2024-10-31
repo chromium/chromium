@@ -101,7 +101,7 @@ PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
   host_->AddInstanceObserver(instance_, this);
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -302,8 +302,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgBind(
 
   // This is only supported by PPB_TCPSocket v1.1 or above.
   if (version_ != ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_NOACCESS;
+    NOTREACHED();
   }
 
   if (!pepper_socket_utils::CanUseSocketAPIs(
@@ -362,8 +361,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
 
   // This is only supported by PPB_TCPSocket_Private.
   if (!IsPrivateAPI()) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_NOACCESS;
+    NOTREACHED();
   }
 
   SocketPermissionRequest request(SocketPermissionRequest::TCP_CONNECT, host,
@@ -375,10 +373,8 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
   }
 
   if (!state_.IsValidTransition(TCPSocketState::CONNECT)) {
-    NOTREACHED_IN_MIGRATION()
-        << "This shouldn't be reached since the renderer only tries "
-        << "to connect once.";
-    return PP_ERROR_FAILED;
+    NOTREACHED() << "This shouldn't be reached since the renderer only tries "
+                    "to connect once.";
   }
 
   network::mojom::NetworkContext* network_context = GetNetworkContext();
@@ -566,8 +562,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgListen(
 
   // This is only supported by PPB_TCPSocket v1.1 or above.
   if (version_ != ppapi::TCP_SOCKET_VERSION_1_1_OR_ABOVE) {
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_NOACCESS;
+    NOTREACHED();
   }
 
   SocketPermissionRequest request =
@@ -719,8 +714,7 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
       return PP_OK;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return PP_ERROR_BADARGUMENT;
+      NOTREACHED();
     }
   }
 }

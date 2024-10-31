@@ -904,8 +904,9 @@ std::unique_ptr<net::test_server::HttpResponse> ServePath(
   http_response->set_code(net::HTTP_OK);
 
   std::string file_contents;
-  if (!base::ReadFileToString(resource_path, &file_contents))
-    NOTREACHED_IN_MIGRATION() << "could not read file " << resource_path;
+  if (!base::ReadFileToString(resource_path, &file_contents)) {
+    NOTREACHED() << "could not read file " << resource_path;
+  }
   http_response->set_content(file_contents);
   return std::move(http_response);
 }
@@ -1019,50 +1020,51 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
 
       std::string value = base::UnescapeBinaryURLComponent(escaped_value);
 
-      if (key == "method")
+      if (key == "method") {
         fail_method = value;
-      else if (key == "class")
+      } else if (key == "class") {
         fail_class = value;
-      else if (key == "instNum")
+      } else if (key == "instNum") {
         instance_num = atoi(value.c_str());
-      else if (key == "callNum")
+      } else if (key == "callNum") {
         call_num = atoi(value.c_str());
-      else
-        NOTREACHED_IN_MIGRATION() << "Unknown param: \"" << key << "\"";
+      } else {
+        NOTREACHED() << "Unknown param: \"" << key << "\"";
+      }
     }
 
     if (fail_class == "LevelDBTransaction") {
       failure_class = FailClass::LEVELDB_TRANSACTION;
-      if (fail_method == "Get")
+      if (fail_method == "Get") {
         failure_method = FailMethod::GET;
-      else if (fail_method == "Commit")
+      } else if (fail_method == "Commit") {
         failure_method = FailMethod::COMMIT;
-      else
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown method: \"" << fail_method << "\"";
+      } else {
+        NOTREACHED() << "Unknown method: \"" << fail_method << "\"";
+      }
     } else if (fail_class == "LevelDBIterator") {
       failure_class = FailClass::LEVELDB_ITERATOR;
-      if (fail_method == "Seek")
+      if (fail_method == "Seek") {
         failure_method = FailMethod::SEEK;
-      else
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown method: \"" << fail_method << "\"";
+      } else {
+        NOTREACHED() << "Unknown method: \"" << fail_method << "\"";
+      }
     } else if (fail_class == "LevelDBDatabase") {
       failure_class = FailClass::LEVELDB_DATABASE;
-      if (fail_method == "Write")
+      if (fail_method == "Write") {
         failure_method = FailMethod::WRITE;
-      else
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown method: \"" << fail_method << "\"";
+      } else {
+        NOTREACHED() << "Unknown method: \"" << fail_method << "\"";
+      }
     } else if (fail_class == "LevelDBDirectTransaction") {
       failure_class = FailClass::LEVELDB_DIRECT_TRANSACTION;
-      if (fail_method == "Get")
+      if (fail_method == "Get") {
         failure_method = FailMethod::GET;
-      else
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown method: \"" << fail_method << "\"";
+      } else {
+        NOTREACHED() << "Unknown method: \"" << fail_method << "\"";
+      }
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unknown class: \"" << fail_class << "\"";
+      NOTREACHED() << "Unknown class: \"" << fail_class << "\"";
     }
 
     DCHECK_GE(instance_num, 1);

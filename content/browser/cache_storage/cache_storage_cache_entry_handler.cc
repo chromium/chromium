@@ -212,7 +212,7 @@ int CacheStorageCacheEntryHandler::DiskCacheBlobEntry::GetSize(
     case CacheStorageCache::INDEX_SIDE_DATA:
       return disk_cache_entry_->GetDataSize(CacheStorageCache::INDEX_SIDE_DATA);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CacheStorageCacheEntryHandler::DiskCacheBlobEntry::Invalidate() {
@@ -365,7 +365,7 @@ CacheStorageCacheEntryHandler::CreateCacheEntryHandler(
       return std::make_unique<BackgroundFetchCacheEntryHandlerImpl>(
           std::move(blob_storage_context));
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 blink::mojom::SerializedBlobPtr CacheStorageCacheEntryHandler::CreateBlob(

@@ -430,8 +430,7 @@ void Affordance::AnimationEnded(const gfx::Animation* animation) {
 void Affordance::AnimationProgressed(const gfx::Animation* animation) {
   switch (state_) {
     case State::DRAGGING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case State::ABORTING:
       SetAbortProgress(animation->GetCurrentValue());
       break;
@@ -442,7 +441,7 @@ void Affordance::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void Affordance::AnimationCanceled(const gfx::Animation* animation) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GestureNavSimple::GestureNavSimple(WebContentsImpl* web_contents)

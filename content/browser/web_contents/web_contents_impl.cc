@@ -272,11 +272,6 @@ enum class CrashRepHandlingOutcome {
 // The window which we dobounce load info updates in.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
-// Kill switch for crash immediately on dangling BrowserContext.
-BASE_FEATURE(kCrashOnDanglingBrowserContext,
-             "CrashOnDanglingBrowserContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for inner WebContents visibility updates.
 BASE_FEATURE(kUpdateInnerWebContentsVisibility,
              "UpdateInnerWebContentsVisibility",
@@ -1054,8 +1049,7 @@ WebContentsImpl::WebContentsTreeNode::DetachInnerWebContents(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 FrameTreeNode*
@@ -1156,58 +1150,45 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
       return;  // Everything is okay - nothing to warn about.
     }
 
-#if BUILDFLAG(IS_ANDROID)
-    JNIEnv* env = base::android::AttachCurrentThread();
-#endif  // BUILDFLAG(IS_ANDROID)
-
     // Any remaining WebContents contain dangling pointers to the
     // BrowserContext being destroyed.  Such WebContents (and their
     // RenderFrameHosts, SiteInstances, etc.) risk causing
     // use-after-free bugs.  For more discussion about managing the
     // lifetime of WebContents please see https://crbug.com/1376879#c44.
-    for (WebContentsImpl* web_contents_with_dangling_ptr_to_browser_context :
-         web_contents_set_) {
-      std::string creator = web_contents_with_dangling_ptr_to_browser_context
-                                ->GetCreatorLocation()
-                                .ToString();
-      SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/creator", creator);
+    WebContentsImpl* const web_contents_with_dangling_ptr_to_browser_context =
+        *web_contents_set_.begin();
+    const std::string creator =
+        web_contents_with_dangling_ptr_to_browser_context->GetCreatorLocation()
+            .ToString();
+    SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/creator", creator);
 
-      const std::optional<base::Location>& ownership_location =
-          web_contents_with_dangling_ptr_to_browser_context
-              ->ownership_location();
-      std::string owner;
-      if (ownership_location) {
-        if (ownership_location->has_source_info()) {
-          owner = std::string(ownership_location->function_name()) + "@" +
-                  ownership_location->file_name();
-        } else {
-          owner = "no_source_info";
-        }
+    const std::optional<base::Location>& ownership_location =
+        web_contents_with_dangling_ptr_to_browser_context->ownership_location();
+    std::string owner;
+    if (ownership_location) {
+      if (ownership_location->has_source_info()) {
+        owner = std::string(ownership_location->function_name()) + "@" +
+                ownership_location->file_name();
       } else {
-        owner = "unknown";
+        owner = "no_source_info";
       }
-      SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/owner", owner);
+    } else {
+      owner = "unknown";
+    }
+    SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/owner", owner);
 
 #if BUILDFLAG(IS_ANDROID)
-      // On Android, also report the Java stack trace from WebContents's
-      // creation.
-      WebContentsAndroid::ReportDanglingPtrToBrowserContext(
-          env, web_contents_with_dangling_ptr_to_browser_context);
+    // On Android, also report the Java stack trace from WebContents's
+    // creation.
+    WebContentsAndroid::ReportDanglingPtrToBrowserContext(
+        base::android::AttachCurrentThread(),
+        web_contents_with_dangling_ptr_to_browser_context);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-      if (base::FeatureList::IsEnabled(kCrashOnDanglingBrowserContext)) {
-        LOG(FATAL)
-            << "BrowserContext is getting destroyed without first closing all "
-            << "WebContents (for more info see https://crbug.com/1376879#c44); "
-            << "creator = " << creator;
-      } else {
-        NOTREACHED_IN_MIGRATION()
-            << "BrowserContext is getting destroyed without first closing all "
-            << "WebContents (for more info see https://crbug.com/1376879#c44); "
-            << "creator = " << creator;
-        base::debug::DumpWithoutCrashing();
-      }
-    }
+    NOTREACHED()
+        << "BrowserContext is getting destroyed without first closing all "
+        << "WebContents (for more info see https://crbug.com/1376879#c44); "
+        << "creator = " << creator;
   }
 
   std::unique_ptr<Data> Clone() override {
@@ -2711,12 +2692,10 @@ bool WebContentsImpl::IsCrashed() {
     case base::TERMINATION_STATUS_STILL_RUNNING:
       return false;
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void WebContentsImpl::SetPrimaryMainFrameProcessStatus(
@@ -3390,7 +3369,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
     prefs.autoplay_policy =
         blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   prefs.dont_send_key_events_to_javascript =
@@ -3839,7 +3818,7 @@ void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {
     pending_contents_.erase(iter);
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsImpl::OnRenderWidgetHostDestroyed(
@@ -4668,8 +4647,7 @@ bool WebContentsImpl::RequestKeyboardLock(
                         "esc_key_locked", esc_key_locked);
   DCHECK(render_widget_host);
   if (WebContentsImpl::FromRenderWidgetHostImpl(render_widget_host) != this) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // KeyboardLock is only supported when called by the top-level browsing
@@ -6565,8 +6543,7 @@ void WebContentsImpl::Find(int request_id,
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Find");
   // Cowardly refuse to search for no text.
   if (search_text.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   GetOrCreateFindRequestManager()->Find(request_id, search_text,
@@ -9924,8 +9901,7 @@ gfx::Size WebContentsImpl::GetSize() {
   return view_android->bounds().size();
 #elif BUILDFLAG(IS_IOS)
   // TODO(crbug.com/40254930): Implement me.
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Size();
+  NOTREACHED();
 #endif
 }
 

@@ -298,8 +298,7 @@
   }
 
   // Oops! Unknown drag pasteboard type.
-  NOTREACHED_IN_MIGRATION();
-  return [NSData data];
+  NOTREACHED();
 }
 
 @end  // @implementation WebDragSource

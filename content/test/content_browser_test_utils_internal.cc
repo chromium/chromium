@@ -850,7 +850,7 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
@@ -866,8 +866,7 @@ bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
     const std::u16string* prompt_override) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(WebContents* contents)
@@ -1171,6 +1170,10 @@ void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
 }
 
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS) && \
+    !defined(USE_AURA)
+  NOTREACHED();
+#else
   base::RunLoop run_loop;
   auto callback = base::BindOnce(
       [](base::RepeatingClosure cb,
@@ -1199,10 +1202,9 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
                          ->GetCompositor();
   compositor->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(callback));
-#else
-  NOTREACHED_IN_MIGRATION();
 #endif
   run_loop.Run();
+#endif
 }
 
 void ForceNewCompositorFrameFromBrowser(WebContents* web_contents) {

@@ -2300,8 +2300,7 @@ class FencedFrameNestedModesTest
         return "opaque-ads";
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   base::test::ScopedFeatureList feature_list_;

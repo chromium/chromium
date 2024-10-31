@@ -320,7 +320,7 @@ void SignedExchangeCertFetcher::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // Cert fetching doesn't have request body.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeCertFetcher::OnTransferSizeUpdated(

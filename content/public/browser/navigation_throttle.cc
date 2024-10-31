@@ -26,8 +26,7 @@ net::Error DefaultNetErrorCode(NavigationThrottle::ThrottleAction action) {
     case NavigationThrottle::BLOCK_RESPONSE:
       return net::ERR_BLOCKED_BY_RESPONSE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return net::ERR_UNEXPECTED;
+      NOTREACHED();
   }
 }
 

@@ -165,8 +165,7 @@ bool ShouldOverrideUserAgent(
     case NavigationController::UA_OVERRIDE_FALSE:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Returns true if this navigation should be treated as a reload. For e.g.
@@ -478,7 +477,7 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
                 frame_entry->redirect_chain()[i]);
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 #endif  // DCHECK_IS_ON()
@@ -1365,8 +1364,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
       break;
     case LOAD_TYPE_DATA:
       if (!params.url.SchemeIs(url::kDataScheme)) {
-        NOTREACHED_IN_MIGRATION() << "Data load must use data scheme.";
-        return nullptr;
+        NOTREACHED() << "Data load must use data scheme.";
       }
       break;
   }
@@ -1635,8 +1633,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
       }
       break;
     case NAVIGATION_TYPE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // At this point, we know that the navigation has just completed, so

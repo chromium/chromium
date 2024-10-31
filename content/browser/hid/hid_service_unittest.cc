@@ -278,8 +278,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
         }
         break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   void CheckHidServiceConnectedState(HidServiceCreationType type,

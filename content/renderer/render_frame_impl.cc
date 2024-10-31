@@ -697,8 +697,7 @@ WebFrameLoadType NavigationTypeToLoadType(
                  : WebFrameLoadType::kStandard;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WebFrameLoadType::kStandard;
+      NOTREACHED();
   }
 }
 
@@ -1127,8 +1126,7 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
           FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
   }
   // All cases should've been handled by the switch case above.
-  NOTREACHED_IN_MIGRATION();
-  return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+  NOTREACHED();
 }
 
 void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
@@ -1225,8 +1223,7 @@ WindowOpenDisposition NavigationPolicyToDisposition(
     case blink::kWebNavigationPolicyPictureInPicture:
       return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected WebNavigationPolicy";
-  return WindowOpenDisposition::IGNORE_ACTION;
+  NOTREACHED() << "Unexpected WebNavigationPolicy";
 }
 
 bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {

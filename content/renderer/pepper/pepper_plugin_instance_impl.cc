@@ -356,8 +356,7 @@ void PrintPDFOutput(PP_Resource print_output,
 
   BufferAutoMapper mapper(enter.object());
   if (!mapper.data() || !mapper.size()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   metafile->InitFromData(mapper);
@@ -490,7 +489,7 @@ void PepperPluginInstanceImpl::GamepadImpl::Sample(
     PP_Instance instance,
     PP_GamepadsSampleData* data) {
   // This gamepad singleton resource method should not be called
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 PepperPluginInstanceImpl::PepperPluginInstanceImpl(
@@ -1118,8 +1117,7 @@ void PepperPluginInstanceImpl::HandleMessage(ScopedPPVar message) {
   if (!dispatcher || (message.get().type == PP_VARTYPE_OBJECT)) {
     // The dispatcher should always be valid, and MessageChannel should never
     // send an 'object' var over PPP_Messaging.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   dispatcher->Send(new PpapiMsg_PPPMessaging_HandleMessage(
       ppapi::API_ID_PPP_MESSAGING,
@@ -1138,8 +1136,7 @@ bool PepperPluginInstanceImpl::HandleBlockingMessage(ScopedPPVar message,
   if (!dispatcher || (message.get().type == PP_VARTYPE_OBJECT)) {
     // The dispatcher should always be valid, and MessageChannel should never
     // send an 'object' var over PPP_Messaging.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   ppapi::proxy::ReceiveSerializedVarReturnValue msg_reply;
   bool was_handled = false;
@@ -1609,8 +1606,7 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
   if (!GetPreferredPrintOutputFormat(&format, print_params)) {
     // PrintBegin should not have been called since SupportsPrintInterface
     // would have returned false;
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   const blink::WebPrintPageDescription& description =
@@ -1853,8 +1849,7 @@ void PepperPluginInstanceImpl::SimulateInputEvent(
   WebWidget* widget =
       container()->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
   if (!widget) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   bool handled = SimulateIMEEvent(input_event);
@@ -2148,8 +2143,7 @@ ppapi::Resource* PepperPluginInstanceImpl::GetSingletonResource(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 int32_t PepperPluginInstanceImpl::RequestInputEvents(PP_Instance instance,

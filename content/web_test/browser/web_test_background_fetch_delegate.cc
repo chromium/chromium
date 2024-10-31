@@ -151,8 +151,7 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
         // The client cancelled or aborted it so no need to notify it.
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
 
     std::unique_ptr<BackgroundFetchResult> result =

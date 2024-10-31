@@ -101,7 +101,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
         std::move(listener_receiver_remote));
 
     server_socket_.set_disconnect_handler(
-        base::BindLambdaForTesting([]() { NOTREACHED_IN_MIGRATION(); }));
+        base::BindLambdaForTesting([]() { NOTREACHED(); }));
 
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 0);
     auto server_helper =

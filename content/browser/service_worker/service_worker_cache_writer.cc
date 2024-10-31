@@ -157,9 +157,7 @@ int ServiceWorkerCacheWriter::DoLoop(int status) {
         status = DoDone(status);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Unknown state in DoLoop";
-        state_ = STATE_DONE;
-        break;
+        NOTREACHED() << "Unknown state in DoLoop";
     }
   } while (status != net::ERR_IO_PENDING && state_ != STATE_DONE);
   io_pending_ = (status == net::ERR_IO_PENDING);

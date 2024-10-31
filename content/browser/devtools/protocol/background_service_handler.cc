@@ -54,10 +54,8 @@ std::string ServiceEnumToName(devtools::proto::BackgroundService service_enum) {
     case devtools::proto::BackgroundService::PERIODIC_BACKGROUND_SYNC:
       return BackgroundService::ServiceNameEnum::PeriodicBackgroundSync;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return "invalid";
 }
 
 std::unique_ptr<protocol::Array<protocol::BackgroundService::EventMetadata>>

@@ -62,8 +62,7 @@ int64_t QuotaReservation::OpenFile(int32_t id,
         file_system_context_->operation_runner()->SyncGetPlatformPath(
             url, &platform_file_path);
     if (error != base::File::FILE_OK) {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
   } else {
     // For test.
@@ -79,8 +78,7 @@ int64_t QuotaReservation::OpenFile(int32_t id,
     std::ignore = file_handle.release();
     return max_written_offset;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void QuotaReservation::CloseFile(int32_t id,
@@ -92,7 +90,7 @@ void QuotaReservation::CloseFile(int32_t id,
     delete it->second;
     files_.erase(it);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -106,7 +104,7 @@ void QuotaReservation::ReserveQuota(int64_t amount,
       it->second->AddAppendModeWriteAmount(
           growth_it->second.append_mode_write_amount);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

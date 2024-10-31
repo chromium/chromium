@@ -357,8 +357,7 @@ ui::SelectFileDialog::Type GetSelectFileDialogType(
         kDirectoryPickerOptions:
       return ui::SelectFileDialog::SELECT_FOLDER;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::SelectFileDialog::SELECT_NONE;
+  NOTREACHED();
 }
 
 blink::mojom::AcceptsTypesInfoPtr GetAndMoveAcceptsTypesInfo(
@@ -1011,7 +1010,7 @@ std::string SerializeURLImpl(const storage::FileSystemURL& url,
       data.mutable_sandboxed()->set_bucket_id(url.bucket()->id.value());
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::string value;
@@ -1161,7 +1160,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       break;
     }
     case FileSystemAccessHandleData::DATA_NOT_SET:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

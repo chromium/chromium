@@ -117,8 +117,7 @@ std::string ToString(TrialType trial_type) {
     case TrialType::kOnlyIssuanceRequiresOriginTrial:
       return "OnlyIssuanceNeedsTrial";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -270,8 +269,7 @@ std::string ToString(Op op) {
     case Op::kRedemption:
       return "Redemption";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -389,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
       EXPECT_FALSE(trust_token_request_->trust_token_params);
       break;
     case Outcome::kFailure:
-      NOTREACHED_IN_MIGRATION();  // Handled earlier.
+      NOTREACHED();  // Handled earlier.
   }
 }
 

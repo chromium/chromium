@@ -836,7 +836,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     }
 
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

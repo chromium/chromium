@@ -147,8 +147,7 @@ WebInputEvent::Type PointerEventTypeForTouchPointState(
       return WebInputEvent::Type::kPointerMove;
     case WebTouchPoint::State::kStateStationary:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WebInputEvent::Type::kUndefined;
+      NOTREACHED();
   }
 }
 
@@ -216,8 +215,7 @@ WebMouseEvent::Button GetButtonTypeFromButtonNumber(int button_code) {
     case 4:
       return WebMouseEvent::Button::kForward;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebMouseEvent::Button::kNoButton;
+  NOTREACHED();
 }
 
 int GetWebMouseEventModifierForButton(WebMouseEvent::Button button) {
@@ -237,8 +235,7 @@ int GetWebMouseEventModifierForButton(WebMouseEvent::Button button) {
     case WebPointerProperties::Button::kEraser:
       return 0;  // Not implemented yet
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const int kButtonsInModifiers =
@@ -2386,8 +2383,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
     case WebInputEvent::Type::kGestureFlingStart:
     case WebInputEvent::Type::kGestureFlingCancel:
       // Flings are no longer handled on the main thread.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case WebInputEvent::Type::kGestureTap: {
       float tap_count = 1;
       float width = 30;
@@ -2512,7 +2508,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   event.unique_touch_event_id = GetUniqueTouchEventId(args);
@@ -2800,7 +2796,7 @@ void EventSender::ReplaySavedEvents() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

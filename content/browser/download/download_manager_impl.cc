@@ -1207,8 +1207,7 @@ void DownloadManagerImpl::PostInitialization(
       break;
     case DOWNLOAD_INITIALIZATION_DEPENDENCY_NONE:
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Download manager is only initialized if both history db and in progress

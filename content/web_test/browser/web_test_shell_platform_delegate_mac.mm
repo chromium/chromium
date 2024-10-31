@@ -49,8 +49,7 @@ gfx::NativeWindow WebTestShellPlatformDelegate::GetNativeWindow(Shell* shell) {
   if (!IsHeadless())
     return ShellPlatformDelegate::GetNativeWindow(shell);
 
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 void WebTestShellPlatformDelegate::CleanUp(Shell* shell) {

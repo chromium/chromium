@@ -101,11 +101,7 @@ void RunCallbackAfterStartWorker(base::WeakPtr<ServiceWorkerVersion> version,
       version->running_status() != blink::EmbeddedWorkerStatus::kRunning) {
     // We've tried to start the worker (and it has succeeded), but
     // it looks it's not running yet.
-    NOTREACHED_IN_MIGRATION()
-        << "The worker's not running after successful StartWorker";
-    std::move(callback).Run(
-        blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed);
-    return;
+    NOTREACHED() << "The worker's not running after successful StartWorker";
   }
   std::move(callback).Run(status);
 }
@@ -407,8 +403,7 @@ void ServiceWorkerVersion::SetStatus(Status status) {
     switch (status_) {
       case NEW:
         // |skip_waiting_| should not be set before the version is NEW.
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case INSTALLING:
         // Do nothing until INSTALLED time.
         break;
@@ -641,7 +636,7 @@ void ServiceWorkerVersion::StopWorker(base::OnceClosure callback) {
       RunSoon(std::move(callback));
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceWorkerVersion::TriggerIdleTerminationAsap() {
@@ -2162,8 +2157,7 @@ bool ServiceWorkerVersion::IsInstalled(ServiceWorkerVersion::Status status) {
     case ServiceWorkerVersion::ACTIVATED:
       return true;
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected status: " << status;
-  return false;
+  NOTREACHED() << "Unexpected status: " << status;
 }
 
 // static
@@ -2183,8 +2177,7 @@ std::string ServiceWorkerVersion::VersionStatusToString(
     case ServiceWorkerVersion::REDUNDANT:
       return "redundant";
   }
-  NOTREACHED_IN_MIGRATION() << status;
-  return std::string();
+  NOTREACHED() << status;
 }
 
 void ServiceWorkerVersion::IncrementPendingUpdateHintCount() {
@@ -3285,8 +3278,7 @@ ServiceWorkerVersion::GetControllerMode() const {
     case ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN:
       // UNKNOWN means the controller is still installing. It's not possible to
       // have a controller that hasn't finished installing.
-      NOTREACHED_IN_MIGRATION();
-      return blink::mojom::ControllerServiceWorkerMode::kNoController;
+      NOTREACHED();
   }
 }
 

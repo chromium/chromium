@@ -128,8 +128,7 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -192,8 +191,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -252,8 +250,7 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -312,8 +309,7 @@ jvalue CoerceJavaScriptStringToJavaValue(JNIEnv* env,
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -347,9 +343,8 @@ jobject CreateJavaArray(JNIEnv* env, const JavaType& type, jsize length) {
     case JavaType::TypeArray:
     case JavaType::TypeObject:
       // Not handled.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 // Sets the specified element of the supplied array to the value of the
@@ -403,7 +398,7 @@ void SetArrayElement(JNIEnv* env,
     case JavaType::TypeArray:
     case JavaType::TypeObject:
       // Not handled.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   base::android::CheckException(env);
 }
@@ -465,8 +460,7 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -683,8 +677,7 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -720,9 +713,8 @@ jvalue CoerceGinJavaBridgeValueToJavaValue(JNIEnv* env,
                                                 coerce_to_string, error);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return jvalue();
 }
 
 }  // namespace
@@ -772,8 +764,7 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
           env, value, target_type, coerce_to_string, object_refs, error);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return jvalue();
+  NOTREACHED();
 }
 
 }  // namespace content

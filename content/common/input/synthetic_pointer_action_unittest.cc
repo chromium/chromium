@@ -40,13 +40,10 @@ WebTouchPoint::State ToWebTouchPointState(
       return WebTouchPoint::State::kStateStationary;
     case SyntheticPointerActionParams::PointerActionType::LEAVE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Invalid SyntheticPointerActionParams::PointerActionType.";
-      return WebTouchPoint::State::kStateUndefined;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid SyntheticPointerActionParams::PointerActionType.";
-  return WebTouchPoint::State::kStateUndefined;
+  NOTREACHED() << "Invalid SyntheticPointerActionParams::PointerActionType.";
 }
 
 WebInputEvent::Type ToWebMouseEventType(
@@ -63,13 +60,10 @@ WebInputEvent::Type ToWebMouseEventType(
     case SyntheticPointerActionParams::PointerActionType::CANCEL:
     case SyntheticPointerActionParams::PointerActionType::IDLE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Invalid SyntheticPointerActionParams::PointerActionType.";
-      return WebInputEvent::Type::kUndefined;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid SyntheticPointerActionParams::PointerActionType.";
-  return WebInputEvent::Type::kUndefined;
+  NOTREACHED() << "Invalid SyntheticPointerActionParams::PointerActionType.";
 }
 
 WebInputEvent::Type WebTouchPointStateToEventType(

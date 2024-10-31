@@ -495,8 +495,7 @@ void PepperVideoDecoderHost::NotifyEndOfBitstreamBuffer(
     int32_t bitstream_buffer_id) {
   auto it = GetPendingDecodeById(bitstream_buffer_id);
   if (it == pending_decodes_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   host()->SendReply(it->reply_context,
                     PpapiPluginMsg_VideoDecoder_DecodeReply(it->shm_id));

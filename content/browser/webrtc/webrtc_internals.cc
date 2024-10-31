@@ -683,7 +683,7 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -700,7 +700,7 @@ void WebRTCInternals::FileSelectionCanceled() {
                  base::Value());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   select_file_dialog_ = nullptr;
 }

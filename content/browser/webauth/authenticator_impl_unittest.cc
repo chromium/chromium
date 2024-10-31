@@ -2112,8 +2112,7 @@ const char* AttestationConveyancePreferenceToString(
     case AttestationConveyancePreference::ENTERPRISE:
       return "enterprise";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -5511,7 +5510,7 @@ class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     virtual_device_factory_->SetCtap2Config(config);
@@ -5623,7 +5622,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
                       break;
 
                     default:
-                      NOTREACHED_IN_MIGRATION();
+                      NOTREACHED();
                   }
 
                   MakeCredentialResult result =
@@ -5653,7 +5652,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
                       break;
 
                     default:
-                      NOTREACHED_IN_MIGRATION();
+                      NOTREACHED();
                   }
                 }
               }
@@ -6037,7 +6036,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertion) {
                 break;
 
               default:
-                NOTREACHED_IN_MIGRATION();
+                NOTREACHED();
             }
 
             GetAssertionResult result = AuthenticatorGetAssertion(
@@ -6062,7 +6061,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertion) {
                 break;
 
               default:
-                NOTREACHED_IN_MIGRATION();
+                NOTREACHED();
             }
           }
         }
@@ -8118,8 +8117,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
 
         switch (test.resulting_policy) {
           case UNSPECIFIED:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
           case NONE:
             EXPECT_EQ(device::CredProtect::kUVOptional, result);
             break;
@@ -8139,7 +8137,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
         EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, status);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

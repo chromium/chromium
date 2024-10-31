@@ -155,7 +155,7 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
         action->type = blink::mojom::NotificationActionType::TEXT;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     action->action = payload_action.action();
@@ -246,7 +246,7 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
             NotificationDatabaseDataProto::NotificationAction::TEXT);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Unknown action type: " << action->type;
+        NOTREACHED() << "Unknown action type: " << action->type;
     }
 
     payload_action->set_action(action->action);

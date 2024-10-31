@@ -236,7 +236,7 @@ void PrefetchStreamingURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // Only handle GETs.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PrefetchStreamingURLLoader::OnTransferSizeUpdated(

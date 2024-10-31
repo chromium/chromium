@@ -369,7 +369,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
 void AuctionURLLoaderFactoryProxy::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 AuctionNetworkEventsProxy::AuctionNetworkEventsProxy(

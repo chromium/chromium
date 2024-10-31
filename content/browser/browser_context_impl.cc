@@ -80,7 +80,7 @@ BrowserContextImpl::~BrowserContextImpl() {
       << "StoragePartitionMap is not shut down properly";
 
   if (!will_be_destroyed_soon_) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Verify that there are no outstanding RenderProcessHosts that reference

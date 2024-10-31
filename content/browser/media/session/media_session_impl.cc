@@ -928,8 +928,7 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
               MediaSessionSuspendedSource::kSystemPermanent);
           break;
         case State::ACTIVE:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case SuspendType::kContent:
@@ -1188,8 +1187,7 @@ void MediaSessionImpl::FinishSystemAudioFocusRequest(
       case AudioFocusType::kAmbient:
       case AudioFocusType::kGainTransient:
         // MediaSessionImpl does not use |kGainTransient| or |kAmbient|.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case AudioFocusType::kGainTransientMayDuck:
         // The focus request failed, we should suspend any players that have
         // the same audio focus type.

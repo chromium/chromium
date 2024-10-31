@@ -161,8 +161,7 @@ void RenderWidgetHostViewChildFrame::UpdateIntrinsicSizingInfo(
 std::unique_ptr<SyntheticGestureTarget>
 RenderWidgetHostViewChildFrame::CreateSyntheticGestureTarget() {
   // Sythetic gestures should be sent to the root view.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::OnManagerWillDestroy(
@@ -175,7 +174,7 @@ void RenderWidgetHostViewChildFrame::OnManagerWillDestroy(
 }
 
 void RenderWidgetHostViewChildFrame::InitAsChild(gfx::NativeView parent_view) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::SetSize(const gfx::Size& size) {
@@ -313,8 +312,7 @@ gfx::NativeView RenderWidgetHostViewChildFrame::GetNativeView() {
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewChildFrame::GetNativeViewAccessible() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::UpdateFrameSinkIdRegistration() {
@@ -341,29 +339,28 @@ void RenderWidgetHostViewChildFrame::UpdateBackgroundColor() {
 
 std::optional<DisplayFeature>
 RenderWidgetHostViewChildFrame::GetDisplayFeature() {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::SetDisplayFeatureForTesting(
     const DisplayFeature*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::mojom::RecordContentToVisibleTimeRequestPtr) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
@@ -381,7 +378,7 @@ void RenderWidgetHostViewChildFrame::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
     const gfx::Rect& bounds,
     const gfx::Rect& anchor_rect) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::UpdateCursor(const ui::Cursor& cursor) {
@@ -751,7 +748,7 @@ bool RenderWidgetHostViewChildFrame::IsRenderWidgetHostViewChildFrame() {
 void RenderWidgetHostViewChildFrame::
     InvalidateLocalSurfaceIdAndAllocationGroup() {
   // This should only be handled by the top frame.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_MAC)

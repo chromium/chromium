@@ -171,8 +171,7 @@ std::string IsolatedOriginSourceToString(IsolatedOriginSource source) {
     case IsolatedOriginSource::WEB_TRIGGERED:
       return "Web-triggered";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

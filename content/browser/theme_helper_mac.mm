@@ -314,8 +314,7 @@ void ThemeHelperMac::LoadSystemColorsForCurrentAppearance(
         values[i] = NSColorToSkColor(NSColor.selectedTextBackgroundColor);
         break;
       case blink::MacSystemColorID::kCount:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

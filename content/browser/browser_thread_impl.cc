@@ -245,8 +245,7 @@ BrowserThread::GetTaskRunnerForThread(ID identifier) {
     case IO:
       return GetIOThreadTaskRunner({});
     case ID_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

@@ -435,8 +435,7 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
           base::android::JavaByteBufferToSpan(env,
                                               jgesture_data_byte_buffer.obj()),
           &gesture_data)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   input_handler->HandleStylusWritingGestureAction(

@@ -875,7 +875,7 @@ std::string PrerenderTestHelper::GenerateHistogramName(
       DCHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ScopedPrerenderWebContentsDelegate::ScopedPrerenderWebContentsDelegate(

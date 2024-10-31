@@ -170,7 +170,7 @@ void SetRuntimeFeatureFromChromiumFeature(const base::Feature& chromium_feature,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

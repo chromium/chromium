@@ -282,8 +282,7 @@ static void GLibLogHandler(const gchar* log_domain,
              (G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)) {
     LOG(INFO) << log_domain << ": " << message;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    LOG(DFATAL) << log_domain << ": " << message;
+    NOTREACHED() << log_domain << ": " << message;
   }
 }
 
@@ -1080,7 +1079,7 @@ BrowserMainLoop::InterceptMainMessageLoopRun() {
 void BrowserMainLoop::RunMainMessageLoop() {
 #if BUILDFLAG(IS_ANDROID)
   // Android's main message loop is the Java message loop.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else  // BUILDFLAG(IS_ANDROID)
   if (InterceptMainMessageLoopRun() != ProceedWithMainMessageLoopRun(true))
     return;

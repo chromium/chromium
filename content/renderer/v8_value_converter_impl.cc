@@ -524,9 +524,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
     return std::make_unique<base::Value>(std::move(buffer));
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Only ArrayBuffer and ArrayBufferView should get here.";
-  return nullptr;
+  NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
 }
 
 std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
@@ -583,11 +581,9 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
     // Extend this test to cover more types as necessary and if sensible.
     if (!key->IsString() &&
         !key->IsNumber()) {
-      NOTREACHED_IN_MIGRATION()
-          << "Key \"" << *v8::String::Utf8Value(isolate, key)
-          << "\" "
-             "is neither a string nor a number";
-      continue;
+      NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
+                   << "\" "
+                      "is neither a string nor a number";
     }
 
     v8::String::Utf8Value name_utf8(isolate, key);

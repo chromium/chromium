@@ -5526,8 +5526,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (event_name == "visibilitychange")
       return blink::mojom::SuddenTerminationDisablerType::
           kVisibilityChangeHandler;
-    NOTREACHED_IN_MIGRATION();
-    return blink::mojom::SuddenTerminationDisablerType::kUnloadHandler;
+    NOTREACHED();
   }
 
   // Returns the list of event targets that the given `event_name` should be
@@ -5543,8 +5542,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (event_name == "visibilitychange") {
       return {"window", "document"};
     }
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 
   // Adds an unload event handler (can be for the unload, pagehide, or

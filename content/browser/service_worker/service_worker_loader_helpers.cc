@@ -156,8 +156,7 @@ bool ShouldBypassCacheDueToUpdateViaCache(
     case blink::mojom::ServiceWorkerUpdateViaCache::kAll:
       return false;
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(cache_mode);
-  return false;
+  NOTREACHED() << static_cast<int>(cache_mode);
 }
 
 bool ShouldValidateBrowserCacheForScript(

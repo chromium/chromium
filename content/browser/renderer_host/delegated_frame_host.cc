@@ -350,7 +350,7 @@ SkColor DelegatedFrameHost::GetGutterColor() const {
 
 void DelegatedFrameHost::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token,

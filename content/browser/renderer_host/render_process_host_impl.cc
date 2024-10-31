@@ -720,8 +720,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
         // the field that this is happening. We need to figure out why some
         // RenderProcessHosts are not taken out of the map when they're
         // destroyed.
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
 
       // It's possible that |host| has become unsuitable for hosting
@@ -1536,9 +1535,8 @@ void RenderProcessHostImpl::ShutDownInProcessRenderer() {
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "There should be only one RenderProcessHost when running "
-          << "in-process.";
+      NOTREACHED() << "There should be only one RenderProcessHost when running "
+                   << "in-process.";
   }
 }
 

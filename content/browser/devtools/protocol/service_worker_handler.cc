@@ -55,9 +55,8 @@ const std::string GetVersionRunningStatusString(
     case blink::EmbeddedWorkerStatus::kStopping:
       return ServiceWorker::ServiceWorkerVersionRunningStatusEnum::Stopping;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 const std::string GetVersionStatusString(
@@ -76,9 +75,8 @@ const std::string GetVersionStatusString(
     case content::ServiceWorkerVersion::REDUNDANT:
       return ServiceWorker::ServiceWorkerVersionStatusEnum::Redundant;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 Response CreateDomainNotEnabledErrorResponse() {

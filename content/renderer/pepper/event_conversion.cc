@@ -399,7 +399,7 @@ WebTouchEvent* BuildTouchEvent(const InputEventData& event) {
       state = WebTouchPoint::State::kStateCancelled;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   input::WebTouchEventTraits::ResetType(
       type, base::TimeTicks() + base::Seconds(event.event_time_stamp),
@@ -430,7 +430,7 @@ WebKeyboardEvent* BuildKeyEvent(const InputEventData& event) {
       type = WebInputEvent::Type::kKeyUp;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   WebKeyboardEvent* key_event = new WebKeyboardEvent(
       type, event.event_modifiers,
@@ -478,7 +478,7 @@ WebMouseEvent* BuildMouseEvent(const InputEventData& event) {
       type = WebInputEvent::Type::kContextMenu;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   WebMouseEvent* mouse_event = new WebMouseEvent(
       type, event.event_modifiers,
@@ -668,8 +668,7 @@ WebInputEvent* CreateWebInputEvent(const InputEventData& event) {
     case PP_INPUTEVENT_TYPE_IME_TEXT:
       // TODO(kinaba) implement in WebKit an event structure to handle
       // composition events.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case PP_INPUTEVENT_TYPE_TOUCHSTART:
     case PP_INPUTEVENT_TYPE_TOUCHMOVE:
     case PP_INPUTEVENT_TYPE_TOUCHEND:

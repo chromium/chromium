@@ -253,8 +253,7 @@ PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(

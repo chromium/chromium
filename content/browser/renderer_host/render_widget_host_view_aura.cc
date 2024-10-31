@@ -1226,9 +1226,7 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
       required_state = blink::WebTouchPoint::State::kStateCancelled;
       break;
     default:
-      required_state = blink::WebTouchPoint::State::kStateUndefined;
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Only send acks for one changed touch point.
@@ -2071,7 +2069,7 @@ void RenderWidgetHostViewAura::OnCaptureLost() {
 }
 
 void RenderWidgetHostViewAura::OnPaint(const ui::PaintContext& context) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
@@ -2411,8 +2409,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
   }
 
   if (window_ != lost_focus) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   UpdateActiveState(false);

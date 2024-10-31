@@ -253,8 +253,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     CreateStream(filter);

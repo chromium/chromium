@@ -91,7 +91,7 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
 
 void SharedStorageURLLoaderFactoryProxy::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

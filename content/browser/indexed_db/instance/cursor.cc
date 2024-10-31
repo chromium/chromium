@@ -314,7 +314,7 @@ Status Cursor::PrefetchIterationOperation(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     size_estimate += cursor_->key().size_estimate();
     size_estimate += cursor_->primary_key().size_estimate();

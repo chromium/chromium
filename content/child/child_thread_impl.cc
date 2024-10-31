@@ -872,11 +872,11 @@ const mojo::Remote<mojom::FontCacheWin>& ChildThreadImpl::GetFontCacheWin() {
 #endif
 
 void ChildThreadImpl::RecordAction(const base::UserMetricsAction& action) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChildThreadImpl::RecordComputedAction(const std::string& action) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChildThreadImpl::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
