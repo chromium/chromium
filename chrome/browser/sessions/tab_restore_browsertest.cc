@@ -3045,6 +3045,15 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({1, 2});
 
+  // Set the visual data here.
+  tab_groups::TabGroupVisualData original_visual_data(
+      u"Title", tab_groups::TabGroupColorId::kYellow);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(original_visual_data, true);
+
   ASSERT_TRUE(service->GetGroup(group));
   base::Uuid saved_group_id = service->GetGroup(group)->saved_guid();
   EXPECT_EQ(1u, service->GetAllGroups().size());
@@ -3092,6 +3101,11 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   EXPECT_TRUE(saved_group.local_group_id().has_value());
   EXPECT_EQ(saved_group_id, saved_group.saved_guid());
   EXPECT_EQ(2u, saved_group.saved_tabs().size());
+  EXPECT_EQ(original_visual_data,
+            *first_browser->tab_strip_model()
+                 ->group_model()
+                 ->GetTabGroup(saved_group.local_group_id().value())
+                 ->visual_data());
 }
 
 IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,

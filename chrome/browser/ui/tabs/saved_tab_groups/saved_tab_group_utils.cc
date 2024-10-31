@@ -577,11 +577,13 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
   CHECK(tab_group_service);
 
   // Find the grouped tabs in `source_browser`.
-  gfx::Range tabs_to_move = source_browser->tab_strip_model()
-                                ->group_model()
-                                ->GetTabGroup(local_group_id)
-                                ->ListTabs();
+  TabGroup* tab_group =
+      source_browser->tab_strip_model()->group_model()->GetTabGroup(
+          local_group_id);
+  gfx::Range tabs_to_move = tab_group->ListTabs();
   int num_tabs_to_move = tabs_to_move.length();
+
+  tab_groups::TabGroupVisualData visual_data = *tab_group->visual_data();
 
   std::vector<int> tab_indicies_to_move(num_tabs_to_move);
   std::iota(tab_indicies_to_move.begin(), tab_indicies_to_move.end(),
@@ -604,6 +606,13 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
   // Add group the tabs using the same local id, and reconnect everything.
   target_browser->tab_strip_model()->AddToGroupForRestore(tabs_to_add_to_group,
                                                           local_group_id);
+
+  // Manually set the visual data because we have moved the group to a new
+  // browser which will give it a default color and title.
+  target_browser->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(local_group_id)
+      ->SetVisualData(visual_data);
 }
 
 void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
