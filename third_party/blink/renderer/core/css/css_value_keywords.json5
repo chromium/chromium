@@ -1669,6 +1669,10 @@
     // https://drafts.csswg.org/css-conditional-4/#typedef-supports-selector-fn
     "selector",
 
+    // @supports at-rule(...)
+    // https://github.com/w3c/csswg-drafts/issues/2463#issuecomment-1016720310
+    "at-rule",
+
     // (device-posture) media feature
     "continuous",
     "folded",

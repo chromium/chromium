@@ -1,0 +1,37 @@
+<!doctype html>
+<title>@supports at-rule</title>
+<link rel="help" href="https://www.w3.org/TR/css-conditional-4/#the-css-namespace">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  function test_supports(rule, expected, desc) {
+    test(() => {
+      assert_equals(CSS.supports(rule), expected, 'CSS.supports(' + rule + ')');
+    }, desc);
+  }
+
+  // Basic at-rule support.
+  test_supports("at-rule(@supports)", true);
+  test_supports("at-rule( @supports)", true);
+  test_supports("at-rule(@supports )", true);
+  test_supports("at-rule(@media)", true);
+  test_supports("at-rule(@counter-style)", true);
+  test_supports("at-rule(@doesnotexist)", false);
+
+  // With descriptors.
+  test_supports("at-rule(@counter-style; system: fixed)", true);
+  test_supports("at-rule(@counter-style;system: fixed )", true);
+  test_supports("at-rule(@counter-style;system:  fixed )", true);
+  test_supports("at-rule(@counter-style; system:)", false, "missing value 1");
+  test_supports("at-rule(@counter-style; system: )", false, "missing value 2");
+  test_supports("at-rule(@counter-style; system: doesnotexist)", false, "invalid value");
+  test_supports("at-rule(@counter-style; system: fixed junk)", false, "junk after value");
+  test_supports("at-rule(@counter-style; system)", false, "missing value 3");
+  test_supports("at-rule(@counter-style! system: fixed)", false, "invalid separator");
+  test_supports("at-rule(@counter-style; suffix: \"abc\")", true, "quoted value is OK");
+  test_supports("at-rule(@counter-style; suffix: \"abc\";)", false, "semicolon after value");
+  test_supports("at-rule(@counter-style; suffix: \"abc\"", true, "implicit end parenthesis");
+  test_supports("at-rule(@counter-style; system: fixed; system: fixed)", false, "multiple descriptors");
+  test_supports("at-rule(@supports; system: fixed)", false, "descriptor invalid in context");
+  test_supports("at-rule(@media; color: red)", false, "properties are not descriptors");
+</script>

@@ -885,12 +885,10 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     }
   } else if (allowed_rules == kPageMarginRules) {
     if (id < CSSAtRuleID::kCSSAtRuleTopLeftCorner ||
-        id > CSSAtRuleID::kCSSAtRuleRightBottom ||
-        !RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
+        id > CSSAtRuleID::kCSSAtRuleRightBottom) {
       ConsumeErroneousAtRule(stream, id);
       return nullptr;
     }
-
     return ConsumePageMarginRule(id, stream);
   } else {
     DCHECK_LE(allowed_rules, kRegularRules);
@@ -2330,10 +2328,6 @@ static std::optional<StyleRuleFunction::Type> ParseFunctionType(
 
 StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
     CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
-    return nullptr;
-  }
   // Parse the prelude; first a function token (the name), then parameters,
   // then return type.
   if (stream.Peek().GetType() != kFunctionToken) {
@@ -2419,11 +2413,6 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
 }
 
 StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSMixinsEnabled()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleMixin);
-    return nullptr;
-  }
-
   // @mixin must be top-level, and as such, we need to clear the arena
   // after we're done parsing it (like ConsumeStyleRule() does).
   if (in_nested_style_rule_) {
@@ -2471,10 +2460,6 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
 
 StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
     CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSMixinsEnabled()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
-    return nullptr;
-  }
   if (stream.Peek().GetType() != kIdentToken) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
     return nullptr;  // Parse error.

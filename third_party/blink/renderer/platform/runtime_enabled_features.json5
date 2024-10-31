@@ -1265,6 +1265,10 @@
       status: "experimental",
     },
     {
+      name: "CSSSupportsAtRuleFunction",
+      status: "experimental",
+    },
+    {
       name: "CSSSupportsForImportRules",
       status: "stable",
     },

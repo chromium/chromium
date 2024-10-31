@@ -308,7 +308,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kApplyMixin:
     case StyleRule::kPositionTry:
       // TODO(andruud): Handle other descriptor types here.
-      NOTREACHED_IN_MIGRATION();
+      // Note that we can reach this path through @supports at-rule(...).
       return nullptr;
   }
 }
