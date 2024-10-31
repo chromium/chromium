@@ -3480,11 +3480,6 @@ inline constexpr char kSigninInterceptionEnabled[] =
 // A dictionary pref of the echo offer check flag. It sets offer info when
 // an offer is checked.
 inline constexpr char kEchoCheckedOffers[] = "EchoCheckedOffers";
-
-// String pref indicating what to do when Lacros is disabled and we go back
-// to using Ash.
-inline constexpr char kLacrosDataBackwardMigrationMode[] =
-    "lacros_data_backward_migration_mode";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Device identifier used by CryptAuth stored in local state. This ID is

@@ -62,21 +62,6 @@ enum class LacrosLaunchSwitchSource {
   kForcedByPolicy = 3
 };
 
-// Represents the values of the LacrosDataBackwardMigrationMode string enum
-// policy. It controls what happens when we switch from Lacros back to Ash.
-// The values shall be consistent with the policy description.
-enum class LacrosDataBackwardMigrationMode {
-  // Indicates data backward migration is not performed. The Lacros folder is
-  // removed and Ash uses its existing state.
-  kNone,
-  // Not yet implemented.
-  kKeepNone,
-  // Not yet implemented.
-  kKeepSafeData,
-  // All data is migrated back from Lacros to Ash.
-  kKeepAll,
-};
-
 struct ComponentInfo {
   // The client-side component name.
   const char* const name;
@@ -84,28 +69,6 @@ struct ComponentInfo {
   // Must match the Omaha console.
   const char* const crx_id;
 };
-
-// The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
-// policy.
-inline constexpr const char
-    kLacrosDataBackwardMigrationModePolicyInternalName[] =
-        "lacros-data-backward-migration-policy";
-
-// The commandline flag name of `LacrosDataBackwardMigrationMode` policy.
-// The value should be the policy value as defined just below.
-inline constexpr const char kLacrosDataBackwardMigrationModePolicySwitch[] =
-    "lacros-data-backward-migration-policy";
-
-// The values for LacrosDataBackwardMigrationMode, they must match the ones
-// from LacrosDataBackwardMigrationMode.yaml.
-inline constexpr const char kLacrosDataBackwardMigrationModePolicyNone[] =
-    "none";
-inline constexpr const char kLacrosDataBackwardMigrationModePolicyKeepNone[] =
-    "keep_none";
-inline constexpr const char
-    kLacrosDataBackwardMigrationModePolicyKeepSafeData[] = "keep_safe_data";
-inline constexpr const char kLacrosDataBackwardMigrationModePolicyKeepAll[] =
-    "keep_all";
 
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];

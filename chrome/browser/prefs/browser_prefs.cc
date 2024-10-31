@@ -1097,6 +1097,8 @@ const char kProfileDataBackwardMigrationCompletedForUserPref[] =
 const char kGotoFilesPref[] = "lacros.goto_files";
 const char kProfileMigrationCompletionTimeForUserPref[] =
     "lacros.profile_migration_completion_time_for_user";
+const char kLacrosDataBackwardMigrationMode[] =
+    "lacros_data_backward_migration_mode";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1249,6 +1251,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
       kProfileDataBackwardMigrationCompletedForUserPref);
   registry->RegisterListPref(kGotoFilesPref);
   registry->RegisterDictionaryPref(kProfileMigrationCompletionTimeForUserPref);
+  registry->RegisterStringPref(kLacrosDataBackwardMigrationMode, "");
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2543,6 +2546,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kProfileDataBackwardMigrationCompletedForUserPref);
   local_state->ClearPref(kGotoFilesPref);
   local_state->ClearPref(kProfileMigrationCompletionTimeForUserPref);
+  local_state->ClearPref(kLacrosDataBackwardMigrationMode);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

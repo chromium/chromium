@@ -44,6 +44,7 @@ schema:
   - keep_all
   type: string
 supported_on:
-- chrome_os:110-
+- chrome_os:110-130
 tags: []
 type: string-enum
+deprecated: true
