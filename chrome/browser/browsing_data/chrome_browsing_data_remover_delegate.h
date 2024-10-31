@@ -39,6 +39,7 @@ class WaitableEvent;
 
 namespace content {
 class BrowserContext;
+class DipsDelegate;
 class StoragePartition;
 }
 
@@ -264,6 +265,8 @@ class ChromeBrowsingDataRemoverDelegate
   base::OnceClosure deferred_disable_passwords_auto_signin_cb_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;
+
+  std::unique_ptr<content::DipsDelegate> dips_delegate_;
 
   base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
       this};

@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
@@ -165,6 +164,7 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
   // entire row.
   static void DeleteState(content::BrowsingDataRemover* remover,
                           std::vector<std::string> sites_to_clear,
+                          content::BrowsingDataRemover::DataType remove_mask,
                           base::OnceClosure callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -193,8 +193,6 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
     // StateClearer manages its own lifetime and deletes itself when finished.
     StateClearer* clearer =
         new StateClearer(remover, /*callback_count=*/2, std::move(callback));
-    chrome_browsing_data_remover::DataType remove_mask =
-        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
     if (base::FeatureList::IsEnabled(features::kDIPSPreservePSData)) {
       remove_mask &= ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
     }
@@ -692,8 +690,12 @@ void DIPSServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
                                                 base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  uint64_t remove_mask = dips_delegate_
+                             ? dips_delegate_->GetRemoveMask()
+                             : content::DipsDelegate::kDefaultRemoveMask;
+
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
-                            std::move(sites), std::move(callback));
+                            std::move(sites), remove_mask, std::move(callback));
 }
 
 void DIPSServiceImpl::AddObserver(Observer* observer) {

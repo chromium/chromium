@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DIPS_CHROME_DIPS_DELEGATE_H_
 #define CHROME_BROWSER_DIPS_CHROME_DIPS_DELEGATE_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/types/pass_key.h"
@@ -33,6 +35,10 @@ class ChromeDipsDelegate : public content::DipsDelegate {
 
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
                             DIPSService* dips_service) override;
+
+  uint64_t GetRemoveMask() override;
+
+  bool ShouldDeleteInteractionRecords(uint64_t remove_mask) override;
 };
 
 #endif  // CHROME_BROWSER_DIPS_CHROME_DIPS_DELEGATE_H_

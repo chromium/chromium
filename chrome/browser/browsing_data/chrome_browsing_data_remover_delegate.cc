@@ -42,6 +42,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
@@ -150,6 +151,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/prefetch_service_delegate.h"
@@ -278,7 +280,8 @@ ChromeBrowsingDataRemoverDelegate::ChromeBrowsingDataRemoverDelegate(
       webapp_registry_(std::make_unique<WebappRegistry>())
 #endif
       ,
-      credential_store_(MakeCredentialStore()) {
+      credential_store_(MakeCredentialStore()),
+      dips_delegate_(ChromeDipsDelegate::Create()) {
   domain_reliability_clearer_ = base::BindRepeating(
       [](BrowserContext* browser_context,
          content::BrowsingDataFilterBuilder* filter_builder,
@@ -896,9 +899,14 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   DIPSEventRemovalType dips_mask = DIPSEventRemovalType::kNone;
   if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) &&
       !filter_builder->PartitionedCookiesOnly()) {
-    dips_mask |= DIPSEventRemovalType::kStorage;
+    // If there's no delegate, delete everything whenever the user is deleting
+    // cookies.
+    dips_mask |= dips_delegate_ ? DIPSEventRemovalType::kStorage
+                                : DIPSEventRemovalType::kAll;
   }
-  if (remove_mask & constants::DATA_TYPE_HISTORY) {
+  // If there's a delegate, ask it whether to delete DIPS history.
+  if (dips_delegate_ &&
+      dips_delegate_->ShouldDeleteInteractionRecords(remove_mask)) {
     dips_mask |= DIPSEventRemovalType::kHistory;
   }
 

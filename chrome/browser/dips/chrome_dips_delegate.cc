@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/stateful_bounce_counter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,13 @@ ProfileSelections GetHumanProfileSelections() {
 }
 
 }  // namespace
+
+static_assert(content::DipsDelegate::kDefaultRemoveMask ==
+                  (chrome_browsing_data_remover::FILTERABLE_DATA_TYPES &
+                   ((content::BrowsingDataRemover::DATA_TYPE_CONTENT_END << 1) -
+                    1)),
+              "kDefaultRemoveMask must contain all the entries of "
+              "FILTERABLE_DATA_TYPES that are known in //content");
 
 ChromeDipsDelegate::ChromeDipsDelegate(PassKey) {}
 
@@ -50,4 +58,12 @@ void ChromeDipsDelegate::OnDipsServiceCreated(
   // Create DIPSBrowserSigninDetector.
   CHECK(DIPSBrowserSigninDetector::Get(browser_context));
   dips::StatefulBounceCounter::CreateFor(dips_service);
+}
+
+uint64_t ChromeDipsDelegate::GetRemoveMask() {
+  return chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
+}
+
+bool ChromeDipsDelegate::ShouldDeleteInteractionRecords(uint64_t remove_mask) {
+  return remove_mask & chrome_browsing_data_remover::DATA_TYPE_HISTORY;
 }
