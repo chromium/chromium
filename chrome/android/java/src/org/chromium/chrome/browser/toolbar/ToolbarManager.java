@@ -423,7 +423,7 @@ public class ToolbarManager
             if (mHandler != null) {
                 mHandler.onBackInvoked();
             } else {
-                assert !mBackGestureInProgress
+                assert (!mBackGestureInProgress || !mIsGestureMode)
                                 || // called handleBackPress without handleBackStarted
                                 !GestureNavigationUtils.allowTransition(
                                         mActivityTabProvider.get(), /* forward= */ false)
@@ -479,6 +479,11 @@ public class ToolbarManager
 
             mStartNavDuringOngoingGesture = false;
             mBackGestureInProgress = true;
+            // This means the user is pressing a back button in 3-button mode.
+            // The transition should only be triggered by swipe rather than a button press.
+            // TODO(crbug.com/376306986): add some tests to ensure the this handler is not
+            // initialized in 3-button mode.
+            if (!mIsGestureMode) return;
             if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) return;
 
             mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
