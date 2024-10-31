@@ -126,7 +126,8 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     Profile* profile,
     std::unique_ptr<ChromeAutocompleteProviderClient> client,
     bool is_low_memory_device)
-    : profile_{profile},
+    : is_low_memory_device_{is_low_memory_device},
+      profile_{profile},
       java_controller_{Java_AutocompleteController_Constructor(
           AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this))},
@@ -555,6 +556,12 @@ void AutocompleteControllerAndroid::OnResultChanged(
 
 void AutocompleteControllerAndroid::NotifySuggestionsReceived(
     const AutocompleteResult& autocomplete_result) {
+  if (is_low_memory_device_ && !autocomplete_controller_->done() &&
+      base::FeatureList::IsEnabled(
+          omnibox::kSuppressIntermediateACUpdatesOnLowEndDevices)) {
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
 
   Java_AutocompleteController_onSuggestionsReceived(

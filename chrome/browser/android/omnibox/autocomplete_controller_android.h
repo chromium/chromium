@@ -159,6 +159,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Omnibox - these requests are deduplicated down the call chain.
   void WarmUpRenderProcess() const;
 
+  // Whether the current device is a low-memory device.
+  const bool is_low_memory_device_{};
+
   // Last input we sent to the autocomplete controller.
   AutocompleteInput input_{};
 

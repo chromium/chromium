@@ -381,6 +381,14 @@ BASE_FEATURE(kRetainOmniboxOnFocus, "RetainOmniboxOnFocus", DISABLED);
 // prioritizing Omnibox focus and background initialization.
 BASE_FEATURE(kJumpStartOmnibox, "JumpStartOmnibox", DISABLED);
 
+// Prevents intermediate AutocompleteResult updates from being sent to Java on
+// low-end devices. This aims at eliminating time spent on constructing,
+// measuring, and laying out views that are about to be discarded, and reducing
+// the volume of JNI jumps.
+BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
+             "SuppressIntermediateACUpdatesOnLowEndDevices",
+             DISABLED);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
