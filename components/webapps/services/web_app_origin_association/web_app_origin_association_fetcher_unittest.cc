@@ -26,9 +26,7 @@
 namespace {
 
 constexpr char kWebAppOriginAssociationFileContent[] =
-    R"({\"web_apps\": ["
-  "    { \"web_app_identity\": \"https://foo.com/\"}"
-  "]})";
+    R"( {\"https://foo.com/\": {} })";
 
 constexpr char kFetchResultHistogram[] =
     "Webapp.WebAppOriginAssociationFetchResult";

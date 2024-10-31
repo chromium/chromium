@@ -70,7 +70,7 @@ void WebAppOriginAssociationManager::Task::OnAssociationFileFetched(
   }
 
   owner_->GetParser()->ParseWebAppOriginAssociation(
-      *file_content,
+      *file_content, GetCurrentScopeExtension().origin,
       base::BindOnce(&WebAppOriginAssociationManager::Task::OnAssociationParsed,
                      weak_ptr_factory_.GetWeakPtr()));
 }

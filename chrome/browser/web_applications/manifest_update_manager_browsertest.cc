@@ -4166,11 +4166,7 @@ class ManifestUpdateManagerBrowserTest_ScopeExtensions
   std::string OriginAssociationFileFromAppIdentity(const GURL& app_identity) {
     constexpr char kOriginAssociationTemplate[] = R"(
     {
-      "web_apps": [
-        {
-          "web_app_identity": "$1"
-        }
-      ]
+      "$1" : {}
     })";
     return base::ReplaceStringPlaceholders(kOriginAssociationTemplate,
                                            {app_identity.spec()}, nullptr);

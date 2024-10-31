@@ -24,22 +24,16 @@ const std::string& kValidAndInvalidAppsUrl = "https://c.com";
 
 constexpr char kInvalidFileContent[] = "invalid";
 constexpr char kValidAppFileContent[] =
-    "{\"web_apps\": ["
-    "  {"
-    "    \"web_app_identity\": \"https://foo.com/index\""
-    "  }"
-    "]}";
+    R"({
+      "https://foo.com/index": {}
+    })";
 constexpr char kValidAndInvalidAppsFileContent[] =
-    "{\"web_apps\": ["
+    R"({
     // 1st app is valid.
-    "  {"
-    "    \"web_app_identity\": \"https://foo.com/index\""
-    "  },"
+      "https://foo.com/index": {},
     // 2nd app is invalid since kWebAppIdentity doesn't match.
-    "  {"
-    "    \"web_app_identity\": \"https://bar.com/\""
-    "  }"
-    "]}";
+      "https://bar.com/": {}
+    })";
 }  // namespace
 
 namespace web_app {

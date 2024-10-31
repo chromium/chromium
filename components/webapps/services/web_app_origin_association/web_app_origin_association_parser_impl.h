@@ -10,6 +10,7 @@
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "url/origin.h"
 
 namespace webapps {
 
@@ -29,6 +30,7 @@ class WebAppOriginAssociationParserImpl
   // webapps::mojom::WebAppOriginAssociationParser:
   void ParseWebAppOriginAssociation(
       const std::string& raw_json,
+      const url::Origin& origin,
       ParseWebAppOriginAssociationCallback callback) override;
 
  private:

@@ -205,6 +205,8 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
   content::ContentMockCertVerifier cert_verifier_;
 };
 
+// TODO(crbug.com/376498171): Add test that verifies functionality of 'scope'
+// field in the well-known file.
 IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
                        ExtendedLinkCapturingBasic) {
   InstallScopeExtendedWebApp(
@@ -222,9 +224,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "web_apps": [{
-              "web_app_identity": "$1"
-            }]
+            "$1" : {}
           })",
           {primary_origin_.Serialize()}, nullptr));
 
@@ -259,9 +259,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "web_apps": [{
-              "web_app_identity": "$1"
-            }]
+            "$1" : {}
           })",
           {primary_server_.GetURL("/simple.html").spec()}, nullptr));
 
@@ -352,9 +350,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsDisabledBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "web_apps": [{
-              "web_app_identity": "$1"
-            }]
+            "$1" : {}
           })",
           {primary_origin_.Serialize()}, nullptr));
 
@@ -431,9 +427,7 @@ constexpr char kTestManifestBody[] = R"({
 })";
 constexpr char kTestAssociatedOrigin[] = "https://test.com/";
 constexpr char kTestOriginAssociationFile[] = R"({
-  "web_apps": [{
-    "web_app_identity": "http://127.0.0.1:8000/"
-  }]
+    "http://127.0.0.1:8000/" : {}
 })";
 
 // Generated from script:
