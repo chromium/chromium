@@ -1907,7 +1907,7 @@ See your search engine’s instructions for deleting your search history, if app
         Get the best from the desktop browser you know and love on your iPhone.
       </message>
       <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on IPad">
-        The browser you love now on iPadOS
+        The browser you love now on iPad
       </message>
       <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
         The browser you love now on iOS
