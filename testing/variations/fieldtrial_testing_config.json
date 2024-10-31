@@ -12565,6 +12565,21 @@
             ]
         }
     ],
+    "JavaScriptPermissionBasedAPIMetricsEnabled": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "JavaScriptPermissionBasedAPIMetricsEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysOnDeviceClusteringContentClustering": [
         {
             "platforms": [
