@@ -466,6 +466,7 @@
 <translation id="3305294846493618482">повеќе</translation>
 <translation id="3310640316857623290">Латенцијата на DNS е значително над дозволениот праг</translation>
 <translation id="3321030238473337787">Брзина на репродукција</translation>
+<translation id="3327613592010997943">Уредов ќе може да го користите повторно <ph name="DAY" /> во <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Тестот се извршува</translation>
 <translation id="3340011300870565703">Нивото на батерија на десната слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">поставки</translation>
@@ -946,6 +947,7 @@
 <translation id="5760715441271661976">Состојба на порталот</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> се рестартира и се ажурира</translation>
 <translation id="576835345334454681">Осветленоста на екранот се зголеми</translation>
+<translation id="5775340474232476653">Вашиот наставник го заврши класот</translation>
 <translation id="5779818640587041940">Екранот нека биде вклучен при снимање</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5784136236926853061">Висока латенција на HTTP</translation>
@@ -1345,6 +1347,7 @@
 <translation id="757747079855995705">камен</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7595982850646262331">Уште <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Администраторот на <ph name="MANAGER" /> поставил кога може да се користи овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Променете ја позицијата со глувчето или копчињата со стрелки.</translation>
 <translation id="7618774594543487847">Неутрална</translation>
 <translation id="7620771111601174153">Дознајте повеќе во „Центарот за помош“</translation>
@@ -1447,6 +1450,7 @@
 <translation id="8088963492174775412">Притиснете за снимање</translation>
 <translation id="8094062939584182041">Дозволете Google да ви праќа е-пораки за проблемов</translation>
 <translation id="8104083085214006426">Користите отворена и небезбедна мрежа</translation>
+<translation id="8110942816572072814">Вашиот наставник го заклучи вашиот екран</translation>
 <translation id="811820734797650957">(Android) Може да се испрати пинг до порталот</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Потврди</translation>

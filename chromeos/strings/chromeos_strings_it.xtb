@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Impossibile avviare la scansione</translation>
 <translation id="1061864016440983342">Usa senza posizione</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> di <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Inserimento rapido non può essere utilizzato per le scorciatoie personalizzate.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall rilevato</translation>
 <translation id="1075811647922107217">Dimensioni pagina</translation>
@@ -470,6 +471,7 @@
 <translation id="3305294846493618482">altro</translation>
 <translation id="3310640316857623290">la latenza DNS è sostanzialmente al di sopra della soglia consentita</translation>
 <translation id="3321030238473337787">Velocità di riproduzione</translation>
+<translation id="3327613592010997943">Potrai usare di nuovo questo dispositivo <ph name="DAY" /> alle ore <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test in esecuzione</translation>
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">impostazioni</translation>
@@ -924,6 +926,7 @@
 <translation id="5595623927872580850">grigio</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5600027863942488546">Tasto <ph name="KEY_NAME" /> testato</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Account disconnesso</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
@@ -953,6 +956,7 @@
 <translation id="5760715441271661976">Stato portale</translation>
 <translation id="5763838252932650682">Riavvio e aggiornamento di <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumenta la luminosità del display</translation>
+<translation id="5775340474232476653">L'insegnante ha terminato il corso</translation>
 <translation id="5779818640587041940">Mantieni lo schermo attivo durante la registrazione</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
 <translation id="5784136236926853061">Latenza HTTP elevata</translation>
@@ -1124,6 +1128,7 @@
 <translation id="6517239166834772319">Esplora</translation>
 <translation id="6526200165918397681">Seleziona colore estratto dallo sfondo</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
+<translation id="6531528791584205545">inserimento rapido</translation>
 <translation id="6535178685492749208">Sei offline. Il feedback verrà inviato in un secondo momento.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">giovedì</translation>
@@ -1356,6 +1361,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="757747079855995705">pietra</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7595982850646262331">Tempo rimanente: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">L'amministratore di <ph name="MANAGER" /> ha impostato il periodo di utilizzo di <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Riposiziona con il mouse o i tasti Freccia.</translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7620771111601174153">Scopri di più nel Centro assistenza</translation>
@@ -1461,6 +1467,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8088963492174775412">Premi per registrare</translation>
 <translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
+<translation id="8110942816572072814">L'insegnante ha bloccato il tuo schermo</translation>
 <translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Conferma</translation>

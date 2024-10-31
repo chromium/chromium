@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">lainnya</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3321030238473337787">Kecepatan pemutaran</translation>
+<translation id="3327613592010997943">Anda akan dapat menggunakan perangkat ini lagi <ph name="DAY" /> pukul <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3340978935015468852">setelan</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Status Portal</translation>
 <translation id="5763838252932650682">Memulai ulang dan mengupdate <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Tingkatkan kecerahan layar</translation>
+<translation id="5775340474232476653">Pengajar telah mengakhiri kelas</translation>
 <translation id="5779818640587041940">Biarkan layar tetap aktif saat merekam</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784136236926853061">Latensi HTTP tinggi</translation>
@@ -1357,6 +1359,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="757747079855995705">batu</translation>
 <translation id="7590883480672980941">Setelan masukan</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
+<translation id="7600430297804876776">Administrator <ph name="MANAGER" /> telah menetapkan waktu untuk <ph name="DEVICE_TYPE" /> ini dapat digunakan.</translation>
 <translation id="7613724632293948900">Ubah posisi dengan tombol mouse atau panah.</translation>
 <translation id="7618774594543487847">Netral</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
@@ -1462,6 +1465,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8088963492174775412">Tekan untuk merekam</translation>
 <translation id="8094062939584182041">Izinkan Google mengirim email kepada Anda tentang masalah ini</translation>
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
+<translation id="8110942816572072814">Pengajar telah mengunci layar Anda</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>

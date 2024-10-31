@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">Zoraďuje sa od A po Z</translation>
 <translation id="3908308510347173149">Aktualizovať službu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Zoraďuje sa od Z po A</translation>
+<translation id="3918415141610210050">Karta</translation>
 <translation id="3924911262913579434">Je zapnutý režim <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Bezpätkové</translation>
 <translation id="3928666092801078803">Spojiť moje údaje</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">Sledované…</translation>
 <translation id="4335835283689002019">Bezpečné prehliadanie je vypnuté</translation>
 <translation id="4351244548802238354">Zavrieť dialógové okno</translation>
+<translation id="4352287748243729941">Chcete použiť heslo od poskytovateľa <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť, ak pridáte záložku</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Prehľad bezpečnosti</translation>
@@ -851,6 +853,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5005498671520578047">Kopírovanie hesla</translation>
 <translation id="5010886807652684893">Vizuálne zobrazenie</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> žiada o pripojenie</translation>
+<translation id="5012253429094023177">Zdá sa, že <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> a <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> súvisia. Než použijete toto heslo, uistite sa, že webu <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> dôverujete.</translation>
 <translation id="5016205925109358554">Pätkové</translation>
 <translation id="5017529052065664584">Posledných 15 minút</translation>
 <translation id="5032430150487044192">QR kód sa nedá vytvoriť</translation>
@@ -904,6 +907,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5304593522240415983">Toto pole nesmie byť prázdne</translation>
 <translation id="5306014156308790439">Tlačidlo Pridať do zbierky je deaktivované</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
+<translation id="5310963254742922113">Heslo bolo použité.</translation>
 <translation id="5316947901395241499">Ukladanie hesiel vypol váš správca</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319359161174645648">Google odporúča Chrome</translation>

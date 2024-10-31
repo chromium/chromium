@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">viac</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3321030238473337787">Rýchlosť prehrávania</translation>
+<translation id="3327613592010997943">Toto zariadenie budete môcť znova použiť <ph name="DAY" /> o <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test prebieha</translation>
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavenia</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">sivom</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5600027863942488546">Bol otestovaný kláves <ph name="KEY_NAME" /></translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Odhlásili ste sa</translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5630438231335788050">bauhausu</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> sa reštartuje a aktualizuje</translation>
 <translation id="576835345334454681">Zvýšenie jasu obrazovky</translation>
+<translation id="5775340474232476653">Učiteľ ukončil vyučovanie</translation>
 <translation id="5779818640587041940">Ponechať obrazovku pri nahrávaní zapnutú</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
@@ -1356,6 +1359,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="757747079855995705">kameň</translation>
 <translation id="7590883480672980941">Nastavenia vstupu</translation>
 <translation id="7595982850646262331">Zostáva <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Správca domény <ph name="MANAGER" /> nastavil, kedy sa toto zariadenie <ph name="DEVICE_TYPE" /> môže používať.</translation>
 <translation id="7613724632293948900">Premiestnenie myšou alebo klávesmi so šípkami.</translation>
 <translation id="7618774594543487847">Neutrálny</translation>
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
@@ -1461,6 +1465,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8088963492174775412">Nahráte stlačením</translation>
 <translation id="8094062939584182041">Povoliť Googlu posielať e‐maily týkajúce sa tohto problému</translation>
 <translation id="8104083085214006426">Používate otvorenú a nezabezpečenú sieť</translation>
+<translation id="8110942816572072814">Učiteľ vám uzamkol obrazovku</translation>
 <translation id="811820734797650957">(Android) Je možné testovať dostupnosť (ping) brány</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>

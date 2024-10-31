@@ -5005,6 +5005,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4538417792467843292">Slet ord</translation>
 <translation id="4538792345715658285">Installeret af virksomhedspolitik.</translation>
 <translation id="4540409690203718935">Der kan ikke oprettes forbindelse til Google Adgangskodeadministrator. Prøv igen om et par minutter</translation>
+<translation id="4540780316273593836">Der gik noget galt</translation>
 <translation id="4541123282641193691">Kontoen kunne ikke verificeres. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="4541505619120536051">Åbn altid</translation>
 <translation id="4541662893742891060">Der kunne ikke oprettes forbindelse til denne profil. Kontakt dit mobilselskab for at få teknisk support.</translation>
@@ -5968,7 +5969,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5240931875940563122">Log ind med Android-telefon</translation>
 <translation id="5242724311594467048">Skal "<ph name="EXTENSION_NAME" />" aktiveres?</translation>
 <translation id="5243522832766285132">Prøv igen om et øjeblik</translation>
-<translation id="5243752692914402705">Når du har aktiveret rulletilstand, skal du bevæge dit hoved i den retning, du vil rulle</translation>
 <translation id="5244234799035360187">OneDrive vises nu i appen Filer</translation>
 <translation id="5244466461749935369">Behold indtil videre</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
@@ -6815,7 +6815,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sættes snart på pause</translation>
 <translation id="586567932979200359">Du kører <ph name="PRODUCT_NAME" /> fra dets diskbillede. Hvis du installerer det på din computer, kan du køre det uden diskbilledet, og det vil blive opdateret løbende.</translation>
 <translation id="5865733239029070421">Sender automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
-<translation id="5866236843389439313">Træk venstre mundvige</translation>
 <translation id="5868434909835797817">Mikrofonen er slået fra på din enhed</translation>
 <translation id="5868479397518301468">Der opstod timeout for login</translation>
 <translation id="5868822853313956582">Følg enhedens farver</translation>
@@ -8830,6 +8829,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7352664183151911163">I alle dine apps og i din Chrome-browser</translation>
 <translation id="7353261921908507769">Dine kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>
+<translation id="7353432112255316844">Verificer din identitet</translation>
 <translation id="735361434055555355">Installerer Linux...</translation>
 <translation id="7354120289251608189">Nu kan du give din browser et nyt udseende, når du har lyst.</translation>
 <translation id="7356506068433555887">Palmetræ</translation>
@@ -9525,6 +9525,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="784273751836026224">Afinstaller Linux</translation>
 <translation id="784475655832336580">Fremhævning af elementet med tastaturfokus er ikke tilgængelig, når ChromeVox er aktiveret</translation>
 <translation id="7844992432319478437">Opdaterer diff</translation>
+<translation id="7846161022626028328">Der opstod en fejl. Prøv igen.</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7847212883280406910">Tryk på Ctrl+Alt+S for at skifte til <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Åbn alle (<ph name="URL_COUNT" />) i en ny fanegruppe</translation>
@@ -9548,7 +9549,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Fjern udvidelsen <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Tjeneste: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Træk højre mundvige</translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Sprog på din Google-konto</translation>
 <translation id="7864114920800968141">Om <ph name="NUM_MIN" /> min.</translation>

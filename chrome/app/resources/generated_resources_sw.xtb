@@ -4999,6 +4999,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4538417792467843292">Futa neno</translation>
 <translation id="4538792345715658285">Imesanidiwa na sera ya biashara.</translation>
 <translation id="4540409690203718935">Imeshindwa kufikia Kidhibiti cha Manenosiri cha Google. Jaribu tena baada ya dakika chache</translation>
+<translation id="4540780316273593836">Hitilafu Fulani Imetokea</translation>
 <translation id="4541123282641193691">Imeshindwa kuthibitisha akaunti yako. Tafadhali jaribu tena au zima kisha uwashe Chromebook yako.</translation>
 <translation id="4541505619120536051">Fungua kila wakati</translation>
 <translation id="4541662893742891060">Imeshindwa kuunganisha kwenye wasifu huu. Wasiliana na mtoa huduma wako ili upate usaidizi wa kiufundi.</translation>
@@ -5962,7 +5963,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5240931875940563122">Ingia katika akaunti ukitumia simu ya Android</translation>
 <translation id="5242724311594467048">Ungependa kuwasha "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Tafadhali jaribu tena baada ya muda mfupi</translation>
-<translation id="5243752692914402705">Baada ya kuanzisha hali ya kusogeza, sogeza kichwa chako katika upande ambao ungependa kusogeza</translation>
 <translation id="5244234799035360187">OneDrive sasa itaonekana katika programu ya Faili</translation>
 <translation id="5244466461749935369">Weka kwa sasa</translation>
 <translation id="5244474230056479698">Inasawazisha kwenye <ph name="EMAIL" /></translation>
@@ -6809,7 +6809,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5865508026715185451"><ph name="APP_NAME" /> itasimamishwa hivi karibuni</translation>
 <translation id="586567932979200359">Unaendesha <ph name="PRODUCT_NAME" /> kutoka kwenye picha yake ya diski. Kuisakinisha kwenye kompyuta yako kunakuruhusu kuendesha bila picha ya diski, na kunahakikisha itasasishwa.</translation>
 <translation id="5865733239029070421">Hutuma kiotomatiki takwimu za matumizi na ripoti za programu kuacha kufanya kazi kwa Google</translation>
-<translation id="5866236843389439313">Tanua pembe ya kushoto ya mdomo wako</translation>
 <translation id="5868434909835797817">Maikrofoni imezimwa kwenye kifaa chako</translation>
 <translation id="5868479397518301468">Muda wa kuingia katika akaunti umeisha</translation>
 <translation id="5868822853313956582">Fuata rangi za kifaa</translation>
@@ -8822,6 +8821,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7352651011704765696">Hitilafu fulani imetokea</translation>
 <translation id="7352664183151911163">Kwenye kivinjari cha Chrome na programu zako mbalimbali</translation>
 <translation id="7353261921908507769">Unaowasiliana nao wataweza kushiriki nawe wakiwa karibu. Uhamishaji hautaanza hadi utakapokubali.</translation>
+<translation id="7353432112255316844">Thibitisha Kwamba Ni Wewe</translation>
 <translation id="735361434055555355">Inasakinisha Linux...</translation>
 <translation id="7354120289251608189">Sasa unaweza kubadilisha mwonekano wa kivinjari chako wakati wowote.</translation>
 <translation id="7356506068433555887">Mtende</translation>
@@ -9519,6 +9519,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="784273751836026224">Ondoa Linux</translation>
 <translation id="784475655832336580">Kipengele cha kuangazia kipengee ukitumia kiangaziaji cha kibodi hakipatikani wakati ChromeVox imewashwa</translation>
 <translation id="7844992432319478437">Inasasisha tofauti</translation>
+<translation id="7846161022626028328">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="7846634333498149051">Kibodi</translation>
 <translation id="7847212883280406910">Bonyeza "Ctrl" na "Alt" na "S" kwa pamoja ili kubadilisha kwenda <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Fungua zote (<ph name="URL_COUNT" />) katika kikundi kipya cha vichupo</translation>
@@ -9542,7 +9543,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Ondoa kiendelezi cha <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Huduma: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Tanua pembe ya kulia ya kinywa chako</translation>
 <translation id="7861215335140947162">&amp;Vipakuzi</translation>
 <translation id="7861846108263890455">Lugha inayotumika kwenye Akaunti ya Google</translation>
 <translation id="7864114920800968141">Baada ya dak <ph name="NUM_MIN" /></translation>

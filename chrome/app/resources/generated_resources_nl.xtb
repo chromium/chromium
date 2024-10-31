@@ -4988,6 +4988,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4538417792467843292">Woord verwijderen</translation>
 <translation id="4538792345715658285">Geïnstalleerd door bedrijfsbeleid.</translation>
 <translation id="4540409690203718935">Kan Google Wachtwoordmanager niet bereiken. Probeer het over enkele minuten opnieuw.</translation>
+<translation id="4540780316273593836">Er is iets misgegaan</translation>
 <translation id="4541123282641193691">Kan je account niet verifiëren. Probeer het opnieuw of start je Chromebook opnieuw op.</translation>
 <translation id="4541505619120536051">Altijd openen</translation>
 <translation id="4541662893742891060">Kan geen verbinding maken met dit profiel. Neem contact op met je provider voor technische support.</translation>
@@ -5950,7 +5951,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5240931875940563122">Inloggen met Android-telefoon</translation>
 <translation id="5242724311594467048"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
 <translation id="5243522832766285132">Probeer het over enige tijd opnieuw</translation>
-<translation id="5243752692914402705">Als je de scrollmodus start, beweeg je je hoofd in de richting waarin je wilt scrollen</translation>
 <translation id="5244234799035360187">OneDrive staat nu in de app Bestanden</translation>
 <translation id="5244466461749935369">Voorlopig bewaren</translation>
 <translation id="5244474230056479698">Synchroniseren met <ph name="EMAIL" /></translation>
@@ -6794,7 +6794,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5865508026715185451"><ph name="APP_NAME" /> wordt straks onderbroken</translation>
 <translation id="586567932979200359">Je voert <ph name="PRODUCT_NAME" /> uit via de schijfkopie. Als je dit programma installeert op je computer, kun je dit uitvoeren zonder de schijfkopie te gebruiken en blijft het programma bijgewerkt.</translation>
 <translation id="5865733239029070421">Hiermee worden automatisch gebruiksstatistieken en crashrapporten naar Google verzonden</translation>
-<translation id="5866236843389439313">De linkerhoek van je mond optrekken</translation>
 <translation id="5868434909835797817">Microfoon staat uit op je apparaat</translation>
 <translation id="5868479397518301468">Time-out bij inloggen</translation>
 <translation id="5868822853313956582">Apparaatkleuren volgen</translation>
@@ -8806,6 +8805,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7352664183151911163">In je apps en in de Chrome-browser</translation>
 <translation id="7353261921908507769">Je contacten kunnen met je delen als ze in de buurt zijn. Overdrachten worden pas gestart nadat je ze accepteert.</translation>
+<translation id="7353432112255316844">Bevestigen dat jij het bent</translation>
 <translation id="735361434055555355">Linux installeren...</translation>
 <translation id="7354120289251608189">Je kunt je browser nu op elk moment een nieuwe look geven.</translation>
 <translation id="7356506068433555887">Palmboom</translation>
@@ -9500,6 +9500,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="784273751836026224">Linux verwijderen</translation>
 <translation id="784475655832336580">De markering van het item met toetsenbordfocus is niet beschikbaar als ChromeVox aanstaat</translation>
 <translation id="7844992432319478437">Diff bijwerken</translation>
+<translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7847212883280406910">Druk op Ctrl + Alt + S om over te schakelen naar <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Alles (<ph name="URL_COUNT" />) openen in nieuwe tabbladgroep</translation>
@@ -9523,7 +9524,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Extensie <ph name="EXTENSION_NAME" /> verwijderen</translation>
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">De rechterhoek van je mond optrekken</translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Taal van Google-account</translation>
 <translation id="7864114920800968141">Over <ph name="NUM_MIN" /> min</translation>

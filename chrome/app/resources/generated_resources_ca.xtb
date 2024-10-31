@@ -4988,6 +4988,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4538417792467843292">Suprimeix la paraula</translation>
 <translation id="4538792345715658285">Instal·lat per una política empresarial</translation>
 <translation id="4540409690203718935">No es pot accedir al gestor de contrasenyes de Google. Torna-ho a provar d'aquí a uns quants minuts.</translation>
+<translation id="4540780316273593836">S'ha produït un error</translation>
 <translation id="4541123282641193691">No s'ha pogut verificar el teu compte. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="4541505619120536051">Obre sempre</translation>
 <translation id="4541662893742891060">No es pot connectar a aquest perfil. Per obtenir assistència tècnica, contacta amb el teu operador.</translation>
@@ -5951,7 +5952,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5240931875940563122">Inicia la sessió amb un telèfon Android</translation>
 <translation id="5242724311594467048">Vols activar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Torna-ho a provar d'aquí a una estona</translation>
-<translation id="5243752692914402705">Un cop iniciïs el mode de desplaçament, mou el cap en la direcció cap a la qual vulguis fer el desplaçament</translation>
 <translation id="5244234799035360187">Ara OneDrive es mostrarà a l'aplicació Fitxers</translation>
 <translation id="5244466461749935369">Conserva per ara</translation>
 <translation id="5244474230056479698">S'està sincronitzant amb <ph name="EMAIL" /></translation>
@@ -6796,7 +6796,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> aviat es posarà en pausa</translation>
 <translation id="586567932979200359">Esteu executant <ph name="PRODUCT_NAME" /> des de la imatge de disc. Si instal·leu l'aplicació a l'equip, podreu executar-la sense la imatge de disc i es mantindrà actualitzada.</translation>
 <translation id="5865733239029070421">Envia automàticament a Google estadístiques d'ús i informes d'error</translation>
-<translation id="5866236843389439313">Estirar el costat esquerre de la boca</translation>
 <translation id="5868434909835797817">El micròfon està desactivat al dispositiu</translation>
 <translation id="5868479397518301468">S'ha esgotat el temps d'espera per iniciar la sessió</translation>
 <translation id="5868822853313956582">Segueix els colors del dispositiu</translation>
@@ -8808,6 +8807,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7352664183151911163">En totes les aplicacions i al navegador Chrome</translation>
 <translation id="7353261921908507769">Els teus contactes poden compartir contingut amb tu quan siguin a prop. Les transferències no començaran fins que no les acceptis.</translation>
+<translation id="7353432112255316844">Verifica la teva identitat</translation>
 <translation id="735361434055555355">S'està instal·lant Linux...</translation>
 <translation id="7354120289251608189">Ara pots donar un aspecte nou al navegador en qualsevol moment.</translation>
 <translation id="7356506068433555887">Palmera</translation>
@@ -9504,6 +9504,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="784273751836026224">Desinstal·la Linux</translation>
 <translation id="784475655832336580">El marcatge de l'element amb el focus del teclat no està disponible quan ChromeVox està activat</translation>
 <translation id="7844992432319478437">S'està actualitzant la diferència.</translation>
+<translation id="7846161022626028328">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="7846634333498149051">Teclat</translation>
 <translation id="7847212883280406910">Premeu Ctrl + Alt + S per canviar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Obre'ls tots (<ph name="URL_COUNT" />) en un grup de pestanyes nou</translation>
@@ -9527,7 +9528,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Suprimeix l'extensió <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Servei: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Estirar el costat dret de la boca</translation>
 <translation id="7861215335140947162">&amp;Baixades</translation>
 <translation id="7861846108263890455">Idioma del Compte de Google</translation>
 <translation id="7864114920800968141">D'aquí a <ph name="NUM_MIN" /> min</translation>

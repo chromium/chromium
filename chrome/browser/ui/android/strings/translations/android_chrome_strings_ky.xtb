@@ -606,6 +606,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3902562446536395999">А—Я тартибинде иреттелүүдө</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> түзмөгүн жаңыртуу</translation>
 <translation id="3911609878849982353">Я—А тартибинде иреттелүүдө</translation>
+<translation id="3918415141610210050">Өтмөк</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> күйүк</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Дайындарымды бириктирүү</translation>
@@ -692,6 +693,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="433213510553688132">Көз салынууда...</translation>
 <translation id="4335835283689002019">Коопсуз серептөө өчүк.</translation>
 <translation id="4351244548802238354">Диалогду жабуу</translation>
+<translation id="4352287748243729941"><ph name="PROVIDER" /> cырсөзүн колдоносузбу?</translation>
 <translation id="4355272626458588338">Маанилүү барактарды кайра ачуу үчүн кыстармаларды кошуп коюңуз</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Коопсуздук тууралуу жалпы маалымат</translation>
@@ -851,6 +853,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
 <translation id="5010886807652684893">Визуалдык көрүнүш</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты туташканы жатат</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> менен <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> бири-бирине байланышкан окшойт. Cырсөзүңүздү <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> сайтына ишенсеңиз гана колдонуңуз.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Акыркы 15 мүнөттө</translation>
 <translation id="5032430150487044192">QR код түзүлгөн жок</translation>
@@ -904,6 +907,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5304593522240415983">Бул талаа бош болбошу керек</translation>
 <translation id="5306014156308790439">"Жыйнакка кошуу" баскычы өчүрүлгөн</translation>
 <translation id="5308380583665731573">Туташуу</translation>
+<translation id="5310963254742922113">Сырсөз колдонулду.</translation>
 <translation id="5316947901395241499">Администраторуңуз сырсөздөрдү сактоону өчүрүп койду</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5319359161174645648">Google Chrome'ду сунуштайт</translation>

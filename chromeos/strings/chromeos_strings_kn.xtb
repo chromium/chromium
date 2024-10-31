@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
 <translation id="3310640316857623290">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಗಮನಾರ್ಹವಾಗಿ ಮೇಲಿದೆ</translation>
 <translation id="3321030238473337787">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗ</translation>
+<translation id="3327613592010997943">ನೀವು ಈ ಸಾಧನವನ್ನು ಮತ್ತೆ <ph name="DAY" /> ರಂದು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
 <translation id="3328783797891415197">ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3340011300870565703">ಸಾಧನದ ಬಲ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="3340978935015468852">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">ಪೋರ್ಟಲ್ ಸ್ಥಿತಿ</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ ಹಾಗೂ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="576835345334454681">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
+<translation id="5775340474232476653">ಕ್ಲಾಸ್ ಅನ್ನು ನಿಮ್ಮ ಶಿಕ್ಷಕರು ಕೊನೆಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="5779818640587041940">ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವಾಗ ಸ್ಕ್ರೀನ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5784136236926853061">ಅಧಿಕ HTTP ವಿಳಂಬ</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">ಕಲ್ಲು</translation>
 <translation id="7590883480672980941">ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
+<translation id="7600430297804876776">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಯಾವಾಗ ಬಳಸಬಹುದೆಂದು <ph name="MANAGER" /> ನಿರ್ವಾಹಕರು ಸೆಟ್‌ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="7613724632293948900">ಮೌಸ್ ಅಥವಾ ಬಾಣದ ಕೀಗಳೊಂದಿಗೆ ಸ್ಥಾನ ಬದಲಾಯಿಸಿ.</translation>
 <translation id="7618774594543487847">ತಟಸ್ಥ</translation>
 <translation id="7620771111601174153">ಸಹಾಯ ಕೇಂದ್ರದಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">ರೆಕಾರ್ಡ್ ಮಾಡಲು ಒತ್ತಿರಿ</translation>
 <translation id="8094062939584182041">ಈ ಸಮಸ್ಯೆಯ ಕುರಿತು ನಿಮಗೆ ಇಮೇಲ್ ಮಾಡಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="8104083085214006426">ನೀವು ಓಪನ್ ಮತ್ತು ಸುರಕ್ಷಿತವಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ</translation>
+<translation id="8110942816572072814">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಲಾಕ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="811820734797650957">(Android) ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>

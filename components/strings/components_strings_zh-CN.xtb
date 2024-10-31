@@ -2264,6 +2264,7 @@
 <translation id="5087286274860437796">服务器的证书目前无效。</translation>
 <translation id="5087580092889165836">添加新卡</translation>
 <translation id="5088142053160410913">操作人员须知</translation>
+<translation id="5089791650329866127">此功能会使用您已通过自动填充功能保存的信息，例如您的地址</translation>
 <translation id="5090647584136241764">添加包含类似商品的标签页，即可轻松比较您关心的细节部分</translation>
 <translation id="5093232627742069661">Z 型折</translation>
 <translation id="5094747076828555589">此服务器无法证明它是<ph name="DOMAIN" />；Chromium不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -3273,7 +3274,6 @@
 <translation id="6936976777388162184">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>
 <translation id="6944557544071529399">策略游戏</translation>
 <translation id="6944692733090228304">您在一个不受 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的网站上输入了您的密码。为了保护您的账号，请不要在其他应用和网站上重复使用您的密码。</translation>
-<translation id="6945221475159498467">选择</translation>
 <translation id="6946949206576443118">在 Chrome 中搜索网络信息</translation>
 <translation id="6948051842255602737">游戏结束，您的得分是 <ph name="SCORE" />。</translation>
 <translation id="6948701128805548767">要查看取货方式和要求，请选择相应地址</translation>
@@ -4537,6 +4537,7 @@
 <translation id="9211461151375991073">输入 @ 搜索 <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">自定义外观</translation>
 <translation id="9215416866750762878">有一款应用正在阻止 Chrome 安全地连接到此网站</translation>
+<translation id="921738974253889319">此功能会使用您已通过自动填充功能保存的信息，例如您的地址。您可以在此页面上查看和管理这些数据。</translation>
 <translation id="92178312226016010">您正在跟踪此商品。</translation>
 <translation id="9218430445555521422">设为默认</translation>
 <translation id="9219103736887031265">图片</translation>

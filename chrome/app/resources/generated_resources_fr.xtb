@@ -425,6 +425,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1288037062697528143">L'éclairage nocturne sera activé automatiquement au coucher du soleil</translation>
 <translation id="1288300545283011870">Propriétés relatives à la voix</translation>
 <translation id="1289619947962767206">Cette option n'est plus compatible. Pour présenter un onglet, utilisez <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Si vous sélectionnez un geste déjà attribué, il sera dissocié de son action d'origine.</translation>
 <translation id="1291119821938122630">Conditions d'utilisation de "<ph name="MANAGER" />"</translation>
 <translation id="1291421198328146277">Réinitialiser les touches</translation>
 <translation id="1292849930724124745">Insérez votre carte à puce pour rester connecté</translation>
@@ -4989,6 +4990,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4538417792467843292">Supprimer le mot</translation>
 <translation id="4538792345715658285">Installée conformément à une règle d'entreprise</translation>
 <translation id="4540409690203718935">Impossible d'accéder au Gestionnaire de mots de passe de Google. Réessayez dans quelques minutes.</translation>
+<translation id="4540780316273593836">Un problème est survenu.</translation>
 <translation id="4541123282641193691">Impossible de valider votre compte. Veuillez réessayer ou redémarrer votre Chromebook.</translation>
 <translation id="4541505619120536051">Toujours ouvrir</translation>
 <translation id="4541662893742891060">Impossible de se connecter à ce profil. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
@@ -5951,7 +5953,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5240931875940563122">Se connecter depuis un Android</translation>
 <translation id="5242724311594467048">Activer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="5243522832766285132">Veuillez réessayer dans quelques instants</translation>
-<translation id="5243752692914402705">Une fois le mode défilement activé, bougez la tête dans la direction souhaitée</translation>
 <translation id="5244234799035360187">OneDrive apparaît désormais dans l'appli Fichiers</translation>
 <translation id="5244466461749935369">Conserver pour l'instant</translation>
 <translation id="5244474230056479698">Synchronisation avec <ph name="EMAIL" />…</translation>
@@ -6742,6 +6743,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5832970156002835240">Autoriser sur tous les sites</translation>
 <translation id="5833397272224757657">Utilise le contenu des sites que vous consultez, votre activité de navigation et vos interactions pour la personnalisation</translation>
 <translation id="5833726373896279253">Ces paramètres ne peuvent être modifiés que par le propriétaire :</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Ne pas autoriser les sites à utiliser JavaScript</translation>
 <translation id="583431638776747">Site non disponible</translation>
 <translation id="5834581999798853053">Environ <ph name="TIME" /> minutes restantes</translation>
@@ -6797,7 +6799,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5865508026715185451">L'application <ph name="APP_NAME" /> sera bientôt suspendue</translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
-<translation id="5866236843389439313">Étirer le coin gauche de votre bouche</translation>
 <translation id="5868434909835797817">Le micro est désactivé sur votre appareil</translation>
 <translation id="5868479397518301468">Délai de connexion dépassé</translation>
 <translation id="5868822853313956582">Suivre les couleurs de l'appareil</translation>
@@ -8812,6 +8813,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7352664183151911163">Dans toutes vos applis et dans le navigateur Chrome</translation>
 <translation id="7353261921908507769">Vos contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les aurez pas acceptés.</translation>
+<translation id="7353432112255316844">Confirmer votre identité</translation>
 <translation id="735361434055555355">Installation de Linux…</translation>
 <translation id="7354120289251608189">Vous pouvez à présent modifier l'apparence de votre navigateur à tout moment.</translation>
 <translation id="7356506068433555887">Palmier</translation>
@@ -9508,6 +9510,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="784273751836026224">Désinstaller Linux</translation>
 <translation id="784475655832336580">"Mettre en surbrillance l'élément sélectionné au clavier" non disponible quand ChromeVox est activé</translation>
 <translation id="7844992432319478437">Différence de mise à jour</translation>
+<translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="7846634333498149051">Clavier</translation>
 <translation id="7847212883280406910">Appuyez sur Ctrl+Alt+S pour passer à <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7848244988854036372">Tout ouvrir (<ph name="URL_COUNT" />) dans un nouveau groupe d'onglets</translation>
@@ -9531,7 +9534,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Supprimer l'extension <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Service : <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Étirer le coin droit de votre bouche</translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7861846108263890455">Langue du compte Google</translation>
 <translation id="7864114920800968141">Dans <ph name="NUM_MIN" /> min</translation>

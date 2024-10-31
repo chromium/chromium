@@ -4994,6 +4994,7 @@
 <translation id="4538417792467843292">حذف كلمة</translation>
 <translation id="4538792345715658285">تمّ التثبيت بموجب سياسة المؤسسة.</translation>
 <translation id="4540409690203718935">‏يتعذّر الوصول إلى "مدير كلمات المرور في Google"، يُرجى إعادة المحاولة بعد بضع دقائق</translation>
+<translation id="4540780316273593836">حدث خطأٌ</translation>
 <translation id="4541123282641193691">‏تعذّر التحقق من حسابك. يُرجى المحاولة مرة أخرى أو إعادة تشغيل Chromebook.</translation>
 <translation id="4541505619120536051">مفتوح دائمًا</translation>
 <translation id="4541662893742891060">تعذّر الربط بهذا الملف الشخصي. للحصول على الدعم الفني، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
@@ -5957,7 +5958,6 @@
 <translation id="5240931875940563122">‏تسجيل الدخول باستخدام هاتف Android</translation>
 <translation id="5242724311594467048">تفعيل "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="5243522832766285132">يُرجى إعادة المحاولة بعد بضع لحظات</translation>
-<translation id="5243752692914402705">بعد بدء وضع الانتقال للأعلى أو للأسفل، حرِّك رأسك في الاتجاه الذي تريد الانتقال إليه</translation>
 <translation id="5244234799035360187">‏ستظهر مساحة تخزين OneDrive الآن في تطبيق "الملفات".</translation>
 <translation id="5244466461749935369">عدم إلغاء تثبيت الإضافة حاليًا</translation>
 <translation id="5244474230056479698">المزامنة مع <ph name="EMAIL" /></translation>
@@ -6804,7 +6804,6 @@
 <translation id="5865508026715185451">سيتم إيقاف تطبيق <ph name="APP_NAME" /> مؤقتًا بعد قليل.</translation>
 <translation id="586567932979200359">أنت تشغّل <ph name="PRODUCT_NAME" /> من صورته على القرص. ويسمح لك تثبيته على الكمبيوتر بتشغيله بدون الحاجة إلى صورة القرص، كما يضمن ذلك الحفاظ على تحديثه بشكل مستمر.</translation>
 <translation id="5865733239029070421">‏يُرسِل إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا.</translation>
-<translation id="5866236843389439313">مدّ زاوية الفم اليسرى</translation>
 <translation id="5868434909835797817">الميكروفون غير مفعَّل على جهازك.</translation>
 <translation id="5868479397518301468">انتهت مهلة تسجيل الدخول إلى الملف الشخصي</translation>
 <translation id="5868822853313956582">استخدام ألوان الجهاز</translation>
@@ -8826,6 +8825,7 @@
 <translation id="7352651011704765696">حدث خطأ ما</translation>
 <translation id="7352664183151911163">‏في تطبيقاتك ومتصفِّح Chrome</translation>
 <translation id="7353261921908507769">يمكن لجهات الاتصال القريبة منك مشاركة الوسائط معك. ولن تبدأ عمليات النقل إلا عند موافقتك.</translation>
+<translation id="7353432112255316844">إثبات هويّتك</translation>
 <translation id="735361434055555355">‏جارٍ تثبيت نظام التشغيل Linux...</translation>
 <translation id="7354120289251608189">يمكنك الآن إضفاء مظهر جديد على المتصفِّح في أي وقت.</translation>
 <translation id="7356506068433555887">نخلة</translation>
@@ -9521,6 +9521,7 @@
 <translation id="784273751836026224">‏إلغاء تثبيت نظام التشغيل Linux</translation>
 <translation id="784475655832336580">‏عندما يكون ChromeVox مفعَّلاً، لا يمكن تفعيل ميزة تمييز العناصر باستخدام تركيز لوحة المفاتيح.</translation>
 <translation id="7844992432319478437">تحديث الاختلافات</translation>
+<translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="7846634333498149051">لوحة المفاتيح</translation>
 <translation id="7847212883280406910">‏اضغط على Ctrl + Alt + S للتبديل إلى <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">‏فتح كل عناوين URL (يبلغ عددها <ph name="URL_COUNT" />) في مجموعة علامات تبويب جديدة</translation>
@@ -9544,7 +9545,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">إزالة الإضافة "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="786073089922909430">الخدمة: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">مدّ زاوية الفم اليمنى</translation>
 <translation id="7861215335140947162">ال&amp;تنزيلات</translation>
 <translation id="7861846108263890455">‏لغة حساب Google</translation>
 <translation id="7864114920800968141">بعد <ph name="NUM_MIN" /> د</translation>

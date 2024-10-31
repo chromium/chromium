@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Nie udało się rozpocząć skanowania</translation>
 <translation id="1061864016440983342">Używaj bez lokalizacji</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">W przypadku niestandardowych skrótów nie można używać szybkiego wstawiania.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Odkrywaj</translation>
 <translation id="6526200165918397681">Dopasuj do tapety</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
+<translation id="6531528791584205545">szybkie wstawianie</translation>
 <translation id="6535178685492749208">Jesteś offline. Opinia zostanie wysłana później.</translation>
 <translation id="6543412779435705598">taco</translation>
 <translation id="6550369542114086980">w czwartek</translation>

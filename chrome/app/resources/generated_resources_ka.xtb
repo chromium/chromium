@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">ისტორიის სინქრონიზაცია</translation>
 <translation id="1110155001042129815">დაელოდეთ</translation>
 <translation id="1110965959145884739">აირჩიეთ, რომელი ენები დაინსტალირდეს ამ მოწყობილობაზე დისკზე მეხსიერების დაზოგვის მიზნით, ენის ფაილები ზიარდება მომხმარებლებს შორის. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">ამ PIN-კოდის გამოყენებით თქვენს ბავშვს შეუძლია თავის ტელეფონში შესვლა</translation>
 <translation id="1112420131909513020">ფონური ჩანართი იყენებს Bluetooth-კავშირს</translation>
 <translation id="1112998165730922436">ტრანსლირება დაპაუზებულია</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">აირჩიეთ სახელი და ფერთა თემა, პროფილები რომ განასხვავოთ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> — ჯგუფის „<ph name="GROUP_NAME" />“ ნაწილი</translation>
 <translation id="1130676589211693127">მარჯვენა ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">თქვენი ბავშვის PIN-კოდი განახლდა</translation>
 <translation id="1133418583142946603">მიმდინარე ჩანართის დამატება</translation>
 <translation id="1134363466745332968">დათვალიერების ისტორიაში ძიება, სათაურისა და URL-ის ძიების გარდა, შეგიძლიათ გვერდზე განთავსებული კონტენტის მიხედვითაც. ეს უფრო გაუმჯობესებულ შედეგებს მოგცემთ მიუხედავად იმისა, დათვალიერების ისტორიაში ეძებთ მისამართთა ზოლიდან @history-ს გამოყენებით თუ უშუალოდ ისტორიის გვერდიდან.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> / <ph name="EMOJI_COUNT" />-დან.</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">თქვენ შესული ხართ Chrome-ში ამ მოწყობილობებზე. ასე რომ, შეგიძლიათ გამოიყენოთ ისინი უსაფრთხოების გასაღებების სახით.</translation>
 <translation id="1398853756734560583">გაშლა</translation>
 <translation id="1399261165075500043">Google Play-ს მომსახურების პირობები ვერ ჩაიტვირთა</translation>
+<translation id="1400243387594338234">ამ PIN-კოდის გამოყენებით შეგიძლიათ თქვენს ტელეფონში შესვლა</translation>
 <translation id="1401216725754314428">შეიტყვეთ მეტი დაკავშირებული საიტების შესახებ ახალ ჩანართში</translation>
 <translation id="1402426911829176748">მიმდინარეობს თქვენს მოწყობილობასთან დაკავშირება</translation>
 <translation id="1403222014593521787">პროქსი-სერვერთან დაკავშირება ვერ მოხერხდა</translation>
@@ -1926,6 +1929,7 @@
 <translation id="2326931316514688470">პროგრამის ხე&amp;ლახლა ჩატვირთვა</translation>
 <translation id="2327492829706409234">პროგრამის ჩართვა</translation>
 <translation id="2327920026543055248">შეიყვანეთ <ph name="CHARACTER" /> სიმბოლო <ph name="TOTAL" />-დან</translation>
+<translation id="2328137272841210255">თქვენი PIN-ის აღდგენა</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" />-ის გამოსაყენებლად გადატვირთეთ მოწყობილობა.</translation>
 <translation id="2328636661627946415">როცა ინკოგნიტო რეჟიმით სარგებლობთ, საიტებს თქვენ მიერ ვების დათვალიერების აქტივობის გაგება მხოლოდ ქუქი-ჩანაწერების მეშვეობით შეუძლია. ინკოგნიტო სესიის დასრულების შემდეგ ქუქი-ჩანაწერები წაიშლება.</translation>
 <translation id="2329597144923131178">შედით სისტემაში თქვენი სანიშნეების, ისტორიის, პაროლების და სხვა პარამეტრების ყველა თქვენს მოწყობილობაში მისაღებად.</translation>
@@ -3774,6 +3778,7 @@
 <translation id="3670480940339182416">საიტებს შეუძლია V8 ოპტიმიზატორის გამოყენება</translation>
 <translation id="3672681487849735243">აღმოჩენილია ქარხნული შეცდომა</translation>
 <translation id="3673097791729989571">შესვლის ჰოსტია <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">თქვენი PIN-კოდი განახლდა</translation>
 <translation id="3673622964532248901">ამ მოწყობილობაზე ტრანსლირების უფლება არ გაქვთ.</translation>
 <translation id="3675683621636519363">ChromeOS Flex-ს გაეგზავნოს ავარიულად გათიშვის ანგარიშები, ასევე, დიაგნოსტიკური და გამოყენების მონაცემები</translation>
 <translation id="367645871420407123">დატოვეთ ცარიელი, თუ გსურთ დააყენოთ ძირეული პაროლი საწყის სატესტო გამოსახულების ღირებულებაზე</translation>
@@ -4991,6 +4996,7 @@
 <translation id="4538417792467843292">სიტყვის წაშლა</translation>
 <translation id="4538792345715658285">დაყენებულია ორგანიზაციის პოლიტიკის შესაბამისად.</translation>
 <translation id="4540409690203718935">Google პაროლების მმართველი მიუწვდომელია. ცადეთ ხელახლა რამდენიმე წუთში</translation>
+<translation id="4540780316273593836">წარმოიქმნა შეფერხება</translation>
 <translation id="4541123282641193691">თქვენი ანგარიში ვერ დადასტურდა. ცადეთ ხელახლა ან გადატვირთეთ თქვენი Chromebook.</translation>
 <translation id="4541505619120536051">ყოველთვის გახსნა</translation>
 <translation id="4541662893742891060">ამ პროფილთან დაკავშირება ვერ მოხერხდა. ტექნიკური მხარდაჭერისთვის მიმართეთ თქვენს ოპერატორს.</translation>
@@ -5954,7 +5960,6 @@
 <translation id="5240931875940563122">შესვლა Android ტელეფონით</translation>
 <translation id="5242724311594467048">ჩავრთოთ "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">გთხოვთ, სცადოთ რამდენიმე წუთში</translation>
-<translation id="5243752692914402705">გადაადგილების რეჟიმის ჩართვის შემდეგ გაამოძრავეთ თავი იმ მიმართულებით, საითაც გსურთ გადაადგილება</translation>
 <translation id="5244234799035360187">OneDrive ახლა გამოჩნდება ფაილების აპში</translation>
 <translation id="5244466461749935369">ჯერ-ჯერობით შენარჩუნება</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />-თან სინქრონიზაცია</translation>
@@ -6801,7 +6806,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> მალე დაპაუზდება</translation>
 <translation id="586567932979200359">თქვენ გაშვებული გაქვთ <ph name="PRODUCT_NAME" /> დისკის გამოსახულებიდან. თუ დააინსტალირებთ მას კომპიუტერში, შეძლებთ მის გაშვებას დისკის გამოსახულების გარეშე და პროგრამა ყოველთვის განახლებული გექნებათ.</translation>
 <translation id="5865733239029070421">ავტომატური აგზავნის Google-ში გამოყენების სტატისტიკასა და შეცდომების ანგარიშებს</translation>
-<translation id="5866236843389439313">გაწელეთ პირის მარცხენა კუთხე</translation>
 <translation id="5868434909835797817">მიკროფონი გამორთულია თქვენი მოწყობილობისთვის</translation>
 <translation id="5868479397518301468">სისტემაში შესვლის დრო ამოიწურა</translation>
 <translation id="5868822853313956582">მოწყობილობის ფერების გათვალისწინება</translation>
@@ -8813,6 +8817,7 @@
 <translation id="7352651011704765696">რაღაც არასწორად წარიმართა</translation>
 <translation id="7352664183151911163">თქვენს აპებსა და Chrome ბრაუზერში</translation>
 <translation id="7353261921908507769">თქვენი კონტაქტები შეძლებენ კონტენტის თქვენთვის გაზიარებას, როცა ახლოს იქნებიან. მონაცემთა გადაცემა არ დაიწყება, სანამ არ დაეთანხმებით.</translation>
+<translation id="7353432112255316844">დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="735361434055555355">მიმდინარეობს Linux-ის ინსტალაცია...</translation>
 <translation id="7354120289251608189">ამიერიდან ნებისმიერ დროს შეგიძლიათ თქვენს ბრაუზერს ახლი იერი შესძინოთ.</translation>
 <translation id="7356506068433555887">პალმა</translation>
@@ -9508,6 +9513,7 @@
 <translation id="784273751836026224">Linux-ის დეინსტალაცია</translation>
 <translation id="784475655832336580">ერთეულის გამოყოფა კლავიატურით ფოკუსირებით მიუწვდომელია, როცა ChromeVox ჩართულია</translation>
 <translation id="7844992432319478437">დიფ განახლება</translation>
+<translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="7846634333498149051">კლავიატურა</translation>
 <translation id="7847212883280406910">დააჭირეთ Ctrl+Alt+S რომ მოხდეს <ph name="IDS_SHORT_PRODUCT_OS_NAME" />-ზე გადართვა</translation>
 <translation id="7848244988854036372">ყველას (<ph name="URL_COUNT" />) გახსნა ჩანართების ახალ ჯგუფში</translation>
@@ -9531,7 +9537,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">წაიშალოს გაფართოება <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">სერვისი: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">გაწელეთ პირის მარჯვენა კუთხე</translation>
 <translation id="7861215335140947162">ჩ&amp;ამოტვირთვები</translation>
 <translation id="7861846108263890455">Google ანგარიშის ენა</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> წუთში</translation>
@@ -11308,6 +11313,7 @@
 <translation id="9101691533782776290">აპლ.გაშვება</translation>
 <translation id="9102610709270966160">გაფართოების ჩართვა</translation>
 <translation id="9102864637938129124">საიტებსა და რეკლამის განმთავსებლებს შეუძლიათ რეკლამის ეფექტურობის გარკვევა. ეს პარამეტრი ჩართულია.</translation>
+<translation id="9103341231213089378">ტრანსლირებისთვის დაუშვით Chrome-ის წვდომა აქ: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; ლოკალური ქსელი &gt; Chrome</translation>
 <translation id="9103868373786083162">დააჭირეთ უკან გასასვლელად, კონტექსტურ მენიუს ისტორიის სანახავად.</translation>
 <translation id="9107096627210171112">თა&amp;რგმნა...</translation>
 <translation id="9107624673674616016">ფერადი ფანქარი</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">আরও</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3321030238473337787">প্লেব্যাক স্পিড</translation>
+<translation id="3327613592010997943">আপনি আবার এই ডিভাইস <ph name="DAY" /> <ph name="TIME" />-এ ব্যবহার করতে পারবেন।</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="3340978935015468852">সেটিংস</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">পোর্টালের স্থিতি</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> রিস্টার্ট ও আপডেট করা হচ্ছে</translation>
 <translation id="576835345334454681">ডিসপ্লের উজ্জ্বলতা বাড়ানোর বোতাম</translation>
+<translation id="5775340474232476653">আপনার শিক্ষক ক্লাস করানো শেষ করেছেন</translation>
 <translation id="5779818640587041940">রেকর্ডিংয়ের সময় স্ক্রিন চালু রাখুন</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5784136236926853061">HTTP লেটেন্সি বেশি</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">পাথর</translation>
 <translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
+<translation id="7600430297804876776">এই <ph name="DEVICE_TYPE" /> ডিভাইস কখন ব্যবহার করা যাবে তা <ph name="MANAGER" /> অ্যাডমিনিস্ট্রেটর সেট করে দিয়েছেন।</translation>
 <translation id="7613724632293948900">মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে অন্য জায়গায় সরান।</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">রেকর্ড করতে প্রেস করুন</translation>
 <translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
+<translation id="8110942816572072814">আপনার শিক্ষক আপনার স্ক্রিন লক করে দিয়েছেন</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>

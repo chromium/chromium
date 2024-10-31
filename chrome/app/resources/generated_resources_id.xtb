@@ -424,6 +424,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1288037062697528143">Fitur Cahaya Malam akan otomatis aktif saat matahari terbenam</translation>
 <translation id="1288300545283011870">Properti Ucapan</translation>
 <translation id="1289619947962767206">Opsi ini tidak lagi didukung. Untuk menampilkan tab, gunakan <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Memilih gestur yang sudah ditetapkan akan menghapus gestur tersebut dari tindakan awalnya.</translation>
 <translation id="1291119821938122630">Persyaratan Layanan <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Reset tombol</translation>
 <translation id="1292849930724124745">Pasang kartu smart agar tetap login</translation>
@@ -5003,6 +5004,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4538417792467843292">Hapus kata</translation>
 <translation id="4538792345715658285">Dipasang oleh kebijakan perusahaan.</translation>
 <translation id="4540409690203718935">Tidak dapat menjangkau Pengelola Sandi Google. Coba lagi dalam beberapa menit</translation>
+<translation id="4540780316273593836">Terjadi Error</translation>
 <translation id="4541123282641193691">Tidak dapat memverifikasi akun Anda. Coba lagi atau mulai ulang Chromebook.</translation>
 <translation id="4541505619120536051">Selalu buka</translation>
 <translation id="4541662893742891060">Tidak dapat terhubung ke profil ini. Untuk dukungan teknis, hubungi operator Anda.</translation>
@@ -5350,7 +5352,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4801512016965057443">Izinkan roaming data seluler</translation>
 <translation id="4803599447809045620">Nonaktifkan link</translation>
 <translation id="4804311503028830356">Klik panah kembali untuk menjelajahi opsi lain</translation>
-<translation id="4804818685124855865">Putuskan koneksi</translation>
+<translation id="4804818685124855865">Berhenti hubungkan</translation>
 <translation id="4804827417948292437">Avokad</translation>
 <translation id="4806071198808203109">Simpan &amp;frame video sebagai...</translation>
 <translation id="4806457879608775995">Tinjau persyaratan ini dan kontrol data Anda</translation>
@@ -5966,7 +5968,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5240931875940563122">Login dengan ponsel Android</translation>
 <translation id="5242724311594467048">Aktifkan "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Coba lagi setelah beberapa saat</translation>
-<translation id="5243752692914402705">Setelah Anda memulai mode scroll, gerakkan kepala Anda ke arah yang Anda inginkan untuk men-scroll</translation>
 <translation id="5244234799035360187">OneDrive kini akan muncul di aplikasi File</translation>
 <translation id="5244466461749935369">Simpan dulu</translation>
 <translation id="5244474230056479698">Menyinkronkan dengan <ph name="EMAIL" /></translation>
@@ -6757,6 +6758,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5832970156002835240">Izinkan di semua situs</translation>
 <translation id="5833397272224757657">Menggunakan konten di situs yang Anda buka serta aktivitas browser dan interaksi untuk personalisasi</translation>
 <translation id="5833726373896279253">Setelan ini hanya boleh diubah-ubah oleh pemiliknya:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Jangan izinkan situs menggunakan JavaScript</translation>
 <translation id="583431638776747">Situs tidak tersedia</translation>
 <translation id="5834581999798853053">Sekitar <ph name="TIME" /> menit lagi</translation>
@@ -6812,7 +6814,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5865508026715185451"><ph name="APP_NAME" /> akan segera dijeda</translation>
 <translation id="586567932979200359">Anda menjalankan <ph name="PRODUCT_NAME" /> dari citra disknya. Dengan memasangnya di komputer, Anda dapat menjalankannya tanpa citra disk, dan memastikannya tetap mutakhir.</translation>
 <translation id="5865733239029070421">Secara otomatis mengirimkan statistik penggunaan dan laporan kerusakan ke Google</translation>
-<translation id="5866236843389439313">Memiringkan bibir ke kiri</translation>
 <translation id="5868434909835797817">Mikrofon nonaktif di perangkat Anda</translation>
 <translation id="5868479397518301468">Waktu login habis</translation>
 <translation id="5868822853313956582">Ikuti warna perangkat</translation>
@@ -8825,6 +8826,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7352651011704765696">Terjadi error</translation>
 <translation id="7352664183151911163">Di seluruh aplikasi dan browser Chrome Anda</translation>
 <translation id="7353261921908507769">Kontak dapat berbagi dengan Anda saat mereka berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
+<translation id="7353432112255316844">Verifikasi Diri Anda</translation>
 <translation id="735361434055555355">Menginstal Linux...</translation>
 <translation id="7354120289251608189">Anda kini dapat memberikan tampilan baru ke browser kapan saja.</translation>
 <translation id="7356506068433555887">Pohon palem</translation>
@@ -9520,6 +9522,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="784273751836026224">Uninstal Linux</translation>
 <translation id="784475655832336580">Sorot item dengan fokus keyboard tidak tersedia saat ChromeVox diaktifkan</translation>
 <translation id="7844992432319478437">Memperbarui diff</translation>
+<translation id="7846161022626028328">Terjadi error. Coba lagi.</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7847212883280406910">Tekan Ctrl + Alt + S untuk beralih ke <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Buka semua (<ph name="URL_COUNT" />) di grup tab baru</translation>
@@ -9543,7 +9546,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Hapus ekstensi <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Layanan: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Memiringkan bibir ke kanan</translation>
 <translation id="7861215335140947162">Un&amp;duhan</translation>
 <translation id="7861846108263890455">Bahasa Akun Google</translation>
 <translation id="7864114920800968141">Dalam <ph name="NUM_MIN" /> mnt</translation>

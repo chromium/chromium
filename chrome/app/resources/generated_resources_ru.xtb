@@ -4993,6 +4993,7 @@
 <translation id="4538417792467843292">Удалить слово</translation>
 <translation id="4538792345715658285">Установлено в соответствии с корпоративным правилом.</translation>
 <translation id="4540409690203718935">Google Менеджер паролей недоступен. Повторите попытку через несколько минут</translation>
+<translation id="4540780316273593836">Произошла ошибка.</translation>
 <translation id="4541123282641193691">Не удалось подтвердить аккаунт. Повторите попытку или перезагрузите устройство Chromebook.</translation>
 <translation id="4541505619120536051">Открывать всегда</translation>
 <translation id="4541662893742891060">Не удалось подключиться к этому профилю. За технической поддержкой обратитесь к своему оператору.</translation>
@@ -5955,7 +5956,6 @@
 <translation id="5240931875940563122">Войти с помощью телефона Android</translation>
 <translation id="5242724311594467048">Включить приложение "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Повторите попытку через несколько секунд</translation>
-<translation id="5243752692914402705">Во время прокрутки ее направление будет зависеть от движений вашей головы</translation>
 <translation id="5244234799035360187">OneDrive появится в приложении "Файлы"</translation>
 <translation id="5244466461749935369">Пока оставить</translation>
 <translation id="5244474230056479698">Синхронизация с <ph name="EMAIL" /></translation>
@@ -6802,7 +6802,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" />: работа скоро будет приостановлена</translation>
 <translation id="586567932979200359">Вы запускаете <ph name="PRODUCT_NAME" /> с образа на диске. Установка его на компьютере позволит запускать браузер без использования образа и обеспечит его регулярное обновление.</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
-<translation id="5866236843389439313">Улыбнуться левым уголком рта</translation>
 <translation id="5868434909835797817">На устройстве отключен микрофон</translation>
 <translation id="5868479397518301468">Время ожидания входа истекло</translation>
 <translation id="5868822853313956582">Использовать настройки цветопередачи устройства</translation>
@@ -8821,6 +8820,7 @@
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7352664183151911163">Между приложениями и браузером Chrome</translation>
 <translation id="7353261921908507769">Ваши контакты могут обмениваться с вами контентом, когда находятся поблизости. Передача данных не начинается без вашего согласия.</translation>
+<translation id="7353432112255316844">Подтвердить личность</translation>
 <translation id="735361434055555355">Установка Linux...</translation>
 <translation id="7354120289251608189">Теперь вы можете менять внешний вид браузера в любое время.</translation>
 <translation id="7356506068433555887">Пальма</translation>
@@ -9516,6 +9516,7 @@
 <translation id="784273751836026224">Удалить Linux</translation>
 <translation id="784475655832336580">Параметр "Выделять объект с помощью клавиатуры" недоступен при включенной программе ChromeVox</translation>
 <translation id="7844992432319478437">Утилита diff обновляется</translation>
+<translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7847212883280406910">Нажмите Ctrl + Alt + S, чтобы перейти к <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Открыть все URL (<ph name="URL_COUNT" />) в новой группе вкладок</translation>
@@ -9539,7 +9540,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Удалить расширение <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Сервис: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Улыбнуться правым уголком рта</translation>
 <translation id="7861215335140947162">&amp;Загрузки</translation>
 <translation id="7861846108263890455">Язык аккаунта Google</translation>
 <translation id="7864114920800968141">Через <ph name="NUM_MIN" /> мин.</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">आणखी</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3321030238473337787">प्लेबॅकचा वेग</translation>
+<translation id="3327613592010997943">तुम्हाला हे डिव्हाइस <ph name="DAY" /> <ph name="TIME" /> वाजता पुन्हा वापरता येईल.</translation>
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
 <translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="3340978935015468852">सेटिंग्ज</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">राखाडी</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की तपासली</translation>
+<translation id="5606865426897221650">टॅब</translation>
 <translation id="5613201299517339763">तुम्हाला साइन आउट केले गेले आहे</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5630438231335788050">बावहाउस</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">पोर्टलची स्थिती</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> रीस्टार्ट करून अपडेट करत आहे</translation>
 <translation id="576835345334454681">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
+<translation id="5775340474232476653">तुमच्या शिक्षकांनी वर्ग संपवला आहे</translation>
 <translation id="5779818640587041940">रेकॉर्ड करताना स्क्रीन सुरू ठेवा</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784136236926853061">उच्च HTTP लेटन्सी</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">दगड</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
+<translation id="7600430297804876776">हे <ph name="DEVICE_TYPE" /> कधी वापरले जाऊ शकते ते <ph name="MANAGER" /> च्या अ‍ॅडमिनिस्ट्रेटरने सेट केले आहे.</translation>
 <translation id="7613724632293948900">माउस आणि अ‍ॅरो की वापरून स्थिती पुन्हा बदला.</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
 <translation id="7620771111601174153">मदत केंद्र मध्ये अधिक जाणून घ्या</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">रेकॉर्ड करण्यासाठी प्रेस करा</translation>
 <translation id="8094062939584182041">या समस्येविषयी तुम्हाला ईमेल पाठवण्याची Google ला अनुमती द्या</translation>
 <translation id="8104083085214006426">तुम्ही खुले आणि असुरक्षित नेटवर्क वापरत आहात</translation>
+<translation id="8110942816572072814">तुमच्या शिक्षकांनी तुमची स्क्रीन लॉक केली आहे</translation>
 <translation id="811820734797650957">(Android) गेटवे ला पिंग केले जाऊ शकते</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>

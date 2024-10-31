@@ -5005,6 +5005,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4538417792467843292">Eyða orði</translation>
 <translation id="4538792345715658285">Sett upp vegna fyrirtækjastefnu.</translation>
 <translation id="4540409690203718935">Ekki næst í Google-aðgangsorðastjórnun. Reyndu aftur eftir nokkrar mínútur</translation>
+<translation id="4540780316273593836">Eitthvað fór úrskeiðis</translation>
 <translation id="4541123282641193691">Ekki tókst að staðfesta reikninginn. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="4541505619120536051">Alltaf opið</translation>
 <translation id="4541662893742891060">Ekki er hægt að tengjast þessum prófíl. Hafðu samband við símafyrirtækið þitt til að fá tæknilega aðstoð.</translation>
@@ -5968,7 +5969,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5240931875940563122">Innskráning með Android-síma</translation>
 <translation id="5242724311594467048">Kveikja á „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Reyndu aftur eftir smástund</translation>
-<translation id="5243752692914402705">Hreyfðu höfuðið í þá átt sem þú vilt fletta í þegar þú hefur kveikt á flettistillingunni</translation>
 <translation id="5244234799035360187">OneDrive mun nú birtast í forritinu Skrár</translation>
 <translation id="5244466461749935369">Halda í bili</translation>
 <translation id="5244474230056479698">Samstillir við <ph name="EMAIL" /></translation>
@@ -6815,7 +6815,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5865508026715185451">Hlé verður gert á <ph name="APP_NAME" /> fljótlega</translation>
 <translation id="586567932979200359">Þú ert að keyra <ph name="PRODUCT_NAME" /> af diskmynd þess. Ef þú setur það upp í tölvunni geturðu keyrt það án diskmyndarinnar og tryggt að það sé alltaf uppfært.</translation>
 <translation id="5865733239029070421">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
-<translation id="5866236843389439313">Brostu út í vinstra munnvikið</translation>
 <translation id="5868434909835797817">Slökkt er á hljóðnema tækisins</translation>
 <translation id="5868479397518301468">Innskráning rann út á tíma</translation>
 <translation id="5868822853313956582">Fylgja litum tækis</translation>
@@ -8829,6 +8828,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7352664183151911163">Í forritunum og Chrome-vafranum þínum</translation>
 <translation id="7353261921908507769">Tengiliðirnir þínir geta deilt með þér þegar þeir eru nálægt. Flutningur hefst ekki fyrr en þú samþykkir.</translation>
+<translation id="7353432112255316844">Staðfestu hver þú ert</translation>
 <translation id="735361434055555355">Setur upp Linux...</translation>
 <translation id="7354120289251608189">Nú geturðu skipt um útlit á vafranum hvenær sem er.</translation>
 <translation id="7356506068433555887">Pálmatré</translation>
@@ -9525,6 +9525,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="784273751836026224">Fjarlægja Linux</translation>
 <translation id="784475655832336580">Ekki er hægt að nota áhersluyfirstrikun lyklaborðs þegar kveikt er á ChromeVox</translation>
 <translation id="7844992432319478437">Uppfærir breytingaskrá</translation>
+<translation id="7846161022626028328">Villa kom upp. Reyndu aftur.</translation>
 <translation id="7846634333498149051">Lyklaborð</translation>
 <translation id="7847212883280406910">Ýttu á Ctrl + Alt + S til að skipta yfir í <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Opna allt (<ph name="URL_COUNT" />) í nýjum flipahóp</translation>
@@ -9548,7 +9549,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Fjarlægja <ph name="EXTENSION_NAME" />-viðbót</translation>
 <translation id="786073089922909430">Þjónusta: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Brostu út í hægra munnvikið</translation>
 <translation id="7861215335140947162">Niðurhal</translation>
 <translation id="7861846108263890455">Tungumál Google reiknings</translation>
 <translation id="7864114920800968141">Eftir <ph name="NUM_MIN" /> mín.</translation>

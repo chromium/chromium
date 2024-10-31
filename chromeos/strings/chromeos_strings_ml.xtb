@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">കൂടുതൽ</translation>
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
 <translation id="3321030238473337787">പ്ലേബാക്ക് വേഗത</translation>
+<translation id="3327613592010997943"><ph name="DAY" /> <ph name="TIME" />-ന് നിങ്ങൾക്ക് ഈ ഉപകരണം വീണ്ടും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="3340978935015468852">ക്രമീകരണങ്ങൾ</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ആപ്പ് റീസ്റ്റാർട്ട് ചെയ്ത് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="576835345334454681">ഡിസ്‌പ്ലേ തെളിച്ചം കൂട്ടുക</translation>
+<translation id="5775340474232476653">നിങ്ങളുടെ അധ്യാപകർ ക്ലാസ് അവസാനിപ്പിച്ചു</translation>
 <translation id="5779818640587041940">റെക്കോർഡ് ചെയ്യുമ്പോൾ സ്ക്രീൻ ഓണാക്കി വയ്‌ക്കുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">സ്‌റ്റോൺ</translation>
 <translation id="7590883480672980941">ഇൻപുട്ട് ക്രമീകരണം</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
+<translation id="7600430297804876776">ഈ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാകുന്ന സമയം <ph name="MANAGER" /> അഡ്മിൻ സജ്ജീകരിച്ചു.</translation>
 <translation id="7613724632293948900">മൗസ് അല്ലെങ്കിൽ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് സ്ഥാനം മാറ്റുക.</translation>
 <translation id="7618774594543487847">ന്യൂട്രൽ</translation>
 <translation id="7620771111601174153">സഹായകേന്ദ്രത്തിൽ കൂടുതലറിയുക</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">റെക്കോർഡ് ചെയ്യാൻ അമർത്തിപ്പിടിക്കുക</translation>
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
+<translation id="8110942816572072814">നിങ്ങളുടെ അധ്യാപകർ സ്‌ക്രീൻ ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>

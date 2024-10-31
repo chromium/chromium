@@ -631,6 +631,7 @@
 <translation id="3208321278970793882">Додаток</translation>
 <translation id="3213571860604332401">Зберегти посилання як закладку</translation>
 <translation id="3217205077783620295">Звук увімкнено. Його можна вимкнути за допомогою перемикача.</translation>
+<translation id="3218561536255328229">Щоб увімкнути сенсорну панель, натисніть клавішу Esc 5 разів</translation>
 <translation id="3226991577105957773">Ще <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3233611303007751344">Режим енергозбереження вимкнено.</translation>
@@ -1476,7 +1477,7 @@
 <translation id="5965524703725988602">Увімкнути або вимкнути темну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Переходити вперед між вікнами</translation>
 <translation id="5978382165065462689">Спільний доступ до екрана через віддалену допомогу.</translation>
-<translation id="5980301590375426705">Закрити сеанс гостя</translation>
+<translation id="5980301590375426705">Вийти з режиму гостя</translation>
 <translation id="5983567367406220847">Точку доступу вимкнено, оскільки ви нею не користувалися.</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="5986723678596105470">Приєднатися через Google Meet</translation>

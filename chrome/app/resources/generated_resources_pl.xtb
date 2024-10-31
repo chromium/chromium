@@ -169,6 +169,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1108938384783527433">Synchronizacja historii</translation>
 <translation id="1110155001042129815">Zaczekaj</translation>
 <translation id="1110965959145884739">Wybierz języki do zainstalowania na tym urządzeniu. Aby pliki pakietów językowych nie zajmowały za dużo miejsca na dysku, użytkownicy korzystają z nich wspólnie. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Twoje dziecko może używać tego kodu PIN, aby logować się na swoim urządzeniu</translation>
 <translation id="1112420131909513020">Karta w tle używa Bluetootha</translation>
 <translation id="1112998165730922436">Przesyłanie zostało wstrzymane</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="113050636487300043">Wybierz nazwę i motyw kolorystyczny, aby rozróżniać profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – należy do grupy <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Poziom naładowania prawej baterii to <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Kod PIN dziecka został zaktualizowany</translation>
 <translation id="1133418583142946603">Dodaj bieżącą kartę</translation>
 <translation id="1134363466745332968">W historii przeglądania możesz wyszukiwać na podstawie ogólnej treści strony, a nie tylko jej tytułu i adresu URL. Dzięki temu uzyskasz lepsze wyniki niezależnie od tego, czy szukasz w historii przeglądania na pasku adresu za pomocą @history czy na stronie historii.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> z <ph name="EMOJI_COUNT" />.</translation>
@@ -566,6 +568,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1397594434718759194">Na tych urządzeniach jesteś zalogowany(-a) w Chrome, więc możesz ich używać jako kluczy bezpieczeństwa.</translation>
 <translation id="1398853756734560583">Maksymalizuj</translation>
 <translation id="1399261165075500043">Nie udało się wczytać Warunków korzystania z usługi Google Play</translation>
+<translation id="1400243387594338234">Możesz używać tego kodu PIN, aby logować się na swoim urządzeniu</translation>
 <translation id="1401216725754314428">Dowiedz się więcej o powiązanych witrynach w nowej karcie</translation>
 <translation id="1402426911829176748">Łączę z Twoim urządzeniem</translation>
 <translation id="1403222014593521787">Nie udało się nawiązać połączenia z serwerem proxy</translation>
@@ -1912,6 +1915,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2326931316514688470">P&amp;rzeładuj aplikację</translation>
 <translation id="2327492829706409234">Włącz aplikację</translation>
 <translation id="2327920026543055248">Wpisz znak <ph name="CHARACTER" /> z <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Zresetuj swój kod PIN</translation>
 <translation id="2328561734797404498">Aby użyć <ph name="APP_NAME" />, uruchom ponownie urządzenie.</translation>
 <translation id="2328636661627946415">Kiedy jesteś w trybie incognito, witryny mogą używać plików cookie tylko do sprawdzania Twojej aktywności związanej z przeglądaniem w danej witrynie. Po zakończeniu sesji incognito pliki cookie są usuwane.</translation>
 <translation id="2329597144923131178">Zaloguj się, by korzystać z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
@@ -3754,6 +3758,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3670480940339182416">Witryny mogą używać optymalizatora V8</translation>
 <translation id="3672681487849735243">Wykryto błąd fabryczny</translation>
 <translation id="3673097791729989571">Logowanie pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Twój kod PIN został zaktualizowany</translation>
 <translation id="3673622964532248901">Nie masz uprawnień do przesyłania na to urządzenie.</translation>
 <translation id="3675683621636519363">Przesyłaj raporty o awariach, dane diagnostyczne i dane o korzystaniu do ChromeOS Flex</translation>
 <translation id="367645871420407123">pozostaw puste, jeśli chcesz ustawić hasło główne na domyślną wartość obrazu testowego</translation>
@@ -4971,6 +4976,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4538417792467843292">Usuń słowo</translation>
 <translation id="4538792345715658285">Zainstalowane na podstawie zasad przedsiębiorstwa.</translation>
 <translation id="4540409690203718935">Nie udało się połączyć z Menedżerem haseł Google. Spróbuj ponownie za kilka minut</translation>
+<translation id="4540780316273593836">Coś poszło nie tak</translation>
 <translation id="4541123282641193691">Nie udało się zweryfikować Twojego konta. Spróbuj jeszcze raz lub ponownie uruchom Chromebooka.</translation>
 <translation id="4541505619120536051">Zawsze otwieraj</translation>
 <translation id="4541662893742891060">Nie można połączyć z tym profilem. Aby uzyskać pomoc techniczną, skontaktuj się ze swoim operatorem.</translation>
@@ -5933,7 +5939,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5240931875940563122">Zaloguj się, używając telefonu</translation>
 <translation id="5242724311594467048">Włączyć rozszerzenie „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5243522832766285132">Spróbuj ponownie za kilka chwil</translation>
-<translation id="5243752692914402705">Po włączeniu trybu przewijania porusz głową w kierunku, w którym chcesz przewijać</translation>
 <translation id="5244234799035360187">OneDrive pojawi się w aplikacji Pliki</translation>
 <translation id="5244466461749935369">Na razie zachowaj</translation>
 <translation id="5244474230056479698">Synchronizacja z <ph name="EMAIL" /></translation>
@@ -6778,7 +6783,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5865508026715185451">Aplikacja <ph name="APP_NAME" /> wkrótce zostanie wstrzymana</translation>
 <translation id="586567932979200359">Produkt <ph name="PRODUCT_NAME" /> został uruchomiony z obrazu dysku. Zainstalowanie go na komputerze umożliwi uruchamianie bez użycia obrazu dysku i bieżące aktualizowanie.</translation>
 <translation id="5865733239029070421">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach</translation>
-<translation id="5866236843389439313">Wyciągnięcie lewego kącika ust</translation>
 <translation id="5868434909835797817">Mikrofon urządzenia jest wyłączony</translation>
 <translation id="5868479397518301468">Przekroczono limit czasu logowania</translation>
 <translation id="5868822853313956582">Używaj kolorów z urządzenia</translation>
@@ -8793,6 +8797,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7352664183151911163">W aplikacjach i przeglądarce Chrome</translation>
 <translation id="7353261921908507769">Twoje kontakty mogą udostępniać Ci dane, gdy znajdują się w pobliżu. Przesyłanie danych nie rozpocznie się bez Twojej zgody.</translation>
+<translation id="7353432112255316844">Potwierdź, że to Ty</translation>
 <translation id="735361434055555355">Instaluję Linuksa...</translation>
 <translation id="7354120289251608189">Teraz możesz w każdej chwili zmienić wygląd przeglądarki.</translation>
 <translation id="7356506068433555887">Palma</translation>
@@ -9488,6 +9493,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="784273751836026224">Odinstaluj Linuksa</translation>
 <translation id="784475655832336580">Gdy włączony jest ChromeVox, nie można podświetlić elementu za pomocą klawiatury</translation>
 <translation id="7844992432319478437">Aktualizowanie zmian</translation>
+<translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7847212883280406910">Naciśnij Ctrl + Alt + S, aby przełączyć się na <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Otwórz wszystkie (<ph name="URL_COUNT" />) w nowej grupie kart</translation>
@@ -9511,7 +9517,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Usuń rozszerzenie <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Usługa: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Wyciągnięcie prawego kącika ust</translation>
 <translation id="7861215335140947162">&amp;Pobrane pliki</translation>
 <translation id="7861846108263890455">Język konta Google</translation>
 <translation id="7864114920800968141">Za <ph name="NUM_MIN" /> min</translation>
@@ -11286,6 +11291,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9101691533782776290">Uruchom aplikację</translation>
 <translation id="9102610709270966160">Włącz rozszerzenie</translation>
 <translation id="9102864637938129124">Witryny i reklamodawcy mogą poznać skuteczność reklam. To ustawienie jest włączone.</translation>
+<translation id="9103341231213089378">Aby przesyłać treści, otwórz <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Sieć lokalna &gt; Chrome i zezwól Chrome na dostęp</translation>
 <translation id="9103868373786083162">Naciśnij, by wrócić, lub otwórz menu kontekstowe, by wyświetlić historię</translation>
 <translation id="9107096627210171112">Tłu&amp;macz…</translation>
 <translation id="9107624673674616016">Rysunek kredkami</translation>

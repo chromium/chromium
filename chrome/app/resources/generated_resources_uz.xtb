@@ -424,6 +424,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1288037062697528143">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
 <translation id="1288300545283011870">Ovoz sozlamalari</translation>
 <translation id="1289619947962767206">Bu variant boshqa ishlamaydi. Taqdimotni boshlash uchun <ph name="GOOGLE_MEET" /> ishlating.</translation>
+<translation id="1291057703584594733">Tayinlangan ishora tanlansa, avvalgi amal olib tashlanadi.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> xizmat shartlari</translation>
 <translation id="1291421198328146277">Tugmalarni tiklash</translation>
 <translation id="1292849930724124745">Smart kartani chiqarmang</translation>
@@ -4990,6 +4991,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4538417792467843292">So‘zni o‘chirish</translation>
 <translation id="4538792345715658285">Korporativ siyosatga ko‘ra o‘rnatilgan.</translation>
 <translation id="4540409690203718935">Google Parollar menejeri serveriga ulanmadi. Bir necha daqiqadan keyin qaytadan urining</translation>
+<translation id="4540780316273593836">Nimadir xato ketdi</translation>
 <translation id="4541123282641193691">Hisobingizni tekshirib bo‘lmadi. Qayta urinib ko‘ring yoki Chromebook qurilmangizni o‘chirib yoqing.</translation>
 <translation id="4541505619120536051">Doim ochilsin</translation>
 <translation id="4541662893742891060">Bu profilga ulana olmadi. Texnik yordam uchun mobil aloqa operatoringizga murojaat qiling.</translation>
@@ -5952,7 +5954,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5240931875940563122">Android telefondan kirish</translation>
 <translation id="5242724311594467048">“<ph name="EXTENSION_NAME" />” kengaytmasi ishga tushirilsinmi?</translation>
 <translation id="5243522832766285132">Bir necha daqiqadan keyin qayta urining</translation>
-<translation id="5243752692914402705">Varaqlash vaqtida yoʻnalishni boshingiz harakati bilan boshqaring</translation>
 <translation id="5244234799035360187">OneDrive ombori endi Fayllar ilovasida chiqadi</translation>
 <translation id="5244466461749935369">Hozircha qolsin</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> hisobiga sinxronlanmoqda</translation>
@@ -6338,7 +6339,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5517304475148761050">Bu ilova Play Marketga kirishni talab etadi</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5520605865175417976">“<ph name="ACTION_TO_REMOVE" />” amalini oʻchirish</translation>
+<translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> amalini olib tashlash</translation>
 <translation id="5521078259930077036">Bu boshqa bosh sahifami?</translation>
 <translation id="5522156646677899028">Bu kengaytmada havfsizlikka ta’sir qiladigan jiddiy zaiflik aniqlandi.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Kengaytma administrator tomonidan oʻrnatildi}other{# ta kengaytma administrator tomonidan oʻrnatildi}}</translation>
@@ -6743,6 +6744,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5832970156002835240">Barcha saytlarda ruxsat berish</translation>
 <translation id="5833397272224757657">Moslashtirish uchun brauzerdagi faoliyatingiz, siz kirgan sahifalar va brauzerda amalga oshirilgan ishlardan foydalanadi.</translation>
 <translation id="5833726373896279253">Bu sozlashlarni faqat egasi o‘zgartirishi mumkin.</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Saytlarga JavaScript ishlatishni taqiqlash</translation>
 <translation id="583431638776747">Sayt ishlamayotgan edi</translation>
 <translation id="5834581999798853053">Taxminan <ph name="TIME" /> daqiqa qoldi</translation>
@@ -6798,7 +6800,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tez orada pauza qilinadi</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> tizimini diskdagi tasviridan ishga tushirgansiz. Uni kompyuteringizga o‘rnatsangiz, disk tasviri kerak bo‘lmaydi hamda tizim muntazam yangilanib turadi.</translation>
 <translation id="5865733239029070421">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin</translation>
-<translation id="5866236843389439313">Oʻgizning chap burchagi bilan kuling</translation>
 <translation id="5868434909835797817">Qurilma mikofoni oʻchiq</translation>
 <translation id="5868479397518301468">Kirish vaqti tugadi</translation>
 <translation id="5868822853313956582">Tizim ranglarini ishlatish</translation>
@@ -8810,6 +8811,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7352664183151911163">Ilovalar va Chrome brauzeri orasida</translation>
 <translation id="7353261921908507769">Kontaktlaringiz sizga yaqinligida sizga fayl ulasha oladi. Uzatmalar qabul qilinmaguncha boshlanmaydi.</translation>
+<translation id="7353432112255316844">Bu siz ekaningizni isbotlang</translation>
 <translation id="735361434055555355">Linux o‘rnatilmoqda...</translation>
 <translation id="7354120289251608189">Endi istalgan vaqt brauzerni yangicha bezatish mumkin.</translation>
 <translation id="7356506068433555887">Palma daraxti</translation>
@@ -9505,6 +9507,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="784273751836026224">Linux tizimini oʻchirish</translation>
 <translation id="784475655832336580">ChromeVox yoniq boʻlsa, klaviatura fokusli elementni ajratib koʻrsa olmaydi</translation>
 <translation id="7844992432319478437">diff vositasi yangilanmoqda</translation>
+<translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />‘ga o‘tish uchun Ctrl + Alt + S tugmalarini bosing</translation>
 <translation id="7848244988854036372">Barchasini (<ph name="URL_COUNT" />) yangi varaqlar guruhida ochish</translation>
@@ -9528,7 +9531,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> kengaytmasi olib tashlansinmi?</translation>
 <translation id="786073089922909430">Xizmat: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Oʻgizning oʻng burchagi bilan kuling</translation>
 <translation id="7861215335140947162">&amp;Yuklanishlar</translation>
 <translation id="7861846108263890455">Google hisobi tili</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> daqiqa ichida</translation>

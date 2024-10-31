@@ -9017,6 +9017,23 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
           Значення правила вказуються в мілісекундах. Крім того, вони не можуть перевищувати тривалість затримки вимкнення екрана (якщо налаштовано) і затримки через неактивність.</translation>
 <translation id="7680437377926096177">Не показувати вікно підтвердження виходу, коли користувач закриває останнє вікно.</translation>
 <translation id="7683777542468165012">Динамічне оновлення політики</translation>
+<translation id="7685309118897567488">За допомогою цього правила адміністратори можуть налаштувати корпоративний агрегатор пошуку, який надаватиме рекомендації і результати пошуку в адресному рядку, коли користувач вводитиме певне ключове слово. Щоб ініціювати пошук, користувачі можуть ввести в адресному рядку ключове слово з поля <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, наприклад <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" /> (символ @ додавати необов’язково), а потім натиснути пробіл або клавішу Tab.
+
+Укажіть значення для таких полів: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+У полі <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується назва пошукової системи, що відображатиметься в адресному рядку.
+
+У полі <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується ключове слово, за допомогою якого користувач запускає пошук. Воно може складатися зі звичайних слів і символів, однак не має містити пробілів або починатися із символу @. Ключові слова мають бути унікальними.
+
+У полі <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується URL-адреса, за якою потрібно виконати пошук. Введіть вебадресу сторінки результатів пошукової системи й замість запиту вставте <ph name="SEARCH_TERM_MARKER" />.
+
+У полі <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується URL-адреса, з якої надаються підказки в пошуку. Якщо поле <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> містить значення <ph name="SEARCH_TERM_MARKER" />, Chrome отримуватиме підказки в пошуку за допомогою запиту GET до URL-адреси, замінюючи <ph name="SEARCH_TERM_MARKER" /> на пошуковий запит користувача. В іншому разі буде надіслано запит POST, а запит користувача буде передано в параметрах POST під ключем <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+У полі <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується URL-адреса зображення, яке використовуватиметься для підказок у пошуку. Якщо це поле не налаштувати, використовуватиметься значок за умовчанням. Рекомендуємо використовувати значок вебсторінки (наприклад, <ph name="ICON_URL_EXAMPLE" />).
+
+У <ph name="MS_WIN_NAME" /> це правило застосовується лише для екземплярів, які зареєстровано в доменах <ph name="MS_AD_NAME" /> чи <ph name="MS_AAD_NAME" /> або сервісі <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+У <ph name="MAC_OS_NAME" /> це правило доступне лише для екземплярів, які контролюються через Керування мобільними пристроями або зареєстровані в домені через MCX чи в сервісі <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7687943045976362719">Якщо це правило налаштовано, вказані типи вмісту обробляє<ph name="PRODUCT_FRAME_NAME" />.
 
           Якщо це правило не налаштовано, для всіх сайтів використовується засіб обробки за умовчанням. (Його можна налаштувати в правилі <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" />.)</translation>

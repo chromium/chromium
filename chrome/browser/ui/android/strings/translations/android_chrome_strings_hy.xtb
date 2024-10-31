@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">Ա-ից Ֆ տեսակավորում</translation>
 <translation id="3908308510347173149">Թարմացնել <ph name="PRODUCT_NAME" /> հավելվածը</translation>
 <translation id="3911609878849982353">Ֆ-ից Ա տեսակավորում</translation>
+<translation id="3918415141610210050">Ներդիր</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />ը միացված է</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Իմ տվյալների միավորում</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">Բաժանորդագրում…</translation>
 <translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
+<translation id="4352287748243729941">Օգտագործե՞լ <ph name="PROVIDER" /> կայքի ձեր գաղտնաբառը</translation>
 <translation id="4355272626458588338">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Ընդհանուր տեղեկություններ անվտանգության մասին</translation>
@@ -851,6 +853,7 @@
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5010886807652684893">Վիզուալ տեսք</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> և <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> կայքերը կարծես թե կապված են միմյանց հետ։ Նախքան ձեր գաղտնաբառն օգտագործելը համոզվեք, որ վստահում եք <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> կայքին։</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Վերջին 15 րոպեն</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
@@ -904,6 +907,7 @@
 <translation id="5304593522240415983">Այս դաշտը չի կարող դատարկ լինել</translation>
 <translation id="5306014156308790439">Հավաքածուին ավելացնելու գործառույթն անջատված է</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
+<translation id="5310963254742922113">Գաղտնաբառն օգտագործվել է։</translation>
 <translation id="5316947901395241499">Ձեր ադմինիստրատորն անջատել է գաղտնաբառերի պահումը</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319359161174645648">Google-ը խորհուրդ է տալիս Chrome դիտարկիչը</translation>

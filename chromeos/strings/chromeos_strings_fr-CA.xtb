@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3321030238473337787">Vitesse de lecture</translation>
+<translation id="3327613592010997943">Vous pourrez à nouveau utiliser cet appareil <ph name="DAY" /> à <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">paramètres</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">gris</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5600027863942488546">Touche <ph name="KEY_NAME" /> testée</translation>
+<translation id="5606865426897221650">Onglet</translation>
 <translation id="5613201299517339763">Vous avez été déconnecté</translation>
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="5763838252932650682">Redémarrage et mise à jour de l'application <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Augmenter la luminosité de l'écran</translation>
+<translation id="5775340474232476653">Votre enseignant a terminé la classe</translation>
 <translation id="5779818640587041940">Garder l'écran allumé lors de l'enregistrement</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
@@ -1356,6 +1359,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="757747079855995705">pierre</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">L'administrateur <ph name="MANAGER" /> a configuré quand l'appareil suivant peut être utilisé : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Repositionnez avec la souris ou les touches fléchées.</translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
@@ -1461,6 +1465,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8088963492174775412">Appuyez pour enregistrer</translation>
 <translation id="8094062939584182041">Autoriser Google à vous envoyer un courriel à propos de ce problème</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
+<translation id="8110942816572072814">Votre enseignant a verrouillé votre écran</translation>
 <translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>

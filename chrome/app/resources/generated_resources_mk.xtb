@@ -420,6 +420,7 @@
 <translation id="1288037062697528143">Ноќното светло ќе се вклучи автоматски на зајдисонце</translation>
 <translation id="1288300545283011870">Својства на говорот</translation>
 <translation id="1289619947962767206">Опцијава веќе не се поддржува. Користете <ph name="GOOGLE_MEET" /> за презентација на картичка.</translation>
+<translation id="1291057703584594733">Избирањето веќе доделено дејство ќе го отстрани од неговото првично дејство.</translation>
 <translation id="1291119821938122630">„Услови за користење“ на <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Копчиња за ресетирање</translation>
 <translation id="1292849930724124745">Вметнете паметна картичка за да останете најавени</translation>
@@ -4970,6 +4971,7 @@
 <translation id="4538417792467843292">Избриши збор</translation>
 <translation id="4538792345715658285">Инсталирано од компаниската политика.</translation>
 <translation id="4540409690203718935">Не може да се контактира со Google Password Manager. Обидете се повторно за неколку минути</translation>
+<translation id="4540780316273593836">Нешто тргна наопаку</translation>
 <translation id="4541123282641193691">Вашата сметка не може да се потврди. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="4541505619120536051">Секогаш отворај</translation>
 <translation id="4541662893742891060">Не може да се поврзе со профилов. За техничка поддршка, контактирајте со операторот.</translation>
@@ -5927,7 +5929,6 @@
 <translation id="5240931875940563122">Најавете се со телефон со Android</translation>
 <translation id="5242724311594467048">Да се овозможи „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Обидете се повторно наскоро</translation>
-<translation id="5243752692914402705">Штом ќе го стартувате „Режимот на лизгање“, движете ја главата во насоката во којашто сакате да лизгате</translation>
 <translation id="5244234799035360187">Сега OneDrive ќе се појави во апликацијата „Датотеки“</translation>
 <translation id="5244466461749935369">Задржи засега</translation>
 <translation id="5244474230056479698">Синхронизирање со <ph name="EMAIL" /></translation>
@@ -6712,6 +6713,7 @@
 <translation id="5832970156002835240">Дозволи на сите сајтови</translation>
 <translation id="5833397272224757657">За персонализација ги користи содржините на сајтовите што ги посетувате, како и активноста и интеракциите на прелистувачот</translation>
 <translation id="5833726373896279253">Овие поставки може да ги менува само сопственикот:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Не им дозволувај на сајтовите да користат JavaScript</translation>
 <translation id="583431638776747">Сајтот не беше достапен</translation>
 <translation id="5834581999798853053">Преостануваат околу <ph name="TIME" /> минути</translation>
@@ -6767,7 +6769,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ќе се паузира наскоро</translation>
 <translation id="586567932979200359">Го активиравте производот <ph name="PRODUCT_NAME" /> од неговата слика на дискот. Со негово инсталирање на компјутер, може да го активирате без сликата на диск и се обезбедува дека ќе биде ажурен.</translation>
 <translation id="5865733239029070421">Автоматски испраќа статистика на користењето и извештаи за падовите до Google.</translation>
-<translation id="5866236843389439313">Истегнете го левиот агол на устата</translation>
 <translation id="5868434909835797817">Микрофонот е исклучен на уредот</translation>
 <translation id="5868479397518301468">Времето за најавување истече</translation>
 <translation id="5868822853313956582">Следи ги боите на системот</translation>
@@ -8769,6 +8770,7 @@
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7352664183151911163">На вашите апликации и прелистувачот Chrome</translation>
 <translation id="7353261921908507769">Вашите контакти може да споделуваат со вас кога се во близина. Преносите нема да започнат додека не прифатите.</translation>
+<translation id="7353432112255316844">Потврдете дека сте вие</translation>
 <translation id="735361434055555355">Се инсталира Linux…</translation>
 <translation id="7354120289251608189">Сега може да му дадете нов изглед на вашиот прелистувач во секое време.</translation>
 <translation id="7356506068433555887">Палма</translation>
@@ -9461,6 +9463,7 @@
 <translation id="784273751836026224">Деинсталирање на Linux</translation>
 <translation id="784475655832336580">Функцијата „Означи ја ставката со фокус на тастатурата“ не е достапна кога е вклучен ChromeVox</translation>
 <translation id="7844992432319478437">Се ажурира разлика</translation>
+<translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7847212883280406910">Притиснете Ctrl + Alt + S за да префрлите на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Отвори ги сите (<ph name="URL_COUNT" />) во нова група картички</translation>
@@ -9484,7 +9487,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Отстрани ја екстензијата <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Истегнете го десниот агол на устата</translation>
 <translation id="7861215335140947162">&amp;Преземања</translation>
 <translation id="7861846108263890455">Јазик на сметката на Google</translation>
 <translation id="7864114920800968141">За <ph name="NUM_MIN" /> мин.</translation>

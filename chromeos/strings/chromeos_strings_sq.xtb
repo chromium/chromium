@@ -466,6 +466,7 @@
 <translation id="3305294846493618482">më shumë</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
 <translation id="3321030238473337787">Shpejtësia e luajtjes</translation>
+<translation id="3327613592010997943">Do të mund ta përdorësh këtë pajisje përsëri <ph name="DAY" /> në <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3340978935015468852">cilësimet</translation>
@@ -916,6 +917,7 @@
 <translation id="5595623927872580850">gri</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5600027863942488546">Tasti <ph name="KEY_NAME" /> u testua</translation>
+<translation id="5606865426897221650">Skeda</translation>
 <translation id="5613201299517339763">Ke dalë nga llogaria</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -945,6 +947,7 @@
 <translation id="5760715441271661976">Gjendja e portalit</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> po riniset dhe po përditësohet</translation>
 <translation id="576835345334454681">Ngritja e ndriçimit të ekranit</translation>
+<translation id="5775340474232476653">Mësuesi yt e ka përfunduar orën e mësimit</translation>
 <translation id="5779818640587041940">Mbaje ekranin ndezur ndërsa regjistron</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
@@ -1344,6 +1347,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="757747079855995705">gur</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
+<translation id="7600430297804876776">Administratori i <ph name="MANAGER" /> ka caktuar se kur mund të përdoret kjo pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Ndrysho pozicionin me anë të miut ose tasteve të shigjetave.</translation>
 <translation id="7618774594543487847">Neutrale</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
@@ -1446,6 +1450,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8088963492174775412">Shtyp për të regjistruar</translation>
 <translation id="8094062939584182041">Lejo që Google të të dërgojë email-e për këtë problem</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
+<translation id="8110942816572072814">Mësuesi yt e ka kyçur ekranin tënd</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>

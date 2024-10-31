@@ -614,6 +614,7 @@
 <translation id="1436671784520050284">सेटअप जारी राख्नुहोस्</translation>
 <translation id="1436784010935106834">हटाइयो</translation>
 <translation id="1437986450143295708">यो समस्या विस्तृत रूपमा वर्णन गर्नुहोस्</translation>
+<translation id="1438630805136563416">"<ph name="REMOVED_ACTION" />" कारबाही हटाइएको छ</translation>
 <translation id="1439671507542716852">दीर्घकालीन सहायता</translation>
 <translation id="1440090277117135316">स्कुलको इमेल ठेगाना हालेर डिभाइस दर्ता गर्ने प्रक्रिया पूरा भयो</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयन गरियो</translation>
@@ -978,6 +979,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> थप्न सकिएन</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाँकी छ</translation>
 <translation id="1678849866171627536">स्क्यान गर्न सकिएन। यो फाइल भाइरस वा मालवेयर हुन सक्छ।</translation>
+<translation id="1678919064276516737">तपाईंले हाल्नुभएको इमेल ठेगाना र PIN मिलेनन्</translation>
 <translation id="1679068421605151609">विकासकर्ता उपकरणहरू</translation>
 <translation id="1679810534535368772">तपाईं साँच्चिकै बाहिर निस्कन चाहनुहुन्छ?</translation>
 <translation id="167983332380191032">व्यवस्थापन सेवाले HTTP त्रुटि पठायो।</translation>
@@ -1423,6 +1425,7 @@
 <translation id="1981434377190976112">सबै वेबसाइटमा भएका तपाईंका सबै डेटा पढ्न</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} र {field_2}}other{{field_1}, {field_2} र {field_3}}}</translation>
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
+<translation id="198507684520034826">मद्दत</translation>
 <translation id="1986836014090708999">उन्नत लोकेसन सेटिङ</translation>
 <translation id="1987317783729300807">खाताहरू</translation>
 <translation id="1987574314042117472">लोकप्रिय एपहरू चयन गर्नुहोस् र इन्स्टल गर्नुहोस्</translation>
@@ -2919,6 +2922,7 @@
 <translation id="3029466929721441205">सेल्फमा स्टाइलसका उपकरणहरू देखाउनुहोस्</translation>
 <translation id="3029808567601324798">लक गर्ने समय भयो</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का अनुसार तपाईंले आजै अपडेट डाउनलोड गर्नु पर्ने हुन्छ। तपाईं इन्टरनेटमा कनेक्ट भएपछि अपडेट स्वतः डाउनलोड हुने छ।}other{<ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै अपडेट डाउनलोड गर्नु पर्ने हुन्छ। तपाईं इन्टरनेटमा कनेक्ट भएपछि अपडेट स्वतः डाउनलोड हुने छ।}}</translation>
+<translation id="3030772324014024606">सम्पादन गर्नुहोस्</translation>
 <translation id="3030967311408872958">सूर्यास्तदेखि सूर्योदयसम्म</translation>
 <translation id="3031417829280473749">एजेन्ट एक्स</translation>
 <translation id="3031532026314193077">राइट क्लिक गर्न टचप्याड र किबोर्ड प्रयोग गर्नुहोस्</translation>
@@ -4022,6 +4026,7 @@
 <translation id="3824621460022590830">यन्त्र दर्ता गर्न प्रयोग गरिने टोकन अवैध छ। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="3824757763656550700">अन्य डिभाइसका ट्याबहरू हेर्न साइन इन गर्नुहोस्</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{यो प्रकारको फाइलका हकमा मेरो रोजाइ याद राख्नुहोस्: <ph name="FILE_TYPES" />}other{यी प्रकारका फाइलका हकमा मेरो रोजाइ याद राख्नुहोस्: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">हेर्नुहोस्</translation>
 <translation id="3825635794653163640">एपसम्बन्धी अलर्टहरूका लागि एपको आइकनमा डट देखाउनुहोस्</translation>
 <translation id="3826071569074535339">मोसन सेन्सरहरू प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="3826086052025847742">ChromeOS Flex का लगहरू</translation>
@@ -4133,6 +4138,7 @@
 <translation id="3905761538810670789">एप मर्मत गर्नुहोस्</translation>
 <translation id="3908288065506437185">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="3908501907586732282">एक्स्टेन्सन सक्षम बनाउनुहोस्</translation>
+<translation id="3909456989251621103">तपाईंले सर्भरको प्रमाणपत्र मेटाउनुभयो भने Chrome ले अबदेखि उक्त प्रमाणपत्र प्रयोग गरी सर्भरहरू पहिचान गर्ने छैन।</translation>
 <translation id="3909701002594999354">सबै नियन्त्रणहरू देखाउनुहोस्</translation>
 <translation id="3909791450649380159">काँ&amp;ट्नुहोस्</translation>
 <translation id="39103738135459590">सक्रिय गर्ने कोड</translation>
@@ -4980,6 +4986,7 @@
 <translation id="4538417792467843292">शब्द मेट्नुहोस्</translation>
 <translation id="4538792345715658285">उद्योग नीतिद्वारा स्थपित।</translation>
 <translation id="4540409690203718935">Google पासवर्ड म्यानेजर एक्सेस गर्न सकिएन। केही मिनेटपछि फेरि प्रयास गर्नुहोस्</translation>
+<translation id="4540780316273593836">कुनै समस्या आयो</translation>
 <translation id="4541123282641193691">तपाईंको खाता पुष्टि गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="4541505619120536051">सधैँ खोल्नुहोस्</translation>
 <translation id="4541662893742891060">यो प्रोफाइलमा कनेक्ट गर्न सकिएन। प्राविधिक सहायता प्राप्त गर्न कृपया आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -5050,6 +5057,7 @@
 <translation id="4581774856936278355">Linux पुनर्स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="4582297591746054421">साइटहरूले तपाईंले कपी गर्नुभएको पाठको ढाँचा कायमै राख्ने जस्ता सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको क्लिपबोर्ड पढ्छन्</translation>
 <translation id="4582563038311694664">सबै सेटिङहरू रिसेट गर्नुहोस्</translation>
+<translation id="4584770411839426377">विन्डो</translation>
 <translation id="4585793705637313973">पृष्ठ सम्पादन गर्नुहोस्</translation>
 <translation id="4586275095964870617">वैकल्पिक ब्राउजरमा <ph name="URL" /> खोल्न सकिँदैन। कृपया आफ्नो प्रणालीका प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
@@ -5442,6 +5450,7 @@
 <translation id="4872192066608821120">पासवर्डहरू इम्पोर्ट गर्न कुनै CSV फाइल चयन गर्नुहोस्</translation>
 <translation id="4872212987539553601">डिभाइसमै इन्क्रिप्ट गर्ने विधि सेटअप गर्नुहोस्</translation>
 <translation id="4873312501243535625">मिडिया फाइल परीक्षक</translation>
+<translation id="4875690134140862902">ट्याब</translation>
 <translation id="4876273079589074638">हाम्रा इन्जिनियरहरूलाई यो क्र्यासको छानबिन गर्न र त्यसलाई समाधान गर्नमा मद्दत गर्नुहोस्। सम्भव भएसम्म हरेक कदमहरू जस्ताको तस्तै सूचीबद्ध गर्नुहोस्। कुनै पनि विवरण कम महत्त्वपूर्ण हुँदैन!</translation>
 <translation id="4876305945144899064">कुनै पनि प्रयोगकर्ता नाम छैन</translation>
 <translation id="4876327226315760474">यसको अर्थ साइटका सुविधाहरूले गर्नु पर्ने जसरी नै काम गर्छन् तर ब्राउजिङको सुरक्षाको स्तर भने कम हुन सक्छ।</translation>
@@ -5554,6 +5563,7 @@
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4951966678293618079">यो साइटका पासवर्ड कहिले पनि सेभ नगर्नुहोस्</translation>
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
+<translation id="4954652437333037880">फाइल</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> को अनुमतिसम्बन्धी सेटिङ</translation>
 <translation id="4955710816792587366">आफ्नो PIN छनौट गर्नुहोस्</translation>
 <translation id="4956847150856741762">1</translation>
@@ -5940,7 +5950,6 @@
 <translation id="5240931875940563122">Android फोनमार्फत साइन इन गर्नुहोस्</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" /> " सक्षम गर्ने?</translation>
 <translation id="5243522832766285132">कृपया केही क्षणमा फेरि प्रयास गर्नुहोस्</translation>
-<translation id="5243752692914402705">तपाईंले स्क्रोल मोड अन गरिसकेपछि आफ्नो टाउको आफूले स्क्रोल गर्न चाहेको दिशातिर चलाउनुहोस्</translation>
 <translation id="5244234799035360187">OneDrive अब Files एपमा देखिने छ</translation>
 <translation id="5244466461749935369">अहिले राखिराख्नुहोस्</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> मा सिंक गर्दै</translation>
@@ -6787,7 +6796,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> चाँडै पज हुने छ</translation>
 <translation id="586567932979200359">तपाईंले <ph name="PRODUCT_NAME" /> लाई यसको डिस्क छविबाट चलाइरहनु भएको छ। यसलाई तपाईंको कम्प्युटरमा स्थापना गर्नाले यसले तपाईंलाई डिस्क छवि बिना चालू गर्न अनुमति दिन्छ, र यो नवीनतम रहने सुनिश्चित गर्छ।</translation>
 <translation id="5865733239029070421">प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः Google मा पठाउँछ</translation>
-<translation id="5866236843389439313">आफ्नो मुखको बायाँ कुना तन्काउनुहोस्</translation>
 <translation id="5868434909835797817">तपाईंको डिभाइसको माइक्रोफोन अफ छ</translation>
 <translation id="5868479397518301468">साइन इन गर्ने समय सकियो</translation>
 <translation id="5868822853313956582">डिभाइसका रङ प्रयोग गर्नुहोस्</translation>
@@ -7811,6 +7819,7 @@
 <translation id="6635674640674343739">इन्टरनेटमा कनेक्ट गर्न सकिएन। आफ्नो इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="663569763553406962">एक्स्टेन्सनहरूले के-के हेर्न सक्छन् भन्ने कुरा हेर्नुहोस् वा साइट परिवर्तन गर्नुहोस्</translation>
 <translation id="6635944431854494329">मालिक सेटिङ &gt; उन्नत &gt; निदान र प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाउनुहोस् नामक सेटिङमा गएर यो सुविधा नियन्त्रण गर्न सक्छन्।</translation>
+<translation id="6636258750460740634">हिस्ट्री</translation>
 <translation id="6636623428211296678">तल दिइएका अन्य सेटिङ मिलाउनुहोस् वा समीक्षा गर्ने कार्य अहिले नै पूरा गर्नुहोस्</translation>
 <translation id="6639554308659482635">SQLite मेमोरी</translation>
 <translation id="6640268266988685324">ट्याब खोल्नुहोस्</translation>
@@ -8797,6 +8806,7 @@
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
 <translation id="7352664183151911163">आफ्ना Chrome ब्राउजर र आफ्ना एपहरू प्रयोग गर्नुहोस्</translation>
 <translation id="7353261921908507769">तपाईं वरपर हुँदा तपाईंको कन्ट्याक्टमा भएका व्यक्तिहरू सामग्री सेयर गर्न सक्छन्। तपाईंले सामग्री सार्ने निम्तो स्वीकार नगरेसम्म सामग्री सार्ने काम सुरु हुँदैन।</translation>
+<translation id="7353432112255316844">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="735361434055555355">Linux स्थापना गर्दै...</translation>
 <translation id="7354120289251608189">तपाईं अब जुनसुकै बेला आफ्नो ब्राउजरलाई नयाँ स्वरूप दिन सक्नुहुन्छ।</translation>
 <translation id="7356506068433555887">ताडको रूख</translation>
@@ -9493,6 +9503,7 @@
 <translation id="784273751836026224">Linux अनइन्स्टल गर्नुहोस्</translation>
 <translation id="784475655832336580">ChromeVox अन भएका बेला किबोर्डको फोकसका सहायताले वस्तु हाइलाइट गर्ने सुविधा उपलब्ध हुँदैन</translation>
 <translation id="7844992432319478437">अपडेट भिन्नता</translation>
+<translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7846634333498149051">किबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> मा स्विच गर्नको लागि Ctrl + Alt + S थिच्नुहोस्</translation>
 <translation id="7848244988854036372">सबै (<ph name="URL_COUNT" />) नयाँ ट्याब समूहमा खोल्नुहोस्</translation>
@@ -9516,7 +9527,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> एक्स्टेन्सन हटाउनुहोस्</translation>
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">आफ्नो मुखको दायाँ कुना तन्काउनुहोस्</translation>
 <translation id="7861215335140947162">&amp;डाउनलोडहरू</translation>
 <translation id="7861846108263890455">Google खाताको भाषा</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> मिनेटमा</translation>

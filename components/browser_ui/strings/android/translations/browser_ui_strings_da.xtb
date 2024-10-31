@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
+<translation id="1070329623210597193">Filer, som dette website kan se eller redigere</translation>
 <translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Mere</translation>
 <translation id="6064125863973209585">Gennemførte downloads</translation>
 <translation id="6071501408666570960">Du bliver muligvis logget ud af dette website</translation>
+<translation id="6085954183010297841">Vil du slette tilladelsen til filredigering? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
 <translation id="6140839633433422817">Er du sikker på, at du vil nulstille tilladelser og slette cookies og websitedata?</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>

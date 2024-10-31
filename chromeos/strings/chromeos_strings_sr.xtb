@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Покретање скенирања није успело</translation>
 <translation id="1061864016440983342">Користи без локације</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />. од <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Тастер за брзо уметање не може да се користи за прилагођене пречице.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Истражите</translation>
 <translation id="6526200165918397681">Препознај позадину</translation>
 <translation id="6527081081771465939">Непознат безбедносни протокол за WiFi</translation>
+<translation id="6531528791584205545">брзо уметање</translation>
 <translation id="6535178685492749208">Офлајн сте. Повратне информације ће бити послате касније.</translation>
 <translation id="6543412779435705598">такоси</translation>
 <translation id="6550369542114086980">у четвртак</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6673898378497337661">повећајте осветљеност тастатуре</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
 <translation id="6694534975463174713">брава</translation>
+<translation id="6700703207451721535">Приступ овом линку није дозвољен. Обратите се наставнику ако вам треба приступ.</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">јагоде</translation>

@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">Gece Işığı güneş battığında otomatik olarak açılır</translation>
 <translation id="1288300545283011870">Konuşma Özellikleri</translation>
 <translation id="1289619947962767206">Bu seçenek artık desteklenmiyor. Bir sekmeyi sunmak için <ph name="GOOGLE_MEET" /> ürününü kullanın.</translation>
+<translation id="1291057703584594733">Daha önce atanmış bir hareket seçildiğinde başlangıçtaki işleminden kaldırılır.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> Hizmet Şartları</translation>
 <translation id="1291421198328146277">Tuşları sıfırla</translation>
 <translation id="1292849930724124745">Oturumunuzu açık tutmak için akıllı kartı takın</translation>
@@ -4986,6 +4987,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4538417792467843292">Kelime sil</translation>
 <translation id="4538792345715658285">Kurumsal politika tarafından yüklenmiş.</translation>
 <translation id="4540409690203718935">Google Şifre Yöneticisi'ne erişilemiyor. Birkaç dakika içinde tekrar deneyin.</translation>
+<translation id="4540780316273593836">Bir Sorun Oluştu</translation>
 <translation id="4541123282641193691">Hesabınız doğrulanamadı. Lütfen tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="4541505619120536051">Her zaman açık</translation>
 <translation id="4541662893742891060">Bu profile bağlanılamıyor. Teknik destek almak için lütfen operatörünüzle iletişime geçin.</translation>
@@ -5949,7 +5951,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5240931875940563122">Android telefonla oturum açın</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" etkinleştirilsin mi?</translation>
 <translation id="5243522832766285132">Lütfen kısa bir süre sonra tekrar deneyin</translation>
-<translation id="5243752692914402705">Kaydırma modunu başlattıktan sonra başınızı kaydırma yapmak istediğiniz yönde hareket ettirin</translation>
 <translation id="5244234799035360187">OneDrive artık Dosyalar uygulamasında görünecek</translation>
 <translation id="5244466461749935369">Şimdilik kalsın</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> hesabıyla senkronize ediliyor</translation>
@@ -6740,6 +6741,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5832970156002835240">Tüm sitelerde izin ver</translation>
 <translation id="5833397272224757657">Kişiselleştirme için ziyaret ettiğiniz sitelerin içeriğinin yanı sıra tarayıcı etkinliğini ve etkileşimlerini kullanır</translation>
 <translation id="5833726373896279253">Bu ayarlar yalnızca sahibi tarafından değiştirilebilir:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Sitelerin JavaScript kullanmasına izin verme</translation>
 <translation id="583431638776747">Siteye ulaşılamadı</translation>
 <translation id="5834581999798853053">Yaklaşık <ph name="TIME" /> dakika kaldı</translation>
@@ -6795,7 +6797,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> yakında duraklatılacak</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> programını disk görüntüsünden çalıştırıyorsunuz. Bu ürünü bilgisayarınıza kurduğunuzda, disk görüntüsü olmadan çalıştırabilir ve her zaman güncel olacağından emin olabilirsiniz.</translation>
 <translation id="5865733239029070421">Kullanım istatistiklerini ve kilitlenme raporlarını Google'a otomatik olarak gönderir</translation>
-<translation id="5866236843389439313">Ağzınızın sol köşesini gerin</translation>
 <translation id="5868434909835797817">Cihazınızın mikrofonu kapalı</translation>
 <translation id="5868479397518301468">Oturum açma işlemi zaman aşımına uğradı</translation>
 <translation id="5868822853313956582">Cihaz renklerine uygun hale getir</translation>
@@ -8808,6 +8809,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7352651011704765696">Bir şeyler ters gitti</translation>
 <translation id="7352664183151911163">Uygulamalarınızda ve Chrome tarayıcıda</translation>
 <translation id="7353261921908507769">Kişileriniz yakındayken sizinle içerik paylaşabilirler. Siz kabul edene kadar aktarım başlamaz.</translation>
+<translation id="7353432112255316844">Kimliğinizi Doğrulayın</translation>
 <translation id="735361434055555355">Linux yükleniyor...</translation>
 <translation id="7354120289251608189">Artık tarayıcınıza yeni bir görünüm verebilirsiniz.</translation>
 <translation id="7356506068433555887">Palmiye ağacı</translation>
@@ -9503,6 +9505,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="784273751836026224">Linux'u kaldır</translation>
 <translation id="784475655832336580">ChromeVox açıkken öğeyi klavye odağıyla vurgulama özelliği kullanılamaz</translation>
 <translation id="7844992432319478437">Fark güncelleniyor</translation>
+<translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
 <translation id="7846634333498149051">Klavye</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ürününe geçmek için Ctrl + Alt + S tuşlarına basın.</translation>
 <translation id="7848244988854036372">Tümünü (<ph name="URL_COUNT" />) yeni sekme grubunda aç</translation>
@@ -9526,7 +9529,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> uzantısını kaldır</translation>
 <translation id="786073089922909430">Hizmet: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Ağzınızın sağ köşesini gerin</translation>
 <translation id="7861215335140947162">&amp;İndirilenler</translation>
 <translation id="7861846108263890455">Google Hesabı dili</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> dk. içinde</translation>

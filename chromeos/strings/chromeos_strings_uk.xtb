@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">більше</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3321030238473337787">Швидкість відтворення</translation>
+<translation id="3327613592010997943">Ви зможете знову використовувати цей пристрій <ph name="DAY" /> о <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">налаштування</translation>
@@ -895,7 +896,7 @@
 <translation id="5423849171846380976">Активовано</translation>
 <translation id="5430931332414098647">Миттєва точка доступу</translation>
 <translation id="5431318178759467895">Колір</translation>
-<translation id="5457599981699367932">Переглядати в режимі гостя</translation>
+<translation id="5457599981699367932">Увійти в режим гостя</translation>
 <translation id="54609108002486618">Керований</translation>
 <translation id="5470776029649730099">мішковини</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Залишилася {0} спроба}one{Залишилася {0} спроба}few{Залишилися {0} спроби}many{Залишилося {0} спроб}other{Залишилося {0} спроби}}</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">сірому</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5600027863942488546">Клавішу "<ph name="KEY_NAME" />" перевірено</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Ви вийшли з облікового запису</translation>
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5630438231335788050">баухаус</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Стан порталу</translation>
 <translation id="5763838252932650682">Перезапуск і оновлення додатка <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Збільшити яскравість екрана</translation>
+<translation id="5775340474232476653">Викладач завершив заняття</translation>
 <translation id="5779818640587041940">Не вимикати екран під час запису</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">каменю</translation>
 <translation id="7590883480672980941">Налаштування введення</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Адміністратор <ph name="MANAGER" /> налаштував, коли можна використовувати цей пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7613724632293948900">Змініть положення за допомогою клавіш миші або стрілок.</translation>
 <translation id="7618774594543487847">Нейтральні кольори</translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">Натисніть, щоб створити запис</translation>
 <translation id="8094062939584182041">Дозволити Google надсилати вам електронні листи щодо цієї проблеми</translation>
 <translation id="8104083085214006426">Ви використовуєте відкриту та незахищену мережу</translation>
+<translation id="8110942816572072814">Викладач заблокував ваш екран</translation>
 <translation id="811820734797650957">Шлюз можна перевірити (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Підтвердити</translation>

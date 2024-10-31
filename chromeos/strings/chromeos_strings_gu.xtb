@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">વધુ</translation>
 <translation id="3310640316857623290">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં ઘણી વધુ છે</translation>
 <translation id="3321030238473337787">પ્લેબૅકની ઝડપ</translation>
+<translation id="3327613592010997943">તમે <ph name="DAY" /> <ph name="TIME" /> વાગ્યે ફરીથી આ ડિવાઇસનો ઉપયોગ કરી શકશો.</translation>
 <translation id="3328783797891415197">પરીક્ષણ ચાલુ છે</translation>
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">પોર્ટલની સ્થિતિ</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />ને ફરી શરૂ અને અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="576835345334454681">ડિસ્પ્લેનું બ્રાઇટનેસ વધારવાની કી</translation>
+<translation id="5775340474232476653">તમારા શિક્ષકે ક્લાસ સમાપ્ત કર્યો છે</translation>
 <translation id="5779818640587041940">રેકોર્ડ કરતી વખતે સ્ક્રીન ચાલુ રાખો</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
 <translation id="5784136236926853061">HTTPની ઉચ્ચ વિલંબતા</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">પથ્થર</translation>
 <translation id="7590883480672980941">ઇનપુટ સેટિંગ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
+<translation id="7600430297804876776">આ <ph name="DEVICE_TYPE" />નો ઉપયોગ ક્યારે કરી શકાય છે, એ <ph name="MANAGER" />ના ઍડમિનિસ્ટ્રેટર દ્વારા સેટ કરવામાં આવ્યું છે.</translation>
 <translation id="7613724632293948900">માઉસ અથવા ઍરો કી વડે સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">રેકોર્ડ કરવા માટે દબાવો</translation>
 <translation id="8094062939584182041">Googleને આ સમસ્યા વિશે તમને ઇમેઇલ કરવાની મંજૂરી આપો</translation>
 <translation id="8104083085214006426">તમે ઓપન અને અસુરક્ષિત નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
+<translation id="8110942816572072814">તમારા શિક્ષકે તમારી સ્ક્રીન લૉક કરી છે</translation>
 <translation id="811820734797650957">(Android) ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>

@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">A முதல் Z வரை வரிசைப்படுத்துகிறது</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ஐப் புதுப்பி</translation>
 <translation id="3911609878849982353">Z முதல் A வரை வரிசைப்படுத்துகிறது</translation>
+<translation id="3918415141610210050">பக்கம்</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> இயக்கத்தில் உள்ளது</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">செயல்படுவதைக் காட்டும் ஸ்பின்னர்...</translation>
 <translation id="4335835283689002019">பாதுகாப்பு உலாவல் முடக்கப்பட்டுள்ளது</translation>
 <translation id="4351244548802238354">அறிவிப்பை மூடு</translation>
+<translation id="4352287748243729941">உங்கள் <ph name="PROVIDER" /> கடவுச்சொல்லைப் பயன்படுத்தவா?</translation>
 <translation id="4355272626458588338">முக்கியமான பக்கங்களை புக்மார்க் செய்வதன் மூலம் எப்போது வேண்டுமானாலும் அவற்றை அணுகலாம்</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ஒரே பார்வையில் பாதுகாப்புத் தகவல்கள்</translation>
@@ -851,6 +853,7 @@
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
 <translation id="5010886807652684893">விஷுவல் காட்சி</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> இணைய விரும்புகிறது</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" />, <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> ஆகியவை தொடர்புடையதாகத் தெரிகிறது. உங்கள் கடவுச்சொல்லைப் பயன்படுத்தும் முன் <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> தளத்தை நம்புகிறீர்கள் என்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">கடந்த 15 நிமிடங்கள்</translation>
 <translation id="5032430150487044192">QR குறியீட்டை உருவாக்க முடியவில்லை</translation>
@@ -904,6 +907,7 @@
 <translation id="5304593522240415983">இந்தப் புலம் காலியாக இருக்கக் கூடாது</translation>
 <translation id="5306014156308790439">'சேகரிப்பில் சேர்' பட்டன் முடக்கப்பட்டுள்ளது</translation>
 <translation id="5308380583665731573">இணை</translation>
+<translation id="5310963254742922113">கடவுச்சொல் பயன்படுத்தப்பட்டது.</translation>
 <translation id="5316947901395241499">கடவுச்சொற்களைச் சேமிப்பதை உங்கள் நிர்வாகி முடக்கியுள்ளார்</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>

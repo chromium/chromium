@@ -4990,6 +4990,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4538417792467843292">Smazat slovo</translation>
 <translation id="4538792345715658285">Nainstalováno podnikovými zásadami.</translation>
 <translation id="4540409690203718935">Správce hesel Google není dostupný. Zkuste to znovu za několik minut</translation>
+<translation id="4540780316273593836">Něco se pokazilo</translation>
 <translation id="4541123282641193691">Účet se nepodařilo ověřit. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="4541505619120536051">Vždy otevřeno</translation>
 <translation id="4541662893742891060">Propojení s tímto profilem se nezdařilo. Se žádostmi o technickou podporu se obracejte na svého operátora.</translation>
@@ -5952,7 +5953,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5240931875940563122">Přihlásit se pomocí telefonu s Androidem</translation>
 <translation id="5242724311594467048">Aktivovat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Zkuste to znovu za okamžik</translation>
-<translation id="5243752692914402705">Po spuštění režimu posouvání, pohněte hlavou směrem, kterým chcete posouvat</translation>
 <translation id="5244234799035360187">OneDrive se nyní objeví v aplikaci Soubory</translation>
 <translation id="5244466461749935369">Zatím ponechat</translation>
 <translation id="5244474230056479698">Údaje se synchronizují do účtu <ph name="EMAIL" /></translation>
@@ -6796,7 +6796,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5865508026715185451">Aplikace <ph name="APP_NAME" /> se brzy pozastaví</translation>
 <translation id="586567932979200359">Aplikaci <ph name="PRODUCT_NAME" /> spouštíte z bitové kopie disku. Pokud ji nainstalujte do svého počítače, můžete ji spouštět bez bitové kopie disku a umožníte její aktualizace.</translation>
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
-<translation id="5866236843389439313">Natáhněte levý koutek úst</translation>
 <translation id="5868434909835797817">Mikrofon je na vašem zařízení vypnutý</translation>
 <translation id="5868479397518301468">Časový limit přihlášení vypršel</translation>
 <translation id="5868822853313956582">Použít barvy zařízení</translation>
@@ -8812,6 +8811,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7352664183151911163">Ve všech aplikacích a prohlížeči Chrome</translation>
 <translation id="7353261921908507769">Kontakty s vámi mohou sdílet obsah, když jsou v okolí. Přenosy nezačnou, dokud je nepotvrdíte.</translation>
+<translation id="7353432112255316844">Ověřte svoji totožnost</translation>
 <translation id="735361434055555355">Probíhá instalace systému Linux...</translation>
 <translation id="7354120289251608189">Teď můžete v prohlížeči kdykoli nastavit nový vzhled.</translation>
 <translation id="7356506068433555887">Palma</translation>
@@ -9507,6 +9507,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="784273751836026224">Odinstalovat Linux</translation>
 <translation id="784475655832336580">Když je zapnutá funkce ChromeVox, zvýraznění položky vybrané pomocí klávesnice není k dispozici</translation>
 <translation id="7844992432319478437">Probíhá aktualizace souboru diff</translation>
+<translation id="7846161022626028328">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="7846634333498149051">Klávesnice</translation>
 <translation id="7847212883280406910">Chcete-li přepnout na systém <ph name="IDS_SHORT_PRODUCT_OS_NAME" />, stiskněte klávesy Ctrl + Alt + S.</translation>
 <translation id="7848244988854036372">Otevřít vše (<ph name="URL_COUNT" />) v nové skupině karet</translation>
@@ -9530,7 +9531,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Odstranit rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Služba: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Natáhněte pravý koutek úst</translation>
 <translation id="7861215335140947162">&amp;Stažené soubory</translation>
 <translation id="7861846108263890455">Jazyk účtu Google</translation>
 <translation id="7864114920800968141">Za <ph name="NUM_MIN" /> min</translation>

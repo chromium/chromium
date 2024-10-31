@@ -693,7 +693,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="433213510553688132">Praćenje...</translation>
 <translation id="4335835283689002019">Sigurno pregledanje je isključeno</translation>
 <translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
-<translation id="4352287748243729941">Želite li upotrijebiti zaporku za <ph name="PROVIDER" />?</translation>
+<translation id="4352287748243729941">Koristiti lozinku za <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="4357206670025518404">i još <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Brzi pregled sigurnosti</translation>
@@ -853,7 +853,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5010886807652684893">Vizuelni prikaz</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> se želi povezati</translation>
-<translation id="5012253429094023177">Čini se da su <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> i <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> povezani. Prije nego što upotrijebite zaporku provjerite je li usluga <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> pouzdana.</translation>
+<translation id="5012253429094023177">Izgleda da su <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> i <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> povezani. Provjerite je li <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> pouzdana web lokacija prije korištenja lozinke.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Posljednjih 15 minuta</translation>
 <translation id="5032430150487044192">Nije moguće kreirati QR kôd</translation>
@@ -907,7 +907,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5304593522240415983">Ovo polje ne može biti prazno</translation>
 <translation id="5306014156308790439">Onemogućeno dodavanje u kolekciju</translation>
 <translation id="5308380583665731573">Poveži</translation>
-<translation id="5310963254742922113">Zaporka je upotrijebljena.</translation>
+<translation id="5310963254742922113">Korištena lozinka.</translation>
 <translation id="5316947901395241499">Pohranjivanje lozinki je isključio administrator</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>

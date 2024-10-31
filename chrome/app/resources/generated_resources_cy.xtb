@@ -5007,6 +5007,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4538417792467843292">Dileu gair</translation>
 <translation id="4538792345715658285">Wedi'i osod gan bolisi sefydliad.</translation>
 <translation id="4540409690203718935">Methu â chyrraedd Rheolwr Cyfrineiriau Google. Rhowch gynnig arall arni ymhen ychydig funudau</translation>
+<translation id="4540780316273593836">Aeth Rhywbeth o'i Le</translation>
 <translation id="4541123282641193691">Methu â dilysu'ch cyfrif. Rhowch gynnig arall arni neu ailgychwynnwch eich Chromebook.</translation>
 <translation id="4541505619120536051">Bob amser ar agor</translation>
 <translation id="4541662893742891060">Methu â chysylltu â'r proffil hwn. I gael cymorth technegol, cysylltwch â'ch cludwr.</translation>
@@ -5970,7 +5971,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5240931875940563122">Mewngofnodwch gyda ffôn Android</translation>
 <translation id="5242724311594467048">Galluogi "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Rhowch gynnig arall arni mewn ychydig eiliadau</translation>
-<translation id="5243752692914402705">Unwaith y byddwch yn dechrau modd sgrolio, symudwch eich pen i'r cyfeiriad yr hoffech chi sgrolio</translation>
 <translation id="5244234799035360187">Bydd OneDrive nawr yn ymddangos yn yr ap Files</translation>
 <translation id="5244466461749935369">Cadw am y tro</translation>
 <translation id="5244474230056479698">Wrthi'n cysoni i <ph name="EMAIL" /></translation>
@@ -6817,7 +6817,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5865508026715185451">Bydd <ph name="APP_NAME" /> yn seibio cyn bo hir</translation>
 <translation id="586567932979200359">Rydych yn rhedeg <ph name="PRODUCT_NAME" /> o'i ddelwedd disg. Mae ei osod ar eich cyfrifiadur yn caniatáu i chi ei redeg heb y ddelwedd disg, ac yn sicrhau y bydd yn aros yn gyfoes.</translation>
 <translation id="5865733239029070421">Yn anfon ystadegau defnydd ac adroddiadau toriadau at Google yn awtomatig</translation>
-<translation id="5866236843389439313">Estynnwch gornel chwith eich ceg</translation>
 <translation id="5868434909835797817">Mae'r meicroffon wedi'i ddiffodd ar eich dyfais</translation>
 <translation id="5868479397518301468">Mewngofnodiad wedi darfod</translation>
 <translation id="5868822853313956582">Dilyn lliwiau dyfais</translation>
@@ -8837,6 +8836,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
 <translation id="7352664183151911163">Ar draws eich apiau a phorwr Chrome</translation>
 <translation id="7353261921908507769">Gall eich cysylltiadau rannu â chi pan fyddant gerllaw. Ni fydd trosglwyddiadau yn dechrau nes i chi dderbyn.</translation>
+<translation id="7353432112255316844">Cadarnhewch Mai Chi Sydd Yno</translation>
 <translation id="735361434055555355">Wrthi'n gosod Linux…</translation>
 <translation id="7354120289251608189">Gallwch nawr roi gwedd newydd i'ch porwr ar unrhyw bryd.</translation>
 <translation id="7356506068433555887">Palmwydden</translation>
@@ -9533,6 +9533,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="784273751836026224">Dadosod Linux</translation>
 <translation id="784475655832336580">Nid yw amlygu'r eitem gyda ffocws bysellfwrdd ar gael pan fydd ChromeVox ymlaen</translation>
 <translation id="7844992432319478437">Wrthi'n diweddaru ffeil diff</translation>
+<translation id="7846161022626028328">Bu gwall. Rhowch gynnig arall arni.</translation>
 <translation id="7846634333498149051">Bysellfwrdd</translation>
 <translation id="7847212883280406910">Pwyswch Ctrl + Alt + S i newid i <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Agor pob un (<ph name="URL_COUNT" />) mewn grŵp tabiau newydd</translation>
@@ -9556,7 +9557,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Tynnu'r estyniad <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Gwasanaeth: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Estynnwch gornel dde eich ceg</translation>
 <translation id="7861215335140947162">&amp;Lawrlwythiadau</translation>
 <translation id="7861846108263890455">Iaith Cyfrif Google</translation>
 <translation id="7864114920800968141">Ymhen <ph name="NUM_MIN" /> mun</translation>

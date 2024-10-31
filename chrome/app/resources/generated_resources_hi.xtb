@@ -5004,6 +5004,7 @@
 <translation id="4538417792467843292">शब्‍द मिटाएं</translation>
 <translation id="4538792345715658285">एंटरप्राइज़ नीति द्वारा इंस्टॉल किया गया.</translation>
 <translation id="4540409690203718935">Google Password Manager को ऐक्सेस नहीं किया जा सका. कुछ देर बाद कोशिश करें</translation>
+<translation id="4540780316273593836">कोई गड़बड़ी हुई</translation>
 <translation id="4541123282641193691">आपके खाते की पुष्टि नहीं हो सकी. कृपया फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="4541505619120536051">हमेशा खोलें</translation>
 <translation id="4541662893742891060">इस प्रोफ़ाइल से कनेक्ट नहीं किया जा सकता. तकनीकी सहायता के लिए, कृपया मोबाइल और इंटरनेट सेवा देने वाली अपनी कंपनी से संपर्क करें.</translation>
@@ -5966,7 +5967,6 @@
 <translation id="5240931875940563122">Android फ़ोन की मदद से साइन इन करें</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" को चालू करें?</translation>
 <translation id="5243522832766285132">कृपया कुछ देर बाद कोशिश करें</translation>
-<translation id="5243752692914402705">स्क्रोल मोड चालू करने के बाद, अपना सिर उस तरफ़ घुमाएं जिस तरफ़ आपको अपने कंप्यूटर की स्क्रीन को स्क्रोल करना है</translation>
 <translation id="5244234799035360187">OneDrive अब Files ऐप्लिकेशन में दिखेगा</translation>
 <translation id="5244466461749935369">अभी रहने दें</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> से सिंक हो रहा है</translation>
@@ -6812,7 +6812,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> जल्द ही रुक जाएगा</translation>
 <translation id="586567932979200359">आप <ph name="PRODUCT_NAME" /> को उसकी डिस्क इमेज से चला रहे हैं. इसे अपने कंप्यूटर पर इंस्टॉल करने से यह आपको बिना डिस्क इमेज के चलाने देता है और पक्का करता है कि इससे यह 'अप टू डेट' रहेगा.</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और गड़बड़ी की रिपोर्ट अपने-आप भेजती है</translation>
-<translation id="5866236843389439313">अपने मुंह के बाएं कोने को खींचें</translation>
 <translation id="5868434909835797817">आपके डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="5868479397518301468">साइन इन करने का समय खत्म हो गया</translation>
 <translation id="5868822853313956582">डिवाइस के रंगों को फ़ॉलो करें</translation>
@@ -8827,6 +8826,7 @@
 <translation id="7352651011704765696">कुछ गलत हुआ</translation>
 <translation id="7352664183151911163">सभी ऐप्लिकेशन और Chrome ब्राउज़र पर</translation>
 <translation id="7353261921908507769">आपके संपर्क आपसे फ़ाइलें तभी शेयर कर सकते हैं, जब वे आस-पास होंं. आपके स्वीकार करने तक ट्रांसफ़र शुरू नहीं होगा.</translation>
+<translation id="7353432112255316844">अपनी पहचान की पुष्टि करें</translation>
 <translation id="735361434055555355">Linux इंस्टॉल किया जा रहा है...</translation>
 <translation id="7354120289251608189">अब अपने ब्राउज़र को किसी भी समय एक नया रूप दिया जा सकता है.</translation>
 <translation id="7356506068433555887">ताड़ का पेड़</translation>
@@ -9521,6 +9521,7 @@
 <translation id="784273751836026224">Linux अनइंस्टॉल करें</translation>
 <translation id="784475655832336580">ChromeVox के चालू होने पर, कीबोर्ड फ़ोकस की मदद से आइटम को हाइलाइट करने की सुविधा उपलब्ध नहीं होती</translation>
 <translation id="7844992432319478437">अंतर अपडेट हो रहा है</translation>
+<translation id="7846161022626028328">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> पर स्विच करने के लिए Ctrl + Alt + S दबाएं</translation>
 <translation id="7848244988854036372">सभी यूआरएल (<ph name="URL_COUNT" />) को नए टैब ग्रुप में खोलें</translation>
@@ -9544,7 +9545,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows) में खोलें</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> एक्सटेंशन हटाएं</translation>
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">अपने मुंह के दाएं कोने को खींचें</translation>
 <translation id="7861215335140947162">&amp;डाउनलोड</translation>
 <translation id="7861846108263890455">Google खाते की भाषा</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> मिनट में</translation>

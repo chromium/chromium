@@ -5004,6 +5004,7 @@
 <translation id="4538417792467843292">Διαγραφή λέξης</translation>
 <translation id="4538792345715658285">Εγκαταστάθηκε από την εταιρική πολιτική.</translation>
 <translation id="4540409690203718935">Δεν είναι δυνατή η επικοινωνία με τη Διαχείριση κωδικών πρόσβασης. Δοκιμάστε ξανά σε λίγα λεπτά</translation>
+<translation id="4540780316273593836">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="4541123282641193691">Δεν ήταν δυνατή η επαλήθευση του λογαριασμού σας. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="4541505619120536051">Να ανοίγει πάντα</translation>
 <translation id="4541662893742891060">Δεν είναι δυνατή η σύνδεση σε αυτό το προφίλ. Για τεχνική υποστήριξη, επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας σας.</translation>
@@ -5967,7 +5968,6 @@
 <translation id="5240931875940563122">Σύνδεση με τηλέφωνο Android</translation>
 <translation id="5242724311594467048">Ενεργοποίηση "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="5243522832766285132">Δοκιμάστε ξανά σε λίγο</translation>
-<translation id="5243752692914402705">Μόλις ξεκινήσετε τη λειτουργία κύλισης, μετακινήστε το κεφάλι σας προς την κατεύθυνση που θέλετε να γίνει κύλιση</translation>
 <translation id="5244234799035360187">Το OneDrive θα εμφανίζεται πλέον στην εφαρμογή Αρχεία</translation>
 <translation id="5244466461749935369">Διατήρηση προς το παρόν</translation>
 <translation id="5244474230056479698">Συγχρονισμός με <ph name="EMAIL" /></translation>
@@ -6815,7 +6815,6 @@
 <translation id="5865508026715185451">Η εφαρμογή <ph name="APP_NAME" /> θα τεθεί σύντομα σε παύση.</translation>
 <translation id="586567932979200359">Εκτελείτε το <ph name="PRODUCT_NAME" /> από την εικόνα δίσκου. Αν το εγκαταστήσετε στον υπολογιστή σας, θα μπορείτε να το εκτελείτε χωρίς την εικόνα δίσκου και θα παραμένει ενημερωμένο.</translation>
 <translation id="5865733239029070421">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google</translation>
-<translation id="5866236843389439313">Τεντώστε την αριστερή γωνία του στόματός σας</translation>
 <translation id="5868434909835797817">Το μικρόφωνο είναι απενεργοποιημένο στη συσκευή σας</translation>
 <translation id="5868479397518301468">Το χρονικό όριο της σύνδεσης έληξε</translation>
 <translation id="5868822853313956582">Χρήση χρωμάτων συσκευής</translation>
@@ -8828,6 +8827,7 @@
 <translation id="7352651011704765696">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="7352664183151911163">Στις εφαρμογές σας και στο πρόγραμμα περιήγησης Chrome</translation>
 <translation id="7353261921908507769">Οι επαφές σας μπορούν να μοιραστούν περιεχόμενο μαζί σας όταν βρίσκονται κοντά. Οι μεταφορές δεν θα ξεκινήσουν έως ότου αποδεχτείτε.</translation>
+<translation id="7353432112255316844">Επαλήθευση ταυτότητας</translation>
 <translation id="735361434055555355">Εγκατάσταση Linux…</translation>
 <translation id="7354120289251608189">Τώρα μπορείτε να δώσετε ανά πάσα στιγμή μια νέα εμφάνιση στο πρόγραμμα περιήγησής σας.</translation>
 <translation id="7356506068433555887">Φοίνικας</translation>
@@ -9524,6 +9524,7 @@
 <translation id="784273751836026224">Απεγκατάσταση Linux</translation>
 <translation id="784475655832336580">Η επισήμανση του στοιχείου με την εστίαση πληκτρολογίου δεν είναι διαθέσιμη όταν είναι ενεργοποιημένο το ChromeVox.</translation>
 <translation id="7844992432319478437">Ενημέρωση ανενεργή</translation>
+<translation id="7846161022626028328">Παρουσιάστηκε σφάλμα. Δοκιμάστε ξανά.</translation>
 <translation id="7846634333498149051">Πληκτρολόγιο</translation>
 <translation id="7847212883280406910">Πατήστε Ctrl + Alt + S για εναλλαγή σε <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Άνοιγμα όλων (<ph name="URL_COUNT" />) σε νέα ομάδα καρτελών</translation>
@@ -9547,7 +9548,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Κατάργηση επέκτασης <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Υπηρεσία: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Τεντώστε τη δεξιά γωνία του στόματός σας</translation>
 <translation id="7861215335140947162">&amp;Λήψεις</translation>
 <translation id="7861846108263890455">Γλώσσα Λογαριασμού Google</translation>
 <translation id="7864114920800968141">Σε <ph name="NUM_MIN" /> λεπ.</translation>

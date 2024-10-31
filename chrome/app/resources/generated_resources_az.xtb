@@ -4988,6 +4988,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4538417792467843292">Sözü silin</translation>
 <translation id="4538792345715658285">Sahibkarlıq qaydaları tərəfindən quraşdırılıb.</translation>
 <translation id="4540409690203718935">Google Parol Menecerinə daxil olmaq mümkün deyil. Bir neçə dəqiqə sonra yenidən cəhd edin</translation>
+<translation id="4540780316273593836">Xəta baş verdi</translation>
 <translation id="4541123282641193691">Hesabınızı doğrulamaq mümkün olmadı. Yenidən cəhd edin və ya Chromebook'u yenidən başladın.</translation>
 <translation id="4541505619120536051">Həmişə açın</translation>
 <translation id="4541662893742891060">Bu profilə qoşulmaq olmur. Texniki dəstək üçün operatorunuzla əlaqə saxlayın.</translation>
@@ -5951,7 +5952,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5240931875940563122">Android telefonu ilə daxil olun</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" aktiv edilsin?</translation>
 <translation id="5243522832766285132">Qısa zaman ərzində yenidən cəhd edin.</translation>
-<translation id="5243752692914402705">Sürüşdürmə rejiminə başladıqdan sonra sürüşdürmək istədiyiniz istiqamətə yönəlin</translation>
 <translation id="5244234799035360187">OneDrive artıq Fayllar tətbiqində görünəcək</translation>
 <translation id="5244466461749935369">İndilik saxlayın</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> e-poçtuna sinxronizasiya olunur</translation>
@@ -6798,7 +6798,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tezliklə dayanacaq</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> məhsulunu onun disk obrazindan işlədirsiniz. Onun kompüterə quraşdırılması disk obrazı olmadan işlətməyinizə imkan verəcək və həmişə güncəl qalmasını sağlayacaq.</translation>
 <translation id="5865733239029070421">İstifadə statistikası və qəza raportlarını avtomatik Google'a göndərir</translation>
-<translation id="5866236843389439313">Ağzınızın sol küncünü dartın</translation>
 <translation id="5868434909835797817">Mikrofon cihazda deaktivdir</translation>
 <translation id="5868479397518301468">Giriş vaxtı bitdi</translation>
 <translation id="5868822853313956582">Cihaz rənglərindən istifadə edin</translation>
@@ -8808,6 +8807,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7352651011704765696">Xəta oldu</translation>
 <translation id="7352664183151911163">Tətbiqlər və Chrome brauzerində</translation>
 <translation id="7353261921908507769">Kontaktlarınız yaxın olduqda sizinlə paylaşa bilər. Siz qəbul etmədən köçürmələr başlamayacaq.</translation>
+<translation id="7353432112255316844">Kimliyinizi doğrulayın</translation>
 <translation id="735361434055555355">Linux quraşdırılır...</translation>
 <translation id="7354120289251608189">Artıq istənilən vaxt brauzerə yeni görünüş tətbiq edə bilərsiniz.</translation>
 <translation id="7356506068433555887">Palma ağacı</translation>
@@ -9504,6 +9504,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="784273751836026224">Linux'u silin</translation>
 <translation id="784475655832336580">ChromeVox aktiv olduqda klaviatura fokusu ilə elementin vurğulanması əlçatan olmur</translation>
 <translation id="7844992432319478437">Diff utiliti güncəllənir</translation>
+<translation id="7846161022626028328">Xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> məhsuluna keçmək üçün Ctrl + Alt + S basın</translation>
 <translation id="7848244988854036372">Hamısını (<ph name="URL_COUNT" />) yeni tab qrupunda açın</translation>
@@ -9527,7 +9528,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> artırmasını silin</translation>
 <translation id="786073089922909430">Xidmət: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Ağzınızın sağ küncünü dartın</translation>
 <translation id="7861215335140947162">Endirmələr</translation>
 <translation id="7861846108263890455">Google Hesabının dili</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> dəqiqə sonra</translation>

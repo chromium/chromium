@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
 <translation id="1061864016440983342">Naudoti be vietovės</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> iš <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Sparčiojo įterpimo funkcijos negalima naudoti tinkintiems spartiesiems klavišams.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Priderinkite prie ekrano fono</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
+<translation id="6531528791584205545">spartusis įterpimas</translation>
 <translation id="6535178685492749208">Esate neprisijungę. Atsiliepimas bus išsiųstas vėliau.</translation>
 <translation id="6543412779435705598">takai</translation>
 <translation id="6550369542114086980">ketvirtadienį</translation>

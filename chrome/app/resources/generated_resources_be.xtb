@@ -427,6 +427,7 @@
 <translation id="1288037062697528143">Начная падсветка ўключыцца аўтаматычна пасля захаду сонца</translation>
 <translation id="1288300545283011870">Параметры маўлення</translation>
 <translation id="1289619947962767206">Гэты варыянт больш не падтрымліваецца. Для прэзентацыі ўкладак выкарыстоўвайце <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Калі выбраць ужо прызначаны жэст, ён будзе выдалены з зыходнага дзеяння.</translation>
 <translation id="1291119821938122630">Умовы выкарыстання <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Скінуць клавішы</translation>
 <translation id="1292849930724124745">Каб прадухіліць выхад з уліковага запісу, устаўце разумную картку</translation>
@@ -4989,6 +4990,7 @@
 <translation id="4538417792467843292">Выдаліць слова</translation>
 <translation id="4538792345715658285">Усталявана карпаратыўнай палітыкай.</translation>
 <translation id="4540409690203718935">Не ўдаецца ўвайсці ў Менеджар пароляў Google. Паўтарыце спробу праз некалькі хвілін.</translation>
+<translation id="4540780316273593836">Нешта пайшло не так</translation>
 <translation id="4541123282641193691">Не ўдалося спраўдзіць уліковы запіс. Паўтарыце спробу або перазапусціце Chromebook.</translation>
 <translation id="4541505619120536051">Адкрываць заўсёды</translation>
 <translation id="4541662893742891060">Не ўдалося падключыцца да гэтага профілю. Па тэхнічную падтрымку звяртайцеся да свайго аператара.</translation>
@@ -5952,7 +5954,6 @@
 <translation id="5240931875940563122">Увайдзіце праз тэлефон Android</translation>
 <translation id="5242724311594467048">Уключыць пашырэнне "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Паўтарыце спробу праз некалькі секунд</translation>
-<translation id="5243752692914402705">Уключыўшы рэжым гартання, рухайце галавой у той бок, у які трэба гартаць</translation>
 <translation id="5244234799035360187">Цяпер OneDrive будзе паказвацца ў праграме "Файлы"</translation>
 <translation id="5244466461749935369">Пакінуць</translation>
 <translation id="5244474230056479698">Сінхранізуецца з <ph name="EMAIL" /></translation>
@@ -6742,6 +6743,7 @@
 <translation id="5832970156002835240">Дазволіць на ўсіх сайтах</translation>
 <translation id="5833397272224757657">Для персаналізацыі выкарыстоўвае змесціва з сайтаў, якія вы праглядалі, а таксама дзеянні ў браўзеры</translation>
 <translation id="5833726373896279253">Гэтыя налады можа змяняць толькі ўладальнік:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Не дазваляць сайтам выкарыстоўваць JavaScript</translation>
 <translation id="583431638776747">Сайт быў недаступны</translation>
 <translation id="5834581999798853053">Засталося каля <ph name="TIME" /> хв</translation>
@@ -6797,7 +6799,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> хутка прыпыніцца</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працуе з вобраза дыска. Калі ўсталяваць праграму на камп’ютар, вы зможаце запускаць яе без вобраза, і яна будзе рэгулярна абнаўляцца.</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
-<translation id="5866236843389439313">Расцягніце левы вугал рота</translation>
 <translation id="5868434909835797817">Мікрафон выключаны на гэтай прыладзе</translation>
 <translation id="5868479397518301468">Перавышаны час чакання ўваходу</translation>
 <translation id="5868822853313956582">Выкарыстоўваць колеравую схему прылады</translation>
@@ -8815,6 +8816,7 @@
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7352664183151911163">У праграмах і браўзеры Chrome</translation>
 <translation id="7353261921908507769">Вашы кантакты могуць абагульваць з вамі даныя, калі знаходзяцца паблізу. Перадача даных не пачнецца, пакуль вы яе не ўхваліце.</translation>
+<translation id="7353432112255316844">Пацвердзіць маю асобу</translation>
 <translation id="735361434055555355">Ідзе ўсталяванне Linux...</translation>
 <translation id="7354120289251608189">Цяпер вы можаце ў любы час наладзіць знешні выгляд браўзера.</translation>
 <translation id="7356506068433555887">Пальма</translation>
@@ -9511,6 +9513,7 @@
 <translation id="784273751836026224">Выдаліць Linux</translation>
 <translation id="784475655832336580">Калі праграма ChromeVox уключана, функцыя вылучэння аб’ектаў з дапамогай клавіятуры недаступная</translation>
 <translation id="7844992432319478437">Абнаўленне розніцы</translation>
+<translation id="7846161022626028328">Узнікла памылка. Паўтарыце спробу.</translation>
 <translation id="7846634333498149051">Клавіятура</translation>
 <translation id="7847212883280406910">Націсніце Ctrl + Alt + S, каб пераключыцца на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Адкрыць усе ўкладкі (<ph name="URL_COUNT" />) у новай групе</translation>
@@ -9534,7 +9537,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Выдаліць пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="786073089922909430">Сэрвіс: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Расцягніце правы вугал рота</translation>
 <translation id="7861215335140947162">&amp;Спампоўкі</translation>
 <translation id="7861846108263890455">Мова Уліковага запісу Google</translation>
 <translation id="7864114920800968141">Праз <ph name="NUM_MIN" /> хв</translation>

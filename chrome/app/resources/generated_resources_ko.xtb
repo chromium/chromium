@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">일몰 시 야간 조명이 자동으로 켜짐</translation>
 <translation id="1288300545283011870">음성 속성</translation>
 <translation id="1289619947962767206">이 옵션은 더 이상 지원되지 않습니다. 탭을 발표하려면 <ph name="GOOGLE_MEET" />을 사용하세요.</translation>
+<translation id="1291057703584594733">이미 할당된 동작을 선택하면 원래 작업에서 동작이 삭제됩니다.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> 서비스 약관</translation>
 <translation id="1291421198328146277">키 재설정</translation>
 <translation id="1292849930724124745">로그인 상태를 유지하려면 스마트 카드 삽입</translation>
@@ -5004,6 +5005,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4538417792467843292">단어 삭제</translation>
 <translation id="4538792345715658285">엔터프라이즈 정책에 의해 설치됨</translation>
 <translation id="4540409690203718935">Google 비밀번호 관리자에 연결할 수 없습니다. 잠시 후 다시 시도해 보세요.</translation>
+<translation id="4540780316273593836">문제 발생</translation>
 <translation id="4541123282641193691">계정을 확인할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="4541505619120536051">항상 열기</translation>
 <translation id="4541662893742891060">이 프로필에 연결할 수 없습니다. 기술 지원이 필요하면 이동통신사에 문의하세요.</translation>
@@ -5967,7 +5969,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5240931875940563122">Android 휴대전화로 로그인</translation>
 <translation id="5242724311594467048">'<ph name="EXTENSION_NAME" />'을(를) 사용하시겠습니까?</translation>
 <translation id="5243522832766285132">잠시 후 다시 시도해 주세요.</translation>
-<translation id="5243752692914402705">스크롤 모드를 시작하면 스크롤하려는 방향으로 머리를 움직입니다</translation>
 <translation id="5244234799035360187">이제 Files 앱에 OneDrive가 표시됨</translation>
 <translation id="5244466461749935369">보관하기</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />에 동기화</translation>
@@ -6758,6 +6759,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5832970156002835240">모든 사이트에서 허용</translation>
 <translation id="5833397272224757657">방문한 사이트의 콘텐츠와 브라우저 활동 및 상호작용이 맞춤설정에 사용됩니다.</translation>
 <translation id="5833726373896279253">이 설정은 소유자만 수정할 수 있습니다.</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">사이트에서 JavaScript를 사용하도록 허용하지 않음</translation>
 <translation id="583431638776747">사이트를 사용할 수 없음</translation>
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
@@ -6813,7 +6815,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> 앱이 곧 일시중지됨</translation>
 <translation id="586567932979200359">디스크 이미지에서 <ph name="PRODUCT_NAME" />을(를) 실행 중입니다. 컴퓨터에 설치하면 디스크 이미지가 없어도 실행이 가능하며 최신 상태로 유지됩니다.</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
-<translation id="5866236843389439313">왼쪽 입꼬리 당기기</translation>
 <translation id="5868434909835797817">기기의 마이크가 꺼져 있습니다.</translation>
 <translation id="5868479397518301468">로그인 타임아웃</translation>
 <translation id="5868822853313956582">기기 색상 따르기</translation>
@@ -8826,6 +8827,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7352664183151911163">여러 앱 및 Chrome 브라우저</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
+<translation id="7353432112255316844">본인 인증</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
 <translation id="7354120289251608189">이제 언제든지 브라우저를 새로운 디자인으로 변경할 수 있습니다.</translation>
 <translation id="7356506068433555887">야자나무</translation>
@@ -9521,6 +9523,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="784273751836026224">Linux 제거</translation>
 <translation id="784475655832336580">ChromeVox가 사용 설정된 경우 키보드 포커스로 항목을 강조 표시할 수 없음</translation>
 <translation id="7844992432319478437">diff 업데이트 중</translation>
+<translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="7846634333498149051">키보드</translation>
 <translation id="7847212883280406910">Ctrl + Alt + S 키를 눌러 <ph name="IDS_SHORT_PRODUCT_OS_NAME" />(으)로 전환합니다.</translation>
 <translation id="7848244988854036372">새 탭 그룹에서 <ph name="URL_COUNT" />개 모두 열기</translation>
@@ -9545,7 +9548,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />(Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> 확장 프로그램 삭제</translation>
 <translation id="786073089922909430">서비스: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">오른쪽 입꼬리 당기기</translation>
 <translation id="7861215335140947162">다운로드(&amp;D)</translation>
 <translation id="7861846108263890455">Google 계정 언어</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" />분 후</translation>

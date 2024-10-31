@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資訊。</translation>
 <translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="10614374240317010">一律不儲存</translation>
+<translation id="1062138828266376352">你的 PIN 碼並未變更。請檢查網路連線，然後再試一次</translation>
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
@@ -676,6 +677,7 @@
 <translation id="421070604241073551">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="4224534474590365556">要關閉 99 個以上的閒置分頁嗎？</translation>
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全性風險。</translation>
+<translation id="422477017457571619">系統會根據你傳送到 Google 的瀏覽資料，運用 AI 技術即時防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4231395118547300571">安全檢查通知已開啟</translation>
 <translation id="4237377247299956313">輕觸 [預設的瀏覽器應用程式]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -1256,7 +1258,7 @@
 <translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
 <translation id="6732087373923685049">攝影機</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
-<translation id="6748108480210050150">寄件者</translation>
+<translation id="6748108480210050150">從</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
@@ -1305,7 +1307,7 @@
 <translation id="6979737339423435258">不限時間</translation>
 <translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
 <translation id="6990519590575500580">FaceTime</translation>
-<translation id="6998989275928107238">收件者</translation>
+<translation id="6998989275928107238">到</translation>
 <translation id="7004032350256606903">貴機構要求你使用私密瀏覽模式。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">在「設定」中設為預設…</translation>

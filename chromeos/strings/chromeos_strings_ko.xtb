@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">더보기</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3321030238473337787">재생 속도</translation>
+<translation id="3327613592010997943"><ph name="DAY" /><ph name="TIME" />에 이 기기를 다시 사용할 수 있습니다.</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="3340978935015468852">설정</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> 다시 시작 및 업데이트</translation>
 <translation id="576835345334454681">디스플레이 밝기 높이기</translation>
+<translation id="5775340474232476653">선생님이 수업을 종료했습니다.</translation>
 <translation id="5779818640587041940">녹음 중 화면 켜두기</translation>
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784136236926853061">HTTP 지연 시간 높음</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">석조</translation>
 <translation id="7590883480672980941">입력 설정</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> 남음</translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> 관리자가 <ph name="DEVICE_TYPE" />을 사용할 수 있는 시기를 설정했습니다.</translation>
 <translation id="7613724632293948900">마우스 또는 화살표 키를 사용하여 재배치합니다.</translation>
 <translation id="7618774594543487847">중성 색상</translation>
 <translation id="7620771111601174153">고객센터에서 자세히 알아보기</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">녹음하려면 누르세요</translation>
 <translation id="8094062939584182041">Google에서 이 문제에 관한 이메일을 보내도록 허용</translation>
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
+<translation id="8110942816572072814">선생님이 화면을 잠갔습니다.</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">확인</translation>

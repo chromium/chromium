@@ -631,6 +631,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3208321278970793882">Application</translation>
 <translation id="3213571860604332401">Enregistrer le lien comme signet</translation>
 <translation id="3217205077783620295">Le son est activé et peut être coupé en cliquant sur le bouton de volume.</translation>
+<translation id="3218561536255328229">Appuyez cinq fois sur Échap pour activer le pavé tactile</translation>
 <translation id="3226991577105957773">et <ph name="COUNT" /> autres</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3233611303007751344">L'Économiseur de pile est désactivé</translation>
@@ -1566,7 +1567,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre appareil photo et votre microphone</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="6240551054644725950">Le mot de passe ne doit contenir que des caractères valides</translation>
+<translation id="6240551054644725950">Le mot de passe doit contenir uniquement des caractères valides</translation>
 <translation id="6240603910551255087">Le bouton du haut</translation>
 <translation id="6240821072888636753">Toujours demander</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>

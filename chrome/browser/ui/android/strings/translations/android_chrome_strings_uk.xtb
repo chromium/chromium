@@ -606,6 +606,7 @@
 <translation id="3902562446536395999">Сортування від А до Я</translation>
 <translation id="3908308510347173149">Оновити сервіс <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Сортування від Я до А</translation>
+<translation id="3918415141610210050">Вкладка</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> увімкнено</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Об’єднати мої дані</translation>
@@ -692,6 +693,7 @@
 <translation id="433213510553688132">Додавання до підписок…</translation>
 <translation id="4335835283689002019">Безпечний перегляд вимкнено</translation>
 <translation id="4351244548802238354">Закрити діалогове вікно</translation>
+<translation id="4352287748243729941">Використати пароль із сайту <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Щоб повернутися на важливу сторінку пізніше, додайте закладку</translation>
 <translation id="4357206670025518404">Ще <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Огляд налаштувань безпеки</translation>
@@ -851,6 +853,7 @@
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5010886807652684893">Візуальний перегляд</translation>
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> хоче підключитися</translation>
+<translation id="5012253429094023177">Схоже, вебсайти <ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> і <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> пов’язані. Перш ніж використати пароль, переконайтеся, що довіряєте сайту <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" />.</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Останні 15 хвилин</translation>
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
@@ -904,6 +907,7 @@
 <translation id="5304593522240415983">Це поле не може бути порожнім</translation>
 <translation id="5306014156308790439">Вимкнена кнопка "Додати в колекцію"</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
+<translation id="5310963254742922113">Пароль використано.</translation>
 <translation id="5316947901395241499">Адміністратор вимкнув можливість зберігати паролі</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319359161174645648">Google рекомендує Chrome</translation>

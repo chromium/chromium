@@ -631,7 +631,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3213571860604332401">Pohranjivanje linka kao oznake</translation>
 <translation id="3217205077783620295">Zvuk je uključen. Deaktiviranjem će se isključiti zvuk.</translation>
-<translation id="3218561536255328229">Pritisnite tipku Esc pet puta da biste omogućili dodirnu podlogu</translation>
+<translation id="3218561536255328229">Pritisnite Esc 5 puta da omogućite dodirnu podlogu</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Ušteda baterije je isključena</translation>
@@ -2352,6 +2352,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8982906748181120328">Vid. u blizini</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
+<translation id="8991648557324317894">Pritisnite fn + Brzo umetanje ili Shift za otkazivanje.</translation>
 <translation id="899350903320462459">Otključajte uređaj kao <ph name="LOGIN_ID" /> da izvršite radnju obavještenja</translation>
 <translation id="8993733019280019776">Pričate li? Mikrofon je isključen. Odaberite mikrofon da ga uključite.</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE POHRANOM</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
 <translation id="1061864016440983342">অৱস্থানৰ অবিহনে ব্যৱহাৰ কৰক</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ৰ <ph name="INDEX" />, <ph name="NAME" />।</translation>
+<translation id="1069150558259542054">কাষ্টম শ্বৰ্টকাটৰ বাবে দ্ৰুত অন্তৰ্ভুক্তি ব্যৱহাৰ কৰিব নোৱাৰি।</translation>
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
@@ -470,6 +471,7 @@
 <translation id="3305294846493618482">অধিক</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3321030238473337787">প্লে’বেকৰ গতিবেগ</translation>
+<translation id="3327613592010997943">আপুনি এই ডিভাইচটো <ph name="DAY" /> <ph name="TIME" />ত পুনৰ ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
 <translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="3340978935015468852">ছেটিংসমূহ</translation>
@@ -954,6 +956,7 @@
 <translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ৰিষ্টাৰ্ট কৰি আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="576835345334454681">ডিছপ্লে’ৰ উজ্জ্বলতা আপ</translation>
+<translation id="5775340474232476653">আপোনাৰ শিক্ষকে ক্লাছটো শেষ কৰিছে</translation>
 <translation id="5779818640587041940">ৰেকৰ্ড কৰোঁতে স্ক্ৰীন অন ৰাখক</translation>
 <translation id="57838592816432529">মিউট কৰক</translation>
 <translation id="5784136236926853061">HTTPৰ উচ্চ বিলম্বতা</translation>
@@ -1125,6 +1128,7 @@
 <translation id="6517239166834772319">অন্বেষণ</translation>
 <translation id="6526200165918397681">ৱালপেপাৰ মিলাওক</translation>
 <translation id="6527081081771465939">ৱাই-ফাইৰ অজ্ঞাত সুৰক্ষাৰ প্ৰ'টকল</translation>
+<translation id="6531528791584205545">দ্ৰুত অন্তৰ্ভুক্তি</translation>
 <translation id="6535178685492749208">আপুনি অফলাইন হৈ আছে। মতামত পাছত পঠিওৱা হ’ব।</translation>
 <translation id="6543412779435705598">টাক’</translation>
 <translation id="6550369542114086980">বৃহস্পতিবাৰে</translation>
@@ -1357,6 +1361,7 @@
 <translation id="757747079855995705">শিল</translation>
 <translation id="7590883480672980941">ইনপুটৰ ছেটিংসমূহ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকী</translation>
+<translation id="7600430297804876776">এই <ph name="DEVICE_TYPE" />টো কেতিয়া ব্যৱহাৰ কৰিব পাৰিব সেয়া <ph name="MANAGER" /> প্ৰশাসকে ছেট কৰিছে।</translation>
 <translation id="7613724632293948900">মাউছ অথবা এৰ’ কীৰ জৰিয়তে স্থান সলনি কৰক।</translation>
 <translation id="7618774594543487847">নিৰপেক্ষ</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
@@ -1462,6 +1467,7 @@
 <translation id="8088963492174775412">ৰেকৰ্ড কৰিবলৈ টিপক</translation>
 <translation id="8094062939584182041">Googleক এই সমস্যাটোৰ বিষয়ে আপোনালৈ ইমেইল কৰিবলৈ দিয়ক</translation>
 <translation id="8104083085214006426">আপুনি এটা মুক্ত আৰু অসুৰক্ষিত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
+<translation id="8110942816572072814">আপোনাৰ শিক্ষকে আপোনাৰ স্ক্ৰীনখন অৱৰোধ কৰিছে</translation>
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>

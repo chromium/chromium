@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização.</translation>
 <translation id="1061864016440983342">Usar sem localização</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Não é possível usar a Inserção rápida para atalhos personalizados.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detetada</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Corresponder à imagem de fundo</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
+<translation id="6531528791584205545">inserção rápida</translation>
 <translation id="6535178685492749208">Está offline. O feedback vai ser enviado mais tarde.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">na quinta-feira</translation>

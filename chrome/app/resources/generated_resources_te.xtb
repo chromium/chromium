@@ -5002,6 +5002,7 @@
 <translation id="4538417792467843292">పదాన్ని తొలగించండి</translation>
 <translation id="4538792345715658285">బిజినెస్ విధానం ద్వారా ఇన్‌స్టాల్ చేయబడింది.</translation>
 <translation id="4540409690203718935">Google Password Managerను రీచ్ అవ్వడం సాధ్యం కాదు. కొన్ని నిమిషాల తర్వాత మళ్లీ ట్రై చేయండి</translation>
+<translation id="4540780316273593836">ఏదో తప్పు జరిగింది</translation>
 <translation id="4541123282641193691">మీ ఖాతాను వెరిఫై చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="4541505619120536051">ఎల్లప్పుడూ తెరిచి ఉంటుంది</translation>
 <translation id="4541662893742891060">ఈ ప్రొఫైల్‌కు కనెక్ట్ చేయడం సాధ్యం కాలేదు. టెక్నికల్ సపోర్ట్ కోసం, దయచేసి మీ క్యారియర్‌ను సంప్రదించండి.</translation>
@@ -5965,7 +5966,6 @@
 <translation id="5240931875940563122">Android ఫోన్‌తో సైన్ ఇన్ చేయండి</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ను ప్రారంభించాలా?</translation>
 <translation id="5243522832766285132">దయచేసి కొన్ని నిమిషాల్లో మళ్లీ ట్రై చేయండి</translation>
-<translation id="5243752692914402705">మీరు స్క్రోల్ మోడ్‌ను ప్రారంభించిన తర్వాత, స్కోల్ర్ చేయాలనుకుంటున్న దిశలో మీ తలను కదిలించండి</translation>
 <translation id="5244234799035360187">OneDrive ఇప్పుడు Files యాప్‌లో కనిపిస్తుంది</translation>
 <translation id="5244466461749935369">ప్రస్తుతాన్ని అలాగే ఉంచండి</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> ఖాతాకు సింక్ చేస్తోంది</translation>
@@ -6811,7 +6811,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> త్వరలో పాజ్ అవుతుంది</translation>
 <translation id="586567932979200359">మీరు <ph name="PRODUCT_NAME" /> డిస్క్ ఇమేజ్ నుండి దాన్ని అమలు చేస్తున్నారు. మీ కంప్యూటర్‌లో దీన్ని ఇన్‌స్టాల్ చేయడం వలన డిస్క్ ఇమేజ్ లేకుండా దాన్ని అమలు చేయడానికి మీరు అనుమతించబడతారు. ఇది తాజాగా ఉంటుందని హామీ పొందుతారు.</translation>
 <translation id="5865733239029070421">వినియోగ గణాంకాలను, క్రాష్ రిపోర్ట్‌లను ఆటోమేటిక్‌గా Googleకు పంపుతుంది</translation>
-<translation id="5866236843389439313">మీ నోటి ఎడమ మూలను సాగదీయడం</translation>
 <translation id="5868434909835797817">మీ పరికరంలో మైక్రోఫోన్ ఆఫ్‌లో ఉంది</translation>
 <translation id="5868479397518301468">సైన్ ఇన్ సమయం ముగిసింది</translation>
 <translation id="5868822853313956582">పరికర రంగులను ఫాలో అవ్వండి</translation>
@@ -8824,6 +8823,7 @@
 <translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="7352664183151911163">మీ యాప్‌లు, Chrome బ్రౌజర్ అంతటా</translation>
 <translation id="7353261921908507769">మీ కాంటాక్ట్‌లు సమీపంలో ఉన్నప్పుడు వారు మీతో షేర్ చేయగలరు. మీరు అంగీకరించే వరకు బదిలీలు ప్రారంభం కావు.</translation>
+<translation id="7353432112255316844">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="735361434055555355">Linuxను ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="7354120289251608189">మీరు ఇప్పుడు మీ బ్రౌజర్‌కు ఎప్పుడైనా కొత్త రూపాన్ని ఇవ్వవచ్చు.</translation>
 <translation id="7356506068433555887">తాటి చెట్టు</translation>
@@ -9519,6 +9519,7 @@
 <translation id="784273751836026224">Linuxను అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="784475655832336580">ChromeVox ఆన్‌లో ఉన్నప్పుడు కీబోర్డ్ ఫోకస్‌తో ఐటెమ్‌ను హైలైట్ చేయడం అందుబాటులో ఉండదు</translation>
 <translation id="7844992432319478437">డిఫ్‌ను అప్‌డేట్ చేస్తోంది</translation>
+<translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7846634333498149051">కీబోర్డ్</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />కు మారడానికి Ctrl + Alt + S నొక్కండి</translation>
 <translation id="7848244988854036372">అన్నింటినీ (<ph name="URL_COUNT" />) కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
@@ -9542,7 +9543,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (విండోలు)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> ఎక్స్‌టెన్షన్‌ను తీసివేయండి</translation>
 <translation id="786073089922909430">సేవ: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">మీ నోటిలో కుడి దవడ వైపు సాగదీయడం</translation>
 <translation id="7861215335140947162">&amp;డౌన్‌లోడ్‌లు</translation>
 <translation id="7861846108263890455">Google ఖాతా భాష</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> నిమిషాల్లో</translation>

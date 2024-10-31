@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">സൂര്യാസ്തമയ സമയത്ത് നൈറ്റ് ലൈറ്റ് സ്വയമേവ ഓണാകും</translation>
 <translation id="1288300545283011870">സംഭാഷണ പ്രോപ്പർട്ടികൾ</translation>
 <translation id="1289619947962767206">ഈ ഓപ്ഷന് ഇനി പിന്തുണയില്ല. ഒരു ടാബ് ദൃശ്യമാക്കാൻ, <ph name="GOOGLE_MEET" /> ഉപയോഗിക്കുക.</translation>
+<translation id="1291057703584594733">ഇതിനകം അസൈൻ ചെയ്ത ജെസ്ച്ചർ തിരഞ്ഞെടുക്കുന്നത് അതിന്റെ ഒറിജിനൽ പ്രവർത്തനത്തിൽ നിന്ന് അതിനെ നീക്കം ചെയ്യും.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> സേവന നിബന്ധനകൾ</translation>
 <translation id="1291421198328146277">കീകൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="1292849930724124745">സൈൻ ഇൻ ചെയ്ത നിലയിൽ തുടരാൻ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്യുക</translation>
@@ -4986,6 +4987,7 @@
 <translation id="4538417792467843292">പദം ഇല്ലാതാക്കുക</translation>
 <translation id="4538792345715658285">എന്റർപ്രൈസ് നയത്തിനാൽ ഇൻസ്റ്റാൾ ചെയ്യപ്പെട്ടത്</translation>
 <translation id="4540409690203718935">Google Password Manager ലഭ്യമാക്കാനാകില്ല. അൽപ്പ സമയം കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="4540780316273593836">എന്തോ കുഴപ്പമുണ്ടായി</translation>
 <translation id="4541123282641193691">നിങ്ങളുടെ അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="4541505619120536051">എപ്പോഴും തുറന്നിരിക്കുന്നു</translation>
 <translation id="4541662893742891060">ഈ പ്രൊഫൈലിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. സാങ്കേതിക പിന്തുണയ്ക്ക് നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
@@ -5949,7 +5951,6 @@
 <translation id="5240931875940563122">Android ഫോൺ ഉപയോഗിച്ച് സെെൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" പ്രവർത്തനക്ഷമമാക്കണോ?</translation>
 <translation id="5243522832766285132">അൽപ്പസമയത്തിനുള്ളിൽ വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="5243752692914402705">സ്ക്രോൾ മോഡ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, സ്ക്രോൾ ചെയ്യേണ്ട ദിശയിലേക്ക് നിങ്ങളുടെ തല നീക്കുക</translation>
 <translation id="5244234799035360187">OneDrive ഇപ്പോൾ Files ആപ്പിൽ ദൃശ്യമാകും</translation>
 <translation id="5244466461749935369">ഇപ്പോൾ നിലനിർത്തുക</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> ഇമെയിലിലേക്ക് സമന്വയിപ്പിക്കുന്നു</translation>
@@ -6741,6 +6742,7 @@
 <translation id="5832970156002835240">എല്ലാ സൈറ്റുകളിലും അനുവദിക്കുക</translation>
 <translation id="5833397272224757657">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകളിലെ ഉള്ളടക്കവും ബ്രൗസർ ആക്റ്റിവിറ്റിയും ആശയവിനിമയങ്ങളും, വ്യക്തിപരമാക്കാൻ ഉപയോഗിക്കുന്നു</translation>
 <translation id="5833726373896279253">ഈ ക്രമീകരണങ്ങള്‍ ഉടമയ്ക്ക് മാത്രമേ പരിഷ്ക്കരിക്കാന്‍ കഴിയൂ:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">JavaScript ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="583431638776747">സൈറ്റ് ലഭ്യമല്ല</translation>
 <translation id="5834581999798853053">ഏകദേശം <ph name="TIME" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
@@ -6796,7 +6798,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ഉടൻ താൽക്കാലികമായി നിർത്തും</translation>
 <translation id="586567932979200359">നിങ്ങൾ <ph name="PRODUCT_NAME" />, അതിന്റെ ഡിസ്‌ക് ചിത്രത്തിൽ നിന്ന് പ്രവർത്തിപ്പിക്കുന്നു. ഇത് നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നത്, ഡിസ്‌ക് ചിത്രം ഇല്ലാതെ തന്നെ ഇത് പ്രവർത്തിപ്പിക്കാൻ നിങ്ങളെ അനുവദിക്കുകയും അപ് റ്റു ഡേറ്റായി നിലനിർത്തുമെന്ന് ഉറപ്പുവരുത്തുകയും ചെയ്യുന്നു.</translation>
 <translation id="5865733239029070421">Google-ലേക്ക് സ്വയമേവ ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോര്‍ട്ടുകളും അയയ്ക്കുന്നു</translation>
-<translation id="5866236843389439313">നിങ്ങളുടെ വായയുടെ ഇടത് വശം സ്ട്രെച്ച് ചെയ്യുക</translation>
 <translation id="5868434909835797817">നിങ്ങളുടെ ഉപകരണത്തിൽ മൈക്രോഫോൺ ഓഫാണ്</translation>
 <translation id="5868479397518301468">സൈൻ ഇൻ ചെയ്യൽ ടൈംഔട്ടായി</translation>
 <translation id="5868822853313956582">ഉപകരണത്തിലെ നിറങ്ങൾ ഉപയോഗിക്കുക</translation>
@@ -8809,6 +8810,7 @@
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
 <translation id="7352664183151911163">നിങ്ങളുടെ ആപ്പുകളിലും Chrome ബ്രൗസറിലും ഉടനീളം</translation>
 <translation id="7353261921908507769">നിങ്ങളുടെ സമീപത്തുള്ളപ്പോൾ കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. നിങ്ങൾ അത് സ്വീകരിക്കുന്നത് വരെ കൈമാറ്റം ആരംഭിക്കില്ല.</translation>
+<translation id="7353432112255316844">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="735361434055555355">Linux ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു...</translation>
 <translation id="7354120289251608189">ഇപ്പോൾ നിങ്ങൾക്ക് ഏതുസമയത്തും നിങ്ങളുടെ ബ്രൗസറിന് പുതിയ രൂപം നൽകാം.</translation>
 <translation id="7356506068433555887">പന</translation>
@@ -9504,6 +9506,7 @@
 <translation id="784273751836026224">Linux അൺഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="784475655832336580">ChromeVox ഓണായിരിക്കുമ്പോൾ, കീബോർഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഇനം ഹൈലൈറ്റ് ചെയ്യൽ ലഭ്യമല്ല</translation>
 <translation id="7844992432319478437">ഡിഫ് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
+<translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7846634333498149051">കീബോർഡ്</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-ലേക്ക് മാറാൻ Ctrl + Alt + S അമർത്തുക</translation>
 <translation id="7848244988854036372">എല്ലാം (<ph name="URL_COUNT" />) പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
@@ -9527,7 +9530,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> വിപുലീകരണം നീക്കം ചെയ്യുക</translation>
 <translation id="786073089922909430">സേവനം: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">നിങ്ങളുടെ വായയുടെ വലത് വശം സ്ട്രെച്ച് ചെയ്യുക</translation>
 <translation id="7861215335140947162">&amp;ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="7861846108263890455">Google അക്കൗണ്ടിന്റെ ഭാഷ</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> മിനിറ്റിൽ</translation>

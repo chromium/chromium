@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Адреса је сачувана само на овом уређају</translation>
 <translation id="1445276840641906250">Све картице у једном прегледачу</translation>
 <translation id="1450170672351507823">Стандардна заштита је укључена. Користите напредну заштиту да бисте се додатно заштитили.</translation>
+<translation id="1455660774629812862">Не скривај</translation>
 <translation id="1460751212339734034">Уштедите време, куцајте мање</translation>
 <translation id="1466035273550360103">Нема отворених картица</translation>
 <translation id="1469381646033328562">Налогом управља родитељ.
@@ -319,6 +320,7 @@
 Сајтови не могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа.</translation>
 <translation id="2377336083033403521">Претраживање картица…</translation>
 <translation id="2381405137052800939">Основе</translation>
+<translation id="2384692388811649784">Сакриј картице без архивирања</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
 <translation id="2390457533592708044">Сакриј „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
@@ -339,6 +341,7 @@
 <translation id="2479148705183875116">Иди у Подешавања</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2484459871750294497">Како да омогућим ову функцију?</translation>
+<translation id="2493269659028026145">Одмах закључај помоћу: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Историја прегледања</translation>
 <translation id="2497852260688568942">Администратор је онемогућио синхронизацију</translation>
 <translation id="2499505845365628575">Комплетну историју прегледања можете да прегледате помоћу дугмета <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -932,6 +935,7 @@
 <translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="5415289094036440596">Приступни кључеви не могу да се деле</translation>
 <translation id="5416455648658732408">Премести у групу картица</translation>
+<translation id="5429624150850059322">Кад се вратите, картице ће бити замагљене док не додирнете да бисте наставили</translation>
 <translation id="5431239785743546285">Прочитане странице</translation>
 <translation id="5431252637281434233">Бићете одјављени</translation>
 <translation id="543338862236136125">Измените лозинку</translation>
@@ -1031,6 +1035,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5817176759448082654">Провера лозинки</translation>
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Синхронизује се…</translation>
+<translation id="5832166137082209907">Сакриј после 10 минута</translation>
 <translation id="5844284118433003733">Кад сте пријављени, ови подаци су повезани са вашим Google налогом да бисмо вас заштитили у свим Google услугама, на пример, повећањем заштите у Gmail-у после безбедносног инцидента.</translation>
 <translation id="5854790677617711513">Старије од 30 дана</translation>
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>

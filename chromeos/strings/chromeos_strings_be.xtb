@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">яшчэ</translation>
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3321030238473337787">Хуткасць прайгравання</translation>
+<translation id="3327613592010997943">Вы зможаце выкарыстоўваць гэту прыладу зноў <ph name="DAY" /> з <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">налады</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Стан партала</translation>
 <translation id="5763838252932650682">Перазапуск і абнаўленне праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="576835345334454681">Павялічыць яркасць дысплэя</translation>
+<translation id="5775340474232476653">Занятак па курсе скончаны выкладчыкам</translation>
 <translation id="5779818640587041940">Захоўваць экран уключаным падчас запісу</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5784136236926853061">Вялікая затрымка HTTP-запытаў</translation>
@@ -1355,6 +1357,7 @@
 <translation id="757747079855995705">камень</translation>
 <translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7595982850646262331">Застаецца <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Адміністратар <ph name="MANAGER" /> указаў, калі можна выкарыстоўваць прыладу "<ph name="DEVICE_TYPE" />".</translation>
 <translation id="7613724632293948900">Для перамяшчэння выкарыстоўвайце мыш або клавішы са стрэлкамі.</translation>
 <translation id="7618774594543487847">Нейтральны</translation>
 <translation id="7620771111601174153">Атрымаць больш інфармацыі ў Даведачным цэнтры</translation>
@@ -1460,6 +1463,7 @@
 <translation id="8088963492174775412">Націсніце, каб запісаць</translation>
 <translation id="8094062939584182041">Дазволіць Google апавяшчаць вас па электроннай пошце пра гэту праблему</translation>
 <translation id="8104083085214006426">Вы карыстаецеся адкрытай небяспечнай сеткай</translation>
+<translation id="8110942816572072814">Экран заблакіраваны выкладчыкам</translation>
 <translation id="811820734797650957">(Android) Можна выканаць праверку ping для шлюза</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>

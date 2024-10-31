@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">غروب آفتاب کے وقت نائٹ لائٹ خودکار طور پر آن ہو جائے گی</translation>
 <translation id="1288300545283011870">اسپیچ کی خصوصیات</translation>
 <translation id="1289619947962767206">یہ اختیار اب مزید تعاون یافتہ نہیں ہے۔ ٹیب کو پیش کرنے کیلئے <ph name="GOOGLE_MEET" /> کا استعمال کریں۔</translation>
+<translation id="1291057703584594733">پہلے سے تفویض کردہ اشارے کا انتخاب اسے اس کی اصل کاروائی سے ہٹا دے گا۔</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> کی سروس کی شرائط</translation>
 <translation id="1291421198328146277">کلیدوں کو ری سیٹ کریں</translation>
 <translation id="1292849930724124745">سائن ان رہنے کیلئے سمارٹ کارڈ داخل کریں</translation>
@@ -4990,6 +4991,7 @@
 <translation id="4538417792467843292">لفظ حذف کریں</translation>
 <translation id="4538792345715658285">انٹرپرائز پالیسی کے ذریعے انسٹال کیا گیا۔</translation>
 <translation id="4540409690203718935">‏‫Google پاس ورڈ مینیجر تک نہیں پہنچ سکتے۔ کچھ منٹ میں دوبارہ کوشش کریں</translation>
+<translation id="4540780316273593836">کچھ غلط ہو گیا</translation>
 <translation id="4541123282641193691">‏آپ کے اکاؤنٹ کی تصدیق نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں یا اپنا Chromebook ری سٹارٹ کریں۔</translation>
 <translation id="4541505619120536051">ہمیشہ کھولیں</translation>
 <translation id="4541662893742891060">اس پروفائل سے منسلک ہونے سے قاصر۔ تکنیکی سپورٹ کیلئے، براہ کرم اپنے کیریئر سے رابطہ کریں۔</translation>
@@ -5952,7 +5954,6 @@
 <translation id="5240931875940563122">‏Android فون سے سائن ان کریں</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" فعال کریں؟</translation>
 <translation id="5243522832766285132">براہ کرم کچھ دیر میں دوبارہ کوشش کریں</translation>
-<translation id="5243752692914402705">اسکرول موڈ شروع کرنے کے بعد، اپنے سر کو اس سمت میں لے جائیں جس سمت آپ اسکرول کرنا چاہتے ہیں</translation>
 <translation id="5244234799035360187">‏OneDrive اب Files ایپ میں ظاہر ہوگا</translation>
 <translation id="5244466461749935369">ابھی کیلئے محفوظ رکھیں</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> میں مطابقت پذیری کی جا رہی ہے</translation>
@@ -6741,6 +6742,7 @@
 <translation id="5832970156002835240">سبھی سائٹس پر اجازت دیں</translation>
 <translation id="5833397272224757657">ذاتی نوعیت سازی کے لیے آپ کی ملاحظہ کی جانے والی سائٹوں، نیز براؤزر کی سرگرمی اور تعاملات پر موجود مواد استعمال کرتی ہے</translation>
 <translation id="5833726373896279253">ان ترتیبات میں صرف مالک ترمیم کر سکتا ہے:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">‏سائٹس کو JavaScript کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="583431638776747">سائٹ دستیاب نہیں تھی</translation>
 <translation id="5834581999798853053">تقریباً <ph name="TIME" /> منٹ باقی</translation>
@@ -6796,7 +6798,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> جلد ہی رک جائے گی</translation>
 <translation id="586567932979200359">آپ <ph name="PRODUCT_NAME" /> کو اس کی ڈسک امیج سے چلا رہے ہیں۔ اسے آپ کے کمپیوٹر پر انسٹال کرنے سے یہ آپ کو اسے ڈسک امیج کے بغیر چلانے دیتا ہے اور یقینی بناتا ہے کہ اسے اپ ٹو ڈیٹ رکھا جائے گا۔</translation>
 <translation id="5865733239029070421">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتا ہے</translation>
-<translation id="5866236843389439313">اپنے منہ کے بائیں کنارے کو پھیلائیں</translation>
 <translation id="5868434909835797817">آپ کے آلے پر مائیکروفون آف ہے</translation>
 <translation id="5868479397518301468">سائن ان کرنے کا ٹائم آؤٹ ہو گیا</translation>
 <translation id="5868822853313956582">آلہ کے رنگ کی پیروی کریں</translation>
@@ -8808,6 +8809,7 @@
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7352664183151911163">‏آپ کی ایپس اور Chrome براؤزر پر</translation>
 <translation id="7353261921908507769">ان کے قریب ہونے پر آپ کے رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ کے قبول کئے بغیر منتقلیاں شروع نہیں ہوں گی۔</translation>
+<translation id="7353432112255316844">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="735361434055555355">‏Linux کو انسٹال کیا جا رہا ہے…</translation>
 <translation id="7354120289251608189">آپ اب کسی بھی وقت اپنے براؤزر کو نئی شکل دے سکتے ہیں۔</translation>
 <translation id="7356506068433555887">کھجور کا درخت</translation>
@@ -9504,6 +9506,7 @@
 <translation id="784273751836026224">‏Linux اَن انسٹال کریں</translation>
 <translation id="784475655832336580">‏ChromeVox آن ہونے پر کی بورڈ فوکس کے ساتھ آئٹم کو ہائی لائٹ کریں دستیاب نہیں ہے</translation>
 <translation id="7844992432319478437">مختلف کو اپ ڈیٹ کیا جا رہا ہے</translation>
+<translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7847212883280406910">‏<ph name="IDS_SHORT_PRODUCT_OS_NAME" /> پر سوئچ کرنے کیلئے Ctrl + Alt + S دبائیں</translation>
 <translation id="7848244988854036372">سبھی (<ph name="URL_COUNT" />) کو نئے ٹیب گروپ میں کھولیں</translation>
@@ -9527,7 +9530,6 @@
 <translation id="7858328180167661092">‎<ph name="APP_NAME" /> (Windows)‎</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> ایکسٹینشن ہٹائیں؟</translation>
 <translation id="786073089922909430">سروس: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">اپنے منہ کے دائیں کنارے کو پھیلائیں</translation>
 <translation id="7861215335140947162">&amp;ڈاؤن لوڈز</translation>
 <translation id="7861846108263890455">‏Google اکاؤنٹ کی زبان</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> منٹ میں</translation>

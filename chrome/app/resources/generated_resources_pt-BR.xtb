@@ -425,6 +425,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1288037062697528143">O Modo noturno será ativado automaticamente ao anoitecer</translation>
 <translation id="1288300545283011870">Propriedades da fala</translation>
 <translation id="1289619947962767206">Essa opção não está mais disponível. Para fazer a apresentação de uma guia, use o <ph name="GOOGLE_MEET" />.</translation>
+<translation id="1291057703584594733">Ao selecionar um gesto já atribuído, ele é removido da ação original.</translation>
 <translation id="1291119821938122630">Termos de Serviço de <ph name="MANAGER" /></translation>
 <translation id="1291421198328146277">Redefinir teclas</translation>
 <translation id="1292849930724124745">Insira o cartão inteligente para manter a conta conectada</translation>
@@ -5004,6 +5005,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4538417792467843292">Excluir palavra</translation>
 <translation id="4538792345715658285">Instalada pela política empresarial.</translation>
 <translation id="4540409690203718935">Falha no acesso ao Gerenciador de senhas do Google. Tente de novo em alguns minutos</translation>
+<translation id="4540780316273593836">Ocorreu um erro</translation>
 <translation id="4541123282641193691">Não foi possível verificar sua conta. Tente novamente ou reinicie o Chromebook.</translation>
 <translation id="4541505619120536051">Sempre abrir</translation>
 <translation id="4541662893742891060">Não é possível se conectar a esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
@@ -5967,7 +5969,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5240931875940563122">Fazer login com o smartphone Android</translation>
 <translation id="5242724311594467048">Ativar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Tente novamente em alguns instantes</translation>
-<translation id="5243752692914402705">Ao iniciar o modo de rolagem, mova a cabeça na direção em que quer rolar a tela</translation>
 <translation id="5244234799035360187">Agora o OneDrive aparecerá no app Arquivos</translation>
 <translation id="5244466461749935369">Manter por enquanto</translation>
 <translation id="5244474230056479698">Sincronizado com <ph name="EMAIL" /></translation>
@@ -6759,6 +6760,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5832970156002835240">Permitir em todos os sites</translation>
 <translation id="5833397272224757657">Usa o conteúdo dos sites que você visita, além das interações e atividades do navegador, para personalização</translation>
 <translation id="5833726373896279253">Estas definições somente poderão ser alteradas pelo proprietário:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">Não permitir que os sites usem JavaScript</translation>
 <translation id="583431638776747">O site não está disponível</translation>
 <translation id="5834581999798853053">Cerca de <ph name="TIME" /> minutos restantes</translation>
@@ -6814,7 +6816,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5865508026715185451">O app <ph name="APP_NAME" /> será pausado em breve</translation>
 <translation id="586567932979200359">Você está executando o <ph name="PRODUCT_NAME" /> a partir de uma imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e garante que ele se manterá atualizado.</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
-<translation id="5866236843389439313">Esticar o canto esquerdo da boca</translation>
 <translation id="5868434909835797817">O microfone está desativado no dispositivo</translation>
 <translation id="5868479397518301468">O tempo limite de login expirou</translation>
 <translation id="5868822853313956582">Seguir as cores do dispositivo</translation>
@@ -8829,6 +8830,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7352664183151911163">Em todos os seus apps e no navegador Chrome</translation>
 <translation id="7353261921908507769">Seus contatos podem compartilhar itens com você quando estão por perto. As transferências só são iniciadas depois que você as aceita.</translation>
+<translation id="7353432112255316844">Confirmar sua identidade</translation>
 <translation id="735361434055555355">Instalando o Linux…</translation>
 <translation id="7354120289251608189">Agora você pode mudar o visual do navegador a qualquer momento.</translation>
 <translation id="7356506068433555887">Palmeira</translation>
@@ -9525,6 +9527,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="784273751836026224">Desinstalar Linux</translation>
 <translation id="784475655832336580">O destaque do item com o foco do teclado fica indisponível quando o ChromeVox está ativado</translation>
 <translation id="7844992432319478437">Atualizando diff</translation>
+<translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7847212883280406910">Pressione Ctrl + Alt + S para mudar para <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Abrir tudo (<ph name="URL_COUNT" />) em um novo grupo de guias</translation>
@@ -9548,7 +9551,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Remover extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Esticar o canto direito da boca</translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Idioma da Conta do Google</translation>
 <translation id="7864114920800968141">Em <ph name="NUM_MIN" /> min</translation>

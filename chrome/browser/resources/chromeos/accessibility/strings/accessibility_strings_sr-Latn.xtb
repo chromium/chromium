@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">Nema sledećeg ARIA obeležja</translation>
 <translation id="2749275490991666823">Provereno</translation>
+<translation id="2751454300227269244">Pomerite usta udesno</translation>
 <translation id="27527859628328957">Prelazak na sledeću stavku koja može da se fokusira</translation>
 <translation id="2756452585631602151">Unesite prilagođenu oznaku</translation>
 <translation id="2766299274563946262">Nema ćelija levo</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabela <ph name="TABLENAME" />, <ph name="TABLEROWS" /> h <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Bež</translation>
 <translation id="316542773973815724">Navigacija</translation>
+<translation id="3167446923957429259">Pomerite usta ulevo</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{razmak}one{# razmak}few{# razmaka}other{# razmaka}}</translation>
 <translation id="3179119189286472195">Nije link</translation>
 <translation id="3180990259147710757">Pomerite vilicu ulevo</translation>
@@ -763,7 +765,6 @@
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5866042630553435010">Delimično provereno</translation>
 <translation id="5866210856231860256">Da biste pregledali lekcije za ovu temu, pritisnite taster za pretragu + strelica nadesno ili taster za pretragu + strelica nalevo</translation>
-<translation id="5866236843389439313">Raširite levi ugao usta</translation>
 <translation id="5867591286054666064">Tokom ovog vodiča pritisnite bilo koji taster da biste čuli kako se zove.</translation>
 <translation id="5869546221129391014">Mreža</translation>
 <translation id="5876817486144482042">Smanjivanje jačine zvuka govora</translation>
@@ -1036,7 +1037,6 @@
 <translation id="7839679365527550018">Prethodna reč</translation>
 <translation id="7846634333498149051">Tastatura</translation>
 <translation id="7851816175263618915">Delimična interpunkcija</translation>
-<translation id="7860802890538098598">Raširite desni ugao usta</translation>
 <translation id="7871691770940645922">Virtuelni prikaz sa Brajevom azbukom</translation>
 <translation id="7882421473871500483">Braon</translation>
 <translation id="78826985582142166">sldr</translation>

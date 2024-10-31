@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">vēl</translation>
 <translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
 <translation id="3321030238473337787">Atskaņošanas ātrums</translation>
+<translation id="3327613592010997943">Šo ierīci varēsiet atkal izmantot <ph name="DAY" /> plkst. <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Tiek veikta pārbaude</translation>
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">pelēka</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5600027863942488546">Taustiņš “<ph name="KEY_NAME" />” ir pārbaudīts</translation>
+<translation id="5606865426897221650">Tabulēšanas taustiņš</translation>
 <translation id="5613201299517339763">Jūs tikāt izrakstīts</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Portāla statuss</translation>
 <translation id="5763838252932650682">Lietotnes <ph name="APP_NAME" /> restartēšana un atjaunināšana</translation>
 <translation id="576835345334454681">Palielināt displeja spilgtumu</translation>
+<translation id="5775340474232476653">Skolotājs pabeidza nodarbību</translation>
 <translation id="5779818640587041940">Saglabāt ekrānu ieslēgtu ierakstīšanas laikā</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
 <translation id="5784136236926853061">Liels HTTP latentums</translation>
@@ -1356,6 +1359,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="757747079855995705">akmens</translation>
 <translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">Vietnes <ph name="MANAGER" /> administrators iestatīja šīs <ph name="DEVICE_TYPE" /> ierīces izmantošanas ierobežojumu.</translation>
 <translation id="7613724632293948900">Mainiet izvietojumu, izmantojot peli vai bultiņas.</translation>
 <translation id="7618774594543487847">Neitrāls</translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
@@ -1461,6 +1465,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8088963492174775412">Nospiediet, lai sāktu ierakstīšanu</translation>
 <translation id="8094062939584182041">Atļaut Google nosūtīt jums e-pasta ziņojumu par šo problēmu</translation>
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
+<translation id="8110942816572072814">Skolotājs nobloķēja jūsu ekrānu</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>

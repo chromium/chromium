@@ -5004,6 +5004,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4538417792467843292">Padam perkataan</translation>
 <translation id="4538792345715658285">Dipasang oleh dasar perusahaan.</translation>
 <translation id="4540409690203718935">Tidak dapat menghubungi Google Password Manager. Cuba lagi selepas beberapa minit</translation>
+<translation id="4540780316273593836">Kesilapan Telah Berlaku</translation>
 <translation id="4541123282641193691">Tidak dapat mengesahkan akaun anda. Sila cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="4541505619120536051">Sentiasa dibuka</translation>
 <translation id="4541662893742891060">Tidak dapat menyambung kepada profil ini. Untuk mendapatkan sokongan teknikal, sila hubungi pembawa anda.</translation>
@@ -5967,7 +5968,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5240931875940563122">Log masuk dengan telefon Android</translation>
 <translation id="5242724311594467048">Dayakan "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Sila cuba lagi dalam beberapa ketika</translation>
-<translation id="5243752692914402705">Setelah anda memulakan mod tatal, alihkan kepala anda mengikut arah yang mahu anda tatal</translation>
 <translation id="5244234799035360187">Kini OneDrive akan dipaparkan pada apl Fail</translation>
 <translation id="5244466461749935369">Simpan untuk masa ini</translation>
 <translation id="5244474230056479698">Menyegerak ke <ph name="EMAIL" /></translation>
@@ -6814,7 +6814,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5865508026715185451"><ph name="APP_NAME" /> akan dijeda tidak lama lagi</translation>
 <translation id="586567932979200359">Anda menjalankan <ph name="PRODUCT_NAME" /> daripada imej cakeranya. Pemasangannya pada komputer anda membolehkan anda menjalankannya tanpa imej cakera, dan memastikannya adalah yang terkini.</translation>
 <translation id="5865733239029070421">Menghantar perangkaan penggunaan dan laporan ranap sistem secara automatik kepada Google</translation>
-<translation id="5866236843389439313">Regangkan sudut kiri mulut anda</translation>
 <translation id="5868434909835797817">Mikrofon dimatikan pada peranti anda</translation>
 <translation id="5868479397518301468">Tamat masa log masuk</translation>
 <translation id="5868822853313956582">Ikut warna peranti</translation>
@@ -8827,6 +8826,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7352664183151911163">Merentas apl dan penyemak imbas Chrome anda</translation>
 <translation id="7353261921908507769">Kenalan anda boleh berkongsi dengan anda apabila mereka berada berdekatan. Pemindahan tidak akan bermula sehinggalah anda menerima perkongsian.</translation>
+<translation id="7353432112255316844">Sahkan Orang Itu Ialah Anda</translation>
 <translation id="735361434055555355">Memasang Linux...</translation>
 <translation id="7354120289251608189">Kini anda boleh memberi penyemak imbas anda rupa baharu pada bila-bila masa.</translation>
 <translation id="7356506068433555887">Pokok palma</translation>
@@ -9523,6 +9523,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="784273751836026224">Nyahpasang Linux</translation>
 <translation id="784475655832336580">Serlahkan item dengan fokus papan kekunci tidak tersedia apabila ChromeVox dihidupkan</translation>
 <translation id="7844992432319478437">Mengemaskini beza</translation>
+<translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7847212883280406910">Tekan Ctrl + Alt + S untuk beralih kepada <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Buka semua (<ph name="URL_COUNT" />) dalam kumpulan tab baharu</translation>
@@ -9546,7 +9547,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Alih keluar sambungan <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Perkhidmatan: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Regangkan sudut kanan mulut anda</translation>
 <translation id="7861215335140947162">&amp;Muat turun</translation>
 <translation id="7861846108263890455">Bahasa Google Account</translation>
 <translation id="7864114920800968141">Dalam <ph name="NUM_MIN" /> minit</translation>

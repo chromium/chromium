@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">เริ่มการสแกนไม่ได้</translation>
 <translation id="1061864016440983342">ใช้โดยไม่ใช้ตำแหน่ง</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> จาก <ph name="COUNT" />, <ph name="NAME" /></translation>
+<translation id="1069150558259542054">ใช้ Quick Insert กับแป้นพิมพ์ลัดที่กำหนดเองไม่ได้</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ตรวจพบไฟร์วอลล์</translation>
 <translation id="1075811647922107217">ขนาดหน้า</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">สำรวจ</translation>
 <translation id="6526200165918397681">จับคู่วอลเปเปอร์ที่เข้ากัน</translation>
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
+<translation id="6531528791584205545">Quick Insert</translation>
 <translation id="6535178685492749208">คุณออฟไลน์อยู่ ระบบจะส่งความคิดเห็นในภายหลัง</translation>
 <translation id="6543412779435705598">ทาโก้</translation>
 <translation id="6550369542114086980">ในวันพฤหัสบดี</translation>

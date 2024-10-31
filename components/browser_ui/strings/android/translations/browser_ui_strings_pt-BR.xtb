@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
+<translation id="1070329623210597193">Arquivos que este site pode ver ou editar</translation>
 <translation id="1073417869336441572">Ajude a melhorar o Chrome informando por que você permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6064125863973209585">Downloads concluídos</translation>
 <translation id="6071501408666570960">Sua conta pode ser desconectada deste site</translation>
+<translation id="6085954183010297841">Excluir a permissão de edição do arquivo? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quando essa configuração está ativada, os sites podem pedir para saber quando você está usando o dispositivo ativamente. Quando está desativada, os sites não conseguem saber quando você está usando o dispositivo ativamente.</translation>
 <translation id="6140839633433422817">Tem certeza de que quer redefinir as permissões e excluir os cookies e dados do site?</translation>
 <translation id="6165508094623778733">Saiba mais</translation>

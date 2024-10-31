@@ -5001,6 +5001,7 @@
 <translation id="4538417792467843292">حذف کلمه</translation>
 <translation id="4538792345715658285">نصب شده توسط خط‌مشی سازمانی.</translation>
 <translation id="4540409690203718935">‏دسترسی به «مدیر گذرواژه Google» ممکن نیست. چند دقیقه دیگر دوباره امتحان کنید</translation>
+<translation id="4540780316273593836">مشکلی رخ داد</translation>
 <translation id="4541123282641193691">‏حسابتان تأیید نشد. لطفاً دوباره امتحان کنید یا Chromebook خود را بازراه‌اندازی کنید.</translation>
 <translation id="4541505619120536051">همیشه باز شود</translation>
 <translation id="4541662893742891060">امکان اتصال به این نمایه وجود ندارد. برای پشتیبانی فنی، لطفاً با شرکت مخابراتی‌تان تماس بگیرید.</translation>
@@ -5964,7 +5965,6 @@
 <translation id="5240931875940563122">‏ورود به سیستم با تلفن Android</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
 <translation id="5243522832766285132">چند لحظه دیگر دوباره امتحان کنید</translation>
-<translation id="5243752692914402705">پس‌از اینکه حالت پیمایش را شروع کردید، سر خود را در جهتی که می‌خواهید پیمایش کنید حرکت دهید</translation>
 <translation id="5244234799035360187">‏ازاین‌پس OneDrive در برنامه Files نشان داده خواهد شد</translation>
 <translation id="5244466461749935369">فعلاً نگه داشته شود</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
@@ -6811,7 +6811,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> به‌زودی متوقف می‌شود</translation>
 <translation id="586567932979200359">شما <ph name="PRODUCT_NAME" /> را از تصویر دیسک آن اجرا می‌کنید. با نصب آن روی رایانه می‌توانید آن را بدون تصویر دیسک اجرا کنید، و مطمئن شوید که به روز نگه داشته خواهد شد.</translation>
 <translation id="5865733239029070421">‏به‌طور خودکار آمار کاربرد و گزارش‌های خرابی را به Google ارسال می‌کند</translation>
-<translation id="5866236843389439313">کشیدن گوشه چپ دهان</translation>
 <translation id="5868434909835797817">میکروفون در دستگاهتان خاموش است</translation>
 <translation id="5868479397518301468">مهلت زمانی ورود به سیستم پایان یافت</translation>
 <translation id="5868822853313956582">پیروی از رنگ‌های دستگاه</translation>
@@ -8826,6 +8825,7 @@
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7352664183151911163">‏بین برنامه‌ها و مرورگر Chrome</translation>
 <translation id="7353261921908507769">وقتی مخاطبینتان نزدیک شما باشند می‌توانند با شما هم‌رسانی کنند. تا درخواست را نپذیرید، انتقال شروع نخواهد شد.</translation>
+<translation id="7353432112255316844">تأیید کنید هویتتان</translation>
 <translation id="735361434055555355">‏درحال نصب Linux…</translation>
 <translation id="7354120289251608189">اکنون می‌توانید هرزمان خواستید ظاهر جدیدی به مرورگرتان بدهید.</translation>
 <translation id="7356506068433555887">درخت نخل</translation>
@@ -9521,6 +9521,7 @@
 <translation id="784273751836026224">‏حذف نصب Linux</translation>
 <translation id="784475655832336580">‏هنگام روشن بودن ChromeVox، برجسته کردن مورد با کانونی کردن صفحه‌کلید دردسترس نیست</translation>
 <translation id="7844992432319478437">به‌روزرسانی تفاوت</translation>
+<translation id="7846161022626028328">خطایی وجود داشت. دوباره امتحان کنید.</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
 <translation id="7847212883280406910">‏برای رفتن به <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> کلیدهای Ctrl + Alt + S را فشار دهید.</translation>
 <translation id="7848244988854036372">باز کردن همه (<ph name="URL_COUNT" />) در گروه برگه جدید</translation>
@@ -9544,7 +9545,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">برداشتن افزونه <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">سرویس: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">کشیدن گوشه راست دهان</translation>
 <translation id="7861215335140947162">&amp;فایلهای بارگیری‌شده</translation>
 <translation id="7861846108263890455">‏زبان «حساب Google»</translation>
 <translation id="7864114920800968141">‫<ph name="NUM_MIN" /> دقیقه دیگر</translation>

@@ -424,6 +424,7 @@
 <translation id="1288037062697528143">护眼模式将于日落时自动开启</translation>
 <translation id="1288300545283011870">语音属性</translation>
 <translation id="1289619947962767206">此选项不再受支持。若要演示某个标签页，请使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="1291057703584594733">选择已指定的动作会将其从原始操作中移除。</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> 服务条款</translation>
 <translation id="1291421198328146277">重置键</translation>
 <translation id="1292849930724124745">插入智能卡以保持登录状态</translation>
@@ -615,6 +616,7 @@
 <translation id="1436671784520050284">继续设置</translation>
 <translation id="1436784010935106834">已删除</translation>
 <translation id="1437986450143295708">请详细描述您遇到的问题</translation>
+<translation id="1438630805136563416">已移除操作“<ph name="REMOVED_ACTION" />”</translation>
 <translation id="1439671507542716852">长期支持</translation>
 <translation id="1440090277117135316">学校注册已完成</translation>
 <translation id="144283815522798837">已选择 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 项</translation>
@@ -975,6 +977,7 @@
 <translation id="1677306805708094828">无法添加<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1678849866171627536">扫描失败。此文件可能是病毒或恶意软件。</translation>
+<translation id="1678919064276516737">您输入的电子邮件地址和 PIN 码不匹配</translation>
 <translation id="1679068421605151609">开发者工具</translation>
 <translation id="1679810534535368772">确定要退出吗？</translation>
 <translation id="167983332380191032">管理服务向您发送了一项 HTTP 错误。</translation>
@@ -1418,6 +1421,7 @@
 <translation id="1981434377190976112">读取您在所有网站上的数据</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
+<translation id="198507684520034826">帮助</translation>
 <translation id="1986836014090708999">高级位置信息设置</translation>
 <translation id="1987317783729300807">账号</translation>
 <translation id="1987574314042117472">选择并安装热门应用</translation>
@@ -2912,6 +2916,7 @@
 <translation id="3029466929721441205">在任务栏中显示触控笔工具</translation>
 <translation id="3029808567601324798">锁定前的等待时长</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天下载更新。当您连接到互联网后，系统会自动下载更新。}other{<ph name="MANAGER" /> 要求您在截止日期前下载更新。当您连接到互联网后，系统会自动下载更新。}}</translation>
+<translation id="3030772324014024606">修改</translation>
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">女特工</translation>
 <translation id="3031532026314193077">使用触控板和键盘实现右键点击操作</translation>
@@ -4015,6 +4020,7 @@
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">登录即可查看从其他设备打开的标签页</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{记住我对这个文件类型的选择：<ph name="FILE_TYPES" />}other{记住我对这些文件类型的选择：<ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">查看</translation>
 <translation id="3825635794653163640">在应用图标上显示代表应用提醒的圆点</translation>
 <translation id="3826071569074535339">允许使用移动传感器</translation>
 <translation id="3826086052025847742">ChromeOS Flex 日志</translation>
@@ -4126,6 +4132,7 @@
 <translation id="3905761538810670789">修复应用</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3908501907586732282">启用扩展程序</translation>
+<translation id="3909456989251621103">如果您删除了某个服务器证书，Chrome 将不再使用该证书来识别服务器。</translation>
 <translation id="3909701002594999354">显示所有控件(&amp;C)</translation>
 <translation id="3909791450649380159">剪切(&amp;T)</translation>
 <translation id="39103738135459590">激活码</translation>
@@ -4973,6 +4980,7 @@
 <translation id="4538417792467843292">删除字词</translation>
 <translation id="4538792345715658285">按企业政策安装。</translation>
 <translation id="4540409690203718935">无法连接到 Google 密码管理工具。请过几分钟后重试</translation>
+<translation id="4540780316273593836">出了点问题</translation>
 <translation id="4541123282641193691">无法验证您的账号。请重试，或重新启动您的 Chromebook。</translation>
 <translation id="4541505619120536051">一律打开</translation>
 <translation id="4541662893742891060">无法关联到此个人资料。如需技术支持，请与您的运营商联系。</translation>
@@ -5043,6 +5051,7 @@
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
 <translation id="4582297591746054421">网站通常会读取您的剪贴板内容以实现某些功能（例如保留您所复制文字的格式）</translation>
 <translation id="4582563038311694664">重置所有设置</translation>
+<translation id="4584770411839426377">窗口</translation>
 <translation id="4585793705637313973">修改启动页</translation>
 <translation id="4586275095964870617">无法在替代浏览器中打开 <ph name="URL" />。请与您的系统管理员联系。</translation>
 <translation id="4587589328781138893">网站</translation>
@@ -5434,6 +5443,7 @@
 <translation id="4872192066608821120">若要导入密码，请选择一个 CSV 文件</translation>
 <translation id="4872212987539553601">设置设备端加密</translation>
 <translation id="4873312501243535625">媒体文件检查工具</translation>
+<translation id="4875690134140862902">标签页</translation>
 <translation id="4876273079589074638">帮助我们的工程师调查并解决此崩溃问题。请列出您的具体操作，越详细越好！</translation>
 <translation id="4876305945144899064">无用户名</translation>
 <translation id="4876327226315760474">这意味着，网站功能应该会按预期运行，但您受到的保护级别较低。</translation>
@@ -5546,6 +5556,7 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">一律不为此网站保存密码</translation>
 <translation id="4953808748584563296">默认的橙色头像</translation>
+<translation id="4954652437333037880">文件</translation>
 <translation id="4955707703665801001">“<ph name="FEATURE_NAME" />”功能的设备公开范围</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
 <translation id="4956847150856741762">1</translation>
@@ -5932,7 +5943,6 @@
 <translation id="5240931875940563122">使用 Android 手机登录</translation>
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5243522832766285132">请稍后重试</translation>
-<translation id="5243752692914402705">开始滚动模式后，请朝您要滚动的方向移动头部</translation>
 <translation id="5244234799035360187">OneDrive 现在会显示在“文件”应用内</translation>
 <translation id="5244466461749935369">暂时保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -6720,6 +6730,7 @@
 <translation id="5832970156002835240">在所有网站上允许</translation>
 <translation id="5833397272224757657">根据您访问的网站上的内容以及您在浏览器中的活动和互动行为，提供个性化的使用体验</translation>
 <translation id="5833726373896279253">这些设置的修改权仅限于所有者：</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /><ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">不允许网站使用 JavaScript</translation>
 <translation id="583431638776747">网站出问题了</translation>
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
@@ -6775,7 +6786,6 @@
 <translation id="5865508026715185451">“<ph name="APP_NAME" />”即将暂停</translation>
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
-<translation id="5866236843389439313">将左侧嘴角向外拉</translation>
 <translation id="5868434909835797817">您设备的麦克风处于关闭状态</translation>
 <translation id="5868479397518301468">登录超时</translation>
 <translation id="5868822853313956582">遵循设备配色方案</translation>
@@ -7799,6 +7809,7 @@
 <translation id="6635674640674343739">无法建立网络连接。请检查您的网络连接状况，然后重试。</translation>
 <translation id="663569763553406962">查看哪些扩展程序可以读取或更改网站</translation>
 <translation id="6635944431854494329">所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。</translation>
+<translation id="6636258750460740634">历史记录</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
@@ -8786,6 +8797,7 @@
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7352664183151911163">在您所用的各款应用和 Chrome 浏览器上保持同步</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
+<translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
 <translation id="7354120289251608189">您现在可以随时为浏览器换上全新外观了。</translation>
 <translation id="7356506068433555887">棕榈树</translation>
@@ -9482,6 +9494,7 @@
 <translation id="784273751836026224">卸载 Linux</translation>
 <translation id="784475655832336580">开启 ChromeVox 后，无法使用键盘焦点突出显示此内容</translation>
 <translation id="7844992432319478437">正在更新diff</translation>
+<translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846634333498149051">键盘</translation>
 <translation id="7847212883280406910">按 Ctrl + Alt + S 键可切换到 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">在新标签页分组中打开所有（<ph name="URL_COUNT" /> 个）网址</translation>
@@ -9505,7 +9518,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">移除“<ph name="EXTENSION_NAME" />”扩展程序</translation>
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">将右侧嘴角向外拉</translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7861846108263890455">Google 账号语言</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> 分钟后</translation>

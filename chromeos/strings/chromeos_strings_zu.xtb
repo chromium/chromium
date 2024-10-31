@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">okuningi</translation>
 <translation id="3310640316857623290">Ukubambezeleka kwe-DNS kungaphezulu kakhulu komkhawulo ovumelekile</translation>
 <translation id="3321030238473337787">Isivinini sokudlala</translation>
+<translation id="3327613592010997943">Uzokwazi ukusebenzisa le divayisi futhi ngo-<ph name="DAY" /> ngo-<ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Ukuhlolwa kuyaqhubeka</translation>
 <translation id="3340011300870565703">Idivayisi ine-bud yebhethri engakwesokudla engu-<ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">amasethingi</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">okumpunga</translation>
 <translation id="5596627076506792578">Izinketho eziningi</translation>
 <translation id="5600027863942488546">Ukhiye we-<ph name="KEY_NAME" /> uhloliwe</translation>
+<translation id="5606865426897221650">Ithebhu</translation>
 <translation id="5613201299517339763">Ukhishwe ngemvume</translation>
 <translation id="5620281292257375798">Kwangaphakathi kuphela</translation>
 <translation id="5630438231335788050">i-bauhaus</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Isimo sephothali</translation>
 <translation id="5763838252932650682">Ukuqala kabusha nokubuyekeza i-<ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Ukugqama kwesibonisi kuphezulu</translation>
+<translation id="5775340474232476653">Uthisha wakho uqede ikilasi</translation>
 <translation id="5779818640587041940">Gcina isikrini sivulekile ngesikhathi urekhoda</translation>
 <translation id="57838592816432529">Thulisa</translation>
 <translation id="5784136236926853061">Ukubambezeleka kwe-HTTP okuphakeme</translation>
@@ -1356,6 +1359,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="757747079855995705">i-stone</translation>
 <translation id="7590883480672980941">Faka izilungiselelo</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> esele</translation>
+<translation id="7600430297804876776">Umlawuli we-<ph name="MANAGER" /> usethe ukuthi le <ph name="DEVICE_TYPE" /> ingasetshenziswa nini.</translation>
 <translation id="7613724632293948900">Beka kabusha nge-mouse noma okhiye bemicibisholo.</translation>
 <translation id="7618774594543487847">Maphakathi nendawo</translation>
 <translation id="7620771111601174153">Funda kabanzi Esikhungweni sosizo</translation>
@@ -1461,6 +1465,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8088963492174775412">Cindezela ukuze urekhode</translation>
 <translation id="8094062939584182041">Vumela i-Google ikuthumelele i-imeyili mayelana nale nkinga</translation>
 <translation id="8104083085214006426">Usebenzisa inethiwekhi evulekile nengaphephile</translation>
+<translation id="8110942816572072814">Uthisha wakho ukhiye isikrini sakho</translation>
 <translation id="811820734797650957">(Android) Isango Lingaqhwetshwa</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>

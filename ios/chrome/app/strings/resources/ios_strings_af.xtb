@@ -18,6 +18,7 @@
 <translation id="1053651653201045802">Afgemeld. Meld weer aan om die boekmerke, wagwoorde en meer in jou rekening te gebruik.</translation>
 <translation id="1054745118061919935">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_LINK" />diensbepalings<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nooit gestoor nie</translation>
+<translation id="1062138828266376352">Jou PIN is nie verander nie. Gaan jou internetverbinding na en probeer weer</translation>
 <translation id="1066060668811609597">Bestuur sinkronisering</translation>
 <translation id="1076421457278169141">Kode is geskandeer</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} oortjie}other{{count} oortjies}}</translation>
@@ -676,6 +677,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="421070604241073551">Wanneer dit aan is, word data in jou Google-rekening gestoor. Wanneer dit af is, word data net op hierdie toestel gestoor.</translation>
 <translation id="4224534474590365556">Maak 99+ onaktiewe oortjies toe?</translation>
 <translation id="422474357428465195">Jy het verskeie wagwoordkwessies wat jou sekuriteit in gevaar kan stel.</translation>
+<translation id="422477017457571619">Intydse, KI-aangedrewe beskerming teen gevaarlike werwe, aflaaie en uitbreidings wat gegrond is op blaaierdata wat na Google toe gestuur word</translation>
 <translation id="4231395118547300571">Kennisgewings vir veiligheidskontrole is aangeskakel</translation>
 <translation id="4237377247299956313">Tik op <ph name="BEGIN_BOLD" />Verstekblaaierprogram<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>

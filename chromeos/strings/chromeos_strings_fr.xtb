@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
 <translation id="3321030238473337787">Vitesse de lecture</translation>
+<translation id="3327613592010997943">Vous pourrez à nouveau utiliser cet appareil <ph name="DAY" /> à <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test en cours</translation>
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3340978935015468852">paramètres</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="5763838252932650682">Redémarrage et mise à jour de <ph name="APP_NAME" />…</translation>
 <translation id="576835345334454681">Augmenter la luminosité de l'écran</translation>
+<translation id="5775340474232476653">Votre enseignant a mis fin au cours</translation>
 <translation id="5779818640587041940">Garder l'écran allumé pendant l'enregistrement</translation>
 <translation id="57838592816432529">Couper le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
@@ -1357,6 +1359,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="757747079855995705">pierre</translation>
 <translation id="7590883480672980941">Paramètres de saisie</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">L'administrateur de <ph name="MANAGER" /> a défini quand ce <ph name="DEVICE_TYPE" /> peut être utilisé.</translation>
 <translation id="7613724632293948900">Repositionnez la touche à l'aide de la souris ou des flèches.</translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>
@@ -1462,6 +1465,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8088963492174775412">Appuyez pour enregistrer</translation>
 <translation id="8094062939584182041">Autoriser Google à vous informer de ce problème par e-mail</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
+<translation id="8110942816572072814">Votre enseignant a verrouillé votre écran</translation>
 <translation id="811820734797650957">(Android) Pinguer la passerelle</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>

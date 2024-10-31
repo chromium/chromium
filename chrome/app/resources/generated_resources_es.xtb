@@ -4991,6 +4991,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
 <translation id="4540409690203718935">No se puede acceder al Gestor de contraseñas de Google. Vuelve a intentarlo dentro de unos minutos.</translation>
+<translation id="4540780316273593836">Se ha producido un error</translation>
 <translation id="4541123282641193691">No se ha podido verificar tu cuenta. Vuelve a intentarlo o reinicia el Chromebook.</translation>
 <translation id="4541505619120536051">Abrir siempre</translation>
 <translation id="4541662893742891060">No se ha podido conectar a este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
@@ -5953,7 +5954,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5240931875940563122">Iniciar sesión con un teléfono Android</translation>
 <translation id="5242724311594467048">¿Habilitar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Inténtalo de nuevo dentro de unos minutos.</translation>
-<translation id="5243752692914402705">Cuando inicies el modo Desplazar, mueve la cabeza en la dirección en la que quieras desplazarte</translation>
 <translation id="5244234799035360187">Ahora OneDrive aparecerá en la aplicación Archivos</translation>
 <translation id="5244466461749935369">Conservar por ahora</translation>
 <translation id="5244474230056479698">Sincronizando con <ph name="EMAIL" /></translation>
@@ -6799,7 +6799,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5865508026715185451"><ph name="APP_NAME" /> se pausará pronto</translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Al instalar la aplicación en tu ordenador, podrás ejecutarla sin la imagen de disco y, de esta forma, te asegurarás de que siempre esté actualizada.</translation>
 <translation id="5865733239029070421">Envía automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
-<translation id="5866236843389439313">Estirar la comisura izquierda de los labios</translation>
 <translation id="5868434909835797817">El micrófono está desactivado en tu dispositivo</translation>
 <translation id="5868479397518301468">Tiempo de espera para iniciar sesión agotado</translation>
 <translation id="5868822853313956582">Seguir colores del dispositivo</translation>
@@ -8812,6 +8811,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7352664183151911163">En tus aplicaciones y el navegador Chrome</translation>
 <translation id="7353261921908507769">Tus contactos pueden compartir archivos contigo cuando estén cerca de ti. Las transferencias no se iniciarán hasta que las aceptes.</translation>
+<translation id="7353432112255316844">Verifica que eres tú</translation>
 <translation id="735361434055555355">Instalando Linux...</translation>
 <translation id="7354120289251608189">Ahora puedes renovar el aspecto de tu navegador en cualquier momento.</translation>
 <translation id="7356506068433555887">Palmera</translation>
@@ -9508,6 +9508,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="784273751836026224">Desinstalar Linux</translation>
 <translation id="784475655832336580">Destacar el elemento con el foco del teclado no disponible cuando ChromeVox está activado</translation>
 <translation id="7844992432319478437">Actualizando archivo diff</translation>
+<translation id="7846161022626028328">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7847212883280406910">Pulsa Ctrl + Alt + S para cambiar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7848244988854036372">Abrir todas (<ph name="URL_COUNT" />) en un nuevo grupo de pestañas</translation>
@@ -9531,7 +9532,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Quitar extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Servicio: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Estirar la comisura derecha de los labios</translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7861846108263890455">Idioma de la cuenta de Google</translation>
 <translation id="7864114920800968141">Dentro de <ph name="NUM_MIN" /> min</translation>

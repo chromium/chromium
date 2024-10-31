@@ -4987,6 +4987,7 @@
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4540409690203718935">連不上 Google 密碼管理工具，請過幾分鐘後再試</translation>
+<translation id="4540780316273593836">發生錯誤</translation>
 <translation id="4541123282641193691">無法驗證帳戶。請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541505619120536051">一律開啟</translation>
 <translation id="4541662893742891060">無法連線至這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
@@ -5949,7 +5950,6 @@
 <translation id="5240931875940563122">使用 Android 手機登入</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="5243522832766285132">請稍後再試</translation>
-<translation id="5243752692914402705">啟動捲動模式後，將頭部轉向要捲動的方向</translation>
 <translation id="5244234799035360187">OneDrive 現在會顯示在「檔案」應用程式中</translation>
 <translation id="5244466461749935369">暫時保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -6793,7 +6793,6 @@
 <translation id="5865508026715185451">「<ph name="APP_NAME" />」即將暫停</translation>
 <translation id="586567932979200359">你正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。你可以直接在電腦上安裝程式，往後無需透過磁碟映像即可直接執行，而且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
-<translation id="5866236843389439313">將左邊嘴角往上提</translation>
 <translation id="5868434909835797817">你裝置的麥克風已關閉</translation>
 <translation id="5868479397518301468">登入逾時</translation>
 <translation id="5868822853313956582">依循裝置色彩配置</translation>
@@ -8804,6 +8803,7 @@
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7352664183151911163">涵蓋所有應用程式和 Chrome 瀏覽器</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
+<translation id="7353432112255316844">驗證身分</translation>
 <translation id="735361434055555355">正在安裝 Linux...</translation>
 <translation id="7354120289251608189">現在隨時可以更新瀏覽器的外觀。</translation>
 <translation id="7356506068433555887">棕櫚樹</translation>
@@ -9500,6 +9500,7 @@
 <translation id="784273751836026224">解除安裝 Linux</translation>
 <translation id="784475655832336580">ChromeVox 開啟時無法使用鍵盤焦點醒目顯示項目</translation>
 <translation id="7844992432319478437">正在更新差異部分</translation>
+<translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7847212883280406910">按下 Ctrl + Alt + S 鍵切換至 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">在新分頁群組中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
@@ -9523,7 +9524,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">移除「<ph name="EXTENSION_NAME" />」擴充功能</translation>
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">將右邊嘴角往上提</translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> 分鐘後</translation>

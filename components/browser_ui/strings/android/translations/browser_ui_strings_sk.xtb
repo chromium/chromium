@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
+<translation id="1070329623210597193">Súbory, ktoré môže tento web čítať alebo upravovať</translation>
 <translation id="1073417869336441572">Pomôžte nám zlepšiť Chrome tým, že nám poviete, prečo ste povolili súbory cookie tretích strán. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">Predvolené používanie Chromu</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">Viac</translation>
 <translation id="6064125863973209585">Sťahovanie bolo dokončené</translation>
 <translation id="6071501408666570960">Môžeme dôjsť k vášmu odhláseniu z tohto webu</translation>
+<translation id="6085954183010297841">Chcete odstrániť povolenie na úpravu súborov? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie zistiť, kedy aktívne používate zariadenie. Keď je táto možnosť vypnutá, weby nemôžu zistiť, kedy aktívne používate zariadenie.</translation>
 <translation id="6140839633433422817">Naozaj chcete resetovať povolenia a odstrániť súbory cookie a dáta webov?</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>

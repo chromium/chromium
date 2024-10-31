@@ -5005,6 +5005,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4538417792467843292">I-delete ang salita</translation>
 <translation id="4538792345715658285">Na-install ng patakaran ng enterprise.</translation>
 <translation id="4540409690203718935">Hindi makakonekta sa Google Password Manager. Subukan ulit pagkalipas ng ilang minuto</translation>
+<translation id="4540780316273593836">Nagkaproblema</translation>
 <translation id="4541123282641193691">Hindi ma-verify ang iyong account. Pakisubukan ulit o i-restart ang Chromebook mo.</translation>
 <translation id="4541505619120536051">Palaging buksan</translation>
 <translation id="4541662893742891060">Hindi makakonekta sa profile na ito. Para sa technical support, makipag-ugnayan sa iyong carrier.</translation>
@@ -5968,7 +5969,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5240931875940563122">Mag-sign in gamit ang Android phone</translation>
 <translation id="5242724311594467048">I-enable ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Pakisubukang muli pagkalipas ng ilang sandali</translation>
-<translation id="5243752692914402705">Kapag sinimulan mo na ang scroll mode, igalaw ang iyong ulo patungo sa direksyon kung saan mo gustong mag-scroll</translation>
 <translation id="5244234799035360187">Lalabas na ang OneDrive sa Files app</translation>
 <translation id="5244466461749935369">Panatilihin sa ngayon</translation>
 <translation id="5244474230056479698">Sini-sync sa <ph name="EMAIL" /></translation>
@@ -6815,7 +6815,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5865508026715185451">Malapit nang mag-pause ang <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Pinapatakbo mo ang <ph name="PRODUCT_NAME" /> mula sa larawan nito sa disk. Ang pag-install nito ay magbibigay-daan sa iyong patakbuhin ito nang walang larawan ng disk, at makakatiyak na pananatilihin itong napapanahon.</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
-<translation id="5866236843389439313">Ngumiwi pakaliwa gamit ang iyong bibig</translation>
 <translation id="5868434909835797817">Naka-off ang mikropono sa iyong device</translation>
 <translation id="5868479397518301468">Nag-time out ang pag-sign in</translation>
 <translation id="5868822853313956582">Sundin ang mga kulay ng device</translation>
@@ -8830,6 +8829,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7352664183151911163">Sa lahat ng iyong app at Chrome browser</translation>
 <translation id="7353261921908507769">Makakapagbahagi sa iyo ang mga contact mo kapag malapit sila. Hindi magsisimula ang mga paglilipat hangga't hindi mo tinatanggap ang mga ito.</translation>
+<translation id="7353432112255316844">I-verify na Ikaw Ito</translation>
 <translation id="735361434055555355">Ini-install ang Linux...</translation>
 <translation id="7354120289251608189">Puwede mo na ngayong bigyan ng bagong hitsura ang iyong browser anumang oras.</translation>
 <translation id="7356506068433555887">Palm tree</translation>
@@ -9526,6 +9526,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="784273751836026224">I-uninstall ang Linux</translation>
 <translation id="784475655832336580">Hindi available ang i-highlight ang item gamit ang keyboard focus kapag naka-on ang ChromeVox</translation>
 <translation id="7844992432319478437">Ina-update ang diff</translation>
+<translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7847212883280406910">Pindutin ang Ctrl + Alt + S upang lumipat sa <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Buksan lahat (<ph name="URL_COUNT" />) sa bagong grupo ng tab</translation>
@@ -9549,7 +9550,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Alisin ang extension na <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Serbisyo: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Ngumiwi pakanan gamit ang iyong bibig</translation>
 <translation id="7861215335140947162">&amp;Mga download</translation>
 <translation id="7861846108263890455">Wika ng Google Account</translation>
 <translation id="7864114920800968141">Sa loob ng <ph name="NUM_MIN" /> (na) minuto</translation>

@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">履歴の同期</translation>
 <translation id="1110155001042129815">待機</translation>
 <translation id="1110965959145884739">このデバイスにインストールする言語を選択してください。ディスク領域を節約するため、言語ファイルはユーザー間で共有されます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">お子様はにこの PIN を使用してデバイスのログインできます</translation>
 <translation id="1112420131909513020">バックグラウンドのタブで Bluetooth が使用されています</translation>
 <translation id="1112998165730922436">キャストを一時停止しました</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" />（USB）</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">各プロフィールを区別できるように名前と色のテーマを選択してください</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
 <translation id="1130676589211693127">右のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
+<translation id="1131201598497838573">お子様の PIN を更新しました</translation>
 <translation id="1133418583142946603">現在のタブを追加</translation>
 <translation id="1134363466745332968">ページのタイトルや URL だけでなく、ページの全般的な内容に基づいて閲覧履歴を検索できます。これにより、アドレスバーで「@履歴」を使用して検索する場合や [履歴] ページで検索する場合に、探している閲覧履歴を簡単に見つけられます。</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。<ph name="EMOJI_COUNT" /> 件中 <ph name="EMOJI_INDEX" /> 件目。</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">以下のデバイスで Chrome にログインしており、セキュリティ キーとして使用できます。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="1399261165075500043">Google Play 利用規約を読み込めません</translation>
+<translation id="1400243387594338234">この PIN を使用してデバイスにログインできます</translation>
 <translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
 <translation id="1402426911829176748">デバイスに接続しています</translation>
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
@@ -1921,6 +1924,7 @@
 <translation id="2326931316514688470">アプリを再読み込み(&amp;R)</translation>
 <translation id="2327492829706409234">アプリを有効にする</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" /> 文字中 <ph name="CHARACTER" /> 文字目を入力</translation>
+<translation id="2328137272841210255">PIN をリセット</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> を使用するには、デバイスを再起動してください。</translation>
 <translation id="2328636661627946415">シークレット モードの間、各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。シークレット モード セッションが終了すると、Cookie は削除されます。</translation>
 <translation id="2329597144923131178">ログインすると、お使いのどのデバイスでも同じブックマーク、履歴、パスワード、その他の設定を利用できるようになります。</translation>
@@ -2982,7 +2986,7 @@
 <translation id="3082493846131340396">拡張機能</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">セキュリティ保護のために一時的にブロックされています</translation>
-<translation id="3083899879156272923">マウスが画面の中央に置かれているときに画面を移動する</translation>
+<translation id="3083899879156272923">マウスを画面の中央に固定して画面を移動する</translation>
 <translation id="3083998949001524405">サードパーティ Cookie の使用が許可されています</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> は管理者によって固定されています</translation>
 <translation id="3084548735795614657">ここにドロップすると、インストールされます</translation>
@@ -3765,6 +3769,7 @@
 <translation id="3670480940339182416">サイトでの V8 オプティマイザーの使用を許可する</translation>
 <translation id="3672681487849735243">出荷時のエラーが見つかりました</translation>
 <translation id="3673097791729989571">ログインは <ph name="SAML_DOMAIN" /> でホストされています</translation>
+<translation id="3673287357837016374">PIN を更新しました</translation>
 <translation id="3673622964532248901">このデバイスにキャストできません。</translation>
 <translation id="3675683621636519363">障害レポート、診断データ、使用状況データを ChromeOS Flex に送信する</translation>
 <translation id="367645871420407123">既定のテストイメージの値にルート パスワードを設定する場合は、空欄のままにします</translation>
@@ -4980,6 +4985,7 @@
 <translation id="4538417792467843292">1 語削除する</translation>
 <translation id="4538792345715658285">会社のポリシーによってインストール済み。</translation>
 <translation id="4540409690203718935">Google パスワード マネージャーにアクセスできません。数分後にもう一度お試しください。</translation>
+<translation id="4540780316273593836">エラーが発生しました</translation>
 <translation id="4541123282641193691">アカウントを確認できませんでした。もう一度お試しになるか、Chromebook を再起動してください。</translation>
 <translation id="4541505619120536051">常に開く</translation>
 <translation id="4541662893742891060">このプロファイルに接続できません。テクニカル サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
@@ -5941,7 +5947,6 @@
 <translation id="5240931875940563122">Android スマートフォンでログイン</translation>
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
-<translation id="5243752692914402705">スクロール モードを開始したら、スクロールしたい方向に頭を動かします</translation>
 <translation id="5244234799035360187">ファイル アプリに OneDrive が表示されるようになります</translation>
 <translation id="5244466461749935369">今は残す</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
@@ -6786,7 +6791,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> はまもなく一時的に利用できなくなります</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> はディスク イメージから実行されています。パソコンにインストールすると、ディスク イメージなしで実行できるようになり、常に最新の状態に維持できます。</translation>
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
-<translation id="5866236843389439313">左の口角を上げる</translation>
 <translation id="5868434909835797817">デバイスのマイクはオフになっています</translation>
 <translation id="5868479397518301468">ログインがタイムアウトしました</translation>
 <translation id="5868822853313956582">デバイスの色に従う</translation>
@@ -8796,6 +8800,7 @@
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7352664183151911163">アプリと Chrome ブラウザ</translation>
 <translation id="7353261921908507769">近くにいる連絡先から共有を受けられます。許可するまで転送は行われません。</translation>
+<translation id="7353432112255316844">本人確認</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
 <translation id="7354120289251608189">ブラウザのデザインをいつでも変更できるようになりました。</translation>
 <translation id="7356506068433555887">ヤシの木</translation>
@@ -9491,6 +9496,7 @@
 <translation id="784273751836026224">Linux のアンインストール</translation>
 <translation id="784475655832336580">ChromeVox が有効になっている場合、キーボード フォーカスがある項目をハイライト表示することはできません</translation>
 <translation id="7844992432319478437">差分の更新中</translation>
+<translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> に切り替えるには Ctrl + Alt+ S キーを押します</translation>
 <translation id="7848244988854036372">すべて（<ph name="URL_COUNT" /> 個）を新しいタブグループで開く</translation>
@@ -9514,7 +9520,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" />（Windows）</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> 拡張機能を削除</translation>
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">右の口角を上げる</translation>
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7861846108263890455">Google アカウントの言語</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> 分後</translation>
@@ -11292,6 +11297,7 @@
 <translation id="9101691533782776290">アプリを起動</translation>
 <translation id="9102610709270966160">拡張機能を有効にする</translation>
 <translation id="9102864637938129124">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は有効になっています。</translation>
+<translation id="9103341231213089378">キャストするには、[<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />] &gt; [ローカル ネットワーク] &gt; [Chrome] で Chrome にアクセスを許可してください</translation>
 <translation id="9103868373786083162">ボタンを押して前に戻ります。履歴を表示するにはコンテキスト メニューを選択します</translation>
 <translation id="9107096627210171112">翻訳(&amp;R)...</translation>
 <translation id="9107624673674616016">色鉛筆</translation>

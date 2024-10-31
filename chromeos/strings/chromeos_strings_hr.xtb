@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspjelo</translation>
 <translation id="1061864016440983342">Koristi bez lokacije</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> od <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Brzo umetanje ne može se upotrebljavati za prilagođene prečace.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6526200165918397681">Podudaranje s pozadinom</translation>
 <translation id="6527081081771465939">Nepoznat sigurnosni protokol za Wi-Fi</translation>
+<translation id="6531528791584205545">brzo umetanje</translation>
 <translation id="6535178685492749208">Niste povezani s internetom. Povratne informacije poslat će se kasnije.</translation>
 <translation id="6543412779435705598">tacosi</translation>
 <translation id="6550369542114086980">u četvrtak</translation>

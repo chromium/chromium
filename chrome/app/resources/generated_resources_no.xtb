@@ -616,6 +616,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1436671784520050284">Fortsett konfigureringen</translation>
 <translation id="1436784010935106834">Fjernet</translation>
 <translation id="1437986450143295708">Beskriv problemet i detalj</translation>
+<translation id="1438630805136563416">Handlingen <ph name="REMOVED_ACTION" /> er fjernet</translation>
 <translation id="1439671507542716852">langtidsstøtte</translation>
 <translation id="1440090277117135316">Skoleregistreringen er fullført</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> valgt</translation>
@@ -979,6 +980,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1677306805708094828">Kan ikke legge til <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
 <translation id="1678849866171627536">Skanningen mislyktes. Denne filen kan være et virus eller skadelig programvare.</translation>
+<translation id="1678919064276516737">E-postadressen og PIN-koden du skrev inn, stemmer ikke overens</translation>
 <translation id="1679068421605151609">Utviklerverktøy</translation>
 <translation id="1679810534535368772">Er du sikker på at du vil avslutte?</translation>
 <translation id="167983332380191032">Administrasjonstjenesten sendte en HTTP-feil.</translation>
@@ -1430,6 +1432,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1981434377190976112">lese alle dataene dine på alle nettsteder</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} og {field_2}}other{{field_1}, {field_2} og {field_3}}}</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
+<translation id="198507684520034826">Hjelp</translation>
 <translation id="1986836014090708999">Avanserte posisjonsinnstillinger</translation>
 <translation id="1987317783729300807">Kontoer</translation>
 <translation id="1987574314042117472">Velg og installer populære apper</translation>
@@ -2928,6 +2931,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3029466929721441205">Vis pekepennverktøy på hyllen</translation>
 <translation id="3029808567601324798">Låsetidspunkt</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du laster ned en oppdatering i dag. Oppdateringen blir lastet ned automatisk når du kobler til internett.}other{<ph name="MANAGER" /> krever at du laster ned en oppdatering før tidsfristen. Oppdateringen blir lastet ned automatisk når du kobler til internett.}}</translation>
+<translation id="3030772324014024606">Rediger</translation>
 <translation id="3030967311408872958">Solnedgang til soloppgang</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Bruk styreflaten og tastaturet til å høyreklikke</translation>
@@ -4033,6 +4037,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3824621460022590830">Tokenet for registrering av enheten er ugyldig. Kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Logg på for å se faner fra andre enheter</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Husk valget mitt for denne filtypen: <ph name="FILE_TYPES" />}other{Husk valget mitt for disse filtypene: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Vis</translation>
 <translation id="3825635794653163640">Vis punkt på appikon for appvarsler</translation>
 <translation id="3826071569074535339">Nettsteder som har lov til å bruke bevegelsessensorer</translation>
 <translation id="3826086052025847742">ChromeOS Flex-logger</translation>
@@ -4144,6 +4149,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3905761538810670789">Reparer appen</translation>
 <translation id="3908288065506437185">Blokker informasjonskapsler fra tredjeparter i Inkognitomodus</translation>
 <translation id="3908501907586732282">Aktiver utvidelsen</translation>
+<translation id="3909456989251621103">Hvis du sletter et tjenersertifikat, slutter Chrome å bruke det til å identifisere tjenere.</translation>
 <translation id="3909701002594999354">Vis alle &amp;kontroller</translation>
 <translation id="3909791450649380159">Klipp u&amp;t</translation>
 <translation id="39103738135459590">Aktiveringskode</translation>
@@ -4990,6 +4996,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4538417792467843292">Slett ord</translation>
 <translation id="4538792345715658285">Installert av bedriftsinnstillingen.</translation>
 <translation id="4540409690203718935">Får ikke kontakt med Google Passordlagring. Prøv på nytt om noen minutter</translation>
+<translation id="4540780316273593836">Noe gikk galt</translation>
 <translation id="4541123282641193691">Kunne ikke bekrefte kontoen din. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="4541505619120536051">Åpne alltid</translation>
 <translation id="4541662893742891060">Kan ikke koble til denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
@@ -5060,6 +5067,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4581774856936278355">Feil under gjenoppretting av Linux</translation>
 <translation id="4582297591746054421">Nettsteder leser vanligvis utklippstavlen din for å kunne tilby funksjoner som å beholde formateringen på teksten du har kopiert</translation>
 <translation id="4582563038311694664">Tilbakestill alle innstillingene</translation>
+<translation id="4584770411839426377">Vindu</translation>
 <translation id="4585793705637313973">Endre siden</translation>
 <translation id="4586275095964870617">Kunne ikke åpne <ph name="URL" /> i en alternativ nettleser. Kontakt systemadministrator.</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
@@ -5451,6 +5459,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4872192066608821120">For å importere passord, velg en CSV-fil.</translation>
 <translation id="4872212987539553601">Konfigurer kryptering på enheten</translation>
 <translation id="4873312501243535625">Media File Checker</translation>
+<translation id="4875690134140862902">Fane</translation>
 <translation id="4876273079589074638">Hjelp teknikerne våre med å undersøke og fikse denne feilen. Legg inn den nøyaktige fremgangsmåten om du kan. Ingen detaljer er ubetydelige.</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4876327226315760474">Dette betyr at funksjoner på nettstedet skal fungere som forventet, men det kan hende at surfebeskyttelsen svekkes.</translation>
@@ -5563,6 +5572,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Lagre aldri passord for dette nettstedet</translation>
 <translation id="4953808748584563296">Oransje standardbrukerbilde</translation>
+<translation id="4954652437333037880">Fil</translation>
 <translation id="4955707703665801001">Tilgang for <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Velg PIN-koden din</translation>
 <translation id="4956847150856741762">1</translation>
@@ -5949,7 +5959,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5240931875940563122">Logg på med Android-telefon</translation>
 <translation id="5242724311594467048">Vil du aktivere «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="5243522832766285132">Prøv på nytt om en liten stund</translation>
-<translation id="5243752692914402705">Når du har startet rullemodus, beveger du hodet i retningen du vil rulle</translation>
 <translation id="5244234799035360187">Nå kommer OneDrive til å vises i Filer-appen</translation>
 <translation id="5244466461749935369">Behold inntil videre</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
@@ -6794,7 +6803,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5865508026715185451"><ph name="APP_NAME" /> settes snart på pause</translation>
 <translation id="586567932979200359">Du kjører <ph name="PRODUCT_NAME" /> fra diskavbildningen. Hvis du installer produktet på datamaskinen, kan du kjøre det uten diskavbildningen og sikre at det holdes oppdatert.</translation>
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
-<translation id="5866236843389439313">Strekk venstre munnvik</translation>
 <translation id="5868434909835797817">Mikrofonen er av på enheten</translation>
 <translation id="5868479397518301468">Påloggingen ble tidsavbrutt</translation>
 <translation id="5868822853313956582">Følg enhetsfargene</translation>
@@ -7819,6 +7827,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6635674640674343739">Det kan ikke opprettes noen nettverkstilkobling. Kontroller nettverkstilkoblingen og prøv på nytt.</translation>
 <translation id="663569763553406962">Se hvilke utvidelser som kan lese eller endre nettsteder</translation>
 <translation id="6635944431854494329">Eieren kan styre denne funksjonen under Innstillinger &gt; Avansert &gt; Send diagnostikk og bruksdata til Google automatisk.</translation>
+<translation id="6636258750460740634">Logg</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
@@ -8806,6 +8815,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7352664183151911163">i appene dine og i Chrome-nettleseren</translation>
 <translation id="7353261921908507769">Kontaktene dine kan dele med deg når de er i nærheten. Overføringer starter ikke før du godtar.</translation>
+<translation id="7353432112255316844">Bekreft at det er deg</translation>
 <translation id="735361434055555355">Installerer Linux ...</translation>
 <translation id="7354120289251608189">Nå kan du når som helst gi nettleseren et nytt utseende.</translation>
 <translation id="7356506068433555887">Palme</translation>
@@ -9502,6 +9512,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="784273751836026224">Avinstaller Linux</translation>
 <translation id="784475655832336580">Fremhev elementet med tastaturfokus er ikke tilgjengelig når ChromeVox er på</translation>
 <translation id="7844992432319478437">Oppdateringsproblem</translation>
+<translation id="7846161022626028328">Det oppsto en feil. Prøv på nytt.</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7847212883280406910">Trykk på Ctrl+Alt+S for å bytte til <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Åpne alle (<ph name="URL_COUNT" />) i en ny fanegruppe</translation>
@@ -9525,7 +9536,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Fjern <ph name="EXTENSION_NAME" />-utvidelsen</translation>
 <translation id="786073089922909430">Tjeneste: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Strekk høyre munnvik</translation>
 <translation id="7861215335140947162">Ne&amp;dlastinger</translation>
 <translation id="7861846108263890455">Google-kontospråk</translation>
 <translation id="7864114920800968141">Om <ph name="NUM_MIN" /> min</translation>

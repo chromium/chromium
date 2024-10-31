@@ -2268,6 +2268,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5087286274860437796">O certificado do servidor non é válido neste momento.</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
 <translation id="5088142053160410913">Mensaxe para o operador</translation>
+<translation id="5089791650329866127">Esta función usa información que xa gardases coa función autocompletar, como o teu enderezo</translation>
 <translation id="5090647584136241764">Engade pestanas con produtos similares para comparar facilmente os detalles que máis che interesen</translation>
 <translation id="5093232627742069661">Dobrez en Z</translation>
 <translation id="5094747076828555589">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque Chromium non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
@@ -3278,7 +3279,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6936976777388162184">Este é un dispositivo dun lote e non se pode inscribir con Kiosk e Signage Upgrade.</translation>
 <translation id="6944557544071529399">Xogos de estratexia</translation>
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
-<translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6946949206576443118">Fai buscas na Web desde Chrome</translation>
 <translation id="6948051842255602737">Fin da partida. A túa puntuación é <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para consultar os requisitos e métodos de recollida, selecciona un enderezo</translation>
@@ -4541,6 +4541,7 @@ Detalles adicionais:
 <translation id="9211461151375991073">Escribe @ para buscar <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personalizar a aparencia</translation>
 <translation id="9215416866750762878">Unha aplicación está evitando que Chrome se conecte de forma segura a este sitio</translation>
+<translation id="921738974253889319">Esta función usa a información que xa gardases coa función autocompletar, como o teu enderezo. Podes revisar e xestionar eses datos nesta páxina.</translation>
 <translation id="92178312226016010">Estás facendo un seguimento deste produto.</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imaxes</translation>

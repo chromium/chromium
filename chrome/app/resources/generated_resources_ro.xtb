@@ -4991,6 +4991,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4538417792467843292">Șterge cuvântul</translation>
 <translation id="4538792345715658285">Instalată pe baza politicii întreprinderii.</translation>
 <translation id="4540409690203718935">Nu se poate accesa Managerul de parole Google. Încearcă din nou după câteva minute</translation>
+<translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="4541123282641193691">Contul nu a putut fi verificat. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="4541505619120536051">Deschide întotdeauna</translation>
 <translation id="4541662893742891060">Nu s-a putut conecta la acest profil. Contactează operatorul pentru asistență tehnică.</translation>
@@ -5953,7 +5954,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5240931875940563122">Conectează-te cu telefonul Android</translation>
 <translation id="5242724311594467048">Activați extensia „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5243522832766285132">Încearcă din nou în câteva momente</translation>
-<translation id="5243752692914402705">După ce pornești modul de derulare, mișcă capul în direcția în care vrei să derulezi</translation>
 <translation id="5244234799035360187">OneDrive va apărea acum în aplicația Fișiere</translation>
 <translation id="5244466461749935369">Păstrează deocamdată</translation>
 <translation id="5244474230056479698">Se sincronizează cu <ph name="EMAIL" /></translation>
@@ -6799,7 +6799,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5865508026715185451">Aplicația <ph name="APP_NAME" /> se va întrerupe în curând</translation>
 <translation id="586567932979200359">Rulează <ph name="PRODUCT_NAME" /> din imaginea sa de pe disc. Instalarea sa pe computer îți permite să îl rulezi fără imaginea de pe disc și asigură actualizarea acestuia.</translation>
 <translation id="5865733239029070421">Trimite automat statistici de utilizare și rapoarte de blocare la Google</translation>
-<translation id="5866236843389439313">Întinde colțul stâng al gurii</translation>
 <translation id="5868434909835797817">Microfonul dispozitivului este dezactivat</translation>
 <translation id="5868479397518301468">Conectarea a expirat</translation>
 <translation id="5868822853313956582">Folosește culorile dispozitivului</translation>
@@ -8814,6 +8813,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7352664183151911163">În toate aplicațiile și în browserul Chrome</translation>
 <translation id="7353261921908507769">Persoanele de contact îți pot trimite fișiere când sunt în apropiere. Transferurile nu vor începe până când nu accepți.</translation>
+<translation id="7353432112255316844">Confirmă-ți identitatea</translation>
 <translation id="735361434055555355">Se instalează Linux...</translation>
 <translation id="7354120289251608189">Acum îi poți oferi browserului un nou aspect oricând.</translation>
 <translation id="7356506068433555887">Palmier</translation>
@@ -9510,6 +9510,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="784273751836026224">Dezinstalează Linux</translation>
 <translation id="784475655832336580">Evidențierea elementului cu focalizare de la tastatură nu este disponibilă când ChromeVox este activat</translation>
 <translation id="7844992432319478437">Se actualizează diferențele</translation>
+<translation id="7846161022626028328">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="7846634333498149051">Tastatură</translation>
 <translation id="7847212883280406910">Apăsați combinația Ctrl + Alt + S pentru a comuta la <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Deschide-le pe toate (<ph name="URL_COUNT" />) într-un nou grup de file</translation>
@@ -9533,7 +9534,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Elimină extensia <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Serviciu: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Întinde colțul drept al gurii</translation>
 <translation id="7861215335140947162">&amp;Descărcări</translation>
 <translation id="7861846108263890455">Limba Contului Google</translation>
 <translation id="7864114920800968141">În <ph name="NUM_MIN" /> min.</translation>

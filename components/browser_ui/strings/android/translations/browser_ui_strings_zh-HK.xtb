@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">在線上開啟</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
+<translation id="1070329623210597193">此網站可以查看或編輯的檔案</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -335,6 +336,7 @@
 <translation id="6042308850641462728">更多選項</translation>
 <translation id="6064125863973209585">下載完成</translation>
 <translation id="6071501408666570960">您可能會登出此網站</translation>
+<translation id="6085954183010297841">要刪除檔案編輯權限嗎？<ph name="FILE" /></translation>
 <translation id="6120483543004435978">開咗之後，網站可以要求偵測你有冇主動用緊裝置。閂咗之後，網站唔可以偵測你有冇主動用緊裝置。</translation>
 <translation id="6140839633433422817">確定要重設權限，並刪除 Cookie 和網站資料嗎？</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>

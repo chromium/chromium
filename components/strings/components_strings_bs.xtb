@@ -213,7 +213,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1358223345833465883">Vaš pretraživač u Chromiumu</translation>
 <translation id="1359836962251219822">Kuhinjski i pribor za jelo</translation>
 <translation id="1360955481084547712">Otvorite novi anonimni prozor da privatno pretražujete</translation>
-<translation id="1361528602584216624">Ograničenje po Pix računu:<ph name="TRANSACTION_LIMIT" /> BRL</translation>
+<translation id="1361528602584216624">Ograničenje po Pix računu je <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Načini plaćanja koji su dostupni za odabir za nastavak s plaćanjem su otvoreni u punoj visini.</translation>
 <translation id="1363028406613469049">Numera</translation>
 <translation id="1364822246244961190">Ovo pravilo je blokirano. Njegova vrijednost će se ignorirati.</translation>
@@ -2268,7 +2268,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5087286274860437796">Potvrda servera trenutno nije važeća.</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
 <translation id="5088142053160410913">Poruka operateru</translation>
-<translation id="5089791650329866127">Ta značajka upotrebljava podatke koje ste već spremili pomoću automatskog popunjavanja, na primjer vašu adresu</translation>
+<translation id="5089791650329866127">Ova funkcija koristi informacije koje su već sačuvane putem automatskog popunjavanja, kao što je adresa</translation>
 <translation id="5090647584136241764">Dodajte kartice sa sličnim proizvodima da lako uporedite detalje koji su vam važni</translation>
 <translation id="5093232627742069661">Z-presavijanje</translation>
 <translation id="5094747076828555589">Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; Chromium ne vjeruje njegovoj sigurnosnoj potvrdi. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
@@ -3279,7 +3279,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6936976777388162184">Ovo je uređaj u paketu i nije se moguće prijaviti pomoću Kioska i Nadogradnje potpisivanja.</translation>
 <translation id="6944557544071529399">Strateške igre</translation>
 <translation id="6944692733090228304">Unijeli ste lozinku na web lokaciji kojom ne upravlja organizacija <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da zaštitite račun, lozinku nemojte ponovo koristiti u drugim aplikacijama i na drugim web lokacijama.</translation>
-<translation id="6945221475159498467">Odaberi</translation>
 <translation id="6946949206576443118">Pretražite web u Chromeu</translation>
 <translation id="6948051842255602737">Igra je završena. Vaš rezultat je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Da vidite načine i uslove preuzimanja, odaberite adresu</translation>
@@ -4543,7 +4542,7 @@ Dodatni detalji:
 <translation id="9211461151375991073">Napišite @ da pretražite <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Prilagodite izgled</translation>
 <translation id="9215416866750762878">Jedna aplikacija sprečava sigurno povezivanje Chromea na ovu web lokaciju</translation>
-<translation id="921738974253889319">Ta značajka upotrebljava podatke koje ste već spremili pomoću automatskog popunjavanja, na primjer vašu adresu. Na ovoj stranici možete pregledati te podatke i upravljati njima.</translation>
+<translation id="921738974253889319">Ova funkcija koristi informacije koje su već sačuvane putem automatskog popunjavanja, kao što je adresa. Mogućnost pregleda ovih podataka i upravljanje njima na ovoj stranici.</translation>
 <translation id="92178312226016010">Pratite ovaj proizvod.</translation>
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>

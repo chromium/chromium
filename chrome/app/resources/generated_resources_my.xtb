@@ -5002,6 +5002,7 @@
 <translation id="4538417792467843292">စကားလုံးကို ဖျက်ရန်</translation>
 <translation id="4538792345715658285">လုပ်ငန်း မူဝါဒဖြင့် တပ်ဆင်ပေးခဲ့သည်။</translation>
 <translation id="4540409690203718935">Google Password Manager ကို ချိတ်ဆက်၍မရပါ။ ခဏအကြာတွင် ထပ်စမ်းကြည့်ပါ</translation>
+<translation id="4540780316273593836">တစ်ခုခု မှားသွားပါသည်</translation>
 <translation id="4541123282641193691">သင့်အကောင့်ကို စိစစ်၍ မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="4541505619120536051">အမြဲဖွင့်ရန်</translation>
 <translation id="4541662893742891060">ဤပရိုဖိုင်နှင့် ချိတ်ဆက်၍မရပါ။ နည်းပညာအကူအညီအတွက် သင့်ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်ပါ။</translation>
@@ -5965,7 +5966,6 @@
 <translation id="5240931875940563122">Android ဖုန်းဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ကို ဖွင့်ထားမလား?</translation>
 <translation id="5243522832766285132">ခေတ္တအကြာတွင် ထပ်စမ်းကြည့်ပါ</translation>
-<translation id="5243752692914402705">လှိမ့်ခြင်းမုဒ်ကို စတင်ပြီးသောအခါ လှိမ့်လိုသော ဦးတည်ရာအတိုင်း သင့်ခေါင်းကိုရွှေ့ပါ</translation>
 <translation id="5244234799035360187">OneDrive ကို Files အက်ပ်တွင် တွေ့နိုင်ပါပြီ</translation>
 <translation id="5244466461749935369">ယခု ဆက်ထားရန်</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> သို့စင့်ခ်လုပ်နေသည်</translation>
@@ -6813,7 +6813,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> သည် မကြာမီ ခဏရပ်ပါမည်</translation>
 <translation id="586567932979200359">သင်သည်<ph name="PRODUCT_NAME" />ကို ၎င်း၏ ဒီစ်က် ုရပ်ပုံမှ ဖွင့်သုံးနေသည်။ ၎င်းကို သင်၏ ကွန်ပျူတာမှာ တပ်ဆင်ထားခြင်းဖြင့် သင်သည် ဒီစ်က် ုရပ်ပုံ မပါဘဲ ၎င်းကို ဖွင့်နိုင်မှာဖြစ်ပြီး၊ ၎င်းသည် ခေတ်မီလျက် ရှိနေမှာကို စိတ်ချနိုင်ပါသည်။</translation>
 <translation id="5865733239029070421">သုံးစွဲမှုဆိုင်ရာ အချက်အလက် ကိန်းဂဏန်းများနှင့် ပျက်စီးမှု အစီရင်ခံစာများကို Google သို့ အလိုအလျောက် ပို့သည်</translation>
-<translation id="5866236843389439313">သင့်ပါးစပ်၏ ဘယ်ဘက်ထောင့်ကို ဆန့်ပါ</translation>
 <translation id="5868434909835797817">သင့်စက်တွင် မိုက်ခရိုဖုန်း ပိတ်ထားသည်</translation>
 <translation id="5868479397518301468">လက်မှတ်ထိုးဝင်ရန် အချိန်ကုန်သွားပြီ</translation>
 <translation id="5868822853313956582">စက်အရောင်များအတိုင်း ထားရန်</translation>
@@ -8822,6 +8821,7 @@
 <translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="7352664183151911163">သင့်အက်ပ်များနှင့် Chrome ဘရောင်ဇာများတွင်</translation>
 <translation id="7353261921908507769">အနီးတစ်ဝိုက်ရှိ အဆက်အသွယ်များက သင်နှင့်မျှဝေနိုင်သည်။ သင်လက်မခံမချင်း လွှဲပြောင်းမှုကို စတင်မည်မဟုတ်ပါ။</translation>
+<translation id="7353432112255316844">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
 <translation id="735361434055555355">Linux ကို ထည့်သွင်းနေသည်...</translation>
 <translation id="7354120289251608189">ယခုအခါ ဘရောင်ဇာတွင် အချိန်မရွေး အသွင်သစ်သုံးနိုင်ပါပြီ။</translation>
 <translation id="7356506068433555887">အုန်းပင်</translation>
@@ -9518,6 +9518,7 @@
 <translation id="784273751836026224">Linux ဖယ်ရှားရန်</translation>
 <translation id="784475655832336580">ChromeVox ဖွင့်ထားစဉ် ကီးဘုတ်ခလုတ်သုံးပြီး ဤအရာကို မြင်သာအောင် မလုပ်နိုင်ပါ</translation>
 <translation id="7844992432319478437">ခြားနားမှု ကို မွမ်းမံနေ</translation>
+<translation id="7846161022626028328">အမှားတစ်ခု ဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7846634333498149051">ကီးဘုတ်</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> သို့ပြောင်းရန် Ctrl + Alt + S နှိပ်ပါ</translation>
 <translation id="7848244988854036372">(<ph name="URL_COUNT" />) ခုစလုံးကို တဘ်အုပ်စုအသစ်တွင် ဖွင့်ရန်</translation>
@@ -9541,7 +9542,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲကို ဖယ်ရှားရန်</translation>
 <translation id="786073089922909430">ဝန်ဆောင်မှု − <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">သင့်ပါးစပ်၏ ညာဘက်ထောင့်ကို ဆန့်ပါ</translation>
 <translation id="7861215335140947162">&amp;​ဒေါင်းလုဒ်များ</translation>
 <translation id="7861846108263890455">Google Account ဘာသာစကား</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> မိနစ်အတွင်း</translation>

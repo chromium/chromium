@@ -4999,6 +4999,7 @@
 <translation id="4538417792467843292">Үгийг устгах</translation>
 <translation id="4538792345715658285">Байгууллагын бодлогоор суулгасан.</translation>
 <translation id="4540409690203718935">Google Нууц үгний менежерт холбогдох боломжгүй байна. Хэдэн минутын дараа дахин оролдоно уу</translation>
+<translation id="4540780316273593836">Алдаа гарлаа</translation>
 <translation id="4541123282641193691">Таны бүртгэлийг баталгаажуулж чадсангүй. Дахин оролдох эсвэл Chromebook-г дахин эхлүүлнэ үү.</translation>
 <translation id="4541505619120536051">Үргэлж нээх</translation>
 <translation id="4541662893742891060">Энэ профайлд холбогдож чадсангүй. Техникийн тусламж авах бол оператор компанитайгаа холбоо барина уу.</translation>
@@ -5962,7 +5963,6 @@
 <translation id="5240931875940563122">Android утсаар нэвтрэх</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />-ыг идэвхжүүлэх үү"?</translation>
 <translation id="5243522832766285132">Хэдэн хормын дараа дахин оролдоно уу</translation>
-<translation id="5243752692914402705">Та гүйлгэх горимыг эхлүүлснийхээ дараа гүйлгэхийг хүсэж буй чиглэл рүүгээ толгойгоо хөдөлгөнө үү</translation>
 <translation id="5244234799035360187">OneDrive одоо Файлс аппад харагдана</translation>
 <translation id="5244466461749935369">Одоохондоо үлдээх</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />-д синк хийж байна</translation>
@@ -6810,7 +6810,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> удахгүй түр зогсоно</translation>
 <translation id="586567932979200359">Та <ph name="PRODUCT_NAME" />-ийг дискний дүрснээс нь ажилуулж байна. Үүнийг компьютер дээрээ суулгаснаар та үүн дээр дискний дүрсгүйгээр ажиллах боломжтой болох бөгөөд үргэлж шинэчлэгдэж байх болно.</translation>
 <translation id="5865733239029070421">Хэрэглээний статистик мэдээ болон алдааны тайланг Google-д автоматаар илгээдэг</translation>
-<translation id="5866236843389439313">Завжаа зүүн тийш мушийлгах</translation>
 <translation id="5868434909835797817">Таны төхөөрөмж дээрх микрофон унтраалттай байна</translation>
 <translation id="5868479397518301468">Нэвтрэх явц завсарласан</translation>
 <translation id="5868822853313956582">Төхөөрөмжийн өнгөнүүдийг дагах</translation>
@@ -8821,6 +8820,7 @@
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
 <translation id="7352664183151911163">Таны аппууд болон Chrome хөтчид</translation>
 <translation id="7353261921908507769">Таны харилцагчид ойролцоо байх үедээ тантай хуваалцах боломжтой. Таныг зөвшөөрөх хүртэл шилжүүлгийг эхлүүлэхгүй.</translation>
+<translation id="7353432112255316844">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="735361434055555355">Linux-г суулгаж байна...</translation>
 <translation id="7354120289251608189">Та одоо хөтчидөө хүссэн үедээ шинэ дүр төрх өгөх боломжтой.</translation>
 <translation id="7356506068433555887">Далдуу мод</translation>
@@ -9516,6 +9516,7 @@
 <translation id="784273751836026224">Linux-г устгах</translation>
 <translation id="784475655832336580">ChromeVox асаалттай үед гарын фокусаар зүйл тодруулах боломжгүй байна</translation>
 <translation id="7844992432319478437">Шинэчлэх ялгаа</translation>
+<translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="7846634333498149051">Гар</translation>
 <translation id="7847212883280406910">Ctrl + Alt + S дээр даран <ph name="IDS_SHORT_PRODUCT_OS_NAME" />-д шилжих</translation>
 <translation id="7848244988854036372">Бүгдийг (<ph name="URL_COUNT" />) шинэ табын бүлэгт нээх</translation>
@@ -9539,7 +9540,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> өргөтгөлийг хасах</translation>
 <translation id="786073089922909430">Үйлчилгээ: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Завжаа баруун тийш мушийлгах</translation>
 <translation id="7861215335140947162">&amp;Татаж авалтууд</translation>
 <translation id="7861846108263890455">Google Бүртгэлийн хэл</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> минутын дараа</translation>

@@ -425,6 +425,7 @@
 <translation id="1288037062697528143">সূর্যাস্তের সময় নাইট লাইট নিজে থেকেই চালু হবে</translation>
 <translation id="1288300545283011870">ভাষ্য প্রপার্টি</translation>
 <translation id="1289619947962767206">এই বিকল্প আর ব্যবহার করা যাবে না। ট্যাব প্রেজেন্ট করতে, <ph name="GOOGLE_MEET" /> ব্যবহার করুন।</translation>
+<translation id="1291057703584594733">আগে থেকে অ্যাসাইন করা কোনও জেসচার বেছে নিলে, সেটিকে নিজের আসল অ্যাকশন থেকে সরিয়ে দেবে।</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" />-এর পরিষেবার শর্তাবলী</translation>
 <translation id="1291421198328146277">'কী' রিসেট করুন</translation>
 <translation id="1292849930724124745">সাইন-ইন করে থাকতে স্মার্ট কার্ড প্রবেশ করান</translation>
@@ -5004,6 +5005,7 @@
 <translation id="4538417792467843292">শব্দ মুছুন </translation>
 <translation id="4538792345715658285">এন্টারপ্রাইজ নীতি দ্বারা ইনস্টল করা হয়েছে৷</translation>
 <translation id="4540409690203718935">Google Password Manager ব্যবহার করা যাচ্ছে না। কয়েক মিনিট পরে আবার চেষ্টা করুন</translation>
+<translation id="4540780316273593836">কিছু সমস্যা হয়েছে</translation>
 <translation id="4541123282641193691">আপনার অ্যাকাউন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা Chromebook রিস্টার্ট করুন।</translation>
 <translation id="4541505619120536051">সব সময় খুলবে</translation>
 <translation id="4541662893742891060">এই প্রোফাইলে কানেক্ট করা যায়নি। প্রযুক্তিগত সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -5967,7 +5969,6 @@
 <translation id="5240931875940563122">Android ফোন দিয়ে সাইন-ইন করুন</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম করবেন?</translation>
 <translation id="5243522832766285132">কয়েক মুহূর্তের মধ্যে আবার চেষ্টা করুন</translation>
-<translation id="5243752692914402705">স্ক্রল মোড চালু করার পরে, যেদিকে স্ক্রল করতে চান সেই দিকে মাথা হেলিয়ে দিন</translation>
 <translation id="5244234799035360187">এখন Files অ্যাপে OneDrive দেখা যাবে</translation>
 <translation id="5244466461749935369">এখনকার মতো রেখে দিন</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> এ সিঙ্ক হচ্ছে</translation>
@@ -6759,6 +6760,7 @@
 <translation id="5832970156002835240">সমস্ত সাইটে অনুমতি দিন</translation>
 <translation id="5833397272224757657">নিজের মতো সাজিয়ে নেওয়ার জন্য আপনার দেখা সাইটগুলির কন্টেন্ট এবং ব্রাউজারের অ্যাক্টিভিটি ও ইন্টার‌্যাকশনগুলি ব্যবহার করে</translation>
 <translation id="5833726373896279253">এই সেটিংস কেবল মালিক ঈষত্সংশোধন করতে পারেন:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">সাইটগুলিকে জাভাস্ক্রিপ্ট ব্যবহার করার অনুমতি দেবেন না</translation>
 <translation id="583431638776747">সাইট উপলভ্য নেই</translation>
 <translation id="5834581999798853053">প্রায় <ph name="TIME" /> মিনিট বাকি</translation>
@@ -6814,7 +6816,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> শীঘ্রই পজ করা হবে</translation>
 <translation id="586567932979200359">আপনি <ph name="PRODUCT_NAME" /> থেকে এটির ডিস্ক ছবি চালাচ্ছেন৷ এটিকে আপনার কম্পিউটারে ইনস্টল করা হলে তা ডিস্ক ছবি ছাড়াই এটিকে চালাতে দেয় এবং এটিকে আপ টু ডেট আছে কিনা তা নিশ্চিত করে৷</translation>
 <translation id="5865733239029070421">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট নিজে থেকেই Google-কে পাঠায়</translation>
-<translation id="5866236843389439313">আপনার মুখের বাঁদিক থেকে টানুন</translation>
 <translation id="5868434909835797817">আপনার ডিভাইসে মাইক্রোফোন বন্ধ আছে</translation>
 <translation id="5868479397518301468">সাইন-ইন করার টাইম-আউট হয়ে গেছে</translation>
 <translation id="5868822853313956582">ডিভাইসের রঙ ফলো করুন</translation>
@@ -8829,6 +8830,7 @@
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7352664183151911163">আপনার অ্যাপ এবং Chrome ব্রাউজার অ্যাক্সেস করুন</translation>
 <translation id="7353261921908507769">আপনার পরিচিতি তালিকার কেউ আশেপাশে থাকলে তবেই তারা আপনার সাথে শেয়ার করতে পারবে। আপনি সম্মতি না দেওয়া পর্যন্ত ট্রান্সফার চালু করা যাবে না।</translation>
+<translation id="7353432112255316844">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="735361434055555355">Linux ইনস্টল করা হচ্ছে...</translation>
 <translation id="7354120289251608189">আপনি এখন আপনার ব্রাউজারকে যেকোনও সময় একটি নতুন চেহারা দিতে পারেন।</translation>
 <translation id="7356506068433555887">পাম ট্রি</translation>
@@ -9524,6 +9526,7 @@
 <translation id="784273751836026224">Linux আনইনস্টল করুন</translation>
 <translation id="784475655832336580">ChromeVox চালু করা থাকলে, 'কীবোর্ড ফোকাস ব্যবহার করে আইটেম হাইলাইট করুন' ফিচার উপলভ্য হবে না</translation>
 <translation id="7844992432319478437">ভিন্ন আপডেট হচ্ছে</translation>
+<translation id="7846161022626028328">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="7846634333498149051">কীবোর্ড</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> এ স্যুইচ করার জন্য Ctrl + Alt + S টিপুন</translation>
 <translation id="7848244988854036372">সবকটি (<ph name="URL_COUNT" />) নতুন ট্যাব গ্রুপে খুলুন</translation>
@@ -9547,7 +9550,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> এক্সটেনশন সরান</translation>
 <translation id="786073089922909430">পরিষেবা: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">আপনার মুখের ডানদিক থেকে টানুন</translation>
 <translation id="7861215335140947162">&amp;ডাউনলোড করা</translation>
 <translation id="7861846108263890455">Google অ্যাকাউন্টের ভাষা</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> মিনিটের মধ্যে</translation>

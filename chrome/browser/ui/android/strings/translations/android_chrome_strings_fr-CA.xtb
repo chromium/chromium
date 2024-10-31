@@ -606,6 +606,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3902562446536395999">Tri par ordre alphabétique</translation>
 <translation id="3908308510347173149">Mettre à jour <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Tri par ordre alphabétique inverse</translation>
+<translation id="3918415141610210050">Onglet</translation>
 <translation id="3924911262913579434">La <ph name="SAFE_BROWSING_MODE" /> est activée</translation>
 <translation id="3927692899758076493">Sans empattement</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
@@ -692,6 +693,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="433213510553688132">Suivi en cours…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
+<translation id="4352287748243729941">Utiliser votre mot de passe <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Aperçu de la sécurité</translation>
@@ -851,6 +853,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5010886807652684893">Vue visuelle</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
+<translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> et <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> semblent liés. Assurez-vous de faire confiance à <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> avant d'utiliser votre mot de passe.</translation>
 <translation id="5016205925109358554">Avec empattement</translation>
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5032430150487044192">Impossible de créer un code QR</translation>
@@ -904,6 +907,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
 <translation id="5306014156308790439">Option Ajouter à la collection désactivée</translation>
 <translation id="5308380583665731573">Connecter</translation>
+<translation id="5310963254742922113">Mot de passe utilisé.</translation>
 <translation id="5316947901395241499">L'enregistrement des mots de passe est désactivé par votre administrateur</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>

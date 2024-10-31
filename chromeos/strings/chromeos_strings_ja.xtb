@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
 <translation id="1061864016440983342">位置情報なしで使用する</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />、<ph name="NAME" />。</translation>
+<translation id="1069150558259542054">クイック インサートはカスタム ショートカットには使用できません。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ファイアウォールが検出されました</translation>
 <translation id="1075811647922107217">ページサイズ</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">使い方・ヒント</translation>
 <translation id="6526200165918397681">壁紙に合わせる</translation>
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
+<translation id="6531528791584205545">クイック インサート</translation>
 <translation id="6535178685492749208">オフラインです。フィードバックは後で送信されます。</translation>
 <translation id="6543412779435705598">タコス</translation>
 <translation id="6550369542114086980">木曜日</translation>

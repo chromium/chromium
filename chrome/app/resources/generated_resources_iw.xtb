@@ -618,6 +618,7 @@
 <translation id="1436671784520050284">להמשך ההגדרה</translation>
 <translation id="1436784010935106834">הוסר</translation>
 <translation id="1437986450143295708">יש לתאר את הבעיה בפירוט</translation>
+<translation id="1438630805136563416">הפעולה <ph name="REMOVED_ACTION" /> הוסרה</translation>
 <translation id="1439671507542716852">‏תמיכה לטווח ארוך (LTS)</translation>
 <translation id="1440090277117135316">ההרשמה לשימוש בית ספרי הושלמה</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> פריטים נבחרו</translation>
@@ -981,6 +982,7 @@
 <translation id="1677306805708094828">אי אפשר להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
 <translation id="1678849866171627536">הסריקה נכשלה. הקובץ עשוי להיות וירוס או תוכנה זדונית.</translation>
+<translation id="1678919064276516737">כתובת האימייל וקוד האימות שהזנת לא תואמים</translation>
 <translation id="1679068421605151609">כלים עבור מפתחים</translation>
 <translation id="1679810534535368772">לצאת?</translation>
 <translation id="167983332380191032">‏שירות הניהול שלח שגיאת HTTP.</translation>
@@ -1435,6 +1437,7 @@
 <translation id="1981434377190976112">קריאת כל הנתונים שלך בכל האתרים</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{‫{field_1} וגם {field_2}}one{‫{field_1}, {field_2} וגם {field_3}}other{‫{field_1}, {field_2} וגם {field_3}}}</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
+<translation id="198507684520034826">עזרה</translation>
 <translation id="1986836014090708999">הגדרות מיקום מתקדמות</translation>
 <translation id="1987317783729300807">חשבונות</translation>
 <translation id="1987574314042117472">בחירה והתקנה של האפליקציות הפופולריות</translation>
@@ -2933,6 +2936,7 @@
 <translation id="3029466929721441205">הצגה של כלי סטיילוס במדף</translation>
 <translation id="3029808567601324798">זמן לנעילה</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{לפי הדרישה של <ph name="MANAGER" />, עליך להוריד עדכון היום. הורדת העדכון תתבצע באופן אוטומטי בחיבור הבא לאינטרנט.}one{לפי הדרישה של <ph name="MANAGER" />, עליך להוריד עדכון לפני המועד האחרון. הורדת העדכון תתבצע באופן אוטומטי בחיבור הבא לאינטרנט.}two{לפי הדרישה של <ph name="MANAGER" />, עליך להוריד עדכון לפני המועד האחרון. הורדת העדכון תתבצע באופן אוטומטי בחיבור הבא לאינטרנט.}other{לפי הדרישה של <ph name="MANAGER" />, עליך להוריד עדכון לפני המועד האחרון. הורדת העדכון תתבצע באופן אוטומטי בחיבור הבא לאינטרנט.}}</translation>
+<translation id="3030772324014024606">עריכה</translation>
 <translation id="3030967311408872958">מהשקיעה ועד לזריחה</translation>
 <translation id="3031417829280473749">‏סוכנת X</translation>
 <translation id="3031532026314193077">שימוש בלוח המגע ובמקלדת כדי ללחוץ לחיצה ימנית</translation>
@@ -4038,6 +4042,7 @@
 <translation id="3824621460022590830">טוקן הרשמת המכשיר לא חוקי. יש לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">כדי לראות כרטיסיות ממכשירים אחרים, צריך להיכנס לחשבון</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{אני רוצה שהבחירה שלי עבור סוג הקובץ הזה תישמר: <ph name="FILE_TYPES" />}one{אני רוצה שהבחירה שלי עבור סוגי הקבצים האלה תישמר: <ph name="FILE_TYPES" />}two{אני רוצה שהבחירה שלי עבור סוגי הקבצים האלה תישמר: <ph name="FILE_TYPES" />}other{אני רוצה שהבחירה שלי עבור סוגי הקבצים האלה תישמר: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">הצגה</translation>
 <translation id="3825635794653163640">הצגת נקודה בסמל האפליקציה לציון קבלת התראות מהאפליקציות</translation>
 <translation id="3826071569074535339">מורשים להשתמש בחיישני תנועה</translation>
 <translation id="3826086052025847742">‏יומנים של ChromeOS Flex</translation>
@@ -4149,6 +4154,7 @@
 <translation id="3905761538810670789">תיקון האפליקציה</translation>
 <translation id="3908288065506437185">‏חסימת קובצי cookie של צד שלישי במצב פרטי</translation>
 <translation id="3908501907586732282">הפעלת תוסף</translation>
+<translation id="3909456989251621103">‏אם מוחקים אישור שרת, Chrome לא ישתמש בו יותר כדי לזהות שרתים.</translation>
 <translation id="3909701002594999354">הצגת כל &amp;הפקדים</translation>
 <translation id="3909791450649380159">גז&amp;ירה</translation>
 <translation id="39103738135459590">קוד הפעלה</translation>
@@ -4998,6 +5004,7 @@
 <translation id="4538417792467843292">מחיקת מילה</translation>
 <translation id="4538792345715658285">מותקן לפי מדיניות של ארגון.</translation>
 <translation id="4540409690203718935">‏לא ניתן להתחבר למנהל הסיסמאות של Google. אפשר לנסות שוב בעוד כמה דקות</translation>
+<translation id="4540780316273593836">משהו השתבש</translation>
 <translation id="4541123282641193691">‏לא ניתן היה לאמת את החשבון שלך. יש לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="4541505619120536051">תמיד לפתוח</translation>
 <translation id="4541662893742891060">לא ניתן להתחבר לפרופיל הזה. עליך לפנות לספק לקבלת תמיכה טכנית.</translation>
@@ -5068,6 +5075,7 @@
 <translation id="4581774856936278355">‏שגיאה בזמן השחזור של Linux</translation>
 <translation id="4582297591746054421">אתרים קוראים בדרך כלל את הלוח כדי לתמוך בתכונות כמו שמירה על עיצוב הטקסט שהועתק אליו</translation>
 <translation id="4582563038311694664">איפוס כל ההגדרות</translation>
+<translation id="4584770411839426377">חלון</translation>
 <translation id="4585793705637313973">עריכת הדף</translation>
 <translation id="4586275095964870617">לא ניתן לפתוח את <ph name="URL" /> בדפדפן חלופי. יש לפנות למנהל המערכת.</translation>
 <translation id="4587589328781138893">אתרים</translation>
@@ -5460,6 +5468,7 @@
 <translation id="4872192066608821120">‏כדי לייבא סיסמאות, צריך לבחור קובץ CSV</translation>
 <translation id="4872212987539553601">הגדרה של הצפנה במכשיר</translation>
 <translation id="4873312501243535625">בודק קובצי המדיה</translation>
+<translation id="4875690134140862902">‏מקש Tab</translation>
 <translation id="4876273079589074638">רוצה לעזור למהנדסים שלנו לחקור את הקריסה הזו ולתקן אותה? מומלץ לרשום את השלבים בצורה כמה שיותר מדויקת, גם הפרטים הקטנים ביותר יכולים לעזור.</translation>
 <translation id="4876305945144899064">אין שם משתמש</translation>
 <translation id="4876327226315760474">במצב כזה תכונות האתר אמורות לפעול כצפוי, אבל יכול להיות שתהיה פחות הגנה במהלך הגלישה.</translation>
@@ -5572,6 +5581,7 @@
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4951966678293618079">אין לשמור סיסמאות לאתר הזה אף פעם</translation>
 <translation id="4953808748584563296">דמות ברירת מחדל כתומה</translation>
+<translation id="4954652437333037880">קובץ</translation>
 <translation id="4955707703665801001">הרשאות הגישה של <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">בחירת קוד</translation>
 <translation id="4956847150856741762">1</translation>
@@ -5958,7 +5968,6 @@
 <translation id="5240931875940563122">‏כניסה באמצעות טלפון Android</translation>
 <translation id="5242724311594467048">האם להפעיל את "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">צריך לנסות שוב בעוד כמה רגעים</translation>
-<translation id="5243752692914402705">אחרי שמפעילים את מצב הגלילה, מזיזים את הראש לכיוון שאליו רוצים לגלול</translation>
 <translation id="5244234799035360187">‏OneDrive יופיע עכשיו באפליקציה 'קבצים'</translation>
 <translation id="5244466461749935369">לשמור בינתיים</translation>
 <translation id="5244474230056479698">הסנכרון ל-<ph name="EMAIL" /> מתבצע</translation>
@@ -6805,7 +6814,6 @@
 <translation id="5865508026715185451">האפליקציה <ph name="APP_NAME" /> תושהה בקרוב</translation>
 <translation id="586567932979200359">מתבצעת הפעלה של <ph name="PRODUCT_NAME" /> מתמונת הדיסק שלו. התקנתו במחשב מאפשרת לך להפעיל אותו ללא תמונת הדיסק, ומבטיחה שיישאר מעודכן.</translation>
 <translation id="5865733239029070421">‏שליחת דוחות קריסה וסטטיסטיקת שימוש אל Google באופן אוטומטי</translation>
-<translation id="5866236843389439313">מותחים את החלק השמאלי של הפה</translation>
 <translation id="5868434909835797817">המיקרופון כבוי במכשיר</translation>
 <translation id="5868479397518301468">פג הזמן הקצוב לכניסה</translation>
 <translation id="5868822853313956582">שימוש בצבעים שמוצעים במכשיר</translation>
@@ -7834,6 +7842,7 @@
 <translation id="6635674640674343739">לא ניתן ליצור חיבור לרשת. צריך לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="663569763553406962">הצגת התוספים שיש להם הרשאה לקרוא או לשנות אתר</translation>
 <translation id="6635944431854494329">‏הבעלים יכולים לשלוט בתכונה הזו דרך 'הגדרות' &gt; 'מתקדם' &gt; 'שליחה אוטומטית של נתוני אבחון ושימוש אל Google'.</translation>
+<translation id="6636258750460740634">היסטוריה</translation>
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
 <translation id="6639554308659482635">‏זיכרון SQLite </translation>
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
@@ -8821,6 +8830,7 @@
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7352664183151911163">‏באפליקציות ובדפדפן Chrome</translation>
 <translation id="7353261921908507769">אנשי הקשר יוכלו לשתף איתך כשהם בקרבת מקום. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
+<translation id="7353432112255316844">אימות הזהות שלך</translation>
 <translation id="735361434055555355">‏מתבצעת התקנה של Linux...</translation>
 <translation id="7354120289251608189">עכשיו אפשר לשנות את המראה של הדפדפן מתי שרוצים.</translation>
 <translation id="7356506068433555887">עץ דקל</translation>
@@ -9516,6 +9526,7 @@
 <translation id="784273751836026224">‏הסרה של Linux</translation>
 <translation id="784475655832336580">‏הדגשת הפריט במוקד ההקלדה לא זמינה כש-ChromeVox פועל</translation>
 <translation id="7844992432319478437">ההבדל מתעדכן</translation>
+<translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
 <translation id="7846634333498149051">מקלדת</translation>
 <translation id="7847212883280406910">‏יש להקיש על Ctrl ‏+ Alt ‏+ S כדי לעבור אל <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">פתיחת כל הכתובות (<ph name="URL_COUNT" />) בקבוצת כרטיסיות חדשה</translation>
@@ -9539,7 +9550,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">להסיר את התוסף <ph name="EXTENSION_NAME" />?</translation>
 <translation id="786073089922909430">שירות: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">מותחים את החלק הימני של הפה</translation>
 <translation id="7861215335140947162">&amp;הורדות</translation>
 <translation id="7861846108263890455">‏השפה בחשבון Google</translation>
 <translation id="7864114920800968141">בעוד <ph name="NUM_MIN" /> דקות</translation>
@@ -10525,7 +10535,7 @@
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8551647092888540776">לא ניתן לפתוח את <ph name="FILE_NAMES" /> במצב אופליין</translation>
 <translation id="8552102814346875916">שמירה ברשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
-<translation id="8553342806078037065">ניהול אנשים אחרים</translation>
+<translation id="8553342806078037065">ניהול משתמשים אחרים</translation>
 <translation id="8554899698005018844">לא הוגדרה שפה</translation>
 <translation id="8555444629041783356">שינוי אוטומטי של המראה לפי זמני זריחה ושקיעה</translation>
 <translation id="855604308879080518">‏אפליקציות ל-Android יוכלו לקבל גישה להתקני USB ב-Chromebook הזה. בכל פעם שיחובר התקן USB, תישלח בקשה להרשאה. אפליקציות נפרדות ל-Android ישלחו בקשות להרשאות נוספות.</translation>

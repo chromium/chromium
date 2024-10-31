@@ -425,6 +425,7 @@
 <translation id="1288037062697528143">સૂર્યાસ્ત વખતે રાત્રિ પ્રકાશ ઑટોમૅટિક રીતે ચાલુ થશે</translation>
 <translation id="1288300545283011870">વાણીના ઇનપુટ નિયંત્રણોનું વિવરણ</translation>
 <translation id="1289619947962767206">આ વિકલ્પને હવેથી સપોર્ટ કરવામાં આવતો નથી. કોઈ ટૅબ પ્રસ્તુત કરવા માટે, <ph name="GOOGLE_MEET" />નો ઉપયોગ કરો.</translation>
+<translation id="1291057703584594733">પહેલેથી અસાઇન કરેલો કોઈ સંકેત પસંદ કરવાથી તેને તેની મૂળ ક્રિયામાંથી કાઢી નાખવામાં આવશે.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" />ની સેવાની શરતો</translation>
 <translation id="1291421198328146277">કી રીસેટ કરો</translation>
 <translation id="1292849930724124745">સાઇન ઇન થયેલા રહેવા માટે સ્માર્ટ કાર્ડ દાખલ કરો</translation>
@@ -4988,6 +4989,7 @@
 <translation id="4538417792467843292">શબ્દ ડિલીટ કરો</translation>
 <translation id="4538792345715658285">એન્ટરપ્રાઇઝ પૉલિસી દ્વારા ઇન્સ્ટોલ થયેલું છે.</translation>
 <translation id="4540409690203718935">Google Password Managerનો સંપર્ક કરી શકતા નથી. થોડી મિનિટમાં ફરી પ્રયાસ કરો</translation>
+<translation id="4540780316273593836">કંઈક ખોટું થયું હતું</translation>
 <translation id="4541123282641193691">તમારું એકાઉન્ટ ચકાસી ન શકાયું. કૃપા કરીને ફરી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="4541505619120536051">હંમેશાં ખોલો</translation>
 <translation id="4541662893742891060">આ પ્રોફાઇલ સાથે કનેક્ટ કરી શકાયું નથી. ટેક્નિકલ સપોર્ટ માટે, કૃપા કરીને તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
@@ -5951,7 +5953,6 @@
 <translation id="5240931875940563122">Android ફોન વડે સાઇન ઇન કરો</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ને ચાલુ કરીએ?</translation>
 <translation id="5243522832766285132">કૃપા કરીને થોડીવારમાં ફરી પ્રયાસ કરો</translation>
-<translation id="5243752692914402705">એકવાર તમે સ્ક્રોલ મોડ શરૂ કરો, પછી તમે જે દિશામાં સ્ક્રોલ કરવા માગો છો તે દિશામાં તમારા માથાને ખસેડો</translation>
 <translation id="5244234799035360187">Files ઍપમાં હવે OneDrive દેખાશે</translation>
 <translation id="5244466461749935369">હાલ પૂરતું જાળવો</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> પર સમન્વયિત કરી રહ્યાં છે</translation>
@@ -6743,6 +6744,7 @@
 <translation id="5832970156002835240">બધી સાઇટ પર મંજૂરી આપો</translation>
 <translation id="5833397272224757657">વૈયક્તિકરણ માટે, તમે મુલાકાત લીધેલી સાઇટના કન્ટેન્ટનો, ઉપરાંત બ્રાઉઝરની પ્રવૃત્તિ અને ક્રિયાપ્રતિક્રિયાઓનો ઉપયોગ કરે છે</translation>
 <translation id="5833726373896279253">આ સેટિંગ ફક્ત માલિક દ્વારા જ ફેરફાર થઈ શકે છે:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">સાઇટને JavaScriptનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="583431638776747">સાઇટ ઉપલબ્ધ ન હતી</translation>
 <translation id="5834581999798853053">લગભગ <ph name="TIME" /> મિનિટ બાકી</translation>
@@ -6798,7 +6800,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" />ને ટૂંક સમયમાં થોભાવવામાં આવશે</translation>
 <translation id="586567932979200359">તમે <ph name="PRODUCT_NAME" /> ને તેની ડિસ્ક છબીથી ચલાવી રહ્યા છો. તેને તમારા કમ્પ્યુટર પર ઇન્સ્ટોલ કરવાથી તમે તેને ડિસ્ક છબી વગર ચલાવી શકો છો, અને તે અપ-ટુ-ડેટ રાખવામાં આવશે તેની ખાતરી થાય છે.</translation>
 <translation id="5865733239029070421">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે</translation>
-<translation id="5866236843389439313">તમારા મોઢાને ડાબે ખૂણેથી ખેંચો</translation>
 <translation id="5868434909835797817">તમારા ડિવાઇસ પર માઇક્રોફોન બંધ છે</translation>
 <translation id="5868479397518301468">સાઇન ઇન કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="5868822853313956582">ડિવાઇસના રંગો ફૉલો કરો</translation>
@@ -8814,6 +8815,7 @@ USB ડિવાઇસ</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7352664183151911163">તમારી સમગ્ર ઍપ અને Chrome બ્રાઉઝર પર</translation>
 <translation id="7353261921908507769">તમારા સંપર્કો જ્યારે નજીકમાં હોય, ત્યારે તેઓ તમારી સાથે શેર કરી શકે છે. તમે સ્વીકારશો નહીં ત્યાં સુધી ટ્રાન્સફર શરૂ થઈ શકશે નહીં.</translation>
+<translation id="7353432112255316844">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="735361434055555355">Linux ઇન્સ્ટૉલ કરી રહ્યાં છીએ…</translation>
 <translation id="7354120289251608189">હવે તમે કોઈપણ સમયે તમારા બ્રાઉઝરને કોઈ નવો દેખાવ આપી શકો છો.</translation>
 <translation id="7356506068433555887">તાડનું ઝાડ</translation>
@@ -9509,6 +9511,7 @@ USB ડિવાઇસ</translation>
 <translation id="784273751836026224">Linux અનઇન્સ્ટૉલ કરો</translation>
 <translation id="784475655832336580">ChromeVox ચાલુ હોય ત્યારે કીબોર્ડ ફોકસ સાથે આઇટમ હાઇલાઇટ કરવાની સુવિધા ઉપલબ્ધ હોતી નથી</translation>
 <translation id="7844992432319478437">અપડેટનો તફાવત</translation>
+<translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7846634333498149051">કીબોર્ડ</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> પર સ્વિચ કરવા માટે Ctrl + Alt + S દબાવો</translation>
 <translation id="7848244988854036372">બધા (<ph name="URL_COUNT" />)ને નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
@@ -9532,7 +9535,6 @@ USB ડિવાઇસ</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> એક્સ્ટેન્શન કાઢી નાખો</translation>
 <translation id="786073089922909430">સેવા: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">તમારા મોઢાને જમણે ખૂણેથી ખેંચો</translation>
 <translation id="7861215335140947162">&amp;ડાઉનલોડ્સ</translation>
 <translation id="7861846108263890455">Google એકાઉન્ટની ભાષા</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> મિનિટમાં</translation>

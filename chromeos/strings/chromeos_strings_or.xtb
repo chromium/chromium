@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">ଅଧିକ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3321030238473337787">ପ୍ଲେବ୍ୟାକର ସ୍ପିଡ୍</translation>
+<translation id="3327613592010997943">ଆପଣ ଏହି ଡିଭାଇସକୁ ପୁଣି <ph name="DAY" /> <ph name="TIME" />ରେ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="3340978935015468852">ସେଟିଂସ୍</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">ଧୂସର</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> କୀ'କୁ ପରୀକ୍ଷା କରାଯାଇଛି</translation>
+<translation id="5606865426897221650">ଟାବ</translation>
 <translation id="5613201299517339763">ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5630438231335788050">ବଉହସ</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />କୁ ରିଷ୍ଟାର୍ଟ କରାଯାଇ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="576835345334454681">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
+<translation id="5775340474232476653">ତୁମ ଶିକ୍ଷକ କ୍ଲାସକୁ ସମାପ୍ତ କରିଛନ୍ତି</translation>
 <translation id="5779818640587041940">ରେକର୍ଡିଂ କରିବା ସମୟରେ ସ୍କ୍ରିନକୁ ଚାଲୁ ରଖନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">ପଥର</translation>
 <translation id="7590883480672980941">ଇନପୁଟ୍ ସେଟିଂସ୍</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
+<translation id="7600430297804876776">ଏହି <ph name="DEVICE_TYPE" />କୁ କେତେବେଳେ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା <ph name="MANAGER" /> ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।</translation>
 <translation id="7613724632293948900">ମାଉସ କିମ୍ବା ତୀର କୀ'ଗୁଡ଼ିକ ସହ ରିପୋଜିସନ କରନ୍ତୁ।</translation>
 <translation id="7618774594543487847">ନ୍ୟୁଟ୍ରାଲ୍</translation>
 <translation id="7620771111601174153">ସହାୟତା କେନ୍ଦ୍ରରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">ରେକର୍ଡ କରିବାକୁ ଦବାନ୍ତୁ</translation>
 <translation id="8094062939584182041">ଏହି ସମସ୍ୟା ବିଷୟରେ ଆପଣଙ୍କୁ ଇମେଲ କରିବା ପାଇଁ Googleକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8104083085214006426">ଆପଣ ଏକ ଖୋଲା ଏବଂ ଅସୁରକ୍ଷିତ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
+<translation id="8110942816572072814">ତୁମ ଶିକ୍ଷକ ତୁମର ସ୍କ୍ରିନକୁ ଲକ କରିଛନ୍ତି</translation>
 <translation id="811820734797650957">(Android) ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>

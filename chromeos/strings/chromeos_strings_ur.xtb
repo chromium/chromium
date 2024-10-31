@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">مزید</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3321030238473337787">پلے بیک کی رفتار</translation>
+<translation id="3327613592010997943"><ph name="DAY" /> آپ اس آلہ کو <ph name="TIME" /> بجے دوبارہ استعمال کر سکیں گے۔</translation>
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3340011300870565703">آلے کے دائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="3340978935015468852">ترتیبات</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">پورٹل صورت حال</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> کو ری اسٹارٹ اور اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="576835345334454681">ڈسپلے کی چمک بڑھانے کی کلید</translation>
+<translation id="5775340474232476653">آپ کے استاد نے کلاس کو ختم کر دیا ہے</translation>
 <translation id="5779818640587041940">ریکارڈنگ کرتے وقت اسکرین آن رکھیں</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
 <translation id="5784136236926853061">‏زیادہ HTTPS تاخیر</translation>
@@ -1357,6 +1359,7 @@
 <translation id="757747079855995705">پتھر</translation>
 <translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> منتظم نے <ph name="DEVICE_TYPE" /> کے استعمال کیے جا سکنے کا وقت سیٹ کیا ہے۔</translation>
 <translation id="7613724632293948900">ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ پوزیشن تبدیل کریں۔</translation>
 <translation id="7618774594543487847">نیوٹرل</translation>
 <translation id="7620771111601174153">ہیلپ سینٹر میں مزید جانیں</translation>
@@ -1462,6 +1465,7 @@
 <translation id="8088963492174775412">ریکارڈ کرنے کے لیے دبائیں</translation>
 <translation id="8094062939584182041">‏Google کو اس مسئلے کے بارے میں آپ کو ای میل کرنے کی اجازت دیں</translation>
 <translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
+<translation id="8110942816572072814">آپ کے استاد نے آپ کی سکرین لاک کر دی ہے</translation>
 <translation id="811820734797650957">‏(Android) گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>

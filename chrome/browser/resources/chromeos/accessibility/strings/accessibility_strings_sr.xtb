@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2737898226590637227">Нема следећег ARIA обележја</translation>
 <translation id="2749275490991666823">Проверено</translation>
+<translation id="2751454300227269244">Померите уста удесно</translation>
 <translation id="27527859628328957">Прелазак на следећу ставку која може да се фокусира</translation>
 <translation id="2756452585631602151">Унесите прилагођену ознаку</translation>
 <translation id="2766299274563946262">Нема ћелија лево</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Табела <ph name="TABLENAME" />, <ph name="TABLEROWS" /> х <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Беж</translation>
 <translation id="316542773973815724">Навигација</translation>
+<translation id="3167446923957429259">Померите уста улево</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{размак}one{# размак}few{# размака}other{# размака}}</translation>
 <translation id="3179119189286472195">Није линк</translation>
 <translation id="3180990259147710757">Померите вилицу улево</translation>
@@ -763,7 +765,6 @@
 <translation id="5851548754964597211">Листа картица</translation>
 <translation id="5866042630553435010">Делимично проверено</translation>
 <translation id="5866210856231860256">Да бисте прегледали лекције за ову тему, притисните тастер за претрагу + стрелица надесно или тастер за претрагу + стрелица налево</translation>
-<translation id="5866236843389439313">Раширите леви угао уста</translation>
 <translation id="5867591286054666064">Током овог водича притисните било који тастер да бисте чули како се зове.</translation>
 <translation id="5869546221129391014">Мрежа</translation>
 <translation id="5876817486144482042">Смањивање јачине звука говора</translation>
@@ -1036,7 +1037,6 @@
 <translation id="7839679365527550018">Претходна реч</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7851816175263618915">Делимична интерпункција</translation>
-<translation id="7860802890538098598">Раширите десни угао уста</translation>
 <translation id="7871691770940645922">Виртуелни приказ са Брајевом азбуком</translation>
 <translation id="7882421473871500483">Браон</translation>
 <translation id="78826985582142166">sldr</translation>

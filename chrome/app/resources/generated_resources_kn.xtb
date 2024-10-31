@@ -425,6 +425,7 @@
 <translation id="1288037062697528143">ನೈಟ್ ಲೈಟ್ ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಆಗುತ್ತದೆ</translation>
 <translation id="1288300545283011870">ಧ್ವನಿ ಗುಣಲಕ್ಷಣಗಳು</translation>
 <translation id="1289619947962767206">ಇನ್ನು ಮುಂದೆ ಈ ಆಯ್ಕೆಯನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ. ಟ್ಯಾಬ್ ಅನ್ನು ಪ್ರಸ್ತುತಪಡಿಸಲು, <ph name="GOOGLE_MEET" /> ಬಳಸಿ.</translation>
+<translation id="1291057703584594733">ಈಗಾಗಲೇ ನಿಯೋಜಿಸಲಾದ ಗೆಸ್ಚರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಅದನ್ನು ಅದರ ಮೂಲ ಕ್ರಿಯೆಯಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="1291421198328146277">ಕೀಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="1292849930724124745">ಸೈನ್ ಇನ್ ಆಗಿ ಉಳಿಯಲು ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
@@ -4995,6 +4996,7 @@
 <translation id="4538417792467843292">ಪದವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4538792345715658285">ಎಂಟರ್‌ಪ್ರೈಸ್ ನೀತಿಯಿಂದ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4540409690203718935">Google Password Manager ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಕೆಲವು ನಿಮಿಷಗಳಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="4540780316273593836">ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ</translation>
 <translation id="4541123282641193691">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="4541505619120536051">ಯಾವಾಗಲೂ ತೆರೆದಿರುತ್ತದೆ</translation>
 <translation id="4541662893742891060">ಈ ಪ್ರೊಫೈಲ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ತಾಂತ್ರಿಕ ಬೆಂಬಲಕ್ಕಾಗಿ, ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -5958,7 +5960,6 @@
 <translation id="5240931875940563122">Android ಫೋನ್‌ನಿಂದ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" ಸಕ್ರಿಯಗೊಳಿಸುವುದೆ?</translation>
 <translation id="5243522832766285132">ದಯವಿಟ್ಟು ಕೆಲವು ಕ್ಷಣಗಳಲ್ಲಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="5243752692914402705">ಒಮ್ಮೆ ನೀವು ಸ್ಕ್ರಾಲ್‌ ಮೋಡ್‌ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿದರೆ, ನೀವು ಸ್ಕ್ರಾಲ್‌ ಮಾಡಲು ಬಯಸುವ ದಿಕ್ಕಿನಲ್ಲಿ ನಿಮ್ಮ ತಲೆಯನ್ನು ಸರಿಸಿ</translation>
 <translation id="5244234799035360187">OneDrive ಈಗ Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಕಾಣಿಸುತ್ತಿದೆ</translation>
 <translation id="5244466461749935369">ಸದ್ಯಕ್ಕೆ ಇರಿಸಿ</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> ಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -6749,6 +6750,7 @@
 <translation id="5832970156002835240">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="5833397272224757657">ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಕಂಟೆಂಟ್‍, ಜೊತೆಗೆ ಬ್ರೌಸರ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಸಂವಹನಗಳನ್ನು ವೈಯಕ್ತೀಕರಣಕ್ಕಾಗಿ ಬಳಸುತ್ತದೆ</translation>
 <translation id="5833726373896279253">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮಾಲೀಕರಿಂದ ಮಾತ್ರ ನವೀಕರಿಸಬಹುದಾಗಿದೆ:</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="5833899990800318936">JavaScript ಅನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="583431638776747">ಸೈಟ್ ಲಭ್ಯವಿರಲಿಲ್ಲ</translation>
 <translation id="5834581999798853053">ಸುಮಾರು <ph name="TIME" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
@@ -6804,7 +6806,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ ಶೀಘ್ರದಲ್ಲೇ ವಿರಾಮಗೊಳ್ಳಲಿದೆ</translation>
 <translation id="586567932979200359">ನೀವು <ph name="PRODUCT_NAME" /> ಅನ್ನು ಅದರ ಡಿಸ್ಕ್‌ ಇಮೇಜ್‌‌‌ನಿಂದ ಚಾಲನೆ ಮಾಡುತ್ತಿರುವಿರಿ. ಅದನ್ನು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಸ್ಥಾಪನೆ ಮಾಡಿದರೆ ಅದು ನಿಮಗೆ ಡಿಸ್ಕ್ ಇಮೇಜ್ ಇಲ್ಲದೆಯೆ ಚಾಲನೆ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ, ಮತ್ತು ಆಗಿಂದಾಗ್ಗೆ ನವೀಕೃತಗೊಂಡಿದೆಯೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸುತ್ತದೆ.</translation>
 <translation id="5865733239029070421">ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುತ್ತದೆ</translation>
-<translation id="5866236843389439313">ನಿಮ್ಮ ಬಾಯಿಯ ಎಡ ಮೂಲೆಯನ್ನು ಹಿಗ್ಗಿಸುವುದು</translation>
 <translation id="5868434909835797817">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮೈಕ್ರೊಫೋನ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5868479397518301468">ಸೈನ್ ಇನ್ ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="5868822853313956582">ಸಾಧನದ ಬಣ್ಣಗಳು ಫಾಲೋ ಮಾಡಿ</translation>
@@ -8820,6 +8821,7 @@
 <translation id="7352651011704765696">ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="7352664183151911163">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು Chrome ಬ್ರೌಸರ್‌ನಾದ್ಯಂತ</translation>
 <translation id="7353261921908507769">ನಿಮ್ಮ ಸಂಪರ್ಕಗಳು ಸಮೀಪದಲ್ಲಿರುವಾಗ ನಿಮ್ಮ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ನೀವು ಸಮ್ಮತಿಸುವವರೆಗೆ ವರ್ಗಾವಣೆಗಳು ಪ್ರಾರಂಭವಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="7353432112255316844">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="735361434055555355">Linux ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7354120289251608189">ಈಗ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಬ್ರೌಸರ್‌ಗೆ ಹೊಸ ನೋಟವನ್ನು ನೀಡಬಹುದು.</translation>
 <translation id="7356506068433555887">ತಾಳೆ ಮರ</translation>
@@ -9514,6 +9516,7 @@
 <translation id="784273751836026224">Linux ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="784475655832336580">ChromeVox ಆನ್ ಆಗಿರುವಾಗ ಕೀಬೋರ್ಡ್ ಫೋಕಸ್ ಮೂಲಕ ಐಟಂ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡುವುದು ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="7844992432319478437">ವ್ಯತ್ಯಾಸವನ್ನು ನವೀಕರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="7846161022626028328">ದೋಷ ಎದುರಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7846634333498149051">ಕೀಬೋರ್ಡ್</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ಗೆ ಬದಲಾಯಿಸಲು Ctrl + Alt + S ಒತ್ತಿರಿ</translation>
 <translation id="7848244988854036372">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಎಲ್ಲವನ್ನೂ (<ph name="URL_COUNT" />) ತೆರೆಯಿರಿ</translation>
@@ -9537,7 +9540,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="786073089922909430">ಸೇವೆ: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">ನಿಮ್ಮ ಬಾಯಿಯ ಬಲ ಮೂಲೆಯನ್ನು ಹಿಗ್ಗಿಸುವುದು</translation>
 <translation id="7861215335140947162">&amp;ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7861846108263890455">Google ಖಾತೆಯ ಭಾಷೆ</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> ನಿಮಿಷದಲ್ಲಿ</translation>

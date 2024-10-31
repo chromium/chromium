@@ -618,6 +618,7 @@
 <translation id="1436671784520050284">Շարունակել կարգավորումը</translation>
 <translation id="1436784010935106834">Հեռացված</translation>
 <translation id="1437986450143295708">Մանրամասն նկարագրեք խնդիրը</translation>
+<translation id="1438630805136563416">«<ph name="REMOVED_ACTION" />» գործողությունը հեռացվել է</translation>
 <translation id="1439671507542716852">երկարաժամկետ աջակցություն</translation>
 <translation id="1440090277117135316">Ուսումնական հաստատության հաշվում գրանցումն արված է</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ընտրված</translation>
@@ -983,6 +984,7 @@
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ը չի կարող ավելացվել</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
 <translation id="1678849866171627536">Չհաջողվեց սկանավորել։ Այս ֆայլը կարող է վիրուս կամ վնասագիր լինել։</translation>
+<translation id="1678919064276516737">Մուտքագրված էլփոստը և PIN կոդը չեն համընկնում</translation>
 <translation id="1679068421605151609">Ծրագրավորողի գործիքներ</translation>
 <translation id="1679810534535368772">Իսկապե՞ս ուզում եք դուրս գալ</translation>
 <translation id="167983332380191032">Կառավարման ծառայությունն ուղարկել է HTTP-ի սխալ։</translation>
@@ -1428,6 +1430,7 @@
 <translation id="1981434377190976112">Կարդալ ձեր տվյալները բոլոր կայքերում</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} և {field_2}}one{{field_1}, {field_2} և {field_3}}other{{field_1}, {field_2} և {field_3}}}</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
+<translation id="198507684520034826">Օգնություն</translation>
 <translation id="1986836014090708999">Տեղադրության լրացուցիչ կարգավորումներ</translation>
 <translation id="1987317783729300807">Հաշիվներ</translation>
 <translation id="1987574314042117472">Ընտրել և տեղադրել հայտնի հավելվածներ</translation>
@@ -2921,6 +2924,7 @@
 <translation id="3029466929721441205">Ցուցադրել ստիլուսի գործիքները դարակում</translation>
 <translation id="3029808567601324798">Կողպման ժամանակը</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է այսօր ներբեռնեք թարմացումը։ Այն ավտոմատ կներբեռնվի, հենց որ միանաք համացանցին։}one{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է մինչև վերջնաժամկետը ներբեռնեք թարմացումը։ Այն ավտոմատ կներբեռնվի, հենց որ միանաք համացանցին։}other{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է մինչև վերջնաժամկետը ներբեռնեք թարմացումը։ Այն ավտոմատ կներբեռնվի, հենց որ միանաք համացանցին։}}</translation>
+<translation id="3030772324014024606">Փոփոխում</translation>
 <translation id="3030967311408872958">Մայրամուտից լուսաբաց</translation>
 <translation id="3031417829280473749">Գործակալ X</translation>
 <translation id="3031532026314193077">Մկնիկի աջ կոճակը սեղմելու համար օգտագործեք հպահարթակ և ստեղնաշար</translation>
@@ -4024,6 +4028,7 @@
 <translation id="3824621460022590830">Սարքերի գրանցման թոքենն անվավեր է։ Կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="3824757763656550700">Մուտք գործեք՝ ներդիներն այլ սարքերից դիտելու համար</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Հիշել իմ ընտրությունը ֆայլի այս տեսակի համար՝ <ph name="FILE_TYPES" />}one{Հիշել իմ ընտրությունը ֆայլերի այս տեսակների համար՝ <ph name="FILE_TYPES" />}other{Հիշել իմ ընտրությունը ֆայլերի այս տեսակների համար՝ <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825512074963838982">Դիտում</translation>
 <translation id="3825635794653163640">Հավելվածի պատկերակի վրա ցուցադրել կետ, երբ ծանուցումներ են ստացվում</translation>
 <translation id="3826071569074535339">Թույլատրվում է օգտագործել շարժման տվիչները</translation>
 <translation id="3826086052025847742">ChromeOS Flex-ի մատյաններ</translation>
@@ -4135,6 +4140,7 @@
 <translation id="3905761538810670789">Հավելվածի վերանորոգում</translation>
 <translation id="3908288065506437185">Արգելափակել երրորդ կողմի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="3908501907586732282">Միացնել ընդլայնումը</translation>
+<translation id="3909456989251621103">Եթե ջնջեք սերվերի հավաստագիրը, Chrome-ը այլևս չի օգտագործի այն՝ սերվերները նույնականացնելու համար։</translation>
 <translation id="3909701002594999354">Ցուցադրել &amp;կառավարման բոլոր տարրերը</translation>
 <translation id="3909791450649380159">Կտ&amp;րել</translation>
 <translation id="39103738135459590">Ակտիվացման կոդ</translation>
@@ -4983,6 +4989,7 @@
 <translation id="4538417792467843292">Ջնջել բառը</translation>
 <translation id="4538792345715658285">Տեղադրված է ձեռնարկության կանոնի համաձայն:</translation>
 <translation id="4540409690203718935">Չի հաջողվում կապ հաստատել Google գաղտնաբառերի կառավարչի հետ։ Մի քանի րոպեից նորից փորձեք</translation>
+<translation id="4540780316273593836">Սխալ առաջացավ</translation>
 <translation id="4541123282641193691">Չհաջողվեց մուտք գործել։ Փորձեք նորից կամ վերաբեռնեք Chromebook-ը։</translation>
 <translation id="4541505619120536051">Միշտ բացել</translation>
 <translation id="4541662893742891060">Չհաջողվեց միանալ այս պրոֆիլին։ Տեխնիկական աջակցության համար կապվեք օպերատորի հետ։</translation>
@@ -5053,6 +5060,7 @@
 <translation id="4581774856936278355">Չհաջողվեց վերականգնել Լինուքսը սխալի պատճառով</translation>
 <translation id="4582297591746054421">Կայքերը սովորաբար դիտում են սեղմատախտակը՝ պատճենված տեքստի ձևաչափը պահպանելու և նման այլ գործառույթների համար</translation>
 <translation id="4582563038311694664">Վերակայել բոլոր կարգավորումները</translation>
+<translation id="4584770411839426377">Պատուհան</translation>
 <translation id="4585793705637313973">Փոխել էջը</translation>
 <translation id="4586275095964870617">Չհաջողվեց <ph name="URL" /> կայքը բացել այլ դիտարկիչում։ Կապվեք համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
@@ -5444,6 +5452,7 @@
 <translation id="4872192066608821120">Գաղտնաբառերը ներմուծելու համար ընտրեք CSV ֆայլը</translation>
 <translation id="4872212987539553601">Կարգավորեք գաղտնագրումը սարքում</translation>
 <translation id="4873312501243535625">Մեդիա ֆայլի ստուգիչ</translation>
+<translation id="4875690134140862902">Ներդիր</translation>
 <translation id="4876273079589074638">Օգնեք մեր մշակողներին ուսումնասիրել և շտկել այս խափանումը: 
 Նկարագրեք ձեր գործողությունները: Յուրաքանչյուր դետալ կարևոր է:</translation>
 <translation id="4876305945144899064">Օգտանունը նշված չէ</translation>
@@ -5557,6 +5566,7 @@
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4951966678293618079">Երբեք չպահել գաղտնաբառեր այս կայքի համար</translation>
 <translation id="4953808748584563296">Կանխադրված նարնջագույն ավատար</translation>
+<translation id="4954652437333037880">Ֆայլ</translation>
 <translation id="4955707703665801001">«<ph name="FEATURE_NAME" />» գործառույթի տեսանելիությունը</translation>
 <translation id="4955710816792587366">Ընտրեք ձեր PIN-ը</translation>
 <translation id="4956847150856741762">1</translation>
@@ -5943,7 +5953,6 @@
 <translation id="5240931875940563122">Մուտք գործել Android հեռախոսի միջոցով</translation>
 <translation id="5242724311594467048">Միացնե՞լ «<ph name="EXTENSION_NAME" />» ընդլայնումը:</translation>
 <translation id="5243522832766285132">Մի քանի րոպեից նորից փորձեք</translation>
-<translation id="5243752692914402705">Հենց որ սկսեք թերթելու ռեժիմը, գլուխը շարժեք այն ուղղությամբ, որ ուղղությամբ ցանկանում եք թերթել</translation>
 <translation id="5244234799035360187">OneDrive-ն այժմ կցուցադրվի Files հավելվածում</translation>
 <translation id="5244466461749935369">Դեռ թողնել</translation>
 <translation id="5244474230056479698">Համաժամացում <ph name="EMAIL" />-ի հետ</translation>
@@ -6787,7 +6796,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> հավելվածի աշխատանքը շուտով կդադարեցվի</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />-ը գործարկվում է իր սկավառակի պատկերից: Եթե տեղադրեք այն համակարգչում, կարող եք գործարկել առանց սկավառակի պատկերի` միևնույն ժամանակ այն արդի պահելով:</translation>
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
-<translation id="5866236843389439313">Ներս ձգեք բերանի ձախ հատվածը</translation>
 <translation id="5868434909835797817">Սարքի խոսափողն անջատված է</translation>
 <translation id="5868479397518301468">Մուտք գործելու ժամանակը սպառվել է</translation>
 <translation id="5868822853313956582">Հետևեք սարքի գույներին</translation>
@@ -7813,6 +7821,7 @@
 <translation id="6635674640674343739">Չհաջողվեց միանալ։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="663569763553406962">Տեսեք, թե ինչ ընդլայնումներ կարող են կարդալ կամ փոխել կայքը</translation>
 <translation id="6635944431854494329">Սեփականատերը կարող է կառավարել այս գործառույթը՝ անցնելով Կարգավորումներ &gt; Լրացուցիչ &gt; Ավտոմատ ուղարկել օգտագործման և դիագնոստիկ տվյալները Google-ին։</translation>
+<translation id="6636258750460740634">Պատմություն</translation>
 <translation id="6636623428211296678">Ստորև ծանոթացեք այլ կարգավորումների կամ ավարտեք ստուգումը</translation>
 <translation id="6639554308659482635">SQLite հիշողություն</translation>
 <translation id="6640268266988685324">Բացել ներդիր</translation>
@@ -8799,6 +8808,7 @@
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7352664183151911163">Ձեր հավելվածներում և Chrome դիտարկիչում</translation>
 <translation id="7353261921908507769">Ձեր կոնտակտները կարող են տվյալներով կիսվել ձեզ հետ, երբ մոտակայքում են։ Տվյալների փոխանցումը չի սկսվի, մինչև դուք չհաստատեք։</translation>
+<translation id="7353432112255316844">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="735361434055555355">Linux-ը տեղադրվում է...</translation>
 <translation id="7354120289251608189">Այժմ դուք ցանկացած ժամանակ կարող եք փոխել դիտարկիչի տեսքը</translation>
 <translation id="7356506068433555887">Պալմա</translation>
@@ -9494,6 +9504,7 @@
 <translation id="784273751836026224">Ապատեղադրել Լինուքսը</translation>
 <translation id="784475655832336580">Ստեղնաշարի միջոցով տարրի ընդգծման գործառույթը հասանելի չէ, երբ ChromeVox-ը միացված է</translation>
 <translation id="7844992432319478437">Diff-ի թարմացում</translation>
+<translation id="7846161022626028328">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="7846634333498149051">Ստեղնաշար</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-ին փոխարկելու համար սեղմեք Ctrl + Alt + S</translation>
 <translation id="7848244988854036372">Բացել բոլորը (<ph name="URL_COUNT" />) ներդիրների նոր խմբում</translation>
@@ -9517,7 +9528,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Հեռացնել <ph name="EXTENSION_NAME" /> ընդլայնումը</translation>
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">Ներս ձգեք բերանի աջ հատվածը</translation>
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> րոպեից</translation>

@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">тағы</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3321030238473337787">Ойнату жылдамдығы</translation>
+<translation id="3327613592010997943">Бұл құрылғыны енді <ph name="DAY" /> <ph name="TIME" /> уақытында пайдалана аласыз.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">параметрлер</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">сұр</translation>
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> пернесі тексерілді.</translation>
+<translation id="5606865426897221650">Қойынды</translation>
 <translation id="5613201299517339763">Аккаунттан шығарылдыңыз.</translation>
 <translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5630438231335788050">баухауз</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Портал күйі</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> қайта іске қосылып, жаңартылып жатыр</translation>
 <translation id="576835345334454681">Дисплей жарықтығын арттыру</translation>
+<translation id="5775340474232476653">Мұғаліміңіз сабақ сеансын аяқтады.</translation>
 <translation id="5779818640587041940">Жазған кезде экранды өшірмеу</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
@@ -1356,6 +1359,7 @@
 <translation id="757747079855995705">тас</translation>
 <translation id="7590883480672980941">Енгізу параметрлері</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> әкімшісі осы <ph name="DEVICE_TYPE" /> құрылғысын пайдалануға болатын мерзімді белгіледі.</translation>
 <translation id="7613724632293948900">Тінтуір немесе бағыт пернелері көмегімен орнын өзгертіңіз.</translation>
 <translation id="7618774594543487847">Бейтарап</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8088963492174775412">Жазу үшін басыңыз.</translation>
 <translation id="8094062939584182041">Google-ға осы мәселе туралы электрондық хат жіберуге рұқсат ету</translation>
 <translation id="8104083085214006426">Ашық әрі қауіпті желіні қолданып жатырсыз.</translation>
+<translation id="8110942816572072814">Мұғаліміңіз экранды құлыптады.</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Растау</translation>

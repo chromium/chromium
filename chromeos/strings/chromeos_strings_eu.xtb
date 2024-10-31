@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">gehiago</translation>
 <translation id="3310640316857623290">DNSaren latentzia onartzen den atalasetik askoz gorago dago</translation>
 <translation id="3321030238473337787">Erreprodukzio-abiadura</translation>
+<translation id="3327613592010997943">Egun honetan erabili ahalko duzu berriro gailua: <ph name="DAY" /> (<ph name="TIME" />).</translation>
 <translation id="3328783797891415197">Abian da proba</translation>
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3340978935015468852">ezarpenak</translation>
@@ -924,6 +925,7 @@
 <translation id="5595623927872580850">kolore griseko</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> probatu da</translation>
+<translation id="5606865426897221650">Fitxa</translation>
 <translation id="5613201299517339763">Amaitu egin da saioa</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
@@ -953,6 +955,7 @@
 <translation id="5760715441271661976">Atariaren egoera</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> berrabiarazten eta eguneratzen</translation>
 <translation id="576835345334454681">Pantailaren distira igotzeko tekla</translation>
+<translation id="5775340474232476653">Irakasleak klasea amaitu du</translation>
 <translation id="5779818640587041940">Mantendu pantaila piztuta grabaketa abian den bitartean</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5784136236926853061">HTTP eskaeren latentzia luzea da</translation>
@@ -1356,6 +1359,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="757747079855995705">harria</translation>
 <translation id="7590883480672980941">Idazketa-metodoaren ezarpenak</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> geratzen dira</translation>
+<translation id="7600430297804876776"><ph name="MANAGER" /> domeinuaren administratzaileak <ph name="DEVICE_TYPE" /> hau noiz erabil daitekeen ezarri du.</translation>
 <translation id="7613724632293948900">Aldatu posizioa saguarekin edo gezi-teklekin.</translation>
 <translation id="7618774594543487847">Neutroa</translation>
 <translation id="7620771111601174153">Lortu informazio gehiago laguntza-zentroan</translation>
@@ -1461,6 +1465,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8088963492174775412">Sakatu grabatzeko</translation>
 <translation id="8094062939584182041">Eman arazo honi buruzko mezu elektronikoak bidaltzeko baimena Google-ri</translation>
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
+<translation id="8110942816572072814">Irakasleak pantaila blokeatu dizu</translation>
 <translation id="811820734797650957">Ping egin dakioke atebideari (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Berretsi</translation>

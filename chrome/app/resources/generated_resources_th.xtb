@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">ซิงค์ประวัติการเข้าชม</translation>
 <translation id="1110155001042129815">รอ</translation>
 <translation id="1110965959145884739">เลือกภาษาที่จะติดตั้งในอุปกรณ์นี้ ไฟล์ภาษาจะแชร์กับผู้ใช้เพื่อประหยัดพื้นที่ในดิสก์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">บุตรหลานใช้ PIN นี้เพื่อลงชื่อเข้าใช้อุปกรณ์ของตนได้</translation>
 <translation id="1112420131909513020">แท็บพื้นหลังกำลังใช้บลูทูธ</translation>
 <translation id="1112998165730922436">หยุดแคสต์ชั่วคราว</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">เลือกชื่อและธีมสีเพื่อให้แตกต่างจากโปรไฟล์อื่น</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ส่วนหนึ่งของกลุ่ม <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">ระดับแบตเตอรี่ทางขวา <ph name="PERCENTAGE" />%</translation>
+<translation id="1131201598497838573">อัปเดต PIN ของบุตรหลานแล้ว</translation>
 <translation id="1133418583142946603">เพิ่มแท็บปัจจุบัน</translation>
 <translation id="1134363466745332968">คุณสามารถค้นหาประวัติการท่องเว็บโดยใช้เนื้อหาทั่วไปในหน้า ไม่ใช่แค่ชื่อหน้าและ URL ของหน้า ซึ่งจะให้ผลลัพธ์ที่ดีขึ้น ไม่ว่าคุณจะค้นหาประวัติการท่องเว็บในแถบที่อยู่โดยใช้ @history หรือค้นหาจากหน้าประวัติ</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" /> <ph name="EMOJI_INDEX" /> จาก <ph name="EMOJI_COUNT" /></translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">คุณลงชื่อเข้าใช้ Chrome ในอุปกรณ์เหล่านี้ จึงสามารถใช้อุปกรณ์ดังกล่าวเป็นคีย์ความปลอดภัย</translation>
 <translation id="1398853756734560583">ขยายใหญ่สุด</translation>
 <translation id="1399261165075500043">โหลดข้อกำหนดในการให้บริการของ Google Play ไม่ได้</translation>
+<translation id="1400243387594338234">คุณใช้ PIN นี้เพื่อลงชื่อเข้าใช้อุปกรณ์ได้</translation>
 <translation id="1401216725754314428">ดูข้อมูลเพิ่มเติมเกี่ยวกับเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="1402426911829176748">กำลังเชื่อมต่อกับอุปกรณ์</translation>
 <translation id="1403222014593521787">เชื่อมต่อพร็อกซีไม่ได้</translation>
@@ -1926,6 +1929,7 @@
 <translation id="2326931316514688470">โ&amp;หลดแอปซ้ำ</translation>
 <translation id="2327492829706409234">เปิดใช้งานแอปพลิเคชัน</translation>
 <translation id="2327920026543055248">ป้อนอักขระที่ <ph name="CHARACTER" /> จาก <ph name="TOTAL" /> ตัว</translation>
+<translation id="2328137272841210255">รีเซ็ต PIN ของคุณ</translation>
 <translation id="2328561734797404498">โปรดรีสตาร์ทอุปกรณ์เพื่อใช้ <ph name="APP_NAME" /></translation>
 <translation id="2328636661627946415">เมื่อใช้โหมดไม่ระบุตัวตน เว็บไซต์จะสามารถใช้คุกกี้ดูกิจกรรมการท่องเว็บของคุณได้เฉพาะในเว็บไซต์ของตน โดยคุกกี้จะถูกลบเมื่อสิ้นสุดเซสชันไม่ระบุตัวตน</translation>
 <translation id="2329597144923131178">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก ประวัติ รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์ทั้งหมด</translation>
@@ -3772,6 +3776,7 @@
 <translation id="3670480940339182416">เว็บไซต์สามารถใช้เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="3672681487849735243">ตรวจพบข้อผิดพลาดจากโรงงาน</translation>
 <translation id="3673097791729989571">การลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">อัปเดต PIN ของคุณแล้ว</translation>
 <translation id="3673622964532248901">คุณไม่ได้รับอนุญาตให้แคสต์ไปยังอุปกรณ์นี้</translation>
 <translation id="3675683621636519363">ส่งรายงานข้อขัดข้อง รวมถึงข้อมูลการวินิจฉัยและการใช้งานไปยัง ChromeOS Flex</translation>
 <translation id="367645871420407123">เว้นว่างไว้หากคุณต้องการตั้งรหัสผ่านระดับรูทเป็นภาพทดสอบเริ่มต้น</translation>
@@ -4989,6 +4994,7 @@
 <translation id="4538417792467843292">ลบคำ</translation>
 <translation id="4538792345715658285">ติดตั้งโดยนโยบายขององค์กร</translation>
 <translation id="4540409690203718935">เข้าถึงเครื่องมือจัดการรหัสผ่านบน Google ไม่ได้ โปรดลองอีกครั้งในอีกสักครู่</translation>
+<translation id="4540780316273593836">เกิดข้อผิดพลาด</translation>
 <translation id="4541123282641193691">ยืนยันบัญชีไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="4541505619120536051">เปิดตลอดเวลา</translation>
 <translation id="4541662893742891060">เชื่อมต่อโปรไฟล์นี้ไม่ได้ โปรดติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
@@ -5951,7 +5957,6 @@
 <translation id="5240931875940563122">ลงชื่อเข้าใช้ด้วยโทรศัพท์ Android</translation>
 <translation id="5242724311594467048">เปิดใช้งาน "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="5243522832766285132">โปรดลองอีกครั้งในอีกสักครู่</translation>
-<translation id="5243752692914402705">เมื่อเริ่มโหมดเลื่อนแล้ว ให้ขยับศีรษะไปในทิศทางที่ต้องการเลื่อน</translation>
 <translation id="5244234799035360187">ตอนนี้ OneDrive จะปรากฏในแอป Files</translation>
 <translation id="5244466461749935369">เก็บไว้ก่อน</translation>
 <translation id="5244474230056479698">กำลังซิงค์กับ <ph name="EMAIL" /></translation>
@@ -6795,7 +6800,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> จะหยุดชั่วคราวเร็วๆ นี้</translation>
 <translation id="586567932979200359">คุณกำลังเรียกใช้ <ph name="PRODUCT_NAME" /> จากดิสก์อิมเมจ การติดตั้งผลิตภัณฑ์นี้บนคอมพิวเตอร์จะทำให้คุณเรียกใช้ได้โดยไม่ต้องใช้ดิสก์อิมเมจและคุณมั่นใจได้ว่าผลิตภัณฑ์จะอัปเดตตลอดเวลา</translation>
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
-<translation id="5866236843389439313">ยกมุมปากด้านซ้าย</translation>
 <translation id="5868434909835797817">ไมโครโฟนในอุปกรณ์ปิดอยู่</translation>
 <translation id="5868479397518301468">การลงชื่อเข้าใช้หมดเวลาแล้ว</translation>
 <translation id="5868822853313956582">ใช้สีของอุปกรณ์</translation>
@@ -8807,6 +8811,7 @@
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7352664183151911163">ในแอปและเบราว์เซอร์ Chrome</translation>
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
+<translation id="7353432112255316844">ยืนยันว่าเป็นคุณ</translation>
 <translation id="735361434055555355">กำลังติดตั้ง Linux...</translation>
 <translation id="7354120289251608189">ตอนนี้คุณเปลี่ยนโฉมเบราว์เซอร์ของตัวเองได้ทุกเมื่อแล้ว</translation>
 <translation id="7356506068433555887">ต้นปาล์ม</translation>
@@ -9502,6 +9507,7 @@
 <translation id="784273751836026224">ถอนการติดตั้ง Linux</translation>
 <translation id="784475655832336580">การไฮไลต์รายการที่มีโฟกัสแป้นพิมพ์ไม่พร้อมใช้งานเมื่อ ChromeVox เปิดอยู่</translation>
 <translation id="7844992432319478437">กำลังอัปเดตความต่าง</translation>
+<translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
 <translation id="7847212883280406910">กด Ctrl + Alt + S เพื่อสลับไปยัง <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">เปิดทั้งหมด (<ph name="URL_COUNT" />)ในกลุ่มแท็บใหม่</translation>
@@ -9525,7 +9531,6 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">นำส่วนขยาย <ph name="EXTENSION_NAME" /> ออก</translation>
 <translation id="786073089922909430">บริการ: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7860802890538098598">ยกมุมปากด้านขวา</translation>
 <translation id="7861215335140947162">&amp;ดาวน์โหลด</translation>
 <translation id="7861846108263890455">ภาษาของบัญชี Google</translation>
 <translation id="7864114920800968141">ใน <ph name="NUM_MIN" /> นาที</translation>
@@ -11303,6 +11308,7 @@
 <translation id="9101691533782776290">เปิดแอป</translation>
 <translation id="9102610709270966160">เปิดใช้ส่วนขยาย</translation>
 <translation id="9102864637938129124">เว็บไซต์และผู้ลงโฆษณาจะรู้ได้ว่าโฆษณามีประสิทธิภาพเพียงใด การตั้งค่านี้เปิดอยู่</translation>
+<translation id="9103341231213089378">หากต้องการแคสต์ โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; เครือข่าย LAN &gt; Chrome</translation>
 <translation id="9103868373786083162">กดเพื่อย้อนกลับไปที่เมนูตามบริบทเพื่อดูประวัติ</translation>
 <translation id="9107096627210171112">แปลภาษา...</translation>
 <translation id="9107624673674616016">ดินสอสี</translation>

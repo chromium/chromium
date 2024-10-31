@@ -470,6 +470,7 @@
 <translation id="3305294846493618482">mais</translation>
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3321030238473337787">Velocidade da reprodução</translation>
+<translation id="3327613592010997943">Você poderá usar este dispositivo de novo <ph name="DAY" />, <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
 <translation id="3340011300870565703">O fone direito tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3340978935015468852">configurações</translation>
@@ -954,6 +955,7 @@
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5763838252932650682">Reiniciando e atualizando o app <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumentar o brilho da tela</translation>
+<translation id="5775340474232476653">O professor encerrou a aula</translation>
 <translation id="5779818640587041940">Manter a tela ligada durante a gravação</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">A latência do HTTP está alta</translation>
@@ -1357,6 +1359,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="757747079855995705">pedra</translation>
 <translation id="7590883480672980941">Configurações de entrada</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">O administrador de <ph name="MANAGER" /> definiu quando este <ph name="DEVICE_TYPE" /> pode ser usado.</translation>
 <translation id="7613724632293948900">Reposicionar com o mouse ou as teclas de seta.</translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Saiba mais na Central de Ajuda</translation>
@@ -1462,6 +1465,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8088963492174775412">Pressione para gravar</translation>
 <translation id="8094062939584182041">Permitir que o Google envie um e-mail para você sobre esse problema</translation>
 <translation id="8104083085214006426">Você está usando uma rede aberta e não segura</translation>
+<translation id="8110942816572072814">O professor bloqueou sua tela</translation>
 <translation id="811820734797650957">(Android) O gateway pode receber um ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>

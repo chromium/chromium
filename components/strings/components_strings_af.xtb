@@ -2268,6 +2268,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5087286274860437796">Bediener se sertifikaat is nie op die oomblik geldig nie.</translation>
 <translation id="5087580092889165836">Voeg kaart by</translation>
 <translation id="5088142053160410913">Boodskap aan operateur</translation>
+<translation id="5089791650329866127">Hierdie kenmerk gebruik inligting wat jy reeds met outovul gestoor het, soos jou adres</translation>
 <translation id="5090647584136241764">Voeg oortjies met soortgelyke produkte by om die besonderhede wat vir jou saak maak maklik te vergelyk</translation>
 <translation id="5093232627742069661">Z-vou</translation>
 <translation id="5094747076828555589">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur Chromium vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
@@ -3278,7 +3279,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6936976777388162184">Dit is ’n gebondelde toestel en dit kan nie by kiosk- en naambordopgradering ingeskryf word nie.</translation>
 <translation id="6944557544071529399">Strategiespeletjies</translation>
 <translation id="6944692733090228304">Jy het jou wagwoord ingevoer op 'n werf wat nie deur <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> bestuur word nie. Om jou rekening te beskerm, moet jy nie jou wagwoord op ander programme en werwe hergebruik nie.</translation>
-<translation id="6945221475159498467">Kies</translation>
 <translation id="6946949206576443118">Deursoek die web in Chrome</translation>
 <translation id="6948051842255602737">Speletjie is verby. Jou telling is <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Kies 'n adres om oplaaimetodes en -vereistes te sien</translation>
@@ -4541,6 +4541,7 @@ Bykomende besonderhede:
 <translation id="9211461151375991073">Tik @ om <ph name="FEATURED_SEARCH_LIST" /> te soek</translation>
 <translation id="9213433120051936369">Pasmaak voorkoms</translation>
 <translation id="9215416866750762878">'n Program verhinder Chrome om veilig aan hierdie werf te koppel</translation>
+<translation id="921738974253889319">Hierdie kenmerk gebruik inligting wat jy reeds met outovul gestoor het, soos jou adres. Jy kan hierdie data op hierdie bladsy hersien en bestuur.</translation>
 <translation id="92178312226016010">Jy spoor tans hierdie produk na.</translation>
 <translation id="9218430445555521422">Stel as verstek</translation>
 <translation id="9219103736887031265">Prente</translation>
