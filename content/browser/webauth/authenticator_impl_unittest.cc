@@ -550,7 +550,7 @@ std::vector<uint8_t> UncompressLargeBlob(device::LargeBlob blob) {
   std::vector<uint8_t> uncompressed;
   base::RunLoop run_loop;
   gzipper.Inflate(
-      blob.compressed_data, blob.original_size,
+      {blob.compressed_data}, blob.original_size,
       base::BindLambdaForTesting(
           [&](std::optional<mojo_base::BigBuffer> result) {
             if (result) {

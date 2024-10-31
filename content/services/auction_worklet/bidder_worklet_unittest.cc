@@ -14105,7 +14105,7 @@ class BidderWorkletKVv2Test : public BidderWorkletTest,
         std::move(client_it->second));
     pending_cache_clients_.erase(client_it);
     client->OnSuccess(mojom::TrustedSignalsCompressionScheme::kNone,
-                      test::ToCborVector(response_json_content));
+                      {test::ToCborVector(response_json_content)});
   }
 
   static std::string GenerateResponseBody(

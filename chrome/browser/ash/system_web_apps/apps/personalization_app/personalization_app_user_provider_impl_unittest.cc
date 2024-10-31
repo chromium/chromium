@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 
@@ -66,7 +67,7 @@ constexpr char kFakeTestName[] = "Fake Name";
 constexpr char kTestGaiaId[] = "1234567890";
 
 mojo_base::BigBuffer FakeEncodedPngBuffer() {
-  return mojo_base::BigBuffer({0, 1});
+  return mojo_base::BigBuffer(std::to_array<uint8_t>({0, 1}));
 }
 
 class TestUserImageObserver

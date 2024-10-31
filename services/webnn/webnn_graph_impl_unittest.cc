@@ -7420,39 +7420,39 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   {
     // Validate the inputs match the expected.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = std::vector<uint8_t>(byte_length);
-    inputs["rhs"] = std::vector<uint8_t>(byte_length);
+    inputs["lhs"] = {std::vector<uint8_t>(byte_length)};
+    inputs["rhs"] = {std::vector<uint8_t>(byte_length)};
     EXPECT_TRUE(ValidateInputsForComputing(builder.CloneGraphInfo(),
                                            std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid input size.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = std::vector<uint8_t>(byte_length);
+    inputs["lhs"] = {std::vector<uint8_t>(byte_length)};
     EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
                                             std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid input name.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["a_different_input_name"] = std::vector<uint8_t>(byte_length);
-    inputs["rhs"] = std::vector<uint8_t>(byte_length);
+    inputs["a_different_input_name"] = {std::vector<uint8_t>(byte_length)};
+    inputs["rhs"] = {std::vector<uint8_t>(byte_length)};
     EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
                                             std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid first input byte length.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = std::vector<uint8_t>(20);
-    inputs["rhs"] = std::vector<uint8_t>(byte_length);
+    inputs["lhs"] = {std::vector<uint8_t>(20)};
+    inputs["rhs"] = {std::vector<uint8_t>(byte_length)};
     EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
                                             std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid second input byte length.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = std::vector<uint8_t>(byte_length);
-    inputs["rhs"] = std::vector<uint8_t>(20);
+    inputs["lhs"] = {std::vector<uint8_t>(byte_length)};
+    inputs["rhs"] = {std::vector<uint8_t>(20)};
     EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
                                             std::move(inputs)));
   }

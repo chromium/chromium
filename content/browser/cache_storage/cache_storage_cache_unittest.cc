@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/browser/cache_storage/cache_storage_cache.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,6 +18,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -40,7 +43,6 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage.h"
-#include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -573,8 +575,7 @@ class CacheStorageCacheTest : public testing::Test {
 
     blob_storage_context_->context()->RegisterFromMemory(
         blob_remote_.BindNewPipeAndPassReceiver(), expected_blob_uuid_,
-        std::vector<uint8_t>(expected_blob_data_.begin(),
-                             expected_blob_data_.end()));
+        base::as_byte_span(expected_blob_data_));
 
     ASSERT_OK_AND_ASSIGN(auto bucket_locator,
                          GetOrCreateDefaultBucket(kTestUrl));
@@ -715,7 +716,7 @@ class CacheStorageCacheTest : public testing::Test {
     blob->size = data.size();
     blob_storage_context_->context()->RegisterFromMemory(
         blob->blob.InitWithNewPipeAndPassReceiver(), uuid,
-        std::vector<uint8_t>(data.begin(), data.end()));
+        base::as_byte_span(data));
   }
 
   blink::mojom::FetchAPIRequestPtr CopyFetchRequest(

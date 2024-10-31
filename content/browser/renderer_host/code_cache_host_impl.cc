@@ -267,14 +267,14 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
   if (!code_cache) {
-    std::move(callback).Run(base::Time(), std::vector<uint8_t>());
+    std::move(callback).Run(base::Time(), {});
     return;
   }
 
   std::optional<GURL> secondary_key =
       GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kRead);
   if (!secondary_key) {
-    std::move(callback).Run(base::Time(), std::vector<uint8_t>());
+    std::move(callback).Run(base::Time(), {});
     return;
   }
 

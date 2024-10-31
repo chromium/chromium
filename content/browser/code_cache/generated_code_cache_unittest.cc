@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -97,10 +98,9 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
                     const GURL& origin_lock,
                     const std::string& data,
                     base::Time response_time) {
-    std::vector<uint8_t> vector_data(data.begin(), data.end());
     generated_code_cache_->WriteEntry(url, origin_lock,
                                       net::NetworkIsolationKey(), response_time,
-                                      vector_data);
+                                      base::as_byte_span(data));
   }
 
   void DeleteFromCache(const GURL& url, const GURL& origin_lock) {

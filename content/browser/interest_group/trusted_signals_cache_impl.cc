@@ -62,7 +62,7 @@ void SendResultToClient(
 
   if (result.has_value()) {
     client->OnSuccess(result.value().compression_scheme,
-                      result.value().compression_group_data);
+                      {result.value().compression_group_data});
   } else {
     client->OnError(result.error());
   }

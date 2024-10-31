@@ -85,9 +85,6 @@ BigBuffer::BigBuffer(base::span<const uint8_t> data) {
   *this = BigBufferView::ToBigBuffer(BigBufferView(data));
 }
 
-BigBuffer::BigBuffer(const std::vector<uint8_t>& data)
-    : BigBuffer(base::make_span(data)) {}
-
 BigBuffer::BigBuffer(internal::BigBufferSharedMemoryRegion shared_memory)
     : storage_type_(StorageType::kSharedMemory),
       shared_memory_(std::move(shared_memory)) {}

@@ -660,7 +660,7 @@ TEST_F(SharedStorageWorkletTest,
   // Configure to return empty data, with matched response time.
   mock_code_cache_host_->OverrideFetchCachedCodeResult(
       /*response_time=*/kScriptResponseTime,
-      /*data=*/std::vector<uint8_t>());
+      /*data=*/{});
 
   AddModule(/*script_content=*/"");
 
@@ -681,7 +681,7 @@ TEST_F(SharedStorageWorkletTest,
   // Configure to return non-empty data, with unmatched response time.
   mock_code_cache_host_->OverrideFetchCachedCodeResult(
       /*response_time=*/kScriptResponseTime - base::Days(1),
-      /*data=*/std::vector<uint8_t>(1));
+      /*data=*/{std::vector<uint8_t>(1)});
 
   AddModule(/*script_content=*/"");
   mock_code_cache_host_->FlushForTesting();
@@ -701,7 +701,7 @@ TEST_F(SharedStorageWorkletTest,
   // Configure to return non-empty data, with matched response time.
   mock_code_cache_host_->OverrideFetchCachedCodeResult(
       /*response_time=*/kScriptResponseTime,
-      /*data=*/std::vector<uint8_t>(1));
+      /*data=*/{std::vector<uint8_t>(1)});
 
   AddModule(/*script_content=*/"");
   mock_code_cache_host_->FlushForTesting();

@@ -429,7 +429,7 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::Save(
     SaveCallback callback) {
   SaveInline(base::BindOnce(
       [](SaveCallback callback, const std::vector<uint8_t>& pdf) {
-        std::move(callback).Run(pdf);
+        std::move(callback).Run({pdf});
       },
       std::move(callback)));
 }

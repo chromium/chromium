@@ -136,7 +136,8 @@ class TrustedSignalsKVv2ManagerTest : public mojom::TrustedSignalsCache,
     auto cache_request = WaitForCacheRequest(expected_compression_group_token);
     mojo::Remote<mojom::TrustedSignalsCacheClient> client(
         std::move(cache_request.client));
-    client->OnSuccess(mojom::TrustedSignalsCompressionScheme::kNone, response);
+    client->OnSuccess(mojom::TrustedSignalsCompressionScheme::kNone,
+                      {response});
   }
 
   // Returns the results of calling TrustedSignals::Result::GetBiddingSignals()
@@ -348,8 +349,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, Gzip) {
       std::move(cache_request.client));
   client->OnSuccess(
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-      std::vector<std::uint8_t>(compressed_string.begin(),
-                                compressed_string.end()));
+      base::as_byte_span(compressed_string));
 
   EXPECT_THAT(future, SucceededWithDataVersion(1));
 }
@@ -659,14 +659,14 @@ TEST_F(TrustedSignalsKVv2ManagerTest, IndependentRequests) {
   mojo::Remote<mojom::TrustedSignalsCacheClient> client2(
       std::move(cache_request2.client));
   client2->OnSuccess(mojom::TrustedSignalsCompressionScheme::kNone,
-                     DifferentOnePartitionResponse());
+                     {DifferentOnePartitionResponse()});
   EXPECT_THAT(future2, SucceededWithDataVersion(2));
 
   // Send a response for the first request.
   mojo::Remote<mojom::TrustedSignalsCacheClient> client1(
       std::move(cache_request1.client));
   client1->OnSuccess(mojom::TrustedSignalsCompressionScheme::kNone,
-                     OnePartitionResponse());
+                     {OnePartitionResponse()});
   EXPECT_THAT(future1, SucceededWithDataVersion(1));
   EXPECT_NE(future1.Get<ResultType>(), future2.Get<ResultType>());
 

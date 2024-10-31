@@ -95,9 +95,6 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   // internal storage.
   BigBuffer(base::span<const uint8_t> data);
 
-  // Helper for implicit conversion from byte vectors.
-  BigBuffer(const std::vector<uint8_t>& data);
-
   // Constructs a BigBuffer from an existing shared memory region. Not intended
   // for general-purpose use.
   explicit BigBuffer(internal::BigBufferSharedMemoryRegion shared_memory);

@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -504,9 +505,8 @@ class RemoveCodeCacheTester {
                         const GURL& origin_lock,
                         const std::string& data,
                         base::OnceClosure quit) {
-    std::vector<uint8_t> data_vector(data.begin(), data.end());
     GetCache(cache)->WriteEntry(url, origin_lock, net::NetworkIsolationKey(),
-                                base::Time::Now(), data_vector);
+                                base::Time::Now(), base::as_byte_span(data));
     std::move(quit).Run();
   }
 

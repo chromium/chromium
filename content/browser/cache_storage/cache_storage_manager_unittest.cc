@@ -651,7 +651,7 @@ class CacheStorageManagerTest : public testing::Test {
     auto& str = request->url.spec();
     blob_storage_context_->context()->RegisterFromMemory(
         blob->blob.InitWithNewPipeAndPassReceiver(), blob_uuid,
-        std::vector<uint8_t>(str.begin(), str.end()));
+        base::as_byte_span(str));
 
     base::RunLoop loop;
     CachePutWithStatusCodeAndBlobInternal(cache, std::move(request),
