@@ -319,6 +319,9 @@ class BLINK_EXPORT WebView {
 
   // Do a hit test equivalent to what would be done for a GestureTap event
   // that has width/height corresponding to the supplied |tapArea|.
+  //
+  // TODO(crbug.com/376493204): This method is only called by Blink unit tests,
+  // so it should be removed from this API.
   virtual WebHitTestResult HitTestResultForTap(const gfx::Point& tap_point,
                                                const gfx::Size& tap_area) = 0;
 

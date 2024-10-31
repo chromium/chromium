@@ -241,21 +241,6 @@ void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
   GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
-// Only main frame needs to *receive* the hit test request, because all we need
-// is to get the blink::webView object and invoke a the hitTestResultForTap API
-// from it.
-void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
-                               const gfx::SizeF& touch_area) {
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  const blink::WebHitTestResult result = webview->HitTestResultForTap(
-      gfx::Point(touch_center.x(), touch_center.y()),
-      gfx::Size(touch_area.width(), touch_area.height()));
-  HandleHitTestResult(result);
-}
-
 void AwRenderFrameExt::HandleHitTestResult(
     const blink::WebHitTestResult& result) {
   auto data = mojom::HitTestData::New();
