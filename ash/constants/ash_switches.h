@@ -544,6 +544,12 @@ bool IsScannerUpdateSecretKeyMatched();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest();
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsSunfishSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+base::AutoReset<bool> SetIgnoreSunfishSecretKeyForTest();
+
 }  // namespace ash::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

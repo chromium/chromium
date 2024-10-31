@@ -52,6 +52,14 @@ constexpr std::string_view kScannerUpdateHashKey(
 // Whether checking the Scanner update secret key is ignored.
 bool g_ignore_scanner_update_secret_key = false;
 
+// The hash value for the secret key of the Sunfish feature.
+constexpr std::string_view kSunfishFeatureHashKey(
+    "\xce\x89\xdb\x48\xdc\x19\x49\x2a\xba\xd8\xaa\x48\xaa\x28\xc0\xd1\xc0\x10"
+    "\xf4\x2e",
+    base::kSHA1Length);
+
+bool g_ignore_sunfish_secret_key = false;
+
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -1090,6 +1098,9 @@ const char kShelfHotseat[] = "shelf-hotseat";
 // Supply the secret key for Scanner (for more details see b/363103871).
 const char kScannerUpdateKey[] = "scanner-update-key";
 
+// Supply the secret key for Sunfish.
+const char kSunfishFeatureKey[] = "sunfish-feature-key";
+
 // Supply secret key for Seal feature.
 const char kSealKey[] = "seal-key";
 
@@ -1498,6 +1509,31 @@ bool IsScannerUpdateSecretKeyMatched() {
 
 base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest() {
   return {&g_ignore_scanner_update_secret_key, true};
+}
+
+bool IsSunfishSecretKeyMatched() {
+  if (g_ignore_sunfish_secret_key) {
+    return true;
+  }
+
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --sunfish-feature-key="INSERT KEY HERE" --enable-features=SunfishFeature
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kSunfishFeatureKey));
+
+  const bool sunfish_key_matched =
+      (provided_key_hash == kSunfishFeatureHashKey);
+  if (!sunfish_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return sunfish_key_matched;
+}
+
+base::AutoReset<bool> SetIgnoreSunfishSecretKeyForTest() {
+  return {&g_ignore_sunfish_secret_key, true};
 }
 
 }  // namespace ash::switches
