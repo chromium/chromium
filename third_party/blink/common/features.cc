@@ -2078,7 +2078,7 @@ BASE_FEATURE(kPrerender2NoVarySearch,
 
 BASE_FEATURE(kPrerender2WarmUpCompositor,
              "Prerender2WarmUpCompositor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<Prerender2WarmUpCompositorTriggerPoint>::Option
     prerender2_warm_up_compositor_trigger_point[] = {
         {Prerender2WarmUpCompositorTriggerPoint::kDidCommitLoad,
