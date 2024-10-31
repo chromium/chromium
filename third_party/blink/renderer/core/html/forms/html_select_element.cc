@@ -524,15 +524,6 @@ void HTMLSelectElement::OptionElementChildrenChanged(
             GetLayoutObject()->GetDocument().ExistingAXObjectCache())
       cache->ChildrenChanged(this);
   }
-
-  if (option.Selected()) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      for (HTMLSelectedOptionElement* selectedoption :
-           TargetSelectedOptions()) {
-        selectedoption->CloneContentsFromOptionElement(&option);
-      }
-    }
-  }
 }
 
 void HTMLSelectElement::AccessKeyAction(
@@ -1907,10 +1898,8 @@ void HTMLSelectElement::setSelectedOptionElement(
     HTMLSelectedOptionElement* new_selectedoption) {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   auto* old_selectedoption = selectedOptionElement();
-  if (new_selectedoption) {
-    SetElementAttribute(html_names::kSelectedoptionelementAttr,
-                        new_selectedoption);
-  }
+  SetElementAttribute(html_names::kSelectedoptionelementAttr,
+                      new_selectedoption);
 
   if (old_selectedoption != new_selectedoption) {
     if (old_selectedoption) {

@@ -42,6 +42,9 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_selected_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
@@ -2092,6 +2095,23 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
       if (!tree_.CurrentStackItem()->MatchesHTMLTag(tag))
         ParseError(token);
       tree_.OpenElements()->PopUntilPopped(tag);
+      return;
+    case HTMLTag::kOption: {
+      auto* option =
+          DynamicTo<HTMLOptionElement>(tree_.OpenElements()->TopNode());
+      ProcessAnyOtherEndTagForInBody(token);
+      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+        if (option && option->Selected()) {
+          auto* select = option->OwnerSelectElement();
+          if (select && select->UsesMenuList() && !select->IsMultiple()) {
+            CHECK_EQ(option, select->SelectedOption());
+            for (auto& selectedoption : select->TargetSelectedOptions()) {
+              selectedoption->CloneContentsFromOptionElement(option);
+            }
+          }
+        }
+      }
+    }
       return;
     case HTMLTag::kForm:
       if (!IsParsingTemplateContents()) {

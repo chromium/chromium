@@ -273,6 +273,10 @@ class CORE_EXPORT HTMLSelectElement final
   void DefaultEventHandler(Event&) override;
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
+  // Returns descendant_selectedoptions_ and the <selectedoption> targeted by
+  // the selectedoptionelement attribute.
+  HeapHashSet<Member<HTMLSelectedOptionElement>> TargetSelectedOptions() const;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
@@ -364,10 +368,6 @@ class CORE_EXPORT HTMLSelectElement final
   // size).
   void ChangeRendering();
   void UpdateUserAgentShadowTree(ShadowRoot& root);
-
-  // Returns descendant_selectedoptions_ and the <selectedoption> targeted by
-  // the selectedoptionelement attribute.
-  HeapHashSet<Member<HTMLSelectedOptionElement>> TargetSelectedOptions() const;
 
   // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
   // HTMLHRElement objects.
