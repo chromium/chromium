@@ -57,65 +57,6 @@ consoles.console_view(
     },
 )
 
-ci.builder(
-    name = "Android ASAN (dbg)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android_clang",
-            apply_configs = [
-                "errorprone",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "clang_builder_mb",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "clang",
-            "asan",
-            "debug_builder",
-            "remoteexec",
-            # TODO(crbug.com/40282985): Remove no_symbols when unit_tests binary size
-            # issue is resolved.
-            "no_symbols",
-            "strip_debug_info",
-            "arm",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = [
-            "all",
-        ],
-    ),
-    builderless = False,
-    cores = None,
-    # TODO(crbug.com/40282985): Restore tree-closing and gardener rotation if/when
-    # bot is fixed.
-    # tree_closing = True,
-    gardener_rotations = args.ignore_default(None),
-    console_view_entry = consoles.console_view_entry(
-        category = "builder|arm",
-        short_name = "san",
-    ),
-    contact_team_email = "clank-engprod@google.com",
-    # Higher build timeout since dbg ASAN builds can take a while on a clobber
-    # build.
-    # TODO(crbug.com/40882299): Check why the compile takes longer time.
-    execution_timeout = 8 * time.hour,
-)
-
 ci.thin_tester(
     name = "Android WebView O (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,

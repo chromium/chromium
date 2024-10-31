@@ -376,12 +376,6 @@ try_.builder(
 # )
 
 try_.builder(
-    name = "android-asan-compile-dbg",
-    mirrors = ["ci/Android ASAN (dbg)"],
-    gn_args = "ci/Android ASAN (dbg)",
-)
-
-try_.builder(
     name = "android-bfcache-rel",
     mirrors = [
         "ci/android-bfcache-rel",

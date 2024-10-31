@@ -22,7 +22,6 @@
     "linux-blink-web-tests-force-accessibility-rel": "ci/linux-blink-web-tests-force-accessibility-rel/gn-args.json"
   },
   "chromium.android": {
-    "Android ASAN (dbg)": "ci/Android ASAN (dbg)/gn-args.json",
     "Android arm Builder (dbg)": "ci/Android arm Builder (dbg)/gn-args.json",
     "Android arm64 Builder (dbg)": "ci/Android arm64 Builder (dbg)/gn-args.json",
     "Android arm64 Builder All Targets (dbg)": "ci/Android arm64 Builder All Targets (dbg)/gn-args.json",
@@ -571,7 +570,6 @@
     "android-arm-compile-dbg": "try/android-arm-compile-dbg/gn-args.json",
     "android-arm64-all-targets-dbg": "try/android-arm64-all-targets-dbg/gn-args.json",
     "android-arm64-rel": "try/android-arm64-rel/gn-args.json",
-    "android-asan-compile-dbg": "try/android-asan-compile-dbg/gn-args.json",
     "android-bfcache-rel": "try/android-bfcache-rel/gn-args.json",
     "android-binary-size": "try/android-binary-size/gn-args.json",
     "android-cast-arm-dbg": "try/android-cast-arm-dbg/gn-args.json",
