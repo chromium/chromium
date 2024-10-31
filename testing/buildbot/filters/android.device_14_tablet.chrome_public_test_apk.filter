@@ -9,6 +9,7 @@
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testBottomBar
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRemoteViews
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testLaunchPartialCustomTabActivity_startActivityForResult
 -org.chromium.chrome.browser.customtabs.CustomTabPrivacySandboxDialogTest.adsNoticeCct_AppIDNullShowDialog
 
 # crbug.com/350395970
@@ -44,6 +45,10 @@
 -org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_Complete
 -org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_UserAbort
 -org.chromium.chrome.browser.payments.PaymentRequestContactDetailsTest.testPaymentRequestIncognitoMode
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.testAddEmailAndPhoneAndPay
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.testAddInvalidEmailAndCancel
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.testAddInvalidNameAndCancel
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.testAddNameAndPay
 
 # crbug.com/376168546
 -org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.*
@@ -63,3 +68,16 @@
 
 # crbug.com/376375165
 -org.chromium.chrome.browser.NavigateTest.testWindowOpenUrlSpoof
+
+# crbug.com/376527109
+-org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
+-org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
+
+# crbug.com/376528174
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testActionForPassphraseRequiredForSignedInUsers
+-org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
+
+# TODO (Create Bugs)
+-org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceNotFilteredWithWarning
+-org.chromium.chrome.browser.password_manager.PasswordCheckupIntegrationTest.testPasswordCheckOpensPasswordCheckupForLocalWhenStateCompromised
