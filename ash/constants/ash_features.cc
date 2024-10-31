@@ -34,13 +34,6 @@ BASE_FEATURE(kAdaptiveCharging,
              "AdaptiveCharging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the logic to show the notifications for Adaptive Charging features.
-// This is intended to be used by developers to test the UI aspect of the
-// feature.
-BASE_FEATURE(kAdaptiveChargingForTesting,
-             "AdaptiveChargingForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the UI for additional on-device parental controls that can be used to
 // enable or block ARC++ apps.
 BASE_FEATURE(kOnDeviceAppControls,
@@ -3469,10 +3462,6 @@ bool Is16DesksEnabled() {
 
 bool IsAdaptiveChargingEnabled() {
   return base::FeatureList::IsEnabled(kAdaptiveCharging);
-}
-
-bool IsAdaptiveChargingForTestingEnabled() {
-  return base::FeatureList::IsEnabled(kAdaptiveChargingForTesting);
 }
 
 bool IsOnDeviceAppControlsEnabled() {

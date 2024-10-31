@@ -3284,12 +3284,6 @@ extern const char kAcceleratedMjpegDecodeDescription[];
 extern const char kAccessibilityFilterKeysName[];
 extern const char kAccessibilityFilterKeysDescription[];
 
-extern const char kAdaptiveChargingName[];
-extern const char kAdaptiveChargingDescription[];
-
-extern const char kAdaptiveChargingForTestingName[];
-extern const char kAdaptiveChargingForTestingDescription[];
-
 extern const char kAllowApnModificationPolicyName[];
 extern const char kAllowApnModificationPolicyDescription[];
 
