@@ -8223,3 +8223,9 @@ crbug.com/376320405 [ Win10.20h2 ] external/wpt/css/css-sizing/keyword-sizes-for
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
+crbug.com/376491758 external/wpt/largest-contentful-paint/first-letter-background.html [ Failure Pass ]
+crbug.com/376491758 external/wpt/largest-contentful-paint/observe-css-generated-text.html [ Failure Pass ]
+crbug.com/376491758 external/wpt/largest-contentful-paint/text-with-display-style.html [ Failure Pass ]
+crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/first-letter-background.html [ Failure Pass ]
+crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/observe-css-generated-text.html [ Failure Pass ]
+crbug.com/376491758 virtual/scalefactor200/external/wpt/largest-contentful-paint/text-with-display-style.html [ Failure Pass ]
