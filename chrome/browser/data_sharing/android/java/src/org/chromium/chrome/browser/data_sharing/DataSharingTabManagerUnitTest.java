@@ -38,6 +38,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -72,6 +73,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -240,7 +242,7 @@ public class DataSharingTabManagerUnitTest {
     }
 
     @Test
-    public void testInviteFlowWithExistingTabGroupSyncOnly() {
+    public void testJoinFlowWithExistingTabGroupSyncOnly() {
         doReturn(
                         new DataSharingService.ParseURLResult(
                                 new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseURLStatus.SUCCESS))
@@ -268,7 +270,7 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
-    public void testOldUiInviteFlowWithNewTabGroup() {
+    public void testOldUiJoinFlowWithNewTabGroup() {
         mockSuccessfulParseDataSharingURL();
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
@@ -282,9 +284,38 @@ public class DataSharingTabManagerUnitTest {
         verify(mDataSharingService, times(2)).addMember(eq(GROUP_ID), eq(ACCESS_TOKEN), any());
     }
 
+    private static final class JoinTestHelper {
+        Boolean mCallbackResult;
+        Callback<Boolean> mCallback =
+                new Callback<Boolean>() {
+                    @Override
+                    public void onResult(Boolean result) {
+                        Assert.assertTrue(result);
+                        mCallbackResult = result;
+                    }
+                };
+
+        JoinTestHelper() {}
+
+        Callback<Boolean> getCallback() {
+            return mCallback;
+        }
+
+        void waitForCallback() {
+            CriteriaHelper.pollUiThreadForJUnit(() -> mCallbackResult);
+        }
+    }
+
+    private org.chromium.components.sync.protocol.GroupData getSyncGroupData() {
+        return org.chromium.components.sync.protocol.GroupData.newBuilder()
+                .setGroupId(GROUP_ID)
+                .setDisplayName(TEST_GROUP_DISPLAY_NAME)
+                .build();
+    }
+
     @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
-    public void testInviteFlowWithNewTabGroup() {
+    public void testJoinFlowWithNewTabGroup() {
         mockSuccessfulParseDataSharingURL();
 
         doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
@@ -294,14 +325,54 @@ public class DataSharingTabManagerUnitTest {
         ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
         verify(mDataSharingUiDelegate).showJoinFlow(uiConfigCaptor.capture());
-        verify(mTabGroupSyncService).addObserver(any());
+
+        ArgumentCaptor<TabGroupSyncService.Observer> syncObserverCaptor =
+                ArgumentCaptor.forClass(TabGroupSyncService.Observer.class);
+        verify(mTabGroupSyncService).addObserver(syncObserverCaptor.capture());
 
         DataSharingJoinUiConfig uiConfig = uiConfigCaptor.getValue();
         Assert.assertEquals(GROUP_ID, uiConfig.getGroupToken().groupId);
         Assert.assertEquals(ACCESS_TOKEN, uiConfig.getGroupToken().accessToken);
 
         Assert.assertNotNull(uiConfig.getJoinCallback());
-        uiConfig.getJoinCallback().onGroupJoined(null);
+        JoinTestHelper helper = new JoinTestHelper();
+
+        uiConfig.getJoinCallback().onGroupJoinedWithWait(getSyncGroupData(), helper.getCallback());
+        syncObserverCaptor.getValue().onTabGroupAdded(mSavedTabGroup, TriggerSource.REMOTE);
+
+        helper.waitForCallback();
+        verify(mDataSharingUiDelegate).destroyFlow(any());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
+    public void testJoinFlowWithNewTabGroupOpenedBeforeJoinCallback() {
+        mockSuccessfulParseDataSharingURL();
+
+        doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
+
+        mDataSharingTabManager.initiateJoinFlow(null, TEST_URL);
+
+        ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
+                ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
+        verify(mDataSharingUiDelegate).showJoinFlow(uiConfigCaptor.capture());
+
+        ArgumentCaptor<TabGroupSyncService.Observer> syncObserverCaptor =
+                ArgumentCaptor.forClass(TabGroupSyncService.Observer.class);
+        verify(mTabGroupSyncService).addObserver(syncObserverCaptor.capture());
+
+        DataSharingJoinUiConfig uiConfig = uiConfigCaptor.getValue();
+        Assert.assertEquals(GROUP_ID, uiConfig.getGroupToken().groupId);
+        Assert.assertEquals(ACCESS_TOKEN, uiConfig.getGroupToken().accessToken);
+
+        Assert.assertNotNull(uiConfig.getJoinCallback());
+        JoinTestHelper helper = new JoinTestHelper();
+
+        syncObserverCaptor.getValue().onTabGroupAdded(mSavedTabGroup, TriggerSource.REMOTE);
+        uiConfig.getJoinCallback().onGroupJoinedWithWait(getSyncGroupData(), helper.getCallback());
+
+        helper.waitForCallback();
+        verify(mDataSharingUiDelegate).destroyFlow(any());
     }
 
     @Test
@@ -446,11 +517,7 @@ public class DataSharingTabManagerUnitTest {
                 .when(mDataSharingService)
                 .createGroup(any(), any());
 
-        var groupDataProto =
-                org.chromium.components.sync.protocol.GroupData.newBuilder()
-                        .setGroupId(GROUP_ID)
-                        .setDisplayName(TEST_GROUP_DISPLAY_NAME)
-                        .build();
+        var groupDataProto = getSyncGroupData();
 
         doReturn(TEST_URL).when(mDataSharingService).getDataSharingURL(any());
         doReturn(TEST_URL)

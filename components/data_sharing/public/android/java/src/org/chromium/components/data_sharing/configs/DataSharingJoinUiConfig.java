@@ -6,6 +6,7 @@ package org.chromium.components.data_sharing.configs;
 
 import android.graphics.Bitmap;
 
+import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedDataPreview;
 import org.chromium.components.sync.protocol.GroupData;
@@ -26,7 +27,12 @@ public class DataSharingJoinUiConfig {
 
     /** Callback interface for data sharing join UI events. */
     public interface JoinCallback {
+        // DEPRECATED: use the version with callback, to close the loading UI.
         default void onGroupJoined(GroupData groupData) {}
+
+        // Called when group is joined, the `onJoinFinished` should be called when any processing is
+        // done.
+        default void onGroupJoinedWithWait(GroupData groupData, Callback<Boolean> onJoinFinished) {}
 
         default void onPreviewTabGroupDetailsClicked(String groupId) {}
     }
