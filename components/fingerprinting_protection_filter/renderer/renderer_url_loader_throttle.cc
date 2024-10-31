@@ -225,12 +225,13 @@ void RendererURLLoaderThrottle::OnLoadPolicyCalculated(
   } else {
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<RendererAgent> agent) {
+                       [](base::WeakPtr<RendererAgent> agent, const GURL& url) {
                          if (agent) {
-                           agent->OnSubresourceDisallowed();
+                           agent->OnSubresourceDisallowed(
+                               url.possibly_invalid_spec().c_str());
                          }
                        },
-                       renderer_agent_));
+                       renderer_agent_, GetCurrentURL()));
     // Cancel if the resource load should be blocked.
     delegate_->CancelWithError(net::ERR_BLOCKED_BY_CLIENT,
                                "FingerprintingProtection");

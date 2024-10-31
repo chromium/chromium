@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/shared/common/utils.h"
@@ -192,16 +195,27 @@ void RendererAgent::OnDestruct() {
   delete this;
 }
 
-void RendererAgent::OnSubresourceDisallowed() {
+void RendererAgent::OnSubresourceDisallowed(std::string_view subresource_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Notify the browser that a subresource was disallowed on the renderer
-  // (for metrics or UI logic).
   if (!notified_disallow_) {
     notified_disallow_ = true;
+
+    // Notify the browser that a subresource was disallowed on the renderer
+    // (for metrics or UI logic).
     auto* fp_host = GetFingerprintingProtectionHost();
     if (fp_host) {
       fp_host->DidDisallowFirstSubresource();
     }
+
+#if defined(_DEBUG)
+    if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {
+      // Log message to console.
+      std::string console_message = base::StringPrintf(
+          kDisallowSubresourceConsoleDebugMessageFormat, subresource_url);
+      render_frame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError, console_message);
+    }
+#endif
   }
 }
 

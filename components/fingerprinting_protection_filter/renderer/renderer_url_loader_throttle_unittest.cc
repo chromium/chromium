@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
@@ -97,6 +98,9 @@ class RendererURLLoaderThrottleTest : public ::testing::Test {
     activation_state.activation_level = activation_level;
     throttle_->OnActivationComputed(activation_state);
   }
+
+  FRIEND_TEST_ALL_PREFIXES(RendererURLLoaderThrottleTest,
+                           BlocksMatchingUrlLoad);
 
   base::test::TaskEnvironment message_loop_;
   MockRendererAgent renderer_agent_;
@@ -192,8 +196,17 @@ TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
   EXPECT_FALSE(defer);
 }
 
+MATCHER_P(GURLWith,
+          enable_logging,
+          "Matches an object `obj` such that `obj.enable_logging == "
+          "enable_logging`") {
+  return arg.enable_logging == enable_logging;
+}
+
 TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
   GURL url("https://blocked.com/");
+  EXPECT_CALL(renderer_agent_, OnSubresourceDisallowed("https://blocked.com/"));
+
   bool defer = false;
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kScript);

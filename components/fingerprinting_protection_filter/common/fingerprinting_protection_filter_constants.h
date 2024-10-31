@@ -51,6 +51,12 @@ constexpr char kActivationConsoleMessage[] =
 constexpr char kDisallowChildFrameConsoleMessageFormat[] =
     "Blocking navigation: %s";
 
+// Console message to be displayed on disallowing subresource.
+inline constexpr char kDisallowSubresourceConsoleMessage[] =
+    "Blocked one or more subresources on the current page.";
+inline constexpr char kDisallowSubresourceConsoleDebugMessageFormat[] =
+    "Blocking subresource: %s";
+
 }  // namespace fingerprinting_protection_filter
 
 #endif  // COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_COMMON_FINGERPRINTING_PROTECTION_FILTER_CONSTANTS_H_
