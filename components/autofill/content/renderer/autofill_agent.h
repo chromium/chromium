@@ -335,7 +335,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
 
+  // TODO(crbug.com/376628389): Remove.
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
+  void OnSelectControlDidChange(const blink::WebFormControlElement& element);
+
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 
   // Shows Password Manager, password generation, or Autofill suggestions for

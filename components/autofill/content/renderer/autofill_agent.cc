@@ -832,6 +832,21 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   }
 }
 
+void AutofillAgent::OnSelectControlDidChange(
+    const WebFormControlElement& element) {
+  DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
+  if (std::optional<FormAndField> form_and_field =
+          FindFormAndFieldForFormControlElement(
+              element, field_data_manager(),
+              GetCallTimerState(kOnProvisionallySaveForm),
+              MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
+    auto& [form, field] = *form_and_field;
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->SelectControlDidChange(form, field->renderer_id());
+    }
+  }
+}
+
 void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
                                                const WebKeyboardEvent& event) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
@@ -1848,19 +1863,7 @@ void AutofillAgent::OnProvisionallySaveForm(
       break;
     case FormTracker::Observer::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
-      // Signal the browser of change in select fields.
-      // TODO(crbug.com/40281981): Investigate if this is necessary: if it is,
-      // document the reason, if not, remove.
-      if (std::optional<FormAndField> form_and_field =
-              FindFormAndFieldForFormControlElement(
-                  element, field_data_manager(),
-                  GetCallTimerState(kOnProvisionallySaveForm),
-                  MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
-        auto& [form, field] = *form_and_field;
-        if (auto* autofill_driver = unsafe_autofill_driver()) {
-          autofill_driver->SelectControlDidChange(form, field->renderer_id());
-        }
-      }
+      OnSelectControlDidChange(element);
       break;
   }
 }
