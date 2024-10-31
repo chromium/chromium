@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -79,6 +80,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_subscriptions_.push_back(
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(webui::InitEmbeddingContext(&tab));
 
   // TODO(crbug.com/346148554): Do not create a SidePanelRegistry or
   // dependencies for non-normal browsers.

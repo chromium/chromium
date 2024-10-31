@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -78,6 +79,19 @@ class EmbedderContextData
 WEB_CONTENTS_USER_DATA_KEY_IMPL(EmbedderContextData);
 
 }  // namespace
+
+base::CallbackListSubscription InitEmbeddingContext(
+    tabs::TabInterface* tab_interface) {
+  // Set the initial browser context and configure updates for browser changes.
+  const auto update_browser_context = [](tabs::TabInterface* tab) {
+    CHECK(tab->GetBrowserWindowInterface());
+    SetBrowserWindowInterface(tab->GetContents(),
+                              tab->GetBrowserWindowInterface());
+  };
+  update_browser_context(tab_interface);
+  return tab_interface->RegisterDidInsert(
+      base::BindRepeating(update_browser_context));
+}
 
 void SetBrowserWindowInterface(
     content::WebContents* host_contents,

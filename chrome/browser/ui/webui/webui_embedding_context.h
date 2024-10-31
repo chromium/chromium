@@ -13,6 +13,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 class BrowserWindowInterface;
 
 // These utilities help manage embedding context relevant to a `host_contents`
@@ -20,6 +24,11 @@ class BrowserWindowInterface;
 // embedders that owns the WebUI.
 
 namespace webui {
+
+// Initializes the embedding context for a given `tab_interface` and registers a
+// necessary callback to keep this up to date for the life of a tab.
+base::CallbackListSubscription InitEmbeddingContext(
+    tabs::TabInterface* tab_interface);
 
 // Called by embedders to set the browser for `host_contents`.
 void SetBrowserWindowInterface(

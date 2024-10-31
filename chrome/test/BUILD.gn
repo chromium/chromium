@@ -3203,6 +3203,7 @@ if (!is_android) {
       "../browser/ui/webui/support_tool/support_tool_ui_browsertest.cc",
       "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc",
       "../browser/ui/webui/top_chrome/webui_contents_preload_manager_browsertest.cc",
+      "../browser/ui/webui/webui_embedding_context_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
       "../browser/ui/webui/webui_url_hashes_browsertest.cc",
       "../browser/ukm_worker_browsertest.cc",
