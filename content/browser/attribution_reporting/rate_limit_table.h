@@ -11,7 +11,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
@@ -185,7 +184,7 @@ class CONTENT_EXPORT RateLimitTable {
       bool is_source,
       const CommonSourceInfo& common_info,
       base::Time time,
-      const base::flat_set<net::SchemefulSite>& destination_sites)
+      base::span<const net::SchemefulSite> destination_sites)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.

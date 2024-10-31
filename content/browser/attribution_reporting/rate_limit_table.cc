@@ -651,7 +651,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AllowedForReportingOriginLimit(
       db, /*is_source=*/false, source.common_info(), attribution_info.time,
-      {net::SchemefulSite(attribution_info.context_origin)});
+      base::span_from_ref(net::SchemefulSite(attribution_info.context_origin)));
 }
 
 RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
@@ -659,7 +659,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
     bool is_source,
     const CommonSourceInfo& common_info,
     base::Time time,
-    const base::flat_set<net::SchemefulSite>& destination_sites) {
+    base::span<const net::SchemefulSite> destination_sites) {
   const AttributionConfig::RateLimitConfig& rate_limits =
       delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
