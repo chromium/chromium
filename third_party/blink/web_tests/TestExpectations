@@ -7074,7 +7074,6 @@ crbug.com/326123178 accessibility/selection-change-notification-on-selection-rem
 crbug.com/326123298 virtual/third-party-cookie-phaseout-enabled/external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Pass Timeout ]
 
 # Flaky tests: 2024-02-21
-crbug.com/40271908 virtual/fenced-frame-mparch/external/wpt/fenced-frame/navigate-ancestor-top-level-fenced-frame.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40948868 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/non-standard-pseudo-elements.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40944477 fast/events/scroll-event-handler-count.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40264022 external/wpt/webtransport/echo-large-bidirectional-streams.https.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
