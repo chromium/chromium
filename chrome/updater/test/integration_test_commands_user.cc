@@ -141,23 +141,27 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
       const std::string& app_id,
       UpdateService::Priority priority,
       const base::Version& from_version,
-      const base::Version& to_version) const override {
+      const base::Version& to_version,
+      const base::Version& updater_version) const override {
     updater::test::ExpectUpdateCheckSequence(updater_scope_, test_server,
                                              app_id, priority, from_version,
-                                             to_version);
+                                             to_version, updater_version);
   }
 
-  void ExpectUpdateSequence(ScopedServer* test_server,
-                            const std::string& app_id,
-                            const std::string& install_data_index,
-                            UpdateService::Priority priority,
-                            const base::Version& from_version,
-                            const base::Version& to_version,
-                            bool do_fault_injection,
-                            bool skip_download) const override {
+  void ExpectUpdateSequence(
+      ScopedServer* test_server,
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      const base::Version& from_version,
+      const base::Version& to_version,
+      bool do_fault_injection,
+      bool skip_download,
+      const base::Version& updater_version) const override {
     updater::test::ExpectUpdateSequence(
         updater_scope_, test_server, app_id, install_data_index, priority,
-        from_version, to_version, do_fault_injection, skip_download);
+        from_version, to_version, do_fault_injection, skip_download,
+        updater_version);
   }
 
   void ExpectUpdateSequenceBadHash(
@@ -172,17 +176,20 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         from_version, to_version);
   }
 
-  void ExpectInstallSequence(ScopedServer* test_server,
-                             const std::string& app_id,
-                             const std::string& install_data_index,
-                             UpdateService::Priority priority,
-                             const base::Version& from_version,
-                             const base::Version& to_version,
-                             bool do_fault_injection,
-                             bool skip_download) const override {
+  void ExpectInstallSequence(
+      ScopedServer* test_server,
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      const base::Version& from_version,
+      const base::Version& to_version,
+      bool do_fault_injection,
+      bool skip_download,
+      const base::Version& updater_version) const override {
     updater::test::ExpectInstallSequence(
         updater_scope_, test_server, app_id, install_data_index, priority,
-        from_version, to_version, do_fault_injection, skip_download);
+        from_version, to_version, do_fault_injection, skip_download,
+        updater_version);
   }
 
   void ExpectEnterpriseCompanionAppOTAInstallSequence(

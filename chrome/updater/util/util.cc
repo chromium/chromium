@@ -287,8 +287,9 @@ void InitLogging(UpdaterScope updater_scope) {
 #endif
 }
 
-std::string GetUpdaterUserAgent() {
-  return base::StrCat({PRODUCT_FULLNAME_STRING, " ", kUpdaterVersion});
+std::string GetUpdaterUserAgent(const base::Version& updater_version) {
+  return base::StrCat(
+      {PRODUCT_FULLNAME_STRING, " ", updater_version.GetString()});
 }
 
 // This function and the helper functions are copied from net/base/url_util.cc

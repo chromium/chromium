@@ -16,9 +16,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process_iterator.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_version.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -34,7 +36,6 @@ namespace base {
 class CommandLine;
 class TimeDelta;
 class Value;
-class Version;
 }  // namespace base
 
 namespace updater {
@@ -286,6 +287,9 @@ void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 // Gets the real updater lower version paths/versions.
 std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions();
 
+// Gets the real updater current and lower version paths/versions.
+std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
+
 // Sets up a real updater on the system given any (higher or lower) version of
 // `UpdaterSetup.exe` in `updater_path`.
 void SetupRealUpdater(UpdaterScope scope, const base::FilePath& updater_path);
@@ -399,17 +403,20 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                const std::string& app_id,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
-                               const base::Version& to_version);
+                               const base::Version& to_version,
+                               const base::Version& updater_version);
 
-void ExpectUpdateSequence(UpdaterScope scope,
-                          ScopedServer* test_server,
-                          const std::string& app_id,
-                          const std::string& install_data_index,
-                          UpdateService::Priority priority,
-                          const base::Version& from_version,
-                          const base::Version& to_version,
-                          bool do_fault_injection,
-                          bool skip_download);
+void ExpectUpdateSequence(
+    UpdaterScope scope,
+    ScopedServer* test_server,
+    const std::string& app_id,
+    const std::string& install_data_index,
+    UpdateService::Priority priority,
+    const base::Version& from_version,
+    const base::Version& to_version,
+    bool do_fault_injection,
+    bool skip_download,
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -427,7 +434,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& from_version,
                            const base::Version& to_version,
                            bool do_fault_injection,
-                           bool skip_download);
+                           bool skip_download,
+                           const base::Version& updater_version);
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
 

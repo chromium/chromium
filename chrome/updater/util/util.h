@@ -17,9 +17,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 
 class GURL;
 
@@ -27,7 +29,6 @@ namespace base {
 
 class CommandLine;
 class FilePath;
-class Version;
 
 // Enables insertion of optional `base` types. Must be in the `base` namespace
 // for insertion into gTest expectations to work.
@@ -152,7 +153,8 @@ std::optional<base::FilePath> GetLogFilePath(UpdaterScope scope);
 void InitLogging(UpdaterScope updater_scope);
 
 // Returns HTTP user-agent value.
-std::string GetUpdaterUserAgent();
+std::string GetUpdaterUserAgent(
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 // Returns a new GURL by appending the given query parameter name and the
 // value. Unsafe characters in the name and the value are escaped like
