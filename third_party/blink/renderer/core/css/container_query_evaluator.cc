@@ -195,7 +195,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(
     match_result.SetDependsOnStyleContainerQueries();
   }
   if (selects_scroll_state) {
-    match_result.SetDependsOnStateContainerQueries();
+    match_result.SetDependsOnScrollStateContainerQueries();
   }
 
   Element* starting_element =
@@ -731,7 +731,7 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
   UpdateContainerValues();
 }
 
-StyleRecalcChange ContainerQueryEvaluator::ApplyStateAndStyleChanges(
+StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
     const StyleRecalcChange& child_change,
     const ComputedStyle& old_style,
     const ComputedStyle& new_style,
@@ -744,10 +744,11 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyStateAndStyleChanges(
       case ContainerQueryEvaluator::Change::kNone:
         break;
       case ContainerQueryEvaluator::Change::kNearestContainer:
-        recalc_change = recalc_change.ForceRecalcStateContainer();
+        recalc_change = recalc_change.ForceRecalcScrollStateContainer();
         break;
       case ContainerQueryEvaluator::Change::kDescendantContainers:
-        recalc_change = recalc_change.ForceRecalcDescendantStateContainers();
+        recalc_change =
+            recalc_change.ForceRecalcDescendantScrollStateContainers();
         break;
     }
   }
@@ -798,10 +799,11 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyStateAndStyleChanges(
         case ContainerQueryEvaluator::Change::kNone:
           break;
         case ContainerQueryEvaluator::Change::kNearestContainer:
-          recalc_change = recalc_change.ForceRecalcStateContainer();
+          recalc_change = recalc_change.ForceRecalcScrollStateContainer();
           break;
         case ContainerQueryEvaluator::Change::kDescendantContainers:
-          recalc_change = recalc_change.ForceRecalcDescendantStateContainers();
+          recalc_change =
+              recalc_change.ForceRecalcDescendantScrollStateContainers();
           break;
       }
     }

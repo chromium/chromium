@@ -4238,7 +4238,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
             .EnsureContainerQueryData()
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
-        child_change = evaluator->ApplyStateAndStyleChanges(
+        child_change = evaluator->ApplyScrollStateAndStyleChanges(
             child_change, *old_style, *new_style,
             diff != ComputedStyle::Difference::kEqual);
       }

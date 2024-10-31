@@ -46,8 +46,8 @@ bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
            old_style->HighlightPseudoElementStylesDependOnContainerUnits())) ||
          (RecalcStyleContainerQueryDependent() &&
           old_style->DependsOnStyleContainerQueries()) ||
-         (RecalcStateContainerQueryDependent() &&
-          old_style->DependsOnStateContainerQueries());
+         (RecalcScrollStateContainerQueryDependent() &&
+          old_style->DependsOnScrollStateContainerQueries());
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {

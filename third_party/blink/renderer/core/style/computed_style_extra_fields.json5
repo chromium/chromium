@@ -1137,7 +1137,7 @@
       default_value: "false",
     },
     {
-      name: "DependsOnStateContainerQueries",
+      name: "DependsOnScrollStateContainerQueries",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",

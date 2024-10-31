@@ -1773,8 +1773,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.DependsOnStyleContainerQueries()) {
     builder.SetDependsOnStyleContainerQueries(true);
   }
-  if (match_result.DependsOnStateContainerQueries()) {
-    builder.SetDependsOnStateContainerQueries(true);
+  if (match_result.DependsOnScrollStateContainerQueries()) {
+    builder.SetDependsOnScrollStateContainerQueries(true);
   }
   if (match_result.FirstLineDependsOnSizeContainerQueries()) {
     builder.SetFirstLineDependsOnSizeContainerQueries(true);

@@ -91,7 +91,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // To be called during style recalc to make any necessary invalidation of
   // container queries based on computed style changes on the container.
   // style_changed is true if there is a diff between old_style and new_style.
-  StyleRecalcChange ApplyStateAndStyleChanges(
+  StyleRecalcChange ApplyScrollStateAndStyleChanges(
       const StyleRecalcChange& child_change,
       const ComputedStyle& old_style,
       const ComputedStyle& new_style,
