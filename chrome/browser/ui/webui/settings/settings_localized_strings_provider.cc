@@ -479,6 +479,11 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  std::string managed_sublabel_3 =
+      l10n_util::GetStringFUTF8(IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_SUBLABEL_3,
+                                {chrome::kAiSettingsLearnMorePageManagedUrl});
+  html_source->AddString("aiPageMainManagedSublabel3", managed_sublabel_3);
+
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
   html_source->AddString("historySearchLearnMoreManagedUrl",
