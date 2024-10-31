@@ -11,9 +11,12 @@
 
 #include "base/component_export.h"
 #include "base/containers/linked_list.h"
+#include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "net/base/network_isolation_key.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -72,6 +75,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchCache final {
   // created by Emplace() and not already erased.
   void Erase(PrefetchURLLoaderClient* client);
 
+  // Erases `client` after `kEraseGraceTime` has expired. The purpose is to
+  // permit a new transaction from a renderer to reach the HttpCache code before
+  // this client is erased, so that it can take over the cache lock if possible,
+  // avoiding the entry being truncated.
+  //
+  // This is a temporary feature to maximise the chances of reusing the disk
+  // cache entry when the feature kNetworkContextPrefetchUseMatches is not
+  // enabled.
+  //
+  // TODO(crbug.com/342445996): Remove this method and associated code after
+  // kNetworkContextPrefetchUseMatches has been permanently enabled.
+  void DelayedErase(PrefetchURLLoaderClient* client);
+
  private:
   // This is not a std::list because we want to be able to remove an item from
   // the cache by pointer.
@@ -88,8 +104,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchCache final {
   using ClientStorage = std::set<std::unique_ptr<PrefetchURLLoaderClient>,
                                  base::UniquePtrComparator>;
 
+  struct PendingErasure {
+    // The client is referred to by its key rather than a pointer, so that there
+    // is no dangling reference if something else erases the client first.
+    net::NetworkIsolationKey nik;
+    GURL url;
+    base::TimeTicks erase_time;
+  };
+
+  using EraseQueue = base::queue<PendingErasure>;
+
   // Deletes any expired cache entries and then restarts the timer if needed.
   void OnTimer();
+
+  // Deletes anything in `delayed_erase_queue_` that is due for deletion, and
+  // then schedules another call if the queue is still non-empty.
+  void DoDelayedErases();
 
   // Removes and deletes the oldest entry from the cache.
   void EraseOldest();
@@ -105,6 +135,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchCache final {
   // should be the current time. It is optional because some callers have it
   // handy and some don't.
   void StartTimer(base::TimeTicks now = base::TimeTicks::Now());
+
+  // Schedules a task to call DoDelayedErases() the next time something in
+  // `delayed_erase_queue_` needs to be erased. `now` should be the return value
+  // from a recent call to `base::TimeTicks::Now()`.
+  void SchedulePendingErases(base::TimeTicks now);
+
+  // Performing a find() on `map_` is sufficiently messy that it's worth
+  // encapsulating in a separate method.
+  MapType::iterator FindInMap(const net::NetworkIsolationKey& nik,
+                              const GURL& url);
 
   // Storage for all the PrefetchURLLoaderClients created by this object,
   // regardless if Consume() has been called for them or not. `list_` and `map_`
@@ -124,8 +164,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchCache final {
   // `list_` will expire.
   base::OneShotTimer expiry_timer_;
 
+  // Queue for DelayedErase(). Entries will be deleted when their `erase_time`
+  // is reached.
+  EraseQueue delayed_erase_queue_;
+
   // Initialized from kNetworkContextPrefetchMaxLoaders feature flag.
   const size_t max_size_;
+
+  // Initialized from "erase_grace_time" parameter to "NetworkContextPrefetch"
+  // feature.
+  const base::TimeDelta erase_grace_time_;
+
+  base::WeakPtrFactory<PrefetchCache> weak_factory_{this};
 };
 
 }  // namespace network

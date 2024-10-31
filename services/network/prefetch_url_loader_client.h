@@ -60,11 +60,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchURLLoaderClient final
   // only be called once.
   mojo::PendingRemote<mojom::URLLoaderClient> BindNewPipeAndPassRemote();
 
-  // Sets `real_client_` and replays any callbacks that have been received up
-  // until this point. Once this has been called, the object becomes
-  // self-owning and will delete itself if it loses connection to `real_client_`
-  // or the URLLoader. May delete `this`.
-  void SetClient(mojo::PendingRemote<mojom::URLLoaderClient> client);
+  // Returns true if `request_` is similar enough to `real_request_` that it can
+  // be used to serve it.
+  bool Matches(const ResourceRequest& real_request) const;
+
+  // Binds this response to a request from a client. Sets `real_client_` and
+  // replays any callbacks that have been received up until this point. Once
+  // this has been called, the object's lifetime is tied to the remotes and it
+  // will instruct PrefetchCache to delete it if it loses connection to
+  // `real_client_` or the URLLoader. Calling Consume() may delete `this`.
+  void Consume(mojo::PendingReceiver<mojom::URLLoader> loader,
+               mojo::PendingRemote<mojom::URLLoaderClient> client);
 
   // Implementation of mojom::URLLoaderClient. Each of these methods forwards
   // the arguments in `real_client_` if it has been set, otherwise caches the
@@ -110,7 +116,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchURLLoaderClient final
   // This is initialized at construction.
   mojo::Receiver<mojom::URLLoaderClient> receiver_{this};
 
-  // This is initialized when the request is started.
+  // This is initialized when the request is started. It is unbound again when
+  // Consume() is called.
   mojo::Remote<mojom::URLLoader> url_loader_;
 
   // A pointer to the PrefetchCache object that created and owns us.

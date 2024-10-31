@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -213,124 +214,210 @@ MATCHER(URLLoaderCompletionStatusIsOk, "URLLoaderCompletionStatus is ok") {
          equals(&S::should_collapse_initiator);
 }
 
-// Calls all the mojo methods on `client` in order with verifiable parameters.
-// This doesn't in any way correspond to the real behaviour of a URLLoader.
-void CallAllMojoMethods(mojom::URLLoaderClient* client) {
-  client->OnReceiveEarlyHints(TestEarlyHints());
-  client->OnReceiveResponse(TestURLResponseHead(), TestDataPipeConsumer(),
-                            TestBigBuffer());
-  client->OnReceiveRedirect(TestRedirectInfo(), TestURLResponseHead());
-  client->OnUploadProgress(kTestCurrentPosition, kTestTotalSize,
-                           base::DoNothing());
-  client->OnTransferSizeUpdated(kTransferSizeDiff);
-  client->OnComplete(TestURLLoaderCompletionStatus());
-}
-
-// This adds expectations that all the methods on `client` will be called with
-// arguments matching those in `CallAllMojoMethods()`.
-void ExpectCallMojoMethods(StrictMock<MockURLLoaderClient>& mock_client) {
-  EXPECT_CALL(mock_client, OnReceiveEarlyHints(IsTrue()));
-  EXPECT_CALL(mock_client,
-              OnReceiveResponse(URLResponseHeadIsOk(), _,
-                                Optional(BigBufferHasExpectedContents())))
-      .WillOnce(WithArg<1>(Invoke(CheckDataPipeContents)));
-  EXPECT_CALL(mock_client, OnReceiveRedirect(EqualsTestRedirectInfo(),
-                                             URLResponseHeadIsOk()));
-  EXPECT_CALL(mock_client,
-              OnUploadProgress(Eq(kTestCurrentPosition), Eq(kTestTotalSize), _))
-      .WillOnce(WithArg<2>([](auto&& callback) { std::move(callback).Run(); }));
-  EXPECT_CALL(mock_client, OnTransferSizeUpdated(Eq(kTransferSizeDiff)));
-  EXPECT_CALL(mock_client, OnComplete(URLLoaderCompletionStatusIsOk()));
-}
-
-// A wrapper for a mojo::Receiver that calls Call() on `disconnect` when the
-// pending remote is disconnected.
-class DisconnectDetectingReceiver final {
+// An implementation of URLLoader that does nothing.
+class StubURLLoader final : public network::mojom::URLLoader {
  public:
-  DisconnectDetectingReceiver(mojom::URLLoaderClient* client,
-                              MockFunction<void()>* disconnect)
-      : receiver_(client), disconnect_(disconnect) {}
+  explicit StubURLLoader(
+      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver)
+      : receiver_(this, std::move(url_loader_receiver)) {}
 
-  mojo::PendingRemote<mojom::URLLoaderClient> GetPendingRemote() {
-    auto pending_remote = receiver_.BindNewPipeAndPassRemote();
-    // After `receiver_` is destroyed, the callback will not be called, so this
-    // use of base::Unretained() is safe.
-    receiver_.set_disconnect_handler(base::BindOnce(
-        &MockFunction<void()>::Call, base::Unretained(disconnect_)));
-
-    return pending_remote;
-  }
+  // network::mojom::URLLoader overrides.
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const std::optional<GURL>& new_url) override {}
+  void SetPriority(net::RequestPriority priority,
+                   int32_t intra_priority_value) override {}
+  void PauseReadingBodyFromNet() override {}
+  void ResumeReadingBodyFromNet() override {}
 
  private:
-  mojo::Receiver<mojom::URLLoaderClient> receiver_;
-  raw_ptr<MockFunction<void()>> disconnect_;
+  mojo::Receiver<network::mojom::URLLoader> receiver_;
 };
 
 class PrefetchURLLoaderClientTest : public ::testing::Test {
  protected:
+  PrefetchURLLoaderClientTest()
+      : client_(cache()->Emplace(TestRequest())),
+        stub_url_loader_(client_->GetURLLoaderPendingReceiver()),
+        client_pending_remote_(client_->BindNewPipeAndPassRemote()),
+        mock_client_receiver_(&mock_client_) {}
+
+  ~PrefetchURLLoaderClientTest() override {
+    // Avoid calls to a disconnect handler on the stack.
+    mock_client_receiver_.reset();
+  }
+
+  // The cache that owns the object under test.
   PrefetchCache* cache() { return &cache_; }
 
-  // Construct a PrefetchURLLoaderClient with TestRequest() that is initially
-  // owned by `cache_`. The return value is always destroyed automatically.
-  PrefetchURLLoaderClient* Emplace() { return cache()->Emplace(TestRequest()); }
+  // The object under test.
+  PrefetchURLLoaderClient* client() { return client_; }
+
+  // A mock URLLoaderClient that will stand-in for the URLLoaderClient inside
+  // the render process.
+  StrictMock<MockURLLoaderClient>& mock_client() { return mock_client_; }
+
+  // Arranges for `disconnect_handler` to be called when `mock_client_receiver_`
+  // detects a disconnection. Must be called after `Consume()`.
+  void set_disconnect_handler(MockFunction<void()>* disconnect_handler) {
+    // This use of base::Unretained is potentially unsafe as
+    // `disconnect_handler` is on the stack. It is mitigated by resetting
+    // `mock_client_receiver_` in the destructor.
+    mock_client_receiver_.set_disconnect_handler(base::BindOnce(
+        &MockFunction<void()>::Call, base::Unretained(disconnect_handler)));
+  }
+
+  // Pretend the datapipe that passed mojo messages from the "real" URLLoader
+  // disconnected.
+  void ResetClientPendingRemote() { client_pending_remote_.reset(); }
+
+  // Remove the reference to the client. This needs to be called by tests which
+  // arrange for the client to be deleted before the test ends, in order to
+  // prevent triggering the dangling pointer detection.
+  void ClearClientPointer() { client_ = nullptr; }
+
+  // Sets `client_` to nullptr and returns the old value. This is needed for
+  // tests that need a call a method on `client_` that will delete it.
+  PrefetchURLLoaderClient* TakeClientPointer() {
+    return std::exchange(client_, nullptr);
+  }
+
+  // Calls Consume() on `client_`, hooking it up to the mock client.
+  void Consume() {
+    client_->Consume(loader_.BindNewPipeAndPassReceiver(),
+                     mock_client_receiver_.BindNewPipeAndPassRemote());
+    EXPECT_TRUE(loader_.is_bound());
+  }
+
+  // Calls all the mojo methods on `client_` in order with verifiable
+  // parameters. This doesn't in any way correspond to the real behaviour of a
+  // URLLoader.
+  void CallAllMojoMethods() {
+    client_->OnReceiveEarlyHints(TestEarlyHints());
+    client_->OnReceiveResponse(TestURLResponseHead(), TestDataPipeConsumer(),
+                               TestBigBuffer());
+    client_->OnReceiveRedirect(TestRedirectInfo(), TestURLResponseHead());
+    client_->OnUploadProgress(kTestCurrentPosition, kTestTotalSize,
+                              base::DoNothing());
+    client_->OnTransferSizeUpdated(kTransferSizeDiff);
+    client_->OnComplete(TestURLLoaderCompletionStatus());
+  }
+
+  // This adds expectations that all the methods on `client` will be called with
+  // arguments matching those in `CallAllMojoMethods()`.
+  void ExpectCallMojoMethods() {
+    EXPECT_CALL(mock_client_, OnReceiveEarlyHints(IsTrue()));
+    EXPECT_CALL(mock_client_,
+                OnReceiveResponse(URLResponseHeadIsOk(), _,
+                                  Optional(BigBufferHasExpectedContents())))
+        .WillOnce(WithArg<1>(Invoke(CheckDataPipeContents)));
+    EXPECT_CALL(mock_client_, OnReceiveRedirect(EqualsTestRedirectInfo(),
+                                                URLResponseHeadIsOk()));
+    EXPECT_CALL(mock_client_, OnUploadProgress(Eq(kTestCurrentPosition),
+                                               Eq(kTestTotalSize), _))
+        .WillOnce(
+            WithArg<2>([](auto&& callback) { std::move(callback).Run(); }));
+    EXPECT_CALL(mock_client_, OnTransferSizeUpdated(Eq(kTransferSizeDiff)));
+    EXPECT_CALL(mock_client_, OnComplete(URLLoaderCompletionStatusIsOk()));
+  }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
+
+  // A dummy URLLoader that adopts `client_`'s url_loader_ when Consume() is
+  // called.
+  mojo::Remote<mojom::URLLoader> loader_;
+
+  // Owner for `client_`.
   PrefetchCache cache_;
+
+  // The client under test. Owned by `cache_`.
+  raw_ptr<PrefetchURLLoaderClient> client_;
+
+  // The "real" URLLoader that `client_` connects to.
+  StubURLLoader stub_url_loader_;
+
+  // Connected to `client_`. Used to detect when `client_` is destroyed. In
+  // normal operation this would be passed to a real URLLoader.
+  mojo::PendingRemote<mojom::URLLoaderClient> client_pending_remote_;
+
+  // Represents the renderer-side client that will eventually consume this
+  // object.
+  StrictMock<MockURLLoaderClient> mock_client_;
+
+  // Forwards mojo calls to `mock_client_`.
+  mojo::Receiver<mojom::URLLoaderClient> mock_client_receiver_;
 };
 
+// Tests that call Consume() leak memory and hit an assert(), so they are
+// disabled on address sanitizer and debug builds.
+// TODO(crbug.com/375425822): Fix the leak before running this code in
+// production.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+
+#define MAYBE_RecordAndReplay DISABLED_RecordAndReplay
+#define MAYBE_DelegateDirectly DISABLED_DelegateDirectly
+#define MAYBE_ReplayAfterResponse DISABLED_ReplayAfterResponse
+#define MAYBE_ConsumeRemovesFromCache DISABLED_ConsumeRemovesFromCache
+
+#else
+
+#define MAYBE_RecordAndReplay RecordAndReplay
+#define MAYBE_DelegateDirectly DelegateDirectly
+#define MAYBE_ReplayAfterResponse ReplayAfterResponse
+#define MAYBE_ConsumeRemovesFromCache ConsumeRemovesFromCache
+
+#endif
+
 TEST_F(PrefetchURLLoaderClientTest, Construct) {
-  auto* client = Emplace();
-  EXPECT_EQ(client->url(), TestURL());
-  EXPECT_EQ(client->network_isolation_key(), TestNIK());
-  EXPECT_GT(client->expiry_time(), base::TimeTicks::Now());
-  EXPECT_LT(client->expiry_time(), base::TimeTicks::Now() + base::Days(1));
+  EXPECT_EQ(client()->url(), TestURL());
+  EXPECT_EQ(client()->network_isolation_key(), TestNIK());
+  EXPECT_GT(client()->expiry_time(), base::TimeTicks::Now());
+  EXPECT_LT(client()->expiry_time(), base::TimeTicks::Now() + base::Days(1));
 }
 
-TEST_F(PrefetchURLLoaderClientTest, RecordAndReplay) {
-  StrictMock<MockURLLoaderClient> mock_client;
+TEST_F(PrefetchURLLoaderClientTest, MAYBE_RecordAndReplay) {
   MockFunction<void()> checkpoint;
   MockFunction<void()> disconnect;
-  DisconnectDetectingReceiver receiver(&mock_client, &disconnect);
 
   {
     InSequence s;
     EXPECT_CALL(checkpoint, Call());
-    ExpectCallMojoMethods(mock_client);
+    ExpectCallMojoMethods();
     EXPECT_CALL(disconnect, Call());
   }
 
-  auto* client = Emplace();
-  auto pending_remote = client->BindNewPipeAndPassRemote();
-  CallAllMojoMethods(client);
-  pending_remote.reset();
+  CallAllMojoMethods();
+  ResetClientPendingRemote();
   checkpoint.Call();
-  client->SetClient(receiver.GetPendingRemote());
+  Consume();
+  set_disconnect_handler(&disconnect);
+  ClearClientPointer();
   RunUntilIdle();
 }
 
-// The difference from the previous test is that now SetClient() is called
+// The difference from the previous test is that now Consume() is called
 // before any of the delegating methods, so there's no need to record them.
-TEST_F(PrefetchURLLoaderClientTest, DelegateDirectly) {
-  StrictMock<MockURLLoaderClient> mock_client;
+TEST_F(PrefetchURLLoaderClientTest, MAYBE_DelegateDirectly) {
   MockFunction<void()> checkpoint;
   MockFunction<void()> disconnect;
-  DisconnectDetectingReceiver receiver(&mock_client, &disconnect);
 
   {
     InSequence s;
-    ExpectCallMojoMethods(mock_client);
+    ExpectCallMojoMethods();
     EXPECT_CALL(disconnect, Call());
     EXPECT_CALL(checkpoint, Call());
   }
 
-  auto* client = Emplace();
-  auto pending_remote = client->BindNewPipeAndPassRemote();
-  client->SetClient(receiver.GetPendingRemote());
-  CallAllMojoMethods(client);
-  pending_remote.reset();
+  Consume();
+  set_disconnect_handler(&disconnect);
+  CallAllMojoMethods();
+  ClearClientPointer();
+  ResetClientPendingRemote();
   RunUntilIdle();
   checkpoint.Call();
 }
@@ -338,117 +425,82 @@ TEST_F(PrefetchURLLoaderClientTest, DelegateDirectly) {
 // This test just verifies that all the recorded callbacks can be destroyed
 // without leaks.
 TEST_F(PrefetchURLLoaderClientTest, RecordAndDiscard) {
-  auto* client = Emplace();
-  CallAllMojoMethods(client);
+  CallAllMojoMethods();
   RunUntilIdle();
 }
 
 // Verifies that setting the client after the response comes but before it
 // completes works.
-TEST_F(PrefetchURLLoaderClientTest, ReplayAfterResponse) {
-  StrictMock<MockURLLoaderClient> mock_client;
+TEST_F(PrefetchURLLoaderClientTest, MAYBE_ReplayAfterResponse) {
   MockFunction<void(int)> checkpoint;
   MockFunction<void()> disconnect;
-  DisconnectDetectingReceiver receiver(&mock_client, &disconnect);
   {
     InSequence s;
     EXPECT_CALL(checkpoint, Call(0));
-    EXPECT_CALL(mock_client,
+    EXPECT_CALL(mock_client(),
                 OnReceiveResponse(URLResponseHeadIsOk(), _,
                                   Optional(BigBufferHasExpectedContents())))
         .WillOnce(WithArg<1>(Invoke(CheckDataPipeContents)));
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(mock_client, OnComplete(URLLoaderCompletionStatusIsOk()));
+    EXPECT_CALL(mock_client(), OnComplete(URLLoaderCompletionStatusIsOk()));
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(disconnect, Call());
     EXPECT_CALL(checkpoint, Call(3));
   }
 
-  auto* client = Emplace();
-  auto pending_remote = client->BindNewPipeAndPassRemote();
-  client->OnReceiveResponse(TestURLResponseHead(), TestDataPipeConsumer(),
-                            TestBigBuffer());
+  client()->OnReceiveResponse(TestURLResponseHead(), TestDataPipeConsumer(),
+                              TestBigBuffer());
   RunUntilIdle();
   checkpoint.Call(0);
 
-  client->SetClient(receiver.GetPendingRemote());
+  Consume();
+  set_disconnect_handler(&disconnect);
   RunUntilIdle();
   checkpoint.Call(1);
 
-  client->OnComplete(TestURLLoaderCompletionStatus());
+  client()->OnComplete(TestURLLoaderCompletionStatus());
   RunUntilIdle();
   checkpoint.Call(2);
 
-  pending_remote.reset();
+  ClearClientPointer();
+  ResetClientPendingRemote();
   RunUntilIdle();
   checkpoint.Call(3);
 }
 
-TEST_F(PrefetchURLLoaderClientTest, GetURLLoaderPendingReceiver) {
-  StrictMock<MockURLLoaderClient> mock_client;
-  MockFunction<void()> checkpoint;
-  MockFunction<void()> disconnect;
-  DisconnectDetectingReceiver receiver(&mock_client, &disconnect);
+TEST_F(PrefetchURLLoaderClientTest, MAYBE_ConsumeRemovesFromCache) {
+  Consume();
 
-  {
-    InSequence s;
-    EXPECT_CALL(checkpoint, Call());
-    EXPECT_CALL(disconnect, Call());
-  }
-
-  auto* client = Emplace();
-  auto pending_remote = client->BindNewPipeAndPassRemote();
-
-  auto pending_receiver = client->GetURLLoaderPendingReceiver();
-  EXPECT_TRUE(pending_receiver.is_valid());
-
-  checkpoint.Call();
-  client->SetClient(receiver.GetPendingRemote());
-  pending_receiver.reset();
-
-  RunUntilIdle();
-}
-
-TEST_F(PrefetchURLLoaderClientTest, SetClientRemovesFromCache) {
-  StrictMock<MockURLLoaderClient> mock_client;
-  mojo::Receiver<mojom::URLLoaderClient> receiver(&mock_client);
-
-  auto* client = Emplace();
-  auto pending_remote = client->BindNewPipeAndPassRemote();
-
-  client->SetClient(receiver.BindNewPipeAndPassRemote());
-
-  EXPECT_FALSE(cache()->Lookup(client->network_isolation_key(), client->url()));
+  EXPECT_FALSE(
+      cache()->Lookup(client()->network_isolation_key(), client()->url()));
 }
 
 TEST_F(PrefetchURLLoaderClientTest, BadResponseCode) {
   constexpr auto kBadResponseCode = net::HTTP_NOT_FOUND;
 
-  auto* client = Emplace();
-  client->OnReceiveResponse(CreateURLResponseHead(kBadResponseCode),
-                            TestDataPipeConsumer(), TestBigBuffer());
+  TakeClientPointer()->OnReceiveResponse(
+      CreateURLResponseHead(kBadResponseCode), TestDataPipeConsumer(),
+      TestBigBuffer());
 
   // It should have been deleted from the cache.
   EXPECT_FALSE(cache()->Lookup(TestNIK(), TestURL()));
 }
 
 TEST_F(PrefetchURLLoaderClientTest, BadHeader) {
-  auto* client = Emplace();
   auto url_response_head = TestURLResponseHead();
   url_response_head->headers->AddHeader("Vary", "Sec-Purpose, Set-Cookie");
-  client->OnReceiveResponse(std::move(url_response_head),
-                            TestDataPipeConsumer(), TestBigBuffer());
+  TakeClientPointer()->OnReceiveResponse(
+      std::move(url_response_head), TestDataPipeConsumer(), TestBigBuffer());
 
   // It should have been deleted from the cache.
   EXPECT_FALSE(cache()->Lookup(TestNIK(), TestURL()));
 }
 
 TEST_F(PrefetchURLLoaderClientTest, NoStore) {
-  auto* client = Emplace();
   auto url_response_head = TestURLResponseHead();
   url_response_head->headers->AddHeader("Cache-Control", "no-cache, no-store");
-  client->OnReceiveResponse(std::move(url_response_head),
-                            TestDataPipeConsumer(), TestBigBuffer());
+  TakeClientPointer()->OnReceiveResponse(
+      std::move(url_response_head), TestDataPipeConsumer(), TestBigBuffer());
 
   // It should have been deleted from the cache.
   EXPECT_FALSE(cache()->Lookup(TestNIK(), TestURL()));

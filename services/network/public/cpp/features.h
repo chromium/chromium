@@ -177,11 +177,20 @@ BASE_DECLARE_FEATURE(kAvoidResourceRequestCopies);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDocumentIsolationPolicy);
 
+// To actually use the prefetch results, it's also necessary to enable
+// kNetworkContextPrefetchUseCache, below.
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kNetworkContextPrefetch);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders;
+
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<base::TimeDelta>
+    kNetworkContextPrefetchEraseGraceTime;
+
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kNetworkContextPrefetchUseMatches);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kTreatNullIPAsPublicAddressSpace);
