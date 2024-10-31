@@ -109,11 +109,12 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
 };
 
 // TODO(crbug.com/366547977): CrOS doesn't use our nav capturing implementation.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/376641667): Flaky on Mac.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_FocusExisting DISABLED_FocusExisting
 #else
 #define MAYBE_FocusExisting FocusExisting
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                        MAYBE_FocusExisting) {
   std::pair<Browser*, content::WebContents*> pair = SetupAndLaunchApp(
