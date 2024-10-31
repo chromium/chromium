@@ -548,10 +548,13 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
 
   void SetUpOnMainThread() override {
     FeaturePromoLifecycleUiTest::SetUpOnMainThread();
-    CHECK(embedded_test_server()->Start());
+    embedded_https_test_server().SetCertHostnames({kApp1Host, kApp2Host});
+    CHECK(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
-    app1_id_ = InstallPWA(embedded_test_server()->GetURL(kApp1Host, kAppPath));
-    app2_id_ = InstallPWA(embedded_test_server()->GetURL(kApp2Host, kAppPath));
+    app1_id_ =
+        InstallPWA(embedded_https_test_server().GetURL(kApp1Host, kAppPath));
+    app2_id_ =
+        InstallPWA(embedded_https_test_server().GetURL(kApp2Host, kAppPath));
     EXPECT_NE(app1_id_, app2_id_);
   }
 
@@ -617,6 +620,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
   Browser* const app_browser2 = LaunchWebAppBrowser(app2_id_);
   RunTestSequenceInContext(
       app_browser->window()->GetElementContext(),
+      WaitForShow(kToolbarAppMenuButtonElementId),
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}),
       WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(),
       InContext(

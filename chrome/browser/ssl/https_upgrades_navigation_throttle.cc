@@ -151,9 +151,7 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
   if ((handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK &&
        tab_helper->has_failed_upgrade(handle->GetURL())) &&
       !handle->GetURL().SchemeIsCryptographic()) {
-    if (IsInterstitialEnabled(interstitial_state_) &&
-        !ShouldExcludeUrlFromInterstitial(interstitial_state_,
-                                          handle->GetURL())) {
+    if (IsInterstitialEnabled(interstitial_state_)) {
       security_interstitials::https_only_mode::RecordInterstitialReason(
           interstitial_state_);
 
@@ -214,9 +212,7 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
 
   if (tab_helper->is_navigation_fallback() &&
       !handle->GetURL().SchemeIsCryptographic() &&
-      IsInterstitialEnabled(interstitial_state_) &&
-      !ShouldExcludeUrlFromInterstitial(interstitial_state_,
-                                        handle->GetURL())) {
+      IsInterstitialEnabled(interstitial_state_)) {
     security_interstitials::https_only_mode::RecordInterstitialReason(
         interstitial_state_);
 

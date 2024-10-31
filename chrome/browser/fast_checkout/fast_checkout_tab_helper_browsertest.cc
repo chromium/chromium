@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,7 +85,7 @@ class FastCheckoutTabHelperBrowserTest : public AndroidBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(
         GetActiveWebContents(),
         embedded_test_server()->GetURL(url.host(), url.path())));
-    base::RunLoop().RunUntilIdle();
+    content::RunAllTasksUntilIdle();
   }
 
  private:
@@ -98,8 +99,11 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_NoShoppingURL_NoFetchCapabilitiesCall) {
   // No availability request was started or the `StrickMock` would have failed.
   GURL no_shopping_url("http://www.example.com/empty.html");
-  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateToUrl(no_shopping_url);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -107,8 +111,11 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_CheckoutURL_MakesFetchCapabilitiesCall) {
   GURL shopping_url("http://www.example2.co.uk/checkout.html");
   EXPECT_CALL(*fetcher(), FetchCapabilities);
-  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateToUrl(shopping_url);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -116,8 +123,11 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_CartShoppingURL_MakesFetchCapabilitiesCall) {
   GURL shopping_cart_url("http://www.example2.co.uk/cart.html");
   EXPECT_CALL(*fetcher(), FetchCapabilities);
-  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateToUrl(shopping_cart_url);
+  run_loop.Run();
 }
 
 }  // namespace
