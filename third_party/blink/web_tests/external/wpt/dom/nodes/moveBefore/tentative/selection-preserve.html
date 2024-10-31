@@ -134,5 +134,28 @@ promise_test(async t => {
   assert_equals(getSelection().focusNode, childParagraph2.firstChild);
   assert_false(getSelection().getRangeAt(0).intersectsNode(parentParagraph));
 }, "moveBefore focus node moved up to shrink selection and exclude nodes");
+
+// Selection focus node is moved upwards in the DOM, shrinking the selection and
+// excluding once-intersecting nodes.
+promise_test(async t => {
+  document.body.innerHTML = `
+    <ul id=list>
+      <li id=i1>One</li>
+      <li id=i2>Two</li>
+      <li id=i3>Three</li>
+      <li id=i4>Four</li>
+    </ul>
+  `;
+  getSelection().removeAllRanges();
+  await select_range(t, i3, i4);
+
+  // Move the last list item to the position before the first. This pulls the
+  // range upwards, suddenly intersecting both `i2` and `i3`.
+  list.moveBefore(i4, i1);
+  assert_equals(getSelection().focusNode, i4.firstChild);
+  assert_equals(getSelection().anchorNode, i3.firstChild);
+  assert_true(getSelection().getRangeAt(0).intersectsNode(i2));
+  assert_true(getSelection().getRangeAt(0).intersectsNode(i3));
+}, "moveBefore selection is preserved when directionality changes");
 </script>
 </html>
