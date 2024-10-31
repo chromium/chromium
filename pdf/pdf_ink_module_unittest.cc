@@ -128,10 +128,6 @@ constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
         {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
     });
 
-base::FilePath GetInkTestDataFilePath(std::string_view filename) {
-  return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
-}
-
 // Matcher for ink::Stroke objects against their expected brush and inputs.
 MATCHER_P(InkStrokeEq, expected_brush, "") {
   const auto& [actual_stroke, expected_inputs] = arg;

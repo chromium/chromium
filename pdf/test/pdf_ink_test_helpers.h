@@ -7,8 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,6 +63,9 @@ MATCHER_P6(InkAffineTransformEq,
          Matches(FloatEq(expected_e))(arg.E()) &&
          Matches(FloatEq(expected_f))(arg.F());
 }
+
+// Generate the path for test files specific to Ink.
+base::FilePath GetInkTestDataFilePath(std::string_view filename);
 
 }  // namespace chrome_pdf
 
