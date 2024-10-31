@@ -73,11 +73,6 @@ std::unique_ptr<PdfInkBrush> CreateTestBrush() {
                                        /*size=*/4.0f);
 }
 
-base::FilePath GetReferenceFilePath(std::string_view test_filename) {
-  return base::FilePath(FILE_PATH_LITERAL("pdfium_ink"))
-      .AppendASCII(test_filename);
-}
-
 }  // namespace
 
 using PDFiumInkWriterTest = PDFiumTestBase;
@@ -106,8 +101,8 @@ TEST_P(PDFiumInkWriterTest, Basic) {
   ASSERT_TRUE(!saved_pdf_data.empty());
 
   CheckPdfRendering(saved_pdf_data,
-                    /*page_number=*/0, gfx::Size(200, 200),
-                    GetReferenceFilePath("basic.png"));
+                    /*page_index=*/0, gfx::Size(200, 200),
+                    GetInkTestDataFilePath("ink_writer_basic.png"));
 }
 
 TEST_P(PDFiumInkWriterTest, EmptyStroke) {
