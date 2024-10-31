@@ -88,36 +88,6 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
     if (name == "ReloadPageBubble") {
       ClickExtensionsMenuButton();
       TriggerSingleExtensionButton();
-    } else if (ui_test_name_ == "UninstallDialog_Accept" ||
-               ui_test_name_ == "UninstallDialog_Cancel") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
-
-      LoadTestExtension("extensions/uitest/long_name");
-      LoadTestExtension("extensions/uitest/window_open");
-
-      // Without the uninstall dialog the icon should now be invisible.
-      EXPECT_FALSE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
-      EXPECT_FALSE(
-          container->GetViewForId(extensions()[0]->id())->GetVisible());
-
-      // Trigger uninstall dialog.
-      views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                           "ExtensionUninstallDialog");
-      extensions::ExtensionContextMenuModel menu_model(
-          extensions()[0].get(), browser(),
-          /*is_pinned=*/true, nullptr,
-          /*can_show_icon_in_toolbar=*/false,
-          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
-      menu_model.ExecuteCommand(
-          extensions::ExtensionContextMenuModel::UNINSTALL, 0);
-      ASSERT_TRUE(waiter.WaitIfNeededAndGet());
-    } else if (ui_test_name_ == "InstallDialog") {
-      LoadTestExtension("extensions/uitest/long_name");
-      LoadTestExtension("extensions/uitest/window_open");
-
-      // Trigger post-install dialog.
-      ExtensionInstallUI::ShowBubble(extensions()[0], browser(), SkBitmap());
     } else {
       ClickExtensionsMenuButton();
       ASSERT_TRUE(ExtensionsMenuView::GetExtensionsMenuViewForTesting());
@@ -140,79 +110,9 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
           extensions()[0]->id()));
       EXPECT_EQ(std::nullopt, container->GetPoppedOutActionId());
       EXPECT_FALSE(ExtensionsMenuView::IsShowing());
-    } else if (ui_test_name_ == "UninstallDialog_Accept" ||
-               ui_test_name_ == "UninstallDialog_Cancel" ||
-               ui_test_name_ == "InstallDialog") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
-      EXPECT_TRUE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
-      EXPECT_TRUE(container->GetViewForId(extensions()[0]->id())->GetVisible());
     }
 
     return true;
-  }
-
-  void DismissUi() override {
-    if (ui_test_name_ == "UninstallDialog_Accept" ||
-        ui_test_name_ == "UninstallDialog_Cancel") {
-      DismissUninstallDialog();
-      return;
-    }
-
-    if (ui_test_name_ == "InstallDialog") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
-      views::DialogDelegate* const install_bubble =
-          container->GetViewForId(extensions()[0]->id())
-              ->GetProperty(views::kAnchoredDialogKey);
-      ASSERT_TRUE(install_bubble);
-      install_bubble->GetWidget()->Close();
-      return;
-    }
-
-    // Use default implementation for other tests.
-    ExtensionsToolbarUITest::DismissUi();
-  }
-
-  void DismissUninstallDialog() {
-    ExtensionsToolbarContainer* const container =
-        GetExtensionsToolbarContainer();
-    // Accept or cancel the dialog.
-    views::DialogDelegate* const uninstall_bubble =
-        container->GetViewForId(extensions()[0]->id())
-            ->GetProperty(views::kAnchoredDialogKey);
-    ASSERT_TRUE(uninstall_bubble);
-    views::test::WidgetDestroyedWaiter destroyed_waiter(
-        uninstall_bubble->GetWidget());
-    if (ui_test_name_ == "UninstallDialog_Accept") {
-      uninstall_bubble->AcceptDialog();
-    } else {
-      uninstall_bubble->CancelDialog();
-    }
-    destroyed_waiter.Wait();
-
-    if (ui_test_name_ == "UninstallDialog_Accept") {
-      // Accepting the dialog should remove the item from the container and the
-      // ExtensionRegistry.
-      EXPECT_EQ(nullptr, container->GetActionForId(extensions()[0]->id()));
-      EXPECT_EQ(nullptr, extensions::ExtensionRegistry::Get(profile())
-                             ->GetInstalledExtension(extensions()[0]->id()));
-    } else {
-      // After dismissal the icon should become invisible.
-      // Wait for animations to finish.
-      views::test::WaitForAnimatingLayoutManager(
-          GetExtensionsToolbarContainer());
-
-      // The extension should still be present in the ExtensionRegistry (not
-      // uninstalled) when the uninstall dialog is dismissed.
-      EXPECT_NE(nullptr, extensions::ExtensionRegistry::Get(profile())
-                             ->GetInstalledExtension(extensions()[0]->id()));
-      // Without the uninstall dialog present the icon should now be
-      // invisible.
-      EXPECT_FALSE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
-      EXPECT_FALSE(
-          container->GetViewForId(extensions()[0]->id())->GetVisible());
-    }
   }
 
   void TriggerSingleExtensionButton() {
@@ -661,35 +561,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   context_menu_button->OnMouseReleased(release_event);
 
   EXPECT_TRUE(item_view->IsContextMenuRunningForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       InvokeUi_InstallDialog) {
-  ShowAndVerifyUi();
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40740852): Flaky on Linux and Lacros.
-#define MAYBE_InvokeUi_UninstallDialog_Accept \
-  DISABLED_InvokeUi_UninstallDialog_Accept
-#else
-#define MAYBE_InvokeUi_UninstallDialog_Accept InvokeUi_UninstallDialog_Accept
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       MAYBE_InvokeUi_UninstallDialog_Accept) {
-  ShowAndVerifyUi();
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40746111): Flaky on Linux.
-#define MAYBE_InvokeUi_UninstallDialog_Cancel \
-  DISABLED_InvokeUi_UninstallDialog_Cancel
-#else
-#define MAYBE_InvokeUi_UninstallDialog_Cancel InvokeUi_UninstallDialog_Cancel
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       MAYBE_InvokeUi_UninstallDialog_Cancel) {
-  ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,

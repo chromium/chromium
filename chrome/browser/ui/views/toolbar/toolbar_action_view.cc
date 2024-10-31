@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -62,6 +63,7 @@ ToolbarActionView::ToolbarActionView(
   SetHideInkDropWhenShowingContextMenu(false);
   SetShowInkDropWhenHotTracked(true);
   SetID(VIEW_ID_BROWSER_ACTION);
+  SetProperty(views::kElementIdentifierKey, kToolbarActionViewElementId);
   view_controller_->SetDelegate(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(delegate_);
