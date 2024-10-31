@@ -11778,6 +11778,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kSeparateLocalAndAccountSearchEngines)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"partition-visited-link-database",
+     flag_descriptions::kPartitionVisitedLinkDatabaseName,
+     flag_descriptions::kPartitionVisitedLinkDatabaseDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kPartitionVisitedLinkDatabase)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

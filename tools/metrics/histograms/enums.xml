@@ -19256,6 +19256,7 @@ from previous Chrome versions.
   <int value="-368811558" label="DynamicTopChrome:enabled"/>
   <int value="-368106169"
       label="CrOSLateBootCrasSplitAlsaUSBInternal:disabled"/>
+  <int value="-367820709" label="PartitionVisitedLinkDatabase:disabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
   <int value="-367047011" label="PrivacySandboxAdsNoticeCCT:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
@@ -20613,6 +20614,7 @@ from previous Chrome versions.
   <int value="178377589" label="(Obsolete) LacrosResourcesFileSharing:enabled"/>
   <int value="178693406" label="LockScreenMediaControls:disabled"/>
   <int value="179083323" label="HelpAppBackgroundPage:disabled"/>
+  <int value="179491176" label="partition-visited-link-database:enabled"/>
   <int value="179871410" label="ui-debug-tools:disabled"/>
   <int value="180040169" label="OneGroupPerRenderer:disabled"/>
   <int value="180074362" label="memory-pressure-thresholds"/>
@@ -23891,6 +23893,7 @@ from previous Chrome versions.
   <int value="1509880263"
       label="AccessibilityManageBroadcastReceiverOnBackground:disabled"/>
   <int value="1509901380" label="disable-drive-search-in-app-launcher"/>
+  <int value="1509957873" label="partition-visited-link-database:disabled"/>
   <int value="1510279169" label="PrivacyGuide2:disabled"/>
   <int value="1510476448" label="disable-prefixed-encrypted-media"/>
   <int value="1510659184" label="MacMDDownloadShelf:enabled"/>
@@ -24309,6 +24312,7 @@ from previous Chrome versions.
   <int value="1673943701" label="UseSCContentSharingPicker:disabled"/>
   <int value="1674803174"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:disabled"/>
+  <int value="1675683700" label="PartitionVisitedLinkDatabase:enabled"/>
   <int value="1675848452" label="BluetoothQualityReport:disabled"/>
   <int value="1675857410" label="PrivateNetworkAccessNullIpAddress:enabled"/>
   <int value="1677167062" label="AutomaticPasswordGeneration:enabled"/>
