@@ -17,6 +17,9 @@ id<SystemIdentity> GetPrimarySystemIdentity(
     return nil;
   }
 
+  // TODO(crbug.com/376046766): if HasPrimaryAccount(...) return true, then
+  // the CoreAccountInfo returned by GetPrimaryAccountInfo(...) should be
+  // valid. This return should be a CHECK(...).
   const CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(consent_level);
   if (account_info.gaia.empty()) {
