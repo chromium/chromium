@@ -77,9 +77,11 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
 
  private:
   void OnGroupDataStoreLoaded(GroupDataStore::DBInitStatus status);
-  // `collaboration_group_sync_bridge_` and `group_data_store_` might be out of
-  // sync on startup, this method handles all missed deletions and updates.
-  void ProcessInitialData();
+
+  // Handles all known group changes, i.e. when data stored in
+  // `group_data_store_` is different from data in
+  // `collaboration_group_sync_bridge_`.
+  void ProcessGroupChanges(bool is_initial_load);
 
   // Asynchronously fetches data from the SDK.
   void FetchGroupsFromSDK(const std::vector<GroupId>& added_or_updated_groups);
@@ -91,6 +93,11 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   GroupDataStore group_data_store_;
   bool is_group_data_store_loaded_ = false;
   bool is_collaboration_group_bridge_loaded_ = false;
+  // TODO(crbug.com/370897286): Add test coverage for the scenarios addressed
+  // by the following two fields: when there is a race condition between two
+  // consecutive fetches (see crrev.com/c/5965993).
+  bool has_ongoing_group_fetch_ = false;
+  bool has_pending_changes_ = false;
 
   raw_ptr<CollaborationGroupSyncBridge> collaboration_group_sync_bridge_;
   raw_ptr<DataSharingSDKDelegate> sdk_delegate_;

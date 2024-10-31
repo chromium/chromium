@@ -87,9 +87,8 @@ bool GroupDataModel::IsModelLoaded() const {
   return is_group_data_store_loaded_ && is_collaboration_group_bridge_loaded_;
 }
 
-// TODO(crbug.com/301390275): looks like we don't need to distinguish added and
-// updated groups here, merge them into single parameter (they could be
-// distinguished by their presence in `group_data_store_`).
+// TODO(crbug.com/301390275): looks like we don't need specific changes anymore
+// (see ProcessGroupChanges()), so the parameters can be removed.
 void GroupDataModel::OnGroupsUpdated(
     const std::vector<GroupId>& added_group_ids,
     const std::vector<GroupId>& updated_group_ids,
@@ -97,20 +96,11 @@ void GroupDataModel::OnGroupsUpdated(
   if (!IsModelLoaded()) {
     return;
   }
-  group_data_store_.DeleteGroups(deleted_group_ids);
-  for (auto& observer : observers_) {
-    for (auto& group_id : deleted_group_ids) {
-      observer.OnGroupDeleted(group_id);
-    }
-  }
 
-  std::vector<GroupId> added_or_updated_groups = added_group_ids;
-  std::copy(updated_group_ids.begin(), updated_group_ids.end(),
-            std::back_inserter(added_or_updated_groups));
-
-  if (!added_or_updated_groups.empty()) {
-    // Observers will be notified once groups are actually fetched from the SDK.
-    FetchGroupsFromSDK(added_or_updated_groups);
+  if (!has_ongoing_group_fetch_) {
+    ProcessGroupChanges(/*is_initial_load=*/false);
+  } else {
+    has_pending_changes_ = true;
   }
 }
 
@@ -119,7 +109,8 @@ void GroupDataModel::OnCollaborationGroupSyncDataLoaded() {
   if (IsModelLoaded()) {
     // Don't notify observers about data being loaded yet - let's process
     // deletions first.
-    ProcessInitialData();
+    CHECK(!has_ongoing_group_fetch_);
+    ProcessGroupChanges(/*is_initial_load=*/true);
   }
 }
 
@@ -133,11 +124,14 @@ void GroupDataModel::OnGroupDataStoreLoaded(
 
   is_group_data_store_loaded_ = true;
   if (IsModelLoaded()) {
-    ProcessInitialData();
+    CHECK(!has_ongoing_group_fetch_);
+    ProcessGroupChanges(/*is_initial_load=*/true);
   }
 }
 
-void GroupDataModel::ProcessInitialData() {
+void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
+  has_pending_changes_ = false;
+
   std::vector<GroupId> bridge_groups =
       collaboration_group_sync_bridge_->GetCollaborationGroupIds();
   std::vector<GroupId> store_groups = group_data_store_.GetAllGroupIds();
@@ -152,16 +146,19 @@ void GroupDataModel::ProcessInitialData() {
                                std::back_inserter(deleted_group_ids));
 
   group_data_store_.DeleteGroups(deleted_group_ids);
-  for (auto& observer : observers_) {
-    observer.OnModelLoaded();
+  if (is_initial_load) {
+    // This is the first ProcessGroupChanges() call after startup, so notify
+    // observers about data being loaded once deletions are processed.
+    for (auto& observer : observers_) {
+      observer.OnModelLoaded();
+    }
   }
+
   for (auto& group_id : deleted_group_ids) {
     for (auto& observer : observers_) {
       observer.OnGroupDeleted(group_id);
     }
   }
-  // TODO(crbug.com/301390275): notify observers about deletions and the fact
-  // that data is loaded.
 
   std::vector<GroupId> added_or_updated_group_ids;
   for (const auto& group_id : bridge_groups) {
@@ -191,6 +188,8 @@ void GroupDataModel::FetchGroupsFromSDK(
     return;
   }
 
+  has_ongoing_group_fetch_ = true;
+
   std::map<GroupId, VersionToken> group_versions;
   data_sharing_pb::ReadGroupsParams params;
   for (const GroupId& group_id : added_or_updated_groups) {
@@ -214,6 +213,11 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
         read_groups_result) {
   if (!read_groups_result.has_value()) {
+    has_ongoing_group_fetch_ = false;
+    if (has_pending_changes_) {
+      // Some changes happened while the fetch was in flight, process them now.
+      ProcessGroupChanges(/*is_initial_load=*/false);
+    }
     // TODO(crbug.com/301390275): handle entire request failure.
     return;
   }
@@ -245,6 +249,12 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
         observer.OnGroupAdded(group_id);
       }
     }
+  }
+
+  has_ongoing_group_fetch_ = false;
+  if (has_pending_changes_) {
+    // Some changes happened while the fetch was in flight, process them now.
+    ProcessGroupChanges(/*is_initial_load=*/false);
   }
 }
 
