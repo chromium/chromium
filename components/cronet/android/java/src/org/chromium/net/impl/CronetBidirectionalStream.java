@@ -576,8 +576,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     }
 
     /**
-     * Called when the final set of headers, after all redirects,
-     * is received. Can only be called once for each stream.
+     * Called when the final set of headers, after all redirects, is received. Can only be called
+     * once for each stream.
      */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -1030,8 +1030,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     }
 
     /**
-     * Posts task to application Executor. Used for callbacks
-     * and other tasks that should not be executed on network thread.
+     * Posts task to application Executor. Used for callbacks and other tasks that should not be
+     * executed on network thread.
      */
     private void postTaskToExecutor(Runnable task) {
         try {

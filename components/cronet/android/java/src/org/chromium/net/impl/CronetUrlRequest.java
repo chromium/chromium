@@ -421,8 +421,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
-     * Posts task to application Executor. Used for Listener callbacks
-     * and other tasks that should not be executed on network thread.
+     * Posts task to application Executor. Used for Listener callbacks and other tasks that should
+     * not be executed on network thread.
      */
     private void postTaskToExecutor(Runnable task) {
         try {
@@ -629,8 +629,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
-     * Called when the final set of headers, after all redirects,
-     * is received. Can only be called once for each request.
+     * Called when the final set of headers, after all redirects, is received. Can only be called
+     * once for each request.
      */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -711,8 +711,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
-     * Called when request is completed successfully, no callbacks will be
-     * called afterwards.
+     * Called when request is completed successfully, no callbacks will be called afterwards.
      *
      * @param receivedByteCount number of bytes received.
      */
@@ -802,10 +801,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         postTaskToExecutor(task);
     }
 
-    /**
-     * Called by the native code when request status is fetched from the
-     * native stack.
-     */
+    /** Called by the native code when request status is fetched from the native stack. */
     @SuppressWarnings("unused")
     @CalledByNative
     private void onStatus(
