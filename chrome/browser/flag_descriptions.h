@@ -4507,9 +4507,6 @@ extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 extern const char kDisableOfficeEditingComponentAppName[];
 extern const char kDisableOfficeEditingComponentAppDescription[];
 
-extern const char kLacrosColorManagementName[];
-extern const char kLacrosColorManagementDescription[];
-
 extern const char kLockedModeName[];
 extern const char kLockedModeDescription[];
 

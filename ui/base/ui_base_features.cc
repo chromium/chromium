@@ -496,15 +496,6 @@ bool IsVariableRefreshRateAlwaysOn() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
 }
 
-// Enables chrome color management wayland protocol for lacros.
-BASE_FEATURE(kLacrosColorManagement,
-             "LacrosColorManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsLacrosColorManagementEnabled() {
-  return base::FeatureList::IsEnabled(kLacrosColorManagement);
-}
-
 BASE_FEATURE(kBubbleMetricsApi,
              "BubbleMetricsApi",
              base::FEATURE_DISABLED_BY_DEFAULT);

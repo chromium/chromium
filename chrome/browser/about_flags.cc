@@ -8904,10 +8904,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFileSystemAccessGetCloudIdentifiersDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(blink::features::kFileSystemAccessGetCloudIdentifiers)},
-
-    {"lacros-color-management", flag_descriptions::kLacrosColorManagementName,
-     flag_descriptions::kLacrosColorManagementDescription, kOsLacros,
-     FEATURE_VALUE_TYPE(features::kLacrosColorManagement)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,

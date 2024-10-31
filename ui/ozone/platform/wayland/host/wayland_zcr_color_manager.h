@@ -28,6 +28,9 @@ namespace ui {
 class WaylandConnection;
 
 // Wrapper around |zcr_color_manager_v1| Wayland factory
+// TODO(crbug.com/375959958): given lacros' sunset, it probably makes sense to
+// adapt this class to use the WIP upstream protocol for the color management.
+// See more details in the bug.
 class WaylandZcrColorManager
     : public wl::GlobalObjectRegistrar<WaylandZcrColorManager> {
  public:

@@ -171,10 +171,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &WaylandShm::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraShell::kInterfaceName,
                               &WaylandZAuraShell::Instantiate);
-  if (features::IsLacrosColorManagementEnabled()) {
-    RegisterGlobalObjectFactory(WaylandZcrColorManager::kInterfaceName,
-                                &WaylandZcrColorManager::Instantiate);
-  }
   RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
                               &WaylandCursorShape::Instantiate);
   RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,

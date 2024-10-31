@@ -201,8 +201,7 @@ bool AllowColorSpaceCombination(
   //
   // TODO(b/243150091): Remove the call to IsYUVColorSpace() or turn it into a
   // DCHECK() once LaCrOS plumbs the correct color space.
-  bool is_yuv_color_space = features::IsLacrosColorManagementEnabled() ||
-                            IsYUVColorSpace(source_color_space);
+  bool is_yuv_color_space = IsYUVColorSpace(source_color_space);
   if ((source_format == MultiPlaneFormat::kNV12 ||
        source_format == MultiPlaneFormat::kYV12 ||
        source_format == MultiPlaneFormat::kP010) &&

@@ -15424,7 +15424,6 @@ from previous Chrome versions.
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
   <int value="-1926236767" label="DynamicColorButtonsAndroid:enabled"/>
-  <int value="-1926142124" label="LacrosColorManagement:disabled"/>
   <int value="-1926124919" label="WebViewOriginTrials:enabled"/>
   <int value="-1925573731" label="CreateShortcutIgnoresManifest:enabled"/>
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
@@ -18390,6 +18389,7 @@ from previous Chrome versions.
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
   <int value="-718626298" label="SysInternals:enabled"/>
   <int value="-718485659" label="OmniboxGroupingFrameworkForNonZPS:enabled"/>
+  <int value="-717721890" label="(Obsolete) LacrosColorManagement:enabled"/>
   <int value="-716973822" label="PasswordManualFallbackAvailable:disabled"/>
   <int value="-716965886" label="NtpRealboxRoundedCorners:disabled"/>
   <int value="-716953514" label="disable-password-separated-signin-flow"/>
@@ -22152,7 +22152,6 @@ from previous Chrome versions.
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>
-  <int value="806063284" label="LacrosColorManagement:enabled"/>
   <int value="806334184" label="AndroidSpellChecker:enabled"/>
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
   <int value="807268968" label="VcRelightingInferenceBackend:disabled"/>
@@ -22826,6 +22825,7 @@ from previous Chrome versions.
   <int value="1095706700" label="NavigationPredictor:enabled"/>
   <int value="1096462052" label="TabGroupsSaveV2:enabled"/>
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
+  <int value="1096958492" label="(Obsolete) LacrosColorManagement:disabled"/>
   <int value="1096970451"
       label="DawnSIRepsUseClientProvidedInternalUsages:disabled"/>
   <int value="1097339521"
