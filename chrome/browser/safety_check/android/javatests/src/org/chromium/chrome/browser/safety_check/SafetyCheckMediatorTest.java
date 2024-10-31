@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -799,7 +800,7 @@ public class SafetyCheckMediatorTest {
                         eq(
                                 BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.SAFETY_CHECK),
                         isNull());
     }

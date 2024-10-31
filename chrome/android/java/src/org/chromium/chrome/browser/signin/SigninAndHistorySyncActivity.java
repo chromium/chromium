@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
@@ -43,6 +42,7 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoord
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -205,9 +205,10 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 intent.getIntExtra(
                         ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE,
                         WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
-        @HistoryOptInMode
+        @HistorySyncConfig.OptInMode
         int historyOptInMode =
-                intent.getIntExtra(ARGUMENT_HISTORY_OPT_IN_MODE, HistoryOptInMode.OPTIONAL);
+                intent.getIntExtra(
+                        ARGUMENT_HISTORY_OPT_IN_MODE, HistorySyncConfig.OptInMode.OPTIONAL);
         @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
 
         mCoordinator =
@@ -355,7 +356,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
-            @HistoryOptInMode int historyOptInMode,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId selectedCoreAccountId) {
         assert bottomSheetStrings != null;

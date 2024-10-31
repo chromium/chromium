@@ -54,11 +54,11 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -212,7 +212,7 @@ public class SyncPromoControllerUITest {
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER),
                         isNull());
     }
@@ -242,7 +242,7 @@ public class SyncPromoControllerUITest {
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER),
                         isNull());
     }
@@ -276,7 +276,7 @@ public class SyncPromoControllerUITest {
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.REQUIRED),
+                        eq(HistorySyncConfig.OptInMode.REQUIRED),
                         eq(SigninAccessPoint.RECENT_TABS),
                         isNull());
     }
@@ -306,7 +306,7 @@ public class SyncPromoControllerUITest {
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.REQUIRED),
+                        eq(HistorySyncConfig.OptInMode.REQUIRED),
                         eq(SigninAccessPoint.RECENT_TABS),
                         isNull());
     }
@@ -336,7 +336,7 @@ public class SyncPromoControllerUITest {
                         eq(BOTTOM_SHEET_STRINGS),
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.REQUIRED),
+                        eq(HistorySyncConfig.OptInMode.REQUIRED),
                         eq(SigninAccessPoint.RECENT_TABS),
                         isNull());
     }

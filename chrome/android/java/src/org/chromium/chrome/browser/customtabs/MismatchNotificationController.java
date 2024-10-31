@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -135,7 +136,7 @@ public class MismatchNotificationController
                         BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.NO_SIGNIN,
                         BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                        HistorySyncConfig.OptInMode.NONE,
                         SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
                         mAppAccountId);
         if (intent != null) {

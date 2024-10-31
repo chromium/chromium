@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
@@ -145,8 +146,7 @@ public class SyncPromoController {
     private final boolean mShouldSuppressSecondaryButton;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-    private final @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int
-            mHistoryOptInMode;
+    private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
     private final Delegate mDelegate;
 
     private @Nullable DisplayableProfileData mProfileData;
@@ -263,8 +263,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_bookmarks;
                 }
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode =
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -281,8 +280,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                 }
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode =
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -299,8 +297,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
                     mShouldSuppressSecondaryButton = false;
                 }
-                mHistoryOptInMode =
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.REQUIRED;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
@@ -318,8 +315,7 @@ public class SyncPromoController {
                 mTitleStringId = R.string.sync_promo_title_settings;
                 mDescriptionStringId = R.string.sync_promo_description_settings_without_passwords;
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode =
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {

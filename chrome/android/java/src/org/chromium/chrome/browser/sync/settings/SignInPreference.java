@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -221,8 +222,7 @@ public class SignInPreference extends Preference
                                                 BottomSheetSigninAndHistorySyncCoordinator
                                                         .WithAccountSigninMode
                                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                                BottomSheetSigninAndHistorySyncCoordinator
-                                                        .HistoryOptInMode.OPTIONAL,
+                                                HistorySyncConfig.OptInMode.OPTIONAL,
                                                 SigninAccessPoint.SETTINGS,
                                                 /* selectedCoreAccountId= */ null);
                         if (intent != null) {

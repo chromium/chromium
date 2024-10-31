@@ -9,7 +9,14 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -63,4 +70,53 @@ public interface SigninAndHistorySyncCoordinator {
     /** Called when a backpress occurs in the embedder activity. */
     @BackPressResult
     int handleBackPress();
+
+    /**
+     * Whether the sign-in ui will show in the sign-in flow if the latter is launched.
+     *
+     * <p>The sign-in UI can be skipped if the user is already signed-in, for instance.
+     *
+     * @param profile The current profile.
+     */
+    public static boolean willShowSigninUI(Profile profile) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        return signinManager.isSigninAllowed();
+    }
+
+    /**
+     * Whether the history sync opt-in ui will show in the sign-in flow if the latter is launched.
+     *
+     * <p>The history sync opt-in can be skipped if the user is already opted-in, or if sync or the
+     * history sync data types are managed, for instance.
+     *
+     * @param profile The current profile.
+     * @param historyOptInMode Whether the history opt-in should be always, optionally or never
+     *     shown.
+     */
+    public static boolean willShowHistorySyncUI(
+            Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (!willShowSigninUI(profile) && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            // Signin is suppressed because of something other than the user being signed in. Since
+            // the user cannot sign in, we should not show history sync either.
+            return false;
+        }
+        return shouldShowHistorySync(profile, historyOptInMode);
+    }
+
+    static boolean shouldShowHistorySync(
+            Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
+        HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
+        return switch (historyOptInMode) {
+            case HistorySyncConfig.OptInMode.NONE -> false;
+            case HistorySyncConfig.OptInMode.OPTIONAL -> !historySyncHelper
+                            .shouldSuppressHistorySync()
+                    && !historySyncHelper.isDeclinedOften();
+            case HistorySyncConfig.OptInMode.REQUIRED -> !historySyncHelper
+                    .shouldSuppressHistorySync();
+            default -> throw new IllegalArgumentException(
+                    "Unexpected value for historyOptInMode :" + historyOptInMode);
+        };
+    }
 }

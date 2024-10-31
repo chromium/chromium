@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -64,7 +65,7 @@ public interface SigninAndHistorySyncActivityLauncher {
             @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                     int withAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId);
 

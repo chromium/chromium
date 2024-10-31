@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -113,8 +114,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.NONE,
+                                            HistorySyncConfig.OptInMode.NONE,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                             /* selectedCoreAccountId= */ null);
                     assertNotNull(intent);
@@ -140,8 +140,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.NONE,
+                                            HistorySyncConfig.OptInMode.NONE,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                             TestAccounts.ACCOUNT1.getId());
                     assertNotNull(intent);
@@ -170,8 +169,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.REQUIRED,
+                                            HistorySyncConfig.OptInMode.REQUIRED,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                             /* selectedCoreAccountId= */ null);
                     assertNotNull(intent);
@@ -197,8 +195,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.REQUIRED,
+                                            HistorySyncConfig.OptInMode.REQUIRED,
                                             SigninAccessPoint.RECENT_TABS,
                                             null);
                     assertNotNull(intent);
@@ -227,8 +224,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.REQUIRED,
+                                            HistorySyncConfig.OptInMode.REQUIRED,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                             /* selectedCoreAccountId= */ null);
                     assertNull(intent);
@@ -259,8 +255,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.REQUIRED,
+                                            HistorySyncConfig.OptInMode.REQUIRED,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                             /* selectedCoreAccountId= */ null);
                     assertNull(intent);
@@ -292,8 +287,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.NONE,
+                                            HistorySyncConfig.OptInMode.NONE,
                                             SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                             /* selectedCoreAccountId= */ null);
                     assertNull(intent);
@@ -323,8 +317,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.REQUIRED,
+                                            HistorySyncConfig.OptInMode.REQUIRED,
                                             SigninAccessPoint.RECENT_TABS,
                                             null);
                     assertNull(intent);
@@ -355,8 +348,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             .BOTTOM_SHEET,
                                     BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    HistorySyncConfig.OptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                     /* selectedCoreAccountId= */ null);
                 });
@@ -392,8 +384,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             .BOTTOM_SHEET,
                                     BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .REQUIRED,
+                                    HistorySyncConfig.OptInMode.REQUIRED,
                                     SigninAccessPoint.RECENT_TABS,
                                     null);
                 });

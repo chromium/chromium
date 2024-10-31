@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -198,7 +199,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                         .BOTTOM_SHEET,
                                 BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                                HistorySyncConfig.OptInMode.NONE,
                                 signinAccessPoint,
                                 /* selectedCoreAccountId= */ null);
         if (intent != null) {
@@ -233,8 +234,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                             .BOTTOM_SHEET,
                                     BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                            .NONE,
+                                    HistorySyncConfig.OptInMode.NONE,
                                     signinAccessPoint,
                                     /* selectedCoreAccountId= */ null);
             if (intent != null) {

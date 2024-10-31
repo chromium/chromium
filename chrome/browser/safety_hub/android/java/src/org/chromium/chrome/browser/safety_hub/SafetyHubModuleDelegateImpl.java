@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -108,7 +109,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
                         BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
                         BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                        HistorySyncConfig.OptInMode.NONE,
                         SigninAccessPoint.SAFETY_CHECK,
                         /* selectedCoreAccountId= */ null);
         if (intent != null) {

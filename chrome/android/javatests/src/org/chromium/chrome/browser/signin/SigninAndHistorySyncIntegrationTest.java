@@ -57,10 +57,10 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -147,7 +147,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
@@ -162,7 +162,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
@@ -177,7 +177,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
         verify(mHistorySyncHelperMock).recordHistorySyncNotShown(mSigninAccessPoint);
@@ -194,7 +194,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.OPTIONAL);
+                HistorySyncConfig.OptInMode.OPTIONAL);
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
         verify(mHistorySyncHelperMock).recordHistorySyncNotShown(mSigninAccessPoint);
@@ -209,7 +209,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         // The footer should show the email of the signed in account.
         onView(withId(R.id.history_sync_footer))
@@ -235,7 +235,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
@@ -275,7 +275,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.OPTIONAL);
+                HistorySyncConfig.OptInMode.OPTIONAL);
 
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
@@ -289,7 +289,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
+                HistorySyncConfig.OptInMode.NONE);
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
 
@@ -315,7 +315,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
+                HistorySyncConfig.OptInMode.NONE);
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
 
@@ -338,7 +338,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
         // Verify that the default account bottom sheet is shown.
         onView(
                         allOf(
@@ -363,7 +363,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
+                HistorySyncConfig.OptInMode.NONE);
 
         // Select an account on the shown expanded sign-in bottom-sheet.
         onView(
@@ -403,7 +403,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         // Select "Add Account" on the shown expanded sign-in bottom-sheet.
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
@@ -423,7 +423,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.OPTIONAL);
+                HistorySyncConfig.OptInMode.OPTIONAL);
 
         // Verifies that the default account sign-in bottom-sheet is shown and select the account.
         onView(
@@ -461,7 +461,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.OPTIONAL);
+                HistorySyncConfig.OptInMode.OPTIONAL);
 
         // Verifies that the expanded sign-in bottom-sheet is shown.
         ViewUtils.waitForVisibleView(
@@ -480,7 +480,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.NO_SIGNIN,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
+                HistorySyncConfig.OptInMode.NONE);
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -494,7 +494,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.OPTIONAL);
+                HistorySyncConfig.OptInMode.OPTIONAL);
 
         // Verifies that the no account sign-in bottom-sheet is shown.
         ViewUtils.waitForVisibleView(
@@ -513,7 +513,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
 
         verifyNoAccountBottomSheetAndSignin();
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
@@ -534,7 +534,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
         // Start sign-in from the 0-account sign-in bottom-sheet shown.
         onView(
                         allOf(
@@ -573,7 +573,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
         mSigninTestRule.setAddAccountFlowResult(
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
@@ -598,7 +598,7 @@ public class SigninAndHistorySyncIntegrationTest {
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                HistorySyncConfig.OptInMode.REQUIRED);
         onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -610,7 +610,7 @@ public class SigninAndHistorySyncIntegrationTest {
     private void launchActivity(
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
-            @HistoryOptInMode int historyOptInMode) {
+            @HistorySyncConfig.OptInMode int historyOptInMode) {
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)

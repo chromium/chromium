@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -59,7 +61,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                     int withAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId) {
 
@@ -81,10 +83,10 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     private boolean canStartSigninAndHistorySyncOrShowError(
             Context context,
             Profile profile,
-            @BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
             @SigninAccessPoint int accessPoint) {
-        if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
-                || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile, historyOptInMode)) {
             return true;
         }
@@ -103,12 +105,9 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     @Override
     public @Nullable Intent createFullscreenSigninIntent(
             Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config) {
-        // TODO(crbug.com/372684475): Move those methods out of
-        // BottomSheetSigninAndHistorySyncCoordinator.
-        if (BottomSheetSigninAndHistorySyncCoordinator.willShowSigninUI(profile)
-                || BottomSheetSigninAndHistorySyncCoordinator.willShowHistorySyncUI(
-                        profile,
-                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
+        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+                        profile, HistorySyncConfig.OptInMode.OPTIONAL)) {
             return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
         }
         return null;
@@ -120,7 +119,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
         if (canStartSigninAndHistorySyncOrShowError(
                 context,
                 profile,
-                BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
+                HistorySyncConfig.OptInMode.OPTIONAL,
                 SigninAccessPoint.SIGNIN_PROMO)) {
             return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
         }

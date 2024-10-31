@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -131,7 +132,7 @@ public final class FeedActionDelegateImplTest {
                         eq(
                                 BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
                         isNull()))
                 .thenReturn(mSigninIntent);
@@ -157,7 +158,7 @@ public final class FeedActionDelegateImplTest {
                         eq(
                                 BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
                         isNull());
     }
@@ -176,7 +177,7 @@ public final class FeedActionDelegateImplTest {
                         eq(
                                 BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         isNull()))
                 .thenReturn(mSigninIntent);

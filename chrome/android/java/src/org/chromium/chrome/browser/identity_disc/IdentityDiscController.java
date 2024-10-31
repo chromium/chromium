@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -378,8 +379,7 @@ public class IdentityDiscController
                                                 .NoAccountSigninMode.BOTTOM_SHEET,
                                         BottomSheetSigninAndHistorySyncCoordinator
                                                 .WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode
-                                                .OPTIONAL,
+                                        HistorySyncConfig.OptInMode.OPTIONAL,
                                         SigninAccessPoint.NTP_SIGNED_OUT_ICON,
                                         /* selectedCoreAccountId= */ null);
                 if (intent != null) {

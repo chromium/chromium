@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -91,7 +92,7 @@ public class SafetyHubModuleDelegateTest {
                         eq(
                                 BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(BottomSheetSigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(HistorySyncConfig.OptInMode.NONE),
                         eq(SigninAccessPoint.SAFETY_CHECK),
                         isNull()))
                 .thenReturn(mSigninIntent);

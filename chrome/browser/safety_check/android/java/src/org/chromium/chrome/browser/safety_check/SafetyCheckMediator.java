@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -621,8 +622,7 @@ class SafetyCheckMediator {
                                             BottomSheetSigninAndHistorySyncCoordinator
                                                     .WithAccountSigninMode
                                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .HistoryOptInMode.NONE,
+                                            HistorySyncConfig.OptInMode.NONE,
                                             SigninAccessPoint.SAFETY_CHECK,
                                             /* selectedCoreAccountId= */ null);
                             if (intent != null) {

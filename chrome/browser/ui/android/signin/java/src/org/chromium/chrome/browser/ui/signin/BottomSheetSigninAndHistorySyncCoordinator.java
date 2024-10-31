@@ -70,7 +70,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private final AccountPickerBottomSheetStrings mBottomSheetStrings;
     private final @NoAccountSigninMode int mNoAccountSigninMode;
     private final @WithAccountSigninMode int mWithAccountSigninMode;
-    private final @HistoryOptInMode int mHistoryOptInMode;
+    private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
     private final @Nullable CoreAccountId mCoreAccountId;
 
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
@@ -129,37 +129,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         int CHOOSE_ACCOUNT_BOTTOM_SHEET = 1;
     }
 
-    /** The visibility rule to apply to the history opt-in step. */
-    @IntDef({HistoryOptInMode.NONE, HistoryOptInMode.OPTIONAL, HistoryOptInMode.REQUIRED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface HistoryOptInMode {
-        /** Never show the history sync opt-in. */
-        int NONE = 0;
-
-        /** The history sync opt-in can be skipped (e.g. if the user declined too recently). */
-        int OPTIONAL = 1;
-
-        /** The history sync opt-in should always be shown. */
-        int REQUIRED = 2;
-    }
-
-    public static boolean willShowSigninUI(Profile profile) {
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        return signinManager.isSigninAllowed();
-    }
-
-    public static boolean willShowHistorySyncUI(
-            Profile profile, @HistoryOptInMode int historyOptInMode) {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        if (!willShowSigninUI(profile) && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            // Signin is suppressed because of something other than the user being signed in. Since
-            // the user cannot sign in, we should not show history sync either.
-            return false;
-        }
-        return shouldShowHistorySync(profile, historyOptInMode);
-    }
-
     /**
      * Creates an instance of {@link BottomSheetSigninAndHistorySyncCoordinator} and shows the
      * sign-in bottom sheet.
@@ -184,7 +153,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
-            @HistoryOptInMode int historyOptInMode,
+            @HistorySyncConfig.OptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId accountId) {
         mWindowAndroid = windowAndroid;
@@ -441,7 +410,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private void maybeShowHistoryOptInDialog() {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
-        if (!shouldShowHistorySync(profile, mHistoryOptInMode)) {
+        if (!SigninAndHistorySyncCoordinator.shouldShowHistorySync(profile, mHistoryOptInMode)) {
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
@@ -501,7 +470,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private void createHistorySyncCoordinator(Profile profile) {
         assert mHistorySyncCoordinator == null;
         boolean shouldSignOutOnDecline =
-                mDidShowSigninStep && mHistoryOptInMode == HistoryOptInMode.REQUIRED;
+                mDidShowSigninStep && mHistoryOptInMode == HistorySyncConfig.OptInMode.REQUIRED;
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mActivity,
@@ -526,19 +495,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                 mDialogModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
-    }
-
-    private static boolean shouldShowHistorySync(
-            Profile profile, @HistoryOptInMode int historyOptInMode) {
-        HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
-        return switch (historyOptInMode) {
-            case HistoryOptInMode.NONE -> false;
-            case HistoryOptInMode.OPTIONAL -> !historySyncHelper.shouldSuppressHistorySync()
-                    && !historySyncHelper.isDeclinedOften();
-            case HistoryOptInMode.REQUIRED -> !historySyncHelper.shouldSuppressHistorySync();
-            default -> throw new IllegalArgumentException(
-                    "Unexpected value for historyOptInMode :" + historyOptInMode);
-        };
     }
 
     private void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result) {
