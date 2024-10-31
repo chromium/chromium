@@ -32,12 +32,10 @@ bool OptionalBooleanToBool(OptionalBoolean value) {
     case OptionalBoolean::kTrue:
       return true;
     case OptionalBoolean::kUndefined:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool AreCollapsible(const absl::monostate& event1,

@@ -408,7 +408,7 @@ bool IsInCrossOriginIframeOrEmbeddedFrame(const WebInputElement& element) {
     if (element.GetDocument().GetFrame()->IsInFencedFrameTree()) {
       return true;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   return false;

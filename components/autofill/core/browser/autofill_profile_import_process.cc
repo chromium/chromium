@@ -376,8 +376,7 @@ void ProfileImportProcess::SetUserDecision(
       break;
 
     case UserDecision::kUndefined:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

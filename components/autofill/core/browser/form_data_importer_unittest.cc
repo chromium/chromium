@@ -225,8 +225,9 @@ AutofillProfile ConstructProfileFromTypeValuePairs(
     profile.SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
                                              VerificationStatus::kObserved);
   }
-  if (!profile.FinalizeAfterImport())
-    NOTREACHED_IN_MIGRATION();
+  if (!profile.FinalizeAfterImport()) {
+    NOTREACHED();
+  }
   return profile;
 }
 

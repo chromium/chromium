@@ -33,8 +33,7 @@ void AutofillScanner::Advance() {
 
 AutofillField* AutofillScanner::Cursor() const {
   if (IsEnd()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   return *cursor_;

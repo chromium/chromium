@@ -349,8 +349,7 @@ void AutofillMetrics::LogUnmaskPromptEventDuration(
       suffix = ".Success";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.Duration", duration);
   base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.Duration" + suffix,
@@ -405,8 +404,7 @@ void AutofillMetrics::LogRealPanResult(PaymentsRpcResult result,
       metric_result = PAYMENTS_RESULT_CLIENT_SIDE_TIMEOUT;
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   std::string card_type_suffix;
@@ -418,8 +416,7 @@ void AutofillMetrics::LogRealPanResult(PaymentsRpcResult result,
       card_type_suffix = "VirtualCard";
       break;
     case PaymentsRpcCardType::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration("Autofill.UnmaskPrompt.GetRealPanResult",
@@ -472,8 +469,7 @@ void AutofillMetrics::LogRealPanDuration(base::TimeDelta duration,
       result_suffix = "ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.GetRealPanDuration",
@@ -498,8 +494,7 @@ void AutofillMetrics::LogUnmaskingDuration(base::TimeDelta duration,
       card_type_suffix = "VirtualCard";
       break;
     case PaymentsRpcCardType::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   switch (result) {
@@ -522,8 +517,7 @@ void AutofillMetrics::LogUnmaskingDuration(base::TimeDelta duration,
       result_suffix = "ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramLongTimes("Autofill.UnmaskPrompt.UnmaskingDuration",
                               duration);
@@ -709,11 +703,10 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         if (card->HasNonEmptyValidNickname())
           num_server_cards_with_nickname += 1;
         break;
+      // These card types are not persisted in Chrome.
       case CreditCard::RecordType::kFullServerCard:
       case CreditCard::RecordType::kVirtualCard:
-        // These card types are not persisted in Chrome.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -954,9 +947,7 @@ AutofillMetrics::CreditCardSeamlessness::QualitativeFillableFormEvent() const {
       return autofill_metrics::
           FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
   }
-  NOTREACHED_IN_MIGRATION();
-  return autofill_metrics::
-      FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
+  NOTREACHED();
 }
 
 autofill_metrics::FormEvent
@@ -981,8 +972,7 @@ AutofillMetrics::CreditCardSeamlessness::QualitativeFillFormEvent() const {
       return autofill_metrics::
           FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
   }
-  NOTREACHED_IN_MIGRATION();
-  return autofill_metrics::FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
+  NOTREACHED();
 }
 
 uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskMetric() const {
@@ -1451,7 +1441,7 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
       autocomplete_suffix = "Password";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Log the metric for heuristic and server type.
@@ -1493,7 +1483,7 @@ const std::string PaymentsRpcResultToMetricsSuffix(PaymentsRpcResult result) {
       result_suffix = ".ClientSideTimeout";
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return result_suffix;

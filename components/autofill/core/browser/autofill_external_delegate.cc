@@ -999,7 +999,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

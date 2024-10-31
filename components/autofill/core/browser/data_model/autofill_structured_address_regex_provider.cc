@@ -544,7 +544,7 @@ std::string StructuredAddressesRegExProvider::GetPattern(
     case RegEx::kParseStreetNameHouseNumber:
       return ParseStreetNameHouseNumberExpression();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const RE2* StructuredAddressesRegExProvider::GetRegEx(

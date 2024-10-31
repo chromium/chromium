@@ -300,10 +300,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
         case IMPROVED_PREDICTION:
-          NOTREACHED_IN_MIGRATION()
-              << field_type << " type is not in that group.";
-          group = GROUP_AMBIGUOUS;
-          break;
+          NOTREACHED() << field_type << " type is not in that group.";
       }
       break;
 
@@ -339,10 +336,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
           group = GROUP_CREDIT_CARD_VERIFICATION;
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
-              << field_type << " has no group assigned (ambiguous)";
-          group = GROUP_AMBIGUOUS;
-          break;
+          NOTREACHED() << field_type << " has no group assigned (ambiguous)";
       }
       break;
 
@@ -363,8 +357,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
       break;
 
     case FieldTypeGroup::kTransaction:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Use bits 8-15 for the group and bits 0-7 for the metric.
@@ -381,8 +374,7 @@ const char* GetQualityMetricPredictionSource(
     QualityMetricPredictionSource source) {
   switch (source) {
     case PREDICTION_SOURCE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown";
+      NOTREACHED();
     case PREDICTION_SOURCE_HEURISTIC:
       return "Heuristic";
     case PREDICTION_SOURCE_SERVER:
@@ -397,8 +389,7 @@ const char* GetQualityMetricPredictionSource(
 const char* GetQualityMetricTypeSuffix(QualityMetricType metric_type) {
   switch (metric_type) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case TYPE_SUBMISSION:
       return "";
     case TYPE_NO_SUBMISSION:

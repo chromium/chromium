@@ -71,9 +71,7 @@ TEST_P(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
       channel_type = "CHROME_DOWNSTREAM";
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED_IN_MIGRATION();
-      ASSERT_TRUE(false);
-      break;
+      NOTREACHED();
   }
   EXPECT_TRUE(GetRequest()->GetRequestContent().find(channel_type) !=
               std::string::npos);

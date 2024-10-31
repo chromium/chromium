@@ -363,10 +363,8 @@ std::string PhoneFieldParser::GetJSONFieldType(RegexType phonetype_id) {
     case REGEX_EXTENSION:
       return "PHONE_EXTENSION";
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::string();
 }
 
 // static

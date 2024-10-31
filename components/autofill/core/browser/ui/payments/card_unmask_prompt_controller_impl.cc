@@ -122,8 +122,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
     }
 
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   flow_ended_with_unmask_server_response_ =

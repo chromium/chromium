@@ -1312,7 +1312,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       } else if (absl::holds_alternative<AblationFieldLogEvent>(event)) {
         matchers.push_back(Equal(absl::get<AblationFieldLogEvent>(event)));
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
     return ElementsAreArray(matchers);
@@ -1369,8 +1369,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   void CreateTestAutofillProfiles() {

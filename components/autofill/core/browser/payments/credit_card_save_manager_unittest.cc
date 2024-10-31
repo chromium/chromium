@@ -530,8 +530,7 @@ class CreditCardSaveManagerTest : public testing::Test {
       if (metric & (1 << sample))
         return sample;
 
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 };
 

@@ -73,8 +73,7 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
                                 ui_language_code, components_language_code);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 AutofillAddressUIComponent::LengthHint ConvertLengthHint(

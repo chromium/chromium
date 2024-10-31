@@ -125,24 +125,11 @@ void FullCardRequest::GetFullCardImpl(
   result_delegate_ = result_delegate;
   ui_delegate_ = ui_delegate;
 
-  // If unmasking is for a virtual card and
-  // |last_committed_primary_main_frame_origin| is empty, end the request as
-  // failure and reset.
+  // If unmasking is for a virtual card then
+  // |last_committed_primary_main_frame_origin| should not be empty.
   if (card.record_type() == CreditCard::RecordType::kVirtualCard &&
       !last_committed_primary_main_frame_origin.has_value()) {
-    NOTREACHED_IN_MIGRATION();
-    if (ui_delegate_) {
-      ui_delegate_->OnUnmaskVerificationResult(
-          PaymentsRpcResult::kVcnRetrievalPermanentFailure);
-    }
-
-    if (result_delegate_) {
-      result_delegate_->OnFullCardRequestFailed(
-          card_type, FailureType::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
-    }
-
-    Reset();
-    return;
+    NOTREACHED();
   }
 
   request_ = std::make_unique<UnmaskRequestDetails>();
@@ -375,7 +362,7 @@ void FullCardRequest::OnDidGetRealPan(
         // server cards are not persisted in any way.
         request_->card.set_record_type(CreditCard::RecordType::kFullServerCard);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       // TODO(crbug.com/40621544): Once |fido_opt_in| is added to
@@ -396,8 +383,7 @@ void FullCardRequest::OnDidGetRealPan(
     }
 
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

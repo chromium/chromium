@@ -282,15 +282,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     if (response_details.card_type !=
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard) {
       // Currently we offer OTP authentication only for virtual cards.
-      NOTREACHED_IN_MIGRATION();
-      if (requester_) {
-        requester_->OnOtpAuthenticationComplete(
-            OtpAuthenticationResponse().with_result(
-                OtpAuthenticationResponse::Result::kGenericError));
-      }
-
-      Reset();
-      return;
+      NOTREACHED();
     }
     // If |flow_status| is present, this intermediate status allows the user to
     // stay in the current session to finish the unmasking with certain user

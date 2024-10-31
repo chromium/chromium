@@ -57,8 +57,7 @@ std::string OptChangeRequest::GetRequestContent() {
       reason = "ADD_CARD_FOR_FIDO_AUTH";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   request_dict.Set("reason", std::move(reason));
 

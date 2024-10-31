@@ -143,8 +143,7 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtonLabel(
     return virtual_card_enroll_bubble_controller_->GetUiModel()
         .cancel_action_text();
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported button label requested.";
-  return std::u16string();
+  NOTREACHED() << "Unsupported button label requested.";
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::InfoBarDismissed() {

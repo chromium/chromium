@@ -309,7 +309,7 @@ TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
       EXPECT_EQ(credit_card.cvc(), value_to_fill);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -335,7 +335,7 @@ TEST_P(CreditCardVerificationCodeTest,
       EXPECT_EQ(kCvc, value_to_fill);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -493,8 +493,7 @@ bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
       return !IsValidEmailAddress(data);
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1140,8 +1139,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
     case FieldTypeGroup::kPredictionImprovements:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {

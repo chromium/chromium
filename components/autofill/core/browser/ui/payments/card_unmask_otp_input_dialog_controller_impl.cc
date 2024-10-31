@@ -77,8 +77,7 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
       ShowInvalidState(result);
       break;
     case OtpUnmaskResult::kUnknownType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -218,7 +217,7 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
     case OtpUnmaskResult::kSuccess:
     case OtpUnmaskResult::kPermanentFailure:
     case OtpUnmaskResult::kUnknownType:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

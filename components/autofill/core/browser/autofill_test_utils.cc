@@ -630,8 +630,7 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return challenge_options;

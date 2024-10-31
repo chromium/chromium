@@ -521,7 +521,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
         suffix = "SettingsPage";
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // Verifies the logging.

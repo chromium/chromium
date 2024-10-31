@@ -371,8 +371,7 @@ void CreditCardFidoAuthenticator::OptChange(
           payments::OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // If |authenticator_response| is set, that means the user just signed a
@@ -604,7 +603,7 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
   } else if (base::EqualsCaseInsensitiveASCII(*attestation, "DIRECT")) {
     options->attestation = device::AttestationConveyancePreference::kDirect;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Only allow user-verifying platform authenticators.
@@ -712,8 +711,7 @@ void CreditCardFidoAuthenticator::LogWebauthnResult(
                   : autofill_metrics::WebauthnFlowEvent::kCheckoutOptIn;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   // TODO(crbug.com/40621544): Add metrics for revoked pending WebAuthn
@@ -786,8 +784,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     case NONE_FLOW:
     case OPT_IN_FETCH_CHALLENGE_FLOW:
     case OPT_OUT_FLOW: {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
   }
 
@@ -838,8 +835,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
     case NONE_FLOW:
     case OPT_IN_FETCH_CHALLENGE_FLOW:
     case OPT_OUT_FLOW: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
   current_flow_ = NONE_FLOW;

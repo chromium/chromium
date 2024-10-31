@@ -407,7 +407,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -1731,8 +1731,7 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
 
 void PaymentsDataManager::LoadCreditCards() {
   if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CancelPendingLocalQuery(&pending_creditcards_query_);
@@ -1759,8 +1758,7 @@ void PaymentsDataManager::LoadCreditCardCloudTokenData() {
 
 void PaymentsDataManager::LoadIbans() {
   if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   CancelPendingLocalQuery(&pending_local_ibans_query_);
   CancelPendingServerQuery(&pending_server_ibans_query_);
@@ -1832,8 +1830,7 @@ void PaymentsDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
     if (!database_helper_->GetLocalDatabase()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     database_helper_->GetLocalDatabase()->CancelRequest(*handle);
   }
@@ -1844,8 +1841,7 @@ void PaymentsDataManager::CancelPendingServerQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
     if (!database_helper_->GetServerDatabase()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     database_helper_->GetServerDatabase()->CancelRequest(*handle);
   }

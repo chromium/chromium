@@ -351,10 +351,9 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return FillDataType::kUndefined;
+  NOTREACHED();
 }
 
 void LogAutocompletePredictionCollisionTypeMetrics(
@@ -3637,7 +3636,7 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
       } else if (absl::holds_alternative<AblationFieldLogEvent>(log_event)) {
         ++num_ablation_event;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -3682,7 +3681,7 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
       // FastCheckout only supports address and credit card forms.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

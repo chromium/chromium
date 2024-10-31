@@ -448,8 +448,7 @@ class PredictionQualityMetricsTest
         return "Decca";
 
       default:
-        NOTREACHED_IN_MIGRATION();  // Fall through
-        return "unexpected!";
+        NOTREACHED();
     }
   }
 
@@ -506,9 +505,8 @@ class PredictionQualityMetricsTest
                actual_type != predicted_type && predicted_type == UNKNOWN_TYPE;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return false;
   }
 
   static int FieldTypeCross(FieldType predicted_type, FieldType actual_type) {

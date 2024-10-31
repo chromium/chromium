@@ -757,8 +757,7 @@ void FormStructure::AssignBestFieldTypes(
 
 const AutofillField* FormStructure::field(size_t index) const {
   if (index >= fields_.size()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   return fields_[index].get();
 }

@@ -279,8 +279,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   for (const FormData& form : forms) {
     FormStructure* form_structure = FindCachedFormById(form.global_id());
     if (!form_structure) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     form_types.insert_all(form_structure->GetFormTypes());

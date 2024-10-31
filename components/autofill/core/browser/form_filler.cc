@@ -1079,7 +1079,7 @@ void FormFiller::TriggerRefill(const FormData& form,
                       autofill_field, trigger_details,
                       /*is_refill=*/true);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

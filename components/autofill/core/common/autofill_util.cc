@@ -133,8 +133,7 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SubmissionIndicatorEvent::NONE;
+  NOTREACHED();
 }
 
 GURL StripAuthAndParams(const GURL& gurl) {

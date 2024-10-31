@@ -122,9 +122,7 @@ void CreditCardCvcAuthenticator::OnFullCardRequestFailed(
       event = autofill_metrics::CvcAuthEvent::kGenericError;
       break;
     case payments::FullCardRequest::FailureType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      event = autofill_metrics::CvcAuthEvent::kUnknown;
-      break;
+      NOTREACHED();
   }
   autofill_metrics::LogCvcAuthResult(card_type, event);
 

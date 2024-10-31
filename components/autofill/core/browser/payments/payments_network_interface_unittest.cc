@@ -1623,8 +1623,7 @@ class UpdateVirtualCardEnrollmentTest
                        "");
         break;
       case PaymentsRpcResult::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     EXPECT_EQ(response_type_for_test, result_);
   }
@@ -1766,8 +1765,7 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
       ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   EXPECT_EQ(result, result_);
 }

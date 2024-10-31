@@ -472,8 +472,7 @@ void CreditCardAccessManagerTestBase::
       EXPECT_TRUE(vcn_3ds_context.user_consent_already_given);
       break;
     case CardUnmaskChallengeOptionType::kUnknownType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
