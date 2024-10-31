@@ -368,6 +368,11 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     preloading_data->SetIsNavigationInDomainCallback(
         preloading_predictor::kPreloadingHeuristicsMLModel, is_new_link_nav);
   }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPreloadingViewportHeuristics)) {
+    preloading_data->SetIsNavigationInDomainCallback(
+        preloading_predictor::kViewportHeuristic, is_new_link_nav);
+  }
 
   // Here we look for all preloading candidates that are safe to perform, but
   // their eagerness level is not high enough to perform without the trigger

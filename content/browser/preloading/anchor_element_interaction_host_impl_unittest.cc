@@ -14,6 +14,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -86,6 +87,10 @@ TEST_F(AnchorElementInteractionHostImplTest, OnViewportHeuristicTriggered) {
   base::HistogramTester histogram_tester;
   auto* render_frame_host = static_cast<RenderFrameHostImpl*>(main_rfh());
 
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  PreloadingDecider::GetOrCreateForCurrentDocument(render_frame_host)
+      ->UpdateSpeculationCandidates(candidates);
+
   mojo::Remote<blink::mojom::AnchorElementInteractionHost> remote;
   AnchorElementInteractionHostImpl::Create(render_frame_host,
                                            remote.BindNewPipeAndPassReceiver());
@@ -106,6 +111,32 @@ TEST_F(AnchorElementInteractionHostImplTest, OnViewportHeuristicTriggered) {
   histogram_tester.ExpectUniqueSample(
       "Preloading.Predictor.ViewportHeuristic.Precision",
       PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.ViewportHeuristic.Recall",
+      PredictorConfusionMatrix::kTruePositive, 1);
+}
+
+TEST_F(AnchorElementInteractionHostImplTest,
+       RecallRecordedWhenViewportHeuristicIsNotTriggered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPreloadingViewportHeuristics);
+
+  base::HistogramTester histogram_tester;
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  PreloadingDecider::GetOrCreateForCurrentDocument(main_rfh())
+      ->UpdateSpeculationCandidates(candidates);
+
+  std::unique_ptr<NavigationSimulator> navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(GURL("https://example.com"),
+                                                   main_rfh());
+  navigation_simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
+  navigation_simulator->Start();
+
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.ViewportHeuristic.Recall",
+      PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
 }  // namespace

@@ -170,9 +170,6 @@ void AnchorElementInteractionHostImpl::OnViewportHeuristicTriggered(
       PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
   ukm::SourceId triggering_page_ukm_source_id =
       render_frame_host().GetPageUkmSourceId();
-  preloading_data->SetIsNavigationInDomainCallback(
-      preloading_predictor::kViewportHeuristic,
-      base::BindRepeating(&PreloadingDataImpl::IsLinkClickNavigation));
   preloading_data->AddPreloadingPrediction(
       preloading_predictor::kViewportHeuristic, PreloadingConfidence(100),
       PreloadingData::GetSameURLMatcher(url), triggering_page_ukm_source_id);
