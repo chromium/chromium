@@ -10,8 +10,10 @@ namespace cc {
 
 RenderingStats::TimeDeltaList::TimeDeltaList() = default;
 
-RenderingStats::TimeDeltaList::TimeDeltaList(const TimeDeltaList& other) =
-    default;
+RenderingStats::TimeDeltaList::TimeDeltaList(TimeDeltaList&& other) = default;
+
+RenderingStats::TimeDeltaList& RenderingStats::TimeDeltaList::operator=(
+    TimeDeltaList&& other) = default;
 
 RenderingStats::TimeDeltaList::~TimeDeltaList() = default;
 
@@ -39,7 +41,9 @@ base::TimeDelta RenderingStats::TimeDeltaList::GetLastTimeDelta() const {
 
 RenderingStats::RenderingStats() = default;
 
-RenderingStats::RenderingStats(const RenderingStats& other) = default;
+RenderingStats::RenderingStats(RenderingStats&& other) = default;
+
+RenderingStats& RenderingStats::operator=(RenderingStats&& other) = default;
 
 RenderingStats::~RenderingStats() = default;
 

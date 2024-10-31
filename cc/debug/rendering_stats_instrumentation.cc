@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 
 namespace cc {
@@ -24,7 +26,7 @@ RenderingStatsInstrumentation::~RenderingStatsInstrumentation() = default;
 
 RenderingStats RenderingStatsInstrumentation::TakeImplThreadRenderingStats() {
   base::AutoLock scoped_lock(lock_);
-  auto stats = impl_thread_rendering_stats_;
+  auto stats = std::move(impl_thread_rendering_stats_);
   impl_thread_rendering_stats_ = RenderingStats();
   return stats;
 }
