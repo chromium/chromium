@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] innerText has collapsed whitespace but preserved newlines with pre-line
-  assert_equals: expected "one\\ntwo\\nthree\\nfour\\n" but got "\\none\\ntwo\\n\\nthree\\nfour\\n"
-Harness: the test ran to completion.
-

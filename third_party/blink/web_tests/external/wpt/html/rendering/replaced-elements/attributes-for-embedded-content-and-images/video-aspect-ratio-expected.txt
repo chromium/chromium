@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] Video width and height attributes are used to infer aspect-ratio
-  assert_approx_equals: expected 2.5 +/- 0.001 but got 2
+[FAIL] Aspect ratio for regular video
+  assert_approx_equals: aspect ratio before load expected 2.5 +/- 0.001 but got 2
+[FAIL] Aspect ratio for regular video with width:auto
+  assert_approx_equals: aspect ratio before load expected 2.5 +/- 0.001 but got 2
 Harness: the test ran to completion.
 
