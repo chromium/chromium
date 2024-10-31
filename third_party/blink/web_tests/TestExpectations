@@ -2637,8 +2637,6 @@ crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-accu
 crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-accumulation-003.html [ Failure ]
 crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-accumulation-004.html [ Failure ]
 crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-not-ignore-nested-text-box-edge.html [ Failure ]
-crbug.com/374822356 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Failure ]
-crbug.com/374822356 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-050.html [ Failure ]
 crbug.com/372287206 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Crash ]
 crbug.com/372103377 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Crash ]
 crbug.com/371659899 [ Mac ] external/wpt/selection/caret/editing-host-has-only-invisible-br.html [ Timeout ]
@@ -7694,7 +7692,9 @@ crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-02
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
 
 # disable-css-line-clamp
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-047.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-050.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-001.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-004.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-005.tentative.html [ Failure ]
