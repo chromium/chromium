@@ -5,11 +5,13 @@
 #include "chrome/browser/sync/chrome_sync_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,14 +41,28 @@ namespace {
 
 using content::BrowserThread;
 
-// A global variable is needed to detect multiprofile scenarios where more than
-// one profile try to register a synthetic field trial.
-bool trusted_vault_synthetic_field_trial_registered = false;
-
 #if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kLoopbackServerBackendFilename[] =
     FILE_PATH_LITERAL("profile.pb");
 #endif  // BUILDFLAG(IS_WIN)
+
+// A global variable is needed to detect multi-profile scenarios where more than
+// one profile try to register a synthetic field trial. Rather than using a
+// boolean, a struct is used to handle the case where the same profile is loaded
+// multiple times and tries to register the very same synthetic field trial
+// group (which shouldn't be considered a conflict).
+struct ProfileAndGroupName {
+  base::FilePath profile_base_name;
+  std::string group_name;
+
+  friend bool operator==(const ProfileAndGroupName& lhs,
+                         const ProfileAndGroupName& rhs) = default;
+};
+
+std::optional<ProfileAndGroupName>& GetRegisteredProfileAndGroupName() {
+  static base::NoDestructor<std::optional<ProfileAndGroupName>> value;
+  return *value;
+}
 
 }  // namespace
 
@@ -173,17 +189,33 @@ void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
 
-  // If `trusted_vault_synthetic_field_trial_registered` is true, and given that
-  // each SyncService invokes this function at most once, it means that multiple
-  // profiles are trying to register a synthetic field trial. In that case,
-  // register a special "conflict" group.
+  ProfileAndGroupName new_profile_and_group_name{profile_base_name_,
+                                                 group.name()};
+
+  std::optional<ProfileAndGroupName>& global_profile_and_group_name =
+      GetRegisteredProfileAndGroupName();
+
+  // If a group is previously set, it may imply that a different profile has
+  // just been loaded, as this function is invoked at most once per profile.
+  // However, on some platforms (e.g. Mac), the same profile can be closed and
+  // loaded once again, and this case should not count as a conflict case.
+  const bool multi_profile_conflict =
+      global_profile_and_group_name.has_value() &&
+      global_profile_and_group_name.value() != new_profile_and_group_name;
+
+  // Use a special group name if a multi-profile conflict was detected.
   const std::string group_name =
-      trusted_vault_synthetic_field_trial_registered
+      multi_profile_conflict
           ? syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
                 GetMultiProfileConflictGroupName()
           : group.name();
 
-  trusted_vault_synthetic_field_trial_registered = true;
+  // If a conflict was detected, ensure that future runs of this function will
+  // also report a conflict by using a pair that won't match future invocations
+  // of this function.
+  global_profile_and_group_name =
+      multi_profile_conflict ? ProfileAndGroupName{base::FilePath(), group_name}
+                             : new_profile_and_group_name;
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, group_name,

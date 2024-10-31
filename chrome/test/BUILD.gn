@@ -5931,6 +5931,7 @@ test("unit_tests") {
     "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
     "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
     "../browser/supervised_user/supervised_user_navigation_throttle_unittest.cc",
+    "../browser/sync/chrome_sync_client_unittest.cc",
     "../browser/sync/session_sync_service_factory_unittest.cc",
     "../browser/sync/sessions/sync_sessions_web_contents_router_unittest.cc",
     "../browser/sync/sync_service_factory_unittest.cc",
