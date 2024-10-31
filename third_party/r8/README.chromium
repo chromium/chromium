@@ -75,12 +75,12 @@ tools/gradle.py r8
 java -jar build/libs/r8.jar --debug --classfile --output r8.jar \
     --lib $CHROMIUM_SRC/third_party/jdk/current --pg-conf src/main/keep.txt \
     --no-minification --no-desugaring build/libs/r8.jar
-mv $CHROMIUM_SRC/third_party/r8/lib/r8.jar{,.bak}
-cp r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+mv $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar{,.bak}
+cp r8.jar $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
 
 * Update backported methods list (used by lint):
 cd $CHROMIUM_SRC
-java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
+java -cp third_party/r8/cipd/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
 
 How to file bugs against R8:
 * Create a dump (snapshot of R8 inputs):
@@ -99,9 +99,9 @@ Example R8 git-bisect script:
 set -x
 CHROMIUM_SRC=/media/mheikal/code/clankium/src
 tools/gradle.py r8 || exit -1
-chmod +r $CHROMIUM_SRC/third_party/r8/lib/r8.jar
-rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar
-cp build/libs/r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+chmod +r $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
+rm -f $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
+cp build/libs/r8.jar $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
 
 cd $CHROMIUM_SRC
 exec tools/autotest.py --out-dir out/Release <Test Here>
@@ -115,7 +115,7 @@ git bisect run bash <path_to_script.sh>
 ```
 Tip: When you are done, you can delete the r8 jar and gclient sync to get back
      to ToT R8.
-     `rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar && gclient sync`
+     `rm -f $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar && gclient sync`
 
 How to submit CLs to R8:
 * Request to be added to their allowlist in order to upload CLs.
