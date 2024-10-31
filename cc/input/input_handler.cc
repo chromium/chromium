@@ -1227,6 +1227,10 @@ void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
     finished_node = OuterViewportScrollNode();
   }
 
+  if (!finished_node) {
+    return;
+  }
+
   bool was_animating_for_snap = IsAnimatingForSnap(finished_node->element_id);
   ScrollNode* latched_node = CurrentlyScrollingNode();
 
