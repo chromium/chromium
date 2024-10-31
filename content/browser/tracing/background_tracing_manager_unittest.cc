@@ -183,8 +183,6 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(kBackgroundTracingDatabase);
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
@@ -203,8 +201,6 @@ TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterDelete) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(kBackgroundTracingDatabase);
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
@@ -274,9 +270,6 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
 }
 
 TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(kBackgroundTracingDatabase);
-
   BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

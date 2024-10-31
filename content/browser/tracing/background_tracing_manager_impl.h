@@ -44,8 +44,6 @@ class ChildProcess;
 class BackgroundTracingActiveScenario;
 class TracingDelegate;
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingDatabase);
-
 class BackgroundTracingManagerImpl
     : public BackgroundTracingManager,
       public base::trace_event::NamedTriggerManager,

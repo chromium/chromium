@@ -84,13 +84,8 @@ void OpenDatabaseOnDatabaseTaskRunner(
   } else {
     success = database->OpenDatabase(*database_dir);
   }
-  std::optional<NewTraceReport> report_to_upload;
-  if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
-    report_to_upload = database->GetNextReportPendingUpload();
-  } else {
-    // Traces pending upload from previous sessions have timed out.
-    database->AllPendingUploadSkipped(SkipUploadReason::kUploadTimedOut);
-  }
+  std::optional<NewTraceReport> report_to_upload =
+      database->GetNextReportPendingUpload();
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(on_database_created),
@@ -124,30 +119,16 @@ void AddTraceOnDatabaseTaskRunner(
 
   std::string compressed_trace;
   bool success = compression::GzipCompress(serialized_trace, &compressed_trace);
-  std::optional<NewTraceReport> report_to_upload;
   if (success) {
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
                                 compressed_trace.size() / 1024);
 
-    if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
-      NewTraceReport trace_report = base_report;
-      trace_report.trace_content = std::move(compressed_trace);
-      trace_report.system_profile = std::move(serialized_system_profile);
-      success = database->AddTrace(trace_report);
-    } else {
-      // When the database is disabled, we still store the base report without
-      // the trace content proto to enable tracking of trace upload limits.
-      success = database->AddTrace(base_report);
-      if (success && base_report.skip_reason == SkipUploadReason::kNoSkip) {
-        report_to_upload = std::move(base_report);
-        report_to_upload->trace_content = std::move(compressed_trace);
-        report_to_upload->system_profile = std::move(serialized_system_profile);
-      }
-    }
+    NewTraceReport trace_report = base_report;
+    trace_report.trace_content = std::move(compressed_trace);
+    trace_report.system_profile = std::move(serialized_system_profile);
+    success = database->AddTrace(trace_report);
   }
-  if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
-    report_to_upload = database->GetNextReportPendingUpload();
-  }
+  auto report_to_upload = database->GetNextReportPendingUpload();
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_trace_saved),
                                 std::move(report_to_upload), success));
@@ -160,7 +141,6 @@ void GetProtoValueOnDatabaseTaskRunner(
                             std::optional<std::string>)> receive_callback,
     base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
         on_finalize_complete) {
-  DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
   auto trace_content = database->GetTraceContent(uuid);
   auto serialized_system_profile = database->GetSystemProfile(uuid);
   std::optional<ClientTraceReport> next_report;
@@ -188,10 +168,6 @@ class PreferenceManagerImpl
 };
 
 }  // namespace
-
-BASE_FEATURE(kBackgroundTracingDatabase,
-             "BackgroundTracingDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<BackgroundTracingManager>
