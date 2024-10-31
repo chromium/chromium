@@ -67,7 +67,6 @@ class ChromeAppKioskServiceAsh;
 class ChromeAppWindowTrackerAsh;
 class ClipboardHistoryAsh;
 class ContentProtectionAsh;
-class CrosapiDependencyRegistry;
 class DebugInterfaceRegistererAsh;
 class DeskAsh;
 class DeskProfilesAsh;
@@ -149,7 +148,7 @@ class VpnExtensionObserverAsh;
 // crosapi clients, such as lacros-chrome, can call into.
 class CrosapiAsh : public mojom::Crosapi {
  public:
-  explicit CrosapiAsh(CrosapiDependencyRegistry* registry);
+  CrosapiAsh();
   ~CrosapiAsh() override;
 
   // Binds the given receiver to this instance.

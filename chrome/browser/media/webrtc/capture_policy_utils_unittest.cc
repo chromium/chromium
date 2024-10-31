@@ -21,7 +21,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -304,7 +303,7 @@ class MultiCaptureTest
     if (!ash::LoginState::IsInitialized()) {
       ash::LoginState::Initialize();
     }
-    cros_api_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    cros_api_manager_ = std::make_unique<crosapi::CrosapiManager>();
 
     HostContentSettingsMap* content_settings =
         HostContentSettingsMapFactory::GetForProfile(profile());

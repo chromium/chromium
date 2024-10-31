@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -101,7 +100,7 @@ class EnterpriseDeviceAttributesApiAshTest
 
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
-    manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    manager_ = std::make_unique<crosapi::CrosapiManager>();
     manager_->crosapi_ash()
         ->device_attributes_ash()
         ->SetDeviceAttributesForTesting(std::move(device_attributes_));

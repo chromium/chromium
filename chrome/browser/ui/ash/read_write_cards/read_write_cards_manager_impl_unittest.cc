@@ -30,7 +30,6 @@
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -102,7 +101,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
     if (!ash::LoginState::IsInitialized()) {
       ash::LoginState::Initialize();
     }
-    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
 #endif
 
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`

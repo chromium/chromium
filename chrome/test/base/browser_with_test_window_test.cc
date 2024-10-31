@@ -45,7 +45,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -105,7 +104,7 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::IdleServiceAsh::DisableForTesting();
-  manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+  manager_ = std::make_unique<crosapi::CrosapiManager>();
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 #endif
 

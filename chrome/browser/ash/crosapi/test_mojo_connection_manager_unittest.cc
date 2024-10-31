@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -224,7 +223,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   profile->set_profile_name(account.GetUserEmail());
   user_manager.OnUserProfileCreated(account, profile->GetPrefs());
 
-  auto crosapi_manager = CreateCrosapiManagerWithTestRegistry();
+  auto crosapi_manager = std::make_unique<CrosapiManager>();
 
   // Ash-chrome queues an invitation, drop a socket and wait for connection.
   std::string socket_path =

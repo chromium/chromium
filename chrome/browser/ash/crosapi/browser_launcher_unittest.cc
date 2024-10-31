@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/chrome_features.h"
@@ -63,7 +62,7 @@ class BrowserLauncherTest : public testing::Test {
     // Settings required to create startup data.
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
-    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
     ash::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
 

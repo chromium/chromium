@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 
 namespace crosapi {
@@ -28,7 +27,7 @@ void TestCrosapiEnvironment::SetUp() {
     ash::LoginState::Initialize();
     initialized_login_state_ = true;
   }
-  crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+  crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
 }
 
 void TestCrosapiEnvironment::TearDown() {

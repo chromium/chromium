@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
-
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -110,7 +108,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
 
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
-    manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    manager_ = std::make_unique<crosapi::CrosapiManager>();
 
     dispatcher_ =
         std::make_unique<SessionStateChangedEventDispatcher>(testing_profile_);

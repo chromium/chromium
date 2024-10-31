@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/crosapi/chrome_app_window_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/debug_interface_registerer_ash.h"
 #include "chrome/browser/ash/crosapi/desk_ash.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
@@ -198,7 +197,7 @@ Profile* GetAshProfile() {
 
 }  // namespace
 
-CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
+CrosapiAsh::CrosapiAsh()
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
       automation_ash_(std::make_unique<AutomationAsh>()),
