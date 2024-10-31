@@ -28,6 +28,8 @@ namespace {
 
 using VisualAnnotationPtr = screen_ai::mojom::VisualAnnotationPtr;
 
+constexpr base::TimeDelta kOcrDelay = base::Milliseconds(100);
+
 void WaitUntilIdle(PDFiumOnDemandSearchifier* searchifier,
                    base::OnceClosure callback) {
   if (searchifier->IsIdleForTesting()) {
@@ -38,7 +40,7 @@ void WaitUntilIdle(PDFiumOnDemandSearchifier* searchifier,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaitUntilIdle, searchifier, std::move(callback)),
-      base::Milliseconds(100));
+      kOcrDelay);
 }
 
 void WaitUntilFailure(PDFiumOnDemandSearchifier* searchifier,
@@ -51,7 +53,12 @@ void WaitUntilFailure(PDFiumOnDemandSearchifier* searchifier,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaitUntilFailure, searchifier, std::move(callback)),
-      base::Milliseconds(100));
+      kOcrDelay);
+}
+
+void WaitForOneTimingCycle(base::OnceClosure callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, std::move(callback), kOcrDelay);
 }
 
 VisualAnnotationPtr CreateEmptyAnnotation() {
@@ -164,12 +171,11 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
   base::test::TestFuture<void> future;
   WaitUntilIdle(searchifier, future.GetCallback());
   ASSERT_TRUE(future.Wait());
+
+  // The page has 2 images, so the text contains 2 fake OCR results.
   ASSERT_EQ(performed_ocrs(), 2);
   EXPECT_TRUE(page.IsPageSearchified());
-
-  // The page has two images.
-  std::string page_text = GetPageText(page);
-  ASSERT_EQ(page_text, "OCR Text 0\r\nOCR Text 1");
+  ASSERT_EQ(GetPageText(page), "OCR Text 0\r\nOCR Text 1");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, PageWithImagesNoRecognizableText) {
@@ -226,6 +232,60 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
   EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 1");
   EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR Text 2");
   EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 3");
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
+  CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
+  // Load the page to trigger searchify checking.
+  page.GetPage();
+  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+
+  PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
+  ASSERT_TRUE(searchifier);
+
+  ASSERT_TRUE(searchifier->IsPageScheduled(0));
+
+  ASSERT_EQ(performed_ocrs(), 0);
+  StartSearchify(/*empty_results=*/false);
+  ASSERT_EQ(performed_ocrs(), 1);
+
+  // Check the partially Searchified state after performing 1 of 2 OCRs. There
+  // is no text, considering the OCR result has not arrived yet.
+  EXPECT_FALSE(page.IsPageSearchified());
+  ASSERT_EQ(GetPageText(page), "");
+
+  {
+    // Wait for the first OCR result to arrive.
+    base::test::TestFuture<void> future;
+    WaitForOneTimingCycle(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // OCR result arrived, but the second OCR has not finished, so the result text
+  // has been inserted into the page, but has not been committed. Thus the page
+  // knows Searchify is happening, but there is still no text.
+  EXPECT_TRUE(page.IsPageSearchified());
+  ASSERT_EQ(GetPageText(page), "");
+
+  // Unloading the page, while `searchifier` continues to do its work.
+  page.Unload();
+  ASSERT_TRUE(searchifier->IsPageScheduled(0));
+
+  // Let `searchifier` finish.
+  // TODO(crbug.com/376146225): If the test gets very unlucky, then this can
+  // crash. The chances of crashing are higher if the input PDF had more images.
+  base::test::TestFuture<void> future;
+  WaitUntilIdle(searchifier, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Searchify finished, but some OCR results have been lost.
+  // TODO(crbug.com/376303942): Avoid this and get consistent OCR results like
+  // the OnePageWithImages test case.
+  ASSERT_EQ(performed_ocrs(), 2);
+  ASSERT_EQ(GetPageText(page), "OCR Text 1");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
