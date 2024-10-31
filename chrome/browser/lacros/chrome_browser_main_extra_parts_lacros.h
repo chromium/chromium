@@ -32,7 +32,6 @@ class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class NetworkSettingsObserver;
 class TabletModePageBehavior;
-class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
 class WebKioskInstallerLacros;
 class MultitaskMenuNudgeDelegateLacros;
@@ -135,9 +134,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends lacros installation status of force-installed extensions to ash.
   std::unique_ptr<ForceInstalledTrackerLacros> force_installed_tracker_;
-
-  // Sends lacros load/unload events of Vpn extensions to ash.
-  std::unique_ptr<VpnExtensionTrackerLacros> vpn_extension_tracker_;
 
   std::unique_ptr<ChromeKioskLaunchControllerLacros>
       chrome_kiosk_launch_controller_;

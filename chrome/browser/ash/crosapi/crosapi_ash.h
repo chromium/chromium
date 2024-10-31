@@ -142,7 +142,6 @@ class WebAppServiceAsh;
 class WebKioskServiceAsh;
 class VirtualKeyboardAsh;
 class VolumeManagerAsh;
-class VpnExtensionObserverAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -623,10 +622,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return virtual_keyboard_ash_.get();
   }
 
-  VpnExtensionObserverAsh* vpn_extension_observer_ash() {
-    return vpn_extension_observer_ash_.get();
-  }
-
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
   NetworkSettingsServiceAsh* network_settings_service_ash() {
@@ -739,7 +734,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
-  std::unique_ptr<VpnExtensionObserverAsh> vpn_extension_observer_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
   std::unique_ptr<WallpaperAsh> wallpaper_ash_;
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;

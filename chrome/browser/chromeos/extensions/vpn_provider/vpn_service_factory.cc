@@ -7,25 +7,15 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#endif
 
 namespace {
 
 // Only main profile should be allowed to access the API.
 bool IsContextForMainProfile(content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!Profile::FromBrowserContext(context)->IsMainProfile()) {
-    return false;
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string user_hash =
       extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
           context);
@@ -33,7 +23,6 @@ bool IsContextForMainProfile(content::BrowserContext* context) {
       user_hash != ash::LoginState::Get()->primary_user_hash()) {
     return false;
   }
-#endif
 
   return true;
 }

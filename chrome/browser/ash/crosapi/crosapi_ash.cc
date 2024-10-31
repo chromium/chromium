@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
@@ -102,7 +103,6 @@
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
 #include "chrome/browser/ash/crosapi/volume_manager_ash.h"
-#include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -312,7 +312,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::VideoConferenceManagerAsh>()),
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
       volume_manager_ash_(std::make_unique<VolumeManagerAsh>()),
-      vpn_extension_observer_ash_(std::make_unique<VpnExtensionObserverAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       wallpaper_ash_(std::make_unique<WallpaperAsh>()),
       web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
@@ -1034,7 +1033,7 @@ void CrosapiAsh::BindVolumeManager(
 
 void CrosapiAsh::BindVpnExtensionObserver(
     mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver) {
-  vpn_extension_observer_ash_->BindReceiver(std::move(receiver));
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindVpnService(

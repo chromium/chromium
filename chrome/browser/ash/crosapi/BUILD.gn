@@ -242,8 +242,6 @@ static_library("crosapi") {
     "virtual_keyboard_ash.h",
     "volume_manager_ash.cc",
     "volume_manager_ash.h",
-    "vpn_extension_observer_ash.cc",
-    "vpn_extension_observer_ash.h",
     "vpn_service_ash.cc",
     "vpn_service_ash.h",
     "wallpaper_ash.cc",
