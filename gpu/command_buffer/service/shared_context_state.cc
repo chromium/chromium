@@ -1341,10 +1341,8 @@ std::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
     case GL_UNKNOWN_CONTEXT_RESET_ARB:
       return error::kUnknown;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::nullopt;
 }
 
 bool SharedContextState::CheckResetStatus(bool need_gl) {
@@ -1425,8 +1423,7 @@ Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
       return dawn_context_provider_->GetD3D11Device();
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 #endif

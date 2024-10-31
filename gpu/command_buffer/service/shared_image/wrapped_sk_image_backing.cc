@@ -335,7 +335,7 @@ SharedImageBackingType WrappedSkImageBacking::GetType() const {
 }
 
 void WrappedSkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool WrappedSkImageBacking::UploadFromMemory(

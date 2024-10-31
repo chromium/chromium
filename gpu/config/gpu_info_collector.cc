@@ -200,8 +200,7 @@ std::string GetDisplayTypeString(gl::DisplayType type) {
     case gl::ANGLE_METAL_NULL:
       return "ANGLE_METAL_NULL";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -234,8 +233,7 @@ std::string GetDawnBackendTypeString(wgpu::BackendType type) {
     case wgpu::BackendType::OpenGLES:
       return "OpenGLES backend";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

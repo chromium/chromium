@@ -42,8 +42,7 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
     case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace

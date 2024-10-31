@@ -204,9 +204,7 @@ void getExpectedColorAndMask(GLenum src_internal_format,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION()
-          << gl::GLEnums::GetStringEnum(src_internal_format);
-      break;
+      NOTREACHED() << gl::GLEnums::GetStringEnum(src_internal_format);
   }
 
   switch (dest_internal_format) {
@@ -281,9 +279,7 @@ void getExpectedColorAndMask(GLenum src_internal_format,
       setColor(1, 1, 1, 0, expected_mask);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << gl::GLEnums::GetStringEnum(dest_internal_format);
-      break;
+      NOTREACHED() << gl::GLEnums::GetStringEnum(dest_internal_format);
   }
 }
 
@@ -372,8 +368,7 @@ void getTextureDataAndExpectedRGBAs(FormatType src_format_type,
     }
     return;
   }
-  NOTREACHED_IN_MIGRATION() << gl::GLEnums::GetStringEnum(src_format_type.type);
-  return;
+  NOTREACHED() << gl::GLEnums::GetStringEnum(src_format_type.type);
 }
 
 }  // namespace
@@ -440,8 +435,7 @@ class GLCopyTextureCHROMIUMTest
       case GL_BGRA8_EXT:
         return GL_BGRA_EXT;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return GL_NONE;
+        NOTREACHED();
     }
   }
 

@@ -163,55 +163,47 @@ void WebGPUImplementation::SetErrorMessageCallback(
 }
 bool WebGPUImplementation::ThreadSafeShallowLockDiscardableTexture(
     uint32_t texture_id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 void WebGPUImplementation::CompleteLockDiscardableTexureOnContextThread(
     uint32_t texture_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 bool WebGPUImplementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
     uint32_t texture_id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 void* WebGPUImplementation::MapTransferCacheEntry(uint32_t serialized_size) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 void WebGPUImplementation::UnmapAndCreateTransferCacheEntry(uint32_t type,
                                                             uint32_t id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 bool WebGPUImplementation::ThreadsafeLockTransferCacheEntry(uint32_t type,
                                                             uint32_t id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 void WebGPUImplementation::UnlockTransferCacheEntries(
     const std::vector<std::pair<uint32_t, uint32_t>>& entries) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 void WebGPUImplementation::DeleteTransferCacheEntry(uint32_t type,
                                                     uint32_t id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 unsigned int WebGPUImplementation::GetTransferBufferFreeSize() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 bool WebGPUImplementation::IsJpegDecodeAccelerationSupported() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 bool WebGPUImplementation::IsWebPDecodeAccelerationSupported() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 bool WebGPUImplementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // InterfaceBase implementation.
@@ -330,7 +322,7 @@ void WebGPUImplementation::OnGpuControlReturnData(
     } break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 #endif
 }
@@ -427,8 +419,7 @@ ReservedTexture WebGPUImplementation::ReserveTexture(
   result.deviceGeneration = reserved.deviceHandle.generation;
   return result;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 #endif
 }
 

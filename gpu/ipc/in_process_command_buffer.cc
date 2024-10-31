@@ -838,15 +838,15 @@ void InProcessCommandBuffer::OnFenceSyncRelease(uint64_t release) {
 }
 
 void InProcessCommandBuffer::OnDescheduleUntilFinished() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InProcessCommandBuffer::OnRescheduleAfterFinished() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InProcessCommandBuffer::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InProcessCommandBuffer::ScheduleGrContextCleanup() {
@@ -1005,7 +1005,7 @@ void InProcessCommandBuffer::GetGpuFenceOnGpuThread(
 
 void InProcessCommandBuffer::SetLock(base::Lock*) {
   // No support for using on multiple threads.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InProcessCommandBuffer::EnsureWorkVisible() {

@@ -76,7 +76,7 @@ int MockTransferBuffer::GetResultOffset() {
 }
 
 void MockTransferBuffer::Free() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool MockTransferBuffer::HaveBuffer() const {

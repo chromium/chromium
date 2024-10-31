@@ -47,8 +47,7 @@ base::FilePath::StringType GetGpuDiskCacheSubdir(GpuDiskCacheType type) {
     case GpuDiskCacheType::kDawnGraphite:
       return FILE_PATH_LITERAL("DawnGraphiteCache");
   }
-  NOTREACHED_IN_MIGRATION();
-  return FILE_PATH_LITERAL("");
+  NOTREACHED();
 }
 
 GpuDiskCacheType GetHandleType(const GpuDiskCacheHandle& handle) {

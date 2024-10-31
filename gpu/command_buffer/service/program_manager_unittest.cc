@@ -386,7 +386,7 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
                   vertex_variables[ii].static_use, vertex_variables[ii].name));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 
@@ -432,7 +432,7 @@ class ProgramManagerWithShaderTest : public ProgramManagerTestBase {
                   fragment_variables[ii].name));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 

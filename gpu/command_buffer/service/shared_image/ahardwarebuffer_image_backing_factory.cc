@@ -174,8 +174,7 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
     return AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  NOTREACHED();
 }
 
 constexpr SharedImageUsageSet kSupportedUsage =
@@ -486,8 +485,7 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 

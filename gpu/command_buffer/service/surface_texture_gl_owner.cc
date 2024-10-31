@@ -140,9 +140,7 @@ gl::GLSurface* SurfaceTextureGLOwner::GetSurface() const {
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 SurfaceTextureGLOwner::GetAHardwareBuffer() {
-  NOTREACHED_IN_MIGRATION()
-      << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
-  return nullptr;
+  NOTREACHED() << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
 }
 
 bool SurfaceTextureGLOwner::GetCodedSizeAndVisibleRect(

@@ -207,8 +207,7 @@ bool GpuControlList::Version::Contains(const std::string& version_string,
         return false;
       return Version::Compare(version, ref_version2, style) <= 0;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

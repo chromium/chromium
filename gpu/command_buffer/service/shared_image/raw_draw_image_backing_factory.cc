@@ -56,8 +56,7 @@ RawDrawImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> data) {
-  NOTREACHED_IN_MIGRATION() << "Not supported";
-  return nullptr;
+  NOTREACHED() << "Not supported";
 }
 
 std::unique_ptr<SharedImageBacking>

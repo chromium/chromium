@@ -21,8 +21,7 @@ bool IsGLContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsWebGLContextType(ContextType context_type) {
@@ -38,8 +37,7 @@ bool IsWebGLContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsWebGL1OrES2ContextType(ContextType context_type) {
@@ -55,8 +53,7 @@ bool IsWebGL1OrES2ContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsWebGL2OrES3ContextType(ContextType context_type) {
@@ -72,8 +69,7 @@ bool IsWebGL2OrES3ContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsWebGL2OrES3OrHigherContextType(ContextType context_type) {
@@ -89,8 +85,7 @@ bool IsWebGL2OrES3OrHigherContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsES31ForTestingContextType(ContextType context_type) {
@@ -106,8 +101,7 @@ bool IsES31ForTestingContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsWebGPUContextType(ContextType context_type) {
@@ -123,8 +117,7 @@ bool IsWebGPUContextType(ContextType context_type) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const char* ContextTypeToLabel(ContextType context_type) {
@@ -144,8 +137,7 @@ const char* ContextTypeToLabel(ContextType context_type) {
       return "WEBGPU";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "BadGLContext";
+  NOTREACHED();
 }
 
 ContextCreationAttribs::ContextCreationAttribs() = default;

@@ -600,14 +600,13 @@ SharedImageInterfaceInProcess::CreateSwapChain(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     gpu::SharedImageUsageSet usage) {
-  NOTREACHED_IN_MIGRATION();
-  return SharedImageInterface::SwapChainSharedImages(nullptr, nullptr);
+  NOTREACHED();
 }
 
 void SharedImageInterfaceInProcess::PresentSwapChain(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -617,7 +616,7 @@ void SharedImageInterfaceInProcess::RegisterSysmemBufferCollection(
     const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -748,8 +747,7 @@ SharedImageInterfaceInProcess::ImportSharedImage(
     const ExportedSharedImage& exported_shared_image) {
   // Secondary references are required only by client processes, so it shouldn't
   // be reachable here.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace gpu

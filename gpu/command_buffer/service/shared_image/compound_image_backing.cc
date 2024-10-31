@@ -768,8 +768,7 @@ CompoundImageBacking::ElementHolder& CompoundImageBacking::GetElement(
       return element;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return elements_.back();
+  NOTREACHED();
 }
 
 SharedImageBacking* CompoundImageBacking::GetBacking(

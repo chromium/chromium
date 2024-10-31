@@ -134,7 +134,7 @@ void MappedMemoryManager::Free(void* pointer) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MappedMemoryManager::FreePendingToken(void* pointer, int32_t token) {
@@ -144,7 +144,7 @@ void MappedMemoryManager::FreePendingToken(void* pointer, int32_t token) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MappedMemoryManager::FreeUnused() {

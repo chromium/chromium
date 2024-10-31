@@ -62,8 +62,7 @@ class FeatureInfoTest
                                            "OpenGL ES 3.0");
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -74,8 +73,7 @@ class FeatureInfoTest
       case ES3_on_Version3_0:
         return CONTEXT_TYPE_OPENGLES3;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return CONTEXT_TYPE_OPENGLES2;
+        NOTREACHED();
     }
   }
 

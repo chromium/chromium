@@ -71,8 +71,7 @@ const char* ImageDecodeAcceleratorTypeToString(
     case gpu::ImageDecodeAcceleratorType::kUnknown:
       return "Unknown";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid ImageDecodeAcceleratorType.";
-  return "";
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorType.";
 }
 
 const char* ImageDecodeAcceleratorSubsamplingToString(

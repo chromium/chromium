@@ -137,8 +137,7 @@ gfx::GpuMemoryBufferHandle
 OzoneImageBacking::GetSinglePlaneGpuMemoryBufferHandle(uint32_t index) {
   gfx::GpuMemoryBufferHandle gmb_handle = GetGpuMemoryBufferHandle();
 #if BUILDFLAG(IS_FUCHSIA)
-  NOTREACHED_IN_MIGRATION() << "Cannot get single plane from GPU memory buffer";
-  return gmb_handle;
+  NOTREACHED() << "Cannot get single plane from GPU memory buffer";
 #else
   DCHECK(gmb_handle.native_pixmap_handle.modifier == 0);
   auto& planes = gmb_handle.native_pixmap_handle.planes;
@@ -194,8 +193,7 @@ OzoneImageBacking::ProduceSkiaGraphite(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -364,8 +362,7 @@ OzoneImageBacking::ProduceSkiaGanesh(
         manager, this, std::move(context_state), std::move(vulkan_images),
         tracker);
 #else
-    NOTREACHED_IN_MIGRATION() << "Vulkan is disabled.";
-    return nullptr;
+    NOTREACHED() << "Vulkan is disabled.";
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   }
   NOTIMPLEMENTED_LOG_ONCE();

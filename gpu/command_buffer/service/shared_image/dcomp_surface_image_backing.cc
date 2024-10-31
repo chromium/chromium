@@ -119,9 +119,8 @@ class DCompSurfaceImageBacking::D3DTextureGLSurfaceEGL
 
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
                               gfx::FrameData data) override {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Attempted to call SwapBuffers on a D3DTextureGLSurfaceEGL.";
-    return gfx::SwapResult::SWAP_FAILED;
   }
 
   gfx::Size GetSize() override { return size_; }
@@ -409,7 +408,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDrawGanesh(
       framebuffer_info.fFormat = GL_BGRA8_EXT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "color_type: " << color_type;
+      NOTREACHED() << "color_type: " << color_type;
   }
 
   auto render_target = GrBackendRenderTargets::MakeGL(

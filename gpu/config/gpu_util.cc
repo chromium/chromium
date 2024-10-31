@@ -114,8 +114,7 @@ inline D3D11FeatureLevel ConvertToHistogramD3D11FeatureLevel(
     case D3D_FEATURE_LEVEL_12_2:
       return D3D11FeatureLevel::k12_2;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return D3D11FeatureLevel::kUnknown;
+      NOTREACHED();
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

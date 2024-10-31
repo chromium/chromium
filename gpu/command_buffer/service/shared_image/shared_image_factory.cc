@@ -104,7 +104,7 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
     case gfx::ANDROID_HARDWARE_BUFFER:
       return "platform";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::GpuMemoryBufferType GetNativeBufferType() {

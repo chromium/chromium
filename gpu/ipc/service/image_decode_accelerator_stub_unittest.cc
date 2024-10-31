@@ -153,8 +153,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -167,8 +166,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       std::string debug_label,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

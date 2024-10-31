@@ -1998,8 +1998,7 @@ GLES2DecoderPassthroughImpl::PatchGetFramebufferAttachmentParameter(
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } break;
 
@@ -2188,8 +2187,7 @@ bool GLES2DecoderPassthroughImpl::CheckResetStatus() {
       MarkContextLost(error::kUnknown);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   reset_by_robustness_extension_ = true;
   return true;
@@ -2428,8 +2426,7 @@ void GLES2DecoderPassthroughImpl::ReadBackBuffersIntoShadowCopies(
     if (!resources_->buffer_id_map.GetServiceID(client_id, &service_id)) {
       // Buffer no longer exists, this shadow update should have been removed by
       // DoDeleteBuffers
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     const auto& update = u.second;

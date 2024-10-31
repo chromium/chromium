@@ -73,8 +73,7 @@ GLuint GetServiceId(const TextureUnit& unit, GLuint target) {
     case GL_TEXTURE_EXTERNAL_OES:
       return GetOesServiceId(unit);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -90,8 +89,7 @@ bool TargetIsSupported(const FeatureInfo* feature_info, GLuint target) {
       return feature_info->feature_flags().oes_egl_image_external ||
              feature_info->feature_flags().nv_egl_stream_consumer_external;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -132,8 +130,7 @@ bool Vec4::Equal(const Vec4& other) const {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return true;
 }
@@ -155,8 +152,7 @@ void Vec4::GetValues<GLfloat>(GLfloat* values) const {
         values[ii] = static_cast<GLfloat>(v_[ii].uint_value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -177,8 +173,7 @@ void Vec4::GetValues<GLint>(GLint* values) const {
         values[ii] = static_cast<GLint>(v_[ii].uint_value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -199,8 +194,7 @@ void Vec4::GetValues<GLuint>(GLuint* values) const {
         values[ii] = v_[ii].uint_value;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -524,8 +518,7 @@ void ContextState::RestoreVertexAttribValues() const {
         api()->glVertexAttribI4uivFn(attrib, v);
       } break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -772,8 +765,7 @@ void ContextState::SetBoundBuffer(GLenum target, Buffer* buffer) {
         buffer->OnBind(target, false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

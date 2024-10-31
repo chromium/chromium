@@ -26,7 +26,7 @@ struct GPU_EXPORT
       case gpu::SchedulingPriority::kLow:
         return gpu::mojom::SchedulingPriority::kNormal;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

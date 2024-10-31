@@ -540,8 +540,7 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
       "SIFServiceUtils ToDawnFormat error");
   crash_reporter::ScopedCrashKeyString crash_key_scope(&crash_key,
                                                        format.ToString());
-  NOTREACHED_IN_MIGRATION() << "Unsupported format: " << format.ToString();
-  return wgpu::TextureFormat::Undefined;
+  NOTREACHED() << "Unsupported format: " << format.ToString();
 }
 
 wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,

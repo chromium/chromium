@@ -823,10 +823,7 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
     return GetDawnBackendType() == wgpu::BackendType::Vulkan;
   }
 #else
-  wgpu::BackendType GetDawnBackendType() const {
-    NOTREACHED_IN_MIGRATION();
-    return wgpu::BackendType::Undefined;
-  }
+  wgpu::BackendType GetDawnBackendType() const { NOTREACHED(); }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  protected:

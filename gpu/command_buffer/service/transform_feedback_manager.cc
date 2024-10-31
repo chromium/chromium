@@ -122,8 +122,7 @@ bool TransformFeedback::GetVerticesNeededForDraw(GLenum mode,
           checked_primcount * (checked_count - checked_count % 2);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case GL_POINTS:
       checked_vertices += checked_primcount * checked_count;
   }

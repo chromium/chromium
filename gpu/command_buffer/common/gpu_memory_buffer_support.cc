@@ -56,8 +56,7 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace gpu

@@ -147,8 +147,7 @@ void QueryShaderPrecisionFormat(GLenum shader_type,
       *precision = 23;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // This function is sometimes defined even though it's really just
@@ -481,8 +480,7 @@ error::ContextLostReason GetContextLostReasonFromResetStatus(
       return error::kUnknown;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return error::kUnknown;
+  NOTREACHED();
 }
 
 bool GetCompressedTexSizeInBytes(const char* function_name,
@@ -1274,8 +1272,7 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
     case GL_TEXTURE_CUBE_MAP:
       return GL_TEXTURE_BINDING_CUBE_MAP;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

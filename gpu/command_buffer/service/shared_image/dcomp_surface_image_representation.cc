@@ -89,8 +89,7 @@ DCompSurfaceSkiaGaneshImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<skgpu::MutableTextureState>* end_state) {
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 std::vector<sk_sp<GrPromiseImageTexture>>
@@ -98,12 +97,11 @@ DCompSurfaceSkiaGaneshImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<skgpu::MutableTextureState>* end_state) {
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 void DCompSurfaceSkiaGaneshImageRepresentation::EndReadAccess() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DCompSurfaceDawnImageRepresentation::DCompSurfaceDawnImageRepresentation(

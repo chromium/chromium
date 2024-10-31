@@ -437,7 +437,7 @@ void TestSharedImageInterface::VerifySyncToken(SyncToken& sync_token) {
 }
 
 void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestSharedImageInterface::Flush() {

@@ -1786,7 +1786,7 @@ class StateSetNamedParameter(TypeHandler):
       f.write("      }\n")
       f.write("      break;\n")
     f.write("    default:\n")
-    f.write("      NOTREACHED_IN_MIGRATION();\n")
+    f.write("      NOTREACHED();\n")
     f.write("  }\n")
 
   def WriteImmediateCmdInit(self, func, f):
@@ -6470,8 +6470,7 @@ class GLGenerator():
 
       f.write("""\
               default:
-                NOTREACHED_IN_MIGRATION();
-                return;
+                NOTREACHED();
             }
             if (enable)
               api()->glEnableFn(cap);
@@ -6720,8 +6719,7 @@ void ContextState::InitState(const ContextState *prev_state) const {
         f.write("    case GL_%s:\n" % capability['name'].upper())
         f.write("      return enable_flags.%s;\n" % capability['name'])
       f.write("""    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 """)
@@ -6816,8 +6814,7 @@ bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
               return false;
               """ % capability)
         f.write("""    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 """)

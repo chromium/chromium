@@ -681,10 +681,8 @@ gfx::GpuMemoryBufferHandle ExternalVkImageBacking::GetGpuMemoryBufferHandle() {
   handle.native_pixmap_handle = pixmap_->ExportHandle();
   return handle;
 #else
-  LOG(ERROR) << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
-                "platforms from this backing.";
-  NOTREACHED_IN_MIGRATION();
-  return gfx::GpuMemoryBufferHandle();
+  NOTREACHED() << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
+                  "platforms from this backing.";
 #endif
 }
 

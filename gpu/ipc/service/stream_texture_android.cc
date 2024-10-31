@@ -156,8 +156,7 @@ void StreamTexture::NotifyOverlayPromotion(bool promotion,
                                            const gfx::Rect& bounds) {}
 
 bool StreamTexture::RenderToOverlay() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StreamTexture::TextureOwnerBindsTextureOnUpdate() {
