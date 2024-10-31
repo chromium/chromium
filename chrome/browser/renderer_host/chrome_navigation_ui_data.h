@@ -85,6 +85,13 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   std::optional<int64_t> bookmark_id() { return bookmark_id_; }
   void set_bookmark_id(std::optional<int64_t> id) { bookmark_id_ = id; }
 
+  bool navigation_initiated_from_sync() {
+    return navigation_initiated_from_sync_;
+  }
+  void set_navigation_initiated_from_sync(bool navigation_initiated_from_sync) {
+    navigation_initiated_from_sync_ = navigation_initiated_from_sync;
+  }
+
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Manages the lifetime of optional ExtensionNavigationUIData information.
@@ -116,6 +123,13 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 
   // Id of the bookmark which started this navigation.
   std::optional<int64_t> bookmark_id_ = std::nullopt;
+
+  // True if the navigation was initiated in response to a sync message. This is
+  // used in tab group sync to identify the sync initiated navigations and
+  // blocking them from sending back to sync which would otherwise cause
+  // ping-pong issue. They will still be allowed to load locally like a normal
+  // navigation.
+  bool navigation_initiated_from_sync_ = false;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_NAVIGATION_UI_DATA_H_

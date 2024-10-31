@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
@@ -57,6 +58,16 @@ bool IsUserTriggeredMainFrameNavigation(
   return true;
 }
 
+bool WasNavigationInitiatedFromSync(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle) {
+    return false;
+  }
+  ChromeNavigationUIData* ui_data = static_cast<ChromeNavigationUIData*>(
+      navigation_handle->GetNavigationUIData());
+  return ui_data && ui_data->navigation_initiated_from_sync();
+}
+
 }  // namespace
 
 void SavedTabGroupWebContentsListener::OnTabDiscarded(
@@ -73,8 +84,7 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::NavigationHandle* navigation_handle)
     : service_(service),
       saved_tab_group_tab_id_(saved_tab_group_tab_id),
-      local_tab_(local_tab),
-      handle_from_sync_update_(navigation_handle) {
+      local_tab_(local_tab) {
   tab_discard_subscription_ = local_tab->RegisterWillDiscardContents(
       base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
                           base::Unretained(this)));
@@ -105,12 +115,14 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
     return;
   }
 
-  content::NavigationHandle* navigation_handle =
-      contents()
-          ->GetController()
-          .LoadURLWithParams(content::NavigationController::LoadURLParams(url))
-          .get();
-  handle_from_sync_update_ = navigation_handle;
+  // Start loading the URL. Mark the navigation as sync initiated to avoid ping
+  // pong issues.
+  content::NavigationController::LoadURLParams params(url);
+  auto navigation_ui_data = std::make_unique<ChromeNavigationUIData>();
+  navigation_ui_data->set_navigation_initiated_from_sync(true);
+  params.navigation_ui_data = std::move(navigation_ui_data);
+
+  contents()->GetController().LoadURLWithParams(params).get();
 }
 
 content::WebContents* SavedTabGroupWebContentsListener::contents() const {
@@ -131,8 +143,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
 
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
-  if (navigation_handle == handle_from_sync_update_) {
-    handle_from_sync_update_ = nullptr;
+  if (WasNavigationInitiatedFromSync(navigation_handle)) {
     // Create a tab state to indicate that the tab is restricted.
     TabGroupSyncTabState::Create(contents());
     return;

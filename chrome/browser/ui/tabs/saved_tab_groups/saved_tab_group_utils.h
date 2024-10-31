@@ -108,6 +108,10 @@ class SavedTabGroupUtils {
       std::optional<int> tabstrip_index = std::nullopt,
       std::optional<tab_groups::TabGroupId> local_group_id = std::nullopt);
 
+  // Returns whether a navigation was initiated from sync.
+  static bool WasNavigationInitiatedFromSync(
+      content::NavigationHandle* navigation_handle);
+
   // Returns the Browser that contains a local group with id `group_id`.
   static Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id);
 

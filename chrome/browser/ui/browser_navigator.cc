@@ -454,10 +454,13 @@ base::WeakPtr<content::NavigationHandle> LoadURLInContents(
         params->url_typed_with_http_scheme ||
         params->captive_portal_window_type !=
             captive_portal::CaptivePortalWindowType::kNone;
-    load_url_params.navigation_ui_data =
+    std::unique_ptr<ChromeNavigationUIData> navigation_ui_data =
         ChromeNavigationUIData::CreateForMainFrameNavigation(
             target_contents, params->disposition,
             params->is_using_https_as_default_scheme, force_no_https_upgrade);
+    navigation_ui_data->set_navigation_initiated_from_sync(
+        params->navigation_initiated_from_sync);
+    load_url_params.navigation_ui_data = std::move(navigation_ui_data);
   }
 
   if (params->post_data) {

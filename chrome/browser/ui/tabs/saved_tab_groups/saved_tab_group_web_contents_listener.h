@@ -85,10 +85,6 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   // The subscription to the tab discarding callback in the `local_tab_`.
   base::CallbackListSubscription tab_discard_subscription_;
-
-  // The NavigationHandle that resulted from the last sync update. Ignored by
-  // `DidFinishNavigation` to prevent synclones.
-  raw_ptr<content::NavigationHandle> handle_from_sync_update_ = nullptr;
 };
 
 }  // namespace tab_groups
