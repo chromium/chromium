@@ -27,9 +27,14 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                  blink::AcceleratedImageInfo> {
-  static const gpu::ExportedSharedImage& shared_image(
+  static const gpu::MailboxHolder& mailbox_holder(
       const blink::AcceleratedImageInfo& input) {
-    return input.shared_image;
+    return input.mailbox_holder;
+  }
+
+  static gpu::SharedImageUsageSet usage(
+      const blink::AcceleratedImageInfo& input) {
+    return input.usage;
   }
 
   static SkImageInfo image_info(const blink::AcceleratedImageInfo& input) {

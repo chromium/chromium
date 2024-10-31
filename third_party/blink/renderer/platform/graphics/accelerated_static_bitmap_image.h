@@ -18,7 +18,6 @@ struct SkImageInfo;
 
 namespace gpu {
 class ClientSharedImage;
-struct ExportedSharedImage;
 }  // namespace gpu
 
 namespace blink {
@@ -74,13 +73,13 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       bool supports_display_compositing,
       bool is_overlay_candidate);
 
-  // Creates an image wrapping an external shared image.
-  // The shared image may come from a different context,
+  // Creates an image wrapping an external mailbox.
+  // The mailbox may come from a different context,
   // potentially from a different process.
-  // This takes ownership of the shared image.
-  static scoped_refptr<AcceleratedStaticBitmapImage>
-  CreateFromExternalSharedImage(
-      const gpu::ExportedSharedImage& exported_shared_image,
+  // This takes ownership of the mailbox.
+  static scoped_refptr<AcceleratedStaticBitmapImage> CreateFromExternalMailbox(
+      const gpu::MailboxHolder& mailbox_holder,
+      gpu::SharedImageUsageSet usage,
       const SkImageInfo& sk_image_info,
       bool is_origin_top_left,
       bool supports_display_compositing,
