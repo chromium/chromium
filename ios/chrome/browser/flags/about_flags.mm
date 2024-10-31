@@ -2037,6 +2037,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayEnableLocationBarEntrypointDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensOverlayEnableLocationBarEntrypoint)},
+    {"lens-overlay-disable-price-insights",
+     flag_descriptions::kLensOverlayDisablePriceInsightsName,
+     flag_descriptions::kLensOverlayDisablePriceInsightsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayDisablePriceInsights)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

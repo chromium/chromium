@@ -621,6 +621,13 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+extern const char kLensOverlayDisablePriceInsightsName[] =
+    "Allow Lens overlay to disable price insights";
+extern const char kLensOverlayDisablePriceInsightsDescription[] =
+    "When enabled, price insights is disabled. The price insight entrypoint "
+    "trumps lens overlay entrypoint in the location bar. This should only be "
+    "used for experiments.";
+
 extern const char kLensOverlayEnableIPadCompatibilityName[] =
     "Allow Lens overlay to also run on iPad devices if the feature is enabled";
 extern const char kLensOverlayEnableIPadCompatibilityDescription[] =

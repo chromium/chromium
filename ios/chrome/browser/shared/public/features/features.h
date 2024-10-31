@@ -312,6 +312,11 @@ extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 // default.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);
 
+// Feature flag to disable price insights for a lens overlay experiment. As the
+// price insights entrypoint trumps the lens overlay entrypoint. This flag
+// should only be used for experiment.
+BASE_DECLARE_FEATURE(kLensOverlayDisablePriceInsights);
+
 // Feature to force allow iPad support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 
