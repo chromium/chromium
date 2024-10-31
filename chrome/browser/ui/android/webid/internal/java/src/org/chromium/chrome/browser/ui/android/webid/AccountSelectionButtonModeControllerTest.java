@@ -35,6 +35,9 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -258,5 +261,80 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         // this is a returning account, we cannot skip directly to signing in because we have to
         // show browser UI in the flow so we show the account chooser.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testShowErrorDialogClickGotIt() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpData,
+                /* isAutoReauthn= */ false,
+                mNewAccountsSingleReturningAccount);
+        mMediator.showErrorDialog(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                mIdpMetadata,
+                RpContext.SIGN_IN,
+                mTokenErrorEmptyUrl);
+
+        assertEquals(
+                ModalDialogManager.ModalDialogType.APP, mMockModalDialogManager.getDialogType());
+        final PropertyModel model = mMockModalDialogManager.getDialogModel();
+        assertNotNull(model);
+        assertEquals(
+                mContext.getString(R.string.signin_error_dialog_got_it_button),
+                model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
+                model.get(ModalDialogProperties.BUTTON_STYLES));
+
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+        mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.POSITIVE);
+        assertNull(mMockModalDialogManager.getDialogModel());
+        assertEquals(-1, mMockModalDialogManager.getDialogType());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
+        assertTrue(mMediator.wasDismissed());
+    }
+
+    @Test
+    public void testShowErrorDialogClickMoreDetails() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpData,
+                /* isAutoReauthn= */ false,
+                mNewAccountsSingleReturningAccount);
+        mMediator.showErrorDialog(
+                mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, RpContext.SIGN_IN, mTokenError);
+
+        assertEquals(
+                ModalDialogManager.ModalDialogType.APP, mMockModalDialogManager.getDialogType());
+        final PropertyModel model = mMockModalDialogManager.getDialogModel();
+        assertNotNull(model);
+        assertEquals(
+                mContext.getString(R.string.signin_error_dialog_got_it_button),
+                model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(
+                mContext.getString(R.string.signin_error_dialog_more_details_button),
+                model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+                model.get(ModalDialogProperties.BUTTON_STYLES));
+
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+        mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.NEGATIVE);
+        assertNull(mMockModalDialogManager.getDialogModel());
+        assertEquals(-1, mMockModalDialogManager.getDialogType());
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
+        assertTrue(mMediator.wasDismissed());
     }
 }

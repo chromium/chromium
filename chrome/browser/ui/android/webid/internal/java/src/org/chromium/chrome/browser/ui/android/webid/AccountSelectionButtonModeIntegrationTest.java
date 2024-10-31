@@ -40,8 +40,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
@@ -53,6 +55,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -905,6 +909,30 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         runOnUiThreadBlocking(
                 () -> sheetSupport.setSheetState(BottomSheetController.SheetState.FULL, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+    }
+
+    @Test
+    @MediumTest
+    public void testErrorDialogDismissesCallsCallback() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showErrorDialog(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            IDP_METADATA,
+                            RpContext.SIGN_IN,
+                            TOKEN_ERROR);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
+
+        ModalDialogManager dialogManager =
+                mActivityTestRule.getActivity().getModalDialogManagerSupplier().get();
+        CriteriaHelper.pollUiThread(() -> dialogManager.isShowing());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> dialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN));
+
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
     private void clickFirstAccountInAccountsList() {

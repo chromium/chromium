@@ -270,9 +270,7 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  // TODO(crbug.com/347117752): Implement active mode error dialog.
-  if (rp_mode == blink::mojom::RpMode::kActive ||
-      !MaybeCreateJavaObject(rp_mode)) {
+  if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.

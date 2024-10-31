@@ -137,7 +137,9 @@ public class AccountSelectionCoordinator
                         mBottomSheetContent,
                         imageFetcher,
                         avatarSize,
-                        rpMode);
+                        rpMode,
+                        context,
+                        windowAndroid.getModalDialogManager());
 
         // If this object is corresponding to the custom tab opened by showModalDialog, this
         // is the first chance to associate it with the opener, so do so now.
