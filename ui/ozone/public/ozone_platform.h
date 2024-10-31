@@ -225,6 +225,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // scaling.
     bool supports_per_window_scaling = false;
 
+    // Whether status icon windows (with a wm_role_name of
+    // ui::kStatusIconWmRoleName) are supported.
+    bool supports_system_tray_windowing = false;
+
     // Allows overriding whether per window scaling is enabled in tests.
     static SupportsForTest override_supports_per_window_scaling_for_test;
   };

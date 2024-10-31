@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace {
 
@@ -53,6 +54,12 @@ void StatusIconButtonLinux::UpdatePlatformContextMenu(ui::MenuModel* model) {
 }
 
 void StatusIconButtonLinux::OnSetDelegate() {
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_system_tray_windowing) {
+    return;
+  }
+
   widget_ = std::make_unique<StatusIconWidget>();
 
   const int width = std::max(1, delegate_->GetImage().width());
