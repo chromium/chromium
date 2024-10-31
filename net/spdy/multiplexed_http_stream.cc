@@ -30,9 +30,7 @@ void MultiplexedHttpStream::SaveSSLInfo() {
 }
 
 void MultiplexedHttpStream::Drain(HttpNetworkSession* session) {
-  NOTREACHED_IN_MIGRATION();
-  Close(false);
-  delete this;
+  NOTREACHED();
 }
 
 std::unique_ptr<HttpStream> MultiplexedHttpStream::RenewStreamForAuth() {

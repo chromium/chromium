@@ -80,7 +80,7 @@ void BidirectionalStreamSpdyImpl::Start(
 
 void BidirectionalStreamSpdyImpl::SendRequestHeaders() {
   // Request headers will be sent automatically.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int BidirectionalStreamSpdyImpl::ReadData(IOBuffer* buf, int buf_len) {

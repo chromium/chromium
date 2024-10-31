@@ -85,9 +85,8 @@ std::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
     case static_cast<int>(net::SiteType::kService):
       return net::SiteType::kService;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown SiteType: " << value;
+      NOTREACHED() << "Unknown SiteType: " << value;
   }
-  return std::nullopt;
 }
 
 std::string FirstPartySetEntry::GetDebugString() const {

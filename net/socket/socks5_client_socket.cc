@@ -104,15 +104,13 @@ bool SOCKS5ClientSocket::WasEverUsed() const {
 NextProto SOCKS5ClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();
-  NOTREACHED_IN_MIGRATION();
-  return kProtoUnknown;
+  NOTREACHED();
 }
 
 bool SOCKS5ClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   if (transport_socket_)
     return transport_socket_->GetSSLInfo(ssl_info);
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int64_t SOCKS5ClientSocket::GetTotalReceivedBytes() const {
@@ -248,9 +246,7 @@ int SOCKS5ClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::SOCKS5_HANDSHAKE_READ, rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
   return rv;
@@ -393,7 +389,7 @@ int SOCKS5ClientSocket::DoHandshakeWriteComplete(int result) {
   } else if (bytes_sent_ < buffer_.size()) {
     next_state_ = STATE_HANDSHAKE_WRITE;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return OK;

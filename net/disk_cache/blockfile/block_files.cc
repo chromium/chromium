@@ -118,8 +118,7 @@ bool BlockHeader::CreateMapBlock(int size, int* index) {
 
 void BlockHeader::DeleteMapBlock(int index, int size) {
   if (size < 0 || size > kMaxNumBlocks) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   int byte_index = index / 8;
   uint8_t* byte_map = reinterpret_cast<uint8_t*>(header_->allocation_map);

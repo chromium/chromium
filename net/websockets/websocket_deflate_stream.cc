@@ -204,7 +204,7 @@ void WebSocketDeflateStream::OnMessageStart(
       writing_state_ = WRITING_POSSIBLY_COMPRESSED_MESSAGE;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int WebSocketDeflateStream::AppendCompressedFrame(

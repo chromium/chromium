@@ -3855,7 +3855,7 @@ TEST_P(SpdyNetworkTransactionTest, BufferFull) {
     if (rv > 0) {
       content.append(buf->data(), rv);
     } else if (rv < 0) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } while (rv > 0);
 

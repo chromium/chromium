@@ -529,8 +529,7 @@ std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
     case NetLogCaptureMode::kEverything:
       return "Everything";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN";
+  NOTREACHED();
 }
 
 FileNetLogObserver::WriteQueue::WriteQueue(uint64_t memory_max)

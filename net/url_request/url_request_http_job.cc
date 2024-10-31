@@ -577,8 +577,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
     case NetworkDelegate::PrivacySetting::kStateDisallowed:
       return PRIVACY_MODE_ENABLED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PRIVACY_MODE_ENABLED;
+  NOTREACHED();
 }
 
 void URLRequestHttpJob::NotifyHeadersComplete() {
@@ -1486,8 +1485,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
         break;
       case SourceStream::TYPE_NONE:
       case SourceStream::TYPE_UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
     if (downstream == nullptr)
       return nullptr;
@@ -1800,9 +1798,8 @@ IPEndPoint URLRequestHttpJob::GetResponseRemoteEndpoint() const {
 
 void URLRequestHttpJob::RecordTimer() {
   if (request_creation_time_.is_null()) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "The same transaction shouldn't start twice without new timing.";
-    return;
   }
 
   base::TimeDelta to_start = base::Time::Now() - request_creation_time_;
@@ -1829,8 +1826,7 @@ void URLRequestHttpJob::RecordTimer() {
 
 void URLRequestHttpJob::ResetTimer() {
   if (!request_creation_time_.is_null()) {
-    NOTREACHED_IN_MIGRATION() << "The timer was reset before it was recorded.";
-    return;
+    NOTREACHED() << "The timer was reset before it was recorded.";
   }
   request_creation_time_ = base::Time::Now();
 }

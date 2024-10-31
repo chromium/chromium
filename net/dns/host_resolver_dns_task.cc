@@ -364,7 +364,7 @@ void HostResolverDnsTask::OnTimeout() {
       default:
         // The timeout timer is only started when all other transactions have
         // completed.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -450,9 +450,6 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
         /*original_domain_name=*/host_.GetHostnameWithoutBrackets(),
         request_port);
   }
-
-  DCHECK_NE(results.error_or(DnsResponseResultExtractor::ExtractionError::kOk),
-            DnsResponseResultExtractor::ExtractionError::kUnexpected);
 
   if (!results.has_value()) {
     net_log_.AddEvent(
@@ -794,7 +791,7 @@ void HostResolverDnsTask::HandleTransactionResults(
         break;
       default:
         // Only expect address query types with multiple transactions.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -995,7 +992,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
     }
   } else {
     // Unhandled supplemental type.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   base::TimeDelta timeout;

@@ -23,8 +23,7 @@ const char* RequestPriorityToString(RequestPriority priority) {
     case HIGHEST:
       return "HIGHEST";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN_PRIORITY";
+  NOTREACHED();
 }
 
 }  // namespace net

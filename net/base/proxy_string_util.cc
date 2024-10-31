@@ -128,8 +128,7 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
                                      proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -195,8 +194,7 @@ std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
                                      proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

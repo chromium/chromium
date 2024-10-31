@@ -39,9 +39,7 @@ NetworkChangeNotifier::ConnectionType ConvertConnectionType(
     case NetworkChangeNotifier::CONNECTION_BLUETOOTH:
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown connection type received: " << connection_type;
-      return NetworkChangeNotifier::CONNECTION_UNKNOWN;
+      NOTREACHED() << "Unknown connection type received: " << connection_type;
   }
   return static_cast<NetworkChangeNotifier::ConnectionType>(connection_type);
 }
@@ -56,9 +54,7 @@ NetworkChangeNotifier::ConnectionCost ConvertConnectionCost(
     case NetworkChangeNotifier::CONNECTION_COST_METERED:
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown connection cost received: " << connection_cost;
-      return NetworkChangeNotifier::CONNECTION_COST_UNKNOWN;
+      NOTREACHED() << "Unknown connection cost received: " << connection_cost;
   }
   return static_cast<NetworkChangeNotifier::ConnectionCost>(connection_cost);
 }

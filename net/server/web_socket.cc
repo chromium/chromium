@@ -167,7 +167,7 @@ void WebSocket::Send(std::string_view message,
 
     default:
       // Only Pong and Text frame types are supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   server_->SendRaw(connection_->id(), encoded, traffic_annotation);
 }

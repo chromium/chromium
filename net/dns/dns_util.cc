@@ -121,8 +121,7 @@ std::string CreateNamePointer(uint16_t offset) {
 uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {
   switch (dns_query_type) {
     case DnsQueryType::UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     case DnsQueryType::A:
       return dns_protocol::kTypeA;
     case DnsQueryType::AAAA:
@@ -147,8 +146,7 @@ DnsQueryType AddressFamilyToDnsQueryType(AddressFamily address_family) {
     case ADDRESS_FAMILY_IPV6:
       return DnsQueryType::AAAA;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return DnsQueryType::UNSPECIFIED;
+      NOTREACHED();
   }
 }
 

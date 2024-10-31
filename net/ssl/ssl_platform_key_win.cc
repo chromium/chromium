@@ -132,8 +132,7 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
         hash_alg = CALG_SHA_512;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return ERR_FAILED;
+        NOTREACHED();
     }
 
     crypto::ScopedHCRYPTHASH hash_handle;
@@ -323,8 +322,7 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
           hash_alg = BCRYPT_SHA512_ALGORITHM;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          return ERR_FAILED;
+          NOTREACHED();
       }
       if (SSL_is_signature_algorithm_rsa_pss(algorithm)) {
         pss_padding_info.pszAlgId = hash_alg;

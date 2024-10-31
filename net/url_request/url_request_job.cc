@@ -206,34 +206,33 @@ bool URLRequestJob::NeedsAuth() {
 std::unique_ptr<AuthChallengeInfo> URLRequestJob::GetAuthChallengeInfo() {
   // This will only be called if NeedsAuth() returns true, in which
   // case the derived class should implement this!
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void URLRequestJob::SetAuth(const AuthCredentials& credentials) {
   // This will only be called if NeedsAuth() returns true, in which
   // case the derived class should implement this!
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void URLRequestJob::CancelAuth() {
   // This will only be called if NeedsAuth() returns true, in which
   // case the derived class should implement this!
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void URLRequestJob::ContinueWithCertificate(
     scoped_refptr<X509Certificate> client_cert,
     scoped_refptr<SSLPrivateKey> client_private_key) {
   // The derived class should implement this!
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void URLRequestJob::ContinueDespiteLastError() {
   // Implementations should know how to recover from errors they generate.
   // If this code was reached, we are trying to recover from an error that
   // we don't know how to recover from.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int64_t URLRequestJob::prefilter_bytes_read() const {
@@ -376,8 +375,7 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
       return GURL();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return GURL();
+  NOTREACHED();
 }
 
 int URLRequestJob::NotifyConnected(const TransportInfo& info,

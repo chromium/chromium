@@ -153,8 +153,7 @@ RegistryLengthOutput GetRegistryLengthInTrimmedHost(
       // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
       // on the PSL, which is why it returns the length of foo.invalid. This
       // isn't entirely correct.
-      NOTREACHED_IN_MIGRATION() << "Invalid exception rule";
-      return {length, false};
+      NOTREACHED() << "Invalid exception rule";
     }
     return {host.length() - first_dot - 1, false};
   }
@@ -348,8 +347,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return canonical_rcd_len;
+  NOTREACHED();
 }
 
 bool SameDomainOrHost(std::string_view host1,
@@ -457,8 +455,7 @@ bool HostHasRegistryControlledDomain(std::string_view host,
               .registry_length;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   return (rcd_length != 0) && (rcd_length != std::string::npos);
 }

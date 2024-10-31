@@ -255,10 +255,8 @@ bool SetCertTrust(CERTCertificate* nsscert,
   if ((trustBits & kSSLTrustBits) == kSSLTrustBits ||
       (trustBits & kEmailTrustBits) == kEmailTrustBits ||
       (trustBits & kObjSignTrustBits) == kObjSignTrustBits) {
-    LOG(ERROR) << "SetCertTrust called with conflicting trust bits "
-               << trustBits;
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED() << "SetCertTrust called with conflicting trust bits "
+                 << trustBits;
   }
 
   SECStatus srv;

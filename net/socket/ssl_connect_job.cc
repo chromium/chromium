@@ -125,8 +125,7 @@ LoadState SSLConnectJob::GetLoadState() const {
     case STATE_SSL_CONNECT_COMPLETE:
       return LOAD_STATE_SSL_HANDSHAKE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return LOAD_STATE_IDLE;
+      NOTREACHED();
   }
 }
 
@@ -226,9 +225,7 @@ int SSLConnectJob::DoLoop(int result) {
         rv = DoSSLConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
@@ -459,8 +456,7 @@ SSLConnectJob::State SSLConnectJob::GetInitialState(
     case SSLSocketParams::SOCKS_PROXY:
       return STATE_SOCKS_CONNECT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return STATE_NONE;
+  NOTREACHED();
 }
 
 int SSLConnectJob::ConnectInternal() {

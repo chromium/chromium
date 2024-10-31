@@ -263,8 +263,7 @@ int HostResolverManager::RequestImpl::DoLoop(int rv) {
         rv = DoFinishRequest(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "next_state_: " << next_state_;
-        break;
+        NOTREACHED() << "next_state_: " << next_state_;
     }
   } while (next_state_ != STATE_NONE && rv != ERR_IO_PENDING);
 

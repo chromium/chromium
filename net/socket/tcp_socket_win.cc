@@ -857,7 +857,7 @@ void TCPSocketWin::StartLoggingMultipleConnectAttempts(
     logging_multiple_connect_attempts_ = true;
     LogConnectBegin(addresses);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -866,7 +866,7 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
     LogConnectEnd(net_error);
     logging_multiple_connect_attempts_ = false;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -904,12 +904,7 @@ int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
 
   IPEndPoint ip_end_point;
   if (!ip_end_point.FromSockAddr(storage.addr, storage.addr_len)) {
-    NOTREACHED_IN_MIGRATION();
-    if (closesocket(new_socket) < 0)
-      PLOG(ERROR) << "closesocket";
-    int net_error = ERR_ADDRESS_INVALID;
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT, net_error);
-    return net_error;
+    NOTREACHED();
   }
   auto tcp_socket =
       TCPSocketWin::Create(nullptr, net_log_.net_log(), net_log_.source());
@@ -989,13 +984,8 @@ int TCPSocketWin::DoConnect() {
     //   WSAGetLastError will return WSAEWOULDBLOCK.
     // which implies that for a nonblocking socket, connect never returns 0.
     // It's not documented whether the event object will be signaled or not
-    // if connect does return 0.  So the code below is essentially dead code
-    // and we don't know if it's correct.
-    NOTREACHED_IN_MIGRATION();
-
-    if (ResetEventIfSignaled(core_->GetConnectEvent())) {
-      return OK;
-    }
+    // if connect does return 0.
+    NOTREACHED();
   } else {
     int os_error = WSAGetLastError();
     if (os_error != WSAEWOULDBLOCK) {

@@ -530,8 +530,7 @@ DBCookiePriority CookiePriorityToDBCookiePriority(CookiePriority value) {
       return kCookiePriorityHigh;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kCookiePriorityMedium;
+  NOTREACHED();
 }
 
 CookiePriority DBCookiePriorityToCookiePriority(DBCookiePriority value) {
@@ -544,8 +543,7 @@ CookiePriority DBCookiePriorityToCookiePriority(DBCookiePriority value) {
       return COOKIE_PRIORITY_HIGH;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return COOKIE_PRIORITY_DEFAULT;
+  NOTREACHED();
 }
 
 // Possible values for the 'samesite' column
@@ -1690,8 +1688,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }

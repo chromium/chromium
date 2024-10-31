@@ -79,8 +79,7 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
         // the list. Additionally |kChannelBindings| and |kTargetName| pairs
         // would have been rejected during the initial parsing. See
         // |NtlmBufferReader::ReadTargetInfo|.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       default:
         // Ignore entries we don't care about.
         break;

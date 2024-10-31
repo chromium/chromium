@@ -305,8 +305,7 @@ std::string HttpAuthHandlerDigest::QopToString(QualityOfProtection qop) {
     case QOP_AUTH:
       return "auth";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -324,8 +323,7 @@ std::string HttpAuthHandlerDigest::AlgorithmToString(Algorithm algorithm) {
     case Algorithm::SHA256_SESS:
       return "SHA-256-sess";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

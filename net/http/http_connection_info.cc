@@ -16,8 +16,7 @@ std::string_view HttpConnectionInfoToString(
     case HttpConnectionInfo::kHTTP1_1:
       return "http/1.1";
     case HttpConnectionInfo::kDEPRECATED_SPDY2:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     case HttpConnectionInfo::kDEPRECATED_SPDY3:
       return "spdy/3";
     // Since ConnectionInfo is persisted to disk, deprecated values have to be

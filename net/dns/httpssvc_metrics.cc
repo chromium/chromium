@@ -39,7 +39,7 @@ enum HttpssvcDnsRcode TranslateDnsRcodeForHttpssvcExperiment(uint8_t rcode) {
     default:
       return HttpssvcDnsRcode::kUnrecognizedRcode;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 HttpssvcMetrics::HttpssvcMetrics(bool secure) : secure_(secure) {}

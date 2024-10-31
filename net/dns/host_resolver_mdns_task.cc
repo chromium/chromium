@@ -105,7 +105,7 @@ class HostResolverMdnsTask::Transaction {
         break;
       default:
         // No other results should be possible with the request flags used.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     results_ = HostResolverMdnsTask::ParseResult(error, query_type_, parsed,
@@ -210,8 +210,7 @@ HostCache::Entry HostResolverMdnsTask::ParseResult(
       // Not supported.
       // TODO(ericorth@chromium.org): Consider support for HTTPS in mDNS if it
       // is ever decided to support HTTPS via non-DoH.
-      NOTREACHED_IN_MIGRATION();
-      return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
+      NOTREACHED();
     case DnsQueryType::A:
       return HostCache::Entry(
           OK, {IPEndPoint(parsed->rdata<net::ARecordRdata>()->address(), 0)},

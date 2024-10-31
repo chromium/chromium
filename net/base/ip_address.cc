@@ -568,7 +568,7 @@ size_t CommonPrefixLength(const IPAddress& a1, const IPAddress& a2) {
         return i * CHAR_BIT + j;
       diff <<= 1;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return a1.size() * CHAR_BIT;
 }

@@ -196,7 +196,7 @@ void URLRequest::Delegate::OnSSLCertificateError(URLRequest* request,
 
 void URLRequest::Delegate::OnResponseStarted(URLRequest* request,
                                              int net_error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -761,8 +761,7 @@ int URLRequest::CancelWithError(int error) {
 void URLRequest::CancelWithSSLError(int error, const SSLInfo& ssl_info) {
   // This should only be called on a started request.
   if (!is_pending_ || !job_.get() || job_->has_response_started()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   DoCancel(error, ssl_info);
 }
@@ -1138,10 +1137,7 @@ void URLRequest::SetPriority(RequestPriority priority) {
   DCHECK_LE(priority, MAXIMUM_PRIORITY);
 
   if ((load_flags() & LOAD_IGNORE_LIMITS) && (priority != MAXIMUM_PRIORITY)) {
-    NOTREACHED_IN_MIGRATION();
-    // Maintain the invariant that requests with IGNORE_LIMITS set
-    // have MAXIMUM_PRIORITY for release mode.
-    return;
+    NOTREACHED();
   }
 
   if (priority_ == priority)

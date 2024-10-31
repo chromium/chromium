@@ -276,8 +276,7 @@ LoadState HttpProxyConnectJob::GetLoadState() const {
       return LOAD_STATE_ESTABLISHING_PROXY_TUNNEL;
     // This state shouldn't be possible to be called in.
     case STATE_TRANSPORT_CONNECT:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case STATE_BEGIN_CONNECT:
     case STATE_NONE:
       // May be possible for this method to be called after an error, shouldn't
@@ -328,7 +327,7 @@ void HttpProxyConnectJob::OnNeedsProxyAuth(
   // challenges. Instead, the challenges are returned by the ProxyClientSocket
   // implementations after nested_connect_job_ has already established a
   // connection.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
@@ -453,9 +452,7 @@ int HttpProxyConnectJob::DoLoop(int result) {
         rv = DoRestartWithAuthComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
@@ -480,7 +477,7 @@ int HttpProxyConnectJob::DoBeginConnect() {
       next_state_ = STATE_TRANSPORT_CONNECT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return OK;
 }

@@ -121,8 +121,7 @@ base::Value::Dict NetLogSSLMessageParams(bool is_write,
                                          size_t len,
                                          NetLogCaptureMode capture_mode) {
   if (len == 0) {
-    NOTREACHED_IN_MIGRATION();
-    return base::Value::Dict();
+    NOTREACHED();
   }
 
   base::Value::Dict dict;
@@ -508,8 +507,7 @@ int64_t SSLClientSocketImpl::GetTotalReceivedBytes() const {
 void SSLClientSocketImpl::GetSSLCertRequestInfo(
     SSLCertRequestInfo* cert_request_info) const {
   if (!ssl_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   cert_request_info->host_and_port = host_and_port_;
@@ -1067,9 +1065,7 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
     //
     // See section 6.1.7 of draft-ietf-tls-esni-13.
     if (HostIsIPAddressNoBrackets(ech_name_override)) {
-      NOTREACHED_IN_MIGRATION();
-      OpenSSLPutNetError(FROM_HERE, ERR_INVALID_ECH_CONFIG_LIST);
-      return ssl_verify_invalid;
+      NOTREACHED();
     }
   }
 
@@ -1198,8 +1194,7 @@ int SSLClientSocketImpl::CheckCTRequirements() {
       return OK;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return OK;
+  NOTREACHED();
 }
 
 void SSLClientSocketImpl::DoConnectCallback(int rv) {
@@ -1241,9 +1236,7 @@ int SSLClientSocketImpl::DoHandshakeLoop(int last_io_result) {
         break;
       case STATE_NONE:
       default:
-        rv = ERR_UNEXPECTED;
-        NOTREACHED_IN_MIGRATION() << "unexpected state" << state;
-        break;
+        NOTREACHED() << "unexpected state" << state;
     }
   } while (rv != ERR_IO_PENDING && next_handshake_state_ != STATE_NONE);
   return rv;

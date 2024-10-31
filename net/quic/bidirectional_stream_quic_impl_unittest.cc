@@ -378,7 +378,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
     TestDelegateBase::OnHeadersReceived(headers_copy);
   }
 
-  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataSent() override { NOTREACHED(); }
 
   void OnDataRead(int bytes_read) override {
     DCHECK_NE(ON_HEADERS_RECEIVED, phase_);

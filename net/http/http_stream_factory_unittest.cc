@@ -463,14 +463,12 @@ class WebSocketStreamCreateHelper
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 
@@ -1235,12 +1233,12 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
     response_headers_ = response_headers.Clone();
     loop_.Quit();
   }
-  void OnDataRead(int bytes_read) override { NOTREACHED_IN_MIGRATION(); }
-  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataRead(int bytes_read) override { NOTREACHED(); }
+  void OnDataSent() override { NOTREACHED(); }
   void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void OnFailed(int error) override { NOTREACHED_IN_MIGRATION(); }
+  void OnFailed(int error) override { NOTREACHED(); }
   base::RunLoop loop_;
   quiche::HttpHeaderBlock response_headers_;
 };

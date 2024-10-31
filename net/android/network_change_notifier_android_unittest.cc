@@ -256,8 +256,7 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
         delegate_.FakeDefaultNetwork(network, type);
         break;
       case NONE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     // See comment above.
     base::RunLoop().RunUntilIdle();

@@ -180,8 +180,7 @@ void GenerateCrash(CrashLocation location) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 #endif  // NDEBUG
 }
@@ -639,9 +638,7 @@ void Rankings::ConvertToLongLived(CacheRankingsBlock* rankings) {
 void Rankings::CompleteTransaction() {
   Addr node_addr(static_cast<CacheAddr>(control_data_->transaction));
   if (!node_addr.is_initialized() || node_addr.is_separate_file()) {
-    NOTREACHED_IN_MIGRATION();
-    LOG(ERROR) << "Invalid rankings info.";
-    return;
+    NOTREACHED() << "Invalid rankings info.";
   }
 
   CacheRankingsBlock node(backend_->File(node_addr), node_addr);
@@ -658,8 +655,7 @@ void Rankings::CompleteTransaction() {
   } else if (REMOVE == control_data_->operation) {
     RevertRemove(&node);
   } else {
-    NOTREACHED_IN_MIGRATION();
-    LOG(ERROR) << "Invalid operation to recover.";
+    NOTREACHED() << "Invalid operation to recover.";
   }
 }
 
@@ -690,10 +686,7 @@ void Rankings::RevertRemove(CacheRankingsBlock* node) {
     return;
   }
   if (next_addr.is_separate_file() || prev_addr.is_separate_file()) {
-    NOTREACHED_IN_MIGRATION();
-    LOG(WARNING) << "Invalid rankings info.";
-    control_data_->transaction = 0;
-    return;
+    NOTREACHED() << "Invalid rankings info.";
   }
 
   CacheRankingsBlock next(backend_->File(next_addr), next_addr);

@@ -232,9 +232,7 @@ int TransportConnectJob::DoLoop(int result) {
         rv = DoTransportConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED();
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 

@@ -165,12 +165,10 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
     CFArrayAppendValue(chain.get(), SecTrustGetCertificateAtIndex(trust, i));
   }
   return chain;
-
 #else
   // The other logic paths should be used, this is just to make the compiler
   // happy.
-  NOTREACHED_IN_MIGRATION();
-  return base::apple::ScopedCFTypeRef<CFArrayRef>(nullptr);
+  NOTREACHED();
 #endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
         // MAC_OS_VERSION_12_0)
         // || (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED <

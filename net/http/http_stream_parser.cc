@@ -428,8 +428,7 @@ int HttpStreamParser::DoLoop(int result) {
         result = DoReadBodyComplete(result);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } while (result != ERR_IO_PENDING &&
            (io_state_ != STATE_DONE && io_state_ != STATE_NONE));

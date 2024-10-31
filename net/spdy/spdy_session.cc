@@ -451,10 +451,9 @@ SpdyProtocolErrorDetails MapFramerErrorToProtocolError(
       return SPDY_ERROR_STOP_PROCESSING;
 
     case http2::Http2DecoderAdapter::LAST_ERROR:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<SpdyProtocolErrorDetails>(-1);
+  NOTREACHED();
 }
 
 Error MapFramerErrorToNetError(
@@ -506,10 +505,9 @@ Error MapFramerErrorToNetError(
     case http2::Http2DecoderAdapter::SPDY_OVERSIZED_PAYLOAD:
       return ERR_HTTP2_FRAME_SIZE_ERROR;
     case http2::Http2DecoderAdapter::LAST_ERROR:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return ERR_HTTP2_PROTOCOL_ERROR;
+  NOTREACHED();
 }
 
 SpdyProtocolErrorDetails MapRstStreamStatusToProtocolError(
@@ -544,8 +542,7 @@ SpdyProtocolErrorDetails MapRstStreamStatusToProtocolError(
     case spdy::ERROR_CODE_HTTP_1_1_REQUIRED:
       return STATUS_CODE_HTTP_1_1_REQUIRED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<SpdyProtocolErrorDetails>(-1);
+  NOTREACHED();
 }
 
 spdy::SpdyErrorCode MapNetErrorToGoAwayStatus(Error err) {
@@ -1098,8 +1095,7 @@ std::unique_ptr<SpdyBuffer> SpdySession::CreateDataBuffer(
   CHECK_EQ(stream->stream_id(), stream_id);
 
   if (len < 0) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   *effective_len = std::min(len, kMaxSpdyFrameChunkSize);
@@ -1222,8 +1218,7 @@ void SpdySession::CloseActiveStream(spdy::SpdyStreamId stream_id, int status) {
 
   auto it = active_streams_.find(stream_id);
   if (it == active_streams_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CloseActiveStreamIterator(it, status);
@@ -1235,8 +1230,7 @@ void SpdySession::CloseCreatedStream(const base::WeakPtr<SpdyStream>& stream,
 
   auto it = created_streams_.find(stream.get());
   if (it == created_streams_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CloseCreatedStreamIterator(it, status);
@@ -1249,8 +1243,7 @@ void SpdySession::ResetStream(spdy::SpdyStreamId stream_id,
 
   auto it = active_streams_.find(stream_id);
   if (it == active_streams_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ResetStreamIterator(it, error, description);
@@ -1846,8 +1839,7 @@ int SpdySession::DoReadLoop(ReadState expected_read_state, int result) {
         result = DoReadComplete(result);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "read_state_: " << read_state_;
-        break;
+        NOTREACHED() << "read_state_: " << read_state_;
     }
 
     if (availability_state_ == STATE_DRAINING)
@@ -1987,8 +1979,7 @@ int SpdySession::DoWriteLoop(WriteState expected_write_state, int result) {
         break;
       case WRITE_STATE_IDLE:
       default:
-        NOTREACHED_IN_MIGRATION() << "write_state_: " << write_state_;
-        break;
+        NOTREACHED() << "write_state_: " << write_state_;
     }
 
     if (write_state_ == WRITE_STATE_IDLE) {
@@ -2046,8 +2037,7 @@ int SpdySession::DoWrite() {
 
     in_flight_write_ = producer->ProduceBuffer();
     if (!in_flight_write_) {
-      NOTREACHED_IN_MIGRATION();
-      return ERR_UNEXPECTED;
+      NOTREACHED();
     }
     in_flight_write_frame_type_ = frame_type;
     in_flight_write_frame_size_ = in_flight_write_->GetRemainingSize();

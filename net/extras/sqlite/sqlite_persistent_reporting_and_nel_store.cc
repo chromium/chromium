@@ -944,8 +944,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
       // There are no UPDATE_DETAILS operations for NEL policies.
       // TODO(chlily): Maybe add the ability to update details as opposed to
       // removing and re-adding every time; it might be slightly more efficient.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return true;
@@ -1039,8 +1038,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::
     default:
       // There are no UPDATE_ACCESS_TIME operations for Reporting endpoints
       // because their access times are not tracked.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return true;
@@ -1259,7 +1257,7 @@ void SQLitePersistentReportingAndNelStore::Backend::OnOperationBatched(
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
             base::Milliseconds(kCommitIntervalMs))) {
-      NOTREACHED_IN_MIGRATION() << "background_task_runner_ is not running.";
+      NOTREACHED() << "background_task_runner_ is not running.";
     }
   } else if (num_pending >= kCommitAfterBatchSize) {
     // We've reached a big enough batch, fire off a commit now.

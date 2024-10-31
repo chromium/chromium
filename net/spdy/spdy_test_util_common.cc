@@ -975,7 +975,7 @@ void SpdyTestUtil::UpdateWithStreamDestruction(int stream_id) {
       }
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static

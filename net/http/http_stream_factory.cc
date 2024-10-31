@@ -280,7 +280,7 @@ void HttpStreamFactory::OnJobControllerComplete(JobController* controller) {
   if (it != job_controller_set_.end()) {
     job_controller_set_.erase(it);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

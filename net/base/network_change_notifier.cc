@@ -440,8 +440,7 @@ double NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
     case SUBTYPE_OTHER:
       return std::numeric_limits<double>::infinity();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::numeric_limits<double>::infinity();
+  NOTREACHED();
 }
 
 // static
@@ -516,8 +515,7 @@ base::cstring_view NetworkChangeNotifier::ConnectionTypeToString(
                     NetworkChangeNotifier::CONNECTION_LAST + 1,
                 "ConnectionType name count should match");
   if (type < CONNECTION_UNKNOWN || type > CONNECTION_LAST) {
-    NOTREACHED_IN_MIGRATION();
-    return "CONNECTION_INVALID";
+    NOTREACHED();
   }
   return kConnectionTypeNames[type];
 }

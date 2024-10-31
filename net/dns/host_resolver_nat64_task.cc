@@ -80,9 +80,7 @@ int HostResolverNat64Task::DoLoop(int result) {
         rv = DoSynthesizeToIpv6();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED();
     }
   } while (rv != ERR_IO_PENDING && next_state_ != State::kStateNone);
   return rv;

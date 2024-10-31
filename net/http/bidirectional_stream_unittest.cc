@@ -341,12 +341,11 @@ class DeleteStreamDelegate : public TestDelegateBase {
     }
   }
 
-  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataSent() override { NOTREACHED(); }
 
   void OnDataRead(int bytes_read) override {
     if (phase_ == ON_HEADERS_RECEIVED) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     TestDelegateBase::OnDataRead(bytes_read);
     if (phase_ == ON_DATA_READ) {
@@ -357,8 +356,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     if (phase_ == ON_HEADERS_RECEIVED || phase_ == ON_DATA_READ) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     TestDelegateBase::OnTrailersReceived(trailers);
     if (phase_ == ON_TRAILERS_RECEIVED) {
@@ -369,8 +367,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnFailed(int error) override {
     if (phase_ != ON_FAILED) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     TestDelegateBase::OnFailed(error);
     DeleteStream();

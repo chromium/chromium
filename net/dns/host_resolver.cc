@@ -300,8 +300,7 @@ HostResolver::ManagerOptions::~ManagerOptions() = default;
 
 const std::vector<bool>*
 HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
@@ -329,8 +328,7 @@ std::unique_ptr<HostResolver::ProbeRequest>
 HostResolver::CreateDohProbeRequest() {
   // Should be overridden in any HostResolver implementation where this method
   // may be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<HostResolver::MdnsListener> HostResolver::CreateMdnsListener(
@@ -338,8 +336,7 @@ std::unique_ptr<HostResolver::MdnsListener> HostResolver::CreateMdnsListener(
     DnsQueryType query_type) {
   // Should be overridden in any HostResolver implementation where this method
   // may be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 HostCache* HostResolver::GetHostCache() {
@@ -353,21 +350,19 @@ base::Value::Dict HostResolver::GetDnsConfigAsValue() const {
 void HostResolver::SetRequestContext(URLRequestContext* request_context) {
   // Should be overridden in any HostResolver implementation where this method
   // may be called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 HostResolverManager* HostResolver::GetManagerForTesting() {
   // Should be overridden in any HostResolver implementation where this method
   // may be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const URLRequestContext* HostResolver::GetContextForTesting() const {
   // Should be overridden in any HostResolver implementation where this method
   // may be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 handles::NetworkHandle HostResolver::GetTargetNetworkForTesting() const {

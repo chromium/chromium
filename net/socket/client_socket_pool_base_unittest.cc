@@ -239,8 +239,7 @@ class MockClientSocketFactory : public ClientSocketFactory {
       DatagramSocket::BindType bind_type,
       NetLog* net_log,
       const NetLogSource& source) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
@@ -460,9 +459,7 @@ class TestConnectJob : public ConnectJob {
         DoAdvanceAuthChallenge(2, false /* succeed_after_last_challenge */);
         return ERR_IO_PENDING;
       default:
-        NOTREACHED_IN_MIGRATION();
-        SetSocket(std::unique_ptr<StreamSocket>(), std::nullopt);
-        return ERR_FAILED;
+        NOTREACHED();
     }
   }
 

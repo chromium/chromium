@@ -434,10 +434,8 @@ ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
     case WEBSOCKET_SOCKET_POOL:
       return websocket_socket_pool_manager_.get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 void HttpNetworkSession::OnMemoryPressure(

@@ -294,7 +294,7 @@ int BackendImpl::SyncInit() {
   trace_object_->EnableTracing(false);
   int sc = SelfCheck();
   if (sc < 0 && sc != ERR_NUM_ENTRIES_MISMATCH)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   trace_object_->EnableTracing(true);
 #endif
 
@@ -1420,8 +1420,7 @@ bool BackendImpl::InitStats() {
   }
 
   if (!address.is_block_file()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Load the required data.

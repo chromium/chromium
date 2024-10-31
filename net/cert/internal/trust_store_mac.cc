@@ -87,8 +87,7 @@ bssl::CertificateTrust TrustStatusToCertificateTrust(TrustStatus trust_status) {
     case TrustStatus::UNKNOWN:
       // UNKNOWN is an implementation detail of TrustImpl and should never be
       // returned.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return bssl::CertificateTrust::ForUnspecified();
@@ -441,8 +440,7 @@ class TrustDomainCacheFullCerts {
         domain_name = "Admin";
         break;
       case kSecTrustSettingsDomainSystem:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     base::UmaHistogramCounts1000(
         base::StrCat(

@@ -482,8 +482,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
       case 'H':
         return COOKIE_PRIORITY_HIGH;
     }
-    NOTREACHED_IN_MIGRATION();
-    return COOKIE_PRIORITY_DEFAULT;
+    NOTREACHED();
   }
 
   // Instantiates a CookieMonster, adds multiple cookies (to http_www_foo_)

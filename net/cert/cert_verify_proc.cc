@@ -307,8 +307,7 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // InspectSignatureAlgorithmsInChain() sets |verify_result->has_*| based on

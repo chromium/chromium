@@ -157,8 +157,7 @@ int WebSocketHttp2HandshakeStream::ReadResponseBody(
     CompletionOnceCallback callback) {
   // Callers should instead call Upgrade() to get a WebSocketStream
   // and call ReadFrames() on that.
-  NOTREACHED_IN_MIGRATION();
-  return OK;
+  NOTREACHED();
 }
 
 void WebSocketHttp2HandshakeStream::Close(bool not_reusable) {

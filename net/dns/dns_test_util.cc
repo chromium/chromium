@@ -652,8 +652,7 @@ class MockDnsTransactionFactory::MockDohProbeRunner : public DnsProbeRunner {
 
   base::TimeDelta GetDelayUntilNextProbeForTest(
       size_t doh_server_index) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::TimeDelta();
+    NOTREACHED();
   }
 
  private:
@@ -833,7 +832,7 @@ DnsConfigOverrides MockDnsClient::GetConfigOverridesForTesting() const {
 
 void MockDnsClient::SetTransactionFactoryForTesting(
     std::unique_ptr<DnsTransactionFactory> factory) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockDnsClient::SetAddressSorterForTesting(

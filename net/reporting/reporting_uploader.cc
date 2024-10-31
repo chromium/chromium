@@ -311,7 +311,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
         HandlePayloadResponse(std::move(upload), response_code);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -349,7 +349,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
   void OnReadCompleted(URLRequest* request, int bytes_read) override {
     // Reporting doesn't need anything in the body of the response, so it
     // doesn't read it, so it should never get OnReadCompleted calls.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   int GetPendingUploadCountForTesting() const override {

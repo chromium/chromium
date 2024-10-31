@@ -82,8 +82,7 @@ LoadState SOCKSConnectJob::GetLoadState() const {
     case STATE_SOCKS_CONNECT_COMPLETE:
       return LOAD_STATE_CONNECTING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return LOAD_STATE_IDLE;
+      NOTREACHED();
   }
 }
 
@@ -118,7 +117,7 @@ void SOCKSConnectJob::OnNeedsProxyAuth(
     base::OnceClosure restart_with_auth_callback,
     ConnectJob* job) {
   // A SOCKSConnectJob can't be on top of an HttpProxyConnectJob.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int SOCKSConnectJob::DoLoop(int result) {
@@ -144,9 +143,7 @@ int SOCKSConnectJob::DoLoop(int result) {
         rv = DoSOCKSConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 

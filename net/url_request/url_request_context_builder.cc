@@ -569,8 +569,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           backend_type = CACHE_BACKEND_SIMPLE;
           break;
         case HttpCacheParams::IN_MEMORY:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       http_cache_backend = std::make_unique<HttpCache::DefaultBackend>(
           DISK_CACHE, backend_type, http_cache_params_.file_operations_factory,

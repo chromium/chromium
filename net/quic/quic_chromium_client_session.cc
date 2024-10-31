@@ -700,8 +700,7 @@ int QuicChromiumClientSession::StreamRequest::DoLoop(int rv) {
         rv = DoRequestStreamComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "next_state_: " << next_state_;
-        break;
+        NOTREACHED() << "next_state_: " << next_state_;
     }
   } while (next_state_ != STATE_NONE && next_state_ && rv != ERR_IO_PENDING);
 
@@ -1344,8 +1343,7 @@ bool QuicChromiumClientSession::ShouldCreateOutgoingBidirectionalStream() {
 }
 
 bool QuicChromiumClientSession::ShouldCreateOutgoingUnidirectionalStream() {
-  NOTREACHED_IN_MIGRATION() << "Try to create outgoing unidirectional streams";
-  return false;
+  NOTREACHED() << "Try to create outgoing unidirectional streams";
 }
 
 bool QuicChromiumClientSession::WasConnectionEverUsed() {
@@ -1355,15 +1353,12 @@ bool QuicChromiumClientSession::WasConnectionEverUsed() {
 
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateOutgoingBidirectionalStream() {
-  NOTREACHED_IN_MIGRATION()
-      << "CreateOutgoingReliableStreamImpl should be called directly";
-  return nullptr;
+  NOTREACHED() << "CreateOutgoingReliableStreamImpl should be called directly";
 }
 
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateOutgoingUnidirectionalStream() {
-  NOTREACHED_IN_MIGRATION() << "Try to create outgoing unidirectional stream";
-  return nullptr;
+  NOTREACHED() << "Try to create outgoing unidirectional stream";
 }
 
 QuicChromiumClientStream*
@@ -1486,8 +1481,7 @@ bool QuicChromiumClientSession::CanPool(
   }
   SSLInfo ssl_info;
   if (!GetSSLInfo(&ssl_info) || !ssl_info.cert.get()) {
-    NOTREACHED_IN_MIGRATION() << "QUIC should always have certificates.";
-    return false;
+    NOTREACHED() << "QUIC should always have certificates.";
   }
 
   return SpdySession::CanPool(transport_security_state_, ssl_info,

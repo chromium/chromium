@@ -143,7 +143,7 @@ void WebSocketSpdyStreamAdapter::OnHeadersSent() {
 void WebSocketSpdyStreamAdapter::OnEarlyHintsReceived(
     const quiche::HttpHeaderBlock& headers) {
   // This callback should not be called for a WebSocket handshake.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebSocketSpdyStreamAdapter::OnHeadersReceived(

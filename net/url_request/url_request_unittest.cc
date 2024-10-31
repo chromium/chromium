@@ -599,8 +599,7 @@ int BlockingNetworkDelegate::MaybeBlockStage(
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // OCSPErrorTestDelegate caches the SSLInfo passed to OnSSLCertificateError.
@@ -3912,8 +3911,7 @@ class URLRequestTestHTTP : public URLRequestTest {
 
     std::unique_ptr<URLRequestJob> CreateJob(
         URLRequest* request) const override {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
 
     bool IsSafeRedirectTarget(const GURL& location) const override {
@@ -4257,7 +4255,7 @@ void NetworkDelegateCancelRequest(BlockingNetworkDelegate::BlockMode block_mode,
     } else if (stage == BlockingNetworkDelegate::ON_HEADERS_RECEIVED) {
       EXPECT_TRUE(r->proxy_chain().is_direct());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     EXPECT_EQ(ERR_BLOCKED_BY_CLIENT, d.request_status());
     EXPECT_EQ(1, network_delegate.created_requests());

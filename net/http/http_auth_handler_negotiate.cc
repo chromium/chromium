@@ -335,9 +335,7 @@ int HttpAuthHandlerNegotiate::DoLoop(int result) {
         rv = DoGenerateAuthTokenComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 

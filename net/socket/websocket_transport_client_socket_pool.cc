@@ -258,8 +258,7 @@ base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
 bool WebSocketTransportClientSocketPool::HasActiveSocket(
     const GroupId& group_id) const {
   // This method is not supported for WebSocket.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool WebSocketTransportClientSocketPool::IsStalled() const {
@@ -490,7 +489,7 @@ void WebSocketTransportClientSocketPool::ConnectJobDelegate::OnNeedsProxyAuth(
     base::OnceClosure restart_with_auth_callback,
     ConnectJob* job) {
   // This class isn't used for proxies.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int WebSocketTransportClientSocketPool::ConnectJobDelegate::Connect(

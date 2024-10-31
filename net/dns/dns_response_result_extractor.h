@@ -44,8 +44,6 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
     kMultipleCnames,
     // Invalid alias chain, e.g. contains loops or disjoint aliases.
     kBadAliasChain,
-    // Not expected. Used for DCHECKs.
-    kUnexpected,
   };
 
   using ResultsOrError =

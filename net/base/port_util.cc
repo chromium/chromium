@@ -166,10 +166,11 @@ ScopedPortException::ScopedPortException(int port) : port_(port) {
 
 ScopedPortException::~ScopedPortException() {
   auto it = g_explicitly_allowed_ports.Get().find(port_);
-  if (it != g_explicitly_allowed_ports.Get().end())
+  if (it != g_explicitly_allowed_ports.Get().end()) {
     g_explicitly_allowed_ports.Get().erase(it);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 }
 
 NET_EXPORT bool IsAllowablePort(int port) {

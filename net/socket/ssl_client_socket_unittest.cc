@@ -2987,7 +2987,7 @@ TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
               ssl_info.handshake_type);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }
