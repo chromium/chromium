@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -14,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 
 import android.view.ViewGroup;
 
@@ -183,6 +186,28 @@ public class TabSwitcherSearchTest {
 
         ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
         verifySuggestions(suggestions, urlsToOpen, null);
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchActivityBackButton() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+
+        // Click the back button which is setup as the status view icon.
+        onView(withId(R.id.location_bar_status)).perform(click());
+
+        // Check that the tab switcher is now fully showing again.
+        onView(
+                        allOf(
+                                isDescendantOfA(
+                                        withId(
+                                                getTabSwitcherAncestorId(
+                                                        mActivityTestRule.getActivity()))),
+                                withId(R.id.tab_list_recycler_view)))
+                .check(matches(isCompletelyDisplayed()));
     }
 
     private void verifySuggestions(

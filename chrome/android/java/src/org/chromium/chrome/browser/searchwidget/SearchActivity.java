@@ -671,7 +671,13 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void setHubSearchBoxVisualElements() {
-        mLocationBarCoordinator.getStatusCoordinator().setShowStatusView(false);
+        mLocationBarCoordinator
+                .getStatusCoordinator()
+                .setOnStatusIconNavigateBackButtonPress(
+                        (View v) ->
+                                finish(
+                                        TerminationReason.BACK_KEY_PRESSED,
+                                        /* loadUrlParams= */ null));
     }
 
     private void setIncognitoColorScheme() {

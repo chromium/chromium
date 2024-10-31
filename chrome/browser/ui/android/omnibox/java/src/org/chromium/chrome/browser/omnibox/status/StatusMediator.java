@@ -42,6 +42,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -482,7 +483,16 @@ public class StatusMediator
         int toast = 0;
 
         mIsSecurityViewShown = false;
-        if (mUrlHasFocus) {
+
+        if (mLocationBarDataProvider.getPageClassification(false)
+                == PageClassification.ANDROID_HUB_VALUE) {
+            // Show the status icon primarily for incognito since it is defaulted off there.
+            setStatusIconShown(/* show= */ true);
+            icon = R.drawable.ic_arrow_back_24dp;
+            tint =
+                    ThemeUtils.getThemedToolbarIconTintRes(
+                            mLocationBarDataProvider.isIncognitoBranded());
+        } else if (mUrlHasFocus) {
             if (mShowStatusIconWhenUrlFocused) {
                 icon =
                         mUrlBarTextIsSearch
@@ -528,6 +538,11 @@ public class StatusMediator
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
+        if (mLocationBarDataProvider.getPageClassification(false)
+                == PageClassification.ANDROID_HUB_VALUE) {
+            return false;
+        }
+
         if (mLocationBarDataProvider.isIncognitoBranded()) {
             return false;
         }

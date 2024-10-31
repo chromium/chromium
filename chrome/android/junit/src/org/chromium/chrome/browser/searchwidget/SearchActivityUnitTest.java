@@ -436,7 +436,7 @@ public class SearchActivityUnitTest {
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
-        verify(statusCoordinator).setShowStatusView(false);
+        verify(statusCoordinator).setOnStatusIconNavigateBackButtonPress(any());
     }
 
     @Test
