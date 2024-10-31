@@ -1066,7 +1066,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
       // This prevents file save churn when rebaselining, to reduce flakiness
       // when reading the file on test initialization.
       LOG(INFO) << "No changes detected for test case " << full_test_params
-                << ", not saving file.";
+                << ", not saving file "
+                << GetExpectationsFile(file_config).value();
     } else {
       SaveExpectations(file_config);
     }
@@ -1839,6 +1840,43 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(NavigationElement::kElementLink),
         testing::Values(test::ClickMethod::kShiftClick,
                         test::ClickMethod::kMiddleClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Test the browser-tab-app -> browser-tab-app user modified redirect.
+INSTANTIATE_TEST_SUITE_P(
+    Redirect_Modified_BothBrowserApp,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(testing::Values(ClientModeCombination::kAuto),
+                     testing::Values(AppUserDisplayMode::kBothBrowser),
+                     testing::Values(LinkCapturing::kEnabled),
+                     testing::Values(StartingPoint::kTab),
+                     testing::Values(Destination::kScopeA2A),
+                     testing::Values(RedirectType::kServerSideViaB),
+                     testing::Values(NavigationElement::kElementLink),
+                     testing::Values(test::ClickMethod::kShiftClick),
+                     testing::Values(OpenerMode::kNoOpener),
+                     testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Test 'navigate-new' interaction with browser apps and redirection.
+INSTANTIATE_TEST_SUITE_P(
+    Redirect_CaptureNew_BrowserApp,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(ClientModeCombination::kAuto),
+        testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A,
+                        Destination::kScopeA2B,
+                        Destination::kScopeA2X),
+        testing::Values(RedirectType::kServerSideViaA,
+                        RedirectType::kServerSideViaB,
+                        RedirectType::kServerSideViaX),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);

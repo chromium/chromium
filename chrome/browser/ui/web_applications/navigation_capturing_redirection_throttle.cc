@@ -306,29 +306,53 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  ClientModeAndBrowser client_mode_and_browser =
+      GetEffectiveClientModeAndBrowserForCapturing(*profile_, *target_app_id);
+
   // After this point:
   // - The navigation is non-user-modified.
   // - This is a top-level browsing context.
   // - The first navigation app_id doesn't match the target app_id (as per "Same
   //   first navigation state" case above).
+
   // Handle all cases where the initial navigation was captured, and that now
   // needs to be corrected. See the table at
   // bit.ly/pwa-navigation-handling-dd?tab=t.0#bookmark=id.hnvzj4iwiviz
-  // Handle the use-case where the first result was navigation captured
-  // into an app window and both apps had NavigateNew as launch handlers,
-  // triggered via a non user modified.
-  ClientModeAndBrowser client_mode_and_browser =
-      GetEffectiveClientModeAndBrowserForCapturing(*profile_, *target_app_id);
 
-  // TODO(crbug.com/375619465): Implement open-in-browser-tab app support for
-  // redirection.
-  if (initial_nav_handling_result ==
-          NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow &&
-      client_mode_and_browser.effective_client_mode ==
-          LaunchHandler::ClientMode::kNavigateNew) {
-    ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
-                                            *target_app_id, final_url);
-    return content::NavigationThrottle::PROCEED;
+  // First, address the 'navigate-new' or 'browser' initial capture, where the
+  // final state is also an effective 'navigate-new'.
+  if (client_mode_and_browser.effective_client_mode ==
+          LaunchHandler::ClientMode::kNavigateNew &&
+      (initial_nav_handling_result ==
+           NavigationHandlingInitialResult::kBrowserTab ||
+       initial_nav_handling_result ==
+           NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow ||
+       initial_nav_handling_result ==
+           NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab)) {
+    // Handle all cases that result in a standalone app.
+    // (browser tab, browser-tab-app, or standalone-app -> standalone-app)
+    if (target_display_mode != blink::mojom::DisplayMode::kBrowser) {
+      ReparentToAppBrowserEnqueueLaunchParams(web_contents_for_navigation,
+                                              *target_app_id, final_url);
+      return content::NavigationThrottle::PROCEED;
+    }
+    // Handle all cases that result in a browser-tab-app.
+    // (browser tab, browser-tab-app, or standalone-app -> browser-tab-app)
+    if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
+      EnqueueLaunchParams(web_contents_for_navigation, *target_app_id,
+                          final_url,
+                          /*wait_for_navigation_to_complete=*/true);
+      RecordLaunchMetrics(*target_app_id,
+                          apps::LaunchContainer::kLaunchContainerTab,
+                          apps::LaunchSource::kFromNavigationCapturing,
+                          final_url, web_contents_for_navigation);
+      if (initial_nav_handling_result ==
+          NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
+        ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
+                                           link_click_disposition);
+      }
+      return content::NavigationThrottle::PROCEED;
+    }
   }
 
   // Only proceed from now on if the final app can be capturable depending on
