@@ -395,7 +395,7 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override perfLogger = new PerfLogger(this.eventsSender);
 
-  override async installSoda(language: LanguageCode): Promise<void> {
+  override installSoda(language: LanguageCode): void {
     console.log(`SODA lang pack ${language} installation requested`);
     const sodaState = this.getSodaState(language);
     if (sodaState.value.kind === 'notInstalled') {

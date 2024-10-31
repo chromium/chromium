@@ -171,12 +171,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.langPacks.get(language));
   }
 
-  override async installSoda(language: LanguageCode): Promise<void> {
-    // Wait the request goes through to make sure all soda states are updated.
-    // The install progress is separately tracked in `sodaState`.
-    // TODO: b/375306309 - Remove "await" when soda states are always consistent
-    // after the `OnSodaUninstalled` event is implemented.
-    await this.remote.installSoda(language);
+  override installSoda(language: LanguageCode): void {
+    // We don't care about the returned promise as long as the request goes
+    // through. The install progress is separately tracked in `sodaState`.
+    void this.remote.installSoda(language);
   }
 
   override isSodaAvailable(): boolean {

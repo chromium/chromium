@@ -499,13 +499,9 @@ void RecorderAppUI::InstallSoda(const std::string& language,
   CHECK(language_code != speech::LanguageCode::kNone);
 
   if (IsSodaAvailable(language_code)) {
-    // Check Soda state directly from SodaInstaller in case the cached state is
-    // outdated.
-    // TODO: b/375306309 - Check the cached state instead when soda states are
-    // always consistent after having `OnSodaUninstalled` event.
-    auto* soda_installer = speech::SodaInstaller::GetInstance();
-    if (!soda_installer->IsSodaInstalled(language_code) &&
-        !soda_installer->IsSodaDownloading(language_code)) {
+    auto state = GetSodaState(language_code).type;
+    if (state == recorder_app::mojom::ModelStateType::kNotInstalled ||
+        state == recorder_app::mojom::ModelStateType::kError) {
       // Update SODA state to installing so the UI will show downloading
       // immediately, since the DLC download might start later.
       UpdateSodaState(language_code,
