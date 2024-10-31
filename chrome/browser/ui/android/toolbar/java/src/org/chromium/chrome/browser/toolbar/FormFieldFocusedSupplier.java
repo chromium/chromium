@@ -44,6 +44,7 @@ class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean> implement
         mWebContents = newWebContents;
         mImeAdapter = ImeAdapter.fromWebContents(mWebContents);
         mImeAdapter.addEventObserver(this);
+        set(mImeAdapter.focusedNodeEditable());
     }
 
     @Override

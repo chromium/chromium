@@ -66,9 +66,13 @@ public interface ImeAdapter {
      */
     boolean onCheckIsTextEditor();
 
+    /** Whether the focused node is editable or not. */
+    boolean focusedNodeEditable();
+
     /**
      * Overrides the InputMethodManagerWrapper that ImeAdapter uses to make calls to
      * InputMethodManager.
+     *
      * @param immw InputMethodManagerWrapper that should be used to call InputMethodManager.
      */
     void setInputMethodManagerWrapper(InputMethodManagerWrapper immw);

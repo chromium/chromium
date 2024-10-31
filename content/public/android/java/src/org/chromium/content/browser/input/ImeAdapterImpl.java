@@ -372,6 +372,12 @@ public class ImeAdapterImpl
         return isTextInputType(mTextInputType);
     }
 
+    /** Whether the focused node is editable or not. */
+    @Override
+    public boolean focusedNodeEditable() {
+        return mTextInputType != TextInputType.NONE;
+    }
+
     private boolean isHardwareKeyboardAttached() {
         return mCurrentConfig.keyboard != Configuration.KEYBOARD_NOKEYS;
     }
@@ -403,11 +409,6 @@ public class ImeAdapterImpl
     // should still be allowed with a physical keyboard so mInputConnection will be non-null.
     private boolean focusedNodeAllowsSoftKeyboard() {
         return mTextInputType != TextInputType.NONE && mTextInputMode != WebTextInputMode.NONE;
-    }
-
-    // Whether the focused node is editable or not.
-    private boolean focusedNodeEditable() {
-        return mTextInputType != TextInputType.NONE;
     }
 
     private View getContainerView() {
