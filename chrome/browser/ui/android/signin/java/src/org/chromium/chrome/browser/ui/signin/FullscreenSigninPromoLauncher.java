@@ -22,6 +22,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.HashSet;
@@ -56,7 +57,7 @@ public final class FullscreenSigninPromoLauncher {
             @Nullable
             Intent intent =
                     signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
-                            context, profile, config);
+                            context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
             if (intent != null) {
                 context.startActivity(intent);
             }

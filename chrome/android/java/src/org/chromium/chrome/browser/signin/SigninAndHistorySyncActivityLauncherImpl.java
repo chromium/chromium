@@ -104,24 +104,29 @@ public final class SigninAndHistorySyncActivityLauncherImpl
 
     @Override
     public @Nullable Intent createFullscreenSigninIntent(
-            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config) {
+            Context context,
+            Profile profile,
+            FullscreenSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint) {
         if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
                 || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
-                        profile, HistorySyncConfig.OptInMode.OPTIONAL)) {
-            return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
+                        profile, config.historyOptInMode)) {
+            return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
+                    context, config, signinAccessPoint);
         }
         return null;
     }
 
     @Override
     public @Nullable Intent createFullscreenSigninIntentOrShowError(
-            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config) {
+            Context context,
+            Profile profile,
+            FullscreenSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint) {
         if (canStartSigninAndHistorySyncOrShowError(
-                context,
-                profile,
-                HistorySyncConfig.OptInMode.OPTIONAL,
-                SigninAccessPoint.SIGNIN_PROMO)) {
-            return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context, config);
+                context, profile, config.historyOptInMode, signinAccessPoint)) {
+            return SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
+                    context, config, signinAccessPoint);
         }
         return null;
     }

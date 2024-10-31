@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -39,6 +40,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -111,7 +113,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         Assert.assertEquals(38, mPrefManager.getSigninPromoLastShownVersion());
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -129,7 +131,7 @@ public class FullscreenSigninPromoLauncherTest {
     public void promoVisibleWhenForcingSigninPromoAtStartup() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
-                        eq(mContext), eq(mProfile), any()))
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO)))
                 .thenReturn(mSigninIntent);
 
         Assert.assertTrue(
@@ -149,7 +151,8 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(eq(mContext), eq(mProfile), any());
+                .createFullscreenSigninIntent(
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO));
     }
 
     @Test
@@ -163,7 +166,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -177,7 +180,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -189,7 +192,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -200,7 +203,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -211,7 +214,7 @@ public class FullscreenSigninPromoLauncherTest {
                 .thenReturn(TestAccounts.ACCOUNT1);
         mPrefManager.setSigninPromoLastShownVersion(40);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
-                        eq(mContext), eq(mProfile), any()))
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO)))
                 .thenReturn(mSigninIntent);
 
         // Old implementation hasn't been storing account list
@@ -239,7 +242,8 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(eq(mContext), eq(mProfile), any());
+                .createFullscreenSigninIntent(
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO));
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(null, mPrefManager.getSigninPromoLastAccountEmails());
     }
@@ -254,7 +258,7 @@ public class FullscreenSigninPromoLauncherTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(Set.of(TestAccounts.ACCOUNT1.getEmail()));
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
-                        eq(mContext), eq(mProfile), any()))
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO)))
                 .thenReturn(mSigninIntent);
 
         Assert.assertTrue(
@@ -281,7 +285,8 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(eq(mContext), eq(mProfile), any());
+                .createFullscreenSigninIntent(
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO));
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 new String[] {TestAccounts.ACCOUNT1.getEmail()},
@@ -298,7 +303,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
@@ -316,7 +321,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any());
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
     }

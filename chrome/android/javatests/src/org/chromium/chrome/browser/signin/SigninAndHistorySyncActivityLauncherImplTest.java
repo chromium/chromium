@@ -407,7 +407,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -427,7 +430,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
     }
@@ -449,7 +455,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -470,7 +479,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
     }
@@ -491,7 +503,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntent(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
     }
@@ -508,7 +523,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -528,7 +546,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -551,7 +572,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -572,7 +596,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -595,7 +622,10 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createFullscreenSigninIntentOrShowError(
-                                            mContextMock, mProfileMock, CONFIG);
+                                            mContextMock,
+                                            mProfileMock,
+                                            CONFIG,
+                                            SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.

@@ -75,20 +75,28 @@ public interface SigninAndHistorySyncActivityLauncher {
      * created.
      *
      * @param config The object containing IDS of resources for the sign-in & history sync views.
+     * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
     @Nullable
     Intent createFullscreenSigninIntent(
-            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config);
+            Context context,
+            Profile profile,
+            FullscreenSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint);
 
     /**
      * Create {@Intent} for the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if
      * sign-in and history opt-in are allowed. Show an error if the intent can't be created.
      *
      * @param config The object containing IDS of resources for the sign-in & history sync views.
+     * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
     @Nullable
     Intent createFullscreenSigninIntentOrShowError(
-            Context context, Profile profile, FullscreenSigninAndHistorySyncConfig config);
+            Context context,
+            Profile profile,
+            FullscreenSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint);
 }

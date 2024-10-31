@@ -90,6 +90,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             "SigninAndHistorySyncActivity.HistorySyncConfigTitle";
     private static final String ARGUMENT_HISTORY_SYNC_CONFIG_SUBTITLE =
             "SigninAndHistorySyncActivity.HistorySyncConfigSubtitle";
+    private static final String ARGUMENT_HISTORY_SYNC_CONFIG_HISTORY_OPT_IN_MODE =
+            "SigninAndHistorySyncActivity.HistorySyncConfigHistoryOptInMode";
 
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
@@ -132,6 +134,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         super.triggerLayoutInflation();
 
         Intent intent = getIntent();
+        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
+        assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();
             FullscreenSigninAndHistorySyncConfig config;
@@ -160,6 +165,11 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         intent.getIntExtra(
                                 ARGUMENT_HISTORY_SYNC_CONFIG_SUBTITLE,
                                 R.string.history_sync_subtitle);
+                @HistorySyncConfig.OptInMode
+                int historyOptInMode =
+                        intent.getIntExtra(
+                                ARGUMENT_HISTORY_SYNC_CONFIG_HISTORY_OPT_IN_MODE,
+                                HistorySyncConfig.OptInMode.OPTIONAL);
                 config =
                         new FullscreenSigninAndHistorySyncConfig.Builder()
                                 .signinTitleId(signinTitleId)
@@ -168,6 +178,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                                 .signinLogoId(signinLogoId)
                                 .historySyncTitleId(historySyncTitleId)
                                 .historySyncSubtitleId(historySyncSubtitleId)
+                                .historyOptInMode(historyOptInMode)
                                 .build();
             }
             mCoordinator =
@@ -177,6 +188,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                             getProfileProviderSupplier(),
                             PrivacyPreferencesManagerImpl.getInstance(),
                             config,
+                            signinAccessPoint,
                             this);
 
             setInitialContentView(mCoordinator.getView());
@@ -185,8 +197,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         }
 
         setStatusBarColor(Color.TRANSPARENT);
-        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
-        assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
         int titleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, 0);
         int subtitleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, 0);
         int dismissStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, 0);
@@ -378,7 +388,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     }
 
     public static @NonNull Intent createIntentForFullscreenSignin(
-            Context context, FullscreenSigninAndHistorySyncConfig config) {
+            Context context,
+            FullscreenSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
         intent.putExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, true);
         if (SigninFeatureMap.isEnabled(SigninFeatures.PUT_PARCELABLE_SIGNIN_CONFIG_IN_EXTRA)) {
@@ -394,8 +406,10 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             intent.putExtra(ARGUMENT_HISTORY_SYNC_CONFIG_TITLE, config.historySyncConfig.titleId);
             intent.putExtra(
                     ARGUMENT_HISTORY_SYNC_CONFIG_SUBTITLE, config.historySyncConfig.subtitleId);
+            intent.putExtra(
+                    ARGUMENT_HISTORY_SYNC_CONFIG_HISTORY_OPT_IN_MODE, config.historyOptInMode);
         }
-
+        intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
         return intent;
     }
 

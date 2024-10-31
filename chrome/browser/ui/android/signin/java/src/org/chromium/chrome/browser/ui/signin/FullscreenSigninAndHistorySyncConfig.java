@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
     public final FullscreenSigninConfig signinConfig;
     public final HistorySyncConfig historySyncConfig;
+    public final @HistorySyncConfig.OptInMode int historyOptInMode;
 
     /**
      * Builder for {@link FullscreenSigninAndHistorySyncConfig} which contains resource IDs for the
@@ -32,6 +33,8 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
         private @DrawableRes int mSigninLogoId = R.drawable.fre_product_logo;
         private @StringRes int mHistorySyncTitleId = R.string.history_sync_title;
         private @StringRes int mHistorySyncSubtitleId = R.string.history_sync_subtitle;
+        private @HistorySyncConfig.OptInMode int mHistoryOptInMode =
+                HistorySyncConfig.OptInMode.OPTIONAL;
 
         public Builder() {}
 
@@ -71,6 +74,11 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
             return this;
         }
 
+        public Builder historyOptInMode(@HistorySyncConfig.OptInMode int historyOptInMode) {
+            mHistoryOptInMode = historyOptInMode;
+            return this;
+        }
+
         public FullscreenSigninAndHistorySyncConfig build() {
             final FullscreenSigninConfig signinConfig =
                     new FullscreenSigninConfig(
@@ -83,7 +91,8 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
                             /* titleId= */ mHistorySyncTitleId,
                             /* subtitleId= */ mHistorySyncSubtitleId);
 
-            return new FullscreenSigninAndHistorySyncConfig(signinConfig, historySyncConfig);
+            return new FullscreenSigninAndHistorySyncConfig(
+                    signinConfig, historySyncConfig, mHistoryOptInMode);
         }
     }
 
@@ -101,14 +110,19 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
             };
 
     private FullscreenSigninAndHistorySyncConfig(
-            FullscreenSigninConfig signinConfig, HistorySyncConfig historySyncConfig) {
+            FullscreenSigninConfig signinConfig,
+            HistorySyncConfig historySyncConfig,
+            @HistorySyncConfig.OptInMode int historyOptInMode) {
         this.signinConfig = signinConfig;
         this.historySyncConfig = historySyncConfig;
+        this.historyOptInMode = historyOptInMode;
     }
 
     private FullscreenSigninAndHistorySyncConfig(Parcel in) {
-        signinConfig = in.readParcelable(FullscreenSigninConfig.class.getClassLoader());
-        historySyncConfig = in.readParcelable(HistorySyncConfig.class.getClassLoader());
+        this(
+                in.readParcelable(FullscreenSigninConfig.class.getClassLoader()),
+                in.readParcelable(HistorySyncConfig.class.getClassLoader()),
+                /* historyOptInMode= */ in.readInt());
     }
 
     /** Implements {@link Parcelable} */
@@ -122,5 +136,6 @@ public final class FullscreenSigninAndHistorySyncConfig implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeParcelable(signinConfig, 0);
         out.writeParcelable(historySyncConfig, 0);
+        out.writeInt(historyOptInMode);
     }
 }
