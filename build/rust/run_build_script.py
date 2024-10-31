@@ -150,9 +150,6 @@ def main():
         feature_name = f.upper().replace("-", "_")
         env["CARGO_FEATURE_%s" % feature_name] = "1"
     if args.rustflags:
-      # TODO(danakj): If there are spaces encoded with `\ ` or inside quotes
-      # like " " then these will be split incorrectly. We'll need to expand this
-      # logic then.
       with open(args.rustflags) as flags:
         env["CARGO_ENCODED_RUSTFLAGS"] = '\x1f'.join(flags.readlines())
     if args.env:
