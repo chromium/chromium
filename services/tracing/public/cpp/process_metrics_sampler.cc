@@ -44,6 +44,7 @@ void ProcessMetricsSampler::OnStop(const StopArgs&) {
 
 ProcessMetricsSampler::Sampler::Sampler() {
   process_metrics_ = base::ProcessMetrics::CreateCurrentProcessMetrics();
+  SampleProcessMetrics();
   sample_timer_.Start(FROM_HERE, kSamplingInterval, this,
                       &Sampler::SampleProcessMetrics);
 }
