@@ -171,6 +171,11 @@
             "description": "True if the double click flag should be set.",
             "optional": true
           },
+          "isTripleClick": {
+            "type": "boolean",
+            "description": "True if the triple click flag should be set.",
+            "optional": true
+          },
           "useRewriters": {
             "type": "boolean",
             "description": "If true, uses rewriters for the mouse event; only allowed if used from FaceGaze. Otherwise indicates that rewriters should be skipped.",

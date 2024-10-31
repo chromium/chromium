@@ -27,6 +27,7 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.RESET_CURSOR,
   MacroName.MOUSE_CLICK_LEFT,
   MacroName.MOUSE_CLICK_LEFT_DOUBLE,
+  MacroName.MOUSE_CLICK_LEFT_TRIPLE,
   MacroName.MOUSE_CLICK_RIGHT,
   MacroName.MOUSE_LONG_CLICK_LEFT,
   MacroName.TOGGLE_DICTATION,
@@ -272,6 +273,8 @@ export class FaceGazeUtils {
         return 'faceGazeMacroLabelClickLeft';
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
         return 'faceGazeMacroLabelClickLeftDouble';
+      case MacroName.MOUSE_CLICK_LEFT_TRIPLE:
+        return 'faceGazeMacroLabelClickLeftTriple';
       case MacroName.MOUSE_CLICK_RIGHT:
         return 'faceGazeMacroLabelClickRight';
       case MacroName.MOUSE_LONG_CLICK_LEFT:

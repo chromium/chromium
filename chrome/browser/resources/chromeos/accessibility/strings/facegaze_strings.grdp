@@ -39,6 +39,9 @@
   <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT_DOUBLE" desc="This text describes an action to double click the mouse.">
     Double-click the mouse
   </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT_TRIPLE" desc="This text describes an action to triple click the mouse.">
+    Triple-click the mouse
+  </message>
   <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_RIGHT" desc="This text describes an action to right-click the mouse.">
     Right-click the mouse
   </message>

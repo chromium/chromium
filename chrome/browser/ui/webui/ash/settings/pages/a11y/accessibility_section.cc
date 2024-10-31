@@ -1030,6 +1030,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT},
       {"faceGazeMacroLabelClickLeftDouble",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT_DOUBLE},
+      {"faceGazeMacroLabelClickLeftTriple",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT_TRIPLE},
       {"faceGazeMacroLabelClickRight",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_RIGHT},
       {"faceGazeMacroLabelLongClickLeft",

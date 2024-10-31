@@ -691,6 +691,10 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
     flags |= ui::EF_IS_DOUBLE_CLICK;
   }
 
+  if (mouse_data->is_triple_click && *(mouse_data->is_triple_click)) {
+    flags |= ui::EF_IS_TRIPLE_CLICK;
+  }
+
   bool use_rewriters = mouse_data->use_rewriters.has_value() &&
                        mouse_data->use_rewriters.value();
 

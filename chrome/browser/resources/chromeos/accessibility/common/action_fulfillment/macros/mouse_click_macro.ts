@@ -77,10 +77,41 @@ export class MouseClickLeftDoubleMacro extends Macro {
 
     const mouseButton = SyntheticMouseEventButton.LEFT;
     EventGenerator.sendMousePress(
-        this.location_.x, this.location_.y, mouseButton,
-        /*isDoubleClick=*/ true);
+        this.location_.x, this.location_.y, mouseButton, {isDoubleClick: true});
     EventGenerator.sendMouseRelease(
-        this.location_.x, this.location_.y, /*isDoubleClick=*/ true);
+        this.location_.x, this.location_.y, {isDoubleClick: true});
+
+    return this.createRunMacroResult_(/*isSuccess=*/ true);
+  }
+}
+
+/** Class that implements a macro to send a triple left click. */
+export class MouseClickLeftTripleMacro extends Macro {
+  private location_: ScreenPoint|undefined;
+
+  constructor(location: ScreenPoint|undefined) {
+    super(MacroName.MOUSE_CLICK_LEFT_TRIPLE);
+    this.location_ = location;
+  }
+
+  override checkContext(): CheckContextResult {
+    if (!this.location_) {
+      return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
+    }
+
+    return this.createSuccessCheckContextResult_();
+  }
+
+  override run(): RunMacroResult {
+    if (!this.location_) {
+      return this.createRunMacroResult_(/*isSuccess=*/ false);
+    }
+
+    const mouseButton = SyntheticMouseEventButton.LEFT;
+    EventGenerator.sendMousePress(
+        this.location_.x, this.location_.y, mouseButton, {isTripleClick: true});
+    EventGenerator.sendMouseRelease(
+        this.location_.x, this.location_.y, {isTripleClick: true});
 
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }

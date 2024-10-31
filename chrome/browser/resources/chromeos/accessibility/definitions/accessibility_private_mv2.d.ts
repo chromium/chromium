@@ -165,6 +165,7 @@ declare global {
         touchAccessibility?: boolean;
         mouseButton?: SyntheticMouseEventButton;
         isDoubleClick?: boolean;
+        isTripleClick?: boolean;
         useRewriters?: boolean;
       }
 

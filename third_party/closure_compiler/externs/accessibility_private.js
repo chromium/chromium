@@ -209,6 +209,7 @@ chrome.accessibilityPrivate.SyntheticMouseEventButton = {
  *   touchAccessibility: (boolean|undefined),
  *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
  *   isDoubleClick: (boolean|undefined),
+ *   isTripleClick: (boolean|undefined),
  *   useRewriters: (boolean|undefined)
  * }}
  */

@@ -95,6 +95,9 @@ export class BubbleController {
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
         return chrome.i18n.getMessage(
             'facegaze_macro_text_mouse_click_left_double');
+      case MacroName.MOUSE_CLICK_LEFT_TRIPLE:
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_mouse_click_left_triple');
       case MacroName.MOUSE_CLICK_RIGHT:
         return chrome.i18n.getMessage('facegaze_macro_text_mouse_click_right');
       case MacroName.MOUSE_LONG_CLICK_LEFT:

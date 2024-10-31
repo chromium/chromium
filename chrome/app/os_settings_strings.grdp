@@ -1400,6 +1400,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT_DOUBLE" desc="This text describes an action that a user can take on their computer to double click the left mouse button.">
     Double-click the mouse
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT_TRIPLE" desc="This text describes an action that a user can take on their computer to triple click the left mouse button.">
+    Triple-click the mouse
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_RIGHT" desc="This text describes an action that a user can take on their computer to click the right mouse button.">
     Right-click the mouse
   </message>

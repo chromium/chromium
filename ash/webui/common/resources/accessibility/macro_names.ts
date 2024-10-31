@@ -183,6 +183,9 @@ export enum MacroName {
   // Takes a screenshot.
   KEY_PRESS_SCREENSHOT = 52,
 
+  // Generates a synthetic triple left click event.
+  MOUSE_CLICK_LEFT_TRIPLE = 53,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }
