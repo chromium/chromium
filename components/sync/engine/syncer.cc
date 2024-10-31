@@ -35,8 +35,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     SyncProtocolErrorType protocol_error) {
   switch (protocol_error) {
     case SYNC_SUCCESS:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerErrorValueForUma::kSyncerOk;
+      NOTREACHED();
     case NOT_MY_BIRTHDAY:
       return SyncerErrorValueForUma::kServerReturnNotMyBirthday;
     case THROTTLED:
@@ -48,8 +47,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case DISABLED_BY_ADMIN:
       return SyncerErrorValueForUma::kServerReturnDisabledByAdmin;
     case PARTIAL_FAILURE:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerErrorValueForUma::kServerReturnUnknownError;
+      NOTREACHED();
     case CLIENT_DATA_OBSOLETE:
       return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
     case ENCRYPTION_OBSOLETE:

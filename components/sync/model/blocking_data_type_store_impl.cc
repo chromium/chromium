@@ -149,8 +149,7 @@ std::string GetStorageTypePrefix(StorageType storage_type) {
     case StorageType::kAccount:
       return kAccountStoragePrefix;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace

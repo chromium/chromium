@@ -949,8 +949,7 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
     case GoogleServiceAuthError::REQUEST_CANCELED:
     case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       // Transient errors aren't reachable.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case GoogleServiceAuthError::SERVICE_ERROR:
     case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
@@ -963,8 +962,7 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
       break;
     // Conventional value for counting the states, never used.
     case GoogleServiceAuthError::NUM_STATES:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (user_settings_->IsPassphraseRequiredForPreferredDataTypes()) {
@@ -1221,7 +1219,7 @@ void SyncServiceImpl::OnActionableProtocolError(
       ResetEngine(ResetEngineReason::kResetLocalData);
       break;
     case UNKNOWN_ACTION:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DVLOG(2) << "Notify observers OnActionableProtocolError";
   NotifyObservers();

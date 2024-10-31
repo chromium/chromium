@@ -72,8 +72,7 @@ KeyDerivationParams CustomPassphraseKeyDerivationParamsFromProto(
           proto.custom_passphrase_key_derivation_salt());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return KeyDerivationParams::CreateForPbkdf2();
+  NOTREACHED();
 }
 
 // |encrypted| must not be null.

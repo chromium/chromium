@@ -70,8 +70,7 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
       return "Scrypt8192";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 size_t& GetScryptCostParameter() {

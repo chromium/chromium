@@ -109,8 +109,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return base::TimeDelta();
+      NOTREACHED();
   }
 }
 
@@ -178,8 +177,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case COOKIES:
       return false;
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -328,8 +326,7 @@ base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
 base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
   if (GetBlockingMode() !=
       WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
-    NOTREACHED_IN_MIGRATION();
-    return base::Seconds(0);
+    NOTREACHED();
   }
   return wait_interval_->length;
 }

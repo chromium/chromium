@@ -122,8 +122,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kCookies:
       return {kCookiesTypeName, COOKIES, {COOKIES}};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {nullptr, UNSPECIFIED, {}};
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

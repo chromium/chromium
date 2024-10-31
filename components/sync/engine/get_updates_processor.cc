@@ -90,8 +90,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
   for (const sync_pb::SyncEntity& update : gu_response.entries()) {
     DataType type = GetDataTypeFromSpecifics(update.specifics());
     if (!IsRealDataType(type)) {
-      NOTREACHED_IN_MIGRATION() << "Received update with invalid type.";
-      continue;
+      NOTREACHED() << "Received update with invalid type.";
     }
 
     auto it = updates_by_type->find(type);
@@ -320,9 +319,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   PartitionProgressMarkersByType(gu_response, gu_types,
                                  &progress_index_by_type);
   if (gu_types.size() != progress_index_by_type.size()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Missing progress markers in GetUpdates response.";
-    return SyncerError::ProtocolViolationError();
+    NOTREACHED() << "Missing progress markers in GetUpdates response.";
   }
 
   TypeToIndexMap context_by_type;

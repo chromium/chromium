@@ -238,8 +238,7 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       break;
     case sync_pb::ClientToServerMessage::DEPRECATED_3:
     case sync_pb::ClientToServerMessage::DEPRECATED_4:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (http_error_status_code_) {

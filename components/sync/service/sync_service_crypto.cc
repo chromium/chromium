@@ -215,8 +215,7 @@ bool SyncServiceCrypto::IsPassphraseRequired() const {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SyncServiceCrypto::IsTrustedVaultKeyRequired() const {
@@ -353,8 +352,7 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
@@ -396,8 +394,7 @@ void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       // Neither keys nor the recoverability state are fetched during engine
       // initialization.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -436,8 +433,7 @@ bool SyncServiceCrypto::HasCryptoError() const {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void SyncServiceCrypto::OnPassphraseRequired(

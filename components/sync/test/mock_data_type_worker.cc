@@ -129,9 +129,7 @@ const CommitRequestData* MockDataTypeWorker::GetLatestPendingCommitForHash(
       }
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Could not find commit for tag hash " << tag_hash << ".";
-  return nullptr;
+  NOTREACHED() << "Could not find commit for tag hash " << tag_hash << ".";
 }
 
 void MockDataTypeWorker::VerifyNthPendingCommit(

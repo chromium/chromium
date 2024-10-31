@@ -78,8 +78,7 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
     case EntityChange::ACTION_UPDATE:
       return SyncChange::ACTION_UPDATE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SyncChange::ACTION_UPDATE;
+  NOTREACHED();
 }
 
 // Parses the content of |record_list| into |*in_memory_store|. The output
@@ -323,15 +322,13 @@ SyncableServiceBasedBridge::GetAllDataForDebugging() {
 std::string SyncableServiceBasedBridge::GetClientTag(
     const EntityData& entity_data) {
   // Not supported as per SupportsGetClientTag().
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
     const EntityData& entity_data) {
   // Not supported as per SupportsGetStorageKey().
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 bool SyncableServiceBasedBridge::SupportsGetClientTag() const {

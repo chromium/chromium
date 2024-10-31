@@ -216,8 +216,7 @@ std::string GetTransportStateString(syncer::SyncService::TransportState state) {
     case syncer::SyncService::TransportState::ACTIVE:
       return "Active";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string GetUserActionableErrorString(
@@ -241,8 +240,7 @@ std::string GetUserActionableErrorString(
       return "Trusted vault recoverability degraded for everything";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Returns a string describing the chrome version environment. Version format:
@@ -327,8 +325,7 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
           "server error since %s",
           GetTimeStr(status.connection_status_update_time).c_str());
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace

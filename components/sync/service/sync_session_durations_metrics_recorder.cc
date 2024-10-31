@@ -291,10 +291,8 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       // This state cannot happen in production, but does happen in tests.
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected feature states: "
-          << GetFeatureStates(signin_status_, sync_status_);
-      break;
+      NOTREACHED() << "Unexpected feature states: "
+                   << GetFeatureStates(signin_status_, sync_status_);
   }
 }
 

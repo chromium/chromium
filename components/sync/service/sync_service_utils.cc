@@ -70,8 +70,7 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
       }
       return UploadState::ACTIVE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UploadState::NOT_ACTIVE;
+  NOTREACHED();
 }
 
 void RecordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA trigger) {

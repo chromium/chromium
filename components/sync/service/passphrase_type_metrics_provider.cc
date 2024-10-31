@@ -44,8 +44,7 @@ PassphraseTypeForMetrics GetPassphraseTypeForSingleProfile(
       return PassphraseTypeForMetrics::kTrustedVaultPassphrase;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return PassphraseTypeForMetrics::kUnknown;
+  NOTREACHED();
 }
 
 PassphraseTypeForMetrics GetPassphraseTypeForAllProfiles(

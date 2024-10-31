@@ -36,37 +36,28 @@ class FakeSyncableServiceBasedBridge : public DataTypeSyncBridge {
 
   // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_data*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
   std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_changes*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
   std::unique_ptr<DataBatch> GetDataForCommit(
       StorageKeyList /*storage_keys*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
-  std::unique_ptr<DataBatch> GetAllDataForDebugging() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  std::unique_ptr<DataBatch> GetAllDataForDebugging() override { NOTREACHED(); }
   std::string GetClientTag(const EntityData& /*entity_data*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
   std::string GetStorageKey(const EntityData& /*entity_data*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 };
 

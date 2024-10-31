@@ -38,8 +38,7 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
     case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       return std::string();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
   return std::string();
 }

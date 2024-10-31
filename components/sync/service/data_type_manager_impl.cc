@@ -614,8 +614,7 @@ bool DataTypeManagerImpl::UpdatePreconditionError(DataType type) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void DataTypeManagerImpl::ProcessReconfigure() {
