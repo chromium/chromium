@@ -51,9 +51,6 @@ crbug.com/933880 [ Release ] http/tests/inspector-protocol/network/security-info
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 
-crbug.com/1106413 [ Linux ] external/wpt/webmessaging/multi-globals/broadcastchannel-current.sub.html [ Failure ]
-crbug.com/1106413 [ Linux ] external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Failure ]
-
 # Opt-in origin-keying is intentionally disabled with --disable-site-isolation-trials.
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
 
