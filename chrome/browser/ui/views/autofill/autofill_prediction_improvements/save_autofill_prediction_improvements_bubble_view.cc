@@ -213,6 +213,8 @@ SaveAutofillPredictionImprovementsBubbleView::
       views::BoxLayout::Orientation::kVertical));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
+  SetAccessibleTitle(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE));
 
   const int kVerficalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
