@@ -110,6 +110,8 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
     case LaunchSource::kFromNavigationCapturing:
       return ApplicationLaunchSource::
           APPLICATION_LAUNCH_SOURCE_NAVIGATION_CAPTURING;
+    case LaunchSource::kFromWebInstallApi:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_WEB_INSTALL_API;
   }
 }
 
@@ -201,6 +203,8 @@ std::ostream& operator<<(std::ostream& out, LaunchSource launch_source) {
       return out << "kFromSparky";
     case LaunchSource::kFromNavigationCapturing:
       return out << "kFromNavigationCapturing";
+    case LaunchSource::kFromWebInstallApi:
+      return out << "kFromWebInstallApi";
   }
 }
 

@@ -1029,6 +1029,7 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
     case apps::LaunchSource::kFromAppHomePage:
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
+    case apps::LaunchSource::kFromWebInstallApi:
       NOTREACHED();
   }
   NOTREACHED();

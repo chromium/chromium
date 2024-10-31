@@ -2379,6 +2379,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FromSparky" summary="From Sparky."/>
     <variant name=".FromSysTrayCalendar" summary="From system tray Calendar."/>
     <variant name=".FromUrlHandler" summary="From URL handler."/>
+    <variant name=".FromWebInstallApi" summary="From Web Install API."/>
     <variant name=".FromWelcomeTour" summary="From Welcome Tour."/>
   </token>
 </histogram>

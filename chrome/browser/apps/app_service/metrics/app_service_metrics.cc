@@ -176,6 +176,10 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromSparky",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromWebInstallApi:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromWebInstallApi",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:

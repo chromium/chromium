@@ -1047,6 +1047,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI:
     case webapps::WebappInstallSource::WEBAPK_RESTORE:
     case webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS:
+    case webapps::WebappInstallSource::WEB_INSTALL:
       if (base::FeatureList::IsEnabled(
               features::kWebAppDontAddExistingAppsToSync)) {
         return WebAppManagement::kUserInstalled;

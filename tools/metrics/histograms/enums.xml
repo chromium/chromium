@@ -14341,6 +14341,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="40" label="Focus Mode panel"/>
   <int value="41" label="Sparky"/>
   <int value="42" label="Web App Navigation Capturing"/>
+  <int value="43" label="Web Install API"/>
 </enum>
 
 <enum name="LcppHintStatus">
@@ -33512,6 +33513,7 @@ others/histograms.xml -->
   <int value="33" label="almanac://install-app navigation"/>
   <int value="34" label="WebAPK Backup and restore"/>
   <int value="35" label="OOBE Recommended Apps screen on ChromeOS"/>
+  <int value="36" label="Installed from web content via Web Install API"/>
 </enum>
 
 <enum name="WebAppPreinstalledWindowExperimentUserGroup">

@@ -358,6 +358,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromFocusMode:
     case apps::LaunchSource::kFromSparky:
     case apps::LaunchSource::kFromNavigationCapturing:
+    case apps::LaunchSource::kFromWebInstallApi:
       break;
   }
 

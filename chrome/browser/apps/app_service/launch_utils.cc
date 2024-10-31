@@ -337,6 +337,7 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromSysTrayCalendar:
     case LaunchSource::kFromInstaller:
     case LaunchSource::kFromNavigationCapturing:
+    case LaunchSource::kFromWebInstallApi:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }

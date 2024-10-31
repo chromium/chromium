@@ -98,6 +98,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::ALMANAC_INSTALL_APP_URI:
     case InstallSource::WEBAPK_RESTORE:
     case InstallSource::OOBE_APP_RECOMMENDATIONS:
+    case InstallSource::WEB_INSTALL:
       return true;
     case InstallSource::DEVTOOLS:
     case InstallSource::MANAGEMENT_API:

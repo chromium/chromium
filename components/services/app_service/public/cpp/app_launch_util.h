@@ -75,10 +75,11 @@ enum class LaunchSource {
   kFromFocusMode = 40,            // Focus Mode panel.
   kFromSparky = 41,               // From Sparky feature.
   kFromNavigationCapturing = 42,  // Web App Navigation Capturing.
+  kFromWebInstallApi = 43,        // Web Install API.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromNavigationCapturing,
+  kMaxValue = kFromWebInstallApi,
 };
 
 // Don't remove items or change the order of this enum.  It's used in
