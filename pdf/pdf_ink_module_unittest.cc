@@ -625,6 +625,13 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     client().set_page_visibility(0, true);
   }
 
+  void InitializeScaledLandscapeSinglePageBasicLayout() {
+    // Single page layout that matches visible area.
+    constexpr gfx::RectF kPage(0.0f, 0.0f, 120.0f, 100.0f);
+    client().set_page_layouts(base::span_from_ref(kPage));
+    client().set_page_visibility(0, true);
+  }
+
   void InitializeVerticalTwoPageLayout() {
     // Page 2 is below page 1. Not side-by-side.
     client().set_page_layouts(kVerticalLayout2Pages);
@@ -1209,6 +1216,83 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   EXPECT_EQ(1, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0, 0));
+}
+
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 3.0.  Invalidation areas are in screen
+  // coordinates.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  EXPECT_THAT(client().invalidations(), ElementsAre(kInvalidationAreaMouseDown,
+                                                    kInvalidationAreaMouseMove,
+                                                    kInvalidationAreaMouseUp));
+
+  PerformUndo();
+  // TODO(crbug.com/376301209): Determine if the small size reported for the
+  // entire stroke makes sense.  What is being returned by
+  // `ink::ModeledShape::Bounds()` looks like it is smaller than what would be
+  // expected given the inputs.
+  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(8.0f, 13.0f),
+                                            gfx::Size(24.0f, 6.0f));
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaUndoRedo));
+
+  PerformRedo();
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaUndoRedo,
+                  kInvalidationAreaUndoRedo));
+}
+
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
+  InitializeScaledLandscapeSinglePageBasicLayout();
+  client().set_orientation(PageOrientation::kClockwise90);
+  client().set_zoom(2.0f);
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 3.0.  Invalidation areas are in screen
+  // coordinates.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  EXPECT_THAT(client().invalidations(), ElementsAre(kInvalidationAreaMouseDown,
+                                                    kInvalidationAreaMouseMove,
+                                                    kInvalidationAreaMouseUp));
+
+  PerformUndo();
+  // TODO(crbug.com/376301209): Determine if the small size reported for the
+  // entire stroke makes sense.  What is being returned by
+  // `ink::ModeledShape::Bounds()` looks like it is smaller than what would be
+  // expected given the inputs.
+  // TODO(crbug.com/375445386): Invalidation area for undo/redo should be
+  // similar to location & combined size of the invalidation areas that happened
+  // while stroking.
+  const gfx::Rect kInvalidationAreaUndoRedo(gfx::Point(6.0f, 43.0f),
+                                            gfx::Size(4.0f, 13.0f));
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaUndoRedo));
+
+  PerformRedo();
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaUndoRedo,
+                  kInvalidationAreaUndoRedo));
 }
 
 TEST_F(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
