@@ -147,6 +147,11 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Graphite backend textures used for fulfilling Graphite promise images.
   // Owned by the shared image representation / scoped access.
   std::vector<skgpu::graphite::BackendTexture> graphite_textures_;
+
+  // Stores whether whether there was a mismatch between the YCbCr info given by
+  // Viz for the promise image and the YCbCr info computed at the time of
+  // fulfilling the promise image.
+  bool graphite_ycbcr_info_mismatch_ = false;
 };
 
 }  // namespace viz
