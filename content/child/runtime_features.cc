@@ -690,7 +690,8 @@ void ResolveInvalidConfigurations() {
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsAdInterestGroupAPIEnabled())
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsAdInterestGroupAPIEnabledByRuntimeFlag())
         << "AdInterestGroupAPI cannot be enabled in this "
            "configuration. Use --"
         << switches::kEnableFeatures << "="
@@ -714,7 +715,8 @@ void ResolveInvalidConfigurations() {
   // PermissionElement cannot be enabled without the support of the
   // browser process.
   if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsPermissionElementEnabled())
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsPermissionElementEnabledByRuntimeFlag())
         << "PermissionElement cannot be enabled in this configuration. Use --"
         << switches::kEnableFeatures << "="
         << blink::features::kPermissionElement.name << " instead.";

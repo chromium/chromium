@@ -1099,7 +1099,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
               is_module_allowed =
                   has_enable_nacl_switch ||
                   (is_pnacl_mime_type &&
-                   blink::WebOriginTrials::isTrialEnabled(&document, "PNaCl"));
+                   blink::WebOriginTrials::IsPNaClEnabled(&document));
             }
           }
           if (!is_module_allowed) {

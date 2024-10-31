@@ -121,9 +121,6 @@ source_set("test_headers") {
   ]
 }
 
-# Depend on this target to use public blink API headers for things like enums
-# and public structures without actually linking against any Blink libraries.
-#
 # See public/common/BUILD.gn for the headers that can be referenced both from
 # the browser- and renderer-side components.
 source_set("blink_headers") {
@@ -481,12 +478,14 @@ blink_python_runner("runtime_features_for_public") {
         "../renderer/build/scripts/make_runtime_features_utilities.py",
         "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/templates/features_generated.h.tmpl",
+        "../renderer/build/scripts/templates/web_origin_trials.h.tmpl",
         "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
       ]
 
   outputs = [
     "$blink_public_output_dir/common/features_generated.h",
     "$blink_public_output_dir/platform/web_runtime_features_base.h",
+    "$blink_public_output_dir/web/web_origin_trials.h",
   ]
 
   args = [
