@@ -291,6 +291,9 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
       is_page_counter = !entry->layout_object->GetNode();
     }
   }
+  if (result.empty()) {
+    result.push_back(0);
+  }
   return result;
 }
 
