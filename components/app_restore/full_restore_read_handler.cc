@@ -142,28 +142,6 @@ void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
     arc_read_handler_->OnTaskDestroyed(task_id);
 }
 
-app_restore::AppRestoreData*
-FullRestoreReadHandler::GetFirstAppRestoreDataForActiveProfile(
-    const std::string& app_id,
-    int32_t& out_window_id) {
-  app_restore::RestoreData* restore_data = GetRestoreData(active_profile_path_);
-  if (!restore_data) {
-    return nullptr;
-  }
-
-  auto launch_list_it = restore_data->app_id_to_launch_list().find(app_id);
-  if (launch_list_it == restore_data->app_id_to_launch_list().end()) {
-    return nullptr;
-  }
-  const app_restore::RestoreData::LaunchList& launch_list =
-      launch_list_it->second;
-  if (launch_list.empty()) {
-    return nullptr;
-  }
-  out_window_id = launch_list.begin()->first;
-  return launch_list.begin()->second.get();
-}
-
 void FullRestoreReadHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
   primary_profile_path_ = profile_path;
@@ -362,19 +340,6 @@ void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
       std::move(app_launch_info));
   window_id_to_app_restore_info_[session_id.id()] =
       std::make_pair(profile_path, app_constants::kChromeAppId);
-}
-
-void FullRestoreReadHandler::SetRestoreDataForTesting(
-    const base::FilePath& path,
-    std::unique_ptr<app_restore::RestoreData> restore_data) {
-  profile_path_to_restore_data_[path] = std::move(restore_data);
-}
-
-std::unique_ptr<app_restore::RestoreData>
-FullRestoreReadHandler::GetRestoreDataForTesting(const base::FilePath& path) {
-  auto* restore_data = GetRestoreData(path);
-  CHECK(restore_data);
-  return restore_data->Clone();
 }
 
 std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
