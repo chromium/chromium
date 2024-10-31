@@ -520,6 +520,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
              screenshot"/>
 </enum>
 
+<enum name="ContentTransferAuthenticationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Transient Failure"/>
+  <int value="2" label="Persistent Failure"/>
+</enum>
+
 <enum name="ContentTransferFlowState">
   <int value="0" label="Welcome screen"/>
   <int value="1" label="Takeout screen"/>

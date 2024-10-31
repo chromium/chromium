@@ -36,6 +36,23 @@ class WebviewAuthHandler
   // Called when webview authentication is finished.
   using OnWebviewAuth = base::OnceCallback<void(bool is_success)>;
 
+  // The bucket identifiers used to record the authentication result when
+  // authentication finishes. Should be kept consistent with
+  // ContentTransferAuthenticationResult in
+  // tools/metrics/histograms/metadata/ash/enums.xml.
+  enum class AuthResult : int {
+    // Authentication has succeeded.
+    kSuccess = 0,
+    // A transient failure occurred during authentication.
+    kTransientFailure = 1,
+    // A persistent failure occurred during authentication.
+    kPersistentFailure = 2,
+    kMaxValue = kPersistentFailure,
+  };
+
+  static constexpr char kAuthResultHistogramName[] =
+      "Ash.ContentTransfer.AuthenticationResult";
+
   // Constructs the `WebviewAuthHandler` for the webview identified by given
   // browser `context` and `webview_host_name`.
   WebviewAuthHandler(content::BrowserContext* context,

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -25,6 +26,21 @@
 #include "url/gurl.h"
 
 namespace ash::graduation {
+
+namespace {
+
+WebviewAuthHandler::AuthResult GetAuthResultHistogramBucket(
+    signin::SetAccountsInCookieResult result) {
+  switch (result) {
+    case signin::SetAccountsInCookieResult::kSuccess:
+      return WebviewAuthHandler::AuthResult::kSuccess;
+    case signin::SetAccountsInCookieResult::kTransientError:
+      return WebviewAuthHandler::AuthResult::kTransientFailure;
+    case signin::SetAccountsInCookieResult::kPersistentError:
+      return WebviewAuthHandler::AuthResult::kPersistentFailure;
+  }
+}
+}  // namespace
 
 WebviewAuthHandler::WebviewAuthHandler(content::BrowserContext* context,
                                        const std::string& webview_host_name)
@@ -79,7 +95,8 @@ void WebviewAuthHandler::OnAuthFinished(
     OnWebviewAuth callback,
     signin::SetAccountsInCookieResult cookie_result) {
   VLOG(1) << "graduation: webview auth finished";
-  // TODO(b.corp.google.com/374824476): Add metrics for webview auth result.
+  base::UmaHistogramEnumeration(kAuthResultHistogramName,
+                                GetAuthResultHistogramBucket(cookie_result));
   switch (cookie_result) {
     case signin::SetAccountsInCookieResult::kSuccess:
       VLOG(1) << "graduation: webview auth successful";

@@ -2561,6 +2561,18 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.ContentTransfer.AuthenticationResult"
+    enum="ContentTransferAuthenticationResult" expires_after="2025-10-07">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>amberhaynes@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the outcome of webview authentication when it finishes. Allows for
+    tracking the authentication success rate. Recorded for ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ContentTransfer.FlowState" enum="ContentTransferFlowState"
     expires_after="2025-10-07">
   <owner>courtneywong@chromium.org</owner>
