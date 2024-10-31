@@ -23,7 +23,10 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
   // CollaborationService Java API methods, implemented by native service:
   bool IsEmptyService(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& j_caller);
-  jni_zero::ScopedJavaLocalRef<jobject> GetServiceStatus(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetServiceStatus(JNIEnv* env);
+  jint GetCurrentUserRoleForGroup(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& group_id);
 
   // Returns the CollaborationServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

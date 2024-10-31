@@ -29,6 +29,7 @@ import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.collaboration.SyncStatus;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 
 import java.util.concurrent.TimeoutException;
 
@@ -55,6 +56,11 @@ public class CollaborationServiceFactoryTest {
                                 SigninStatus.NOT_SIGNED_IN,
                                 SyncStatus.NOT_SYNCING,
                                 CollaborationStatus.DISABLED);
+                    }
+
+                    @Override
+                    public @MemberRole int getCurrentUserRoleForGroup(String groupId) {
+                        return MemberRole.UNKNOWN;
                     }
                 };
 

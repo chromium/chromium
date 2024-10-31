@@ -26,4 +26,9 @@ ServiceStatus EmptyCollaborationService::GetServiceStatus() {
   return ServiceStatus();
 }
 
+data_sharing::MemberRole EmptyCollaborationService::GetCurrentUserRoleForGroup(
+    const data_sharing::GroupId& group_id) {
+  return data_sharing::MemberRole::kUnknown;
+}
+
 }  // namespace collaboration

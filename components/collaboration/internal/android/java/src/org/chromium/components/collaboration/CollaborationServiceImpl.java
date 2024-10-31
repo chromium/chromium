@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.data_sharing.member_role.MemberRole;
+
 /**
  * Java side of the JNI bridge between CollaborationServiceImpl in Java and C++. All method calls
  * are delegated to the native C++ class.
@@ -35,6 +37,11 @@ public class CollaborationServiceImpl implements CollaborationService {
         return CollaborationServiceImplJni.get().getServiceStatus(mNativePtr);
     }
 
+    @Override
+    public @MemberRole int getCurrentUserRoleForGroup(String groupId) {
+        return CollaborationServiceImplJni.get().getCurrentUserRoleForGroup(mNativePtr, groupId);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -46,5 +53,7 @@ public class CollaborationServiceImpl implements CollaborationService {
                 long nativeCollaborationServiceAndroid, CollaborationServiceImpl caller);
 
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
+
+        int getCurrentUserRoleForGroup(long nativeCollaborationServiceAndroid, String groupId);
     }
 }

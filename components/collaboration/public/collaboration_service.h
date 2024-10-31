@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/service_status.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "url/gurl.h"
@@ -50,12 +51,17 @@ class CollaborationService : public KeyedService,
 
   // Starts a new share flow. This will cancel all existing ongoing join and
   // share flows in the same browser instance.
+  // Note: EitherGroupID is either a local tab group id or a sync id.
   virtual void StartShareFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      tab_groups::EitherGroupID group_id) = 0;
+      tab_groups::EitherGroupID either_id) = 0;
 
   // Get the current ServiceStatus.
   virtual ServiceStatus GetServiceStatus() = 0;
+
+  // Get the group member information of the current user.
+  virtual data_sharing::MemberRole GetCurrentUserRoleForGroup(
+      const data_sharing::GroupId& group_id) = 0;
 };
 
 }  // namespace collaboration

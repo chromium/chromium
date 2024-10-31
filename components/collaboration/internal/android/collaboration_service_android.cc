@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/collaboration/internal/jni_headers/CollaborationServiceImpl_jni.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -14,9 +15,12 @@
 #include "components/collaboration/public/jni_headers/ServiceStatus_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
+using data_sharing::GroupData;
+using data_sharing::GroupId;
 
 namespace collaboration {
 namespace {
@@ -73,6 +77,16 @@ ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
       env, static_cast<int>(status.signin_status),
       static_cast<int>(status.sync_status),
       static_cast<int>(status.collaboration_status));
+}
+
+jint CollaborationServiceAndroid::GetCurrentUserRoleForGroup(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& group_id) {
+  data_sharing::MemberRole role =
+      collaboration_service_->GetCurrentUserRoleForGroup(
+          GroupId(ConvertJavaStringToUTF8(env, group_id)));
+
+  return static_cast<jint>(role);
 }
 
 ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetJavaObject() {

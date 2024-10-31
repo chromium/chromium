@@ -1,5 +1,7 @@
 include_rules = [
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
   "+components/keyed_service",
   "+components/saved_tab_groups/public",
-  "+components/data_sharing/public/features.h",
+  "+components/signin/public/identity_manager",
 ]

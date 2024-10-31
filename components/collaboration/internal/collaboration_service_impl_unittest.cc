@@ -6,15 +6,38 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
+#include "components/data_sharing/test_support/mock_data_sharing_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using data_sharing::GroupData;
+using data_sharing::GroupId;
+using data_sharing::GroupMember;
+using data_sharing::MemberRole;
+using testing::Return;
+
 namespace collaboration {
+
+namespace {
+
+const char kUserGaia[] = "gaia_id";
+const char kUserEmail[] = "test@email.com";
+const char kGroupId[] = "/?-group_id";
+
+}  // namespace
 
 class CollaborationServiceImplTest : public testing::Test {
  public:
   CollaborationServiceImplTest() = default;
 
   ~CollaborationServiceImplTest() override = default;
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  data_sharing::MockDataSharingService mock_data_sharing_service_;
+  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_F(CollaborationServiceImplTest, ConstructionAndEmptyServiceCheck) {
@@ -24,6 +47,40 @@ TEST_F(CollaborationServiceImplTest, ConstructionAndEmptyServiceCheck) {
       /*identity_manager=*/nullptr,
       /*sync_service=*/nullptr);
   EXPECT_FALSE(service->IsEmptyService());
+}
+
+TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
+  auto service = std::make_unique<CollaborationServiceImpl>(
+      /*tab_group_sync_service=*/nullptr, &mock_data_sharing_service_,
+      identity_test_env_.identity_manager(),
+      /*sync_service=*/nullptr);
+
+  GroupData group_data = GroupData();
+  GroupMember group_member = GroupMember();
+  group_member.gaia_id = kUserGaia;
+  group_member.role = MemberRole::kOwner;
+  group_data.members.push_back(group_member);
+
+  data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
+
+  // Empty or non existent group should return unknown role.
+  EXPECT_CALL(mock_data_sharing_service_, ReadGroup(group_id))
+      .WillOnce(Return(std::nullopt));
+
+  EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id),
+            MemberRole::kUnknown);
+
+  // No current primary account should return unknown role.
+  EXPECT_CALL(mock_data_sharing_service_, ReadGroup(group_id))
+      .WillRepeatedly(Return(group_data));
+  EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id),
+            MemberRole::kUnknown);
+
+  identity_test_env_.MakeAccountAvailable(
+      kUserEmail,
+      {.primary_account_consent_level = signin::ConsentLevel::kSignin,
+       .gaia_id = kUserGaia});
+  EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id), MemberRole::kOwner);
 }
 
 }  // namespace collaboration

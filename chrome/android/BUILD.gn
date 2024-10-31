@@ -1014,6 +1014,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/bluetooth/android:junit",
       "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/browser_controls/android:junit",
+      "//chrome/browser/collaboration:factory_java",
       "//chrome/browser/commerce/android:java",
       "//chrome/browser/commerce/android:junit",
       "//chrome/browser/commerce/coupons/android:junit",

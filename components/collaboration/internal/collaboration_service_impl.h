@@ -42,9 +42,23 @@ class CollaborationServiceImpl : public CollaborationService {
   void StartShareFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                       tab_groups::EitherGroupID group_id) override;
   ServiceStatus GetServiceStatus() override;
+  data_sharing::MemberRole GetCurrentUserRoleForGroup(
+      const data_sharing::GroupId& group_id) override;
 
  private:
   ServiceStatus current_status_;
+
+  // Service providing information about tabs and tab groups.
+  const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+
+  // Service providing information about people groups.
+  const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
+
+  // Service providing information about sign in.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Service providing information about sync.
+  const raw_ptr<syncer::SyncService> sync_service_;
 };
 
 }  // namespace collaboration

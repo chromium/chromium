@@ -23,6 +23,8 @@ class EmptyCollaborationService : public CollaborationService {
   void StartShareFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                       tab_groups::EitherGroupID group_id) override;
   ServiceStatus GetServiceStatus() override;
+  data_sharing::MemberRole GetCurrentUserRoleForGroup(
+      const data_sharing::GroupId& group_id) override;
 };
 
 }  // namespace collaboration

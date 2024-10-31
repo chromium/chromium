@@ -7,6 +7,8 @@ package org.chromium.components.collaboration;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.data_sharing.member_role.MemberRole;
+
 /**
  * CollaborationService is the core class for managing collaboration group flows. It represents a
  * native CollaborationService object in Java.
@@ -25,4 +27,14 @@ public interface CollaborationService {
     /** Returns the current {@link ServiceStatus} of the service. */
     @NonNull
     ServiceStatus getServiceStatus();
+
+    /**
+     * Get the member role of the current primary user for a collaboration group.
+     *
+     * @param groupId The collaboration group id.
+     * @return The {@link MemberRole} of the current user. UNKNOWN is returned if no user or group
+     *     found.
+     */
+    @MemberRole
+    int getCurrentUserRoleForGroup(String groupId);
 }

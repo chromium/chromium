@@ -29,7 +29,7 @@ static_library("internal") {
   public_deps = [
     "//base",
     "//components/collaboration/public",
-    "//components/data_sharing/public:features",
+    "//components/data_sharing/public",
     "//components/keyed_service/core",
   ]
 
@@ -58,6 +58,10 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    "//base/test:test_support",
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
 }
@@ -72,6 +76,7 @@ if (is_android) {
       "//base:base_java",
       "//build/android:build_java",
       "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
   }
