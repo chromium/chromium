@@ -95,10 +95,8 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, ExternalConnectionFail) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  const char* const kURLs[] = {
-    "http://www.google.com/",
-    "http://www.cnn.com/"
-  };
+  const char* const kURLs[] = {"https://www.google.com/",
+                               "https://www.cnn.com/"};
   for (size_t i = 0; i < std::size(kURLs); ++i) {
     GURL url(kURLs[i]);
     LoadFailObserver observer(contents);
