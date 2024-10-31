@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_filter.h"
 
 #include <algorithm>
@@ -63,10 +58,11 @@ bool HasDiscardableImages(const sk_sp<PaintFilter>& filter) {
   return filter ? filter->has_discardable_images() : false;
 }
 
-bool HasDiscardableImages(const sk_sp<PaintFilter>* const filters, int count) {
-  for (int i = 0; i < count; ++i) {
-    if (filters[i] && filters[i]->has_discardable_images())
+bool HasDiscardableImages(base::span<const sk_sp<PaintFilter>> filters) {
+  for (auto& filter : filters) {
+    if (filter && filter->has_discardable_images()) {
       return true;
+    }
   }
   return false;
 }
@@ -652,7 +648,7 @@ bool ArithmeticPaintFilter::EqualsForTesting(
 
 MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
     const SkISize& kernel_size,
-    const SkScalar* kernel,
+    base::span<const SkScalar> kernel,
     SkScalar gain,
     SkScalar bias,
     const SkIPoint& kernel_offset,
@@ -670,12 +666,13 @@ MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
   DCHECK(kernel_size_.width() >= 0 && kernel_size_.height() >= 0);
   auto len = static_cast<size_t>(kernel_size_.width()) *
              static_cast<size_t>(kernel_size_.height());
+  CHECK_EQ(kernel.size(), len);
   kernel_.reserve(len);
   for (size_t i = 0; i < len; ++i)
     kernel_.push_back(kernel[i]);
 
   cached_sk_filter_ = SkImageFilters::MatrixConvolution(
-      kernel_size_, kernel, gain_, bias_, kernel_offset_, tile_mode_,
+      kernel_size_, kernel.data(), gain_, bias_, kernel_offset_, tile_mode_,
       convolve_alpha_, GetSkFilter(input_.get()), crop_rect);
 }
 
@@ -697,7 +694,7 @@ size_t MatrixConvolutionPaintFilter::SerializedSize() const {
 sk_sp<PaintFilter> MatrixConvolutionPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   return sk_make_sp<MatrixConvolutionPaintFilter>(
-      kernel_size_, &kernel_[0], gain_, bias_, kernel_offset_, tile_mode_,
+      kernel_size_, kernel_, gain_, bias_, kernel_offset_, tile_mode_,
       convolve_alpha_, Snapshot(input_, image_provider), GetCropRect());
 }
 
@@ -929,28 +926,27 @@ bool RecordPaintFilter::EqualsForTesting(const RecordPaintFilter& other) const {
          record_bounds_ == other.record_bounds_;
 }
 
-MergePaintFilter::MergePaintFilter(const sk_sp<PaintFilter>* const filters,
-                                   int count,
+MergePaintFilter::MergePaintFilter(base::span<const sk_sp<PaintFilter>> filters,
                                    const CropRect* crop_rect)
-    : MergePaintFilter(filters, count, crop_rect, nullptr) {}
+    : MergePaintFilter(filters, crop_rect, nullptr) {}
 
-MergePaintFilter::MergePaintFilter(const sk_sp<PaintFilter>* const filters,
-                                   int count,
+MergePaintFilter::MergePaintFilter(base::span<const sk_sp<PaintFilter>> filters,
                                    const CropRect* crop_rect,
                                    ImageProvider* image_provider)
-    : PaintFilter(kType, crop_rect, HasDiscardableImages(filters, count)) {
+    : PaintFilter(kType, crop_rect, HasDiscardableImages(filters)) {
   std::vector<sk_sp<SkImageFilter>> sk_filters;
-  sk_filters.reserve(count);
+  sk_filters.reserve(filters.size());
 
-  for (int i = 0; i < count; ++i) {
-    auto filter =
-        image_provider ? Snapshot(filters[i], image_provider) : filters[i];
-    inputs_.push_back(std::move(filter));
+  for (auto& filter : filters) {
+    auto snapshot_filter =
+        image_provider ? Snapshot(filter, image_provider) : filter;
+    inputs_.push_back(std::move(snapshot_filter));
     sk_filters.push_back(GetSkFilter(inputs_.back().get()));
   }
 
   cached_sk_filter_ = SkImageFilters::Merge(
-      static_cast<sk_sp<SkImageFilter>*>(sk_filters.data()), count, crop_rect);
+      static_cast<sk_sp<SkImageFilter>*>(sk_filters.data()), filters.size(),
+      crop_rect);
 }
 
 MergePaintFilter::~MergePaintFilter() = default;
@@ -982,8 +978,8 @@ size_t MergePaintFilter::SerializedSize() const {
 
 sk_sp<PaintFilter> MergePaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  return sk_sp<MergePaintFilter>(new MergePaintFilter(
-      &inputs_[0], inputs_.size(), GetCropRect(), image_provider));
+  return sk_sp<MergePaintFilter>(
+      new MergePaintFilter(inputs_, GetCropRect(), image_provider));
 }
 
 bool MergePaintFilter::EqualsForTesting(const MergePaintFilter& other) const {

@@ -92,7 +92,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return record_filter;
     case PaintFilter::Type::kMerge: {
       sk_sp<PaintFilter> filters[2] = {image_filter, record_filter};
-      return sk_make_sp<MergePaintFilter>(filters, 2, &crop_rect);
+      return sk_make_sp<MergePaintFilter>(filters, &crop_rect);
     }
     case PaintFilter::Type::kMorphology:
       return sk_make_sp<MorphologyPaintFilter>(

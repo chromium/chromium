@@ -3425,7 +3425,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
                                                  filters[4], filters[5]));
   filters.emplace_back(new DisplacementMapEffectPaintFilter(
       SkColorChannel::kR, SkColorChannel::kG, 10, filters[6], filters[7]));
-  filters.emplace_back(new MergePaintFilter(filters.data(), filters.size()));
+  filters.emplace_back(new MergePaintFilter(filters));
   filters.emplace_back(
       new RecordPaintFilter(PaintRecord(), SkRect::MakeXYWH(10, 15, 20, 25)));
 
