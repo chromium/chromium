@@ -238,6 +238,14 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.mutable_name_full(), NAME_FULL);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name related values and statues.
+    s.Set(specifics.mutable_alternative_family_name(), ALTERNATIVE_FAMILY_NAME);
+    s.Set(specifics.mutable_alternative_given_name(), ALTERNATIVE_GIVEN_NAME);
+    s.Set(specifics.mutable_alternative_full_name(), ALTERNATIVE_FULL_NAME);
+  }
+
   // Set address-related values and statuses.
   s.Set(specifics.mutable_address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.mutable_address_state(), ADDRESS_HOME_STATE);
@@ -371,6 +379,14 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.name_full(), NAME_FULL);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name related values and statues.
+    s.Set(specifics.alternative_family_name(), ALTERNATIVE_FAMILY_NAME);
+    s.Set(specifics.alternative_given_name(), ALTERNATIVE_GIVEN_NAME);
+    s.Set(specifics.alternative_full_name(), ALTERNATIVE_FULL_NAME);
+  }
+
   // Set address-related values and statuses.
   s.Set(specifics.address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.address_state(), ADDRESS_HOME_STATE);
@@ -460,6 +476,21 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_name_full())) {
     trimmed_specifics.clear_name_full();
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Delete alternative name related values and statues.
+    if (d.Delete(trimmed_specifics.mutable_alternative_family_name())) {
+      trimmed_specifics.clear_alternative_family_name();
+    }
+    if (d.Delete(trimmed_specifics.mutable_alternative_given_name())) {
+      trimmed_specifics.clear_alternative_given_name();
+    }
+    if (d.Delete(trimmed_specifics.mutable_alternative_full_name())) {
+      trimmed_specifics.clear_alternative_full_name();
+    }
+  }
+
   // Delete address-related values and statuses.;
   if (d.Delete(trimmed_specifics.mutable_address_city())) {
     trimmed_specifics.clear_address_city();

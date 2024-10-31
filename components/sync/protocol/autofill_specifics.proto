@@ -82,6 +82,11 @@ message AutofillProfileSpecifics {
   reserved 60;
   reserved "name_full_with_honorific";
 
+  // Contact info alternative name fields (e.g. phonetic names in Japan).
+  optional string alternative_full_name = 93;
+  optional string alternative_given_name = 94;
+  optional string alternative_family_name = 95;
+
   // Validation status records for name fields.
   reserved 30;
   reserved "name_honorific_status";
@@ -94,6 +99,11 @@ message AutofillProfileSpecifics {
   repeated VerificationStatus name_full_status = 37;
   reserved 61;
   reserved "name_full_with_honorific_status";
+
+  // Validation status records for alternative name fields.
+  optional VerificationStatus alternative_full_name_status = 96;
+  optional VerificationStatus alternative_given_name_status = 97;
+  optional VerificationStatus alternative_family_name_status = 98;
 
   // Contact info additional fields.
   repeated string email_address = 5;

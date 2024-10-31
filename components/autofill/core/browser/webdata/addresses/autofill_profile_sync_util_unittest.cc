@@ -63,6 +63,12 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_CONJUNCTION, u"o",
                                            VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"John Doe",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"John",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Doe",
+                                           VerificationStatus::kParsed);
 
   // Set email, phone and company testing values.
   profile.SetRawInfo(EMAIL_ADDRESS, u"user@example.com");
@@ -362,6 +368,21 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
 
   specifics.add_name_full("John K. Doe");
   specifics.add_name_full_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
+
+  specifics.set_alternative_given_name("John");
+  specifics.set_alternative_given_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_alternative_family_name("Doe");
+  specifics.set_alternative_family_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_alternative_full_name("John Doe");
+  specifics.set_alternative_full_name_status(
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
 
@@ -925,7 +946,7 @@ class AutofillProfileSyncUtilTest
                                 features::kAutofillUseINAddressModel,
                                 features::kAutofillUseITAddressModel,
                                 features::kAutofillUseNLAddressModel,
-                               },
+                                features::kAutofillSupportPhoneticNameForJP},
                                {});
     task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
   }
