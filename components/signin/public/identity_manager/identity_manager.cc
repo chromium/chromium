@@ -385,6 +385,13 @@ DeviceAccountsSynchronizer* IdentityManager::GetDeviceAccountsSynchronizer() {
   return identity_mutator_->GetDeviceAccountsSynchronizer();
 }
 
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo> IdentityManager::GetAccountsOnDevice() {
+  // TODO(crbug.com/368409110): Implement this method.
+  return {};
+}
+#endif
+
 void IdentityManager::AddDiagnosticsObserver(DiagnosticsObserver* observer) {
   diagnostics_observation_list_.AddObserver(observer);
 }

@@ -160,6 +160,11 @@ class IdentityManager : public KeyedService,
     // Called after removing an account info.
     virtual void OnExtendedAccountInfoRemoved(const AccountInfo& info) {}
 
+#if BUILDFLAG(IS_IOS)
+    // Called after the list of accounts in `GetAccountsOnDevice` changes.
+    virtual void OnAccountsOnDeviceChanged() {}
+#endif
+
     // Called on Shutdown(), for observers that aren't KeyedServices to remove
     // their observers.
     virtual void OnIdentityManagerShutdown(IdentityManager* identity_manager) {}
@@ -307,6 +312,11 @@ class IdentityManager : public KeyedService,
   // Returns pointer to the object used to seed accounts information from the
   // device-level accounts. May be null if the system has no such notion.
   DeviceAccountsSynchronizer* GetDeviceAccountsSynchronizer();
+
+#if BUILDFLAG(IS_IOS)
+  // Gets all accounts on the device, including the ones from other profiles.
+  [[nodiscard]] std::vector<AccountInfo> GetAccountsOnDevice();
+#endif
 
   // Observer interface for classes that want to monitor status of various
   // requests. Mostly useful in tests and debugging contexts (e.g., WebUI).
