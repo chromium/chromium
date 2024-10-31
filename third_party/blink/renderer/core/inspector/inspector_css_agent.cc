@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
+#include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
@@ -2871,6 +2872,37 @@ void InspectorCSSAgent::CollectLayersFromRule(
   }
 }
 
+std::unique_ptr<protocol::CSS::CSSStartingStyle>
+InspectorCSSAgent::BuildStartingStyleObject(CSSStartingStyleRule* rule) {
+  std::unique_ptr<protocol::CSS::CSSStartingStyle> starting_style_object =
+      protocol::CSS::CSSStartingStyle::create().build();
+
+  auto it =
+      css_style_sheet_to_inspector_style_sheet_.find(rule->parentStyleSheet());
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
+    starting_style_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
+
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(rule->parentStyleSheet());
+  starting_style_object->setRange(
+      inspector_style_sheet->RuleHeaderSourceRange(rule));
+
+  return starting_style_object;
+}
+
+void InspectorCSSAgent::CollectStartingStylesFromRule(
+    CSSRule* rule,
+    protocol::Array<protocol::CSS::CSSStartingStyle>* starting_style_list,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
+  if (auto* starting_style_rule = DynamicTo<CSSStartingStyleRule>(rule)) {
+    starting_style_list->emplace_back(
+        BuildStartingStyleObject(starting_style_rule));
+    rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::StartingStyleRule);
+  }
+}
+
 void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
                                          protocol::CSS::CSSRule* result) {
   auto layers_list =
@@ -2885,6 +2917,8 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
       std::make_unique<protocol::Array<protocol::CSS::CSSScope>>();
   auto rule_types_list =
       std::make_unique<protocol::Array<protocol::CSS::CSSRuleType>>();
+  auto starting_style_list =
+      std::make_unique<protocol::Array<protocol::CSS::CSSStartingStyle>>();
 
   CSSRule* parent_rule = rule;
   auto nesting_selectors = std::make_unique<protocol::Array<String>>();
@@ -2899,6 +2933,9 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
                             rule_types_list.get());
     CollectScopesFromRule(parent_rule, scopes_list.get(),
                           rule_types_list.get());
+    CollectStartingStylesFromRule(parent_rule, starting_style_list.get(),
+                                  rule_types_list.get());
+
     if (parent_rule != rule) {
       if (auto* style_rule = DynamicTo<CSSStyleRule>(parent_rule)) {
         nesting_selectors->emplace_back(style_rule->selectorText());
@@ -2928,6 +2965,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   result->setLayers(std::move(layers_list));
   result->setContainerQueries(std::move(container_queries_list));
   result->setRuleTypes(std::move(rule_types_list));
+  result->setStartingStyles(std::move(starting_style_list));
   if (nesting_selectors->size() > 0) {
     result->setNestingSelectors(std::move(nesting_selectors));
   }

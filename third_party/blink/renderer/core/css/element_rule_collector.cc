@@ -485,11 +485,8 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     const SelectorChecker& checker,
     SelectorChecker::SelectorCheckingContext& context,
     PartRequest* part_request) {
-  // If we are _not_ in initial style, or we are just collecting rules,
-  // we must skip all rules marked with @starting-style.
   bool reject_starting_styles = style_recalc_context_.is_ensuring_style ||
-                                style_recalc_context_.old_style ||
-                                mode_ != SelectorChecker::kResolvingStyle;
+                                style_recalc_context_.old_style;
 
   CascadeLayerSeeker layer_seeker(stop_at_first_match ? nullptr : context.scope,
                                   context.vtt_originating_element,

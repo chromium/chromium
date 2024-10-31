@@ -500,6 +500,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kLayerBlock:
       case StyleRule::kFontFeatureValues:
       case StyleRule::kProperty:
+      case StyleRule::kStartingStyle:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -519,6 +520,10 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
 
   if (auto* media_rule = DynamicTo<CSSMediaRule>(rule))
     return media_rule->cssRules();
+
+  if (auto* starting_style_rule = DynamicTo<CSSStartingStyleRule>(rule)) {
+    return starting_style_rule->cssRules();
+  }
 
   if (auto* scope_rule = DynamicTo<CSSScopeRule>(rule))
     return scope_rule->cssRules();
@@ -574,6 +579,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kLayerBlockRule:
       case CSSRule::kFontFeatureValuesRule:
       case CSSRule::kPropertyRule:
+      case CSSRule::kStartingStyleRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;
@@ -1988,7 +1994,8 @@ InspectorStyleSheet::BuildObjectForRuleUsage(CSSRule* rule, bool was_used) {
                                source_data->rule_body_range.end + 1);
   auto type = rule->GetType();
   if (type == CSSRule::kMediaRule || type == CSSRule::kSupportsRule ||
-      type == CSSRule::kScopeRule || type == CSSRule::kContainerRule) {
+      type == CSSRule::kScopeRule || type == CSSRule::kContainerRule ||
+      type == CSSRule::kStartingStyleRule) {
     whole_rule_range.end = source_data->rule_header_range.end + 1;
   }
 

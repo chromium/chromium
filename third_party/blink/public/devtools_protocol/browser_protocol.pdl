@@ -1798,6 +1798,9 @@ experimental domain CSS
       experimental optional array of CSSScope scopes
       # The array keeps the types of ancestor CSSRules from the innermost going outwards.
       experimental optional array of CSSRuleType ruleTypes
+      # @starting-style CSS at-rule array.
+      # The array enumerates @starting-style at-rules starting with the innermost one, going outwards.
+      experimental optional array of CSSStartingStyle startingStyles
 
   # Enum indicating the type of a CSS rule, used to represent the order of a style rule's ancestors.
   # This list only contains rule types that are collected during the ancestor rule collection.
@@ -1809,6 +1812,7 @@ experimental domain CSS
       LayerRule
       ScopeRule
       StyleRule
+      StartingStyleRule
 
   # CSS coverage information.
   type RuleUsage extends object
@@ -1983,6 +1987,15 @@ experimental domain CSS
     properties
       # Layer name.
       string text
+      # The associated rule header range in the enclosing stylesheet (if
+      # available).
+      optional SourceRange range
+      # Identifier of the stylesheet containing this object (if exists).
+      optional StyleSheetId styleSheetId
+
+  # CSS Starting Style at-rule descriptor.
+  experimental type CSSStartingStyle extends object
+    properties
       # The associated rule header range in the enclosing stylesheet (if
       # available).
       optional SourceRange range

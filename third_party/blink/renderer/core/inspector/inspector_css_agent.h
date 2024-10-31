@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -435,6 +436,14 @@ class CORE_EXPORT InspectorCSSAgent final
   void CollectLayersFromRule(CSSRule*,
                              protocol::Array<protocol::CSS::CSSLayer>*,
                              protocol::Array<protocol::CSS::CSSRuleType>*);
+
+  // Starting Style at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSStartingStyle> BuildStartingStyleObject(
+      CSSStartingStyleRule* rule);
+  void CollectStartingStylesFromRule(
+      CSSRule*,
+      protocol::Array<protocol::CSS::CSSStartingStyle>*,
+      protocol::Array<protocol::CSS::CSSRuleType>*);
 
   void FillAncestorData(CSSRule* rule, protocol::CSS::CSSRule* result);
 

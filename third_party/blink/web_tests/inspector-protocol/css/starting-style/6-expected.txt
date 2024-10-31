@@ -1,0 +1,27 @@
+@starting-style nested in other at-rule
+Dumping matched rules: 
+*div* {    regular
+    padding: 10px; @[3:8-3:22]
+    transition: background-color 1s ease; @[4:8-4:45]
+    display: inline-block; @[5:8-5:30]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal; @[undefined-undefined]
+    transition-duration: 1s; @[undefined-undefined]
+    transition-timing-function: ease; @[undefined-undefined]
+    transition-delay: 0s; @[undefined-undefined]
+    transition-property: background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+@media (min-width: 1px)
+    @starting-style
+         {    regular
+            background-color: yellow; @[9:12-9:37]
+            background-color: yellow; @[undefined-undefined]
+        }
+Dumping inherited rules: 
+*body* {    regular
+}
+
