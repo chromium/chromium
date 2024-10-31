@@ -22,10 +22,6 @@ try_.defaults.set(
     os = os.WINDOWS_DEFAULT,
     compilator_cores = 16,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,

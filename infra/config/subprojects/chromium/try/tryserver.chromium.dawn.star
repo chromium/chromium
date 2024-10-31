@@ -19,10 +19,6 @@ try_.defaults.set(
     check_for_flakiness_with_resultdb = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     service_account = try_.gpu.SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,

@@ -20,10 +20,6 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.FUCHSIA,
     execution_timeout = 10 * time.hour,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     health_spec = health_spec.DEFAULT,
     notifies = ["cr-fuchsia"],
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,

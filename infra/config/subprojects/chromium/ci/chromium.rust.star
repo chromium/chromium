@@ -19,10 +19,6 @@ ci.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     health_spec = health_spec.DEFAULT,
     notifies = ["chrome-rust-experiments"],
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,

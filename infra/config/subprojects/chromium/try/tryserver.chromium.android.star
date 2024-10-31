@@ -20,10 +20,6 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     compilator_cores = 32,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    experiments = {
-        # crbug.com/355218109
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     orchestrator_cores = 4,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
