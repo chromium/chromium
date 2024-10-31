@@ -156,7 +156,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
     test('Tab dismiss button dispatches dismiss tab event', async () => {
       // Arrange.
-      const moduleElement = await initializeModule(createSampleURLVisits(1));
+      const moduleElement = await initializeModule(createSampleURLVisits(2));
 
       // Assert.
       assertTrue(!!moduleElement);

@@ -352,7 +352,7 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
 
   int max_visits = base::GetFieldTrialParamByFeatureAsInt(
       ntp_features::kNtpMostRelevantTabResumptionModule,
-      ntp_features::kNtpMostRelevantTabResumptionModuleMaxVisitsParam, 5);
+      ntp_features::kNtpMostRelevantTabResumptionModuleMaxVisitsParam, 10);
 
   const size_t num_visits =
       std::min(static_cast<size_t>(max_visits), url_visit_aggregates.size());
