@@ -20308,6 +20308,7 @@ from previous Chrome versions.
   <int value="52368742" label="enable-pixel-canvas-recording:disabled"/>
   <int value="54258707" label="NewTabstripAnimation:enabled"/>
   <int value="54571864" label="EnableDisplayZoomSetting:enabled"/>
+  <int value="54837460" label="EnableCertManagementUIV2Write:disabled"/>
   <int value="56072855" label="VaapiWebPImageDecodeAcceleration:disabled"/>
   <int value="56723110" label="enable-webfonts-intervention"/>
   <int value="56900498" label="OmniboxOneClickUnelide:enabled"/>
@@ -21750,6 +21751,7 @@ from previous Chrome versions.
   <int value="642037198" label="SoleIntegration:disabled"/>
   <int value="642601306" label="ForceInitialSyncWhenDecryptionFails:enabled"/>
   <int value="642678255" label="ExoGamepadVibration:disabled"/>
+  <int value="643011347" label="EnableCertManagementUIV2Write:enabled"/>
   <int value="643068614"
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
   <int value="643637203" label="FastPairSoftwareScanningSupport:enabled"/>

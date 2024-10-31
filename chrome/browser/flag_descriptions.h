@@ -4847,6 +4847,8 @@ extern const char kEnableStandardBoundSessionCredentialsDescription[];
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 extern const char kEnableCertManagementV2UIName[];
 extern const char kEnableCertManagementV2UIDescription[];
+extern const char kEnableCertManagementV2UIWriteName[];
+extern const char kEnableCertManagementV2UIWriteDescription[];
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

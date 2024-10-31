@@ -8320,7 +8320,16 @@ const char kEnableStandardBoundSessionCredentialsDescription[] =
 const char kEnableCertManagementV2UIName[] = "Cert Management V2 UI";
 const char kEnableCertManagementV2UIDescription[] =
     "Enables the Cert Management V2 UI; accessible at "
-    "chrome://settings/certificates";
+    "chrome://certificate-manager";
+const char kEnableCertManagementV2UIWriteName[] =
+    "Cert Management V2 UI Write features";
+const char kEnableCertManagementV2UIWriteDescription[] =
+    "Enables the Cert Management V2 UI write features, using a chrome managed "
+    "DB "
+    "to store user added certs. This is new functionality for Windows and Mac. "
+    "For Linux and ChromeOS, this is a change as previously user-added certs "
+    "would be written to the platform cert store. The UI is accessible at "
+    "chrome://certificate-manager";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
