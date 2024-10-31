@@ -188,16 +188,7 @@ void WaitForTabsToLoad(Browser* browser) {
 
 class SessionRestoreTest : public InProcessBrowserTest {
  public:
-  SessionRestoreTest() {
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{// TODO(crbug.com/40248833): Use HTTPS URLs in
-                               // tests to avoid having to
-                               // disable this feature.
-                               features::kHttpsUpgrades});
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  }
+  SessionRestoreTest() = default;
   ~SessionRestoreTest() override = default;
 
  protected:
@@ -403,8 +394,8 @@ class SmartSessionRestoreTest : public SessionRestoreTest {
 const size_t SmartSessionRestoreTest::kExpectedNumTabs = 6;
 // static
 const char* const SmartSessionRestoreTest::kUrls[] = {
-    "http://google.com/1", "http://google.com/2", "http://google.com/3",
-    "http://google.com/4", "http://google.com/5", "http://google.com/6"};
+    "https://google.com/1", "https://google.com/2", "https://google.com/3",
+    "https://google.com/4", "https://google.com/5", "https://google.com/6"};
 
 // Restore session with url passed in command line.
 class SessionRestoreWithURLInCommandLineTest : public SessionRestoreTest {
@@ -802,8 +793,8 @@ void VerifyNavigationEntries(content::NavigationController& controller,
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
-  GURL url1("http://google.com");
-  GURL url2("http://google2.com");
+  GURL url1("https://google.com");
+  GURL url2("https://google2.com");
 
   // Set up the restore data.
   sessions::SessionTab tab;
@@ -3489,8 +3480,8 @@ class AppSessionRestoreTest : public SessionRestoreTest {
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
   Profile* profile = browser()->profile();
 
-  auto example_url = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
+  auto example_url = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -3727,8 +3718,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
                        MAYBE_IsolatedFromBrowserRestore) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
+  auto example_url = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
 
   // Add a tab so we can recognize if this browser gets restored correctly.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -3800,7 +3791,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 // This test minimizes an app, ensures it restores correctly.
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
+  auto example_url = GURL("https://www.example.com");
 
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
@@ -3872,7 +3863,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 // This test maximizes an app, ensures it restores correctly.
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
+  auto example_url = GURL("https://www.example.com");
 
   // Open a PWA.
   webapps::AppId app_id = InstallPWA(profile, example_url);
@@ -3945,8 +3936,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
                        OpeningAppDoesNotAffectBrowserSession) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
+  auto example_url = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
 
   // Add two tabs to the normal browser.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4010,9 +4001,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 // This test also tests that apps aren't restored on normal startups.
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
                        AppWindowsDontIntefereWithBrowserSessionRestore) {
-  auto example_url = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
-  auto app_url = GURL("http://www.example3.com");
+  auto example_url = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
+  auto app_url = GURL("https://www.example3.com");
 
   // Add two tabs to the normal browser. So we can tell it restored correctly.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4074,9 +4065,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
   Profile* profile = browser()->profile();
-  auto example_url = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
-  auto example_url3 = GURL("http://www.example3.com");
+  auto example_url = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
+  auto example_url3 = GURL("https://www.example3.com");
 
   // Install 3 PWAs.
   webapps::AppId app_id = InstallPWA(profile, example_url);
@@ -4135,8 +4126,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
   Profile* profile = browser()->profile();
 
-  auto app_url = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
+  auto app_url = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -4187,9 +4178,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
 // apps in sequence. Now try to restore that browser.
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
   Profile* profile = browser()->profile();
-  auto app_url = GURL("http://www.example.com");
-  auto app_url2 = GURL("http://www.example.com");
-  auto example_url2 = GURL("http://www.example2.com");
+  auto app_url = GURL("https://www.example.com");
+  auto app_url2 = GURL("https://www.example.com");
+  auto example_url2 = GURL("https://www.example2.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), example_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -4309,7 +4300,7 @@ class TabbedAppSessionRestoreTest : public AppSessionRestoreTest {
 
 IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   Profile* profile = browser()->profile();
-  GURL app_url = GURL("http://www.example.com");
+  GURL app_url = GURL("https://www.example.com");
   webapps::AppId app_id = InstallTabbedPWA(profile, app_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
@@ -4322,7 +4313,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
 
   // Add a regular tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      app_browser, GURL("http://www.example.com/2"),
+      app_browser, GURL("https://www.example.com/2"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
