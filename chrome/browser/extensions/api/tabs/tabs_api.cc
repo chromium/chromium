@@ -396,8 +396,8 @@ int MoveTabToWindow(ExtensionFunction* function,
 // This function sets the state of the browser window to a "locked"
 // fullscreen state (where the user can't exit fullscreen) in response to a
 // call to either chrome.windows.create or chrome.windows.update when the
-// screen is set locked. This is only necessary for ChromeOS and Lacros and
-// is restricted to allowlisted extensions.
+// screen is set locked. This is only necessary for ChromeOS and is
+// restricted to allowlisted extensions.
 void SetLockedFullscreenState(Browser* browser, bool pinned) {
 #if BUILDFLAG(IS_CHROMEOS)
   aura::Window* window = browser->window()->GetNativeWindow();

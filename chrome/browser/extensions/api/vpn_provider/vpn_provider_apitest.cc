@@ -432,10 +432,6 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CreateBlocklist) {
   EXPECT_FALSE(HasService(service_path));
 }
 
-////////////////////////////
-// Ash/lacros shared tests.
-////////////////////////////
-
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ComboSuite) {
   EXPECT_TRUE(RunTest("comboSuite"));
 }

@@ -316,10 +316,6 @@ using CrashReportPrivateCalledFromSwaTest = ash::SystemWebAppIntegrationTest;
 // window.
 IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                        CalledFromWebContentsInWebAppWindow) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    // TODO(crbug.com/40781751): Support Crosapi (web apps running in Lacros).
-    return;
-  }
   WaitForTestSystemAppInstall();
   // Set up test server to listen to handle crash reports & serve fake web app
   // content. Note: Creating a |MockCrashEndpoint| starts the server.

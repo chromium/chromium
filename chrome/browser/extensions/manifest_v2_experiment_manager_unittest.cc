@@ -49,7 +49,7 @@ class ManifestV2ExperimentManagerUnitTestBase
     // Log in the user on CrOS. This is necessary for the profile to be
     // considered one that can install extensions, which itself is
     // necessary for metrics testing.
-    ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+    ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
         GetFakeUserManager()->AddUser(account_id_), account_id_));
 #endif
 

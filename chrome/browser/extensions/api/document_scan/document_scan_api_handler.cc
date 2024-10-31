@@ -55,21 +55,12 @@ constexpr char kScannerImageMimeTypePng[] = "image/png";
 constexpr char kPngImageDataUrlPrefix[] = "data:image/png;base64,";
 
 crosapi::mojom::DocumentScan* GetDocumentScanInterface() {
-#if BUILDFLAG(IS_CHROMEOS)
   // CrosapiManager is not always initialized in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
     CHECK_IS_TEST();
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::DocumentScan>()) {
-    LOG(ERROR) << "DocumentScan service not available";
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::DocumentScan>().get();
-#endif
 }
 
 }  // namespace

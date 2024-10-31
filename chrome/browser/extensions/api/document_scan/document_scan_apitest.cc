@@ -21,7 +21,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry_observer.h"

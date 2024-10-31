@@ -27,7 +27,7 @@ class ProfileUtilUnitTest : public ExtensionServiceUserTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_RegularUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddUser(account_id_), account_id_));
 
   EXPECT_TRUE(ProfileCanUseNonComponentExtensions(profile()));
@@ -36,7 +36,7 @@ TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_RegularUser) {
 TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_ChildUser) {
   const user_manager::User* user =
       GetFakeUserManager()->AddChildUser(account_id_);
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(user, account_id_));
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(user, account_id_));
 
   EXPECT_TRUE(ProfileCanUseNonComponentExtensions(profile()));
 }
@@ -55,7 +55,7 @@ TEST_F(ProfileUtilUnitTest,
 
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_KioskAppUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddKioskAppUser(account_id_), account_id_));
 
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
@@ -63,14 +63,14 @@ TEST_F(ProfileUtilUnitTest,
 
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_WebKioskAppUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddWebKioskAppUser(account_id_), account_id_));
 
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
 
 TEST_F(ProfileUtilUnitTest, ProfileCannotUseNonComponentExtensions_PublicUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
       GetFakeUserManager()->AddPublicAccountUser(account_id_), account_id_));
 
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));

@@ -288,7 +288,6 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Using MSAN on ChromeOS causes problems due to its hardware OpenGL library.
-// Failing on ChromeOS Lacros as well.
 #define MAYBE_Performance DISABLED_Performance
 #elif BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1235358): Flaky on Mac 10.11

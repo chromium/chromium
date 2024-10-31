@@ -39,7 +39,7 @@ void ExtensionServiceUserTestBase::TearDown() {
   scoped_user_manager_.reset();
 }
 
-void ExtensionServiceUserTestBase::LoginChromeOSAshUser(
+void ExtensionServiceUserTestBase::LoginChromeOSUser(
     const user_manager::User* user,
     const AccountId& account_id) {
   ASSERT_TRUE(user);
@@ -64,7 +64,7 @@ void ExtensionServiceUserTestBase::MaybeSetUpTestUser(bool is_guest) {
   } else {
     user = GetFakeUserManager()->AddUser(account_id_);
   }
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(user, account_id));
+  ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(user, account_id));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
