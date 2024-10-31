@@ -1209,7 +1209,6 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
     return false;
   }
   if (!decoder_->image->gainMap) {
-    DVLOG(1) << "Missing gain map";
     return false;
   }
   const avifGainMap& gain_map = *decoder_->image->gainMap;
