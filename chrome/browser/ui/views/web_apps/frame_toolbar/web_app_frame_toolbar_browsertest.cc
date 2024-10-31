@@ -2487,8 +2487,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
+// TODO(crbug.com/376592844): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThemeColorChange DISABLED_ThemeColorChange
+#else
+#define MAYBE_ThemeColorChange ThemeColorChange
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       ThemeColorChange) {
+                       MAYBE_ThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
