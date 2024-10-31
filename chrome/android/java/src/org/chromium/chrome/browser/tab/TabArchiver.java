@@ -103,6 +103,18 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.assertOnUiThread();
         assert mDeclutterInitCalled;
 
+        // Wait for the declutter pass to complete, then do follow-up tasks.
+        addObserver(
+                new Observer() {
+                    @Override
+                    public void onDeclutterPassCompleted() {
+                        removeObserver(this);
+                        // Trigger auto-deletion after archiving tabs.
+                        deleteEligibleArchivedTabs();
+                        ensureArchivedTabsHaveCorrectFields();
+                    }
+                });
+
         // Trigger archival of inactive tabs for the current selectors.
         for (int i = 0; i < mTabWindowManager.getMaxSimultaneousSelectors(); i++) {
             TabModelSelector selector = mTabWindowManager.getTabModelSelectorById(i);
@@ -110,10 +122,6 @@ public class TabArchiver implements TabWindowManager.Observer {
             mSelectorsQueuedForDeclutter++;
             onTabModelSelectorAdded(selector);
         }
-
-        // Trigger auto-deletion after archiving tabs.
-        deleteEligibleArchivedTabs();
-        ensureArchivedTabsHaveCorrectFields();
     }
 
     /** Delete eligible archived tabs. */
@@ -357,5 +365,9 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     public void setClockForTesting(Clock clock) {
         mClock = clock;
+    }
+
+    ObserverList<Observer> getObserversForTesting() {
+        return mObservers;
     }
 }
