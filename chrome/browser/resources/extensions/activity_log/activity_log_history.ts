@@ -282,11 +282,9 @@ export class ActivityLogHistoryElement extends PolymerElement {
   private expandItems_(expanded: boolean) {
     // Do not use .filter here as we need the original index of the item
     // in |activityData_|.
-    this.activityData_.forEach((item, index) => {
-      if (item.countsByUrl.size > 0) {
-        this.set(`activityData_.${index}.expanded`, expanded);
-      }
-    });
+    const items =
+        this.shadowRoot!.querySelectorAll('activity-log-history-item');
+    items.forEach(item => item.expand(expanded));
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 

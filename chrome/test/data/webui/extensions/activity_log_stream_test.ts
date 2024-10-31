@@ -9,6 +9,7 @@ import 'chrome://extensions/extensions.js';
 import type {ActivityLogStreamElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {testVisible} from './test_util.js';
@@ -93,7 +94,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
   test(
       'new activity events are only shown while the stream is started',
-      function() {
+      async () => {
         flush();
         proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
@@ -121,6 +122,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
         proxyDelegate.getOnExtensionActivity().callListeners(activity2);
 
         flush();
+        await microtasksFinished();
         streamItems = getStreamItems();
         assertEquals(2, streamItems.length);
 
@@ -134,7 +136,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
             'testAPI.DOMMethod');
       });
 
-  test('activities shown match search query', function() {
+  test('activities shown match search query', async () => {
     flush();
     boundTestVisible('#empty-stream-message', true);
 
@@ -151,6 +153,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     // Search for the apiCall of |activity1|.
     search!.setValue('testMethod');
     flush();
+    await microtasksFinished();
 
     const filteredStreamItems = getStreamItems();
     assertEquals(1, getStreamItems().length);
@@ -180,10 +183,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
     assertEquals(4, getStreamItems().length);
   });
 
-  test('content script events are split by content script names', function() {
+  test('content script events are split by content script names', async () => {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
 
     flush();
+    await microtasksFinished();
     const streamItems = getStreamItems();
     assertEquals(2, streamItems.length);
 

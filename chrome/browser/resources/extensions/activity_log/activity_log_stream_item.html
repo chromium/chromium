@@ -1,118 +1,28 @@
-<style include="cr-icons cr-shared-style shared-style">
-  :host {
-    border-top: var(--cr-separator-line);
-    display: block;
-    padding: 8px var(--cr-section-padding);
-  }
-
-  cr-expand-button {
-    --cr-expand-button-disabled-display: none;
-
-    /* Match separator height. */
-    height: calc(var(--cr-section-min-height) - var(--separator-gap));
-  }
-
-  cr-expand-button[disabled] {
-    opacity: 1;
-  }
-
-  #activity-call-and-time {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    margin-inline-end: auto;
-    max-width: var(--activity-log-call-and-time-width);
-  }
-
-  #activity-type {
-    min-width: var(--activity-type-width);
-  }
-
-  #activity-name {
-    flex: 1;
-    margin-inline-start: 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  #activity-time {
-    min-width: var(--activity-time-width);
-    text-align: end;
-  }
-
-  #expanded-data {
-    display: flex;
-    flex-direction: column;
-    margin-inline-start: 16px;
-    max-width: var(--activity-log-call-and-time-width);
-  }
-
-  #page-url-link {
-    margin-bottom: 10px;
-    margin-inline-end: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 100%;
-  }
-
-  #args-list,
-  #web-request-section {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-  }
-
-  .expanded-data-heading {
-    font-weight: 500;
-  }
-
-  .list-item {
-    display: flex;
-    margin-top: 10px;
-  }
-
-  .index {
-    min-width: 3em; /* Allow 3 digits of space */
-  }
-
-  .arg,
-  #web-request-details {
-    overflow: hidden;
-    overflow-wrap: break-word;
-  }
-
-  #web-request-details {
-    margin-top: 10px;
-  }
-</style>
-<cr-expand-button expanded="[[data.expanded]]"
-    disabled="[[!isExpandable_]]" on-click="onExpandClick_">
+<cr-expand-button ?expanded="${this.expanded_}"
+    ?disabled="${!this.isExpandable_}" @click="${this.onExpandClick_}">
   <div id="activity-call-and-time">
-    <span id="activity-type">[[data.activityType]]</span>
-    <span id="activity-name" title="[[data.name]]">[[data.name]]</span>
-    <span id="activity-time">[[getFormattedTime_(data.timeStamp)]]</span>
+    <span id="activity-type">${this.data.activityType}</span>
+    <span id="activity-name" title="${this.data.name}">${this.data.name}</span>
+    <span id="activity-time">${this.getFormattedTime_()}</span>
   </div>
 </cr-expand-button>
-<div id="expanded-data" hidden$="[[!data.expanded]]">
-  <a id="page-url-link" href="[[data.pageUrl]]" target="_blank"
-      hidden$="[[!hasPageUrl_(data.pageUrl)]]"
-      title="[[data.pageUrl]]">[[data.pageUrl]]</a>
-  <div id="args-list" hidden$="[[!hasArgs_(argsList_)]]">
+<div id="expanded-data" ?hidden="${!this.expanded_}">
+  <a id="page-url-link" href="${this.data.pageUrl}" target="_blank"
+      ?hidden="${!this.hasPageUrl_()}"
+      title="${this.data.pageUrl}">${this.data.pageUrl}</a>
+  <div id="args-list" ?hidden="${!this.hasArgs_()}">
     <span class="expanded-data-heading">
       $i18n{activityArgumentsHeading}
     </span>
-    <template is="dom-repeat" items="[[argsList_]]">
+    ${this.argsList_.map(item => html`
       <div class="list-item">
-        <span class="index">[[item.index]]</span>
-        <span class="arg">[[item.arg]]</span>
-      </div>
-    </template>
+        <span class="index">${item.index}</span>
+        <span class="arg">${item.arg}</span>
+      </div>`)}
   </div>
   <div id="web-request-section"
-      hidden$="[[!hasWebRequestInfo_(data.webRequestInfo)]]">
+      ?hidden="${!this.hasWebRequestInfo_()}">
     <span class="expanded-data-heading">$i18n{webRequestInfoHeading}</span>
-    <span id="web-request-details">[[data.webRequestInfo]]</span>
+    <span id="web-request-details">${this.data.webRequestInfo}</span>
   </div>
 </div>

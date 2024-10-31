@@ -72,6 +72,8 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "activity_log/activity_log_history_item.css",
+    "activity_log/activity_log_stream_item.css",
     "code_section.css",
     "detail_view.css",
     "drop_overlay.css",

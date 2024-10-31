@@ -8,6 +8,7 @@ import type {ActivityLogHistoryElement} from 'chrome://extensions/extensions.js'
 import {ActivityLogPageState} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {testVisible} from './test_util.js';
@@ -329,6 +330,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     await setupActivityLogHistory();
 
     flush();
+    await microtasksFinished();
 
     const expandableItems = Array.from(getHistoryItems())
                                 .filter(
@@ -346,6 +348,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         .querySelector<HTMLElement>('#expand-all-button')!.click();
 
     flush();
+    await microtasksFinished();
     assertEquals(2, getExpandedItems().length);
 
     // Collapse all items.
@@ -355,6 +358,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         .querySelector<HTMLElement>('#collapse-all-button')!.click();
 
     flush();
+    await microtasksFinished();
     assertEquals(0, getExpandedItems().length);
   });
 
