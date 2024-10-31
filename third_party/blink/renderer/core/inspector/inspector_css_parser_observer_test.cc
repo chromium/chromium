@@ -77,4 +77,17 @@ TEST_F(InspectorCSSParserObserverTest, DeclRangeWithNestedDecl) {
             Substring(text, data[0]->rule_declarations_range));
 }
 
+TEST_F(InspectorCSSParserObserverTest, NestedDeclarationsInvalidPrecedingRule) {
+  // Note: We will first try to parse 'span:dino(t-rex){}' as a declaration,
+  // then as a nested rule. It is not valid as either, so the observer needs
+  // to decide whether we treat it as an invalid nested rule, or as an invalid
+  // declaration. We currently treat all such ambiguous cases as invalid
+  // declarations for compatibility with how the observer worked before
+  // CSS Nesting.
+  String text = "div { span { } span:dino(t-rex) { } }";
+  // Don't crash, crbug.com/372623082.
+  CSSRuleSourceDataList data = Parse(text);
+  ASSERT_EQ(1u, data.size());
+}
+
 }  // namespace blink
