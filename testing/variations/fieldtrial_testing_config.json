@@ -9593,9 +9593,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledRemovePrefDependency",
                     "enable_features": [
                         "ExtendedReportingRemovePrefDependency"
+                    ]
+                },
+                {
+                    "name": "EnabledRemovePrefDependencyAndHprtSamplePing",
+                    "params": {
+                        "HashPrefixRealTimeLookupsSampleRate": "50"
+                    },
+                    "enable_features": [
+                        "ExtendedReportingRemovePrefDependency",
+                        "SafeBrowsingHashPrefixRealTimeLookupsSamplePing"
                     ]
                 }
             ]
