@@ -171,7 +171,11 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
               LOG(WARNING) << "[Boca]Failed to update student activity.";
             }
           }));
-  request->set_active_tab_title(base::UTF16ToUTF8(title));
+
+  // TODO(crbug.com/376550427):Make a permanet fix to provide URL resource for
+  // home page, and remove this after that.
+  request->set_active_tab_title(title.empty() ? kHomePageTitle
+                                              : base::UTF16ToUTF8(title));
   session_client_impl_->UpdateStudentActivity(std::move(request));
 }
 

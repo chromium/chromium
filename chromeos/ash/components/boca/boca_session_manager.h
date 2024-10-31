@@ -42,6 +42,8 @@ class BocaSessionManager
   inline static constexpr base::TimeDelta kPollingInterval = base::Minutes(5);
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
 
+  inline static constexpr char kHomePageTitle[] = "School Tools Home page";
+
   enum class BocaAction {
     kDefault = 0,
     kOntask = 1,
