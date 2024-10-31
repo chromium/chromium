@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] StorageManager interface: existence and properties of interface object
-  assert_equals: prototype of self's property "StorageManager" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
-[FAIL] StorageManager interface: existence and properties of interface prototype object
-  assert_equals: prototype of StorageManager.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
-Harness: the test ran to completion.
-

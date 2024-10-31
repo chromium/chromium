@@ -1917,7 +1917,7 @@ interface StorageBucketManager
     method delete
     method keys
     method open
-interface StorageManager : EventTarget
+interface StorageManager
     attribute @@toStringTag
     method constructor
     method estimate
