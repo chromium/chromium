@@ -2650,6 +2650,8 @@ source_set("browser") {
       "devtools/protocol/native_input_event_builder_mac.mm",
       "file_system_access/file_path_watcher/file_path_watcher_fsevents.cc",
       "file_system_access/file_path_watcher/file_path_watcher_fsevents.h",
+      "file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.cc",
+      "file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h",
       "file_system_access/file_path_watcher/file_path_watcher_kqueue.cc",
       "file_system_access/file_path_watcher/file_path_watcher_kqueue.h",
       "file_system_access/file_path_watcher/file_path_watcher_mac.cc",
