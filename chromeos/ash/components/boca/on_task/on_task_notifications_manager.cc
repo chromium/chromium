@@ -10,6 +10,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
@@ -17,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notification_blocker.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -140,7 +140,7 @@ void OnTaskNotificationsManager::CreateNotification(
       params.message, /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), params.notifier_id,
       message_center::RichNotificationData(), /*delegate=*/nullptr,
-      chromeos::kEnterpriseIcon, SystemNotificationWarningLevel::NORMAL);
+      ash::kSecurityIcon, SystemNotificationWarningLevel::NORMAL);
   delegate_->ShowNotification(std::move(notification));
 }
 
