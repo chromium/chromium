@@ -619,6 +619,20 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.PageInfo.SiteExceptionsScopeType"
+    enum="ContentSettingPatternScope" expires_after="M136">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    The pattern scope of the exceptions shown in page info to the user.
+
+    The pattern scope is defined based on the use of wildcards in the pattern.
+    Examples of scopes are origin scope (https://www.example.com:433), domain
+    wildcard scope (https://[*.]example.com:433) or custom scope (https://*,
+    *:433 etc)
+  </summary>
+</histogram>
+
 <histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
     expires_after="2025-03-09">
   <owner>fsenra@google.com</owner>
@@ -637,6 +651,31 @@ reviewer.
   <summary>
     Tracks whether the tabs deletion is disabled in the Quick delete dialog due
     to the user having multiple windows.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.SiteExceptionsAdded.ContentSettingType"
+    enum="ContentType" expires_after="M136">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    The type of the content setting exception that was manually created in the
+    site settings page.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.SiteExceptionsAdded.ScopeType"
+    enum="ContentSettingPatternScope" expires_after="M136">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    The pattern scope of the exception manually created in the site settings
+    page.
+
+    The pattern scope is defined based on the use of wildcards in the pattern.
+    Examples of scopes are origin scope (https://www.example.com:433), domain
+    wildcard scope (https://[*.]example.com:433) or custom scope (https://*,
+    *:433 etc)
   </summary>
 </histogram>
 

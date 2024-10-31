@@ -2926,6 +2926,24 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="DETECT_IMPORTANT_CONTENT"/>
 </enum>
 
+<!-- LINT.IfChange(ContentSettingPatternScope) -->
+
+<enum name="ContentSettingPatternScope">
+  <int value="0" label="Origin scoped"/>
+  <int value="1" label="With domain wildcard"/>
+  <int value="2" label="With port wildcard"/>
+  <int value="3" label="With scheme wildcard"/>
+  <int value="4" label="With scheme and port wildcard"/>
+  <int value="5" label="With domain and port wildcard"/>
+  <int value="6" label="With domain and scheme wildcard"/>
+  <int value="7" label="With domain and scheme and port wildcard"/>
+  <int value="8" label="Full wildcard"/>
+  <int value="9" label="File path"/>
+  <int value="10" label="Custom scope"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_pattern.h:Scope) -->
+
 <!-- LINT.IfChange(ContentType) -->
 
 <enum name="ContentType">

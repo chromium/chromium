@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -6699,6 +6700,82 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_usage_string=*/"",
       /*expected_cookie_string=*/"",
       /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
+}
+
+TEST_F(SiteSettingsHandlerTest, SiteExceptionScopeTypeMetrics) {
+  constexpr char kScopeTypeHistogram[] =
+      "Privacy.SiteExceptionsAdded.ScopeType";
+  constexpr char kContentSettingTypeHistogram[] =
+      "Privacy.SiteExceptionsAdded.ContentSettingType";
+  base::HistogramTester tester;
+  tester.ExpectTotalCount(kScopeTypeHistogram, 0);
+
+  {
+    base::Value::List set_args;
+    set_args.Append("https://www.blocked.com:443");  // Primary pattern.
+    set_args.Append(std::string());                  // Secondary pattern.
+    set_args.Append(kNotifications);
+    set_args.Append(
+        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+    set_args.Append(false);  // Incognito.
+
+    handler()->HandleSetCategoryPermissionForPattern(set_args);
+    ASSERT_EQ(2U, web_ui()->call_data().size());
+
+    tester.ExpectBucketCount(kScopeTypeHistogram,
+                             ContentSettingsPattern::Scope::kOriginScoped,
+                             1 /* expected_count */);
+    tester.ExpectBucketCount(
+        kContentSettingTypeHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(
+            ContentSettingsType::NOTIFICATIONS),
+        1 /* expected_count */);
+  }
+
+  {
+    base::Value::List set_args;
+    set_args.Append("https://[*.]blocked.com:443");  // Primary pattern.
+    set_args.Append(std::string());                  // Secondary pattern.
+    set_args.Append(kCookies);
+    set_args.Append(
+        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+    set_args.Append(false);  // Incognito.
+
+    handler()->HandleSetCategoryPermissionForPattern(set_args);
+    ASSERT_EQ(3U, web_ui()->call_data().size());
+
+    tester.ExpectBucketCount(kScopeTypeHistogram,
+                             ContentSettingsPattern::Scope::kWithDomainWildcard,
+                             1 /* expected_count */);
+    tester.ExpectBucketCount(
+        kContentSettingTypeHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(
+            ContentSettingsType::COOKIES),
+        1 /* expected_count */);
+  }
+
+  {
+    base::Value::List set_args;
+    set_args.Append("*");                        // Primary pattern.
+    set_args.Append("https://[*.]blocked.com");  // Secondary pattern.
+    set_args.Append(kTrackingProtection);
+    set_args.Append(
+        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+    set_args.Append(false);  // Incognito.
+
+    handler()->HandleSetCategoryPermissionForPattern(set_args);
+    ASSERT_EQ(4U, web_ui()->call_data().size());
+
+    tester.ExpectBucketCount(
+        kScopeTypeHistogram,
+        ContentSettingsPattern::Scope::kWithDomainAndPortWildcard,
+        1 /* expected_count */);
+    tester.ExpectBucketCount(
+        kContentSettingTypeHistogram,
+        content_settings_uma_util::ContentSettingTypeToHistogramValue(
+            ContentSettingsType::TRACKING_PROTECTION),
+        1 /* expected_count */);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

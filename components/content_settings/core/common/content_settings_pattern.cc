@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -684,6 +685,49 @@ ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
 
 const std::string& ContentSettingsPattern::GetHost() const {
   return parts_.host;
+}
+
+ContentSettingsPattern::Scope ContentSettingsPattern::GetScope() const {
+  if (parts_.host.empty() && parts_.has_domain_wildcard &&
+      parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+    return Scope::kFullWildcard;
+  }
+
+  if (parts_.scheme == url::kFileScheme && !parts_.is_path_wildcard) {
+    return Scope::kFilePath;
+  }
+
+  if (parts_.host.empty()) {
+    return Scope::kCustomScope;
+  }
+
+  if (parts_.has_domain_wildcard) {
+    if (parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+      return Scope::kWithDomainAndSchemeAndPortWildcard;
+    }
+    if (parts_.is_port_wildcard) {
+      return Scope::kWithDomainAndPortWildcard;
+    }
+    if (parts_.is_scheme_wildcard) {
+      return Scope::kWithDomainAndSchemeWildcard;
+    }
+    return Scope::kWithDomainWildcard;
+  }
+
+  // Origin is set and there is no domain wildcard.
+  if (parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+    return Scope::kWithSchemeAndPortWildcard;
+  }
+  if (parts_.is_port_wildcard) {
+    return Scope::kWithPortWildcard;
+  }
+  if (parts_.is_scheme_wildcard) {
+    return Scope::kWithSchemeWildcard;
+  }
+
+  DCHECK(!parts_.host.empty() && !parts_.has_domain_wildcard &&
+         !parts_.is_port_wildcard && !parts_.is_scheme_wildcard);
+  return Scope::kOriginScoped;
 }
 
 ContentSettingsPattern::Relation ContentSettingsPattern::Compare(

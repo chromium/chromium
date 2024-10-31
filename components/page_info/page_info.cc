@@ -1388,8 +1388,15 @@ void PageInfo::PresentSitePermissions() {
     PopulatePermissionInfo(permission_info, content_settings, info, setting);
     if (ShouldShowPermission(permission_info)) {
       permission_info_list.push_back(permission_info);
+      if (!has_recorded_permission_metrics_) {
+        CHECK_EQ(info.secondary_pattern, ContentSettingsPattern::Wildcard());
+        base::UmaHistogramEnumeration(
+            "Privacy.PageInfo.SiteExceptionsScopeType",
+            info.primary_pattern.GetScope());
+      }
     }
   }
+  has_recorded_permission_metrics_ = true;
 
   for (ContentSettingsType type : kTwoPatternPermissions) {
     for (auto& requester : GetTwoSitePermissionRequesters(type)) {

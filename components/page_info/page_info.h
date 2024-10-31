@@ -505,6 +505,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   bool is_subscribed_to_permission_change_for_testing = false;
 
+  bool has_recorded_permission_metrics_ = false;
+
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };
 
