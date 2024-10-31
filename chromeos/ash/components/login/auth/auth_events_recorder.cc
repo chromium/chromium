@@ -71,6 +71,9 @@ constexpr int kManyUserLimit = 5;
 constexpr char kConfiguredAuthFactorsHistogramPrefix[] =
     "Ash.OSAuth.Login.ConfiguredAuthFactors.";
 
+// Histogram for recording the passwordless user login.
+constexpr char kPasswordlessLoginHistogram[] = "Ash.OSAuth.Login.Passwordless";
+
 // Histogram prefix for recording duration of various login flow phases.
 // Format: "Ash.OSAuth.Login.Times.{...}"
 constexpr char kLoginTimeHistogramPrefix[] = "Ash.OSAuth.Login.Times.";
@@ -411,6 +414,8 @@ void AuthEventsRecorder::RecordSessionAuthFactors(
   DCHECK(auth_surface_.has_value());
   DCHECK_EQ(auth_surface_.value(), AuthenticationSurface::kLogin);
 
+  bool passwordless = true;
+
   const auto factor_types = auth_factors.GetSessionFactors();
   for (const auto factor : kTrackedAuthFactors) {
     if (factor == cryptohome::AuthFactorType::kPassword) {
@@ -422,12 +427,17 @@ void AuthEventsRecorder::RecordSessionAuthFactors(
       base::UmaHistogramBoolean(GetConfiguredPasswordFactorHistogramName(
                                     ConfiguredPasswordType::kLocal),
                                 local_password != nullptr);
+      if (local_password || online_password) {
+        passwordless = false;
+      }
       continue;
     }
 
     base::UmaHistogramBoolean(GetConfiguredAuthFactorsHistogramName(factor),
                               base::Contains(factor_types, factor));
   }
+
+  base::UmaHistogramBoolean(kPasswordlessLoginHistogram, passwordless);
 }
 
 void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
