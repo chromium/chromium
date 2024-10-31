@@ -10,11 +10,14 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/flat_tree.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
 #include "url/origin.h"
@@ -344,9 +347,25 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
 // static
 std::unique_ptr<WebAppInstallInfo>
 WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
+  CHECK_IS_TEST();
   auto info = std::make_unique<WebAppInstallInfo>(
       GenerateManifestIdFromStartUrlOnly(start_url), start_url);
   info->scope = start_url.GetWithoutFilename();
+  return info;
+}
+
+// static
+std::unique_ptr<WebAppInstallInfo> WebAppInstallInfo::CreateForTesting(
+    const GURL& start_url,
+    blink::mojom::DisplayMode display,
+    mojom::UserDisplayMode user_mode,
+    blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
+  CHECK_IS_TEST();
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = base::ASCIIToUTF16(start_url.PathForRequest());
+  info->display_mode = display;
+  info->user_display_mode = user_mode;
+  info->launch_handler = blink::Manifest::LaunchHandler(client_mode);
   return info;
 }
 
