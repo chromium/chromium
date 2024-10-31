@@ -784,10 +784,10 @@ ListedElement* ListedElement::From(Element& element) {
 }
 
 const HTMLElement& ListedElement::ToHTMLElement() const {
-  if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(this)) {
+  if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(*this)) {
     return *form_control_element;
   }
-  if (auto* element_internals = DynamicTo<ElementInternals>(this)) {
+  if (auto* element_internals = DynamicTo<ElementInternals>(*this)) {
     return element_internals->Target();
   }
   return To<HTMLObjectElement>(*this);
