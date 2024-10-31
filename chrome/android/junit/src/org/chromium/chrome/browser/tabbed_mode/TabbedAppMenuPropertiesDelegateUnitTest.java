@@ -81,6 +81,8 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
@@ -145,6 +147,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
+    @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
@@ -203,6 +206,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .thenReturn(null);
         jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
         when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
+        jniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
 
         Context context =
                 new ContextThemeWrapper(
