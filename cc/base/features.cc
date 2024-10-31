@@ -17,7 +17,7 @@ namespace features {
 // in text. https://crbug.com/359279545
 BASE_FEATURE(kAlignSurfaceLayerImplToPixelGrid,
              "AlignSurfaceLayerImplToPixelGrid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses the Resume method instead of the Catch-up method for animated images.
 // - Catch-up behavior tries to keep animated images in pace with wall-clock
