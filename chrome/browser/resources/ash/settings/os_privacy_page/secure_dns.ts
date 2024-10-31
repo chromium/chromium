@@ -25,17 +25,18 @@ import './secure_dns_input.js';
 import './secure_dns_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 import {getTemplate} from './secure_dns.html.js';
-import {SecureDnsInputElement} from './secure_dns_input.js';
+import type {SecureDnsInputElement} from './secure_dns_input.js';
 
 export interface SettingsSecureDnsElement {
   $: {

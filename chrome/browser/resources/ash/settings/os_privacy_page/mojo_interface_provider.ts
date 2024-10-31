@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppPermissionsHandler, AppPermissionsHandlerInterface} from '../mojom-webui/app_permission_handler.mojom-webui.js';
+import type {AppPermissionsHandlerInterface} from '../mojom-webui/app_permission_handler.mojom-webui.js';
+import {AppPermissionsHandler} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 
 let appPermissionProvider: AppPermissionsHandlerInterface|null = null;
 
