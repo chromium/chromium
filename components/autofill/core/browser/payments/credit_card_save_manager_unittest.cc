@@ -5985,8 +5985,10 @@ class CreditCardSaveManagerWithLocalSaveFallbackTest
     : public CreditCardSaveManagerTest {
  public:
   CreditCardSaveManagerWithLocalSaveFallbackTest() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     feature_list_.InitWithFeatureState(
         features::kAutofillEnableSaveCardLocalSaveFallback, true);
+#endif
   }
 
  private:

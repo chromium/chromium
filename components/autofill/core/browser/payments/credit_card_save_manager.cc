@@ -475,8 +475,14 @@ void CreditCardSaveManager::OnDidUploadCard(
     // Do not save if card does not have the expiration month or the year
     // because the local save bubble does not support the expiration date fix
     // flow.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSaveCardLocalSaveFallback) &&
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    bool run_save_card_fallback = base::FeatureList::IsEnabled(
+        features::kAutofillEnableSaveCardLocalSaveFallback);
+#else
+    bool run_save_card_fallback = true;
+#endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+    if (run_save_card_fallback &&
         !upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_)
              .empty() &&
         !upload_request_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_)
