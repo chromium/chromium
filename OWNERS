@@ -149,7 +149,6 @@ per-file third_party/libaddressinput/src=*
 per-file third_party/libaom/source/libaom=*
 per-file third_party/libavif/src=*
 per-file third_party/crabbyavif/src=*
-per-file third_party/libavifinfo/src=*
 per-file third_party/libc++/src=*
 per-file third_party/libc++abi/src=*
 per-file third_party/libdrm/src=*

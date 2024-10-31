@@ -355,9 +355,6 @@
 [submodule "third_party/crabbyavif/src"]
 	path = third_party/crabbyavif/src
 	url = https://chromium.googlesource.com/external/github.com/webmproject/CrabbyAvif
-[submodule "third_party/libavifinfo/src"]
-	path = third_party/libavifinfo/src
-	url = https://aomedia.googlesource.com/libavifinfo
 [submodule "third_party/nearby/src"]
 	path = third_party/nearby/src
 	url = https://chromium.googlesource.com/external/github.com/google/nearby-connections

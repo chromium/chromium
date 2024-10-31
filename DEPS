@@ -426,10 +426,6 @@ vars = {
   # and whatever else without interference from each other.
   'crabbyavif_revision': 'c3548280e0a516ed7cad7ff1591b5807cef64aa4',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling libavifinfo
-  # and whatever else without interference from each other.
-  'libavifinfo_revision': '8d8b58a3f517ef8d1794baa28ca6ae7d19f65514',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Speedometer v3.0
   # and whatever else without interference from each other.
   'speedometer_3.0_revision': '8d67f28d0281ac4330f283495b7f48286654ad7d',
@@ -2046,9 +2042,6 @@ deps = {
 
   'src/third_party/crabbyavif/src':
     Var('chromium_git') + '/external/github.com/webmproject/CrabbyAvif.git' + '@' + Var('crabbyavif_revision'),
-
-  'src/third_party/libavifinfo/src':
-    Var('aomedia_git') + '/libavifinfo.git' + '@' + Var('libavifinfo_revision'),
 
   'src/third_party/nearby/src':
     Var('chromium_git') + '/external/github.com/google/nearby-connections.git' + '@' + Var('nearby_revision'),
