@@ -332,10 +332,6 @@
     "owners": [ "lingyufeng@chromium.org", "arc-user-focus@google.com" ],
     "expiry_milestone": 130
   },
-  { "name": "arc-instant-response-window-open",
-    "owners": [ "sstan@chromium.org", "mduggan@chromium.org" ],
-    "expiry_milestone": 120
-  },
   {
     "name": "arc-native-bridge-toggle",
     "owners": [ "levarum@google.com" ],

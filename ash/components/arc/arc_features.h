@@ -63,7 +63,6 @@ extern const base::FeatureParam<bool> kVirtualSwapEnabled;
 extern const base::FeatureParam<int> kVirtualSwapIntervalMs;
 BASE_DECLARE_FEATURE(kArcVmPvclock);
 BASE_DECLARE_FEATURE(kIgnoreHoverEventAnr);
-BASE_DECLARE_FEATURE(kInstantResponseWindowOpen);
 BASE_DECLARE_FEATURE(kLockGuestMemory);
 BASE_DECLARE_FEATURE(kLvmApplicationContainers);
 BASE_DECLARE_FEATURE(kMglruReclaim);
