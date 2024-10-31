@@ -113,10 +113,11 @@ enum class ActionButtonType {
 };
 
 // Defines the capture type to be performed when "Capture" or "Search" is
-// pressed.
+// pressed, or a region is selected for text detection.
 enum class PerformCaptureType {
   kCapture,
   kSearch,
+  kTextDetection,
 };
 
 // Defines the rank of an action button for a selected region. Higher ranked

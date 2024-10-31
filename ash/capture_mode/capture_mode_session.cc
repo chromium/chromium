@@ -2480,15 +2480,21 @@ void CaptureModeSession::OnLocatedEventReleased(
   is_selecting_region_ = false;
 
   // TODO(b/367882127): May also need to check if the user has opted in.
-  if (features::IsSunfishFeatureEnabled() &&
-      active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
+  if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
     DCHECK(action_container_widget_);
-    // TODO(b/373896226): Update string and icon with UX specs.
-    capture_mode_util::AddActionButton(
-        base::BindRepeating(&CaptureModeSession::DoPerformImageSearch,
-                            weak_ptr_factory_.GetWeakPtr()),
-        u"Search", &kCaptureModeImageIcon,
-        ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));
+    if (features::IsSunfishFeatureEnabled()) {
+      // TODO(b/373896226): Update string and icon with UX specs.
+      capture_mode_util::AddActionButton(
+          base::BindRepeating(&CaptureModeSession::DoPerformImageSearch,
+                              weak_ptr_factory_.GetWeakPtr()),
+          u"Search", &kCaptureModeImageIcon,
+          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));
+    }
+    if (features::IsScannerEnabled()) {
+      // Perform text detection to determine whether the copy text and scanner
+      // actions buttons should be shown.
+      controller_->PerformCapture(PerformCaptureType::kTextDetection);
+    }
   }
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);

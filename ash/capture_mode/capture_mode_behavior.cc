@@ -334,7 +334,10 @@ class SunfishBehavior : public CaptureModeBehavior {
   }
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }
-  bool ShouldReShowUisAtPerformingCapture() const override { return true; }
+  bool ShouldReShowUisAtPerformingCapture(
+      PerformCaptureType capture_type) const override {
+    return true;
+  }
   bool ShouldShowDefaultActionButtonsAfterRegionSelected() const override {
     // We show action buttons in Sunfish mode for individual Scanner actions,
     // which is a different set of buttons to the default action buttons shown
@@ -488,13 +491,15 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
   return false;
 }
 
-bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture() const {
+bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
+    PerformCaptureType capture_type) const {
   // We don't need to bring capture mode UIs back if `type_` is
   // `CaptureModeType::kImage`, except if the capture type is search, since the
   // session is about to shutdown anyways at these use cases, so it's better to
   // avoid any wasted effort. In the case of video recording, we need to reshow
   // the UIs so that we can start the 3-second count down animation.
-  return CaptureModeController::Get()->type() != CaptureModeType::kImage;
+  return capture_type == PerformCaptureType::kTextDetection ||
+         CaptureModeController::Get()->type() != CaptureModeType::kImage;
 }
 
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()

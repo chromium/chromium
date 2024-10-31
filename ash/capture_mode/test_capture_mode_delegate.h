@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -144,8 +145,10 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       const gfx::Image& thumbnail) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
   std::unique_ptr<AshWebView> CreateSearchResultsView() const override;
-  void DetectTextInImage(const SkBitmap& image,
-                         OnTextDetectionComplete callback) override;
+  MOCK_METHOD(void,
+              DetectTextInImage,
+              (const SkBitmap& image, OnTextDetectionComplete callback),
+              (override));
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         OnSearchUrlFetchedCallback callback) override;

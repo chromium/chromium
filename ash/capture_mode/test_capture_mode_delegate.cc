@@ -4,7 +4,6 @@
 
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 
-#include <string>
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_types.h"
@@ -222,12 +221,6 @@ std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
     const {
   // In ash unit and pixel tests we only need an `AshWebView` instance.
   return AshWebViewFactory::Get()->Create(AshWebView::InitParams());
-}
-
-void TestCaptureModeDelegate::DetectTextInImage(
-    const SkBitmap& image,
-    OnTextDetectionComplete callback) {
-  std::move(callback).Run("detected text");
 }
 
 void TestCaptureModeDelegate::SendRegionSearch(

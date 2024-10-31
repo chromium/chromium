@@ -46,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
@@ -57,16 +58,23 @@ namespace ash {
 
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
+using ::testing::Contains;
+using ::testing::Not;
+using ::testing::Property;
 using ::testing::SizeIs;
 
 constexpr char kTestSearchUrl[] =
     "https://www.google.com/search?q=cat&gsc=1&masfc=c";
 
 void WaitForImageCapturedForSearch() {
-  base::RunLoop run_loop;
-  ash::CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  base::test::TestFuture<void> image_captured_future;
+  CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
+      base::BindLambdaForTesting([&](PerformCaptureType capture_type) {
+        if (capture_type == PerformCaptureType::kSearch) {
+          image_captured_future.SetValue();
+        }
+      }));
+  EXPECT_TRUE(image_captured_future.Wait());
 }
 
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
@@ -852,6 +860,77 @@ TEST_F(ScannerTest, FetchActionsImmediately) {
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+}
+
+// Tests that the copy text button is shown in default capture mode if text is
+// detected in the selected region.
+TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<const SkBitmap&, OnTextDetectionComplete>
+      detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(InvokeFuture(detect_text_future));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto [_, callback] = detect_text_future.Take();
+  std::move(callback).Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              Contains(Property(&PillButton::GetText, u"Copy text")));
+}
+
+// Tests that the copy text button is not shown in default capture mode if no
+// text is detected in the selected region.
+TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<const SkBitmap&, OnTextDetectionComplete>
+      detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(InvokeFuture(detect_text_future));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto [_, callback] = detect_text_future.Take();
+  std::move(callback).Run("");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              Not(Contains(Property(&PillButton::GetText, u"Copy text"))));
+}
+
+// Tests that the copy text button is not shown if the selected region changes
+// before text detection completes.
+TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<const SkBitmap&, OnTextDetectionComplete>
+      detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(InvokeFuture(detect_text_future));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto [_, callback] = detect_text_future.Take();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  std::move(callback).Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              Not(Contains(Property(&PillButton::GetText, u"Copy text"))));
 }
 
 }  // namespace ash

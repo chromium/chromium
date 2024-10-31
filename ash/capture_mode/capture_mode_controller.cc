@@ -63,6 +63,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/env.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -487,7 +488,11 @@ void MaybeUnlockCursor(bool was_cursor_originally_blocked) {
     if (!display::Screen::GetScreen()->InTabletMode()) {
       cursor_manager->ShowCursor();
     }
-    cursor_manager->UnlockCursor();
+    // TODO(crbug.com/376171009): Investigate why the cursor may have already
+    // been unlocked even though image capture should have locked the cursor.
+    if (cursor_manager->IsCursorLocked()) {
+      cursor_manager->UnlockCursor();
+    }
   }
 }
 
@@ -506,6 +511,18 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     default:
       return BehaviorType::kDefault;
   }
+}
+
+// Gets the capture type given the requested `capture_type`, accounting for the
+// `behavior_type`.
+PerformCaptureType GetCaptureTypeForImageCapture(
+    BehaviorType behavior_type,
+    PerformCaptureType capture_type) {
+  if (behavior_type == BehaviorType::kSunfish) {
+    // Only allow search from Sunfish behavior.
+    return PerformCaptureType::kSearch;
+  }
+  return capture_type;
 }
 
 }  // namespace
@@ -919,7 +936,9 @@ void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
   DCHECK(!pending_dlp_check_);
   pending_dlp_check_ = true;
   capture_mode_session_->OnWaitingForDlpConfirmationStarted();
-  capture_mode_session_->MaybeDismissUserNudgeForever();
+  if (capture_type != PerformCaptureType::kTextDetection) {
+    capture_mode_session_->MaybeDismissUserNudgeForever();
+  }
   delegate_->CheckCaptureOperationRestrictionByDlp(
       capture_params->window, capture_params->bounds,
       base::BindOnce(
@@ -927,7 +946,8 @@ void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
           weak_ptr_factory_.GetWeakPtr(), capture_type));
 }
 
-void CaptureModeController::PerformImageSearch() {
+void CaptureModeController::PerformImageSearch(
+    PerformCaptureType capture_type) {
   DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
   const std::optional<CaptureParams> capture_params = GetCaptureParams();
@@ -940,7 +960,7 @@ void CaptureModeController::PerformImageSearch() {
   ui::GrabWindowSnapshotAsJPEG(
       capture_params->window, capture_params->bounds,
       base::BindOnce(&CaptureModeController::OnImageCapturedForSearch,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), capture_type,
                      was_cursor_originally_blocked));
 
   delegate_->OnCaptureImageAttempted(capture_params->window,
@@ -1721,14 +1741,29 @@ void CaptureModeController::OnImageCaptured(
 }
 
 void CaptureModeController::OnImageCapturedForSearch(
+    PerformCaptureType capture_type,
     bool was_cursor_originally_blocked,
     scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
+  absl::Cleanup run_test_callback_on_return = [this, capture_type] {
+    if (on_image_captured_for_search_callback_for_test_) {
+      on_image_captured_for_search_callback_for_test_.Run(capture_type);
+    }
+  };
   // Capture mode session may end before the `jpeg_bytes` are received, no-op if
   // the session is no longer active.
   if (!IsActive()) {
     return;
   }
   MaybeUnlockCursor(was_cursor_originally_blocked);
+
+  const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
+  if (capture_type == PerformCaptureType::kTextDetection) {
+    delegate_->DetectTextInImage(
+        bitmap,
+        base::BindOnce(&CaptureModeController::OnTextDetectionComplete,
+                       weak_ptr_factory_.GetWeakPtr(), user_capture_region_));
+    return;
+  }
 
   if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
     scanner_controller->FetchActionsForImage(
@@ -1738,7 +1773,6 @@ void CaptureModeController::OnImageCapturedForSearch(
   }
 
   if (features::IsSunfishFeatureEnabled()) {
-    SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
     const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     // `OnSearchUrlFetched()` will be invoked with `image` when the server
     // response is fetched.
@@ -1749,10 +1783,24 @@ void CaptureModeController::OnImageCapturedForSearch(
                             capture_mode_session(), user_capture_region_,
                             image));
   }
+}
 
-  if (on_image_captured_for_search_callback_for_test_) {
-    std::move(on_image_captured_for_search_callback_for_test_).Run();
+void CaptureModeController::OnTextDetectionComplete(
+    const gfx::Rect& captured_region,
+    std::string detected_text) {
+  // TODO(crbug.com/376168016): We should also return early if the session has
+  // changed since the text detection request.
+  if (!IsActive() || captured_region != user_capture_region_ ||
+      detected_text.empty()) {
+    return;
   }
+
+  // TODO(crbug.com/374186111): Implement functionality of "copy text" button.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Copy text",
+      &vector_icons::kContentCopyIcon,
+      ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0});
+  // TODO(crbug.com/374356291): Implement Scanner actions button.
 }
 
 void CaptureModeController::OnScannerActionsFetched(
@@ -1776,6 +1824,9 @@ void CaptureModeController::OnSearchUrlFetched(BaseCaptureModeSession* session,
                                                const gfx::Rect& captured_region,
                                                const gfx::ImageSkia& image,
                                                GURL url) {
+  // TODO(crbug.com/376168016): `session` is dangling if the session at time of
+  // the search request is destroyed before the search request completes. Fix
+  // this (e.g. use a weak ptr instead).
   if (IsActive() && session == capture_mode_session() &&
       captured_region == user_capture_region_) {
     ShowSearchResultsPanel(image, url);
@@ -2185,12 +2236,12 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
 
   // We don't need to bring capture mode UIs back if `proceed` is false or if
   // the session is about to shutdown. See also
-  // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture()`.
+  // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture`.
   // TODO(b/374381937): Determine whether to reshow UIs or end the session.
   auto* active_behavior = capture_mode_session_->active_behavior();
   capture_mode_session_->OnWaitingForDlpConfirmationEnded(
       /*reshow_uis=*/proceed &&
-      active_behavior->ShouldReShowUisAtPerformingCapture());
+      active_behavior->ShouldReShowUisAtPerformingCapture(capture_type));
 
   if (!proceed) {
     Stop();
@@ -2207,14 +2258,14 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   if (type_ == CaptureModeType::kImage) {
-    if (active_behavior->behavior_type() == BehaviorType::kSunfish ||
-        capture_type == PerformCaptureType::kSearch) {
-      // Sunfish behavior doesn't need the file path and does specific image
-      // capture handling.
-      PerformImageSearch();
-    } else {
+    const PerformCaptureType effective_capture_type =
+        GetCaptureTypeForImageCapture(active_behavior->behavior_type(),
+                                      capture_type);
+    if (effective_capture_type == PerformCaptureType::kCapture) {
       CaptureImage(*capture_params, BuildImagePath(),
                    capture_mode_session_->active_behavior());
+    } else {
+      PerformImageSearch(effective_capture_type);
     }
   } else {
     // HDCP affects only video recording.

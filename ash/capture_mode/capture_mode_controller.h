@@ -268,7 +268,9 @@ class ASH_EXPORT CaptureModeController
       PerformCaptureType capture_type = PerformCaptureType::kCapture);
 
   // Called by a capture session behavior to perform an image capture search.
-  void PerformImageSearch();
+  // `capture_type` indicates the type of search to perform on the captured
+  // image.
+  void PerformImageSearch(PerformCaptureType capture_type);
 
   void EndVideoRecording(EndRecordingReason reason);
 
@@ -506,9 +508,20 @@ class ASH_EXPORT CaptureModeController
 
   // Called back when an image has been captured to trigger a search request.
   // `jpeg_bytes` is the buffer containing the captured image in a JPEG format.
+  // `capture_type` indicates the type of search to perform on the captured
+  // image.
   void OnImageCapturedForSearch(
+      PerformCaptureType capture_type,
       bool was_cursor_originally_blocked,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
+
+  // Called back when text detection is complete to show copy text and smart
+  // actions buttons if needed. `captured_region` is the selected region at the
+  // time of the text detection request. If the selected region has changed
+  // since the request was made, then the detected text result is discarded and
+  // no buttons are shown.
+  void OnTextDetectionComplete(const gfx::Rect& captured_region,
+                               std::string detected_text);
 
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
@@ -778,7 +791,8 @@ class ASH_EXPORT CaptureModeController
 
   base::OnceClosure on_video_recording_started_callback_for_test_;
 
-  base::OnceClosure on_image_captured_for_search_callback_for_test_;
+  base::RepeatingCallback<void(PerformCaptureType capture_type)>
+      on_image_captured_for_search_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

@@ -94,7 +94,8 @@ class CaptureModeBehavior {
   virtual bool RequiresCaptureFolderCreation() const;
   // Returns true if the behavior should re-show after hiding of all the capture
   // mode UIs while waiting for DLP confirmation.
-  virtual bool ShouldReShowUisAtPerformingCapture() const;
+  virtual bool ShouldReShowUisAtPerformingCapture(
+      PerformCaptureType capture_type) const;
   // Returns true if the behavior should show default action buttons such as
   // search and copy text after region selection.
   virtual bool ShouldShowDefaultActionButtonsAfterRegionSelected() const;
