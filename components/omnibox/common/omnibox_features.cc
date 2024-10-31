@@ -216,9 +216,7 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // suggestion titles and non-prefixes as opposed to be restricted to URL
 // prefixes. Will also adjust the location bar UI and omnibox text selection to
 // accommodate the autocompletions.
-BASE_FEATURE(kRichAutocompletion,
-             "OmniboxRichAutocompletion",
-             enable_if(!IS_ANDROID));
+BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
 // Feature used to enable Pedals in the NTP Realbox.
 BASE_FEATURE(kNtpRealboxPedals, "NtpRealboxPedals", ENABLED);

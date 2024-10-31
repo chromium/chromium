@@ -47,6 +47,9 @@ public class OmniboxFeatures {
     // Timeout requests after 30 minutes if we somehow fail to remove our listener.
     private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 30;
 
+    // Minimum number of characters required to trigger rich inline autocomplete.
+    private static final int DEFAULT_RICH_INLINE_MIN_CHAR = 3;
+
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
@@ -111,13 +114,13 @@ public class OmniboxFeatures {
                     DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
 
     public static final BooleanCachedFieldTrialParameter sRichInlineShowFullUrl =
-            newBooleanParam(sRichInlineAutocomplete, "rich_autocomplete_full_url", false);
+            newBooleanParam(sRichInlineAutocomplete, "rich_autocomplete_full_url", true);
 
     public static final IntCachedFieldTrialParameter sRichInlineMinimumInputChars =
             newIntParam(
                     sRichInlineAutocomplete,
                     "rich_autocomplete_minimum_characters",
-                    Integer.MAX_VALUE);
+                    DEFAULT_RICH_INLINE_MIN_CHAR);
 
     public static final IntCachedFieldTrialParameter sJumpStartOmniboxMemoryThresholdKb =
             newIntParam(sJumpStartOmnibox, "jump_start_memory_threshold_kb", 2 * 1024 * 1024);
