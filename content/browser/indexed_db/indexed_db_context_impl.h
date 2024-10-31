@@ -129,6 +129,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator,
       base::OnceClosure callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
+  void GetSchedulingPriorityForTesting(
+      GetSchedulingPriorityForTestingCallback callback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)
       override;

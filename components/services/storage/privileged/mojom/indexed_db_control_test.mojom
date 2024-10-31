@@ -59,6 +59,10 @@ interface IndexedDBControlTest {
   CompactBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
       ();
 
+  // Computes the scheduling priority for the first bucket in the map. Returns
+  // null if there is no bucket or it doesn't have any open connections.
+  GetSchedulingPriorityForTesting() => (int32? priority);
+
   // Gets the total usage in bytes across all buckets.
   GetUsageForTesting() => (int64 total_usage);
 

@@ -181,6 +181,10 @@ class CONTENT_EXPORT BucketContext
   // changed.
   void OnConnectionPriorityUpdated();
 
+  // Determines the scheduling priority for this bucket (which is the highest of
+  // all active connections). Public for testing.
+  std::optional<int> CalculateSchedulingPriority();
+
   // Called when `space_requested` bytes are about to be used by committing a
   // transaction. Will invoke `disk_space_check_callback` if this usage is
   // approved, or false if there's insufficient space as per the `QuotaManager`.

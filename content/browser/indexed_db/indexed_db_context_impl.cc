@@ -622,6 +622,17 @@ void IndexedDBContextImpl::GetUsageForTesting(
   std::move(callback).Run(total_size);
 }
 
+void IndexedDBContextImpl::GetSchedulingPriorityForTesting(
+    GetSchedulingPriorityForTestingCallback callback) {
+  if (bucket_contexts_.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  bucket_contexts_.begin()
+      ->second.AsyncCall(&BucketContext::CalculateSchedulingPriority)
+      .Then(std::move(callback));
+}
+
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
   pending_failure_injector_ = std::move(receiver);

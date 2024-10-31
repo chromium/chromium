@@ -431,12 +431,20 @@ void BucketContext::OnConnectionPriorityUpdated() {
   if (!updateable_task_runner_) {
     return;
   }
-  int scheduling_priority = std::numeric_limits<int>::max();
+  base::TaskPriority priority = CalculateSchedulingPriority() == 0
+                                    ? base::TaskPriority::USER_BLOCKING
+                                    : base::TaskPriority::USER_VISIBLE;
+  updateable_task_runner_->UpdatePriority(priority);
+}
+
+std::optional<int> BucketContext::CalculateSchedulingPriority() {
+  std::optional<int> scheduling_priority;
   // Established connections:
   for (const auto& [name, database] : databases_) {
     for (auto* connection : database->connections()) {
-      scheduling_priority =
-          std::min(scheduling_priority, connection->scheduling_priority());
+      scheduling_priority = std::min(
+          scheduling_priority.value_or(std::numeric_limits<int>::max()),
+          connection->scheduling_priority());
     }
   }
   // Pending connections:
@@ -445,15 +453,13 @@ void BucketContext::OnConnectionPriorityUpdated() {
     if (iter->WasInvalidated()) {
       iter = pending_connections_.erase(iter);
     } else {
-      scheduling_priority =
-          std::min(scheduling_priority, (*iter)->scheduling_priority);
+      scheduling_priority = std::min(
+          scheduling_priority.value_or(std::numeric_limits<int>::max()),
+          (*iter)->scheduling_priority);
       ++iter;
     }
   }
-  base::TaskPriority priority = scheduling_priority == 0
-                                    ? base::TaskPriority::USER_BLOCKING
-                                    : base::TaskPriority::USER_VISIBLE;
-  updateable_task_runner_->UpdatePriority(priority);
+  return scheduling_priority;
 }
 
 void BucketContext::CheckCanUseDiskSpace(
