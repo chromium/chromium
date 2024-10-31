@@ -16,9 +16,5 @@ gfx::Rect TabSlotView::GetAnchorBoundsInScreen() const {
   return bounds;
 }
 
-void TabSlotView::SetGroup(std::optional<tab_groups::TabGroupId> group) {
-  group_ = group;
-}
-
 BEGIN_METADATA(TabSlotView)
 END_METADATA

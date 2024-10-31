@@ -32,8 +32,9 @@ class TabSlotView : public views::View {
   virtual TabSizeInfo GetTabSizeInfo() const = 0;
 
   // Used to set the tab group that this view belongs to.
-  virtual void SetGroup(std::optional<tab_groups::TabGroupId> group);
-
+  void set_group(std::optional<tab_groups::TabGroupId> group) {
+    group_ = group;
+  }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
   // Used to mark the view as having been detached.  Once this has happened, the
