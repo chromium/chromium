@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -96,6 +98,8 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -358,7 +362,8 @@ class ProfilePickerCreationFlowBrowserTest
  public:
   ProfilePickerCreationFlowBrowserTest()
       : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHProfileSwitchFeature})) {
+            {feature_engagement::kIPHProfileSwitchFeature,
+             feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {
 #if BUILDFLAG(IS_MAC)
     // Ensure the platform is unmanaged
     platform_management_ =
@@ -406,9 +411,11 @@ class ProfilePickerCreationFlowBrowserTest
       const std::string& email,
       const std::string& given_name,
       const std::string& hosted_domain = kNoHostedDomainFound,
-      bool start_on_management_page = false) {
+      bool start_on_management_page = false,
+      bool is_supervised_profile = false) {
     Profile* profile_being_created = StartDiceSignIn(start_on_management_page);
-    FinishDiceSignIn(profile_being_created, email, given_name, hosted_domain);
+    FinishDiceSignIn(profile_being_created, email, given_name, hosted_domain,
+                     is_supervised_profile);
     WaitForLoadStop(target_url);
     return profile_being_created;
   }
@@ -463,7 +470,8 @@ class ProfilePickerCreationFlowBrowserTest
       Profile* profile_being_created,
       const std::string& email,
       const std::string& given_name,
-      const std::string& hosted_domain = kNoHostedDomainFound) {
+      const std::string& hosted_domain = kNoHostedDomainFound,
+      bool is_supervised_profile = false) {
     // Add an account - simulate a successful Gaia sign-in.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_being_created);
@@ -476,8 +484,16 @@ class ProfilePickerCreationFlowBrowserTest
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         core_account_info.account_id));
 
+    CHECK(profile_being_created);
     AccountInfo account_info =
         FillAccountInfo(core_account_info, given_name, hosted_domain);
+
+    if (is_supervised_profile) {
+      supervised_user::EnableParentalControls(
+          *profile_being_created->GetPrefs());
+      AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+      mutator.set_is_subject_to_parental_controls(true);
+    }
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
     if (web_contents()) {
@@ -2237,10 +2253,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
   base::FilePath child_path = CreateNewProfileWithoutBrowser();
   Profile* child_profile =
       g_browser_process->profile_manager()->GetProfileByPath(child_path);
-  supervised_user::EnableParentalControls(*child_profile->GetPrefs());
 
   AccountInfo child_account_info =
-      FinishDiceSignIn(child_profile, "child@gmail.com", "child");
+      FinishDiceSignIn(child_profile, "child@gmail.com", "child",
+                       kNoHostedDomainFound, /*is_supervised=*/true);
   ASSERT_TRUE(child_profile);
 
   OpenProfilePicker();
@@ -2303,6 +2319,116 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "WithHideGuestModeEnabled"
                                              : "WithHideGuestModeDisabled";
                          });
+
+class SupervisedUserProfileIPHTest
+    : public ProfilePickerCreationFlowBrowserTest,
+      public testing::WithParamInterface<
+          LoginUIService::SyncConfirmationUIClosedResult> {
+ public:
+  SupervisedUserProfileIPHTest() = default;
+
+ protected:
+  LoginUIService::SyncConfirmationUIClosedResult GetSyncConfirmationResult() {
+    return GetParam();
+  }
+
+  // Returns true if the supervised user profile IPH has been shown.
+  bool SupervisedProfilePromoHasBeenShown(Browser* browser) {
+    return feature_engagement::TrackerFactory::GetForBrowserContext(
+               browser->profile())
+        ->HasEverTriggered(
+            feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+            /*from_window=*/false);
+  }
+
+  static bool ShouldIphShow(
+      LoginUIService::SyncConfirmationUIClosedResult sync_result) {
+    switch (sync_result) {
+      case LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC:
+        // Reject Sync (pick "No thanks" button).
+        // This paths triggers the customization bubble. The IPH is not shown on
+        // making a sync choice.
+        return false;
+      case LoginUIService::SyncConfirmationUIClosedResult::CONFIGURE_SYNC_FIRST:
+        // Go to Sync configuration (pick the "Settings" button). The
+        // customization bubble is skipped and the IPH is shown.
+        return true;
+      case LoginUIService::SyncConfirmationUIClosedResult::
+          SYNC_WITH_DEFAULT_SETTINGS:
+        // Accept Sync (pick "Yes I am In" button).
+        // When a synced theme is returned from the theme service, the
+        // suctomization bubble is skipped and the IPH is shown.
+        return true;
+      case LoginUIService::SyncConfirmationUIClosedResult::UI_CLOSED:
+        return false;
+    }
+  }
+};
+
+std::string SyncConfirmationResultToString(
+    LoginUIService::SyncConfirmationUIClosedResult result) {
+  switch (result) {
+    case LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC:
+      return "OnSyncAborted";
+    case LoginUIService::SyncConfirmationUIClosedResult::CONFIGURE_SYNC_FIRST:
+      return "OnSyncConfiguration";
+    case LoginUIService::SyncConfirmationUIClosedResult::
+        SYNC_WITH_DEFAULT_SETTINGS:
+      return "OnSyncAccepted";
+    case LoginUIService::SyncConfirmationUIClosedResult::UI_CLOSED:
+      return "OnSyncScreenClosed";
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserProfileIPHTest,
+    testing::Values(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS,
+                    LoginUIService::CONFIGURE_SYNC_FIRST,
+                    LoginUIService::ABORT_SYNC),
+    [](const auto& info) {
+      return SyncConfirmationResultToString(info.param);
+    });
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
+                       ShowIphWhenCustomizationBubbleIsSkipped) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
+
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in sync confirmation screen getting displayed.
+  Profile* profile_being_created = SignInForNewProfile(
+      GetSyncConfirmationURL(), "joe@gmail.com", "Joe", kNoHostedDomainFound,
+      /*start_on_management_page=*/false,
+      /*is_supervised_profile=*/true);
+
+  // Pick an action from the Sync screen.
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(GetSyncConfirmationResult());
+
+  Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1).Wait();
+  CHECK(new_browser);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      new_browser->tab_strip_model()->GetActiveWebContents()));
+
+  auto* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_being_created);
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorGRAY);
+  if (GetSyncConfirmationResult() ==
+      LoginUIService::SYNC_WITH_DEFAULT_SETTINGS) {
+    // Receiving a non-default theme from the theme service, so that the
+    // customization bubble is skipped and the SU IPH is shown.
+    theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
+        ThemeSyncableService::ThemeSyncState::kApplied);
+  }
+
+  WaitForPickerClosed();
+
+  base::test::RunUntil([&]() {
+    return ShouldIphShow(GetSyncConfirmationResult()) ==
+           SupervisedProfilePromoHasBeenShown(new_browser);
+  });
+}
 
 class ProfilePickerEnterpriseCreationFlowBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
