@@ -6869,14 +6869,23 @@
       </message>
 
       <!-- Strings for OnTask notifications -->
-      <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE" desc="Toast message telling students that their teachers have locked their screen.">
+      <message name="IDS_ON_TASK_NOTIFICATION_TITLE" desc="School Tools title for OnTask notifications">
+        School Tools
+      </message>
+      <message name="IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE" desc="Notification message telling students that their teachers have locked their screen.">
         Your teacher has locked your screen
       </message>
-      <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Toast message telling students that their class session ended.">
+      <message name="IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE" desc="Notification message telling students that their class session ended.">
         Your teacher has ended class
       </message>
       <message name="IDS_ON_TASK_URL_BLOCKED_NOTIFICATION_MESSAGE" desc="Toast message telling students that the url is blocked.">
         Access isn’t allowed for this link. Check with your teacher if you need access.
+      </message>
+      <message name="IDS_ON_TASK_BUNDLE_CONTENT_ADDED_MESSAGE" desc="Notification message telling students that their teacher has added new content to the bundle.">
+        Your teacher has added new content in School Tools
+      </message>
+      <message name="IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE" desc="Notification message telling students that their teacher has removed content from the bundle.">
+        Your teacher has removed content in School Tools
       </message>
     </messages>
   </release>

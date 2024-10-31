@@ -27408,6 +27408,10 @@ Called by update_net_error_codes.py.-->
   <int value="186" label="Device Restriction Schedule Upcoming Logout"/>
   <int value="187" label="Device Restriction Schedule Post Logout"/>
   <int value="188" label="Disable Internal Trackpad"/>
+  <int value="189" label="Enter OnTask locked mode"/>
+  <int value="190" label="OnTask session end"/>
+  <int value="191" label="OnTask content added to bundle"/>
+  <int value="192" label="OnTask content removed from bundle"/>
 </enum>
 
 <enum name="NQEObservationSource">

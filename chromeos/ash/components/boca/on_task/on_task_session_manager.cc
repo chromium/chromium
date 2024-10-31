@@ -24,7 +24,11 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
+
+using message_center::NotifierId;
+using message_center::NotifierType;
 
 namespace ash::boca {
 namespace {
@@ -86,15 +90,19 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
   // Re-enable extensions on session end to prepare for subsequent sessions.
   extensions_manager_->ReEnableExtensions();
 
-  // Surface toast to notify users about session end.
-  OnTaskNotificationsManager::ToastCreateParams toast_create_params(
-      kOnTaskSessionEndNotificationId, ToastCatalogName::kOnTaskSessionEnd,
-      /*text_description_callback=*/
-      base::BindRepeating([](base::TimeDelta countdown_period) {
-        return l10n_util::GetStringUTF16(
-            IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE);
-      }));
-  notifications_manager_->CreateToast(std::move(toast_create_params));
+  // Surface notification to notify user about session end.
+  OnTaskNotificationsManager::NotificationCreateParams
+      notification_create_params(
+          kOnTaskSessionEndNotificationId,
+          /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
+          /*message=*/
+          l10n_util::GetStringUTF16(
+              IDS_ON_TASK_SESSION_END_NOTIFICATION_MESSAGE),
+          /*notifier_id=*/
+          NotifierId(NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
+                     ash::NotificationCatalogName::kOnTaskSessionEnd));
+  notifications_manager_->CreateNotification(
+      std::move(notification_create_params));
 }
 
 void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
@@ -112,6 +120,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   }
 
   // Process bundle content.
+  bool has_new_content = false;
   base::flat_set<GURL> current_urls_set;
   active_tab_url_ = GURL();
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
@@ -148,13 +157,17 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
                          weak_ptr_factory_.GetWeakPtr(), url));
     }
 
+    has_new_content = true;
     system_web_app_launch_helper_->AddTab(
         url, restriction_level,
         base::BindOnce(&OnTaskSessionManager::OnBundleTabAdded,
                        weak_ptr_factory_.GetWeakPtr(), url, restriction_level));
   }
+
+  bool has_removed_content = false;
   for (auto const& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     if (!current_urls_set.contains(provider_sent_url)) {
+      has_removed_content = true;
       system_web_app_launch_helper_->RemoveTab(
           tab_ids,
           base::BindOnce(&OnTaskSessionManager::OnBundleTabRemoved,
@@ -163,37 +176,65 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   }
 
   bool should_lock_window = bundle.locked();
+  notifications_manager_->ConfigureForLockedMode(should_lock_window);
   if (should_lock_window) {
-    // Disable extensions as appropriate and surface toast before locking the
-    // window.
+    // Disable extensions as appropriate and surface notification before locking
+    // the window.
     extensions_manager_->DisableExtensions();
-    auto lock_window_callback = base::BindRepeating(
-        &SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindow,
-        base::Unretained(system_web_app_launch_helper_.get()),
+    OnTaskNotificationsManager::NotificationCreateParams
+        notification_create_params(
+            kOnTaskEnterLockedModeNotificationId,
+            /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
+            /*message=*/
+            l10n_util::GetStringUTF16(
+                IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE),
+            /*notifier_id=*/
+            NotifierId(NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
+                       ash::NotificationCatalogName::kOnTaskEnterLockedMode));
+    notifications_manager_->CreateNotification(
+        std::move(notification_create_params));
+    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
         should_lock_window,
-        /*callback=*/
         base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
                             weak_ptr_factory_.GetWeakPtr()));
-    OnTaskNotificationsManager::ToastCreateParams toast_create_params(
-        kOnTaskEnterLockedModeNotificationId,
-        ToastCatalogName::kOnTaskEnterLockedMode,
-        /*text_description_callback=*/
-        base::BindRepeating([](base::TimeDelta countdown_period) {
-          return l10n_util::GetStringUTF16(
-              IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE);
-        }),
-        /*completion_callback=*/std::move(lock_window_callback));
-    notifications_manager_->CreateToast(std::move(toast_create_params));
   } else {
-    // Re-enable extensions as well as clear pending toasts before attempting to
-    // unlock the window.
+    // Re-enable extensions before attempting to unlock the window.
     extensions_manager_->ReEnableExtensions();
-    notifications_manager_->StopProcessingNotification(
-        kOnTaskEnterLockedModeNotificationId);
     system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
         /*pinned=*/should_lock_window,
         base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // Show relevant notifications if content was added or deleted.
+  if (has_new_content) {
+    OnTaskNotificationsManager::NotificationCreateParams
+        notification_create_params(
+            kOnTaskBundleContentAddedNotificationId,
+            /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
+            /*message=*/
+            l10n_util::GetStringUTF16(IDS_ON_TASK_BUNDLE_CONTENT_ADDED_MESSAGE),
+            /*notifier_id=*/
+            NotifierId(
+                NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
+                ash::NotificationCatalogName::kOnTaskAddContentToBundle));
+    notifications_manager_->CreateNotification(
+        std::move(notification_create_params));
+  }
+  if (has_removed_content) {
+    OnTaskNotificationsManager::NotificationCreateParams
+        notification_create_params(
+            kOnTaskBundleContentRemovedNotificationId,
+            /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
+            /*message=*/
+            l10n_util::GetStringUTF16(
+                IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE),
+            /*notifier_id=*/
+            NotifierId(
+                NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
+                ash::NotificationCatalogName::kOnTaskRemoveContentFromBundle));
+    notifications_manager_->CreateNotification(
+        std::move(notification_create_params));
   }
 }
 

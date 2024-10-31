@@ -9,8 +9,9 @@
 namespace ash::boca {
 
 base::flat_set<std::string> GetAllowlistedNotificationIdsForLockedMode() {
-  return {kOnTaskEnterLockedModeNotificationId,
-          kOnTaskSessionEndNotificationId};
+  return {kOnTaskEnterLockedModeNotificationId, kOnTaskSessionEndNotificationId,
+          kOnTaskBundleContentAddedNotificationId,
+          kOnTaskBundleContentRemovedNotificationId};
 }
 
 }  // namespace ash::boca

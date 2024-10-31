@@ -205,7 +205,11 @@ enum class NotificationCatalogName {
   kDeviceRestrictionScheduleUpcomingLogout = 186,
   kDeviceRestrictionSchedulePostLogout = 187,
   kTouchpadDisabled = 188,
-  kMaxValue = kTouchpadDisabled
+  kOnTaskEnterLockedMode = 189,
+  kOnTaskSessionEnd = 190,
+  kOnTaskAddContentToBundle = 191,
+  kOnTaskRemoveContentFromBundle = 192,
+  kMaxValue = kOnTaskRemoveContentFromBundle
 };
 
 // A living catalog that registers system nudges.
@@ -316,8 +320,8 @@ enum class ToastCatalogName {
   kGameDashboardEnterTablet = 50,
   kInformedRestoreOnboarding = 51,
   kTouchpadDisabled = 52,
-  kOnTaskEnterLockedMode = 53,
-  kOnTaskSessionEnd = 54,
+  // [Deprecated] kOnTaskEnterLockedMode = 53,
+  // [Deprecated] kOnTaskSessionEnd = 54,
   kOnTaskUrlBlocked = 55,
   kMaxValue = kOnTaskUrlBlocked
 };

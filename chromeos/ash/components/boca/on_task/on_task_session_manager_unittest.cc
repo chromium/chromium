@@ -18,11 +18,13 @@
 #include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -102,8 +104,13 @@ class FakeOnTaskNotificationsManagerDelegate
   FakeOnTaskNotificationsManagerDelegate() = default;
   ~FakeOnTaskNotificationsManagerDelegate() override = default;
 
-  void ShowToast(ToastData toast_data) override {
-    notifications_shown_.insert(toast_data.id);
+  // OnTaskNotificationsManager::Delegate:
+  void ShowNotification(
+      std::unique_ptr<message_center::Notification> notification) override {
+    notifications_shown_.insert(notification->id());
+  }
+  void ClearNotification(const std::string& notification_id) override {
+    notifications_shown_.erase(notification_id);
   }
 
   bool WasNotificationShown(const std::string& id) {
@@ -149,8 +156,7 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     return &session_manager_->provider_url_restriction_level_map_;
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<OnTaskSessionManager> session_manager_;
   raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;
   raw_ptr<NiceMock<OnTaskExtensionsManagerMock>> extensions_manager_ptr_;
@@ -207,7 +213,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown.
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
 }
@@ -220,7 +225,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown.
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
 }
@@ -233,7 +237,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnSessionEnd) {
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown.
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
 }
@@ -255,18 +258,10 @@ TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
   bundle.add_content_configs()->set_url(kTestUrl1);
   bundle.add_content_configs()->set_url(kTestUrl2);
   session_manager_->OnBundleUpdated(bundle);
-}
 
-TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnBundleUpdated) {
-  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .WillRepeatedly(Return(SessionID::InvalidValue()));
-  EXPECT_CALL(*system_web_app_manager_ptr_, CreateBackgroundTabWithUrl(_, _, _))
-      .Times(0);
-
-  ::boca::Bundle bundle;
-  bundle.add_content_configs()->set_url(kTestUrl1);
-  bundle.add_content_configs()->set_url(kTestUrl2);
-  session_manager_->OnBundleUpdated(bundle);
+  // Verify that relevant notification is shown.
+  EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskBundleContentAddedNotificationId));
 }
 
 TEST_F(OnTaskSessionManagerTest,
@@ -380,11 +375,9 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
   bundle.set_locked(true);
   session_manager_->OnBundleUpdated(bundle);
 
-  // Verify notification and advance timer.
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  // Verify notification is shown.
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
 }
 
 TEST_F(OnTaskSessionManagerTest,
@@ -413,11 +406,9 @@ TEST_F(OnTaskSessionManagerTest,
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
   session_manager_->OnBundleUpdated(bundle);
 
-  // Verify notification and advance timer.
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  // Verify notification is shown.
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldAddTabsWhenAdditionalTabsFoundInBundle) {
@@ -441,6 +432,10 @@ TEST_F(OnTaskSessionManagerTest, ShouldAddTabsWhenAdditionalTabsFoundInBundle) {
   bundle_2.add_content_configs()->set_url(kTestUrl1);
   bundle_2.add_content_configs()->set_url(kTestUrl2);
   session_manager_->OnBundleUpdated(bundle_2);
+
+  // Verify relevant notification is shown.
+  EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskBundleContentAddedNotificationId));
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
@@ -464,9 +459,49 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   bundle_1.add_content_configs()->set_url(kTestUrl2);
   session_manager_->OnBundleUpdated(bundle_1);
 
+  // Verify notification is shown for newly added tabs.
+  EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskBundleContentAddedNotificationId));
+
   ::boca::Bundle bundle_2;
   bundle_2.add_content_configs()->set_url(kTestUrl1);
   session_manager_->OnBundleUpdated(bundle_2);
+
+  // Verify notification is shown for removed content.
+  EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskBundleContentRemovedNotificationId));
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       NoNotificationShownWhenNoNewContentAddedOrRemoved) {
+  // Inject tab id and nav restriction for testing purposes.
+  const SessionID kTabId = SessionID::NewUnique();
+  const ::boca::LockedNavigationOptions::NavigationType kNavRestriction =
+      ::boca::LockedNavigationOptions::BLOCK_NAVIGATION;
+  (*provider_url_tab_ids_map())[GURL(kTestUrl1)].insert(kTabId);
+  (*provider_url_restriction_level_map())[GURL(kTestUrl1)] = kNavRestriction;
+
+  // Attempt to trigger bundle update with same content.
+  const SessionID kWindowId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_, CreateBackgroundTabWithUrl(_, _, _))
+      .Times(0);
+
+  ::boca::Bundle bundle;
+  ::boca::ContentConfig* const content_config =
+      bundle.mutable_content_configs()->Add();
+  content_config->set_url(kTestUrl1);
+  content_config->mutable_locked_navigation_options()->set_navigation_type(
+      kNavRestriction);
+  session_manager_->OnBundleUpdated(bundle);
+
+  // Verify no notification is shown because no new content was added or
+  // removed.
+  EXPECT_FALSE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskBundleContentAddedNotificationId));
+  EXPECT_FALSE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskBundleContentRemovedNotificationId));
 }
 
 TEST_F(OnTaskSessionManagerTest,
@@ -525,11 +560,9 @@ TEST_F(OnTaskSessionManagerTest, ShouldDisableExtensionsOnLock) {
   bundle.set_locked(true);
   session_manager_->OnBundleUpdated(bundle);
 
-  // Verify notification and advance timer.
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  // Verify notification is shown.
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
-  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnUnlock) {
