@@ -109,6 +109,9 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
     // Take out the existing entry entirely and start anew.
     // (We could possibly have reused its memory, but for simplicity,
     // we just treat it as a miss.)
+    if (it->value) {
+      cache_entries_ -= it->value->entries.size();
+    }
     cache_.erase(it);
     return nullptr;
   }
