@@ -37,6 +37,24 @@ enum class WebFilterType {
 // string included in the user feedback log.
 std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type);
 
+// LINT.IfChange(family_link_user_state)
+enum class FamilyLinkUserState {
+  // There may be situations in which we are still waiting for information
+  // around the Family Link status, either capabilities are not loaded or
+  // FamilyRole not downloaded.
+  kUnknown = 0,
+  // The user is signed in to a Family Link account.
+  kHeadOfHousehold = 1,
+  kParent = 2,
+  kMember = 3,
+  kChild = 4,
+  kUnconfirmedMember = 5,
+  // The user does not have a Family Link account. The identity state may be
+  // signed-in or signed-out.
+  kNotFamilyLink = 6,
+};
+// LINT.ThenChange(//components/supervised_user/core/browser/proto/families_common.proto:family_role)
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
