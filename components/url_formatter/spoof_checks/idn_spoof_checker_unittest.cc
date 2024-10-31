@@ -1089,6 +1089,9 @@ const IDNTestCase kIdnCases[] = {
     // Test case for https://crbug.com/1156531 (missed skeleton map)
     {"xn--office65-hts.com", u"office\u0a5c65.com", kUnsafe},
 
+    // Check that ı has multiple skeletons.
+    {"xn--googe-q4a.com", u"goog\u0131e.com", kUnsafe},
+
     // New test cases go ↑↑ above.
 
     // /!\ WARNING: You MUST use tools/security/idn_test_case_generator.py to
