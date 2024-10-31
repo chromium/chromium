@@ -16780,8 +16780,9 @@ class AdAuctionServiceImplBAndAUpdateTest
     : public AdAuctionServiceImplBAndATest {
  public:
   AdAuctionServiceImplBAndAUpdateTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kInterestGroupUpdateIfOlderThan);
+    feature_list_.InitWithFeatures({features::kInterestGroupUpdateIfOlderThan,
+                                    features::kEnableBandATriggeredUpdates},
+                                   {});
   }
 
  protected:
