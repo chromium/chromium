@@ -579,20 +579,24 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SyntheticKeyboardEvent* key_data = &params->key_event;
 
-  int modifiers = 0;
+  int flags = 0;
   if (key_data->modifiers) {
     if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl) {
-      modifiers |= ui::EF_CONTROL_DOWN;
+      flags |= ui::EF_CONTROL_DOWN;
     }
     if (key_data->modifiers->alt && *key_data->modifiers->alt) {
-      modifiers |= ui::EF_ALT_DOWN;
+      flags |= ui::EF_ALT_DOWN;
     }
     if (key_data->modifiers->search && *key_data->modifiers->search) {
-      modifiers |= ui::EF_COMMAND_DOWN;
+      flags |= ui::EF_COMMAND_DOWN;
     }
     if (key_data->modifiers->shift && *key_data->modifiers->shift) {
-      modifiers |= ui::EF_SHIFT_DOWN;
+      flags |= ui::EF_SHIFT_DOWN;
     }
+  }
+
+  if (params->is_repeat.has_value() && params->is_repeat.value()) {
+    flags |= ui::EF_IS_REPEAT;
   }
 
   ui::KeyboardCode keyboard_code =
@@ -602,8 +606,7 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
               accessibility_private::SyntheticKeyboardEventType::kKeyup
           ? ui::EventType::kKeyReleased
           : ui::EventType::kKeyPressed,
-      keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code),
-      modifiers);
+      keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code), flags);
 
   auto* host = ash::GetWindowTreeHostForDisplay(
       display::Screen::GetScreen()->GetPrimaryDisplay().id());

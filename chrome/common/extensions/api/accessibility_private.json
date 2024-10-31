@@ -750,6 +750,12 @@
             "type": "boolean",
             "description": "If true, uses rewriters for the key event; only allowed if used from Dictation or FaceGaze. Otherwise indicates that rewriters should be skipped.",
             "optional": true
+          },
+          {
+            "name": "isRepeat",
+            "type": "boolean",
+            "description": "If true, sets the key event to repeat, which should occur if the key event should be held. Otherwise, the key event should not repeat.",
+            "optional": true
           }
         ]
       },

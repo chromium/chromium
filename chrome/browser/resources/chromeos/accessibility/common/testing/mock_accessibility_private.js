@@ -393,7 +393,10 @@ class MockAccessibilityPrivate {
    * Creates a synthetic keyboard event.
    * @param {chrome.accessibilityPrivate.SyntheticKeyboardEvent} event
    */
-  sendSyntheticKeyEvent(event) {
+  sendSyntheticKeyEvent(event, useRewriters, isRepeat) {
+    event.useRewriters = useRewriters;
+    event.repeat = isRepeat;
+
     this.syntheticKeyEvents_.push(event);
   }
 

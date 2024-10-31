@@ -434,8 +434,8 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();
     chrome.accessibilityPrivate.sendSyntheticKeyEvent =
-        (event, useRewriters, opt_callback) =>
-            this.storeKeyEvent(event, useRewriters, opt_callback);
+        (event, useRewriters, isRepeat, opt_callback) =>
+            this.storeKeyEvent(event, useRewriters, isRepeat, opt_callback);
     chrome.accessibilityPrivate.SyntheticKeyboardEventType = {};
     chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN = 'keydown';
     chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP = 'keyup';
@@ -509,7 +509,7 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
         this.inputHandler.getExpansionType());
   }
 
-  storeKeyEvent(event, useRewriters, opt_callback) {
+  storeKeyEvent(event, useRewriters, isRepeat, opt_callback) {
     const storedCopy = {keyCode: event.keyCode};
     if (event.type === 'keydown') {
       this.keyEvents.push(storedCopy);

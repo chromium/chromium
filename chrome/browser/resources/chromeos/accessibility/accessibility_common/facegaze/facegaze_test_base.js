@@ -184,8 +184,8 @@ FaceGazeTestBase = class extends E2ETestBase {
     this.scrollDirection = this.mockAccessibilityPrivate.ScrollDirection;
 
     if (this.overrideIntervalFunctions_) {
-      this.intervalCallbacks_ = {};
-      this.nextIntervalId_ = 1;
+      this.intervalCallbacks_ = [];
+      this.nextIntervalId_ = 0;
       this.timeoutCallbacks_ = {};
       this.nextTimeoutId_ = 1;
 
@@ -205,10 +205,11 @@ FaceGazeTestBase = class extends E2ETestBase {
       };
 
       window.setInterval = (callback, timeout) => {
-        const id = this.nextIntervalId_;
-        this.nextIntervalId_++;
-        this.intervalCallbacks_[id] = callback;
-        return id;
+        // push() will return the new length of the array, which should be the
+        // next interval id. For the current callback, return nextIntervalId_ -
+        // 1, which should be the id for the current callback.
+        this.nextIntervalId_ = this.intervalCallbacks_.push(callback);
+        return this.nextIntervalId_ - 1;
       };
       window.clearInterval = (id) => {
         delete this.intervalCallbacks_[id];

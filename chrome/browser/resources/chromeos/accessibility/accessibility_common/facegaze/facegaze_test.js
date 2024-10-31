@@ -1617,6 +1617,76 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
   assertObjectEquals(keyEvents[1].modifiers, {ctrl: true});
 });
 
+AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.CUSTOM_KEY_COMBINATION);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.7);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+
+  // Set the gestures to key combinations preference.
+  const keyCombination = {
+    key: KeyCode.V,
+    keyDisplay: 'v',
+    modifiers: {ctrl: true},
+  };
+  await this.setPref(
+      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
+
+  // Verify that the preference propagated to FaceGaze.
+  assertEquals(this.getFaceGaze().gestureHandler_.gesturesToKeyCombos_.size, 1);
+
+  // Jaw open for custom key press.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+  let keyEvents = this.getKeyEvents();
+
+  // Check the first event.
+  this.assertNumKeyEvents(1);
+  assertEquals(
+      keyEvents[0].type,
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN);
+  assertEquals(keyEvents[0].keyCode, KeyCode.V);
+  assertObjectEquals(keyEvents[0].modifiers, {ctrl: true});
+  assertFalse(keyEvents[0].repeat);
+
+  // Manually check and call the last setInterval callback, which should have
+  // been the one just set by KeyPressMacro.
+  assertNotEquals(this.intervalCallbacks_.length, 0);
+  assertNotNullNorUndefined(
+      this.intervalCallbacks_[this.intervalCallbacks_.length - 1]);
+  this.intervalCallbacks_[this.intervalCallbacks_.length - 1]();
+
+  keyEvents = this.getKeyEvents();
+
+  // Additional event should have been fired.
+  this.assertNumKeyEvents(2);
+  assertEquals(
+      keyEvents[1].type,
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN);
+  assertEquals(keyEvents[1].keyCode, KeyCode.V);
+  assertObjectEquals(keyEvents[1].modifiers, {ctrl: true});
+  assertTrue(keyEvents[1].repeat);
+
+  // Release jaw open for custom key release.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.1);
+  this.processFaceLandmarkerResult(result);
+
+  this.assertNumKeyEvents(3);
+  assertEquals(
+      keyEvents[2].type,
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP);
+  assertEquals(keyEvents[2].keyCode, KeyCode.V);
+  assertObjectEquals(keyEvents[2].modifiers, {ctrl: true});
+  assertNullOrUndefined(keyEvents[2].repeat);
+});
+
 AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})

@@ -60,10 +60,10 @@ export class EventGenerator {
   static sendKeyDown(
       keyCode: KeyCode,
       modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
-      useRewriters = false): void {
+      useRewriters = false, isRepeat = false): void {
     const type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN;
     chrome.accessibilityPrivate.sendSyntheticKeyEvent(
-        {type, keyCode, modifiers}, useRewriters);
+        {type, keyCode, modifiers}, useRewriters, isRepeat);
   }
 
   /**

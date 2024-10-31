@@ -410,7 +410,8 @@ declare global {
           callback: SetNativeChromeVoxArcSupportForCurrentAppCallback): void;
 
       export function sendSyntheticKeyEvent(
-          keyEvent: SyntheticKeyboardEvent, useRewriters?: boolean): void;
+          keyEvent: SyntheticKeyboardEvent, useRewriters?: boolean,
+          isRepeat?: boolean): void;
 
       export function enableMouseEvents(enabled: boolean): void;
 

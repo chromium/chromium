@@ -613,8 +613,12 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  * @param {boolean=} useRewriters If true, uses rewriters for the key event;
  *     only allowed if used from Dictation or FaceGaze. Otherwise indicates that
  *     rewriters should be skipped.
+ * @param {boolean=} isRepeat If true, sets the key event to repeat, which
+ *     should occur if the key event should be held. Otherwise, the key event
+ *     should not repeat.
  */
-chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters) {};
+chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(
+    keyEvent, useRewriters, isRepeat) {};
 
 /**
  * Enables or disables mouse events in accessibility extensions
