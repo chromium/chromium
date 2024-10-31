@@ -415,8 +415,10 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     if (transform_tree_index() == scroll_node->transform_id) {
       if (const gfx::Rect* cull_rect =
               scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
-        scaled_cull_rect =
-            gfx::ScaleToEnclosingRect(*cull_rect, max_contents_scale);
+        scaled_cull_rect = gfx::ToEnclosingRect(gfx::ScaleRect(
+            // Convert into layer space.
+            gfx::RectF(*cull_rect) - offset_to_transform_parent(),
+            max_contents_scale));
       }
     }
   }

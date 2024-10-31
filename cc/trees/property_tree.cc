@@ -1953,6 +1953,10 @@ void ScrollTree::SetScrollingContentsCullRect(ElementId id,
   scrolling_contents_cull_rects_[id] = cull_rect;
 }
 
+void ScrollTree::ClearScrollingContentsCullRect(ElementId id) {
+  scrolling_contents_cull_rects_.erase(id);
+}
+
 const gfx::Rect* ScrollTree::ScrollingContentsCullRect(ElementId id) const {
   auto it = scrolling_contents_cull_rects_.find(id);
   if (it == scrolling_contents_cull_rects_.end()) {

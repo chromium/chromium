@@ -605,7 +605,13 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       synced_offset->set_clobber_active_value();
   }
 
+  // Sets the painting cull rect of scrolling contents of a scroll. If set, the
+  // painting of scrolling contents in this cull rect is guaranteed to be
+  // complete. It's in the space of `transform_id` of the corresponding scroll
+  // node. If not set or after ClearScrollingContentsCullRect is called, the
+  // cull rect is supposed to always cover all scrolling contents.
   void SetScrollingContentsCullRect(ElementId id, const gfx::Rect& cull_rect);
+  void ClearScrollingContentsCullRect(ElementId id);
   const gfx::Rect* ScrollingContentsCullRect(ElementId id) const;
 
   SyncedScrollOffset* GetOrCreateSyncedScrollOffsetForTesting(ElementId id);
