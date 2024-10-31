@@ -89,8 +89,10 @@
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(__GLIBC__) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(__GLIBC__)
 #include <gnu/libc-version.h>
+#endif  // defined(__GLIBC__)
 
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
