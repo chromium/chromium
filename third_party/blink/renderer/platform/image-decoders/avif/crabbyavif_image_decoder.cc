@@ -779,14 +779,9 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~crabbyavif::AVIF_STRICT_PIXI_REQUIRED;
 
-    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
-      if (aux_image_ == cc::AuxImage::kGainmap) {
-        decoder_->enableParsingGainMapMetadata = crabbyavif::CRABBY_AVIF_TRUE;
-        decoder_->enableDecodingGainMap = crabbyavif::CRABBY_AVIF_TRUE;
-        decoder_->ignoreColorAndAlpha = crabbyavif::CRABBY_AVIF_TRUE;
-      } else {
-        decoder_->enableParsingGainMapMetadata = crabbyavif::CRABBY_AVIF_TRUE;
-      }
+    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages) &&
+        aux_image_ == cc::AuxImage::kGainmap) {
+      decoder_->imageContentToDecode = crabbyavif::AVIF_IMAGE_CONTENT_GAIN_MAP;
     }
 
     avif_io_.destroy = nullptr;
@@ -1250,10 +1245,10 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
   if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
     return false;
   }
-  if (!decoder_->gainMapPresent) {
+  // Ensure that parsing succeeded.
+  if (!IsDecodedSizeAvailable()) {
     return false;
   }
-
   if (!decoder_->image->gainMap) {
     DVLOG(1) << "Missing gain map";
     return false;
