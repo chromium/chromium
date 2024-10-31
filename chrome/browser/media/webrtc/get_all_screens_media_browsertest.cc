@@ -24,6 +24,8 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -835,6 +837,9 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
 
 IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
                        CalledFromAppSingleRequestNotificationIsShown) {
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"www.example.com"}, browser()->profile()->GetPrefs());
+
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(
       browser()->profile(),
       InstallPWA(browser()->profile(), GURL("http://www.example.com")));
@@ -865,6 +870,10 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
 
 IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
                        CalledFromAppMultipleRequestsNotificationsAreShown) {
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"www.example1.com", "www.example2.com"},
+      browser()->profile()->GetPrefs());
+
   Browser* app_browser_1 = web_app::LaunchWebAppBrowserAndWait(
       browser()->profile(),
       InstallPWA(browser()->profile(), GURL("http://www.example1.com")));
