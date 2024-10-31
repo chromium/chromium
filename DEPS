@@ -524,6 +524,7 @@ allowed_hosts = [
   'chromium-ads-detection',
   'chromium-browser-clang',
   'chromium-clang-format',
+  'chromium-doclava',
   'chromium-nodejs',
   'chrome-linux-sysroot',
   'chromium-fonts',
@@ -4112,6 +4113,19 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'checkout_mac or checkout_ios',
   },
+  'src/buildtools/android/doclava': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-doclava',
+    'condition': 'checkout_android and non_git_source',
+    'objects': [
+      {
+      'object_name': '1931becb8a8e21685f39c62854e9e814d64ccf1a',
+      'sha256sum': '935a602c0dda7f769fc48fc777697ea23ccead170fbc70d2d41af5713ef50bbf',
+      'size_bytes': 3517760,
+      'generation': 1516199210583319,
+      },
+    ],
+  },
   # Repositories from src_internal
   'src/build/fuchsia/internal': {
       'url': Var('chrome_git') + '/fuchsia/build.git' + '@' +
@@ -5143,16 +5157,6 @@ hooks = [
                 '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
     ],
   },
-  {
-    # Pull doclava binaries if building for Android.
-    'name': 'doclava',
-    'pattern': '.',
-    'condition': 'checkout_android',
-    'action': [ 'python3',
-                'src/build/android/download_doclava.py',
-    ],
-  },
-
   {
     'name': 'Download Fuchsia SDK',
     'pattern': '.',
