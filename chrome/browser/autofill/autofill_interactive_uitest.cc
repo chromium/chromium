@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/run_until.h"
@@ -107,8 +108,9 @@
 #include "ui/base/test/ui_controls.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-using base::ASCIIToUTF16;
-using content::URLLoaderInterceptor;
+using ::base::ASCIIToUTF16;
+using ::base::test::RunClosure;
+using ::content::URLLoaderInterceptor;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AssertionFailure;
@@ -161,10 +163,6 @@ constexpr char kTestShippingFormString[] = R"(
      <input type="text" id="phone"><br>
     </form>
     )";
-
-ACTION_P(InvokeClosure, closure) {
-  closure.Run();
-}
 
 // Searches all frames of the primary page in |web_contents| and returns one
 // called |name|. If there are none, returns null, if there are more, returns
@@ -3457,7 +3455,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest, Submission) {
                                   /*known_success=*/false,
                                   mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
   run_loop.Run();
 }
@@ -3477,7 +3475,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                           /*known_success=*/false,
                           mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   // Add a delay before navigating away to avoid race conditions. This is
   // appropriate since we're faking user interaction here.
   ExecuteScript(
@@ -3499,7 +3497,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                           /*known_success=*/true,
                           mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3532,7 +3530,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                                   /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3565,7 +3563,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                                   /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3598,7 +3596,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                                   /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3643,7 +3641,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
           FieldsAre(Map(kExpectedSubmittedValues, HasNameValueUserInput)),
           /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
   run_loop.Run();
 }
@@ -3686,7 +3684,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                         })),
           /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
   run_loop.Run();
 }
@@ -3746,7 +3744,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormlessFormSubmissionTest,
                           /*known_success=*/false,
                           mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate XHR, then page navigation.
   ExecuteScript(

@@ -95,10 +95,6 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Property;
 
-ACTION_P(QuitMessageLoop, loop) {
-  loop->Quit();
-}
-
 // Checks if the context menu model contains any entries with
 // address/payments/plus address manual fallback labels or command ids. `arg`
 // must be of type `ui::SimpleMenuModel`.

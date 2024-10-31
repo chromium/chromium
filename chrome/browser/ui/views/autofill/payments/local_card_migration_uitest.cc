@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -102,12 +103,9 @@
 namespace autofill {
 namespace {
 
-using base::Bucket;
-using testing::ElementsAre;
-
-ACTION_P(QuitMessageLoop, loop) {
-  loop->Quit();
-}
+using ::base::Bucket;
+using ::base::test::RunClosure;
+using ::testing::ElementsAre;
 
 constexpr char kURLGetUploadDetailsRequest[] =
     "https://payments.google.com/payments/apis/chromepaymentsservice/"
@@ -278,7 +276,7 @@ class LocalCardMigrationBrowserTest
 
     base::RunLoop run_loop;
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-        .WillRepeatedly(QuitMessageLoop(&run_loop));
+        .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&personal_data_observer_);
     personal_data_->RemoveObserver(&personal_data_observer_);
