@@ -73,8 +73,6 @@ class ArcGhostWindowViewTest : public testing::Test {
         /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
-
-    feature_list_.InitAndEnableFeature(arc::kGhostWindowNewStyle);
   }
 
   void InstallApp(const std::string& app_id) {

@@ -190,11 +190,6 @@ BASE_FEATURE(kExternalStorageAccess,
              "ArcExternalStorageAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether new UI style for ARC ghost window.
-BASE_FEATURE(kGhostWindowNewStyle,
-             "ArcGhostWindowNewStyle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Used for overriding config params for the virtio-blk feature above.
 BASE_FEATURE(kVirtioBlkDataConfigOverride,
              "ArcVirtioBlkDataConfigOverride",

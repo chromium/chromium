@@ -46,7 +46,6 @@ BASE_DECLARE_FEATURE(kExtendInputAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendIntentAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendServiceAnrTimeout);
 BASE_DECLARE_FEATURE(kExternalStorageAccess);
-BASE_DECLARE_FEATURE(kGhostWindowNewStyle);
 BASE_DECLARE_FEATURE(kVirtioBlkDataConfigOverride);
 extern const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm;
 BASE_DECLARE_FEATURE(kFilePickerExperimentFeature);
