@@ -472,6 +472,14 @@ UIColor* BackgroundColor() {
                                    primaryButtonAction:enrollBlock];
 }
 
+- (void)showFixDegradedRecoverabilityWelcomeScreen:
+    (ProceduralBlock)fixDegradedRecoverabilityBlock {
+  [self createAndPresentPasskeyWelcomeScreenForPurpose:
+            PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability
+                                   primaryButtonAction:
+                                       fixDegradedRecoverabilityBlock];
+}
+
 - (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock {
   [self createAndPresentPasskeyWelcomeScreenForPurpose:
             PasskeyWelcomeScreenPurpose::kReauthenticate

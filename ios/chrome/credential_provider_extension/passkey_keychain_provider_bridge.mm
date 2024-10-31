@@ -243,10 +243,18 @@ NSArray<NSData*>* GetSecurityDomainSecret(
 // recoverability and calls the completion block.
 - (void)checkDegradedRecoverabilityForGaia:(NSString*)gaia
                                 completion:(ErrorCompletionBlock)completion {
+  __weak __typeof(self) weakSelf = self;
   _passkeyKeychainProvider->CheckDegradedRecoverability(
       gaia, base::BindOnce(^(BOOL inDegradedRecoverability, NSError* error) {
-        if (inDegradedRecoverability) {
-          [self fixDegradedRecoverabilityForGaia:gaia completion:completion];
+        if (weakSelf.navigationController && inDegradedRecoverability) {
+          // A valid navigation controller is needed to show the "fix degraded
+          // recoverability state" UI. Otherwise, it won't be possible to
+          // perform the GPM pin creation required to fix the degraded
+          // recoverability state.
+          [weakSelf.delegate showFixDegradedRecoverabilityWelcomeScreen:^{
+            [weakSelf fixDegradedRecoverabilityForGaia:gaia
+                                            completion:completion];
+          }];
         } else {
           completion(error);
         }
@@ -262,6 +270,11 @@ NSArray<NSData*>* GetSecurityDomainSecret(
       base::BindOnce(^(NSError* error) {
         completion(error);
       }));
+}
+
+// Private accessor for the `_navigationController` ivar.
+- (UINavigationController*)navigationController {
+  return _navigationController;
 }
 
 @end

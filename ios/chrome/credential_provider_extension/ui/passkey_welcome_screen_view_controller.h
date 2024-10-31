@@ -12,6 +12,7 @@
 // Possible purposes for showing the passkey welcome screen.
 enum class PasskeyWelcomeScreenPurpose {
   kEnroll,
+  kFixDegradedRecoverability,
   kReauthenticate,
 };
 

@@ -18,6 +18,8 @@ NSString* PrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   switch (purpose) {
     case PasskeyWelcomeScreenPurpose::kEnroll:
       return @"Tap to enroll";
+    case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
+      return @"Tap to fix degraded recoverability";
     case PasskeyWelcomeScreenPurpose::kReauthenticate:
       return @"Tap to reauth";
   }

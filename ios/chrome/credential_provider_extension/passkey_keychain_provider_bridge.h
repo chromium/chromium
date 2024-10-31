@@ -15,6 +15,10 @@
 // Presents the passkey enrollment welcome screen.
 - (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock;
 
+// Presents the passkey "fix degraded recoverability state" welcome screen.
+- (void)showFixDegradedRecoverabilityWelcomeScreen:
+    (ProceduralBlock)fixDegradedRecoverabilityBlock;
+
 // Presents the passkey reauthentication weclome screen.
 - (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock;
 
