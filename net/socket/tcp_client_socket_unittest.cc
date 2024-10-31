@@ -71,7 +71,9 @@ class TCPClientSocketTest
 #endif  // BUILDFLAG(IS_WIN)
   }
 
-  ~TCPClientSocketTest() override = default;
+  ~TCPClientSocketTest() override {
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
 
   void Suspend() { power_monitor_source_.Suspend(); }
   void Resume() { power_monitor_source_.Resume(); }
