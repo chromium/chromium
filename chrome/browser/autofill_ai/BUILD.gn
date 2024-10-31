@@ -4,8 +4,8 @@
 
 static_library("util") {
   sources = [
-    "autofill_prediction_improvements_util.cc",
-    "autofill_prediction_improvements_util.h",
+    "autofill_ai_util.cc",
+    "autofill_ai_util.h",
   ]
 
   deps = [
