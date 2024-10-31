@@ -134,7 +134,8 @@ void KioskIwaManager::UpdateAppsFromPolicy() {
                                          update_manifest_url);
 
     if (!iwa_data) {
-      LOG(WARNING) << "Could not add a Kiosk IWA for id " << web_bundle_id;
+      LOG(WARNING) << "Cannot add Kiosk IWA data for account "
+                   << account.account_id;
       continue;
     }
 

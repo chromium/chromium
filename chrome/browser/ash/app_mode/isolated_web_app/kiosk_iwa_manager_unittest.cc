@@ -37,20 +37,23 @@ AccountId CreateAccountIdFromPolicy(const std::string& account_id) {
 const AccountId kExpectedIwaKioskAccountId =
     CreateAccountIdFromPolicy(kIwaKioskAccountIdSetting);
 
-// Creates an IWA device local account that should be stored.
-base::Value::Dict BuildIwaKioskDeviceLocalAccount() {
+// Creates an IWA device local account.
+// Create a valid account with default params.
+base::Value::Dict BuildIwaKioskDeviceLocalAccount(
+    const std::string& account_id = kIwaKioskAccountIdSetting,
+    const std::string& web_bundle_id = kTestWebBundleId,
+    const std::string& update_url = kTestUpdateUrl) {
   return base::Value::Dict()
-      .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
-           kIwaKioskAccountIdSetting)
+      .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, account_id)
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
            static_cast<int>(
                policy::DeviceLocalAccountType::kKioskIsolatedWebApp))
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
            static_cast<int>(false))
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId,
-           kTestWebBundleId)
+           web_bundle_id)
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
-           kTestUpdateUrl);
+           update_url);
 }
 
 // Creates a chrome app kiosk device local account that should be ignored.
@@ -66,20 +69,36 @@ base::Value::Dict BuildChromeAppKioskDeviceLocalAccount() {
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId, kKioskAppId);
 }
 
-base::Value BuildTestDeviceLocalAccounts() {
+// Creates a list of device local accounts with one IWA entry.
+// Create a valid account with default params.
+base::Value BuildListWithOneIwa(
+    const std::string& account_id = kIwaKioskAccountIdSetting,
+    const std::string& web_bundle_id = kTestWebBundleId,
+    const std::string& update_url = kTestUpdateUrl) {
+  return base::Value(base::Value::List().Append(
+      BuildIwaKioskDeviceLocalAccount(account_id, web_bundle_id, update_url)));
+}
+
+// Creates a list of device local accounts with one IWA entry and one chrome app
+// entry.
+base::Value BuildListWithVarious() {
   return base::Value(base::Value::List()
                          .Append(BuildIwaKioskDeviceLocalAccount())
                          .Append(BuildChromeAppKioskDeviceLocalAccount()));
 }
+
+// Creates a list of device local accounts with duplicate IWA entries.
+base::Value BuildListWithDuplicate() {
+  return base::Value(base::Value::List()
+                         .Append(BuildIwaKioskDeviceLocalAccount())
+                         .Append(BuildIwaKioskDeviceLocalAccount()));
+}
 }  // namespace
 
-class KioskIwaManagerTest : public testing::Test {
+class KioskIwaManagerBaseTest : public testing::Test {
  public:
-  KioskIwaManagerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
-
-  void SetUp() override {
-    SetDeviceLocalAccounts(BuildTestDeviceLocalAccounts());
-  }
+  KioskIwaManagerBaseTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
  protected:
   void SetDeviceLocalAccounts(const base::Value& value) {
@@ -94,82 +113,123 @@ class KioskIwaManagerTest : public testing::Test {
         ash::kAccountsPrefDeviceLocalAccountAutoLoginDelay, 0);
   }
 
+  void DisableFeatureSwitch() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kIsolatedWebAppKiosk);
+  }
+
+  void EnableFeatureSwitch() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kIsolatedWebAppKiosk);
+  }
+
+  KioskIwaManager& iwa_manager() { return iwa_manager_; }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ScopedTestingLocalState local_state_;
 
   KioskIwaManager iwa_manager_;
 };
 
-class KioskIwaManagerFeatureOnTest : public KioskIwaManagerTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kIsolatedWebAppKiosk};
+class KioskIwaManagerFeatureOffTest : public KioskIwaManagerBaseTest {
+  void SetUp() override {
+    DisableFeatureSwitch();
+    SetDeviceLocalAccounts(BuildListWithOneIwa());
+    SetKioskAutoLaunch(kIwaKioskAccountIdSetting);
+  }
 };
 
-TEST_F(KioskIwaManagerFeatureOnTest, StoresOnlyIwaData) {
-  KioskIwaManager* iwa_manager = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager, nullptr);
+TEST_F(KioskIwaManagerFeatureOffTest, GetInstance) {
+  KioskIwaManager* iwa_manager_ptr = KioskIwaManager::Get();
+  ASSERT_NE(iwa_manager_ptr, nullptr);
+  ASSERT_EQ(iwa_manager_ptr, &iwa_manager());
+}
 
-  const auto app_list = iwa_manager->GetApps();
+TEST_F(KioskIwaManagerFeatureOffTest, ReturnsEmptyResults) {
+  EXPECT_TRUE(iwa_manager().GetApps().empty());
+  EXPECT_EQ(iwa_manager().GetApp(kExpectedIwaKioskAccountId), nullptr);
+  EXPECT_EQ(iwa_manager().GetAutoLaunchAccountId(), std::nullopt);
+}
+
+class KioskIwaManagerTest : public KioskIwaManagerBaseTest {
+  void SetUp() override { EnableFeatureSwitch(); }
+};
+
+TEST_F(KioskIwaManagerTest, GetInstance) {
+  KioskIwaManager* iwa_manager_ptr = KioskIwaManager::Get();
+  ASSERT_NE(iwa_manager_ptr, nullptr);
+  ASSERT_EQ(iwa_manager_ptr, &iwa_manager());
+}
+
+TEST_F(KioskIwaManagerTest, SkipsAccountWithInvalidWebBundleId) {
+  constexpr char kBadWebBundleId[] = "abcdefg";
+  SetDeviceLocalAccounts(BuildListWithOneIwa(kIwaKioskAccountIdSetting,
+                                             kBadWebBundleId, kTestUpdateUrl));
+
+  EXPECT_TRUE(iwa_manager().GetApps().empty());
+  EXPECT_EQ(iwa_manager().GetApp(kExpectedIwaKioskAccountId), nullptr);
+}
+
+TEST_F(KioskIwaManagerTest, SkipsAccountWithInvalidUrl) {
+  constexpr char kBadUpdateUrl[] = "http//update.com";
+  SetDeviceLocalAccounts(BuildListWithOneIwa(kIwaKioskAccountIdSetting,
+                                             kTestWebBundleId, kBadUpdateUrl));
+
+  EXPECT_TRUE(iwa_manager().GetApps().empty());
+  EXPECT_EQ(iwa_manager().GetApp(kExpectedIwaKioskAccountId), nullptr);
+}
+
+TEST_F(KioskIwaManagerTest, SkipsEmptyAccountId) {
+  SetDeviceLocalAccounts(
+      BuildListWithOneIwa("", kTestWebBundleId, kTestUpdateUrl));
+
+  EXPECT_TRUE(iwa_manager().GetApps().empty());
+}
+
+TEST_F(KioskIwaManagerTest, SkipsDuplicateAccountId) {
+  SetDeviceLocalAccounts(BuildListWithDuplicate());
+
+  EXPECT_EQ(iwa_manager().GetApps().size(), 1u);
+}
+
+TEST_F(KioskIwaManagerTest, StoresOnlyIwaData) {
+  SetDeviceLocalAccounts(BuildListWithVarious());
+
+  const auto app_list = iwa_manager().GetApps();
 
   // KioskIwaManager stores IWA data, but skips the other one.
   ASSERT_EQ(app_list.size(), 1u);
   EXPECT_EQ(app_list.front().account_id, kExpectedIwaKioskAccountId);
 }
 
-TEST_F(KioskIwaManagerFeatureOnTest, GetAppFromAccountId) {
-  KioskIwaManager* iwa_manager = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager, nullptr);
+TEST_F(KioskIwaManagerTest, GetAppFromAccountId) {
+  SetDeviceLocalAccounts(BuildListWithOneIwa());
 
   const KioskIwaData* iwa_data =
-      iwa_manager->GetApp(kExpectedIwaKioskAccountId);
+      iwa_manager().GetApp(kExpectedIwaKioskAccountId);
   ASSERT_NE(iwa_data, nullptr);
   EXPECT_EQ(iwa_data->web_bundle_id().id(), kTestWebBundleId);
   EXPECT_EQ(iwa_data->update_manifest_url().spec(), kTestUpdateUrl);
 }
 
-TEST_F(KioskIwaManagerFeatureOnTest, NoAutolaunch) {
-  KioskIwaManager* iwa_manager = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager, nullptr);
-  EXPECT_EQ(iwa_manager->GetAutoLaunchAccountId(), std::nullopt);
-}
+TEST_F(KioskIwaManagerTest, NoIwaAutolaunch) {
+  SetDeviceLocalAccounts(BuildListWithOneIwa());
 
-TEST_F(KioskIwaManagerFeatureOnTest, NonIwaAutolaunch) {
+  // no autolaunch set at all
+  EXPECT_EQ(iwa_manager().GetAutoLaunchAccountId(), std::nullopt);
+
+  // other autolaunch account
   SetKioskAutoLaunch("other_account_id");
-  KioskIwaManager* iwa_manager = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager, nullptr);
-  EXPECT_EQ(iwa_manager->GetAutoLaunchAccountId(), std::nullopt);
+  EXPECT_EQ(iwa_manager().GetAutoLaunchAccountId(), std::nullopt);
 }
 
-TEST_F(KioskIwaManagerFeatureOnTest, WithIwaAutolaunch) {
+TEST_F(KioskIwaManagerTest, WithIwaAutolaunch) {
+  SetDeviceLocalAccounts(BuildListWithOneIwa());
   SetKioskAutoLaunch(kIwaKioskAccountIdSetting);
 
-  KioskIwaManager* iwa_manager = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager, nullptr);
-  EXPECT_EQ(iwa_manager->GetAutoLaunchAccountId(), kExpectedIwaKioskAccountId);
-}
-
-class KioskIwaManagerFeatureOffTest : public KioskIwaManagerTest {
- public:
-  KioskIwaManagerFeatureOffTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kIsolatedWebAppKiosk);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(KioskIwaManagerFeatureOffTest, ReturnsEmptyResults) {
-  SetKioskAutoLaunch(kIwaKioskAccountIdSetting);
-
-  KioskIwaManager* iwa_manager = KioskIwaManager::Get();
-  ASSERT_NE(iwa_manager, nullptr);
-
-  EXPECT_TRUE(iwa_manager->GetApps().empty());
-  EXPECT_EQ(iwa_manager->GetApp(kExpectedIwaKioskAccountId), nullptr);
-  EXPECT_EQ(iwa_manager->GetAutoLaunchAccountId(), std::nullopt);
+  EXPECT_EQ(iwa_manager().GetAutoLaunchAccountId(), kExpectedIwaKioskAccountId);
 }
 
 }  // namespace ash
