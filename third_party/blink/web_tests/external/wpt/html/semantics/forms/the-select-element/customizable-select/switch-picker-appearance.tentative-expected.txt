@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Basic functionality of select picker with appearance:auto
+  assert_equals: expected "none" but got "base-select"
+[FAIL] Basic functionality of select picker with appearance:none
+  assert_equals: expected "none" but got "base-select"
+[FAIL] Switching appearance in popover-open should close the picker
+  assert_equals: expected "none" but got "base-select"
+[FAIL] Switching appearance in JS after picker is open should close the picker
+  assert_equals: expected "none" but got "base-select"
+[FAIL] The select picker is closed if the <select> appearance value is changed via CSS while the picker is open
+  assert_equals: appearance should be back to base-select expected "base-select" but got "auto"
+[FAIL] The select picker is closed if the ::picker() appearance value is changed via CSS while the picker is open
+  assert_true: picker should open when clicked expected true got false
+[FAIL] The select picker is closed if the <select> inline appearance value is changed while the picker is open
+  assert_false: Adding inline style should close the picker expected false got true
+Harness: the test ran to completion.
+

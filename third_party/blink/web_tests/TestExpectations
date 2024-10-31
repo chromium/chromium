@@ -2696,7 +2696,6 @@ crbug.com/368060001 [ Mac15 ] external/wpt/webrtc/transfer-datachannel.html [ Ti
 crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
 crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
 crbug.com/367426146 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
-crbug.com/366323456 external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/366343782 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/background-repeat/background-repeat-repeat-x.xht [ Failure ]
 crbug.com/366307017 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 [ Mac15 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Timeout ]
@@ -5541,8 +5540,6 @@ crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics
 
 crbug.com/360357720 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-icon-color.tentative.html [ Failure ]
 crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
-crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
-crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
 
 
 
@@ -5578,15 +5575,6 @@ crbug.com/343631044 virtual/customizable-select-disabled/accessibility/native-se
 crbug.com/343631044 virtual/customizable-select-disabled/accessibility/role-attribute.html [ Pass ]
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/native-select-activedescendant.html [ Pass ]
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribute.html [ Pass ]
-
-# Customizable-<select>. This test has multiple bugs filed against it, and likely remaining bugs
-# once those have been fixed. Currently, this test hits two crashes (crbug.com/364924715 and
-# crbug.com/364924718). I anticipate that once the crashes are fixed, the behavior will still be
-# wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
-# so, please file a bug for that case with details.
-crbug.com/364924715 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
-crbug.com/364924715 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
-crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 
 # The listbox doesn't scroll to the selected option, during typeahead:
 crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
