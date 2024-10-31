@@ -23,6 +23,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -171,10 +172,17 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
   }
 }
 
-void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
+void RecordChoiceScreenDefaultSearchProviderType(
+    SearchEngineType engine_type,
+    ChoiceMadeLocation choice_location) {
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram, engine_type,
       SEARCH_ENGINE_MAX);
+  if (choice_location == ChoiceMadeLocation::kChoiceScreen) {
+    base::UmaHistogramEnumeration(
+        kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram, engine_type,
+        SEARCH_ENGINE_MAX);
+  }
 }
 
 void RecordChoiceScreenSelectedIndex(int selected_engine_index) {

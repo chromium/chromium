@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -27,6 +28,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -737,6 +739,10 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
   EXPECT_FALSE(pref_service()->HasPrefPath(
@@ -755,6 +761,10 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
       &template_url_service());
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -782,6 +792,59 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+}
+
+TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation) {
+  // Configure to an EEA region country.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSearchEngineChoiceCountry);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry,
+      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+  EXPECT_EQ(template_url_service().GetDefaultSearchProvider()->prepopulate_id(),
+            TemplateURLPrepopulateData::google.id);
+
+  auto locations = {ChoiceMadeLocation::kChoiceScreen,
+                    ChoiceMadeLocation::kSearchSettings,
+                    ChoiceMadeLocation::kSearchEngineSettings};
+  int expected_v1_records = 0;
+  int expected_v2_records = 0;
+  for (const ChoiceMadeLocation& choice_location : locations) {
+    switch (choice_location) {
+      case ChoiceMadeLocation::kChoiceScreen:
+        // For the choice screen, the choice should be recorded in the both
+        // histograms.
+        expected_v1_records += 1;
+        expected_v2_records += 1;
+        break;
+
+      case ChoiceMadeLocation::kSearchSettings:
+      case ChoiceMadeLocation::kSearchEngineSettings:
+        // For other locations, the choice should be recorded only in the legacy
+        // histogram.
+        expected_v1_records += 1;
+        break;
+      case ChoiceMadeLocation::kOther:
+        NOTREACHED();  // Not an allowed value for `RecordChoiceMade()`.
+    }
+
+    search_engine_choice_service().RecordChoiceMade(choice_location,
+                                                    &template_url_service());
+    histogram_tester_.ExpectBucketCount(
+        search_engines::
+            kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v1_records);
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::
+            kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
+        SearchEngineType::SEARCH_ENGINE_GOOGLE, expected_v2_records);
+    WipeSearchEngineChoicePrefs(*pref_service(),
+                                WipeSearchEngineChoiceReason::kCommandLineFlag);
+  }
 }
 
 TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DistributionCustom) {
@@ -808,6 +871,10 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DistributionCustom) {
       &template_url_service());
   histogram_tester_.ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
@@ -843,6 +910,10 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_RemovedPrepopulated) {
       &template_url_service());
   histogram_tester_.ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_OTHER, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::
+          kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
       SearchEngineType::SEARCH_ENGINE_OTHER, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(

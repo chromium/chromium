@@ -246,13 +246,25 @@ chromium-metrics-reviews@google.com.
 <histogram name="Search.ChoiceScreenDefaultSearchEngineType"
     enum="OmniboxSearchEngineType" expires_after="2025-04-13">
   <owner>dgn@chromium.org</owner>
-  <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
     Records the type of the default search engine that was chosen by the user.
     Recorded the first time a user in the EEA region changes their default
-    search engine in the search engine choice screen or in the settings page
-    with the SearchEngineChoiceTrigger feature enabled. The enum is shared with
+    search engine in the search engine choice screen or in the settings page.
+    The enum is shared with Search.DefaultSearchProviderType2.
+  </summary>
+</histogram>
+
+<histogram name="Search.ChoiceScreenDefaultSearchEngineType2"
+    enum="OmniboxSearchEngineType" expires_after="2025-04-13">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the type of the default search engine that was chosen by the user.
+    Recorded the first time a user in the EEA region changes their default
+    search engine in the search engine choice screen. Unlike
+    Search.ChoiceScreenDefaultSearchEngineType, it does not record choices made
+    in the settings page. The enum is shared with
     Search.DefaultSearchProviderType2.
   </summary>
 </histogram>

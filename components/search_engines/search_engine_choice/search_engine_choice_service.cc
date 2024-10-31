@@ -365,7 +365,8 @@ void SearchEngineChoiceService::RecordChoiceMade(
   }
 
   RecordChoiceScreenDefaultSearchProviderType(
-      GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)));
+      GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)),
+      choice_location);
   MarkSearchEngineChoiceCompleted(*profile_prefs_);
 }
 
