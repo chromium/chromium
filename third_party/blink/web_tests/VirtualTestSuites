@@ -3734,6 +3734,7 @@
       "external/wpt/css/css-values/attr-color-valid.html",
       "external/wpt/css/css-values/attr-container-style-query.html",
       "external/wpt/css/css-values/attr-crash.html",
+      "external/wpt/css/css-values/attr-IACVT.html",
       "external/wpt/css/css-values/attr-in-max.html",
       "external/wpt/css/css-values/attr-in-slotted.html",
       "external/wpt/css/css-values/attr-invalidation.html",
