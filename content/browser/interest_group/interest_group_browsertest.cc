@@ -1585,9 +1585,9 @@ function provideAdditionalBids(seller, nonce, bidStringList,
     return my_result;
   }
 
-  std::vector<SignedAdditionalBidWithMetadata>
-  TakeAuctionAdditionalBidsForOriginAndNonce(const url::Origin& origin,
-                                             const std::string& nonce) {
+  std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
+      const url::Origin& origin,
+      const std::string& nonce) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
@@ -19174,11 +19174,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       request_origin, base64Decode(kLegitimateAdAuctionResponse)));
   EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
-  EXPECT_THAT(
-      TakeAuctionAdditionalBidsForOriginAndNonce(
-          request_origin, "00000000-0000-0000-0000-000000000000"),
-      ::testing::ElementsAre(::testing::FieldsAre(
-          /*signed_additional_bid=*/"e30=", /*seller_nonce=*/std::nullopt)));
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre("e30="));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -19241,11 +19239,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       request_origin, base64Decode(kLegitimateAdAuctionResponse)));
   EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
-  EXPECT_THAT(
-      TakeAuctionAdditionalBidsForOriginAndNonce(
-          request_origin, "00000000-0000-0000-0000-000000000000"),
-      ::testing::ElementsAre(::testing::FieldsAre(
-          /*signed_additional_bid=*/"e30=", /*seller_nonce=*/std::nullopt)));
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre("e30="));
 }
 
 // On site a.test, test fetch request that gets redirected. Only the initial
@@ -21614,30 +21610,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(console_observer.messages().size(), 1u);
 }
 
-class InterestGroupSellerNonceDisabledTest : public InterestGroupBrowserTest {
- protected:
-  InterestGroupSellerNonceDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kFledgeSellerNonce);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(InterestGroupSellerNonceDisabledTest, FeatureDetection) {
-  GURL test_url =
-      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
-
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
-
-  const char kQuerySellerNonce[] = R"(
-    navigator.protectedAudience.queryFeatureSupport(
-        'sellerNonce');
-  )";
-  EXPECT_EQ(false, EvalJs(shell(), kQuerySellerNonce));
-}
-
 class InterestGroupKAnonmityEnforcedBrowserTest
     : public InterestGroupBrowserTest {
  public:
@@ -23949,11 +23921,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'selectableReportingIds');
   )";
 
-  const char kQuerySellerNonce[] = R"(
-    navigator.protectedAudience.queryFeatureSupport(
-        'sellerNonce');
-  )";
-
   const char kQueryAll[] = R"(
     navigator.protectedAudience.queryFeatureSupport('*');
   )";
@@ -23964,7 +23931,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQuerySelectableReportingIds));
   EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
   EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
-  EXPECT_EQ(true, EvalJs(shell(), kQuerySellerNonce));
   auto all_result = EvalJs(shell(), kQueryAll);
   EXPECT_THAT(all_result.value, base::test::IsJson(R"({
    "adComponentsLimit": 40,
@@ -23972,8 +23938,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
    "permitCrossOriginTrustedSignals": false,
    "realTimeReporting": false,
    "reportingTimeout": true,
-   "selectableReportingIds": true,
-   "sellerNonce": true
+   "selectableReportingIds": true
 })")) << all_result.error;
 }
 
@@ -25301,7 +25266,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                 "realTimeReporting": false,
                 "reportingTimeout": true,
                 "selectableReportingIds": true,
-                "sellerNonce": true,
               })"))
       << all_result.error;
 }
@@ -26724,7 +26688,6 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
                 "realTimeReporting": true,
                 "reportingTimeout": true,
                 "selectableReportingIds": true,
-                "sellerNonce": true,
               })"))
       << all_result.error;
 }

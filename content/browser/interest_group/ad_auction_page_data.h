@@ -6,11 +6,8 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_AD_AUCTION_PAGE_DATA_H_
 
 #include <map>
-#include <optional>
-#include <ostream>
 #include <set>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -46,29 +43,6 @@ struct CONTENT_EXPORT AdAuctionRequestContext {
   base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
-struct CONTENT_EXPORT SignedAdditionalBidWithMetadata {
-  SignedAdditionalBidWithMetadata(std::string_view signed_additional_bid,
-                                  std::optional<std::string_view> seller_nonce);
-  ~SignedAdditionalBidWithMetadata();
-
-  SignedAdditionalBidWithMetadata(SignedAdditionalBidWithMetadata&&);
-  SignedAdditionalBidWithMetadata& operator=(SignedAdditionalBidWithMetadata&&);
-
-  // JSON object with "bid" (containing more JSON encoded as a string) and
-  // "signatures" fields.
-  std::string signed_additional_bid;
-
-  // The seller nonce for `signed_additional_bid`, if present.
-  std::optional<std::string> seller_nonce;
-
-  // ***** Please add new fields to the formatter below. *****
-};
-
-// Formatter for Google Test.
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& out,
-    const SignedAdditionalBidWithMetadata& in);
-
 // Contains auction header responses within a page. This will only be created
 // for the outermost page (i.e. not within a fenced frame).
 class CONTENT_EXPORT AdAuctionPageData
@@ -92,12 +66,12 @@ class CONTENT_EXPORT AdAuctionPageData
 
   void AddAuctionAdditionalBidsWitnessForOrigin(
       const url::Origin& origin,
-      std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
+      const std::map<std::string, std::vector<std::string>>&
           nonce_additional_bids_map);
 
-  std::vector<SignedAdditionalBidWithMetadata>
-  TakeAuctionAdditionalBidsForOriginAndNonce(const url::Origin& origin,
-                                             const std::string& nonce);
+  std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
+      const url::Origin& origin,
+      const std::string& nonce);
 
   void RegisterAdAuctionRequestContext(const base::Uuid& id,
                                        AdAuctionRequestContext context);
@@ -126,8 +100,7 @@ class CONTENT_EXPORT AdAuctionPageData
 
   std::map<url::Origin, std::set<std::string>> origin_auction_result_map_;
   HeaderDirectFromSellerSignals header_direct_from_seller_signals_;
-  std::map<url::Origin,
-           std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>>
+  std::map<url::Origin, std::map<std::string, std::vector<std::string>>>
       origin_nonce_additional_bids_map_;
   std::map<base::Uuid, AdAuctionRequestContext> context_map_;
 

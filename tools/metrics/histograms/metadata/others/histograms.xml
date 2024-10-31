@@ -562,20 +562,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived"
-    enum="AdditionalBidHeaderType" expires_after="2025-03-02">
-  <owner>caraitto@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    The type of Ad-Auction-Additional-Bid header received, either an auction and
-    seller nonce, just an auction nonce, or some type of invalid header.
-    Recorded each time such headers are processed.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.Auction.AdditionalBids.Result"
     enum="AdditionalBidResult" expires_after="2025-03-02">
   <owner>orrb@google.com</owner>

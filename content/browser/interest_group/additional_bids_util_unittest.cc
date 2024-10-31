@@ -20,7 +20,6 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
@@ -29,12 +28,10 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
-#include "crypto/sha2.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -118,12 +115,6 @@ const char kSig2Base64Sloppy[] =
 
 const char kPretendBid[] = "Hi, I am a JSON bid.";
 
-std::string ComputeBidNonce(const base::Uuid& auction_nonce,
-                            const base::Uuid& seller_nonce) {
-  return base::Base64Encode(crypto::SHA256HashString(base::StrCat(
-      {auction_nonce.AsLowercaseString(), seller_nonce.AsLowercaseString()})));
-}
-
 class AdditionalBidsUtilTest : public testing::Test {
  protected:
   base::Value::Dict MakeMinimalValid() {
@@ -193,8 +184,6 @@ class AdditionalBidsUtilTest : public testing::Test {
   }
 
   const base::Uuid kAuctionNonce{base::Uuid::GenerateRandomV4()};
-  const base::Uuid kSellerNonce{base::Uuid::GenerateRandomV4()};
-  const std::string kBidNonce{ComputeBidNonce(kAuctionNonce, kSellerNonce)};
   const base::flat_set<url::Origin> kInterestGroupBuyers{
       url::Origin::Create(GURL("https://buyer.test")),
       url::Origin::Create(GURL("https://rollingstock.test")),
@@ -208,7 +197,6 @@ TEST_F(AdditionalBidsUtilTest, FailNotDict) {
   base::Value input(5);
 
   auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
                                     kInterestGroupBuyers, kSeller,
                                     /*top_level_seller=*/std::nullopt);
   ASSERT_FALSE(result.has_value());
@@ -224,7 +212,6 @@ TEST_F(AdditionalBidsUtilTest, FailNoNonce) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
                                     kInterestGroupBuyers, kSeller,
                                     /*top_level_seller=*/std::nullopt);
   ASSERT_FALSE(result.has_value());
@@ -240,7 +227,6 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
                                     kInterestGroupBuyers, kSeller,
                                     /*top_level_seller=*/std::nullopt);
   ASSERT_FALSE(result.has_value());
@@ -250,136 +236,12 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
       result.error());
 }
 
-class AdditionalBidsUtilWithSellerNonceTest : public AdditionalBidsUtilTest {
- protected:
-  AdditionalBidsUtilWithSellerNonceTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeSellerNonce);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailNoNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Remove("auctionNonce");
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
-                                    kInterestGroupBuyers, kSeller,
-                                    /*top_level_seller=*/std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to no auctionNonce or bidNonce in bid -- exactly one is required.",
-      result.error());
-}
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Set("auctionNonce", "not-a-nonce");
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
-                                    kInterestGroupBuyers, kSeller,
-                                    /*top_level_seller=*/std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      base::StringPrintf(
-          "Additional bid on auction with seller 'https://seller.test' "
-          "rejected due to auctionNonce from bid (not-a-nonce) not matching "
-          "the header auctionNonce (%s).",
-          kAuctionNonce.AsLowercaseString()),
-      result.error());
-}
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBothAuctionNonceAndBidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
-  additional_bid_dict.Set("bidNonce", kBidNonce);
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
-                                    kInterestGroupBuyers, kSeller,
-                                    /*top_level_seller=*/std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to both auctionNonce and bidNonce in bid -- exactly one is "
-      "required.",
-      result.error());
-}
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest,
-       FailBidNoSellerNonceButNoAuctionNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Remove("auctionNonce");
-  additional_bid_dict.Set("bidNonce", kBidNonce);
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
-                                    kInterestGroupBuyers, kSeller,
-                                    /*top_level_seller=*/std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing auctionNonce on a bid returned without a seller nonce.",
-      result.error());
-}
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailBidSellerNonceButNoBidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result =
-      DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                          /*seller_nonce=*/kSellerNonce.AsLowercaseString(),
-                          kInterestGroupBuyers, kSeller,
-                          /*top_level_seller=*/std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing bidNonce on a bid returned with a seller nonce.",
-      result.error());
-}
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, FailInvalidBidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Remove("auctionNonce");
-  // Set bidNonce to base64(sha256("incorrect")).
-  constexpr char kIncorrectNonce[] =
-      "ID01Nr1irTOscLfqPU9eELbVLr0Mt1goQaBTrrtxhqM=";
-  additional_bid_dict.Set("bidNonce", kIncorrectNonce);
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result =
-      DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                          /*seller_nonce=*/kSellerNonce.AsLowercaseString(),
-                          kInterestGroupBuyers, kSeller,
-                          /*top_level_seller=*/std::nullopt);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(base::StringPrintf(
-                "Additional bid on auction with seller "
-                "'https://seller.test' rejected due to bidNonce from bid (%s) "
-                "not matching its expectation (%s) as calculated from the "
-                "header auctionNonce (%s) and sellerNonce (%s).",
-                kIncorrectNonce, kBidNonce, kAuctionNonce.AsLowercaseString(),
-                kSellerNonce.AsLowercaseString()),
-            result.error());
-}
-
 TEST_F(AdditionalBidsUtilTest, FailMissingSeller) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("seller");
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
                                     kInterestGroupBuyers, kSeller,
                                     /*top_level_seller=*/std::nullopt);
   ASSERT_FALSE(result.has_value());
@@ -395,7 +257,6 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidSeller) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
                                     kInterestGroupBuyers, kSeller,
                                     /*top_level_seller=*/std::nullopt);
   ASSERT_FALSE(result.has_value());
@@ -409,7 +270,6 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidSeller) {
 TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller) {
   base::Value input(MakeMinimalValid());
   auto result = DecodeAdditionalBid(/*auction=*/nullptr, input, kAuctionNonce,
-                                    /*seller_nonce=*/std::nullopt,
                                     kInterestGroupBuyers, kSeller,
                                     /*top_level_seller=*/std::nullopt);
   ASSERT_FALSE(result.has_value());
@@ -426,8 +286,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller2) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -444,8 +303,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller3) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -461,8 +319,7 @@ TEST_F(AdditionalBidsUtilTest, FailNoIGDictionary) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -477,8 +334,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupName) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -493,8 +349,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupBiddingScript) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -509,8 +364,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupOwner) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -526,8 +380,7 @@ TEST_F(AdditionalBidsUtilTest, FailNonHttpsInterestGroupOwner) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -543,8 +396,7 @@ TEST_F(AdditionalBidsUtilTest, FailDomainMismatchBetweenOwnerAndBiddingScript) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -562,9 +414,8 @@ TEST_F(AdditionalBidsUtilTest, AdditionalBidOwnerNotInInterestGroupBuyers) {
       url::Origin::Create(GURL("https://wrongbuyer.test"))};
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      wrong_interest_group_buyers, kSeller,
-      base::optional_ref<const url::Origin>(kTopSeller));
+      /*auction=*/nullptr, input, kAuctionNonce, wrong_interest_group_buyers,
+      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -579,8 +430,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingBid) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -595,8 +445,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingBidCreative) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -611,8 +460,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingBidValue) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -627,8 +475,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidBidValue) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -641,55 +488,8 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   base::Value input(MakeMinimalValid());
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
-  ASSERT_TRUE(result.has_value()) << result.error();
-  ASSERT_TRUE(result->bid_state);
-  ASSERT_TRUE(result->bid);
-  const InterestGroupAuction::BidState* bid_state = result->bid_state.get();
-  const InterestGroupAuction::Bid* bid = result->bid.get();
-
-  EXPECT_TRUE(bid_state->made_bid);
-  EXPECT_EQ("trainfans", bid_state->bidder->interest_group.name);
-  ASSERT_TRUE(bid_state->additional_bid_buyer.has_value());
-  EXPECT_EQ(bid_state->bidder->interest_group.owner,
-            bid_state->additional_bid_buyer);
-  EXPECT_EQ("https://rollingstock.test",
-            bid_state->bidder->interest_group.owner.Serialize());
-  ASSERT_TRUE(bid_state->bidder->interest_group.bidding_url.has_value());
-  EXPECT_EQ("https://rollingstock.test/logic.js",
-            bid_state->bidder->interest_group.bidding_url->spec());
-
-  ASSERT_TRUE(bid_state->bidder->interest_group.ads.has_value());
-  ASSERT_EQ(1u, bid_state->bidder->interest_group.ads->size());
-  EXPECT_EQ("https://en.wikipedia.test/wiki/Train",
-            bid_state->bidder->interest_group.ads.value()[0].render_url());
-
-  EXPECT_EQ(auction_worklet::mojom::BidRole::kBothKAnonModes, bid->bid_role);
-  EXPECT_EQ("null", bid->ad_metadata);
-  EXPECT_EQ(10.0, bid->bid);
-  EXPECT_EQ(std::nullopt, bid->bid_currency);
-  EXPECT_EQ(std::nullopt, bid->ad_cost);
-  EXPECT_EQ(blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Train")),
-            bid->ad_descriptor);
-  EXPECT_EQ(0u, bid->ad_component_descriptors.size());
-  EXPECT_EQ(std::nullopt, bid->modeling_signals);
-  EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
-  EXPECT_EQ(&bid_state->bidder->interest_group.ads.value()[0], bid->bid_ad);
-  EXPECT_EQ(bid_state, bid->bid_state);
-}
-
-TEST_F(AdditionalBidsUtilWithSellerNonceTest, MinimalValid) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  additional_bid_dict.Remove("auctionNonce");
-  additional_bid_dict.Set("bidNonce", kBidNonce);
-  base::Value input(std::move(additional_bid_dict));
-
-  auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce,
-      /*seller_nonce=*/kSellerNonce.AsLowercaseString(), kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid_state);
   ASSERT_TRUE(result->bid);
@@ -732,8 +532,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidBidCurrencyType) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -748,8 +547,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidBidCurrencySyntax) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -764,8 +562,7 @@ TEST_F(AdditionalBidsUtilTest, ValidBidCurrency) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_TRUE(result.has_value());
   ASSERT_TRUE(result->bid);
@@ -779,8 +576,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdCost) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -795,8 +591,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdCost) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -812,8 +607,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidModelingSignals) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -826,8 +620,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidModelingSignals2) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -841,8 +634,7 @@ TEST_F(AdditionalBidsUtilTest, BadTypeModelingSignals) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -857,8 +649,7 @@ TEST_F(AdditionalBidsUtilTest, ValidModelingSignals) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -872,8 +663,7 @@ TEST_F(AdditionalBidsUtilTest, ValidModelingSignals2) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -887,8 +677,7 @@ TEST_F(AdditionalBidsUtilTest, ValidModelingSignals3) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -902,8 +691,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdComponents) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -921,8 +709,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdComponentsEntry) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -943,8 +730,7 @@ TEST_F(AdditionalBidsUtilTest, TooManyAdComponents) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
@@ -963,8 +749,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -999,8 +784,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->bid);
@@ -1023,8 +807,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdMetadata) {
   base::Value input(std::move(additional_bid_dict));
 
   auto result = DecodeAdditionalBid(
-      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
-      kInterestGroupBuyers, kSeller,
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
       base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_TRUE(result->bid);
@@ -1037,8 +820,8 @@ TEST_F(AdditionalBidsUtilTest, ValidSingleNegativeIG) {
 
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_FALSE(result->negative_target_joining_origin.has_value());
   ASSERT_EQ(1u, result->negative_target_interest_group_names.size());
@@ -1051,8 +834,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidSingleNegativeIG) {
 
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1067,8 +850,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidBothKindsOfNegativeIG) {
 
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1082,8 +865,8 @@ TEST_F(AdditionalBidsUtilTest, ValidMultipleNegativeIG) {
 
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_TRUE(result->negative_target_joining_origin.has_value());
   EXPECT_EQ("https://depot.test",
@@ -1101,8 +884,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG) {
                                       10);
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1117,8 +900,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG2) {
                                       "http://example.org");
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1133,8 +916,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG3) {
       "negativeInterestGroups.joiningOrigin");
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1149,8 +932,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG4) {
       "negativeInterestGroups.interestGroupNames");
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1166,8 +949,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG5) {
       "negativeInterestGroups.interestGroupNames", "hi");
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1184,8 +967,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG6) {
       ->Append(50);
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
@@ -1199,8 +982,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG7) {
   additional_bid_dict.Set("negativeInterestGroups", "boo");
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
-      kAuctionNonce, /*seller_nonce=*/std::nullopt, kInterestGroupBuyers,
-      kSeller, base::optional_ref<const url::Origin>(kTopSeller));
+      kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "

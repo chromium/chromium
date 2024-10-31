@@ -8,14 +8,12 @@
 #include <functional>
 #include <map>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/interest_group_features.h"
@@ -42,21 +40,6 @@ const char kAdAuctionAdditionalBidResponseHeaderKey[] =
     "Ad-Auction-Additional-Bid";
 
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AdditionalBidHeaderType)
-enum class AdditionalBidHeaderType {
-  kAuctionNonce = 0,
-  kAuctionNonceAndSellerNonce = 1,
-  kMalformedHeaderWrongNumberOfColons = 2,
-  kMalformedHeaderWrongAuctionNonceSize = 3,
-  kMalformedHeaderWrongSellerNonceSize = 4,
-
-  kMaxValue = kMalformedHeaderWrongSellerNonceSize,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AdditionalBidHeaderType)
 
 // Common conditions checked for eligibility in both
 //`IsAdAuctionHeadersEligible` and `IsAdAuctionHeadersEligibleForNavigation`.
@@ -204,67 +187,23 @@ std::vector<std::string> ParseAdAuctionResultResponseHeader(
 // Fuzzer: ad_auction_headers_util_fuzzer
 void ParseAdAuctionAdditionalBidResponseHeader(
     const std::string& header_line,
-    std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>&
+    std::map<std::string, std::vector<std::string>>&
         nonce_additional_bids_map) {
-  // Skip if `header_line` doesn't match either the usual format:
-  //
-  // <36 characters auction nonce>:<36 characters seller nonce>:<base64-encoded
-  // signed additional bid>
-  //
-  // OR the legacy format:
-  //
+  // Skip if `header_line` doesn't match the format
   // <36 characters auction nonce>:<base64-encoded signed additional bid>
-  std::vector<std::string> nonces_and_additional_bid = base::SplitString(
+  std::vector<std::string> nonce_and_additional_bid = base::SplitString(
       header_line, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  constexpr size_t kNonceSize = 36u;
-
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeSellerNonce) &&
-      nonces_and_additional_bid.size() == 3u) {
-    std::string auction_nonce = std::move(nonces_and_additional_bid[0]);
-    if (auction_nonce.size() != kNonceSize) {
-      base::UmaHistogramEnumeration(
-          "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
-          AdditionalBidHeaderType::kMalformedHeaderWrongAuctionNonceSize);
-      return;
-    }
-    std::string seller_nonce = std::move(nonces_and_additional_bid[1]);
-    if (seller_nonce.size() != kNonceSize) {
-      base::UmaHistogramEnumeration(
-          "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
-          AdditionalBidHeaderType::kMalformedHeaderWrongSellerNonceSize);
-      return;
-    }
-    std::string additional_bid = std::move(nonces_and_additional_bid[2]);
-
-    nonce_additional_bids_map[std::move(auction_nonce)].emplace_back(
-        /*signed_additional_bid=*/std::move(additional_bid),
-        /*seller_nonce=*/std::move(seller_nonce));
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
-        AdditionalBidHeaderType::kAuctionNonceAndSellerNonce);
-  } else if (nonces_and_additional_bid.size() == 2u) {
-    std::string auction_nonce = std::move(nonces_and_additional_bid[0]);
-    if (auction_nonce.size() != kNonceSize) {
-      base::UmaHistogramEnumeration(
-          "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
-          AdditionalBidHeaderType::kMalformedHeaderWrongAuctionNonceSize);
-      return;
-    }
-    std::string additional_bid = std::move(nonces_and_additional_bid[1]);
-
-    nonce_additional_bids_map[std::move(auction_nonce)].emplace_back(
-        /*signed_additional_bid=*/std::move(additional_bid),
-        /*seller_nonce=*/std::nullopt);
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
-        AdditionalBidHeaderType::kAuctionNonce);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
-        AdditionalBidHeaderType::kMalformedHeaderWrongNumberOfColons);
+  if (nonce_and_additional_bid.size() != 2) {
+    return;
   }
+
+  const std::string& nonce = nonce_and_additional_bid[0];
+  if (nonce.size() != 36) {
+    return;
+  }
+  const std::string& additional_bid = nonce_and_additional_bid[1];
+
+  nonce_additional_bids_map[nonce].push_back(additional_bid);
 }
 
 // NOTE: This function processes untrusted content, in an unsafe language, from
@@ -307,8 +246,7 @@ void ProcessAdAuctionResponseHeaders(
   }
   headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
 
-  std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
-      nonce_additional_bids_map;
+  std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
   size_t iter = 0;
   std::string header_line;
   while (headers->EnumerateHeader(
@@ -318,7 +256,7 @@ void ProcessAdAuctionResponseHeaders(
   }
   if (!nonce_additional_bids_map.empty()) {
     ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
-        request_origin, std::move(nonce_additional_bids_map));
+        request_origin, nonce_additional_bids_map);
   }
   headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }

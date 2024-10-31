@@ -8710,18 +8710,14 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
       kBidder1.Serialize().c_str(), kSeller.Serialize().c_str(),
       auction_nonce_->AsLowercaseString().c_str(), kSeller.Serialize().c_str());
 
-  std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
-      additional_bids_for_nonce;
+  std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
   additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
-      SignedAdditionalBidWithMetadata(
-          /*signed_additional_bid=*/
-          GenerateSignedAdditionalBidHeaderPayloadPortion(
-              SignedAdditionalBidFault::kNone, bid_json,
-              {kPrivateKey1, kPrivateKey2},
-              {kBase64PublicKey1, kBase64PublicKey2}),
-          /*seller_nonce=*/std::nullopt));
+      GenerateSignedAdditionalBidHeaderPayloadPortion(
+          SignedAdditionalBidFault::kNone, bid_json,
+          {kPrivateKey1, kPrivateKey2},
+          {kBase64PublicKey1, kBase64PublicKey2}));
   ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
-      kSeller, std::move(additional_bids_for_nonce));
+      kSeller, additional_bids_for_nonce);
 
   abortable_ad_auction_->ResolvedAdditionalBids(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
@@ -8971,18 +8967,14 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
       kBidder1.Serialize().c_str(), kSeller.Serialize().c_str(),
       auction_nonce_->AsLowercaseString().c_str(), kSeller.Serialize().c_str());
 
-  std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
-      additional_bids_for_nonce;
+  std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
   additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
-      SignedAdditionalBidWithMetadata(
-          /*signed_additional_bid=*/
-          GenerateSignedAdditionalBidHeaderPayloadPortion(
-              SignedAdditionalBidFault::kNone, bid_json,
-              {kPrivateKey1, kPrivateKey2},
-              {kBase64PublicKey1, kBase64PublicKey2}),
-          /*seller_nonce=*/std::nullopt));
+      GenerateSignedAdditionalBidHeaderPayloadPortion(
+          SignedAdditionalBidFault::kNone, bid_json,
+          {kPrivateKey1, kPrivateKey2},
+          {kBase64PublicKey1, kBase64PublicKey2}));
   ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
-      kSeller, std::move(additional_bids_for_nonce));
+      kSeller, additional_bids_for_nonce);
 
   abortable_ad_auction_->ResolvedAdditionalBids(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
@@ -15567,18 +15559,14 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceAdditionalBid) {
         auction_nonce_->AsLowercaseString().c_str(),
         kSeller.Serialize().c_str());
 
-    std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
-        additional_bids_for_nonce;
+    std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
     additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
-        SignedAdditionalBidWithMetadata(
-            /*signed_additional_bid=*/
-            GenerateSignedAdditionalBidHeaderPayloadPortion(
-                SignedAdditionalBidFault::kNone, bid_json,
-                {kPrivateKey1, kPrivateKey2},
-                {kBase64PublicKey1, kBase64PublicKey2}),
-            /*seller_nonce=*/std::nullopt));
+        GenerateSignedAdditionalBidHeaderPayloadPortion(
+            SignedAdditionalBidFault::kNone, bid_json,
+            {kPrivateKey1, kPrivateKey2},
+            {kBase64PublicKey1, kBase64PublicKey2}));
     ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
-        kSeller, std::move(additional_bids_for_nonce));
+        kSeller, additional_bids_for_nonce);
 
     abortable_ad_auction_->ResolvedAdditionalBids(
         blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
@@ -24903,18 +24891,14 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
       kBidJsonTemplate, kAdditionalBidUrl, kBidder1.Serialize().c_str(),
       auction_nonce_->AsLowercaseString().c_str(), kSeller.Serialize().c_str());
 
-  std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
-      additional_bids_for_nonce;
+  std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
   additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
-      SignedAdditionalBidWithMetadata(
-          /*signed_additional_bid=*/
-          GenerateSignedAdditionalBidHeaderPayloadPortion(
-              SignedAdditionalBidFault::kNone, bid_json,
-              {kPrivateKey1, kPrivateKey2},
-              {kBase64PublicKey1, kBase64PublicKey2}),
-          /*seller_nonce=*/std::nullopt));
+      GenerateSignedAdditionalBidHeaderPayloadPortion(
+          SignedAdditionalBidFault::kNone, bid_json,
+          {kPrivateKey1, kPrivateKey2},
+          {kBase64PublicKey1, kBase64PublicKey2}));
   ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
-      kSeller, std::move(additional_bids_for_nonce));
+      kSeller, additional_bids_for_nonce);
 
   abortable_ad_auction_->ResolvedAdditionalBids(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
