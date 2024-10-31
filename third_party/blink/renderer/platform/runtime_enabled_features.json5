@@ -2047,7 +2047,8 @@
       // purpose of modularly advertising new things.
       implied_by: ["FledgeAuctionDealSupport",
                    "FledgePermitCrossOriginTrustedSignals",
-                   "FledgeRealTimeReporting"],
+                   "FledgeRealTimeReporting",
+                   "FledgeSellerNonce"],
       base_feature: "none",
     },
     {
@@ -2059,7 +2060,8 @@
                    "FledgeDeprecatedRenderURLReplacements",
                    "FledgePermitCrossOriginTrustedSignals",
                    "FledgeRealTimeReporting",
-                   "FledgeReportingTimeout"],
+                   "FledgeReportingTimeout",
+                   "FledgeSellerNonce"],
       base_feature: "none",
     },
     {
@@ -2085,6 +2087,12 @@
       // ad auction config.
       name: "FledgeReportingTimeout",
       status: "stable",
+    },
+    {
+      // Enables the ability to set seller nonces on the header response and
+      // use bidNonce in bids.
+      name: "FledgeSellerNonce",
+      status: "test",
     },
     {
       name: "FledgeTrustedSignalsKVv2Support",

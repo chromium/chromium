@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/ad_auction_headers_util.h"
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -27,6 +28,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -388,9 +390,9 @@ class ProcessAdAuctionResponseHeadersTest : public RenderViewHostTestHarness {
     return my_result;
   }
 
-  std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
-      const url::Origin& origin,
-      const std::string& nonce) {
+  std::vector<SignedAdditionalBidWithMetadata>
+  TakeAuctionAdditionalBidsForOriginAndNonce(const url::Origin& origin,
+                                             const std::string& nonce) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
@@ -522,9 +524,83 @@ TEST_F(ProcessAdAuctionResponseHeadersTest, AdditionalBid) {
   EXPECT_FALSE(headers->HasHeader(kAdAuctionAdditionalBidResponseHeaderKey));
 
   url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
+  std::vector<SignedAdditionalBidWithMetadata> additional_bid =
+      TakeAuctionAdditionalBidsForOriginAndNonce(
+          request_origin, "00000000-0000-0000-0000-000000000000");
+  ASSERT_EQ(additional_bid.size(), 1u);
+  EXPECT_EQ(additional_bid[0].signed_additional_bid, "e30=");
+  EXPECT_EQ(additional_bid[0].seller_nonce, std::nullopt);
+
+  // Future calls to `TakeAuctionAdditionalBidsForOriginAndNonce` on the same
+  // origin and nonce should return nothing. Ideally this should be tested
+  // separately as a unitest for `AdAuctionPageData`.
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000000"),
-              ::testing::ElementsAre("e30="));
+              ::testing::IsEmpty());
+}
+
+class ProcessAdAuctionResponseHeadersWithSellerNonceTest
+    : public ProcessAdAuctionResponseHeadersTest {
+ protected:
+  ProcessAdAuctionResponseHeadersWithSellerNonceTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kFledgeSellerNonce);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
+       AdditionalBidWithNoSellerNonce) {
+  net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
+  headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
+                            "00000000-0000-0000-0000-000000000000:e30=");
+  scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
+
+  ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
+                                  web_contents()->GetPrimaryPage(), headers);
+
+  // The `Ad-Auction-Additional-Bid` header was removed from the headers and
+  // stored in the browser.
+  EXPECT_FALSE(headers->HasHeader(kAdAuctionAdditionalBidResponseHeaderKey));
+
+  url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
+  std::vector<SignedAdditionalBidWithMetadata> additional_bids =
+      TakeAuctionAdditionalBidsForOriginAndNonce(
+          request_origin, "00000000-0000-0000-0000-000000000000");
+  ASSERT_EQ(additional_bids.size(), 1u);
+  EXPECT_EQ(additional_bids[0].signed_additional_bid, "e30=");
+  EXPECT_EQ(additional_bids[0].seller_nonce, std::nullopt);
+
+  // Future calls to `TakeAuctionAdditionalBidsForOriginAndNonce` on the same
+  // origin and nonce should return nothing. Ideally this should be tested
+  // separately as a unitest for `AdAuctionPageData`.
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+}
+
+TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
+       AdditionalBidWithSellerNonce) {
+  net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
+  headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
+                            "00000000-0000-0000-0000-000000000000:"
+                            "00000000-0000-0000-0000-000000000001:e30=");
+  scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
+
+  ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
+                                  web_contents()->GetPrimaryPage(), headers);
+
+  // The `Ad-Auction-Additional-Bid` header was removed from the headers and
+  // stored in the browser.
+  EXPECT_FALSE(headers->HasHeader(kAdAuctionAdditionalBidResponseHeaderKey));
+
+  url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre(::testing::FieldsAre(
+                  /*signed_additional_bid=*/"e30=",
+                  /*seller_nonce=*/"00000000-0000-0000-0000-000000000001")));
 
   // Future calls to `TakeAuctionAdditionalBidsForOriginAndNonce` on the same
   // origin and nonce should return nothing. Ideally this should be tested
@@ -552,12 +628,67 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
   EXPECT_FALSE(headers->HasHeader(kAdAuctionAdditionalBidResponseHeaderKey));
 
   url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
-  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
-                  request_origin, "00000000-0000-0000-0000-000000000000"),
-              ::testing::ElementsAre("e30="));
+  EXPECT_THAT(
+      TakeAuctionAdditionalBidsForOriginAndNonce(
+          request_origin, "00000000-0000-0000-0000-000000000000"),
+      ::testing::ElementsAre(::testing::FieldsAre(
+          /*signed_additional_bid=*/"e30=", /*seller_nonce=*/std::nullopt)));
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000001"),
-              ::testing::ElementsAre("e30=", "e2E6IDF9"));
+              ::testing::ElementsAre(
+                  ::testing::FieldsAre(/*signed_additional_bid=*/"e30=",
+                                       /*seller_nonce=*/std::nullopt),
+                  ::testing::FieldsAre(/*signed_additional_bid=*/"e2E6IDF9",
+                                       /*seller_nonce=*/std::nullopt)));
+
+  // Future calls to `TakeAuctionAdditionalBidsForOriginAndNonce` on the same
+  // origin and nonce should return nothing. Ideally this should be tested
+  // separately as a unitest for `AdAuctionPageData`.
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000001"),
+              ::testing::IsEmpty());
+}
+
+TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
+       AdditionalBid_MultipleNoncesAndMultipleBidsPerNonceWithSellerNonce) {
+  net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
+  headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
+                            "00000000-0000-0000-0000-000000000000:"
+                            "00000000-0000-0000-0000-000000000002:e30=,"
+                            "00000000-0000-0000-0000-000000000001:"
+                            "00000000-0000-0000-0000-000000000003:e30=");
+  headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
+                            "00000000-0000-0000-0000-000000000001:"
+                            "00000000-0000-0000-0000-000000000004:e2E6IDF9");
+  scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
+
+  ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
+                                  web_contents()->GetPrimaryPage(), headers);
+
+  // The `Ad-Auction-Additional-Bid` header was removed from the headers and
+  // stored in the browser.
+  EXPECT_FALSE(headers->HasHeader(kAdAuctionAdditionalBidResponseHeaderKey));
+
+  url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre(::testing::FieldsAre(
+                  /*signed_additional_bid=*/"e30=",
+                  /*seller_nonce=*/"00000000-0000-0000-0000-000000000002")));
+
+  EXPECT_THAT(
+      TakeAuctionAdditionalBidsForOriginAndNonce(
+          request_origin, "00000000-0000-0000-0000-000000000001"),
+      ::testing::ElementsAre(
+          ::testing::FieldsAre(
+              /*signed_additional_bid=*/"e30=",
+              /*seller_nonce=*/"00000000-0000-0000-0000-000000000003"),
+          ::testing::FieldsAre(
+              /*signed_additional_bid=*/"e2E6IDF9",
+              /*seller_nonce=*/"00000000-0000-0000-0000-000000000004")));
 
   // Future calls to `TakeAuctionAdditionalBidsForOriginAndNonce` on the same
   // origin and nonce should return nothing. Ideally this should be tested
@@ -599,7 +730,51 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
               ::testing::IsEmpty());
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000001"),
-              ::testing::ElementsAre("e2E6IDF9"));
+              ::testing::ElementsAre(
+                  ::testing::FieldsAre(/*signed_additional_bid=*/"e2E6IDF9",
+                                       /*seller_nonce=*/std::nullopt)));
+}
+
+TEST_F(ProcessAdAuctionResponseHeadersWithSellerNonceTest,
+       AdditionalBid_InvalidHeaderSkippedWithSellerNonce) {
+  net::HttpResponseHeaders::Builder headers_builder({1, 1}, "200 OK");
+
+  // Entries with invalid nonce (i.e. doesn't have 36 characters) will be
+  // skipped. This also includes the seller nonce.
+  headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
+                            "00000000-0000-0000-0000-000000000000:"
+                            "00000000-0000-0000-0000-00000000000:e30=,"
+                            "00000000-0000-0000-0000-000000000001:"
+                            "00000000-0000-0000-0000-0000000000000:e30=,");
+  headers_builder.AddHeader(kAdAuctionAdditionalBidResponseHeaderKey,
+                            "00000000-0000-0000-0000-0000000000001:"
+                            "00000000-0000-0000-0000-000000000000:e30=,"
+                            "00000000-0000-0000-0000-000000000002:"
+                            "00000000-0000-0000-0000-000000000003:e2E6IDF9");
+  scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
+
+  ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
+                                  web_contents()->GetPrimaryPage(), headers);
+
+  // The `Ad-Auction-Additional-Bid` header was removed from the headers and
+  // stored in the browser.
+  EXPECT_FALSE(headers->HasHeader(kAdAuctionAdditionalBidResponseHeaderKey));
+
+  url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000001"),
+              ::testing::IsEmpty());
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-0000000000001"),
+              ::testing::IsEmpty());
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000002"),
+              ::testing::ElementsAre(::testing::FieldsAre(
+                  /*signed_additional_bid=*/"e2E6IDF9",
+                  /*seller_nonce=*/"00000000-0000-0000-0000-000000000003")));
 }
 
 TEST(RemoveAdAuctionResponseHeadersTest,

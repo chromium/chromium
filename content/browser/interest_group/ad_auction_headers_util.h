@@ -8,6 +8,7 @@
 #include <functional>
 
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -78,7 +79,8 @@ CONTENT_EXPORT std::vector<std::string> ParseAdAuctionResultResponseHeader(
 // unsandboxed process, hence the fuzz test coverage.
 CONTENT_EXPORT void ParseAdAuctionAdditionalBidResponseHeader(
     const std::string& header_line,
-    std::map<std::string, std::vector<std::string>>& nonce_additional_bids_map);
+    std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>&
+        nonce_additional_bids_map);
 
 // Parses and sets the values of the `Ad-Auction-Result`, `Ad-Auction-Signals`,
 // and `Ad-Auction-Additional-Bid` headers on the `AdAuctionPageData`

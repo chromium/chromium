@@ -290,9 +290,9 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     return my_result;
   }
 
-  std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
-      const url::Origin& origin,
-      const std::string& nonce) {
+  std::vector<SignedAdditionalBidWithMetadata>
+  TakeAuctionAdditionalBidsForOriginAndNonce(const url::Origin& origin,
+                                             const std::string& nonce) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
@@ -854,12 +854,19 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdditionalBids) {
   EXPECT_FALSE(test_client.received_ad_auction_additional_bid_header());
 
   url::Origin request_origin = url::Origin::Create(GURL("https://foo1.com"));
-  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
-                  request_origin, "00000000-0000-0000-0000-000000000000"),
-              ::testing::ElementsAre("e30="));
-  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
-                  request_origin, "00000000-0000-0000-0000-000000000001"),
-              ::testing::ElementsAre("e30=", "e2E6IDF9"));
+  EXPECT_THAT(
+      TakeAuctionAdditionalBidsForOriginAndNonce(
+          request_origin, "00000000-0000-0000-0000-000000000000"),
+      ::testing::ElementsAre(::testing::FieldsAre(
+          /*signed_additional_bid=*/"e30=", /*seller_nonce=*/std::nullopt)));
+  EXPECT_THAT(
+      TakeAuctionAdditionalBidsForOriginAndNonce(
+          request_origin, "00000000-0000-0000-0000-000000000001"),
+      ::testing::ElementsAre(
+          ::testing::FieldsAre(
+              /*signed_additional_bid=*/"e30=", /*seller_nonce=*/std::nullopt),
+          ::testing::FieldsAre(/*signed_additional_bid=*/"e2E6IDF9",
+                               /*seller_nonce=*/std::nullopt)));
 
   // Future calls to `TakeAuctionAdditionalBidsForOriginAndNonce` on the same
   // origin and nonce should return nothing. Ideally this should be tested
