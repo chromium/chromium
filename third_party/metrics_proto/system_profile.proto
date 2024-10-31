@@ -354,6 +354,11 @@ message SystemProfileProto {
       // includes hyperthreaded cores.
       optional uint32 num_cores = 3;
 
+      // Number of efficient logical processors/cores on the current machine,
+      // which includes hyperthreaded cores. All cores below highest power
+      // efficiency level are considered efficient.
+      optional uint32 num_efficient_cores = 5;
+
       // Whether the CPU is running in a hypervisor.
       optional bool is_hypervisor = 4;
     }
