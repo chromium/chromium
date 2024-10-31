@@ -797,7 +797,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     return new Promise<void>(async resolve => {
-      await this.fadeAndSlideInSummaryContainer_();
+      await this.fadeAndSlideOutSummaryContainer_();
       this.loadingState_ = {loading: true, urlCount};
       resolve();
       await this.fadeAndSlideInSummaryContainer_();
