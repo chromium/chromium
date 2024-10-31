@@ -146,6 +146,10 @@ class CONTENT_EXPORT FilePathWatcher {
   using CallbackWithChangeInfo = base::RepeatingCallback<
       void(const ChangeInfo&, const base::FilePath& path, bool error)>;
 
+  // Callback that receives the changes in the underlying OS resource usage.
+  using UsageChangeCallback =
+      base::RepeatingCallback<void(size_t old_usage, size_t new_usage)>;
+
   // Used internally to encapsulate different members on different platforms.
   class PlatformDelegate {
    public:
@@ -156,6 +160,8 @@ class CONTENT_EXPORT FilePathWatcher {
     PlatformDelegate(const PlatformDelegate&) = delete;
     PlatformDelegate& operator=(const PlatformDelegate&) = delete;
     virtual ~PlatformDelegate();
+
+    virtual size_t current_usage() const;
 
     // Start watching for the given |path| and notify |delegate| about changes.
     [[nodiscard]] virtual bool Watch(const base::FilePath& path,
@@ -173,7 +179,8 @@ class CONTENT_EXPORT FilePathWatcher {
     [[nodiscard]] virtual bool WatchWithChangeInfo(
         const base::FilePath& path,
         const WatchOptions& options,
-        const CallbackWithChangeInfo& callback);
+        const CallbackWithChangeInfo& callback,
+        const UsageChangeCallback& usage_callback);
 
     // Stop watching. This is called from FilePathWatcher's dtor in order to
     // allow to shut down properly while the object is still alive.
@@ -212,6 +219,9 @@ class CONTENT_EXPORT FilePathWatcher {
   FilePathWatcher& operator=(const FilePathWatcher&) = delete;
   ~FilePathWatcher();
 
+  static size_t quota_limit();
+  size_t current_usage() const;
+
   // Returns true if the platform and OS version support recursive watches.
   static bool RecursiveWatchAvailable();
 
@@ -240,7 +250,8 @@ class CONTENT_EXPORT FilePathWatcher {
   // `callback` is called with a dummy `ChangeInfo`.
   bool WatchWithChangeInfo(const base::FilePath& path,
                            const WatchOptions& options,
-                           const CallbackWithChangeInfo& callback);
+                           const CallbackWithChangeInfo& callback,
+                           const UsageChangeCallback& usage_callback);
 
 #if BUILDFLAG(IS_WIN)
   // Gets the Lock associated with the content::FilePathWatcher implementation's

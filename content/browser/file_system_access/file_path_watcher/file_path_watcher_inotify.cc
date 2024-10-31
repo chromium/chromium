@@ -195,11 +195,20 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // Returns a WatcherEntry for this, must be called on the original sequence.
   InotifyReader::WatcherEntry GetWatcherEntry();
 
+  size_t current_usage() const override {
+    // `watches_` contains inotify watches of all dir components of `target_`.
+    // `recursive_paths_by_watch_` contains inotify watches for sub dirs under
+    // `target_` of a Type::kRecursive watcher and keyed by inotify watches. All
+    // inotify watches used by this FilePathWatcherImpl are either in `watches_`
+    // or as a key in `recursive_paths_by_watch_`. As a result, the two provide
+    // a good estimate on the number of inotify watches used by this
+    // FilePathWatcherImpl.
+    return watches_.size() + recursive_watches_by_path_.size();
+  }
+
   void UpdateInotifyCountHighWaterMark() {
-    int current_inotify_count =
-        watches_.size() + recursive_watches_by_path_.size();
     inotify_count_high_water_mark_ =
-        std::max(inotify_count_high_water_mark_, current_inotify_count);
+        std::max(inotify_count_high_water_mark_, current_usage());
   }
 
  private:
@@ -217,7 +226,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool WatchWithChangeInfo(
       const base::FilePath& path,
       const WatchOptions& options,
-      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override;
 
   // Cancel the watch. This unregisters the instance with InotifyReader.
   void Cancel() override;
@@ -309,7 +319,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
       recursive_paths_by_watch_;
   std::map<base::FilePath, InotifyReader::Watch> recursive_watches_by_path_;
 
-  int inotify_count_high_water_mark_ = 0;
+  size_t inotify_count_high_water_mark_ = 0;
 
   base::WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -829,16 +839,7 @@ void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit() {
 bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
 
-  // `watches_` contains inotify watches of all dir components of `target_`.
-  // `recursive_paths_by_watch_` contains inotify watches for sub dirs under
-  // `target_` of a Type::kRecursive watcher and keyed by inotify watches.
-  // All inotify watches used by this FilePathWatcherImpl are either in
-  // `watches_` or as a key in `recursive_paths_by_watch_`. As a result, the
-  // two provide a good estimate on the number of inofiy watches used by this
-  // FilePathWatcherImpl.
-  const size_t number_of_inotify_watches =
-      watches_.size() + recursive_paths_by_watch_.size();
-  return number_of_inotify_watches >= GetMaxNumberOfInotifyWatches();
+  return current_usage() >= GetMaxNumberOfInotifyWatches();
 }
 
 InotifyReader::WatcherEntry FilePathWatcherImpl::GetWatcherEntry() {
@@ -852,7 +853,8 @@ bool FilePathWatcherImpl::Watch(const base::FilePath& path,
   return WatchWithChangeInfo(
       path, WatchOptions{.type = type},
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherImpl::WatchWithOptions(
@@ -862,13 +864,15 @@ bool FilePathWatcherImpl::WatchWithOptions(
   return WatchWithChangeInfo(
       path, options,
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherImpl::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const FilePathWatcher::CallbackWithChangeInfo& callback) {
+    const FilePathWatcher::CallbackWithChangeInfo& callback,
+    const FilePathWatcher::UsageChangeCallback& usage_callback) {
   DUMP_WILL_BE_CHECK(target_.empty());
 
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());

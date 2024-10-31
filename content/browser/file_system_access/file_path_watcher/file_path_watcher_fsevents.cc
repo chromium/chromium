@@ -92,6 +92,10 @@ FilePathWatcherFSEvents::~FilePathWatcherFSEvents() {
       << "Cancel() must be called before FilePathWatcher is destroyed.";
 }
 
+size_t FilePathWatcherFSEvents::current_usage() const {
+  return kNumberOfWatches;
+}
+
 bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
                                     Type type,
                                     const FilePathWatcher::Callback& callback) {
@@ -106,13 +110,15 @@ bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
   return WatchWithChangeInfo(
       path, WatchOptions{.type = type},
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherFSEvents::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const FilePathWatcher::CallbackWithChangeInfo& callback) {
+    const FilePathWatcher::CallbackWithChangeInfo& callback,
+    const FilePathWatcher::UsageChangeCallback& usage_callback) {
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   change_tracker_ = FilePathWatcherFSEventsChangeTracker(
       callback, path, options.type, options.report_modified_path);
@@ -241,6 +247,11 @@ WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
   base::apple::ScopedCFTypeRef<CFStringRef> cf_path =
       base::apple::FilePathToCFString(resolved_target_);
   CFStringRef paths_array[] = {cf_path.get()};
+
+  static_assert(std::size(paths_array) == kNumberOfWatches,
+                "Update kNumberOfWatches to equal the number of paths we're "
+                "watching so that usage is reported accurately.");
+
   base::apple::ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));

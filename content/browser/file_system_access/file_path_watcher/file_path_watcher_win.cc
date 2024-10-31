@@ -120,9 +120,6 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
 
   base::Lock& GetLockForTest();  // IN-TEST
 
- private:
-  friend base::NoDestructor<CompletionIOPortThread>;
-
   // The max size of a file notification assuming that long paths aren't
   // enabled.
   static constexpr size_t kMaxFileNotifySize =
@@ -139,6 +136,9 @@ class CompletionIOPortThread final : public base::PlatformThread::Delegate {
   // Must be less than the max network packet size for network drives. See
   // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-readdirectorychangesw#remarks.
   static_assert(kWatchBufferSizeBytes <= 64 * 1024);
+
+ private:
+  friend base::NoDestructor<CompletionIOPortThread>;
 
   struct WatcherEntry {
     WatcherEntry(FilePathWatcherImpl* watcher_raw_ptr,
@@ -209,6 +209,10 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override;
 
+  size_t current_usage() const override {
+    return CompletionIOPortThread::kWatchBufferSizeBytes;
+  }
+
   // FilePathWatcher::PlatformDelegate implementation:
   bool Watch(const base::FilePath& path,
              Type type,
@@ -223,7 +227,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool WatchWithChangeInfo(
       const base::FilePath& path,
       const WatchOptions& options,
-      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override;
 
   void Cancel() override;
 
@@ -487,7 +492,8 @@ bool FilePathWatcherImpl::Watch(const base::FilePath& path,
   return WatchWithChangeInfo(
       path, WatchOptions{.type = type},
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherImpl::WatchWithOptions(
@@ -497,13 +503,15 @@ bool FilePathWatcherImpl::WatchWithOptions(
   return WatchWithChangeInfo(
       path, options,
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherImpl::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const FilePathWatcher::CallbackWithChangeInfo& callback) {
+    const FilePathWatcher::CallbackWithChangeInfo& callback,
+    const FilePathWatcher::UsageChangeCallback& usage_callback) {
   DCHECK(target_.empty());  // Can only watch one path.
 
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());

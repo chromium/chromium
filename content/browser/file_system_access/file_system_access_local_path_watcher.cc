@@ -78,7 +78,8 @@ void FileSystemAccessLocalPathWatcher::Initialize(
   watcher_.AsyncCall(&FilePathWatcher::WatchWithChangeInfo)
       .WithArgs(
           scope().root_url().path(), std::move(watch_options),
-          base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
+          base::BindPostTaskToCurrentDefault(std::move(on_change_callback)),
+          base::DoNothingAs<void(size_t, size_t)>())
       .Then(base::BindOnce(
           [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                  callback,

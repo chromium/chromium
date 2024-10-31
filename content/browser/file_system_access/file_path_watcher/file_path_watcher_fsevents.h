@@ -31,10 +31,14 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
  public:
   using ChangeEvent = FilePathWatcherFSEventsChangeTracker::ChangeEvent;
 
+  static constexpr size_t kNumberOfWatches = 1;
+
   FilePathWatcherFSEvents();
   FilePathWatcherFSEvents(const FilePathWatcherFSEvents&) = delete;
   FilePathWatcherFSEvents& operator=(const FilePathWatcherFSEvents&) = delete;
   ~FilePathWatcherFSEvents() override;
+
+  size_t current_usage() const override;
 
   // FilePathWatcher::PlatformDelegate overrides.
   bool Watch(const base::FilePath& path,
@@ -43,7 +47,8 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   bool WatchWithChangeInfo(
       const base::FilePath& path,
       const WatchOptions& options,
-      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override;
   void Cancel() override;
 
  private:

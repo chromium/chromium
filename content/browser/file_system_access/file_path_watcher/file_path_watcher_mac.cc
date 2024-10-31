@@ -25,6 +25,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override = default;
 
+  size_t current_usage() const override { return impl_->current_usage(); }
+
   bool Watch(const base::FilePath& path,
              Type type,
              const FilePathWatcher::Callback& callback) override {
@@ -47,9 +49,10 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool WatchWithChangeInfo(
       const base::FilePath& path,
       const WatchOptions& options,
-      const FilePathWatcher::CallbackWithChangeInfo& callback) override {
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override {
     impl_ = std::make_unique<FilePathWatcherFSEvents>();
-    return impl_->WatchWithChangeInfo(path, options, callback);
+    return impl_->WatchWithChangeInfo(path, options, callback, usage_callback);
   }
 
   void Cancel() override {
