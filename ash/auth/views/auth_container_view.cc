@@ -26,7 +26,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -164,6 +163,8 @@ AuthContainerView::AuthContainerView(AuthFactorSet auth_factors)
   AddPinStatusView();
 
   AddFingerprintView();
+
+  GetViewAccessibility().SetIsInvisible(true);
 }
 
 AuthContainerView::~AuthContainerView() {
@@ -264,10 +265,6 @@ gfx::Size AuthContainerView::CalculatePreferredSize(
   }
 
   return gfx::Size(kAuthContainerViewWidthDp, preferred_height);
-}
-
-void AuthContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
 }
 
 std::string AuthContainerView::GetObjectName() const {

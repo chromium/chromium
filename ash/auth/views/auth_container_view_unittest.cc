@@ -17,6 +17,7 @@
 #include "base/containers/enum_set.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/root_view.h"
@@ -347,6 +348,12 @@ TEST_F(AuthContainerWithPasswordAndPinTest, FingerprintTest) {
   container_view_->SetFingerprintState(FingerprintState::UNAVAILABLE);
   EXPECT_FALSE(fp_view->GetVisible());
   EXPECT_EQ(test_fp_view.GetState(), FingerprintState::UNAVAILABLE);
+}
+
+TEST_F(AuthContainerWithPasswordAndPinTest, AccessibleProperties) {
+  ui::AXNodeData node_data;
+  container_view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
 }
 
 class AuthContainerWithPinTest : public AuthContainerBaseUnitTest {
