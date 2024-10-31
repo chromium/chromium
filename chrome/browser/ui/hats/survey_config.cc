@@ -569,7 +569,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{"Lens request flow ID"});
+      std::vector<std::string>{"ID that's tied to your Google Lens session"});
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
