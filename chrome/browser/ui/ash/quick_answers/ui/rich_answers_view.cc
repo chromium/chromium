@@ -164,13 +164,6 @@ void RichAnswersView::OnKeyEvent(ui::KeyEvent* event) {
   }
 }
 
-void RichAnswersView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  search_link_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorSysPrimary));
-}
-
 void RichAnswersView::OnWidgetActivationChanged(views::Widget* widget,
                                                 bool active) {
   // TODO(b/283135347): Track rich card interaction types for metrics.
@@ -306,13 +299,14 @@ void RichAnswersView::AddGoogleSearchLink() {
           .SetInteriorMargin(kSearchLinkViewInsets)
           .Build());
 
-  search_link_label_ = search_link_view->AddChildView(
+  views::Link* search_link_label = search_link_view->AddChildView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(
           IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT)));
-  search_link_label_->SetCallback(base::BindRepeating(
+  search_link_label->SetCallback(base::BindRepeating(
       &RichAnswersView::OnGoogleSearchLinkClicked, weak_factory_.GetWeakPtr()));
-  search_link_label_->SetFontList(GetFontList(TypographyToken::kCrosButton2));
-  search_link_label_->SetForceUnderline(false);
+  search_link_label->SetFontList(GetFontList(TypographyToken::kCrosButton2));
+  search_link_label->SetForceUnderline(false);
+  search_link_label->SetEnabledColorId(ui::kColorSysPrimary);
 }
 
 void RichAnswersView::OnGoogleSearchLinkClicked() {

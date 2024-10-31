@@ -54,7 +54,6 @@ class RichAnswersView : public views::View, public views::WidgetObserver {
   // views::View:
   void AddedToWidget() override;
   void OnKeyEvent(ui::KeyEvent* event) override;
-  void OnThemeChanged() override;
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -97,7 +96,6 @@ class RichAnswersView : public views::View, public views::WidgetObserver {
   raw_ptr<views::BoxLayoutView> content_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::ImageView> vector_icon_ = nullptr;
-  raw_ptr<views::Link> search_link_label_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
