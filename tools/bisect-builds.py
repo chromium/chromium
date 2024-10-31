@@ -771,10 +771,11 @@ class ArchiveBuild(abc.ABC):
   def _launch_revision(self, tempdir, executables, args=()):
     args = [*self._get_extra_args(), *args]
     args_str = shlex.join(args)
-    command = (self.command.replace(r'%p', executables['chrome']).replace(
-        r'%s', args_str).replace(r'%a', args_str).replace(r'%t', tempdir))
+    command = (self.command.replace(r'%p', shlex.quote(
+        executables['chrome'])).replace(r'%s', args_str).replace(
+            r'%a', args_str).replace(r'%t', tempdir))
     if self.chromedriver:
-      command = command.replace(r'%d', executables['chromedriver'])
+      command = command.replace(r'%d', shlex.quote(executables['chromedriver']))
     return self._run(command, shell=True)
 
   def run_revision(self, download, tempdir, args=()):

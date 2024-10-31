@@ -429,6 +429,45 @@ class ArchiveBuildTest(BisectTestCase):
         stderr=ANY)
 
   @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_launch_revision_should_run_command_for_mac(self, mock_Popen):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    build = self.create_build()
+    build._launch_revision(
+        'temp-dir', {
+            'chrome':
+            'temp-dir/full-build-mac/'
+            'Google Chrome.app/Contents/MacOS/Google Chrome'
+        }, [])
+    mock_Popen.assert_called_once_with(
+        "'temp-dir/full-build-mac/"
+        "Google Chrome.app/Contents/MacOS/Google Chrome'"
+        ' --user-data-dir=temp-dir/profile',
+        cwd=None,
+        shell=True,
+        bufsize=-1,
+        stdout=ANY,
+        stderr=ANY)
+
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_launch_revision_should_run_command_for_win(self, mock_Popen):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    build = self.create_build()
+    build._launch_revision(
+        'C:\\temp-dir', {
+            'chrome': 'C:\\temp-dir\\full-build-win\\chrome.exe'
+        }, [])
+    mock_Popen.assert_called_once_with(
+        "'C:\\temp-dir\\full-build-win\\chrome.exe' "
+        '--user-data-dir=C:\\temp-dir/profile',
+        cwd=None,
+        shell=True,
+        bufsize=-1,
+        stdout=ANY,
+        stderr=ANY)
+
+  @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_command_replacement(self, mock_Popen):
     mock_Popen.return_value.communicate.return_value = ('', '')
     mock_Popen.return_value.returncode = 0
