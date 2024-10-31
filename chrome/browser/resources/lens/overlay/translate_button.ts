@@ -23,6 +23,7 @@ import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import type {Language} from './translate.mojom-webui.js';
 import {getTemplate} from './translate_button.html.js';
 
 // The language codes that are supported to be translated by the server.
@@ -122,15 +123,15 @@ export class TranslateButtonElement extends PolymerElement {
   private shouldShowStarsIcon: boolean;
   // The currently selected source language to translate to. If null, we should
   // auto detect the language.
-  private sourceLanguage: chrome.languageSettingsPrivate.Language|null = null;
+  private sourceLanguage: Language|null = null;
   // The currently selected target language to translate to.
-  private targetLanguage: chrome.languageSettingsPrivate.Language;
+  private targetLanguage: Language;
   // Whether the source language menu picker is visible.
   private sourceLanguageMenuVisible: boolean = false;
   // Whether the target language menu picker is visible.
   private targetLanguageMenuVisible: boolean = false;
   // The list of target languages provided by the chrome API.
-  private translateLanguageList: chrome.languageSettingsPrivate.Language[];
+  private translateLanguageList: Language[];
   // The content language code received from the lext layer.
   private contentLanguage: string = '';
   // A browser proxy for communicating with the C++ Lens overlay controller.
@@ -209,7 +210,7 @@ export class TranslateButtonElement extends PolymerElement {
     const startingChar = event.key.toLowerCase();
     for (let i = 0; i < this.translateLanguageList.length; i++) {
       const language = this.translateLanguageList[i];
-      const languageStartingChar = language.displayName.charAt(0).toLowerCase();
+      const languageStartingChar = language.name.charAt(0).toLowerCase();
       if (startingChar === languageStartingChar) {
         scrollLanguageIndex = i;
         break;
@@ -228,10 +229,9 @@ export class TranslateButtonElement extends PolymerElement {
     }
   }
 
-  private onLanguageListRetrieved(
-      languageList: chrome.languageSettingsPrivate.Language[]) {
+  private onLanguageListRetrieved(languageList: Language[]) {
     this.translateLanguageList = languageList.filter((language) => {
-      return SUPPORTED_TRANSLATION_LANGUAGES.has(language.code);
+      return SUPPORTED_TRANSLATION_LANGUAGES.has(language.languageCode);
     });
 
     // After receiving the language list, get the default translate target
@@ -243,7 +243,7 @@ export class TranslateButtonElement extends PolymerElement {
 
   private onTargetLanguageRetrieved(languageCode: string) {
     const defaultLanguage = this.translateLanguageList.find(
-        language => language.code === languageCode);
+        language => language.languageCode === languageCode);
 
     // If the target language is set to one supported by Lens, then we set it
     // and are done.
@@ -311,7 +311,7 @@ export class TranslateButtonElement extends PolymerElement {
       composed: true,
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.code,
+        targetLanguage: this.targetLanguage.languageCode,
         shouldUnselectWords: true,
       },
     }));
@@ -351,7 +351,7 @@ export class TranslateButtonElement extends PolymerElement {
       composed: true,
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.code,
+        targetLanguage: this.targetLanguage.languageCode,
         shouldUnselectWords: true,
       },
     }));
@@ -360,8 +360,8 @@ export class TranslateButtonElement extends PolymerElement {
   private maybeIssueTranslateRequest() {
     if (this.isTranslateModeEnabled && this.targetLanguage) {
       this.browserProxy.handler.issueTranslateFullPageRequest(
-          this.sourceLanguage ? this.sourceLanguage.code : 'auto',
-          this.targetLanguage.code);
+          this.sourceLanguage ? this.sourceLanguage.languageCode : 'auto',
+          this.targetLanguage.languageCode);
     }
   }
 
@@ -374,9 +374,9 @@ export class TranslateButtonElement extends PolymerElement {
     const newSourceLanguage = sourceLanguage === 'auto' ?
         null :
         this.translateLanguageList.find(
-            language => language.code === sourceLanguage);
+            language => language.languageCode === sourceLanguage);
     const newTargetLanguage = this.translateLanguageList.find(
-        language => language.code === targetLanguage);
+        language => language.languageCode === targetLanguage);
 
     // Do nothing if the languages set are not in the language list. Source
     // language can be null to indicate we should auto-detect source language.
@@ -404,7 +404,7 @@ export class TranslateButtonElement extends PolymerElement {
       composed: true,
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.code,
+        targetLanguage: this.targetLanguage.languageCode,
         shouldUnselectWords: true,
       },
     }));
@@ -422,7 +422,7 @@ export class TranslateButtonElement extends PolymerElement {
       composed: true,
       detail: {
         translateModeEnabled: this.isTranslateModeEnabled,
-        targetLanguage: this.targetLanguage.code,
+        targetLanguage: this.targetLanguage.languageCode,
         shouldUnselectWords: false,
       },
     }));
@@ -448,7 +448,7 @@ export class TranslateButtonElement extends PolymerElement {
 
   private getSourceLanguageDisplayName(): string {
     if (this.sourceLanguage) {
-      return this.sourceLanguage.displayName;
+      return this.sourceLanguage.name;
     }
     // There is a race condition where the DOM can render before the language
     // browser proxy returns the language list. For this reason, we need to
@@ -456,9 +456,9 @@ export class TranslateButtonElement extends PolymerElement {
     // the content language display name inside of it.
     if (this.contentLanguage !== '' && this.translateLanguageList) {
       const detectedLanguage = this.translateLanguageList.find(
-          language => language.code === this.contentLanguage);
+          language => language.languageCode === this.contentLanguage);
       if (detectedLanguage !== undefined) {
-        return detectedLanguage.displayName;
+        return detectedLanguage.name;
       }
     }
     return loadTimeData.getString('detectLanguage');
@@ -466,7 +466,7 @@ export class TranslateButtonElement extends PolymerElement {
 
   private getTargetLanguageDisplayName(): string {
     if (this.targetLanguage) {
-      return this.targetLanguage.displayName;
+      return this.targetLanguage.name;
     }
 
     return '';
@@ -479,9 +479,9 @@ export class TranslateButtonElement extends PolymerElement {
     // the content language display name inside of it.
     if (this.contentLanguage !== '' && this.translateLanguageList) {
       const detectedLanguage = this.translateLanguageList.find(
-          language => language.code === this.contentLanguage);
+          language => language.languageCode === this.contentLanguage);
       if (detectedLanguage !== undefined) {
-        return detectedLanguage.displayName;
+        return detectedLanguage.name;
       }
     }
     return '';
@@ -537,14 +537,12 @@ export class TranslateButtonElement extends PolymerElement {
         'targetLanguageAriaLabel', this.getTargetLanguageDisplayName());
   }
 
-  private getAutoCheckedClass(
-      sourceLanguage: chrome.languageSettingsPrivate.Language): string {
+  private getAutoCheckedClass(sourceLanguage: Language): string {
     return sourceLanguage === null ? 'selected' : '';
   }
 
   private getLanguageCheckedClass(
-      language: chrome.languageSettingsPrivate.Language,
-      selectedLanguage: chrome.languageSettingsPrivate.Language): string {
+      language: Language, selectedLanguage: Language): string {
     return selectedLanguage === language ? 'selected' : '';
   }
 }

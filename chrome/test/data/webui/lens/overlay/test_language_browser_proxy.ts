@@ -3,29 +3,24 @@
 // found in the LICENSE file.
 
 import type {LanguageBrowserProxy} from 'chrome-untrusted://lens-overlay/language_browser_proxy.js';
+import type {Language} from 'chrome-untrusted://lens-overlay/translate.mojom-webui.js';
 
 /**
  * Test version of the LanguageBrowserProxy used in connecting Lens Overlay to
  * the language settings API.
  */
 export class TestLanguageBrowserProxy implements LanguageBrowserProxy {
-  getLanguageList(): Promise<chrome.languageSettingsPrivate.Language[]> {
+  getLanguageList(): Promise<Language[]> {
     return Promise.resolve(structuredClone([
       {
         // English language.
-        code: 'en',
-        displayName: 'English',
-        nativeDisplayName: 'English',
-        supportsTranslate: true,
+        languageCode: 'en',
+        name: 'English',
       },
       {
         // A standalone language.
-        code: 'sw',
-        displayName: 'Swahili',
-        nativeDisplayName: 'Kiswahili',
-        supportsSpellcheck: true,
-        supportsTranslate: true,
-        supportsUI: true,
+        languageCode: 'sw',
+        name: 'Swahili',
       },
     ]));
   }
