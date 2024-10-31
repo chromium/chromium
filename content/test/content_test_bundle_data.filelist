@@ -7368,6 +7368,7 @@ data/media/webrtc_test_utilities.js
 data/mhtml/Ahem.woff
 data/mhtml/custom_element_defined.html
 data/mhtml/custom_element_defined_in_frame.html
+data/mhtml/elements.html
 data/mhtml/fonts.html
 data/mhtml/imported_imported.css
 data/mhtml/imported_inline.css

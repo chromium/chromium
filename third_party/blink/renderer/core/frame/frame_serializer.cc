@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -1006,6 +1007,10 @@ function main(metadata) {
       ImageResourceContent* cached_image = image->CachedImage();
       resource_serializer_->AddImageToResources(
           cached_image, document.CompleteURL(image_url_value));
+    } else if (const auto* svg_image = DynamicTo<SVGImageElement>(element)) {
+      resource_serializer_->AddImageToResources(
+          svg_image->CachedImage(),
+          document.CompleteURL(svg_image->SourceURL()));
     } else if (const auto* input = DynamicTo<HTMLInputElement>(element)) {
       if (input->FormControlType() == FormControlType::kInputImage &&
           input->ImageLoader()) {
