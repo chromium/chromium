@@ -11,6 +11,7 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
@@ -28,6 +29,7 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -156,6 +158,11 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     return &session_manager_->provider_url_restriction_level_map_;
   }
 
+  bool* should_lock_window() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
+    return &session_manager_->should_lock_window_;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<OnTaskSessionManager> session_manager_;
   raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;
@@ -212,9 +219,10 @@ TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
       .Times(1);
   session_manager_->OnSessionEnded("test_session_id");
 
-  // Verify session end notification was shown.
+  // Verify session end notification was shown and window lock state was reset.
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskSessionEndNotificationId));
+  EXPECT_FALSE(*should_lock_window());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnSessionEnd) {
@@ -377,6 +385,33 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
 
   // Verify notification is shown.
   EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskEnterLockedModeNotificationId));
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       ShouldNotShowNotificationIfWindowWasAlreadyLocked) {
+  // Set previous window locked state for testing purposes.
+  *should_lock_window() = true;
+
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId));
+  EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions).Times(1);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
+      .Times(1);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.set_locked(true);
+  session_manager_->OnBundleUpdated(bundle);
+
+  // Verify notification is not shown.
+  EXPECT_FALSE(fake_notifications_delegate_ptr_->WasNotificationShown(
       kOnTaskEnterLockedModeNotificationId));
 }
 
@@ -660,13 +695,12 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(kWindowId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
-      .Times(1)
-      .InSequence(s);
   EXPECT_CALL(
       *system_web_app_manager_ptr_,
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
+      .Times(AtLeast(1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(kWindowId))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -681,6 +715,10 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
                   ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .InSequence(s)
       .WillOnce(Return(kTabId2));
+  EXPECT_CALL(*system_web_app_manager_ptr_, SetPinStateForSystemWebAppWindow(
+                                                /*pinned=*/false, kWindowId))
+      .Times(1)
+      .InSequence(s);
   session_manager_->OnAppReloaded();
   ASSERT_TRUE(
       testing::Mock::VerifyAndClearExpectations(system_web_app_manager_ptr_));
@@ -692,6 +730,32 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
               ElementsAre(kTabId2));
   EXPECT_EQ((*provider_url_restriction_level_map())[GURL(kTestUrl2)],
             ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
+}
+
+TEST_F(OnTaskSessionManagerTest, LockWindowOnAppReload) {
+  // Set window lock state for testing purposes.
+  *should_lock_window() = true;
+
+  // Attempt an app reload and verify that the app window is locked.
+  const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  const std::vector<boca::BocaWindowObserver*> kWindowObservers = {
+      session_manager_->active_tab_tracker(), session_manager_.get()};
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
+      .Times(AtLeast(1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_, SetPinStateForSystemWebAppWindow(
+                                                /*pinned=*/true, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  session_manager_->OnAppReloaded();
 }
 
 TEST_F(OnTaskSessionManagerTest,

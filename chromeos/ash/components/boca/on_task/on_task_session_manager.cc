@@ -34,10 +34,10 @@ namespace ash::boca {
 namespace {
 
 // Delay in seconds before we attempt to add a tab.
-constexpr base::TimeDelta kAddTabRetryDelay = base::Seconds(3);
+constexpr base::TimeDelta kAddTabRetryDelay = base::Seconds(1);
 
 // Delay in seconds before we attempt to remove a tab.
-constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(3);
+constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(1);
 
 // Delay in seconds before we attempt to pin or unpin the active SWA window.
 constexpr base::TimeDelta kSetPinnedStateDelay = base::Seconds(3);
@@ -86,6 +86,7 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
   }
   provider_url_tab_ids_map_.clear();
   provider_url_restriction_level_map_.clear();
+  should_lock_window_ = false;
 
   // Re-enable extensions on session end to prepare for subsequent sessions.
   extensions_manager_->ReEnableExtensions();
@@ -175,36 +176,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     }
   }
 
-  bool should_lock_window = bundle.locked();
-  notifications_manager_->ConfigureForLockedMode(should_lock_window);
-  if (should_lock_window) {
-    // Disable extensions as appropriate and surface notification before locking
-    // the window.
-    extensions_manager_->DisableExtensions();
-    OnTaskNotificationsManager::NotificationCreateParams
-        notification_create_params(
-            kOnTaskEnterLockedModeNotificationId,
-            /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
-            /*message=*/
-            l10n_util::GetStringUTF16(
-                IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE),
-            /*notifier_id=*/
-            NotifierId(NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
-                       ash::NotificationCatalogName::kOnTaskEnterLockedMode));
-    notifications_manager_->CreateNotification(
-        std::move(notification_create_params));
-    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
-        should_lock_window,
-        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
-                            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // Re-enable extensions before attempting to unlock the window.
-    extensions_manager_->ReEnableExtensions();
-    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
-        /*pinned=*/should_lock_window,
-        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  LockOrUnlockWindow(bundle.locked());
 
   // Show relevant notifications if content was added or deleted.
   if (has_new_content) {
@@ -266,6 +238,48 @@ void OnTaskSessionManager::OnAppReloaded() {
         base::BindOnce(&OnTaskSessionManager::OnBundleTabAdded,
                        weak_ptr_factory_.GetWeakPtr(), provider_sent_url,
                        restriction_level));
+  }
+
+  // Also lock window if necessary.
+  LockOrUnlockWindow(should_lock_window_);
+}
+
+void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool locked_mode_state_changed = (should_lock_window_ != lock_window);
+  should_lock_window_ = lock_window;
+  notifications_manager_->ConfigureForLockedMode(should_lock_window_);
+  if (should_lock_window_) {
+    extensions_manager_->DisableExtensions();
+    if (locked_mode_state_changed) {
+      // Show notification before locking the window.
+      OnTaskNotificationsManager::NotificationCreateParams
+          notification_create_params(
+              kOnTaskEnterLockedModeNotificationId,
+              /*title=*/
+              l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
+              /*message=*/
+              l10n_util::GetStringUTF16(
+                  IDS_ON_TASK_ENTER_LOCKED_MODE_NOTIFICATION_MESSAGE),
+              /*notifier_id=*/
+              NotifierId(NotifierType::SYSTEM_COMPONENT, kOnTaskNotifierId,
+                         ash::NotificationCatalogName::kOnTaskEnterLockedMode));
+      notifications_manager_->CreateNotification(
+          std::move(notification_create_params));
+    }
+    // Attempt to lock the window. This should be a no-op should the window be
+    // already locked.
+    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
+        /*pinned=*/true,
+        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
+                            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // Re-enable extensions before attempting to unlock the window.
+    extensions_manager_->ReEnableExtensions();
+    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
+        /*pinned=*/false,
+        base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -97,6 +98,12 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     base::WeakPtrFactory<SystemWebAppLaunchHelper> weak_ptr_factory_{this};
   };
 
+  // Internal helper used to lock or unlock the current app window. This
+  // involves disabling relevant extensions and pinning the window if
+  // `lock_window` is true, or re-enabling extensions and unpinning the window
+  // otherwise.
+  void LockOrUnlockWindow(bool lock_window);
+
   // Callback triggered when a tab from the bundle is added.
   void OnBundleTabAdded(
       GURL url,
@@ -119,6 +126,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   SEQUENCE_CHECKER(sequence_checker_);
 
   GURL active_tab_url_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool should_lock_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Maps the url that providers send to the tab ids spawned from the url. This
   // map allows to remove all the related tabs to the url.
