@@ -317,6 +317,11 @@ void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
   }
 
   NavigateParams params(displayer.browser(), url, ui::PAGE_TRANSITION_LINK);
+  // `captive_portal_window_type = kTab` is used on desktop Chrome to identify
+  // captive portal signin tabs. This disables HTTPS-Upgrades for the captive
+  // portal navigation.
+  params.captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kTab;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   ::Navigate(&params);
 }
