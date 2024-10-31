@@ -78,6 +78,10 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // Blink about the current safe area, and WebContents observers if needed.
   void MaybeActiveRenderFrameHostChanged();
 
+  // Clears the insets on the active frame. This should particularly be used
+  // when switching frames during a transition into or out of fullscreen mode.
+  void ClearSafeAreaInsetsForActiveFrame();
+
   // Returns the current active `RenderFrameHost`: the current RFH or the
   // fullscreen RFH when in Fullscreen mode. May return `nullptr` during
   // startup.
