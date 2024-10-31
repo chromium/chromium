@@ -76,13 +76,22 @@ TabAppSelectionHost* ShowAndGetSelectorMenu(
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
   CHECK_EQ(1u, birch_chips.size());
 
-  auto* coral_button = views::AsViewClass<BirchChipButton>(birch_chips[0]);
-  CHECK_EQ(BirchItemType::kCoral, coral_button->GetItem()->GetType());
-
+  BirchChipButton* coral_button = GetFirstCoralButton();
   event_generator->MoveMouseTo(
       coral_button->addon_view()->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
   return coral_button->tab_app_selection_widget();
+}
+
+BirchChipButton* GetFirstCoralButton() {
+  // Creating `OverviewGridTestApi` will crash if we aren't in overview mode.
+  const std::vector<raw_ptr<BirchChipButtonBase>>& birch_chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  CHECK_EQ(1u, birch_chips.size());
+
+  auto* coral_button = views::AsViewClass<BirchChipButton>(birch_chips[0]);
+  CHECK_EQ(BirchItemType::kCoral, coral_button->GetItem()->GetType());
+  return coral_button;
 }
 
 }  // namespace ash

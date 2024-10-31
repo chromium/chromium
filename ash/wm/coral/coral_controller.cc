@@ -190,9 +190,7 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
   }
 
   DesksController* desks_controller = DesksController::Get();
-  if (!desks_controller->CanCreateDesks()) {
-    return;
-  }
+  CHECK(desks_controller->CanCreateDesks());
   desks_controller->NewDesk(
       DesksCreationRemovalSource::kCoral,
       base::UTF8ToUTF16(group->title.value_or(std::string())));

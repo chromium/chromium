@@ -8,13 +8,17 @@
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/coral_util.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/barrier_callback.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -25,6 +29,8 @@ namespace {
 constexpr int kCoralIconSize = 14;
 constexpr int kCoralAppIconDesiredSize = 64;
 constexpr int kCoralMaxSubIconsNum = 4;
+
+constexpr char kMaxDesksToastId[] = "coral_max_desks_toast";
 
 // Callback for the favicon load request in `GetFaviconImageCoral()`. If the
 // load fails, passes an empty `ui::ImageModel` to the `barrier_callback`.
@@ -135,11 +141,10 @@ base::Value::Dict BirchCoralItem::ToCoralItemDetails() const {
 }
 
 void BirchCoralItem::PerformAction() {
-  coral::mojom::GroupPtr group =
-      BirchCoralProvider::Get()->ExtractGroupById(group_id_);
-
   switch (source_) {
-    case CoralSource::kPostLogin:
+    case CoralSource::kPostLogin: {
+      coral::mojom::GroupPtr group =
+          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
       // End the Overview after restore.
@@ -147,9 +152,22 @@ void BirchCoralItem::PerformAction() {
       OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
                                              OverviewEnterExitType::kNormal);
       break;
-    case CoralSource::kInSession:
+    }
+    case CoralSource::kInSession: {
+      if (!DesksController::Get()->CanCreateDesks()) {
+        ToastData toast(
+            kMaxDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
+            l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED),
+            ToastData::kDefaultToastDuration,
+            /*visible_on_lock_screen=*/false);
+        Shell::Get()->toast_manager()->Show(std::move(toast));
+        return;
+      }
+      coral::mojom::GroupPtr group =
+          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
       Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
       break;
+    }
     case CoralSource::kUnknown:
       NOTREACHED() << "Invalid response with unknown source.";
   }

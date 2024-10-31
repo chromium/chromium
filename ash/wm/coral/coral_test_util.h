@@ -16,6 +16,7 @@ class EventGenerator;
 }  // namespace ui::test
 
 namespace ash {
+class BirchChipButton;
 class TabAppSelectionHost;
 
 // Test struct that holds a string and a GURL or additional string. Simplifies
@@ -46,6 +47,9 @@ void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups);
 // the birch coral chip.
 TabAppSelectionHost* ShowAndGetSelectorMenu(
     ui::test::EventGenerator* event_generator);
+
+// Gets the first coral button on the primary root window.
+BirchChipButton* GetFirstCoralButton();
 
 }  // namespace ash
 
