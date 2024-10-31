@@ -80,7 +80,14 @@ public class SuggestionsListAnimationDriver
         mAdditionalVerticalOffset = additionalVerticalOffset;
         mHandler = handler;
         mWindow = window;
-        mWindow.getDecorView().addOnAttachStateChangeListener(this);
+        // OnControllableInsetsChangedListener event delivery is unreliable if not attached to the
+        // window yet.
+        if (mWindow.getDecorView().isAttachedToWindow()) {
+            mInsetsController = new WindowInsetsControllerCompat(mWindow, mWindow.getDecorView());
+            mInsetsController.addOnControllableInsetsChangedListener(this);
+        } else {
+            mWindow.getDecorView().addOnAttachStateChangeListener(this);
+        }
     }
 
     void onOmniboxSessionStateChange(boolean active) {

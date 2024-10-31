@@ -213,4 +213,33 @@ public class SuggestionsListAnimationDriverTest {
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.1f, MathUtils.EPSILON);
         verify(mInsetObserver, never()).removeWindowInsetsAnimationListener(mDriver);
     }
+
+    @Test
+    public void testRootViewStartsAttached() {
+        doReturn(true).when(mRootView).isAttachedToWindow();
+        mDriver =
+                new SuggestionsListAnimationDriver(
+                        mInsetObserver,
+                        mListModel,
+                        () -> mTranslation,
+                        mShowRunnable,
+                        VERTICAL_OFFSET,
+                        mHandler,
+                        mWindow);
+        verify(mRootView, never()).addOnAttachStateChangeListener(mDriver);
+
+        // IME insets aren't yet controllable. Animation logic shouldn't be active.
+        mDriver.onOmniboxSessionStateChange(true);
+        verify(mInsetObserver, never()).addWindowInsetsAnimationListener(mDriver);
+        verify(mShowRunnable, never()).run();
+
+        mDriver.onOmniboxSessionStateChange(false);
+        // IME insets are now controllable. Animation logic should be active.
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
+        mDriver.onOmniboxSessionStateChange(true);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mShowRunnable).run();
+    }
 }
