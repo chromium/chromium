@@ -1290,16 +1290,6 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
              "AccessibilityIncludeLongClickAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows the use of page zoom in place of accessibility text autosizing, and
-// updated UI to replace existing Chrome Accessibility Settings.
-BASE_FEATURE(kAccessibilityPageZoom,
-             "AccessibilityPageZoom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether the OS-level font setting is adjusted for.
-const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
-    &kAccessibilityPageZoom, "AdjustForOSLevel", false};
-
 // Enables the use of enhancements to the Page Zoom feature based on user
 // feedback from the v1 version (e.g. reset button, Site Settings, etc).
 // This flag is the fast-follow for the AccessibilityPageZoom experiment.

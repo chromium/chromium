@@ -8389,13 +8389,6 @@ void WebContentsImpl::RunFileChooser(
 }
 
 double WebContentsImpl::GetPendingPageZoomLevel() {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, use the default page zoom level when the AccessibilityPageZoom
-  // feature is disabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
-    return 0.0;
-  }
-#endif
   NavigationEntry* pending_entry = GetController().GetPendingEntry();
   if (!pending_entry) {
     return HostZoomMap::GetZoomLevel(this);

@@ -84,6 +84,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   double GetZoomLevelForHostAndSchemeAndroid(const std::string& scheme,
                                              const std::string& host) override;
   void SetSystemFontScaleForTesting(float scale);
+  void SetShouldAdjustForOSLevelForTesting(bool shouldAdjustForOSLevel);
 #endif
 
   double GetZoomLevelForPreviewAndHost(const std::string& host) override;

@@ -2407,8 +2407,6 @@ extern const char kRewriterAPIForGeminiNanoDescription[];
 
 extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
-extern const char kAccessibilityPageZoomName[];
-extern const char kAccessibilityPageZoomDescription[];
 extern const char kAccessibilityPageZoomEnhancementsName[];
 extern const char kAccessibilityPageZoomEnhancementsDescription[];
 extern const char kAccessibilitySnapshotStressTestsName[];

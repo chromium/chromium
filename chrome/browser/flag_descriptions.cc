@@ -4183,11 +4183,6 @@ const char kAccessibilityIncludeLongClickActionDescription[] =
     "When enabled, the accessibility tree for the web contents will include "
     "the ACTION_LONG_CLICK action on all relevant nodes.";
 
-const char kAccessibilityPageZoomName[] = "Accessibility Page Zoom";
-const char kAccessibilityPageZoomDescription[] =
-    "Whether the UI and underlying code for page zoom should be enabled to"
-    " allow a user to increase/decrease the web contents zoom factor.";
-
 const char kAccessibilityPageZoomEnhancementsName[] =
     "Accessibility Page Zoom Enhancements";
 const char kAccessibilityPageZoomEnhancementsDescription[] =

@@ -111,29 +111,18 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mPageZoomIncludeOSAdjustment =
                 (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
-            mTextScalePref.setVisible(false);
-            // Set the initial values for the page zoom settings, and set change listeners.
-            mPageZoomDefaultZoomPref.setInitialValue(
-                    PageZoomUtils.getDefaultZoomAsSeekBarValue(
-                            mDelegate.getBrowserContextHandle()));
-            mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
-            mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
-            mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
+        mTextScalePref.setVisible(false);
+        // Set the initial values for the page zoom settings, and set change listeners.
+        mPageZoomDefaultZoomPref.setInitialValue(
+                PageZoomUtils.getDefaultZoomAsSeekBarValue(mDelegate.getBrowserContextHandle()));
+        mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
+        mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
+        mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
 
-            // When Smart Zoom feature is enabled, set the required delegate.
-            if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
-                mPageZoomDefaultZoomPref.setTextSizeContrastDelegate(
-                        mDelegate.getTextSizeContrastAccessibilityDelegate());
-            }
-        } else {
-            mPageZoomDefaultZoomPref.setVisible(false);
-            mPageZoomAlwaysShowPref.setVisible(false);
-            mTextScalePref.setOnPreferenceChangeListener(this);
-            mTextScalePref.updateFontScaleFactors(
-                    mFontSizePrefs.getFontScaleFactor(),
-                    mFontSizePrefs.getUserFontScaleFactor(),
-                    false);
+        // When Smart Zoom feature is enabled, set the required delegate.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+            mPageZoomDefaultZoomPref.setTextSizeContrastDelegate(
+                    mDelegate.getTextSizeContrastAccessibilityDelegate());
         }
 
         mForceEnableZoomPref = (ChromeSwitchPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
@@ -166,9 +155,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 });
 
         Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-                && ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)) {
             zoomInfo.setVisible(true);
             zoomInfo.setOnPreferenceClickListener(
                     preference -> {

@@ -21,12 +21,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -75,21 +73,11 @@ public class PageZoomMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, true);
-        testValues.addFieldTrialParamOverride(
-                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
-                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM,
-                "true");
-        FeatureList.setTestValues(testValues);
-
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
 
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
         mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, 0.0);
         mMediator = new PageZoomMediator(mModel);
-
-        HostZoomMap.setSystemFontScale(1.0f);
     }
 
     @Test
@@ -109,7 +97,8 @@ public class PageZoomMediatorUnitTest {
     @Test
     public void testDecreaseZoom_SmallConfiguration() {
         // Verify that calling decrease zoom method sends expected value to native code.
-        HostZoomMap.setSystemFontScale(0.85f);
+        HostZoomMap.setSystemFontScaleForTesting(0.85f);
+        HostZoomMap.setShouldAdjustForOSLevelForTesting(true);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mMediator.setWebContents(mWebContentsMock);
         Assert.assertEquals(
@@ -138,7 +127,8 @@ public class PageZoomMediatorUnitTest {
     @Test
     public void testIncreaseZoom_LargeConfiguration() {
         // Verify that calling increase zoom method sends expected value to native code.
-        HostZoomMap.setSystemFontScale(1.3f);
+        HostZoomMap.setSystemFontScaleForTesting(1.3f);
+        HostZoomMap.setShouldAdjustForOSLevelForTesting(true);
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mMediator.setWebContents(mWebContentsMock);
         Assert.assertEquals(
@@ -155,7 +145,8 @@ public class PageZoomMediatorUnitTest {
         // Verify that calling increase zoom method sends expected value to native code when the OS
         // font scale in use could cause the rendered zoom factor value to overflow beyond the
         // maximum displayed zoom factor value.
-        HostZoomMap.setSystemFontScale(2.2f);
+        HostZoomMap.setSystemFontScaleForTesting(2.2f);
+        HostZoomMap.setShouldAdjustForOSLevelForTesting(true);
 
         // Assume that the currently rendered zoom value is maximum, that is 300% or a zoom factor
         // of 6.03. For the zoom scales defined above, this will be equivalent to a display value of

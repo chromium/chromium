@@ -291,17 +291,6 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
 };
 
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
- public:
-  SyntheticMouseEventTest() {
-// On Android, zoom level is set to 0 in
-// WebContentsImpl::GetPendingPageZoomLevel unless the kAccessibilityPageZoom
-// feature is enabled. We enable it to be able to test mouse events across all
-// platforms.
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(features::kAccessibilityPageZoom);
-#endif
-  }
-
  protected:
   void SendMouseEvent(const std::string& type,
                       int x,

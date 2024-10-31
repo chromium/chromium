@@ -245,11 +245,6 @@
       public: true,
     },
     {
-      name: "AccessibilityPageZoom",
-      base_feature: "none",
-      public: true,
-    },
-    {
       // Enforce no accessible name on objects that have a role where names are
       // prohibited (listed in https://w3c.github.io/aria/#namefromprohibited):
       // log a friendly error in the developer console, and trigger a DCHECK().
@@ -3975,7 +3970,6 @@
     },
     {
       name: "SmartZoom",
-      depends_on: ["AccessibilityPageZoom"],
       base_feature: "none",
       public: true,
       status: {"Android": "test"},

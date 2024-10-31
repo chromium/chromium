@@ -53,7 +53,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for the PageZoom view and view binder. */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
 @DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS,
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,

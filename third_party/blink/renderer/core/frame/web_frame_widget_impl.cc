@@ -2367,9 +2367,6 @@ void WebFrameWidgetImpl::SetZoomInternal(double zoom_level,
           if (ForTopMostMainFrame()) {
             // Zoom levels are the exponent in the calculation of zoom. The zoom
             // factor is the value shown to the user (e.g. 50% to 300%).
-            // Note: On Android, when the AccessibilityPageZoom feature is
-            // disabled, this histogrm should only include samples at 100% zoom
-            // factor.
             UMA_HISTOGRAM_CUSTOM_EXACT_LINEAR(
                 "Accessibility.Android.PageZoom.MainFrameZoomFactor",
                 layout_zoom_factor * 100, 50, 300, 52);

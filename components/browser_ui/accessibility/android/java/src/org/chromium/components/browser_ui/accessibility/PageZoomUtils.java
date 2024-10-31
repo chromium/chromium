@@ -203,19 +203,12 @@ public class PageZoomUtils {
     /**
      * Returns true if the Zoom AppMenu item should be shown, false otherwise.
      *
-     * - If there is a current user choice set in Accessibility Settings, respect and return the
-     * user setting.
-     * - Otherwise, if there is an OS level font size set, return true.
-     * - Otherwise, return false.
+     * <p>If there is a current user choice set in Accessibility Settings, respect and return the
+     * user setting. Otherwise, return true if there is an OS level font size set.
      *
-     * This setting is Chrome Android specific.
      * @return boolean
      */
     public static boolean shouldShowZoomMenuItem() {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
-            return false;
-        }
-
         // Always respect the user's choice if the user has set this in Accessibility Settings.
         if (hasUserSetShouldAlwaysShowZoomMenuItemOption()) {
             if (shouldAlwaysShowZoomMenuItem()) {
@@ -233,9 +226,8 @@ public class PageZoomUtils {
         boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(getSystemFontScale(), 1f);
 
         // If the user has a system font scale other than the default, we will show the menu item if
-        // the FeatureParam to provide OS-level adjustments is enabled, or, if the page zoom
-        // enhancements (fast-follow) feature is enabled (which includes a greater presence in the
-        // 3-dot menu).
+        // OS-level adjustments is enabled, or, if the page zoom enhancements (fast-follow) feature
+        // is enabled (which includes a greater presence in the 3-dot menu).
         if (!isUsingDefaultSystemFontScale
                 && (HostZoomMap.shouldAdjustForOSLevel()
                         || ContentFeatureMap.isEnabled(
