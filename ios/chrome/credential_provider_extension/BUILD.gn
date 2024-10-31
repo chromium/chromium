@@ -30,6 +30,7 @@ source_set("credential_provider") {
 
   deps = [
     ":account_verification_provider",
+    ":font_provider",
     ":metrics_util",
     ":passkey_keychain_provider_bridge",
     ":passkey_util",
@@ -157,6 +158,26 @@ source_set("metrics_util") {
     "//base",
     "//ios/chrome/common/app_group",
   ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("font_provider") {
+  public_deps = [ ":font_provider_header" ]
+  deps = [ ":font_provider_implementation" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("font_provider_header") {
+  sources = [ "font_provider.h" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("font_provider_implementation") {
+  sources = [ "font_provider.mm" ]
+  deps = [ ":font_provider_header" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
 

@@ -23,11 +23,13 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
+#import "ios/chrome/credential_provider_extension/font_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
+#import "ios/chrome/credential_provider_extension/ui/create_navigation_item_title_view.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
@@ -82,6 +84,9 @@ UIColor* BackgroundColor() {
 // Navigation controller to present passkey-related UIs.
 @property(nonatomic, strong)
     UINavigationController* passkeyNavigationController;
+
+// Navigation title view for the passkeyNavigationController.
+@property(nonatomic, strong) UIView* passkeyNavigationItemTitleView;
 
 // Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
 @property(nonatomic, strong)
@@ -366,13 +371,21 @@ UIColor* BackgroundColor() {
   return _passkeyNavigationController;
 }
 
+- (UIView*)passkeyNavigationItemTitleView {
+  if (!_passkeyNavigationItemTitleView) {
+    self.passkeyNavigationItemTitleView =
+        credential_provider_extension::CreateNavigationItemTitleView(
+            ios::provider::GetBrandedProductRegularFont(UIFont.labelFontSize));
+  }
+  return _passkeyNavigationItemTitleView;
+}
+
 - (PasskeyKeychainProviderBridge*)passkeyKeychainProviderBridge {
   if (!_passkeyKeychainProviderBridge) {
     _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
           initWithEnableLogging:[self metricsAreEnabled]
            navigationController:self.passkeyNavigationController
-        // TODO(crbug.com/375390807): Create the branded title view.
-        navigationItemTitleView:nil];
+        navigationItemTitleView:self.passkeyNavigationItemTitleView];
     _passkeyKeychainProviderBridge.delegate = self;
   }
   return _passkeyKeychainProviderBridge;

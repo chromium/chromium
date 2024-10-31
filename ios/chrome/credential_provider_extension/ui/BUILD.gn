@@ -8,6 +8,8 @@ source_set("ui") {
     "consent_coordinator.mm",
     "consent_view_controller.h",
     "consent_view_controller.mm",
+    "create_navigation_item_title_view.h",
+    "create_navigation_item_title_view.mm",
     "credential_details_consumer.h",
     "credential_details_view_controller+Testing.h",
     "credential_details_view_controller.h",
@@ -66,6 +68,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/favicon",
@@ -165,6 +168,7 @@ source_set("mock_credential_response_handler") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "create_navigation_item_title_view_unittest.mm",
     "credential_details_view_controller_unittest.mm",
     "credential_list_coordinator_unittest.mm",
     "credential_list_mediator+Testing.h",
@@ -184,6 +188,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:mock_credential_store",
+    "//ios/chrome/credential_provider_extension:font_provider_header",
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",
     "//ios/chrome/test/app:test_support",
