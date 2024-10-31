@@ -615,6 +615,7 @@ artifact_zip("updater_zip") {
     "$root_out_dir/chrome/updater/.install",
     "$root_out_dir/qualification_app",
     "$root_out_dir/${updater_product_full_name}Util",
+    "$root_out_dir/LICENSE.$updater_product_full_name_dashed_lowercase",
   ]
   inputs += rebase_path(get_path_info(updater_signing_sources, "file"),
                         "",
@@ -623,6 +624,7 @@ artifact_zip("updater_zip") {
     ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
+    "//chrome/updater:updater_license",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/tools:${updater_product_full_name}Util",
