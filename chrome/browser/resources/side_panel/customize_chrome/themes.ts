@@ -146,9 +146,6 @@ export class ThemesElement extends ThemesElementBase {
     return !this.imageErrorDetectionEnabled_ || itemLoaded;
   }
 
-  // TODO(b:367702048) -
-  // Record 'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
-  // whenever a preview image fails to load.
   protected onPreviewImageLoad_(e: Event) {
     if (this.imageErrorDetectionEnabled_) {
       const index = Number((e.currentTarget as HTMLElement).dataset['index']);
