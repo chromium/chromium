@@ -11,6 +11,9 @@
 # implementation similar to what was introduced in https://crrev.com/c/4738688.
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/*
 
+# TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
+-BookmarkBarViewTest4.ContextMenus
+
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
