@@ -261,6 +261,8 @@ UserConsentView::UserConsentView(
                                         base::Unretained(this))),
       use_refreshed_design_(use_refreshed_design) {
   SetUseDefaultFillLayout(true);
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
 
   views::FlexLayoutView* content;
   views::FlexLayoutView* buttons_container;
@@ -317,6 +319,7 @@ UserConsentView::UserConsentView(
                       GetConfiguredLabelBuilder(use_refreshed_design_,
                                                 /*is_first_line=*/true)
                           .CopyAddressTo(&title_)
+                          .SetEnabledColorId(ui::kColorLabelForeground)
                           .SetProperty(views::kMarginsKey, kLabelMargin)
                           .SetProperty(
                               views::kFlexBehaviorKey,
@@ -332,6 +335,7 @@ UserConsentView::UserConsentView(
                                   ? kDescriptionRefreshedMessageId
                                   : kDescriptionMessageId))
                           .SetMultiLine(true)
+                          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
                           .SetProperty(views::kMarginsKey, kLabelMargin)
                           .SetProperty(
                               views::kFlexBehaviorKey,
@@ -444,19 +448,6 @@ void UserConsentView::OnFocus() {
   if (QuickAnswersState::Get()->spoken_feedback_enabled()) {
     no_thanks_button_->RequestFocus();
   }
-}
-
-void UserConsentView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  // TODO(b/340628664): Delete `UserConsentView::OnThemeChanged`. Let
-  // `views::Label`, etc handle those color changes.
-  SetBackground(views::CreateSolidBackground(
-      GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
-  title_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorLabelForeground));
-  description_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary));
 }
 
 views::FocusTraversable* UserConsentView::GetPaneFocusTraversable() {
