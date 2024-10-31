@@ -829,6 +829,18 @@ TEST(GURLTest, Replacements) {
              return url.ReplaceComponents(replacements);
            },
        .expected = "filesystem:http://www.google.com/foo/bar.html?foo#bar"},
+      // Regression test for https://crbug.com/375660989.
+      //
+      // "steam:" is explicitly registered as an opaque non-special scheme for
+      // compatibility reasons. See SchemeRegistry::opaque_non_special_schemes.
+      {.base = "steam:a",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("b");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "steam:b"},
   };
 
   for (const ReplaceCase& c : replace_cases) {
