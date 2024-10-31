@@ -1407,7 +1407,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   CHECK(video_frame->HasSharedImage());
 
   auto si_format = video_frame->shared_image()->format();
-  if (!si_format.PrefersExternalSampler() ||
+  if ((!si_format.PrefersExternalSampler() && si_format.is_multi_plane()) ||
       video_frame->metadata().read_lock_fences_enabled) {
     DCHECK(video_frame->metadata().texture_origin_is_top_left);
     if (!raster_context_provider)
@@ -1479,7 +1479,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if (!video_frame->metadata().texture_origin_is_top_left)
       flip_y = !flip_y;
 
-    DCHECK(si_format.PrefersExternalSampler());
+    DCHECK(si_format.is_single_plane() || si_format.PrefersExternalSampler());
     auto shared_image = GetVideoFrameSharedImage(video_frame.get());
     auto si_target = shared_image->GetTextureTarget();
     DCHECK(si_target == GL_TEXTURE_2D ||
@@ -1799,6 +1799,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     DCHECK(gpu_rasterization || raster_context_provider->GrContext());
     auto* ri = raster_context_provider->RasterInterface();
     DCHECK(ri);
+    auto video_frame_si = video_frame->shared_image();
     bool wraps_video_frame_texture = false;
     scoped_refptr<gpu::ClientSharedImage> client_shared_image;
 
@@ -1810,8 +1811,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     //   via checking `texture_target`, which will be set only if this is the
     //   case)
     bool can_wrap_texture =
-        video_frame->shared_image()->format().PrefersExternalSampler() &&
-        video_frame->shared_image()->GetTextureTarget() != 0;
+        (video_frame_si->format().PrefersExternalSampler() ||
+         video_frame_si->format().is_single_plane()) &&
+        video_frame_si->GetTextureTarget() != 0;
 
     if (allow_wrap_texture && can_wrap_texture) {
       cache_.emplace(video_frame->unique_id());
