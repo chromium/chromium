@@ -9,16 +9,19 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.jni_zero.CheckDiscard;
@@ -214,6 +217,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
+    private View mAnchorView;
 
     private SnackbarManager mSnackbarManager;
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
@@ -274,10 +278,10 @@ public class SearchActivity extends AsyncInitializationActivity
 
         // Build the search box.
         mSearchBox = contentView.findViewById(R.id.search_location_bar);
-        View anchorView = contentView.findViewById(R.id.toolbar);
+        mAnchorView = contentView.findViewById(R.id.toolbar);
 
         // Update the status bar's color based on the toolbar color.
-        Drawable anchorViewBackground = anchorView.getBackground();
+        Drawable anchorViewBackground = mAnchorView.getBackground();
         assert anchorViewBackground instanceof GradientDrawable
                 : "Unsupported background drawable.";
         if (anchorViewBackground instanceof GradientDrawable) {
@@ -292,7 +296,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator =
                 new LocationBarCoordinator(
                         mSearchBox,
-                        anchorView,
+                        mAnchorView,
                         mProfileSupplier,
                         mSearchBoxDataProvider,
                         null,
@@ -390,6 +394,11 @@ public class SearchActivity extends AsyncInitializationActivity
         recordUsage(mIntentOrigin, mSearchType);
 
         mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
+
+        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()
+                && mSearchBoxDataProvider.isIncognitoBranded()) {
+            setIncognitoColorScheme();
+        }
 
         switch (mIntentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
@@ -663,6 +672,21 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void setHubSearchBoxVisualElements() {
         mLocationBarCoordinator.getStatusCoordinator().setShowStatusView(false);
+    }
+
+    private void setIncognitoColorScheme() {
+        @ColorInt
+        int anchorViewBackgroundColor = getColor(R.color.default_bg_color_dark_elev_3_baseline);
+        GradientDrawable anchorViewBackground = (GradientDrawable) mAnchorView.getBackground();
+        anchorViewBackground.setColor(anchorViewBackgroundColor);
+        // Update the status bar's color based on the toolbar color.
+        StatusBarColorController.setStatusBarColor(getWindow(), anchorViewBackgroundColor);
+
+        GradientDrawable searchBoxBackground =
+                (GradientDrawable) ((LayerDrawable) mSearchBox.getBackground()).getDrawable(0);
+        searchBoxBackground.setTintList(
+                AppCompatResources.getColorStateList(
+                        this, R.color.toolbar_text_box_background_incognito));
     }
 
     @VisibleForTesting

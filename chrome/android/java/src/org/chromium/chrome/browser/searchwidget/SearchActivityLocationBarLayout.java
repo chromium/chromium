@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
@@ -41,6 +42,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
     private boolean mInteractionFromWidget;
+    private boolean mIsIncognito;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
@@ -57,7 +59,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 urlCoordinator,
                 statusCoordinator,
                 locationBarDataProvider);
-
+        mIsIncognito = locationBarDataProvider.isIncognitoBranded();
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
@@ -125,8 +127,17 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @Nullable String optionalText,
             @NonNull WindowAndroid windowAndroid) {
 
+        // TODO(crbug.com/372036449): Move setting the hint text from the layout to using the URL
+        // bar view binder and model properties.
         if (origin == IntentOrigin.CUSTOM_TAB) {
             mUrlBar.setHint(R.string.omnibox_on_cct_empty_hint);
+        } else if (origin == IntentOrigin.HUB) {
+            @StringRes
+            int hintTextRes =
+                    mIsIncognito
+                            ? R.string.hub_search_empty_hint_incognito
+                            : R.string.hub_search_empty_hint;
+            mUrlBar.setHint(hintTextRes);
         } else {
             mUrlBar.setHint(R.string.omnibox_empty_hint);
         }
