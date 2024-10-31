@@ -1388,13 +1388,12 @@ IN_PROC_BROWSER_TEST_P(
   // Only supervised users should call the backend
   if (GetSignInMode() ==
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-    // TODO(b/358283493): Explain why throttles check the URL twice.
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-                ClassifyUrl(testing::_))
-        .Times(::testing::AtLeast(1));
+                ClassifyUrl(::testing::_))
+        .Times(1);
   } else {
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-                ClassifyUrl(testing::_))
+                ClassifyUrl(::testing::_))
         .Times(0);
   }
 
@@ -1417,13 +1416,12 @@ IN_PROC_BROWSER_TEST_P(
   // Only supervised users should call the backend
   if (GetSignInMode() ==
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-    // TODO(b/358283493): Explain why throttles check the URL twice.
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-                ClassifyUrl(testing::_))
-        .Times(::testing::AtLeast(1));
+                ClassifyUrl(::testing::_))
+        .Times(1);
   } else {
     EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
-                ClassifyUrl(testing::_))
+                ClassifyUrl(::testing::_))
         .Times(0);
   }
 
