@@ -589,21 +589,15 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
     content::PosixFileDescriptorInfo* mappings) {
   base::MemoryMappedFile::Region region;
   int fd = ui::GetMainAndroidPackFd(&region);
-  if (base::FeatureList::IsEnabled(features::kWebViewCheckPakFileDescriptors)) {
-    CHECK_GE(fd, 0);
-  }
+  CHECK_GE(fd, 0);
   mappings->ShareWithRegion(kAndroidWebViewMainPakDescriptor, fd, region);
 
   fd = ui::GetCommonResourcesPackFd(&region);
-  if (base::FeatureList::IsEnabled(features::kWebViewCheckPakFileDescriptors)) {
-    CHECK_GE(fd, 0);
-  }
+  CHECK_GE(fd, 0);
   mappings->ShareWithRegion(kAndroidWebView100PercentPakDescriptor, fd, region);
 
   fd = ui::GetLocalePackFd(&region);
-  if (base::FeatureList::IsEnabled(features::kWebViewCheckPakFileDescriptors)) {
-    CHECK_GE(fd, 0);
-  }
+  CHECK_GE(fd, 0);
   mappings->ShareWithRegion(kAndroidWebViewLocalePakDescriptor, fd, region);
 
   int crash_signal_fd =

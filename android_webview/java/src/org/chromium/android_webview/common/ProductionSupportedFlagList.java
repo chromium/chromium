@@ -728,9 +728,6 @@ public final class ProductionSupportedFlagList {
                 "PartitionAllocUseSmallSingleSlotSpans",
                 "Uses a more nuanced heuristic to classify small single-slot spans."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_CHECK_PAK_FILE_DESCRIPTORS,
-                "Crash on failing to load pak file fds."),
-        Flag.baseFeature(
                 BlinkFeatures.LOADING_PHASE_BUFFER_TIME_AFTER_FIRST_MEANINGFUL_PAINT,
                 "Enables extending the loading phase by some buffer time after "
                         + "First Meaningful Paint is signaled."),

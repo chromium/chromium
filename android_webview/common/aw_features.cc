@@ -24,11 +24,6 @@ BASE_FEATURE(kWebViewBackForwardCache,
              "WebViewBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for adding CHECKs to loading pak files.
-BASE_FEATURE(kWebViewCheckPakFileDescriptors,
-             "WebViewCheckPakFileDescriptors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable loading include statements when checking digital asset links
 BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
