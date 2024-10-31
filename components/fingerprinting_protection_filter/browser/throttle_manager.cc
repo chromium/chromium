@@ -290,7 +290,7 @@ void ThrottleManager::DidBecomePrimaryPage() {
   // notification if a page transitioned from primary to non-primary and back
   // (BFCache).
   if (current_committed_load_has_notified_disallowed_load_) {
-    web_contents_helper_->NotifyOnBlockedResources();
+    web_contents_helper_->NotifyOnBlockedSubresource();
   }
 }
 
@@ -410,7 +410,7 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
   // check |current_committed_load_has_notified_disallowed_load_| and try
   // again.
   if (page_->IsPrimary()) {
-    web_contents_helper_->NotifyOnBlockedResources();
+    web_contents_helper_->NotifyOnBlockedSubresource();
 
 #if defined(NDEBUG)
     if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {

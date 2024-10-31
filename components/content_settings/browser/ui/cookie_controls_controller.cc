@@ -440,7 +440,7 @@ bool CookieControlsController::GetIsSubresourceBlocked() const {
       FingerprintingProtectionWebContentsHelper::FromWebContents(
           GetWebContents());
   return fpf_web_contents_helper != nullptr &&
-         fpf_web_contents_helper->is_subresource_blocked();
+         fpf_web_contents_helper->subresource_blocked_in_current_primary_page();
 }
 
 void CookieControlsController::UpdateUserBypass() {

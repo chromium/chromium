@@ -127,12 +127,14 @@ class FingerprintingProtectionWebContentsHelper
       content::NavigationHandle* navigation_handle,
       subresource_filter::LoadPolicy load_policy);
 
-  void NotifyOnBlockedResources();
+  void NotifyOnBlockedSubresource();
 
   void AddObserver(FingerprintingProtectionObserver* observer);
   void RemoveObserver(FingerprintingProtectionObserver* observer);
 
-  bool is_subresource_blocked() const { return is_subresource_blocked_; }
+  bool subresource_blocked_in_current_primary_page() const {
+    return subresource_blocked_in_current_primary_page_;
+  }
   PrefService* pref_service() const { return pref_service_; }
   privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
     return tracking_protection_settings_;
@@ -180,7 +182,9 @@ class FingerprintingProtectionWebContentsHelper
   void CreateThrottleManagerForNavigation(
       content::NavigationHandle* navigation_handle);
 
-  bool is_subresource_blocked_ = false;
+  // True iff a subresource has been blocked since the last committed
+  // navigation to a new page. Set via a callback by ThrottleManager.
+  bool subresource_blocked_in_current_primary_page_ = false;
 
   base::ObserverList<FingerprintingProtectionObserver>::Unchecked
       observer_list_;

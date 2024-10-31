@@ -207,10 +207,10 @@ class MockFingerprintingProtectionObserver
   MOCK_METHOD(void, OnSubresourceBlocked, (), (override));
 };
 
-class FingerprintingProtectionNotifyOnBlockedResourcesTest
+class FingerprintingProtectionNotifyOnBlockedSubresourceTest
     : public content::RenderViewHostTestHarness {
  public:
-  FingerprintingProtectionNotifyOnBlockedResourcesTest() = default;
+  FingerprintingProtectionNotifyOnBlockedSubresourceTest() = default;
 
   void SetUp() override { content::RenderViewHostTestHarness::SetUp(); }
 
@@ -224,8 +224,8 @@ class FingerprintingProtectionNotifyOnBlockedResourcesTest
   TestSupport test_support_;
 };
 
-TEST_F(FingerprintingProtectionNotifyOnBlockedResourcesTest,
-       OnSubresourceBlockedCalled_NotifyOnBlockedResources) {
+TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
+       OnSubresourceBlockedCalled_NotifyOnBlockedSubresource) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
@@ -242,11 +242,11 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedResourcesTest,
   test_web_contents_helper->AddObserver(&observer);
 
   EXPECT_CALL(observer, OnSubresourceBlocked());
-  test_web_contents_helper->NotifyOnBlockedResources();
+  test_web_contents_helper->NotifyOnBlockedSubresource();
 }
 
-TEST_F(FingerprintingProtectionNotifyOnBlockedResourcesTest,
-       OnSubresourceBlockedNotCalled_WithoutNotifyOnBlockedResources) {
+TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
+       OnSubresourceBlockedNotCalled_WithoutNotifyOnBlockedSubresource) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
@@ -262,9 +262,73 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedResourcesTest,
 
   test_web_contents_helper->AddObserver(&observer);
 
-  // Expect OnSubresourceBlocked is not called without NotifyOnBlockedResources
-  // called.
+  // Expect OnSubresourceBlocked is not called without
+  // NotifyOnBlockedSubresource called.
   EXPECT_CALL(observer, OnSubresourceBlocked()).Times(0);
+}
+
+TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
+       SubresourceBlockedDirtyBit_SetOnBlockAndResetOnNavigation) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableFingerprintingProtectionFilter);
+  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
+      RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.tracking_protection_settings(),
+      /*dealer=*/nullptr,
+      /*is_incognito=*/false);
+
+  auto* test_web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          RenderViewHostTestHarness::web_contents());
+
+  // Initially, dirty bit is false.
+  EXPECT_FALSE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+  // Simulate blocked subresource.
+  test_web_contents_helper->NotifyOnBlockedSubresource();
+  // Dirty bit should be true.
+  EXPECT_TRUE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+  // Navigate somewhere else.
+  WebContents* web_contents = RenderViewHostTestHarness::web_contents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL("http://google.test"));
+  // Now dirty bit should be false again.
+  EXPECT_FALSE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+}
+
+TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
+       SubresourceBlockedDirtyBit_NotResetOnAbortedNavigation) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableFingerprintingProtectionFilter);
+  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
+      RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.tracking_protection_settings(),
+      /*dealer=*/nullptr,
+      /*is_incognito=*/false);
+
+  auto* test_web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          RenderViewHostTestHarness::web_contents());
+
+  // Initially, dirty bit is false.
+  EXPECT_FALSE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+  // Simulate blocked subresource.
+  test_web_contents_helper->NotifyOnBlockedSubresource();
+  // Dirty bit should be true.
+  EXPECT_TRUE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+  // Simulate aborted navigation.
+  WebContents* web_contents = RenderViewHostTestHarness::web_contents();
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://google.test"), web_contents);
+  simulator->AbortCommit();
+  // Dirty bit should not be reset - should still be true.
+  EXPECT_TRUE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
 }
 
 static constexpr std::string_view kGoogleUrl = "http://google.test/";

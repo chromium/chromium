@@ -291,6 +291,13 @@ void FingerprintingProtectionWebContentsHelper::ReadyToCommitNavigation(
 
 void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsSameDocument() &&
+      navigation_handle->HasCommitted()) {
+    // Reset subresource-blocked "dirty bit" on primary page change.
+    subresource_blocked_in_current_primary_page_ = false;
+  }
+
   if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
     GetRefreshMetricsManager().IncrementRefreshCount(
         navigation_handle->GetURL(), *web_contents());
@@ -393,8 +400,8 @@ void FingerprintingProtectionWebContentsHelper::DidFinishLoad(
   }
 }
 
-void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedResources() {
-  is_subresource_blocked_ = true;
+void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedSubresource() {
+  subresource_blocked_in_current_primary_page_ = true;
   for (auto& observer : observer_list_) {
     observer.OnSubresourceBlocked();
   }

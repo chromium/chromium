@@ -1532,7 +1532,7 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
   NavigateAndCommit(GURL("https://example.com"));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
-          ->NotifyOnBlockedResources();
+          ->NotifyOnBlockedSubresource();
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
@@ -1562,7 +1562,7 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
   NavigateAndCommit(GURL("https://example.com"));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
-          ->NotifyOnBlockedResources();
+          ->NotifyOnBlockedSubresource();
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
