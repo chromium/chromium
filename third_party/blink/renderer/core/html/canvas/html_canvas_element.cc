@@ -1451,6 +1451,11 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
+CanvasHibernationHandler* HTMLCanvasElement::GetHibernationHandler() const {
+  return canvas2d_bridge_ ? &canvas2d_bridge_->GetHibernationHandler()
+                          : nullptr;
+}
+
 Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   DCHECK(IsRenderingContext2D());
 

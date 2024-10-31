@@ -162,6 +162,9 @@ class CORE_EXPORT HTMLCanvasElement final
   Canvas2DLayerBridge* GetCanvas2DLayerBridge() {
     return canvas2d_bridge_.get();
   }
+
+  CanvasHibernationHandler* GetHibernationHandler() const;
+
   Canvas2DLayerBridge* GetOrCreateCanvas2DLayerBridge();
 
   void DiscardResourceProvider() override;
