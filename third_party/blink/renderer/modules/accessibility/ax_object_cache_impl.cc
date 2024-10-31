@@ -2334,8 +2334,10 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
 
   ancestor_to_rebuild->UpdateChildrenIfNecessary();
   bad_aria_hidden_ancestor = Get(bad_aria_hidden_ancestor_node);
-  CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());
-  CHECK(!bad_aria_hidden_ancestor->IsAriaHidden());
+  if (bad_aria_hidden_ancestor) {
+    CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());
+    CHECK(!bad_aria_hidden_ancestor->IsAriaHidden());
+  }
   if (AXObject* new_focused_obj = Get(&focused_element)) {
     CHECK(!new_focused_obj->IsAriaHidden());
   }
