@@ -224,11 +224,12 @@ export class ManagedUserProfileNoticeAppElement extends
         return this.continueAs_;
       case State.DISCLOSURE:
       case State.PROCESSING:
+      case State.SUCCESS:
         return this.i18n('continueLabel');
       case State.USER_DATA_HANDLING:
-      case State.SUCCESS:
-      case State.ERROR:
         return this.i18n('confirmLabel');
+      case State.ERROR:
+        return this.i18n('closeLabel');
       case State.TIMEOUT:
         return this.i18n('retryLabel');
     }
