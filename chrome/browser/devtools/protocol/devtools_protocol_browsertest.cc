@@ -36,6 +36,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -153,6 +154,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        CreateBrowserContextAcceptsProxyServer) {
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"this-page-does-not-exist.com"}, browser()->profile()->GetPrefs());
+
   AttachToBrowserTarget();
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
