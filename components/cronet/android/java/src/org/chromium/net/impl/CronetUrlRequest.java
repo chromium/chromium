@@ -674,21 +674,18 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
-     * Called whenever data is received. The ByteBuffer remains
-     * valid only until listener callback. Or if the callback
-     * pauses the request, it remains valid until the request is resumed.
+     * Called whenever data is received. The ByteBuffer remains valid only until listener callback.
+     * Or if the callback pauses the request, it remains valid until the request is resumed.
      * Cancelling the request also invalidates the buffer.
      *
-     * @param byteBuffer ByteBuffer containing received data, starting at
-     *        initialPosition. Guaranteed to have at least one read byte. Its
-     *        limit has not yet been updated to reflect the bytes read.
+     * @param byteBuffer ByteBuffer containing received data, starting at initialPosition.
+     *     Guaranteed to have at least one read byte. Its limit has not yet been updated to reflect
+     *     the bytes read.
      * @param bytesRead Number of bytes read.
-     * @param initialPosition Original position of byteBuffer when passed to
-     *        read(). Used as a minimal check that the buffer hasn't been
-     *        modified while reading from the network.
-     * @param initialLimit Original limit of byteBuffer when passed to
-     *        read(). Used as a minimal check that the buffer hasn't been
-     *        modified while reading from the network.
+     * @param initialPosition Original position of byteBuffer when passed to read(). Used as a
+     *     minimal check that the buffer hasn't been modified while reading from the network.
+     * @param initialLimit Original limit of byteBuffer when passed to read(). Used as a minimal
+     *     check that the buffer hasn't been modified while reading from the network.
      * @param receivedByteCount number of bytes received.
      */
     @SuppressWarnings("unused")

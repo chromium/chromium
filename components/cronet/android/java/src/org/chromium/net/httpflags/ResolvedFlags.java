@@ -175,20 +175,20 @@ public final class ResolvedFlags {
     /**
      * Computes effective flag values based on the contents of a {@link Flags} proto.
      *
-     * <p>This method will resolve {@link FlagValue.ConstrainedValue} filters according to the
-     * other arguments, producing the final values that should apply to the caller.
+     * <p>This method will resolve {@link FlagValue.ConstrainedValue} filters according to the other
+     * arguments, producing the final values that should apply to the caller.
      *
      * <p>Note that a {@link FlagValue} that has no {@link FlagValue.ConstrainedValue} entry, or
      * where the matching entry has no value set, will not be mentioned at all in the resulting
      * {@link #flags}.
      *
      * @param flags The {@link Flags} proto to extract the flag values from. This would normally be
-     *              the return value of {@link HttpFlagsLoader#load}.
+     *     the return value of {@link HttpFlagsLoader#load}.
      * @param appId The App ID for resolving the {@link FlagValue.ConstrainedValue#getAppId} field.
-     *              This would normally be the return value of
-     *              {@link android.content.Context#getPackageName}.
+     *     This would normally be the return value of {@link
+     *     android.content.Context#getPackageName}.
      * @param cronetVersion The version to use for filtering against the {@link
-     *                      FlagValue.ConstrainedValue#getMinVersion} field.
+     *     FlagValue.ConstrainedValue#getMinVersion} field.
      */
     public static ResolvedFlags resolve(Flags flags, String appId, String cronetVersion) {
         int[] parsedCronetVersion = parseVersionString(cronetVersion);
