@@ -264,6 +264,29 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    public void testLoadStopped_NTPInTabGroup() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        mTab.setTabGroupId(new Token(1L, 2L));
+
+        while (observers.hasNext()) {
+            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ true);
+        }
+        assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+    }
+
+    @Test
     public void testHide() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         assertEquals(
