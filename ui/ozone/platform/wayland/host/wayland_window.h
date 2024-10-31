@@ -612,6 +612,9 @@ class WaylandWindow : public PlatformWindow,
   raw_ptr<WaylandWindow> parent_window_ = nullptr;
   raw_ptr<WaylandPopup> child_popup_ = nullptr;
 
+  // AcceleratedWidget for this window. This will be unique even over time.
+  gfx::AcceleratedWidget accelerated_widget_;
+
   // `active_bubble_` represents the WaylandBubble that should take activation
   // when this WaylandWindow has activation from wayland server. It can be set
   // on a WaylandWindow regardless of whether or not this WaylandWindow has
@@ -745,9 +748,6 @@ class WaylandWindow : public PlatformWindow,
   bool latch_immediately_for_testing_ = true;
   int64_t latest_applied_viz_seq_for_testing_ = -1;
   int64_t latest_latched_viz_seq_for_testing_ = -1;
-
-  // AcceleratedWidget for this window. This will be unique even over time.
-  gfx::AcceleratedWidget accelerated_widget_;
 
   WmDragHandler::DragFinishedCallback drag_finished_callback_;
 

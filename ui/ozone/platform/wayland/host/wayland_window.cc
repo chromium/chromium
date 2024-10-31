@@ -94,11 +94,11 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
                              WaylandConnection* connection)
     : delegate_(delegate),
       connection_(connection),
+      accelerated_widget_(
+          connection->window_manager()->AllocateAcceleratedWidget()),
       frame_manager_(std::make_unique<WaylandFrameManager>(this, connection)),
       wayland_overlay_delegation_enabled_(
           connection->viewporter() && connection->ShouldUseOverlayDelegation()),
-      accelerated_widget_(
-          connection->window_manager()->AllocateAcceleratedWidget()),
       ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   // Set a class property key, which allows |this| to be used for drag action.
   SetWmDragHandler(this, this);
@@ -146,6 +146,13 @@ void WaylandWindow::OnWindowLostCapture() {
 }
 
 void WaylandWindow::UpdateWindowScale(bool update_bounds) {
+  // Skip updating the scale (and thus also bounds) during shutdown as
+  // `delegate_` might have already destroyed some of its state so that e.g. a
+  // `GetMinimumSizeForWindow()` call might lead to a crash.
+  if (shutting_down_) {
+    return;
+  }
+
   // `window_scale` is provided authoritatively by the Wayland compositor,
   // either via fractional-scale-v1 extension (ie: per-surface-scaling), or
   // inferred from the currently entereed wl_outputs (deprecated).
@@ -492,6 +499,7 @@ bool WaylandWindow::IsVisible() const {
 }
 
 void WaylandWindow::PrepareForShutdown() {
+  shutting_down_ = true;
   if (drag_finished_callback_) {
     OnDragSessionClose(DragOperation::kNone);
   }
