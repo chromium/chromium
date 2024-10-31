@@ -10,13 +10,26 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
 
-class PrivacySandboxDialogTest : public WebUIMochaBrowserTest {
+namespace {
+
+enum class WindowSize { kSmall, kBig };
+
+}  // namespace
+
+class PrivacySandboxDialogTest
+    : public WebUIMochaBrowserTest,
+      public testing::WithParamInterface<WindowSize> {
  protected:
   PrivacySandboxDialogTest() {
     set_test_loader_host(chrome::kChromeUIPrivacySandboxDialogHost);
   }
 
   void RunTestSuite(const std::string& testCase) {
+    if (GetParam() == WindowSize::kSmall) {
+      ForceWindowSizeSmall();
+    } else {
+      ForceWindowSizeBig();
+    }
     WebUIMochaBrowserTest::RunTest(
         "privacy_sandbox/privacy_sandbox_dialog_test.js",
         base::StringPrintf("runMochaSuite('%s');", testCase.c_str()));
@@ -25,87 +38,47 @@ class PrivacySandboxDialogTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class PrivacySandboxDialogSmallWindowTest : public PrivacySandboxDialogTest {
- protected:
   void ForceWindowSizeSmall() {
     BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
         {0, 0, 620, 600});
   }
 
-  void RunTestSuite(const std::string& testCase) {
-    ForceWindowSizeSmall();
-    PrivacySandboxDialogTest::RunTestSuite(testCase);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, Consent) {
-  RunTestSuite("Consent");
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, Notice) {
-  RunTestSuite("Notice");
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, Combined) {
-  RunTestSuite("Combined");
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, NoticeEEA) {
-  RunTestSuite("NoticeEEA");
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, NoticeROW) {
-  RunTestSuite("NoticeROW");
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, NoticeRestricted) {
-  RunTestSuite("NoticeRestricted");
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogSmallWindowTest, Mixin) {
-  RunTestSuite("Mixin");
-}
-
-class PrivacySandboxDialogBigWindowTest : public PrivacySandboxDialogTest {
- protected:
   void ForceWindowSizeBig() {
     BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
         {0, 0, 620, 900});
   }
 
-  void RunTestSuite(const std::string& testCase) {
-    ForceWindowSizeBig();
-    PrivacySandboxDialogTest::RunTestSuite(testCase);
-  }
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, Consent) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacySandboxDialogTest,
+                         testing::Values(WindowSize::kSmall, WindowSize::kBig));
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Consent) {
   RunTestSuite("Consent");
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, Notice) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Notice) {
   RunTestSuite("Notice");
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, Combined) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Combined) {
   RunTestSuite("Combined");
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, NoticeEEA) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEA) {
   RunTestSuite("NoticeEEA");
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, NoticeROW) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROW) {
   RunTestSuite("NoticeROW");
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, NoticeRestricted) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeRestricted) {
   RunTestSuite("NoticeRestricted");
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, Mixin) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Mixin) {
   RunTestSuite("Mixin");
 }
