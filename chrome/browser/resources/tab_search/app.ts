@@ -28,7 +28,6 @@ export class TabSearchAppElement extends CrLitElement {
     return {
       selectedTabSection_: {type: Object},
       tabNames_: {type: Array},
-      tabIcons_: {type: Array},
       tabOrganizationEnabled_: {type: Boolean},
       declutterEnabled_: {type: Boolean},
       availableHeight_: {type: Number},
@@ -43,8 +42,6 @@ export class TabSearchAppElement extends CrLitElement {
     loadTimeData.getString('tabSearchTabName'),
     loadTimeData.getString('tabOrganizationTabName'),
   ];
-  protected tabIcons_: string[] =
-      ['images/tab_search.svg', 'images/auto_tab_groups.svg'];
   protected tabOrganizationEnabled_: boolean =
       loadTimeData.getBoolean('tabOrganizationEnabled');
   protected declutterEnabled_: boolean =

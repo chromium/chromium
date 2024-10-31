@@ -12,7 +12,6 @@ export function getHtml(this: TabSearchAppElement) {
 ${(this.tabOrganizationEnabled_ || this.declutterEnabled_) ? html`
   <cr-tabs
       .tabNames="${this.tabNames_}"
-      .tabIcons="${this.tabIcons_}"
       .selected="${this.sectionToIndex_(this.selectedTabSection_)}"
       @selected-changed="${this.onSelectedTabIndexChanged_}">
   </cr-tabs>
