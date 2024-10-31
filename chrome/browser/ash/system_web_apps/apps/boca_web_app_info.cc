@@ -8,14 +8,13 @@
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
-#include "chrome/browser/ash/boca/boca_manager.h"
-#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -128,9 +127,7 @@ Browser* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
   if (IsConsumerProfile(profile)) {
     // Notify downstream Boca components so they can prepare the app instance
     // for OnTask and restore contents from the previous session if needed.
-    ash::BocaManager* const boca_manager =
-        ash::BocaManagerFactory::GetInstance()->GetForProfile(profile);
-    boca_manager->GetBocaSessionManager()->NotifyAppReload();
+    ash::boca::BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
   }
   return browser;
 }
