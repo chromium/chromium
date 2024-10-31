@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_languages_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
@@ -453,6 +454,10 @@ void LensOverlayController::ShowUI(
   side_panel_coordinator_ =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   CHECK(side_panel_coordinator_);
+
+  // Create the languages controller.
+  languages_controller_ =
+      std::make_unique<lens::LensOverlayLanguagesController>(profile);
 
   // Setup observer to be notified of side panel opens and closes.
   side_panel_shown_subscription_ =
@@ -1212,6 +1217,12 @@ void LensOverlayController::MaybeCloseTranslateFeaturePromo(
   }
 }
 
+void LensOverlayController::FetchSupportedLanguages(
+    FetchSupportedLanguagesCallback callback) {
+  CHECK(languages_controller_);
+  languages_controller_->SendGetSupportedLanguagesRequest(std::move(callback));
+}
+
 void LensOverlayController::TryShowTranslateFeaturePromo(
     ui::TrackedElement* element) {
   if (!element) {
@@ -1828,6 +1839,7 @@ void LensOverlayController::CloseUIPart2(
   receiver_.reset();
   page_.reset();
   initialization_data_.reset();
+  languages_controller_.reset();
   lens_overlay_query_controller_.reset();
   scoped_tab_modal_ui_.reset();
   pending_side_panel_url_.reset();

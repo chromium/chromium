@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_languages_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -887,6 +888,8 @@ class LensOverlayController : public LensSearchboxClient,
   void SaveAsImage(lens::mojom::CenterRotatedBoxPtr region) override;
   void MaybeShowTranslateFeaturePromo() override;
   void MaybeCloseTranslateFeaturePromo(bool feature_engaged) override;
+  void FetchSupportedLanguages(
+      FetchSupportedLanguagesCallback callback) override;
 
   // Tries to show the translate feature promo after the translate button
   // element is shown.
@@ -1172,6 +1175,11 @@ class LensOverlayController : public LensSearchboxClient,
   //      1) contextual_searchbox_handler_ exists and
   //      2) contextual_searchbox_handler_->IsRemoteBound() is true.
   std::unique_ptr<RealboxHandler> overlay_searchbox_handler_;
+
+  // The controller for sending requests to get the list of supported languages.
+  // Requests are only made if the WebUI has not already cached the languages
+  // and none of the update cache conditions are met.
+  std::unique_ptr<lens::LensOverlayLanguagesController> languages_controller_;
 
   // General side panel coordinator responsible for all side panel interactions.
   // Separate from the results_side_panel_coordinator because this controls

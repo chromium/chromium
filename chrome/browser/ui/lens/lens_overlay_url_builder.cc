@@ -95,6 +95,16 @@ inline constexpr char kUrlRedirectPath[] = "/url";
 // Query parameter for the URL to redirect to.
 inline constexpr char kUrlQueryParameterKey[] = "url";
 
+// Query parameters to send to translate API for getting supported translate
+// languages.
+inline constexpr char kCountryQueryParameter[] = "country";
+inline constexpr char kDisplayLanguageQueryParameter[] = "display_language";
+inline constexpr char kClientIdQueryParameter[] = "client";
+
+// Query parameter value for client ID sent to translate API for getting
+// supported translate languages.
+inline constexpr char kClientIdQueryParameterValue[] = "cr";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -369,6 +379,17 @@ GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
         processed_url, query_param, std::nullopt);
   }
   return processed_url;
+}
+
+GURL BuildTranslateLanguagesURL(std::string country, std::string language) {
+  GURL url = GURL(lens::features::GetLensOverlayTranslateEndpointURL());
+  url =
+      net::AppendOrReplaceQueryParameter(url, kCountryQueryParameter, country);
+  url = net::AppendOrReplaceQueryParameter(url, kDisplayLanguageQueryParameter,
+                                           language);
+  url = net::AppendOrReplaceQueryParameter(url, kClientIdQueryParameter,
+                                           kClientIdQueryParameterValue);
+  return url;
 }
 
 bool IsLensTextSelectionType(

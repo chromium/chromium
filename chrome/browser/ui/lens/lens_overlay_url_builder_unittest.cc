@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "components/lens/lens_features.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_intent_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_query.pb.h"
@@ -29,6 +30,11 @@ constexpr char kResultsRedirectBaseUrl[] = "https://www.google.com/url";
 constexpr char kLanguage[] = "en-US";
 constexpr char kPageUrl[] = "https://www.google.com";
 constexpr char kPageTitle[] = "Page Title";
+// Query parameters to send to translate API for getting supported translate
+// languages.
+inline constexpr char kCountryQueryParameter[] = "country";
+inline constexpr char kDisplayLanguageQueryParameter[] = "display_language";
+inline constexpr char kClientIdQueryParameter[] = "client";
 
 class LensOverlayUrlBuilderTest : public testing::Test {
  public:
@@ -45,7 +51,8 @@ class LensOverlayUrlBuilderTest : public testing::Test {
           {
               {"use-video-context-for-text-only-requests", "true"},
               {"use-video-context-for-multimodal-requests", "true"},
-          }}},
+          }},
+         {lens::features::kLensOverlayTranslateLanguages, {}}},
         /*disabled_features=*/{});
   }
 
@@ -700,6 +707,56 @@ TEST_F(LensOverlayUrlBuilderTest, IsLensTextSelectionType) {
   EXPECT_FALSE(IsLensTextSelectionType(lens::REGION_SEARCH));
   EXPECT_FALSE(IsLensTextSelectionType(lens::TAP_ON_OBJECT));
   EXPECT_FALSE(IsLensTextSelectionType(lens::MULTIMODAL_SEARCH));
+}
+
+TEST_F(LensOverlayUrlBuilderTest, BuildTranslateLanguagesURL) {
+  GURL endpoint_url = GURL(features::GetLensOverlayTranslateEndpointURL());
+
+  GURL translate_url_english_us = BuildTranslateLanguagesURL("US", "en");
+  GURL translate_url_english_uk = BuildTranslateLanguagesURL("UK", "en");
+  GURL translate_url_french_nocountry = BuildTranslateLanguagesURL("", "fr");
+
+  EXPECT_EQ(translate_url_english_us.GetWithEmptyPath(),
+            endpoint_url.GetWithEmptyPath());
+  EXPECT_EQ(translate_url_english_uk.GetWithEmptyPath(),
+            endpoint_url.GetWithEmptyPath());
+  EXPECT_EQ(translate_url_french_nocountry.GetWithEmptyPath(),
+            endpoint_url.GetWithEmptyPath());
+
+  std::string country_param_value;
+  net::GetValueForKeyInQuery(translate_url_english_us, kCountryQueryParameter,
+                             &country_param_value);
+  EXPECT_EQ(country_param_value, "US");
+  net::GetValueForKeyInQuery(translate_url_english_uk, kCountryQueryParameter,
+                             &country_param_value);
+  EXPECT_EQ(country_param_value, "UK");
+  net::GetValueForKeyInQuery(translate_url_french_nocountry,
+                             kCountryQueryParameter, &country_param_value);
+  EXPECT_EQ(country_param_value, "");
+
+  std::string lang_param_value;
+  net::GetValueForKeyInQuery(translate_url_english_us,
+                             kDisplayLanguageQueryParameter, &lang_param_value);
+  EXPECT_EQ(lang_param_value, "en");
+  net::GetValueForKeyInQuery(translate_url_french_nocountry,
+                             kDisplayLanguageQueryParameter, &lang_param_value);
+  EXPECT_EQ(lang_param_value, "fr");
+  net::GetValueForKeyInQuery(translate_url_english_uk,
+                             kDisplayLanguageQueryParameter, &lang_param_value);
+  EXPECT_EQ(lang_param_value, "en");
+
+  std::string client_param_value;
+  net::GetValueForKeyInQuery(translate_url_english_us, kClientIdQueryParameter,
+                             &client_param_value);
+  EXPECT_EQ(client_param_value, "cr");
+  client_param_value = "";
+  net::GetValueForKeyInQuery(translate_url_french_nocountry,
+                             kClientIdQueryParameter, &client_param_value);
+  EXPECT_EQ(client_param_value, "cr");
+  client_param_value = "";
+  net::GetValueForKeyInQuery(translate_url_english_uk, kClientIdQueryParameter,
+                             &client_param_value);
+  EXPECT_EQ(client_param_value, "cr");
 }
 
 }  // namespace lens

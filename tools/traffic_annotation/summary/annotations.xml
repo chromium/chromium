@@ -502,4 +502,5 @@ Refer to README.md for content description and update process.
  <item id="ash_babelorca_transcript_sender_impl" added_in_milestone="132" content_hash_code="03bd3254" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/transcript_sender_impl.cc" />
  <item id="ash_babelorca_babel_orca_consumer" added_in_milestone="132" content_hash_code="032ed9d7" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/babel_orca_consumer.cc" />
  <item id="chromeos_scanner" added_in_milestone="132" content_hash_code="05157491" os_list="chromeos" file_path="chrome/browser/ash/scanner/scanner_keyed_service.cc" />
+ <item id="lens_overlay_languages" added_in_milestone="132" content_hash_code="06a41fb0" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_languages_controller.cc" />
 </annotations>

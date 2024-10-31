@@ -6,6 +6,7 @@ import type {BrowserProxy} from 'chrome-untrusted://lens-overlay/browser_proxy.j
 import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import type {LensPageHandlerInterface, LensPageRemote, SemanticEvent, UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {LensPageCallbackRouter} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {Language} from 'chrome-untrusted://lens-overlay/translate.mojom-webui.js';
 import type {ClickModifiers} from 'chrome-untrusted://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
@@ -40,6 +41,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'recordLensOverlaySemanticEvent',
       'maybeShowTranslateFeaturePromo',
       'maybeCloseTranslateFeaturePromo',
+      'fetchSupportedLanguages',
     ]);
   }
 
@@ -137,6 +139,12 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   maybeCloseTranslateFeaturePromo() {
     this.methodCalled('maybeCloseTranslateFeaturePromo');
+  }
+
+  fetchSupportedLanguages():
+      Promise<{sourceLanguages: Language[], targetLanguages: Language[]}> {
+    this.methodCalled('fetchSupportedLanguages');
+    return Promise.resolve({sourceLanguages: [], targetLanguages: []});
   }
 }
 

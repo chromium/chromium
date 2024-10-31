@@ -33,6 +33,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/text.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/translate.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/overlay_object.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/polygon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/geometry.mojom-webui.ts",

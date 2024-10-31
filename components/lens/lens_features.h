@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kLensOverlay);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 
+// Enables the Lens overlay translate button.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayTranslateLanguages);
+
 // Enables the Lens overlay image context menu actions.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayImageContextMenuActions);
@@ -604,6 +608,10 @@ extern bool IsLensOverlayContextualSearchboxEnabled();
 // Time delay for the results trigger of the Lens Overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensOverlaySurveyResultsTime();
+
+// Time delay for the results trigger of the Lens Overlay HaTS survey.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayTranslateEndpointURL();
 
 }  // namespace lens::features
 

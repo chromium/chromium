@@ -81,6 +81,10 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 // results.
 GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 
+// Builds the appropriate translate service URL for fetching supported
+// languages.
+GURL BuildTranslateLanguagesURL(std::string country, std::string language);
+
 // Returns whether |lens_selection_type| should be considered as a text-only
 // selection type.
 bool IsLensTextSelectionType(

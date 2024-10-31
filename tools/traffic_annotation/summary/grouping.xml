@@ -360,6 +360,7 @@ after discussions on the right group.
       <annotation id="ash_babelorca_transcript_sender_impl"/>
       <annotation id="ash_babelorca_babel_orca_consumer"/>
       <annotation id="chromeos_scanner"/>
+      <annotation id="lens_overlay_languages"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

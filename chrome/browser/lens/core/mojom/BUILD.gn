@@ -12,6 +12,7 @@ mojom("mojo_bindings") {
     "polygon.mojom",
     "search_bubble.mojom",
     "text.mojom",
+    "translate.mojom",
   ]
   webui_module_path = "/"
   public_deps = [

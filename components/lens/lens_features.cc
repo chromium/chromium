@@ -4,6 +4,8 @@
 
 #include "components/lens/lens_features.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
@@ -54,6 +56,10 @@ BASE_FEATURE(kLensOverlay,
 
 BASE_FEATURE(kLensOverlayTranslateButton,
              "LensOverlayTranslateButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayTranslateLanguages,
+             "LensOverlayTranslateLanguages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayImageContextMenuActions,
@@ -300,6 +306,10 @@ constexpr base::FeatureParam<bool> kUsePdfVitParam{
 
 constexpr base::FeatureParam<bool> kUseWebpageVitParam{
     &kLensOverlayContextualSearchbox, "use-webpage-vit-param", false};
+
+constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
+    &kLensOverlayTranslateLanguages, "translate-endpoint-url",
+    "https://translate-pa.googleapis.com/v1/supportedLanguages"};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -746,6 +756,10 @@ bool IsLensOverlayContextualSearchboxEnabled() {
 
 base::TimeDelta GetLensOverlaySurveyResultsTime() {
   return kLensOverlaySurveyResultsTime.Get();
+}
+
+std::string GetLensOverlayTranslateEndpointURL() {
+  return kTranslateEndpointUrl.Get();
 }
 
 }  // namespace lens::features
