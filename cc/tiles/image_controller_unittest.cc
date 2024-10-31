@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -17,6 +18,7 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/threading/thread_restrictions.h"
+#include "cc/base/features.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/cc_test_suite.h"
 #include "cc/test/skia_common.h"
@@ -660,6 +662,9 @@ TEST_F(ImageControllerTest, QueueImageDecodeNonLazyCancelImmediately) {
 }
 
 TEST_F(ImageControllerTest, ExternalDependency) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   // Set up a stand-alone image decode task in a dependency sandwich with two
   // external (i.e. raster) tasks.
   scoped_refptr<SimpleTask> dependency(new SimpleTask);

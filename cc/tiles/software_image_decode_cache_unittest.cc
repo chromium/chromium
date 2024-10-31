@@ -4,6 +4,8 @@
 
 #include "cc/tiles/software_image_decode_cache.h"
 
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/fake_paint_image_generator.h"
@@ -771,6 +773,9 @@ TEST_F(SoftwareImageDecodeCacheTest, GetTaskForImageSameImage) {
 
 TEST_F(SoftwareImageDecodeCacheTest,
        GetRasterTaskBeforeStandAloneTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
       paint_image, false,
@@ -804,6 +809,9 @@ TEST_F(SoftwareImageDecodeCacheTest,
 
 TEST_F(SoftwareImageDecodeCacheTest,
        GetStandAloneTaskBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
       paint_image, false,
@@ -840,6 +848,9 @@ TEST_F(SoftwareImageDecodeCacheTest,
 
 TEST_F(SoftwareImageDecodeCacheTest,
        StandAloneTaskStartedBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
       paint_image, false,

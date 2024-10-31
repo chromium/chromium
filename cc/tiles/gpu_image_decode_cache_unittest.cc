@@ -782,6 +782,9 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImage) {
 }
 
 TEST_P(GpuImageDecodeCacheTest, GetRasterTaskBeforeStandAloneTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
 
@@ -816,6 +819,9 @@ TEST_P(GpuImageDecodeCacheTest, GetRasterTaskBeforeStandAloneTaskSameImage) {
 }
 
 TEST_P(GpuImageDecodeCacheTest, GetStandAloneTaskBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
 
@@ -853,6 +859,9 @@ TEST_P(GpuImageDecodeCacheTest, GetStandAloneTaskBeforeRasterTaskSameImage) {
 
 TEST_P(GpuImageDecodeCacheTest,
        StandAloneTaskStartedBeforeRasterTaskSameImage) {
+  if (!base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    return;
+  }
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();
 
@@ -1092,9 +1101,11 @@ TEST_P(GpuImageDecodeCacheTest, DoesNotCreateATaskForAlreadyUploadedImage2) {
   // It must be a valid task.
   EXPECT_TRUE(result2.task);
   // It must depend on the raster decode task.
-  EXPECT_EQ(result2.task->dependencies().size(), 1u);
-  EXPECT_EQ(result1.task->dependencies()[0]->external_dependent().get(),
-            result2.task.get());
+  if (base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
+    EXPECT_EQ(result2.task->dependencies().size(), 1u);
+    EXPECT_EQ(result1.task->dependencies()[0]->external_dependent().get(),
+              result2.task.get());
+  }
 
   // Execute decode/upload, but do not complete.
   TestTileTaskRunner::ProcessTask(result1.task->dependencies()[0].get());
