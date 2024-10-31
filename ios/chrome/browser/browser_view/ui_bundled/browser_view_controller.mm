@@ -2425,6 +2425,18 @@ enum HeaderBehaviour {
   if (require) {
     [self.blockingView setAuthenticateButtonText:text
                               accessibilityLabel:accessibilityLabel];
+
+    base::WeakPtr<WebStateList> webStateList = _webStateList;
+    id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
+    [self.blockingView.exitIncognitoButton
+               addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                 if (webStateList) {
+                   CloseAllWebStates(*(webStateList),
+                                     WebStateList::CLOSE_USER_ACTION);
+                 }
+                 [reauthHandler manualAuthenticationOverride];
+               }]
+        forControlEvents:UIControlEventTouchUpInside];
   } else {
     // No primary button text or accessibility label should be set when
     // authentication is not required.

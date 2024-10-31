@@ -111,6 +111,10 @@
   return IncognitoLockState::kNone;
 }
 
+- (void)manualAuthenticationOverride {
+  self.authenticatedSinceLastForeground = YES;
+}
+
 - (void)authenticateIncognitoContent {
   [self authenticateIncognitoContentWithCompletionBlock:nil];
 }
