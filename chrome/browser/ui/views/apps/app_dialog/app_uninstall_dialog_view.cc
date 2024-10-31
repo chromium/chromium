@@ -66,10 +66,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
 namespace {
@@ -484,25 +480,6 @@ void AppUninstallDialogView::LoadSubAppIds(const std::string& short_app_name,
         /*arg_for_shutdown=*/std::vector<std::string>());
     return;
   }
-
-  // TODO(crbug.com/376071296): Remove the crosapi code below.
-#if BUILDFLAG(IS_CHROMEOS)
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-
-  if (!web_app_provider_bridge) {
-    LOG(ERROR) << "Could not find WebAppProviderBridge.";
-    return;
-  }
-
-  web_app_provider_bridge->GetSubAppIds(
-      parent_app_id,
-      base::BindOnce(&AppUninstallDialogView::GetSubAppsInfo,
-                     weak_ptr_factory_.GetWeakPtr(), short_app_name));
-#endif
 }
 
 void AppUninstallDialogView::GetSubAppsInfo(

@@ -57,9 +57,7 @@ interface WebAppProviderBridge {
   [MinVersion=2]
   InstallMicrosoft365@3() => (WebAppInstallResultCode install_result);
 
-  // Returns the ids of all the sub-apps of the given app.
-  [MinVersion=3]
-  GetSubAppIds@4(string app_id) => (array<string> sub_apps);
+  // GetSubAppIds@4 was removed.
 
   // Navigates to the specified install url and waits for the web app manifest
   // to load. If there is an installable web app that the user has not
