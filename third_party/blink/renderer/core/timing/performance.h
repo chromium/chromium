@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
@@ -227,6 +228,12 @@ class CORE_EXPORT Performance : public EventTarget {
                                       base::TimeTicks pageshow_start_time,
                                       base::TimeTicks pageshow_end_time);
 
+  void AddRenderCoarsenedEntry(
+      base::OnceCallback<void(Performance&)>,
+      DOMHighResTimeStamp earliest_timestamp_for_timeline);
+  void SchedulePendingRenderCoarsenedEntries(base::TimeTicks target_time);
+  void FlushPendingRenderCoarsenedEntries();
+
   // This enum is used to index different possible strings for for UMA enum
   // histogram. New enum values can be added, but existing enums must never be
   // renumbered or deleted and reused.
@@ -381,6 +388,8 @@ class CORE_EXPORT Performance : public EventTarget {
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
+  void AddPendingRenderCoarsenedEntries();
+
   PerformanceEntryVector resource_timing_buffer_;
   // The secondary RT buffer, used to store incoming entries after the main
   // buffer is full, until the resourcetimingbufferfull event fires.
@@ -425,6 +434,9 @@ class CORE_EXPORT Performance : public EventTarget {
 
   // See crbug.com/1181774.
   Member<BackgroundTracingHelper> background_tracing_helper_;
+
+  Vector<std::pair<base::OnceCallback<void(Performance&)>, base::TimeTicks>>
+      pending_entry_operations_with_render_coarsening_;
 
   // Running counter for LongTask observations.
   size_t long_task_counter_ = 0;

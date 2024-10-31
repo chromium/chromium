@@ -1014,22 +1014,31 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   DOMHighResTimeStamp coarsened_load_time =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
 
-  DOMHighResTimeStamp coarsened_start_time = std::max(
-      RenderTimeToDOMHighResTimeStamp(start_time), coarsened_load_time);
+  DOMHighResTimeStamp coarsened_render_time =
+      RenderTimeToDOMHighResTimeStamp(start_time);
 
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
-      name, url, rect, coarsened_start_time, coarsened_load_time, identifier,
+      name, url, rect, coarsened_render_time, coarsened_load_time, identifier,
       intrinsic_size.width(), intrinsic_size.height(), id, element,
       DomWindow());
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  if (HasObserverFor(PerformanceEntry::kElement)) {
-    NotifyObserversOfEntry(*entry);
-  }
-  if (!IsElementTimingBufferFull()) {
-    AddToElementTimingBuffer(*entry);
-  }
+
+  AddRenderCoarsenedEntry(
+      WTF::BindOnce(
+          [](Persistent<PerformanceElementTiming> entry,
+             Performance& performance) {
+            if (performance.HasObserverFor(PerformanceEntry::kElement)) {
+              static_cast<WindowPerformance&>(performance)
+                  .NotifyObserversOfEntry(*entry);
+            }
+            if (!performance.IsElementTimingBufferFull()) {
+              performance.AddToElementTimingBuffer(*entry);
+            }
+          },
+          WrapPersistent(entry)),
+      coarsened_render_time);
 }
 
 void WindowPerformance::DispatchFirstInputTiming(
@@ -1138,9 +1147,9 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   DOMHighResTimeStamp load_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
   DOMHighResTimeStamp start_timestamp =
-      std::max(load_timestamp, RenderTimeToDOMHighResTimeStamp(start_time));
+      RenderTimeToDOMHighResTimeStamp(start_time);
   DOMHighResTimeStamp render_timestamp =
-      std::max(load_timestamp, RenderTimeToDOMHighResTimeStamp(render_time));
+      RenderTimeToDOMHighResTimeStamp(render_time);
   DOMHighResTimeStamp first_animated_frame_timestamp =
       RenderTimeToDOMHighResTimeStamp(first_animated_frame_time);
 
@@ -1149,10 +1158,29 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
       start_timestamp, render_timestamp, paint_size, load_timestamp,
       first_animated_frame_timestamp, id, url, element, DomWindow(),
       is_triggered_by_soft_navigation);
-  if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint)) {
-    NotifyObserversOfEntry(*entry);
-  }
-  AddLargestContentfulPaint(entry);
+
+  AddRenderCoarsenedEntry(
+      WTF::BindOnce(
+          [](Persistent<LargestContentfulPaint> entry,
+             Performance& performance) {
+            WindowPerformance& window_performance =
+                static_cast<WindowPerformance&>(performance);
+            if (!window_performance.DomWindow()) {
+              return;
+            }
+
+            if (performance.HasObserverFor(
+                    PerformanceEntry::kLargestContentfulPaint)) {
+              window_performance.NotifyObserversOfEntry(*entry);
+            }
+            performance.AddLargestContentfulPaint(entry);
+            window_performance.DomWindow()
+                ->document()
+                ->OnLargestContentfulPaintUpdated();
+          },
+          WrapPersistent(entry)),
+      render_timestamp);
+
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
     if (image_element->HasLazyLoadingAttribute()) {
@@ -1161,8 +1189,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   }
 
   if (element) {
-    element->GetDocument().OnLargestContentfulPaintUpdated();
-
     if (LocalFrame* local_frame = element->GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = local_frame->GetLCPP()) {
         std::optional<KURL> maybe_url = std::nullopt;

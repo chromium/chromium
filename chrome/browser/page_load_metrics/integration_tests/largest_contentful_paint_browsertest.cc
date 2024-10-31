@@ -813,10 +813,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LCPBreakdownTimings) {
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name);
 
   // Verify breakdown timings recorded to UKM are correct. There's discrepancy
-  // between the web-exposed value and the UKM value. An epsilon of 2
-  // milliseconds is used to account for +-2 difference as this 2 is used
-  // elsewhere.
-  double epsilon = 2;
+  // between the web-exposed value and the UKM value, of 4ms due to coarsening
+  // +2ms for other discrepancies.
+  double epsilon = 6;
 
   ExpectUKMPageLoadMetricNear(
       PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName,
@@ -1233,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Verify the LCP recorded in the UKM is the one of the text element.
-  double epsilon = 2;
+  double epsilon = 6;
   ExpectUKMPageLoadMetricNear(
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
       text_element_lcp, epsilon);
@@ -1287,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
       EvalJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("getLCP($1)", element_id2))
           .ExtractDouble();
-  double epsilon = 2;
+  double epsilon = 6;
 
   // This is to reduce flakiness by waiting for an LCP larger than the value
   // passed in so that by the time the test waiter exits from waiting the LCP of
