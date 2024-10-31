@@ -142,8 +142,9 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   DCHECK(gpu_info);
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
 #elif BUILDFLAG(IS_ANDROID)
-  if (gpu_info->gpu.vendor_string == "Qualcomm")
+  if (gpu_info->gpu.vendor_string.find("Qualcomm") != std::string::npos) {
     gfx::SurfaceControl::EnableQualcommUBWC();
+  }
 #endif
 }
 
