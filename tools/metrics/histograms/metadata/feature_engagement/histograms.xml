@@ -757,16 +757,26 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 
 -->
 
+<!-- expires-never: this is a meta-histogram that provides performance
+     information about each feature promo as it rolls out to users. Since new
+     promos roll out all the time, and feature teams want to track the
+     performance of their promos, this histogram must never expire. -->
+
 <histogram name="UserEducation.MessageAction.{IPHFeature}" enum="MessageAction"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>Records what action was taken to close the In-Product Help.</summary>
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance
+     information about each feature promo as it rolls out to users. Since new
+     promos roll out all the time, and feature teams want to track the
+     performance of their promos, this histogram must never expire. -->
+
 <histogram name="UserEducation.MessageNotShown.{IPHFeature}"
-    enum="PromoFailure" expires_after="2025-04-30">
+    enum="PromoFailure" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -778,8 +788,13 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance
+     information about rotating feature promos as they roll out to users. Since
+     new promos roll out all the time, and feature teams want to track the
+     performance of their promos, this histogram must never expire. -->
+
 <histogram name="UserEducation.RotatingPromoIndex.{IPHFeature}" units="Index"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

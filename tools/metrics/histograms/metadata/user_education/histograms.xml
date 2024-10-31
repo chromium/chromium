@@ -105,8 +105,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram for tracking the performance of
+     individual tutorials. Since tutorials are periodically added, this cannot
+     be allowed to expire. -->
+
 <histogram name="Tutorial.{TutorialID}.AbortStep" units="int"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -116,8 +120,12 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram for tracking the performance of
+     individual tutorials. Since tutorials are periodically added, this cannot
+     be allowed to expire. -->
+
 <histogram name="Tutorial.{TutorialID}.Completion" enum="BooleanSuccess"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -127,8 +135,12 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram for tracking the performance of
+     individual tutorials. Since tutorials are periodically added, this cannot
+     be allowed to expire. -->
+
 <histogram name="Tutorial.{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -139,8 +151,12 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram for tracking the performance of
+     individual tutorials. Since tutorials are periodically added, this cannot
+     be allowed to expire. -->
+
 <histogram name="Tutorial.{TutorialID}.StartedFromWhatsNewPage"
-    enum="BooleanSuccess" expires_after="2025-04-30">
+    enum="BooleanSuccess" expires_after="never">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -189,8 +205,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this histogram provides general telemetry about the
+     performance of active promos in the User Education system. Because the
+     roster of promos changes from release to release this metric must be
+     tracked as a measure of the current health of the promo ecosystem. -->
+
 <histogram name="UserEducation.MessageShown.Subtype" enum="PromoSubtype"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -201,8 +222,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this histogram provides general telemetry about the
+     performance of active promos in the User Education system. Because the
+     roster of promos changes from release to release this metric must be
+     tracked as a measure of the current health of the promo ecosystem. -->
+
 <histogram name="UserEducation.MessageShown.Type" enum="PromoType"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -212,8 +238,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram providing telemetry for "New"
+     Badges, which are periodically added and removed as new features are added
+     to the browser. If it expires, telemetry for new "New" Badges will no
+     longer be collected. -->
+
 <histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxShownReached"
-    enum="BooleanCompleted" expires_after="2025-04-30">
+    enum="BooleanCompleted" expires_after="never">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -225,8 +256,13 @@ chromium-metrics-reviews@google.com.
   <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram providing telemetry for "New"
+     Badges, which are periodically added and removed as new features are added
+     to the browser. If it expires, telemetry for new "New" Badges will no
+     longer be collected. -->
+
 <histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxUsedReached"
-    enum="BooleanCompleted" expires_after="2025-04-30">
+    enum="BooleanCompleted" expires_after="never">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -357,8 +393,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: since the content of the "What's New" page changes from
+     release to release, this is an important health metric for the performance
+     of any particular release. It should not be allowed to expire. -->
+
 <histogram name="UserEducation.WhatsNew.ExploreMoreExpanded"
-    enum="BooleanYesNo" expires_after="2025-04-30">
+    enum="BooleanYesNo" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -367,8 +407,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.ModuleLinkClicked.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -378,8 +423,13 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.ModuleShown.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -389,8 +439,13 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.PauseClicked.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -401,8 +456,13 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.PlayClicked.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -413,8 +473,13 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.RestartClicked.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -425,8 +490,12 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<!-- expires-never: this provides usage information about a specific edition of
+     the "What's New" page. However, since the content on the page changes every
+     edition, this histogram cannot be allowed to expire. -->
+
 <histogram name="UserEducation.WhatsNew.ScrollDepth" enum="ScrollDepthQuartile"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -435,8 +504,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this provides usage information about a specific edition of
+     the "What's New" page. However, since the content on the page changes every
+     edition, this histogram cannot be allowed to expire. -->
+
 <histogram name="UserEducation.WhatsNew.TimeOnPage" units="ms"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -445,8 +518,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this provides performance information about a specific
+     edition of the "What's New" page. However, since the content on the page
+     changes every edition, this histogram cannot be allowed to expire. -->
+
 <histogram name="UserEducation.WhatsNew.TimeToLoadContent" units="ms"
-    expires_after="2025-04-30">
+    expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -455,8 +532,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.VideoEnded.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -466,8 +548,13 @@ chromium-metrics-reviews@google.com.
   <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
 <histogram name="UserEducation.WhatsNew.VideoStarted.{ModuleName}"
-    enum="WhatsNewModulePosition" expires_after="2025-04-30">
+    enum="WhatsNewModulePosition" expires_after="never">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
