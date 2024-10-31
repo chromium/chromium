@@ -421,12 +421,12 @@
   {
     "name": "ash-capture-mode-education",
     "owners": [ "hewer@chromium.org", "meganlfu@google.com"],
-    "expiry_milestone": 127
+    "expiry_milestone": 133
   },
   {
     "name": "ash-capture-mode-education-bypass-limits",
     "owners": [ "hewer@chromium.org", "meganlfu@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 133
   },
   {
     "name": "ash-capture-mode-gif-recording",
