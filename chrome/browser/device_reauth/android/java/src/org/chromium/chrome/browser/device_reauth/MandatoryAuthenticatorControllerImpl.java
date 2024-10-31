@@ -28,6 +28,7 @@ import java.util.concurrent.Executor;
  */
 class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorControllerImpl {
     /** The bit is used to request for mandatory biometrics. */
+    @SuppressLint("WrongConstant")
     public static final int AUTHENTICATOR_MANDATORY_BIOMETRICS = 1 << 16;
 
     /** Mandatory biometrics is not in effect. */
