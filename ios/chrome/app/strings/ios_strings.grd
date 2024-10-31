@@ -5134,6 +5134,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER_LINK" desc="The link part of the disclaimer for sharing a tab group.">
         Learn about shared tab groups
       </message>
+      <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_TITLE" desc="The title for sharing a tab group.">
+        Share "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" Tab Group
+      </message>
       <message name="IDS_IOS_SHARE_KIT_JOIN_TAB_GROUP" desc="The type of element that the user will be opening when trying to join a shared group. Used in the context 'Join and open *tab group* with Ali'" meaning="You are trying to join a shared tab group">
         tab group
       </message>
