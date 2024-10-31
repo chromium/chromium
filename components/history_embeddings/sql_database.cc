@@ -25,6 +25,12 @@ namespace history_embeddings {
 constexpr int kLowestSupportedDatabaseVersion = 1;
 constexpr int kCurrentDatabaseVersion = 1;
 
+// This embeddings data version can be rolled to force recompute of all
+// embeddings, useful when we change how source passages are preprocessed.
+// Rolling this is preferable to rolling `kCurrentDatabaseVersion` in that
+// source passages can be preserved; only the embeddings table will be cleared.
+constexpr int kEmbeddingsDataVersion = 1;
+
 namespace {
 
 [[nodiscard]] bool InitSchema(sql::Database& db) {
@@ -175,16 +181,39 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
   // data deletion. In that case, don't check or change meta table.
   if (embedder_metadata_.has_value()) {
     constexpr char kKeyModelVersion[] = "model_version";
+    constexpr char kKeyEmbeddingsDataVersion[] = "embeddings_data_version";
+
     int model_version = 0;
     meta_table.GetValue(kKeyModelVersion, &model_version);
-    if (model_version != embedder_metadata_->model_version ||
-        kDeleteEmbeddings.Get()) {
+
+    bool delete_embeddings =
+        model_version != embedder_metadata_->model_version ||
+        kDeleteEmbeddings.Get();
+
+    // TODO(crbug.com/375502129): Remove this guard and the related guard below
+    //  for more complete data version handling.
+    if (kEraseNonAsciiCharacters.Get()) {
+      int embeddings_data_version = 0;
+      meta_table.GetValue(kKeyEmbeddingsDataVersion, &embeddings_data_version);
+      delete_embeddings |= embeddings_data_version != kEmbeddingsDataVersion;
+    }
+
+    if (delete_embeddings) {
       // Old version embeddings can't be used with new model. Simply delete them
       // all and set new version. Passages can be used for reconstruction later.
       constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
       if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
           !meta_table.SetValue(kKeyModelVersion,
                                embedder_metadata_->model_version)) {
+        return sql::InitStatus::INIT_FAILURE;
+      }
+      // Only write the meta table with this first data version change if
+      // doing so will result in the embeddings being rebuilt with the
+      // non-ASCII character changes.
+      // TODO(crbug.com/375502129): See above TODO comment; remove this guard.
+      if (kEraseNonAsciiCharacters.Get() &&
+          !meta_table.SetValue(kKeyEmbeddingsDataVersion,
+                               kEmbeddingsDataVersion)) {
         return sql::InitStatus::INIT_FAILURE;
       }
     }
@@ -658,7 +687,8 @@ void SqlDatabase::DatabaseErrorCallback(int extended_error,
                                         sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/325524013): Handle razing the database on catastrophic error.
+  // TODO(crbug.com/325524013): Handle razing the database on catastrophic
+  // error.
 
   // The default handling is to assert on debug and to ignore on release.
   // This is because database errors happen in the wild due to faulty hardware,

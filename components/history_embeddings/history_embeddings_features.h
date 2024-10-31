@@ -173,6 +173,12 @@ extern const base::FeatureParam<double> kWordMatchRequiredTermRatio;
 // Whether to include scroll to text fragment directives with answer citations.
 extern const base::FeatureParam<bool> kScrollTagsEnabled;
 
+// Whether to erase non-ASCII characters from passages before sending them to
+// the ML embedder. When false, passages are embedded without modification but
+// then will be skipped during search. When true, passages are embedded with
+// non-ASCII characters removed, but are then included in search.
+extern const base::FeatureParam<bool> kEraseNonAsciiCharacters;
+
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.

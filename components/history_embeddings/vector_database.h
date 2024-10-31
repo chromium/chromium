@@ -71,6 +71,10 @@ struct SearchParams {
   // matched if there's at least one instance found in all passages.
   // Stop words are not considered query terms and are not counted.
   float word_match_required_term_ratio = 1.0f;
+
+  // If true, any non-ASCII characters in queries or passages will be erased
+  // instead of ignoring such queries or passages entirely.
+  bool erase_non_ascii = false;
 };
 
 struct SearchInfo {
@@ -90,6 +94,9 @@ struct SearchInfo {
   // The number of embeddings scored zero due to having a source passage
   // containing non-ASCII characters.
   size_t skipped_nonascii_passage_count = 0u;
+
+  // The number of source passages modified by erasing non-ASCII characters.
+  size_t modified_nonascii_passage_count = 0u;
 
   // Whether the search completed without interruption. Starting a new search
   // may cause a search to halt, and in that case this member will be false.
@@ -265,6 +272,10 @@ std::vector<std::string> SplitQueryToTerms(
     const std::unordered_set<uint32_t>& stop_words_hashes,
     std::string_view raw_query,
     size_t min_term_length);
+
+// Destructively removes non-ASCII characters from single or many passages.
+void EraseNonAsciiCharacters(std::string& passage);
+void EraseNonAsciiCharacters(std::vector<std::string>& passages);
 
 }  // namespace history_embeddings
 

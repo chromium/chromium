@@ -220,6 +220,11 @@ const base::FeatureParam<double> kWordMatchRequiredTermRatio(
     "WordMatchRequiredTermRatio",
     1.0);
 
+const base::FeatureParam<bool> kEraseNonAsciiCharacters(
+    &kHistoryEmbeddings,
+    "EraseNonAsciiCharacters",
+    false);
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&

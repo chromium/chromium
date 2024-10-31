@@ -2305,6 +2305,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Search.ModifiedNonAsciiPassageCount"
+    units="passages" expires_after="2025-03-09">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The number of passages that were modified by removing non-ASCII characters.
+    Note that this value is still useful even when the passage text itself is
+    not used in the search (word match boosting is optimized for speed) because
+    passages counted by this metric also indicate embeddings that were
+    calculated from modified source passages. Logged each time a vector database
+    search is performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Search.PassageScanningTime" units="ms"
     expires_after="2025-03-09">
   <owner>orinj@chromium.org</owner>
