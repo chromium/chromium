@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -154,7 +155,9 @@
 
 /// Whether the lens overlay entrypoint should be available.
 - (BOOL)isLensOverlayEntrypointAvailable {
-  if (!IsLensOverlayAvailable() || _isIncognito ||
+  if (!IsLensOverlayAvailable() ||
+      !base::FeatureList::IsEnabled(kLensOverlayEnableLocationBarEntrypoint) ||
+      _isIncognito ||
       !search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
     return NO;
   }

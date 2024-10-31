@@ -244,6 +244,10 @@ BASE_FEATURE(kLensOverlayEnableIPadCompatibility,
              "EnableLensOverlayForceIPadSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayEnableLocationBarEntrypoint,
+             "LensOverlayEnableLocationBarEntrypoint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayEnableSameTabNavigation,
              "EnableLensOverlaySameTabNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);

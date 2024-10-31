@@ -308,6 +308,10 @@ BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 BASE_DECLARE_FEATURE(kEnableLensOverlay);
 extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 
+// Feature flag to enable the Lens overlay location bar entrypoint. Enabled by
+// default.
+BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);
+
 // Feature to force allow iPad support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 

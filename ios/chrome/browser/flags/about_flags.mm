@@ -2032,6 +2032,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeStartupParametersAsyncName,
      flag_descriptions::kChromeStartupParametersAsyncDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kChromeStartupParametersAsync)},
+    {"lens-overlay-enable-location-bar-entrypoint",
+     flag_descriptions::kLensOverlayEnableLocationBarEntrypointName,
+     flag_descriptions::kLensOverlayEnableLocationBarEntrypointDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensOverlayEnableLocationBarEntrypoint)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
