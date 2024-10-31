@@ -439,8 +439,25 @@ NSURL* DriveFilePickerGenerateDownloadFileURL(web::WebStateID web_state_id,
   base::FilePath download_dir =
       (*web_state_dir)
           .Append(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+
+  // Remove the potential file separator.
+  download_file_name =
+      [download_file_name stringByReplacingOccurrencesOfString:@"/"
+                                                    withString:@"_"];
+  download_file_name =
+      [download_file_name stringByReplacingOccurrencesOfString:@"\\"
+                                                    withString:@"_"];
+  base::FilePath download_file_name_path(
+      base::SysNSStringToUTF8(download_file_name));
+  // Do not allow empty file names.
+  if (download_file_name_path.empty()) {
+    download_file_name_path =
+        base::FilePath(base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
+  }
+
   base::FilePath download_file_path =
-      download_dir.Append(base::SysNSStringToUTF8(download_file_name));
+      download_dir.Append(download_file_name_path);
+  CHECK(download_dir.IsParent(download_file_path));
   return base::apple::FilePathToNSURL(download_file_path);
 }
 
