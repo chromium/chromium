@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_action_handler.h"
+#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
@@ -21,12 +21,15 @@ namespace ash {
 
 class ScannerCommandDelegate;
 
-// A view model wrapper around a `ScannerAction`, which handles the conversion
-// to a user-facing text string, icon, and a callback.
+// A view model wrapper around a `ScannerUnpopulatedAction`, which handles the
+// conversion to a user-facing text string, icon, and a callback.
 class ASH_EXPORT ScannerActionViewModel {
  public:
+  using ActionFinishedCallback =
+      base::RepeatingCallback<ScannerCommandCallback::RunType>;
+
   explicit ScannerActionViewModel(
-      ScannerAction action,
+      ScannerUnpopulatedAction unpopulated_action,
       base::WeakPtr<ScannerCommandDelegate> delegate);
   ScannerActionViewModel(const ScannerActionViewModel&);
   ScannerActionViewModel& operator=(const ScannerActionViewModel&);
@@ -34,15 +37,15 @@ class ASH_EXPORT ScannerActionViewModel {
   ScannerActionViewModel& operator=(ScannerActionViewModel&&);
   ~ScannerActionViewModel();
 
+  // Gets the UI facing text for this action.
+  // This may crash if this action has been previously moved.
   std::u16string GetText() const;
   const gfx::VectorIcon& GetIcon() const;
 
-  // Converts this action into a `base::OnceClosure` which, when called,
+  // Converts this action into a `base::RepeatingClosure` which, when called,
   // executes the action.
   // When the action is finished, `action_finished_callback` is called with a
   // boolean value representing whether the action execution was successful.
-  // It is guaranteed that `action_finished_callback` will never be called
-  // before the returned closure is called.
   //
   // As the returned closure needs to take ownership of this action, this must
   // be called with an rvalue reference to `this`, such as:
@@ -51,11 +54,11 @@ class ASH_EXPORT ScannerActionViewModel {
   // Alternatively, if the intent is to _copy_ the action into the returned
   // closure, explicitly create a copy:
   //     ScannerActionViewModel(action).ToCallback(std::move(on_finished))
-  base::OnceClosure ToCallback(
-      ScannerCommandCallback action_finished_callback) &&;
+  base::RepeatingClosure ToCallback(
+      ActionFinishedCallback action_finished_callback) &&;
 
  private:
-  ScannerAction action_;
+  ScannerUnpopulatedAction unpopulated_action_;
   base::WeakPtr<ScannerCommandDelegate> delegate_;
 };
 

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
+#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -43,38 +44,6 @@ constexpr int64_t kMaxEdgePixels = 2300;
 
 // The quality attribute (out of 100) for the JPEG compression algorithm used.
 constexpr int kJpegQuality = 90;
-
-// Converts a proto action - a oneof - into the equivalent variant type in
-// Scanner code.
-// Returns nullopt if the action is unsupported.
-std::optional<ScannerAction> ProtoActionToVariant(
-    manta::proto::ScannerAction proto_action) {
-  switch (proto_action.action_case()) {
-    case manta::proto::ScannerAction::kNewEvent:
-      return std::move(*proto_action.mutable_new_event());
-
-    case manta::proto::ScannerAction::kNewContact:
-      return std::move(*proto_action.mutable_new_contact());
-
-    case manta::proto::ScannerAction::kNewGoogleDoc:
-      return std::move(*proto_action.mutable_new_google_doc());
-
-    case manta::proto::ScannerAction::kNewGoogleSheet:
-      return std::move(*proto_action.mutable_new_google_sheet());
-
-    case manta::proto::ScannerAction::kCopyToClipboard:
-      return std::move(*proto_action.mutable_copy_to_clipboard());
-
-    case manta::proto::ScannerAction::ACTION_NOT_SET:
-      return std::nullopt;
-  }
-
-  // This should never be reached, as `action_case()` should always return a
-  // valid enum value. If the oneof field is set to something which is not
-  // recognised by this client, that is indistinguishable from an unknown field,
-  // and the above case should be `ACTION_NOT_SET`.
-  NOTREACHED();
-}
 
 // Downscales so that the width and height are both less than kMaxEdgePixels and
 // retains the ratio.
@@ -127,6 +96,33 @@ scoped_refptr<base::RefCountedMemory> DownscaleImageIfNeeded(
   return original_bytes;
 }
 
+// Runs the callback with the populated proto from the response of a call to
+// `FetchActionDetailsForImage`.
+void OnActionPopulated(
+    ScannerUnpopulatedAction::PopulatedProtoCallback callback,
+    std::unique_ptr<manta::proto::ScannerOutput> output,
+    manta::MantaStatus status) {
+  if (output == nullptr) {
+    // TODO(b/363100868): Handle error case
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (output->objects_size() != 1) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  manta::proto::ScannerObject& object = *output->mutable_objects(0);
+
+  if (object.actions_size() != 1) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  manta::proto::ScannerAction& action = *object.mutable_actions(0);
+
+  std::move(callback).Run(std::move(action));
+}
+
 }  // namespace
 
 ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
@@ -137,13 +133,18 @@ ScannerSession::~ScannerSession() = default;
 void ScannerSession::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     FetchActionsCallback callback) {
+  scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes =
+      DownscaleImageIfNeeded(std::move(jpeg_bytes));
+
   delegate_->FetchActionsForImage(
-      DownscaleImageIfNeeded(std::move(jpeg_bytes)),
+      downscaled_jpeg_bytes,
       base::BindOnce(&ScannerSession::OnActionsReturned,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), downscaled_jpeg_bytes,
+                     std::move(callback)));
 }
 
 void ScannerSession::OnActionsReturned(
+    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
     FetchActionsCallback callback,
     std::unique_ptr<manta::proto::ScannerOutput> output,
     manta::MantaStatus status) {
@@ -159,17 +160,32 @@ void ScannerSession::OnActionsReturned(
 
   std::vector<ScannerActionViewModel> action_view_models;
 
+  ScannerUnpopulatedAction::PopulateToProtoCallback populate_to_proto_callback =
+      base::BindRepeating(&ScannerSession::PopulateAction,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          downscaled_jpeg_bytes);
+
   for (manta::proto::ScannerAction& proto_action :
        *output->mutable_objects(0)->mutable_actions()) {
-    std::optional<ScannerAction> variant_action =
-        ProtoActionToVariant(std::move(proto_action));
-    if (variant_action.has_value()) {
-      action_view_models.emplace_back(std::move(*variant_action),
+    std::optional<ScannerUnpopulatedAction> unpopulated_action_ =
+        ScannerUnpopulatedAction::FromProto(std::move(proto_action),
+                                            populate_to_proto_callback);
+    if (unpopulated_action_.has_value()) {
+      action_view_models.emplace_back(std::move(*unpopulated_action_),
                                       weak_ptr_factory_.GetWeakPtr());
     }
   }
 
   std::move(callback).Run(std::move(action_view_models));
+}
+
+void ScannerSession::PopulateAction(
+    scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+    manta::proto::ScannerAction unpopulated_action,
+    ScannerUnpopulatedAction::PopulatedProtoCallback callback) {
+  delegate_->FetchActionDetailsForImage(
+      std::move(downscaled_jpeg_bytes), std::move(unpopulated_action),
+      base::BindOnce(&OnActionPopulated, std::move(callback)));
 }
 
 void ScannerSession::OpenUrl(const GURL& url) {

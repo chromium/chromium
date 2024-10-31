@@ -19,8 +19,6 @@ namespace {
 // Converts a proto action - a oneof - into the equivalent variant type in
 // Scanner code.
 // Returns nullopt if the action is unsupported.
-// TODO: b/376165802 - This is duplicated from `scanner_session.cc`. Remove the
-// equivalent code from that file after migrating to `ScannerUnpopulatedAction`.
 std::optional<ScannerAction> ProtoActionToVariant(
     manta::proto::ScannerAction proto_action) {
   switch (proto_action.action_case()) {

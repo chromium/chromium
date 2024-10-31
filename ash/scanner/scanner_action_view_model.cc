@@ -4,26 +4,59 @@
 
 #include "ash/scanner/scanner_action_view_model.h"
 
+#include <optional>
 #include <string>
 #include <utility>
-#include <variant>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate.h"
+#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
 
+namespace {
+
+// Executes the populated action, if it exists, calling
+// `action_finished_callback` with the result of the execution.
+void ExecutePopulatedAction(
+    base::WeakPtr<ScannerCommandDelegate> delegate,
+    ScannerActionViewModel::ActionFinishedCallback action_finished_callback,
+    std::optional<ScannerAction> populated_action) {
+  if (!populated_action.has_value()) {
+    std::move(action_finished_callback).Run(false);
+    return;
+  }
+
+  HandleScannerCommand(std::move(delegate),
+                       ScannerActionToCommand(std::move(*populated_action)),
+                       std::move(action_finished_callback));
+}
+
+// Populates the unpopulated action and executes the resulting populated action,
+// calling `action_finished_callback` with the result of the execution.
+void PopulateAndExecuteAction(
+    base::WeakPtr<ScannerCommandDelegate> delegate,
+    ScannerActionViewModel::ActionFinishedCallback action_finished_callback,
+    const ScannerUnpopulatedAction& unpopulated_action) {
+  unpopulated_action.PopulateToVariant(
+      base::BindOnce(&ExecutePopulatedAction, std::move(delegate),
+                     std::move(action_finished_callback)));
+}
+
+}  // namespace
+
 ScannerActionViewModel::ScannerActionViewModel(
-    ScannerAction action,
+    ScannerUnpopulatedAction unpopulated_action,
     base::WeakPtr<ScannerCommandDelegate> delegate)
-    : action_(std::move(action)), delegate_(std::move(delegate)) {}
+    : unpopulated_action_(std::move(unpopulated_action)),
+      delegate_(std::move(delegate)) {}
 
 ScannerActionViewModel::ScannerActionViewModel(const ScannerActionViewModel&) =
     default;
@@ -41,21 +74,27 @@ ScannerActionViewModel::~ScannerActionViewModel() = default;
 
 std::u16string ScannerActionViewModel::GetText() const {
   // TODO(b/369470078): Replace this with finalised translated strings.
-  return std::visit(
-      base::Overloaded{
-          [](const manta::proto::NewEventAction&) { return u"New event"; },
-          [](const manta::proto::NewContactAction&) { return u"New contact"; },
-          [](const manta::proto::NewGoogleDocAction&) {
-            return u"New Google Doc";
-          },
-          [](const manta::proto::NewGoogleSheetAction&) {
-            return u"New Google Sheet";
-          },
-          [](const manta::proto::CopyToClipboardAction&) {
-            return u"Copy to clipboard";
-          },
-      },
-      action_);
+
+  switch (unpopulated_action_.action_case()) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return u"New event";
+    case manta::proto::ScannerAction::kNewContact:
+      return u"New contact";
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return u"New Google Doc";
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return u"New Google Sheet";
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      return u"Copy to clipboard";
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      // This should only be possible if `unpopulated_action_` has been
+      // previously moved.
+      NOTREACHED();
+  }
+
+  // This should not be possible as all Protobuf variant case enums should
+  // always be known.
+  NOTREACHED();
 }
 
 const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
@@ -63,11 +102,16 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
   return kCaptureModeIcon;
 }
 
-base::OnceClosure ScannerActionViewModel::ToCallback(
-    ScannerCommandCallback action_finished_callback) && {
-  return base::BindOnce(&HandleScannerCommand, std::move(delegate_),
-                        ScannerActionToCommand(std::move(action_)),
-                        std::move(action_finished_callback));
+base::RepeatingClosure ScannerActionViewModel::ToCallback(
+    ScannerActionViewModel::ActionFinishedCallback
+        action_finished_callback) && {
+  // Every time this callback is called, a copy of the `delegate` and
+  // `action_finished_callback` will be made to call `RunAction`. These copies
+  // are cheap as they are `base::WeakPtr` and `base::RepeatingCallback` (which
+  // internally uses a `scoped_refptr<BindState>`) respectively.
+  return base::BindRepeating(&PopulateAndExecuteAction, std::move(delegate_),
+                             std::move(action_finished_callback),
+                             std::move(unpopulated_action_));
 }
 
 }  // namespace ash

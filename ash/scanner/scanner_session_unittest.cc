@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
@@ -29,11 +30,15 @@
 namespace ash {
 namespace {
 
+using ::base::test::EqualsProto;
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::IsEmpty;
+using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::SizeIs;
 
 using FetchActionsForImageFuture = base::test::TestFuture<
@@ -108,6 +113,158 @@ TEST(ScannerSessionTest,
   EXPECT_THAT(future.Take(), SizeIs(3));
 }
 
+TEST(ScannerSessionTest, RunningActionFailsIfActionDetailsFails) {
+  FakeScannerProfileScopedDelegate delegate;
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          nullptr, manta::MantaStatus{
+                       .status_code = manta::MantaStatusCode::kInvalidInput}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  base::test::TestFuture<bool> action_finished_future;
+  std::move(actions.front())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
+      .Run();
+
+  EXPECT_FALSE(action_finished_future.Get());
+}
+
+TEST(ScannerSessionTest, RunningActionFailsIfActionDetailsHaveMultipleObjects) {
+  FakeScannerProfileScopedDelegate delegate;
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
+  auto output_with_multiple_objects =
+      std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::move(output_with_multiple_objects),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  base::test::TestFuture<bool> action_finished_future;
+  std::move(actions.front())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
+      .Run();
+
+  EXPECT_FALSE(action_finished_future.Get());
+}
+
+TEST(ScannerSessionTest, RunningActionFailsIfActionDetailsHaveMultipleActions) {
+  FakeScannerProfileScopedDelegate delegate;
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
+  auto output_with_multiple_actions =
+      std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& object = *unpopulated_output->add_objects();
+  object.add_actions()->mutable_new_event();
+  object.add_actions()->mutable_new_event();
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::move(output_with_multiple_actions),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  base::test::TestFuture<bool> action_finished_future;
+  std::move(actions.front())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
+      .Run();
+
+  EXPECT_FALSE(action_finished_future.Get());
+}
+
+TEST(ScannerSessionTest,
+     RunningActionsCallsFetchActionDetailsForImageWithResizedImage) {
+  scoped_refptr<base::RefCountedMemory> jpeg_bytes =
+      MakeJpegBytes(/*width=*/2300, /*height=*/23000);
+  FakeScannerProfileScopedDelegate delegate;
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate, FetchActionDetailsForImage(
+                            Pointee(ResultOf(
+                                "decoding JPEG",
+                                [](const base::RefCountedMemory& bytes) {
+                                  return gfx::JPEGCodec::Decode(bytes);
+                                },
+                                AllOf(Property(&SkBitmap::width, 230),
+                                      Property(&SkBitmap::height, 2300)))),
+                            _, _))
+      .WillOnce(RunOnceCallback<2>(
+          nullptr, manta::MantaStatus{
+                       .status_code = manta::MantaStatusCode::kInvalidInput}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(jpeg_bytes, future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  base::test::TestFuture<bool> action_finished_future;
+  std::move(actions.front())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
+      .Run();
+  ASSERT_TRUE(action_finished_future.IsReady());
+}
+
+TEST(ScannerSessionTest,
+     RunningActionsCallsFetchActionDetailsForImageWithUnpopulatedAction) {
+  FakeScannerProfileScopedDelegate delegate;
+  manta::proto::ScannerAction unpopulated_action;
+  unpopulated_action.mutable_new_event()->set_title("Unpopulated event");
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  *unpopulated_output->add_objects()->add_actions() = unpopulated_action;
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate,
+              FetchActionDetailsForImage(_, EqualsProto(unpopulated_action), _))
+      .WillOnce(RunOnceCallback<2>(
+          nullptr, manta::MantaStatus{
+                       .status_code = manta::MantaStatusCode::kInvalidInput}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  base::test::TestFuture<bool> action_finished_future;
+  std::move(actions.front())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
+      .Run();
+  ASSERT_TRUE(action_finished_future.IsReady());
+}
+
 TEST(ScannerSessionTest, RunningNewEventActionOpensUrl) {
   MockNewWindowDelegate new_window_delegate;
   EXPECT_CALL(new_window_delegate,
@@ -121,17 +278,23 @@ TEST(ScannerSessionTest, RunningNewEventActionOpensUrl) {
                       _, _))
       .Times(1);
   FakeScannerProfileScopedDelegate delegate;
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_event();
   manta::proto::NewEventAction event_action;
   event_action.set_title("🌏");
   event_action.set_description("formerly \"Geo Sync\"");
   event_action.set_dates("20241014T160000/20241014T161500");
   event_action.set_location("Wonderland");
-  auto output = std::make_unique<manta::proto::ScannerOutput>();
-  *output->add_objects()->add_actions()->mutable_new_event() =
+  auto populated_output = std::make_unique<manta::proto::ScannerOutput>();
+  *populated_output->add_objects()->add_actions()->mutable_new_event() =
       std::move(event_action);
   EXPECT_CALL(delegate, FetchActionsForImage)
       .WillOnce(RunOnceCallback<1>(
-          std::move(output),
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::move(populated_output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
   ScannerSession session(&delegate);
 
@@ -141,7 +304,7 @@ TEST(ScannerSessionTest, RunningNewEventActionOpensUrl) {
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
   std::move(actions.front())
-      .ToCallback(action_finished_future.GetCallback())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
       .Run();
 
   EXPECT_TRUE(action_finished_future.Get());
@@ -159,17 +322,23 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
                       _, _))
       .Times(1);
   FakeScannerProfileScopedDelegate delegate;
+  auto unpopulated_output = std::make_unique<manta::proto::ScannerOutput>();
+  unpopulated_output->add_objects()->add_actions()->mutable_new_contact();
   manta::proto::NewContactAction contact_action;
   contact_action.set_given_name("André");
   contact_action.set_family_name("François");
   contact_action.set_email("afrancois@example.com");
   contact_action.set_phone("+61400000000");
-  auto output = std::make_unique<manta::proto::ScannerOutput>();
-  *output->add_objects()->add_actions()->mutable_new_contact() =
+  auto populated_output = std::make_unique<manta::proto::ScannerOutput>();
+  *populated_output->add_objects()->add_actions()->mutable_new_contact() =
       std::move(contact_action);
   EXPECT_CALL(delegate, FetchActionsForImage)
       .WillOnce(RunOnceCallback<1>(
-          std::move(output),
+          std::move(unpopulated_output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+  EXPECT_CALL(delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::move(populated_output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
   ScannerSession session(&delegate);
 
@@ -179,7 +348,7 @@ TEST(ScannerSessionTest, RunningNewContactActionOpensUrl) {
   ASSERT_THAT(actions, SizeIs(1));
   base::test::TestFuture<bool> action_finished_future;
   std::move(actions.front())
-      .ToCallback(action_finished_future.GetCallback())
+      .ToCallback(action_finished_future.GetRepeatingCallback())
       .Run();
 
   EXPECT_TRUE(action_finished_future.Get());

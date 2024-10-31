@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
+#include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -52,9 +53,19 @@ class ASH_EXPORT ScannerSession : public ScannerCommandDelegate {
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
 
  private:
-  void OnActionsReturned(FetchActionsCallback callback,
-                         std::unique_ptr<manta::proto::ScannerOutput> output,
-                         manta::MantaStatus status);
+  void OnActionsReturned(
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      FetchActionsCallback callback,
+      std::unique_ptr<manta::proto::ScannerOutput> output,
+      manta::MantaStatus status);
+
+  // Populates the selected action. Used as a
+  // `ScannerUnpopulatedAction::PopulateToProtoCallback` once bound with the
+  // possibly-downscaled JPEG bytes.
+  void PopulateAction(
+      scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      manta::proto::ScannerAction unpopulated_action,
+      ScannerUnpopulatedAction::PopulatedProtoCallback callback);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
 
