@@ -359,13 +359,11 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                                       sourceView:cell];
                  }]];
   }
-  if ([editActions count] > 0) {
-    [menuElements addObject:[UIMenu menuWithTitle:@""
-                                            image:nil
-                                       identifier:nil
-                                          options:UIMenuOptionsDisplayInline
-                                         children:[editActions copy]]];
-  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[editActions copy]]];
 
   // Destructive actions.
   NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
@@ -391,13 +389,11 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                             sourceView:cell];
         }]];
   }
-  if ([destructiveActions count] > 0) {
-    [menuElements addObject:[UIMenu menuWithTitle:@""
-                                            image:nil
-                                       identifier:nil
-                                          options:UIMenuOptionsDisplayInline
-                                         children:[destructiveActions copy]]];
-  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[destructiveActions copy]]];
 
   return [menuElements copy];
 }

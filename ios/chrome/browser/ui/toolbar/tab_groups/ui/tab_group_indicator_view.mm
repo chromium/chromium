@@ -207,13 +207,11 @@
                    [weakSelf.mutator unGroupWithConfirmation:YES];
                  }]];
   }
-  if ([editActions count] > 0) {
-    [menuElements addObject:[UIMenu menuWithTitle:@""
-                                            image:nil
-                                       identifier:nil
-                                          options:UIMenuOptionsDisplayInline
-                                         children:[editActions copy]]];
-  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[editActions copy]]];
 
   // Destructive actions.
   NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
@@ -234,13 +232,11 @@
           [weakSelf.mutator deleteGroupWithConfirmation:NO];
         }]];
   }
-  if ([destructiveActions count] > 0) {
-    [menuElements addObject:[UIMenu menuWithTitle:@""
-                                            image:nil
-                                       identifier:nil
-                                          options:UIMenuOptionsDisplayInline
-                                         children:[destructiveActions copy]]];
-  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[destructiveActions copy]]];
 
   _menuButton.menu = [UIMenu menuWithChildren:[menuElements copy]];
 }
