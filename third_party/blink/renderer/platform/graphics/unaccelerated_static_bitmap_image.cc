@@ -110,30 +110,6 @@ void UnacceleratedStaticBitmapImage::Transfer() {
       ThreadScheduler::Current()->CleanupTaskRunner();
 }
 
-scoped_refptr<StaticBitmapImage>
-UnacceleratedStaticBitmapImage::ConvertToColorSpace(
-    sk_sp<SkColorSpace> color_space,
-    SkColorType color_type) {
-  DCHECK(color_space);
-
-  sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSwSkImage();
-  // If we don't need to change the color type, use SkImage::makeColorSpace()
-  if (skia_image->colorType() == color_type) {
-    skia_image = skia_image->makeColorSpace(
-        static_cast<GrDirectContext*>(nullptr), color_space);
-  } else {
-    skia_image = skia_image->makeColorTypeAndColorSpace(
-        static_cast<GrDirectContext*>(nullptr), color_type, color_space);
-  }
-  if (!skia_image) [[unlikely]] {
-    // Null value indicates that skia failed to allocate the destination
-    // bitmap.
-    base::TerminateBecauseOutOfMemory(
-        skia_image->imageInfo().makeColorType(color_type).computeMinByteSize());
-  }
-  return UnacceleratedStaticBitmapImage::Create(skia_image, orientation_);
-}
-
 bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasResourceProvider* resource_provider,
     const gfx::Rect& copy_rect) {

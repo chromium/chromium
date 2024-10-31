@@ -246,7 +246,7 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
   params.force_copy = force_copy;
   params.flip_y = options.flip_y;
   params.premultiply_alpha = options.premultiply_alpha;
-  params.has_color_space_conversion = options.has_color_space_conversion;
+  params.reinterpret_as_srgb = !options.has_color_space_conversion;
   params.orientation_from_image = options.orientation_from_image;
   params.sampling = options.sampling;
   params.source_rect = options.source_rect;

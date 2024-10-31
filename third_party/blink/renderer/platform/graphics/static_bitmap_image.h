@@ -46,10 +46,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   gfx::Size SizeWithConfig(SizeConfig) const final;
 
-  virtual scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
-      sk_sp<SkColorSpace>,
-      SkColorType = kN32_SkColorType) = 0;
-
   // Methods have common implementation for all sub-classes
   bool CurrentFrameIsComplete() override { return true; }
   void DestroyDecodedData() override {}

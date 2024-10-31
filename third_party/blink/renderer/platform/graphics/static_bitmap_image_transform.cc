@@ -141,10 +141,14 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
         bm_alpha_type = kUnpremul_SkAlphaType;
       }
     }
+    const auto bm_color_space = options.dest_color_space
+                                    ? options.dest_color_space
+                                    : source_info.refColorSpace();
     const auto bm_info =
         source_info.makeDimensions(source_rect.size())
             .makeAlphaType(bm_alpha_type)
-            .makeColorType(GetDestColorType(source_info.colorType()));
+            .makeColorType(GetDestColorType(source_info.colorType()))
+            .makeColorSpace(bm_color_space);
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
     }
@@ -194,7 +198,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
   auto dest_image = bm.asImage();
 
   // Strip the color space if requested.
-  if (!options.has_color_space_conversion) {
+  if (options.reinterpret_as_srgb) {
     dest_image = dest_image->reinterpretColorSpace(SkColorSpace::MakeSRGB());
   }
 
@@ -226,7 +230,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   const SkAlphaType dest_alpha_type =
       source_info.alphaType() == kOpaque_SkAlphaType ? kOpaque_SkAlphaType
                                                      : kPremul_SkAlphaType;
-  auto dest_color_space = source_info.refColorSpace();
+  const auto dest_color_space = options.dest_color_space
+                                    ? options.dest_color_space
+                                    : source_info.refColorSpace();
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
@@ -289,17 +295,30 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
+  // It's not obvious what `reinterpret_as_srgb` should mean if we also specify
+  // `dest_color_space`. Don't try to give an answer.
+  if (options.dest_color_space) {
+    CHECK(!options.reinterpret_as_srgb);
+  }
+
   // Early-out for empty transformations.
   if (!source || options.source_rect.IsEmpty() || options.dest_size.IsEmpty()) {
     return nullptr;
   }
 
+  const auto source_info = source->GetSkImageInfo();
   const bool needs_flip = options.flip_y;
   const bool needs_crop =
       options.source_rect != gfx::Rect(GetSourceSize(source, options));
   const bool needs_resize = options.source_rect.size() != options.dest_size;
   const bool needs_strip_orientation = !options.orientation_from_image;
-  const bool needs_strip_color_space = !options.has_color_space_conversion;
+  const bool needs_strip_color_space = options.reinterpret_as_srgb;
+  const bool needs_convert_color_space =
+      options.dest_color_space &&
+      !SkColorSpace::Equals(options.dest_color_space.get(),
+                            source_info.colorSpace()
+                                ? source_info.colorSpace()
+                                : SkColorSpace::MakeSRGB().get());
   const bool needs_alpha_change =
       (source->GetSkImageInfo().alphaType() == kUnpremul_SkAlphaType) !=
       (!options.premultiply_alpha);
@@ -308,7 +327,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   // the original.
   if (!options.force_copy && !needs_flip && !needs_crop && !needs_resize &&
       !needs_strip_orientation && !needs_strip_color_space &&
-      !needs_alpha_change) {
+      !needs_convert_color_space && !needs_alpha_change) {
     return source;
   }
 
@@ -357,6 +376,21 @@ StaticBitmapImageTransform::GetWithAlphaDisposition(
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
   options.premultiply_alpha = true;
+  return Apply(flush_reason, source, options);
+}
+
+scoped_refptr<StaticBitmapImage>
+StaticBitmapImageTransform::ConvertToColorSpace(
+    FlushReason flush_reason,
+    scoped_refptr<StaticBitmapImage> source,
+    sk_sp<SkColorSpace> color_space) {
+  const auto info = source->GetSkImageInfo();
+  StaticBitmapImageTransform::Params options;
+  options.source_rect = gfx::Rect(GetSourceSize(source, options));
+  options.dest_size = GetSourceSize(source, options);
+  options.premultiply_alpha = info.alphaType() != kUnpremul_SkAlphaType;
+  options.force_copy = true;
+  options.dest_color_space = color_space;
   return Apply(flush_reason, source, options);
 }
 

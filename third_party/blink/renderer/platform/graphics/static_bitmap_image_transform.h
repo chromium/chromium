@@ -30,9 +30,14 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
     // If true, then the final result must be premultiplied (or opaque).
     bool premultiply_alpha = true;
 
-    // If false, then strip the color space from the input (and therefore
+    // If true, then strip the color space from the input (and therefore
     // reinterpret the image as being sRGB).
-    bool has_color_space_conversion = true;
+    bool reinterpret_as_srgb = false;
+
+    // If this is set to a non-nullptr value, then convert the source to this
+    // color space. It's not clear what it means to set `dest_color_space` and
+    // also `reinterpret_as_srgb`, so any call with both parameters will CHECK.
+    sk_sp<SkColorSpace> dest_color_space;
 
     // If false, then strip the orientation from teh imgae (and therefore
     // reinterpret the image as having the origin be the top-left).
@@ -65,6 +70,12 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
       FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       AlphaDisposition);
+
+  // Convert `image` to the specified color space.
+  static scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
+      FlushReason,
+      scoped_refptr<StaticBitmapImage> image,
+      sk_sp<SkColorSpace> color_space);
 
  private:
   // Apply the specified transform by manipulating SkPixmaps in software. This

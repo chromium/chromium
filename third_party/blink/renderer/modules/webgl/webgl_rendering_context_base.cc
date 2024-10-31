@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
@@ -5456,24 +5457,15 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
   // in TexImageSkImage.
   scoped_refptr<StaticBitmapImage> color_converted_image;
   if (params.unpack_colorspace_conversion && image->IsTextureBacked()) {
-    const auto image_color_info = image->GetSkColorInfo();
-    const auto image_color_space = image_color_info.colorSpace()
-                                       ? image_color_info.refColorSpace()
-                                       : SkColorSpace::MakeSRGB();
-    const auto unpack_color_space =
-        PredefinedColorSpaceToSkColorSpace(unpack_color_space_);
-    if (!SkColorSpace::Equals(unpack_color_space.get(),
-                              image_color_space.get())) {
-      color_converted_image = image->ConvertToColorSpace(
-          unpack_color_space, image_color_info.colorType());
-      if (!color_converted_image) {
-        SynthesizeGLError(
-            GL_OUT_OF_MEMORY, func_name,
-            "ImageBitmap in unpack color space unexpectedly empty");
-        return;
-      }
-      image = color_converted_image.get();
+    color_converted_image = StaticBitmapImageTransform::ConvertToColorSpace(
+        FlushReason::kWebGLTexImage, image,
+        PredefinedColorSpaceToSkColorSpace(unpack_color_space_));
+    if (!color_converted_image) {
+      SynthesizeGLError(GL_OUT_OF_MEMORY, func_name,
+                        "ImageBitmap in unpack color space unexpectedly empty");
+      return;
     }
+    image = color_converted_image.get();
   }
 
   // Copy using the GPU, if possible.
