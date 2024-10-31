@@ -1845,6 +1845,10 @@ Permissions you've already given to websites and apps may apply to this account.
           desc="Command in the Lens Overlay context menu to copy text.">
           Copy
         </message>
+        <message name="IDS_LENS_OVERLAY_COPY_TEXT"
+          desc="Command in the Lens Overlay context menu to copy text.">
+          Copy text
+        </message>
         <message name="IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE"
           desc="Notification shown in the Lens Overlay when the user has copied selected text to the clipboard.">
           Text copied

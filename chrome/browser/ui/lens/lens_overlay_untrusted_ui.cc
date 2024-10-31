@@ -51,6 +51,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_COPY_AS_IMAGE);
   html_source->AddLocalizedString("copyAsImageToastMessage",
                                   IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE);
+  html_source->AddLocalizedString("copyText", IDS_LENS_OVERLAY_COPY_TEXT);
   html_source->AddLocalizedString("copyToastMessage",
                                   IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE);
   html_source->AddLocalizedString("dismiss",
