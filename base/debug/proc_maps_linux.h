@@ -26,7 +26,7 @@ struct BASE_EXPORT MappedMemoryRegion {
 
   MappedMemoryRegion();
   MappedMemoryRegion(const MappedMemoryRegion&);
-  MappedMemoryRegion(MappedMemoryRegion&&);
+  MappedMemoryRegion(MappedMemoryRegion&&) noexcept;
 
   // The address range [start,end) of mapped memory.
   uintptr_t start;
@@ -41,8 +41,11 @@ struct BASE_EXPORT MappedMemoryRegion {
   // Bitmask of read/write/execute/private/shared permissions.
   uint8_t permissions;
 
+  // Major and minor device numbers for the region.
   uint8_t dev_major;
   uint8_t dev_minor;
+
+  // Inode for the region.
   long inode;
 
   // Name of the file mapped into memory.

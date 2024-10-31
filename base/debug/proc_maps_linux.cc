@@ -24,12 +24,11 @@
 #include <inttypes.h>
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 MappedMemoryRegion::MappedMemoryRegion() = default;
 MappedMemoryRegion::MappedMemoryRegion(const MappedMemoryRegion&) = default;
-MappedMemoryRegion::MappedMemoryRegion(MappedMemoryRegion&&) = default;
+MappedMemoryRegion::MappedMemoryRegion(MappedMemoryRegion&&) noexcept = default;
 
 // Scans |proc_maps| starting from |pos| returning true if the gate VMA was
 // found, otherwise returns false.
@@ -239,5 +238,4 @@ std::optional<SmapsRollup> ParseSmapsRollupForTesting(
   return ParseSmapsRollup(smaps_rollup);
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug
