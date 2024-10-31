@@ -334,7 +334,13 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
   }
 }
 
-TEST_F(TracingObserverProtoTest, AsProtoInto) {
+// TODO(crbug.com/376596183): Re-enable this test.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AsProtoInto DISABLED_AsProtoInto
+#else
+#define MAYBE_AsProtoInto AsProtoInto
+#endif
+TEST_F(TracingObserverProtoTest, MAYBE_AsProtoInto) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);
