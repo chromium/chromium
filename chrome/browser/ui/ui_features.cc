@@ -465,4 +465,12 @@ BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
              "PageSpecificDataDialogRelatedInstalledAppsSection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableManagementPromotionBanner,
+             "EnableManagementPromotionBanner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnablePolicyPromotionBanner,
+             "EnablePolicyPromotionBanner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

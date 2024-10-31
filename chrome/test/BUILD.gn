@@ -1527,6 +1527,7 @@ if (is_android) {
       "//chrome/browser/ui/autofill/payments:android_browsertests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/webaudio:browser_tests",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/content/renderer:test_support",

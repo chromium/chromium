@@ -66,7 +66,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_details.h"
@@ -106,13 +105,20 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/ui_features.h"
+#endif // !BUILDFLAG(IS_ANDROID)
+
 // LINT.IfChange
 
 namespace {
 
 // Key under which extension policies are grouped in JSON policy exports.
 constexpr char kExtensionsKey[] = "extensions";
+
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kPolicyPromotionBannerLocale[] = "en-US";
+#endif // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -248,7 +254,6 @@ void PolicyUIHandler::RegisterMessages() {
       "setBannerDismissed",
       base::BindRepeating(&PolicyUIHandler::HandleSetBannerDismissed,
                           base::Unretained(this)));
-
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
@@ -494,16 +499,29 @@ void PolicyUIHandler::SendStatus() {
 
 void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   AllowJavascript();
+#if !BUILDFLAG(IS_ANDROID)
   ResolveJavascriptCallback(
       args[0],
       base::Value(
-          base::FeatureList::IsEnabled(policy::features::kEnablePolicyBanner) &&
+          base::FeatureList::IsEnabled(
+              features::kEnablePolicyPromotionBanner) // feature is on
+              &&
           policy::ManagementServiceFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))
-              ->IsAccountManaged() &&
-          g_browser_process->GetApplicationLocale() == kPolicyPromotionBannerLocale &&
+              ->IsAccountManaged() // the user is dasher managed
+              &&
+          g_browser_process->GetApplicationLocale() ==
+              kPolicyPromotionBannerLocale // the user is under en-US locale
+              &&
           !Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-              policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner)));
+              policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner)
+              // the user has not dismissed the banner
+              ));
+#else
+  // If the build is on Android, still handle the request but return false
+  // so the banner does not show
+  ResolveJavascriptCallback(args[0], false);
+#endif
 }
 
 void PolicyUIHandler::HandleSetBannerDismissed(const base::Value::List& args) {

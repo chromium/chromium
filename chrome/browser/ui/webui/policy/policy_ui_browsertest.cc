@@ -38,7 +38,6 @@
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/external_data_fetcher.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -69,6 +68,7 @@
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_builder.h"
@@ -998,10 +998,10 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
   PolicyUIManagedStatusTest() {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
-          policy::features::kEnablePolicyBanner);
+          features::kEnablePolicyPromotionBanner);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          policy::features::kEnablePolicyBanner);
+          features::kEnablePolicyPromotionBanner);
     }
   }
   bool isFeatureEnabled() { return GetParam(); }
@@ -1156,4 +1156,4 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, HandleLocaleNotEnUSHidden) {
 INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
                          PolicyUIManagedStatusTest,
                          ::testing::Values(false, true));
-#endif
+#endif // !BUILDFLAG(IS_ANDROID)
