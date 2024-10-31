@@ -22,7 +22,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxDialogBrowserProxy {
@@ -512,10 +512,10 @@ suite('Combined', function() {
         isChildVisible(learnMore, '#privacyPolicyDiv'), false,
         'privacy policy link should not be visible');
 
-    // Privacy policy iframe does not exist.
-    assertEquals(
-        isChildVisible(consentStep, '.iframe'), false,
-        `privacy policy page should not be visible`);
+    // Privacy policy dialog element does not exist.
+    const privacyPolicyDialog = consentStep!.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertFalse(!!privacyPolicyDialog);
   });
 
   test('privacyPolicy', async function() {
@@ -549,25 +549,45 @@ suite('Combined', function() {
     assertEquals(
         isVisible(privacyPolicyLink), true,
         'privacy policy link should be visible before being clicked');
-    privacyPolicyLink.click();
+
+    privacyPolicyLink!.click();
+    await microtasksFinished();
+
+    const privacyPolicyDialog = consentStep!.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertTrue(!!privacyPolicyDialog);
+    const privacyPolicy =
+        privacyPolicyDialog.shadowRoot!.querySelector('#privacyPolicy');
+    assertTrue(!!privacyPolicy);
+    const privacyPolicyBackButtonContainer =
+        privacyPolicyDialog.shadowRoot!.querySelector('.button-container');
+    assertTrue(!!privacyPolicyBackButtonContainer);
+
     assertEquals(
-        isChildVisible(consentStep, '.iframe.visible'), true,
+        getComputedStyle(privacyPolicy).opacity, '1',
         `privacy policy page should be visible when the link is clicked`);
+    assertEquals(
+        getComputedStyle(privacyPolicyBackButtonContainer).display, 'flex',
+        `privacy policy back button should be visible when the link is clicked`);
     assertEquals(
         isChildVisible(consentStep, '#consentNotice'), false,
         `if the privacy policy page is visible,
         the consent notice should not be visible.`);
 
-
     // After clicking the back button, the content area should display the
     // consent screen again.
-    testClickButton('#backButton', consentStep);
+    testClickButton('#backButton', privacyPolicyDialog);
+    await microtasksFinished();
+
     assertEquals(
         isChildVisible(consentStep, '#confirmButton'), true,
         `buttons should be shown on the consent notice again`);
     assertEquals(
-        isChildVisible(consentStep, '.iframe.hidden'), true,
-        `privacy policy page should be hidden when the link is clicked`);
+        getComputedStyle(privacyPolicy).opacity, '0',
+        `privacy policy page should be hidden when the back button is clicked`);
+    assertEquals(
+        getComputedStyle(privacyPolicyBackButtonContainer).display, 'none',
+        `privacy policy back button should be hidden when the back button is clicked`);
   });
 });
 

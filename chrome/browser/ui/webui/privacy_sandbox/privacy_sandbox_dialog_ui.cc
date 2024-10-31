@@ -239,17 +239,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
                      base::FeatureList::IsEnabled(
                          privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));
 
-  // Dark mode support.
-  ThemeService::BrowserColorScheme color_scheme =
-      ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
-          ->GetBrowserColorScheme();
-  bool is_dark_mode =
-      (color_scheme == ThemeService::BrowserColorScheme::kSystem)
-          ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-          : color_scheme == ThemeService::BrowserColorScheme::kDark;
-
-  source->AddBoolean("isDarkMode", is_dark_mode);
-
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   if (url.query().find("debug") != std::string::npos) {
     // Not intended to be hooked to anything. The dialog will not initialize

@@ -1,44 +1,7 @@
 <style include="cr-shared-style shared-style">
-  .iframe {
-    height: calc(100vh -
-      var(--privacy-sandbox-dialog-buttons-row-height) -
-      var(--privacy-sandbox-privacy-policy-back-button-section-height));
-    width: 96vw;
-    padding-right: 24px;
-    padding-left: 24px;
-  }
-
-  .iframe.hidden {
-    position: absolute;
-    z-index: -1;
-    opacity: 0;
-  }
-
-  .iframe.visible {
-    position: relative;
-    z-index: auto;
-  }
-
-  .back-button {
-    --cr-icon-button-size: 24px;
-    --cr-icon-button-icon-size: 24px;
-    margin-left: -4px;
-    display: flex;
-    align-items: flex-start;
-  }
-
-  .button-container {
-    display: flex;
-    width: 600px;
-    padding: 24px 40px;
-    align-items: flex-end;
-    gap: 16px;
-  }
-
   #privacyPolicyLink {
     color: var(--cr-link-color);
   }
-
 </style>
 
 <div id="consentNotice" hidden$="[[hideConsentNoticePage_]]">
@@ -96,15 +59,10 @@
     </cr-button>
   </div>
 </div>
- <template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
-  <div class="button-container" style$="[[getBackButtonBorderStyle_()]]"
-    hidden$="[[!hideConsentNoticePage_]]">
-    <cr-icon-button id="backButton"
-      aria-description="$i18n{privacyPolicyBackButtonAria}"
-      iron-icon="cr:arrow-back" class="back-button"
-      on-click="onBackToConsentNotice_"></cr-icon-button>
-  </div>
-  <iframe id="privacyPolicy" class="iframe hidden"
-    tabindex="-1" src='chrome-untrusted://privacy-sandbox-dialog/privacy-policy'
-    frameBorder="0"></iframe>
+<template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
+  <privacy-sandbox-privacy-policy-dialog
+      id="privacyPolicyDialog"
+      should-show="[[hideConsentNoticePage_]]"
+      on-back-button-clicked="onBackButtonClicked_">
+  </privacy-sandbox-privacy-policy-dialog>
 </template>

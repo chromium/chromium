@@ -201,6 +201,7 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
         "document.querySelector('body > "
         "privacy-sandbox-combined-dialog-app')"
         ".shadowRoot.querySelector('#consent')"
+        ".shadowRoot.querySelector('privacy-sandbox-privacy-policy-dialog')"
         ".shadowRoot.querySelector('#privacyPolicy').src = $1;",
         embedded_test_server()->GetURL("/blue.html"));
     EXPECT_TRUE(content::ExecJs(
