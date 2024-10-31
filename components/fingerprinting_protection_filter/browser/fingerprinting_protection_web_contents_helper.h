@@ -185,14 +185,12 @@ class FingerprintingProtectionWebContentsHelper
   base::ObserverList<FingerprintingProtectionObserver>::Unchecked
       observer_list_;
 
-  // TODO(https://crbug.com/40280666): Triage dangling pointers.
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
-  raw_ptr<privacy_sandbox::TrackingProtectionSettings, DanglingUntriaged>
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
 
-  raw_ptr<subresource_filter::VerifiedRulesetDealer::Handle, DanglingUntriaged>
-      dealer_handle_;
+  raw_ptr<subresource_filter::VerifiedRulesetDealer::Handle> dealer_handle_;
 
   // Whether the  profile is in Incognito mode.
   bool is_incognito_;

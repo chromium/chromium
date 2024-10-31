@@ -309,9 +309,7 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // this class transferred onto it (in
   // FingerprintingProtectionWebContentsHelper) we'll set this member to point
   // to it.
-  //
-  // TODO(https://crbug.com/40280666): Triage dangling pointers.
-  raw_ptr<content::Page, DanglingUntriaged> page_ = nullptr;
+  raw_ptr<content::Page> page_ = nullptr;
 
   // One ThrottleManger per page means one page activation decision per throttle
   // manager.

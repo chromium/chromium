@@ -243,8 +243,9 @@ class ThrottleManagerTest
   }
 
   void TearDown() override {
-    test_support_.reset();
+    content::RenderViewHostTestHarness::DeleteContents();
     dealer_handle_.reset();
+    test_support_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
