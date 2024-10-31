@@ -26,12 +26,14 @@ import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
-import {PrinterListEntry} from './cups_printer_types.js';
+import type {PrinterListEntry} from './cups_printer_types.js';
 import {PrinterSettingsUserAction, recordPrinterSettingsUserAction} from './cups_printers.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
+import type {CupsPrinterInfo, CupsPrintersBrowserProxy} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 import {getTemplate} from './cups_saved_printers.html.js';
-import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status.js';
+import type {PrinterStatus, PrinterStatusReason} from './printer_status.js';
+import {getStatusReasonFromPrinterStatus} from './printer_status.js';
 
 /**
  * If the Show more button is visible, the minimum number of printers we show

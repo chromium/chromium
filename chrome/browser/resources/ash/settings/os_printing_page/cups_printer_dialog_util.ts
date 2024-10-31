@@ -5,8 +5,9 @@
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {PrinterListEntry} from './cups_printer_types.js';
-import {CupsPrinterInfo, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+import type {PrinterListEntry} from './cups_printer_types.js';
+import type {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
+import {PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
 
 /**
  * @fileoverview  Utility functions that are used in Cups printer setup dialogs.

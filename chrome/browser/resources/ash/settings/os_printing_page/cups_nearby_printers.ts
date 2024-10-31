@@ -13,7 +13,7 @@ import './cups_printers_browser_proxy.js';
 import './cups_printers_entry.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -21,8 +21,9 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './cups_nearby_printers.html.js';
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
-import {PrinterListEntry} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import type {PrinterListEntry} from './cups_printer_types.js';
+import type {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 
 const SettingsCupsNearbyPrintersElementBase =
