@@ -14,6 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -361,9 +362,10 @@ class UserFeedbackView : public views::BoxLayoutView {
     base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", true);
   }
 
-  // TODO(crbug.com/374116757): Open user feedback dialog on thumb down
-  // button pressed.
   void OnThumbDownButtonPressed() {
+    if (auto* birch_bar_controller = BirchBarController::Get()) {
+      birch_bar_controller->ProvideFeedbackForCoral();
+    }
     base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", false);
   }
 };
