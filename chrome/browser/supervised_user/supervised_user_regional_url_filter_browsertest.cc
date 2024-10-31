@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -69,14 +70,8 @@ class SupervisedUserRegionalURLFilterTest
     : public MixinBasedInProcessBrowserTest,
       public ::testing::WithParamInterface<SupervisionMixin::SignInMode> {
  public:
-  SupervisedUserRegionalURLFilterTest() {
-    // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
-    // disable this feature.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kHttpsUpgrades});
-  }
-  ~SupervisedUserRegionalURLFilterTest() override { feature_list_.Reset(); }
+  SupervisedUserRegionalURLFilterTest() = default;
+  ~SupervisedUserRegionalURLFilterTest() override = default;
 
  protected:
   MOCK_METHOD(void,
@@ -137,11 +132,13 @@ MATCHER_P(VerifyRequestPath, expected_path, "") {
 
 // Verifies that the regional setting is passed to the RPC backend.
 IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"www.example.com"}, browser()->profile()->GetPrefs());
+
   std::string url_to_classify =
       "http://www.example.com/simple.html";  // Hostname of this url must be
                                              // resolved to embedded test
                                              // server's address.
-
   ClassifyUrlRequest expected;
   expected.set_region_code(std::string(kRegionCode));
   expected.set_url(url_to_classify);
