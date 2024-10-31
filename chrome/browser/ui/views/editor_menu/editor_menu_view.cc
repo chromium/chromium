@@ -67,8 +67,6 @@ constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 12, 16);
 
-}  // namespace
-
 int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
   const int total_chips_height = num_rows * chip_height;
   const int total_chips_paddings =
@@ -77,6 +75,8 @@ int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
                     : 0;
   return total_chips_height + total_chips_paddings;
 }
+
+}  // namespace
 
 EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
                                const PresetTextQueries& preset_text_queries,
