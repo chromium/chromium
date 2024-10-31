@@ -8184,7 +8184,7 @@ crbug.com/372749228 [ Win ] external/wpt/preload/avoid-delaying-onload-link-prel
 # Gardener 2024-10-04
 crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
-crbug.com/827209 [ Mac14 ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
+crbug.com/827209 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 
 # Gardener 2024-10-11
 crbug.com/372293920 [ Mac11 ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Crash Failure Pass Timeout ]
