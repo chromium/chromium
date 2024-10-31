@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -33,6 +34,7 @@
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -239,7 +241,9 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     const std::string& source_lang,
     const std::string& target_lang,
     base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
-  GetRemote()->CreateTranslator(source_lang, target_lang, std::move(callback));
+  GetRemote()->CreateTranslator(source_lang, target_lang,
+                                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                                    std::move(callback), mojo::NullRemote()));
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(
@@ -262,16 +266,22 @@ void OnDeviceTranslationServiceController::CanTranslate(
         CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
     return;
   }
+
+  auto callbacks = base::SplitOnceCallback(std::move(callback));
   GetRemote()->CanTranslate(
       source_lang, target_lang,
-      base::BindOnce(
-          [](base::OnceCallback<void(CanCreateTranslatorResult)> callback,
-             bool result) {
-            std::move(callback).Run(
-                result ? CanCreateTranslatorResult::kReadily
-                       : CanCreateTranslatorResult::kNoNotSupportedLanguage);
-          },
-          std::move(callback)));
+      mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(
+              [](base::OnceCallback<void(CanCreateTranslatorResult)> callback,
+                 bool result) {
+                std::move(callback).Run(
+                    result
+                        ? CanCreateTranslatorResult::kReadily
+                        : CanCreateTranslatorResult::kNoNotSupportedLanguage);
+              },
+              std::move(callbacks.first)),
+          base::BindOnce(std::move(callbacks.second),
+                         CanCreateTranslatorResult::kNoServiceCrashed)));
 }
 
 CanCreateTranslatorResult

@@ -200,6 +200,195 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        "given source and target language.");
 }
 
+// Tests the behavior of the failure of translation.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslationFailure) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Tries to translate "SIMULATE_ERROR" to Japanese. This "SIMULATE_ERROR"
+  // causes failure in the mock TranslateKit component. See comments in
+  // mock_translate_kit_lib.cc.
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+            return await translator.translate('SIMULATE_ERROR');
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )")
+                .ExtractString(),
+            "NotReadableError: Unable to translate the given text.");
+}
+
+// Tests the behavior of the crash of calling translate().
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CrashWhileTranslating) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Tries to translate "CAUSE_CRASH" to Japanese. This "CAUSE_CRASH" causes
+  // a crash in the mock TranslateKit component. See comments in
+  // mock_translate_kit_lib.cc.
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            window._translator = await translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+            return await window._translator.translate('CAUSE_CRASH');
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )")
+                .ExtractString(),
+            "NotReadableError: Unable to translate the given text.");
+
+  // After the crash, the translator is not usable.
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            return await window._translator.translate('hello');
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )")
+                .ExtractString(),
+            "NotReadableError: Unable to translate the given text.");
+
+  // But a new translator can be created and used.
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// Tests the behavior of the crash of calling createTranslator() and
+// canTranslate().
+class OnDeviceTranslationCrashingLangBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationCrashingLangBrowserTest() {
+    // Need to set TranslationAPIAcceptLanguagesCheck to false to use a fake
+    // language code `cause_crash` to trigger a crash.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kEnableTranslationAPI,
+          {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
+        {});
+  }
+  ~OnDeviceTranslationCrashingLangBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
+    // Need to set the language pack path to the command line to accept the
+    // fake language code `cause_crash`.
+    command_line->AppendSwitchASCII(
+        "translate-kit-packages",
+        base::StrCat({"cause_crash,ja,", GetTempDir().AsUTF8Unsafe()}));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests the behavior of the crash of calling createTranslator().
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
+                       CrashWhileCallingCreateTranslator) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  NavigateToEmptyPage();
+
+  // Tries to create a translator for the fake language code `cause_crash`. This
+  // causes a crash in the mock TranslateKit component. See comments in
+  // mock_translate_kit_lib.cc.
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'cause_crash',
+              targetLanguage: 'ja',
+            });
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )")
+                .ExtractString(),
+            "NotSupportedError: Unable to create translator for the given "
+            "source and target language.");
+}
+
+// Tests the behavior of the crash of calling canTranslate().
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
+                       CrashWhileCallingCanTranslate) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  // Tries to call canTranslate() for the fake language code `cause_crash`. This
+  // causes a crash in the mock TranslateKit component. See comments in
+  // mock_translate_kit_lib.cc.
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            return await translation.canTranslate({
+              sourceLanguage: 'cause_crash',
+              targetLanguage: 'ja',
+            });
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )")
+                .ExtractString(),
+            "no");
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  EXPECT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+        (async () => {
+          try {
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+            return await translator.translate('CHECK_NOT_EXIST_FILE');
+          } catch (e) {
+            return e.toString();
+          }
+        })();
+      )")
+                .ExtractString(),
+            "Result of Open(): Failed, result of FileExists(): false, "
+            "is_directory: false");
+}
+
 // Tests the behavior of createTranslator() when the target language is
 // unsupported.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,

@@ -30,6 +30,9 @@ enum CanCreateTranslatorResult {
   // The translator cannot be created. New models need to be downloaded,
   // but the number of downloaded language packs will exceedd the limit.
   kNoExceedsLanguagePackCountLimitation = 6,
+
+  // The translator cannot be created, because the translator service crashed.
+  kNoServiceCrashed = 7,
 };
 
 // The client interface that receives a Translator from a TranslationManager.

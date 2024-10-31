@@ -32,8 +32,7 @@ class TranslateKitTranslator : public mojom::Translator {
   void Translate(const std::string& input,
                  TranslateCallback translate_callback) override {
     CHECK(translator_);
-    auto result = translator_->Translate(input);
-    std::move(translate_callback).Run(result ? *result : std::string());
+    std::move(translate_callback).Run(translator_->Translate(input));
   }
 
  private:

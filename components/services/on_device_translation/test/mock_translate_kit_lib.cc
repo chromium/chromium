@@ -6,11 +6,16 @@
 // used in production.
 // This mock implementation runs as follows:
 // TranslateKitCreateTranslator()
+//   - If the source language is "cause_crash", crash.
 //   - Check the file "dict.dat" in the language package.
 //   - If the file exists, create and returns a FakeTranslator.
 //   - Otherwise, return a null pointer.
 // TranslatorTranslate()
 //   - If the input text is "SIMULATE_ERROR", return false.
+//   - If the input text is "CAUSE_CRASH", crash.
+//   - If the input text is "CHECK_NOT_EXIST_FILE", check if the file
+//     "not_exist_file" exists in the language package. And pass the result of
+//     Open() and FileExists() to the callback, and return true.
 //   - Otherwise, pass the concatenation of the content of "dict.dat" and the
 //     input text to the callback, and return true.
 
@@ -21,6 +26,8 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -115,13 +122,14 @@ class FakeTranslator {
     if (!dict_data) {
       return nullptr;
     }
-    return std::make_unique<FakeTranslator>(std::move(dict_data),
+    return std::make_unique<FakeTranslator>(package_path, std::move(dict_data),
                                             base::PassKey<FakeTranslator>());
   }
 
-  FakeTranslator(std::unique_ptr<FakeReadOnlyMemoryMap> dict,
+  FakeTranslator(const std::string_view package_path,
+                 std::unique_ptr<FakeReadOnlyMemoryMap> dict,
                  base::PassKey<FakeTranslator>)
-      : dict_(std::move(dict)) {}
+      : package_path_(package_path), dict_(std::move(dict)) {}
   ~FakeTranslator() = default;
   FakeTranslator(const FakeTranslator&) = delete;
   FakeTranslator& operator=(const FakeTranslator&) = delete;
@@ -133,7 +141,10 @@ class FakeTranslator {
          input});
   }
 
+  const std::string& package_path() const { return package_path_; }
+
  private:
+  const std::string package_path_;
   std::unique_ptr<FakeReadOnlyMemoryMap> dict_;
 };
 
@@ -216,6 +227,14 @@ TranslateKitCreateTranslator(uintptr_t kit_ptr,
                              TranslateKitLanguage source_lang,
                              TranslateKitLanguage target_lang) {
   CHECK(kit_ptr);
+  if (std::string_view(source_lang.language_code,
+                       source_lang.language_code_size) == "cause_crash") {
+    LOG(ERROR) << "Intentionally terminating current process to simulate"
+                  " the on device translation service crash for testing.";
+    // Use `TerminateCurrentProcessImmediately()` instead of `CHECK()` to avoid
+    // 'Fatal error' dialog on Windows debug.
+    base::Process::TerminateCurrentProcessImmediately(1);
+  }
   auto translator =
       reinterpret_cast<FakeTranslateKit*>(kit_ptr)->MaybeCreateTranslator(
           std::string_view(source_lang.language_code,
@@ -244,6 +263,34 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
   std::string_view input_string(input.input_text, input.input_text_size);
   if (input_string == "SIMULATE_ERROR") {
     return false;
+  }
+
+  if (input_string == "CAUSE_CRASH") {
+    LOG(ERROR) << "Intentionally terminating current process to simulate"
+                  " the on device translation service crash for testing.";
+    // Use `TerminateCurrentProcessImmediately()` instead of `CHECK()` to avoid
+    // 'Fatal error' dialog on Windows debug.
+    base::Process::TerminateCurrentProcessImmediately(1);
+  }
+
+  if (input_string == "CHECK_NOT_EXIST_FILE") {
+    const std::string not_exsit_file_name = base::StrCat(
+        {reinterpret_cast<FakeTranslator*>(translator_ptr)->package_path(),
+         "/not_exist_file"});
+    std::unique_ptr<FakeReadOnlyMemoryMap> data =
+        FakeReadOnlyMemoryMap::MaybeCreate(not_exsit_file_name);
+    bool is_directory = false;
+    bool file_exists = FileExists(not_exsit_file_name, &is_directory);
+    const std::string result = base::StrCat({
+        "Result of Open(): ",
+        data ? "OK" : "Failed",
+        ", result of FileExists(): ",
+        file_exists ? "true" : "false",
+        ", is_directory: ",
+        is_directory ? "true" : "false",
+    });
+    callback(TranslateKitOutputText(result.data(), result.size()), user_data);
+    return true;
   }
   const auto output = reinterpret_cast<FakeTranslator*>(translator_ptr)
                           ->Translate(input_string);

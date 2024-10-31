@@ -124,7 +124,8 @@ TEST_F(OnDeviceTranslationServiceTest, CreateTranslatorSuccess) {
 
   base::RunLoop run_loop;
   translator_remote->Translate(
-      "test", base::BindLambdaForTesting([&](const std::string& output) {
+      "test",
+      base::BindLambdaForTesting([&](const std::optional<std::string>& output) {
         EXPECT_EQ(output, "En to Ja - test");
         run_loop.Quit();
       }));
@@ -155,8 +156,8 @@ TEST_F(OnDeviceTranslationServiceTest, TranslateFailure) {
   base::RunLoop run_loop;
   translator_remote->Translate(
       "SIMULATE_ERROR",
-      base::BindLambdaForTesting([&](const std::string& output) {
-        EXPECT_EQ(output, "");
+      base::BindLambdaForTesting([&](const std::optional<std::string>& output) {
+        EXPECT_FALSE(output.has_value());
         run_loop.Quit();
       }));
   run_loop.Run();

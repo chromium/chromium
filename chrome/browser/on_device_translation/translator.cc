@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
 namespace on_device_translation {
@@ -28,13 +29,10 @@ void Translator::Translate(const std::string& input,
   RecordTranslationCharacterCount(source_lang_, target_lang_, input.size());
   if (translator_remote_.is_connected()) {
     translator_remote_->Translate(
-        input, base::BindOnce(
-                   [](TranslateCallback callback, const std::string& output) {
-                     std::move(callback).Run(output);
-                   },
-                   std::move(callback)));
+        input, mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                           std::nullopt));
   } else {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
   }
 }
 
