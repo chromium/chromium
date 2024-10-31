@@ -2266,9 +2266,8 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   )
   parser.add_argument(
       '--update-script',
-      dest='update_script',
-      action='store_true',
-      default=False,
+      action=UpdateScriptAction,
+      nargs=0,
       help='Update this script to the latest.',
   )
   parser.add_argument(
@@ -2307,9 +2306,6 @@ def ParseCommandLine(args=None):
   """Parses the command line for bisect options."""
   parser = _CreateCommandLineParser()
   opts = parser.parse_args(args)
-
-  if opts.update_script:
-    UpdateScript()
 
   if opts.archive is None:
     archive = _DetectArchive()
@@ -2462,17 +2458,18 @@ def MaybeSwitchBuildType(opts, good, bad):
   return command_line
 
 
-def UpdateScript():
-  script_path = sys.argv[0]
-  script_content = str(
-      base64.b64decode(
-          urllib.request.urlopen(
-              "https://chromium.googlesource.com/chromium/src/+/HEAD/"
-              "tools/bisect-builds.py?format=TEXT").read()), 'utf-8')
-  with open(script_path, "w") as f:
-    f.write(script_content)
-  print("Update successful!")
-  exit(0)
+class UpdateScriptAction(argparse.Action):
+  def __call__(self, parser, namespace, values, option_string=None):
+    script_path = sys.argv[0]
+    script_content = str(
+        base64.b64decode(
+            urllib.request.urlopen(
+                "https://chromium.googlesource.com/chromium/src/+/HEAD/"
+                "tools/bisect-builds.py?format=TEXT").read()), 'utf-8')
+    with open(script_path, "w") as f:
+      f.write(script_content)
+    print("Update successful!")
+    exit(0)
 
 
 def main():

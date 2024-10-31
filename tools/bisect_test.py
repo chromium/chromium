@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
 import functools
 import io
 import json
@@ -1452,6 +1453,21 @@ class MethodTest(BisectTestCase):
       self.assertRegexpMatches(
           mock_stderr.getvalue(), r'To bisect for mac64, please choose from '
           r'release(-r), snapshot(-s)')
+
+  @patch('urllib.request.urlopen')
+  @patch('builtins.open')
+  @patch('sys.stdout', new_callable=io.StringIO)
+  def test_update_script(self, mock_stdout, mock_open, mock_urlopen):
+    mock_urlopen.return_value = io.BytesIO(
+        base64.b64encode('content'.encode('utf-8')))
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(['--update-script'])
+    mock_urlopen.assert_called_once_with(
+        'https://chromium.googlesource.com/chromium/src/+/HEAD/'
+        'tools/bisect-builds.py?format=TEXT')
+    mock_open.assert_called_once()
+    mock_open.return_value.__enter__().write.assert_called_once_with('content')
+    self.assertEqual(mock_stdout.getvalue(), 'Update successful!\n')
 
   @patch("urllib.request.urlopen",
          side_effect=[
