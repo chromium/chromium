@@ -66,8 +66,6 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -985,16 +983,30 @@ class SessionRestoreImpl : public BrowserListObserver {
       return;
     }
 
+    SessionService* session_service =
+        SessionServiceFactory::GetForProfile(browser->profile());
+    CHECK(session_service);
+
     for (const std::unique_ptr<sessions::SessionTabGroup>& session_tab_group :
          tab_groups) {
+      const tab_groups::TabGroupId& new_tab_group_id =
+          new_group_ids.at(session_tab_group->id);
+      if (session_tab_group->saved_guid) {
+        // We add this mapping to ensure the call to TabGroup::SetVisualData
+        // results in writing the saved guid to disk. This ensures we do not
+        // duplicate saved tab groups if there is a crash prior to or during
+        // model initialization.
+        session_service->AddSavedTabGroupsMapping(
+            new_tab_group_id, session_tab_group->saved_guid.value());
+      }
+
       TabGroup* model_tab_group =
           browser->tab_strip_model()->group_model()->GetTabGroup(
-              new_group_ids.at(session_tab_group->id));
+              new_tab_group_id);
       CHECK(model_tab_group);
       model_tab_group->SetVisualData(session_tab_group->visual_data);
 
-      ProcessSavedGroup(browser->profile(),
-                        new_group_ids.at(session_tab_group->id),
+      ProcessSavedGroup(browser->profile(), new_tab_group_id,
                         session_tab_group->saved_guid);
     }
   }
