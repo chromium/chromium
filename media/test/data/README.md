@@ -1022,6 +1022,16 @@ JSON file that contains all metadata related to test-25fps.av1.ivf, used by the
 video\_decode\_accelerator\_tests. This includes the video codec, resolution and
 md5 checksums of individual video frames when converted to the I420 format.
 
+#### av1-1-b8-02-allintra.ivf
+AOM AV1 test vector in which all frames are intra. This video comes from
+[here](https://code.videolan.org/videolan/dav1d-test-data/-/blob/0b1ae65ec0c949bb1aac496d1b3f8bde5ffb10b8/8-bit/intra/av1-1-b8-02-allintra.ivf)
+and is licensed under the AOM license.
+
+#### av1-1-b8-02-allintra.ivf.json
+JSON file that contains all metadata related to av1-1-b8-02-allintra.ivf, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
+
 #### test-25fps.hevc:
 H.265/HEVC video whose content is the same as test-25fps.h264.
 ```
