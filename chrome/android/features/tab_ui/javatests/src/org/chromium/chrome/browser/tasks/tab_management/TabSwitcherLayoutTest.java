@@ -321,7 +321,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testCloseButtonDescription() {
         String expectedDescription = "Close New tab tab";
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -346,7 +345,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Test group tab.
-        expectedDescription = "Close tab group with 2 tabs.";
+        expectedDescription = "Close tab group with 2 tabs, color Grey.";
         onView(
                         allOf(
                                 withParent(withId(R.id.content_view)),

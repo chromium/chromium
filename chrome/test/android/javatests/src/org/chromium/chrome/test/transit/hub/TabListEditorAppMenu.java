@@ -91,7 +91,6 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
      * @return the "New tab group" dialog as a Facility.
      */
     public NewTabGroupDialogFacility groupTabsWithParityEnabled() {
-        assert ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
         return mGroupWithParityMenuItem.scrollToAndSelect();
     }
 
