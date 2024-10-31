@@ -20,6 +20,7 @@
 
 namespace on_device_translation {
 
+class FileOperationProxyImpl;
 enum class LanguagePackKey;
 
 // This class is the controller that launches the on-device translation service
@@ -53,8 +54,6 @@ class OnDeviceTranslationServiceController {
 
  private:
   friend base::NoDestructor<OnDeviceTranslationServiceController>;
-
-  class FileOperationProxyImpl;
 
   // The information of a pending task. This is used to keep the tasks that are
   // waiting for the language packs to be installed.

@@ -54,6 +54,7 @@ source_set("unit_tests") {
   sources = [
     "../component_updater/translate_kit_component_installer_unittest.cc",
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
+    "file_operation_proxy_impl_unittest.cc",
     "language_pack_util_unittest.cc",
     "translation_manager_impl_unittest.cc",
     "translation_metrics_unittest.cc",
@@ -68,7 +69,9 @@ source_set("unit_tests") {
     "//components/component_updater:test_support",
     "//components/crx_file",
     "//components/prefs",
+    "//components/services/on_device_translation/:test_support",
     "//components/services/on_device_translation/public/cpp",
+    "//components/services/on_device_translation/public/mojom",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
   ]

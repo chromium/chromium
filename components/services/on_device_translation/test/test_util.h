@@ -36,17 +36,20 @@ base::FilePath GetMockInvalidFunctionPointerLibraryPath();
 // its CreateTranslateKit() method always fails.
 base::FilePath GetMockFailingLibraryPath();
 
+// A file to be used in the fake file system.
+struct TestFile {
+  // The relative path of the file.
+  std::string relative_path;
+  // The content of the file.
+  std::string content;
+};
+
+// Sets up the data directory with the given `files`.
+base::ScopedTempDir SetupDataDir(const std::vector<TestFile>& files);
+
 // A fake implementation of FileOperationProxy for testing.
 class FakeFileOperationProxy : public mojom::FileOperationProxy {
  public:
-  // A file to be used in the fake file system.
-  struct TestFile {
-    // The relative path of the file.
-    std::string relative_path;
-    // The content of the file.
-    std::string content;
-  };
-
   // Creates a FakeFileOperationProxy with the given `files`.
   static std::unique_ptr<FakeFileOperationProxy, base::OnTaskRunnerDeleter>
   Create(mojo::PendingReceiver<mojom::FileOperationProxy> proxy_receiver,
@@ -68,9 +71,6 @@ class FakeFileOperationProxy : public mojom::FileOperationProxy {
             OpenCallback callback) override;
 
  private:
-  // Sets up the data directory with the given `files`.
-  base::ScopedTempDir SetupDataDir(const std::vector<TestFile>& files);
-
   // Returns the file path for the given `package_index` and `relative_path`.
   base::FilePath GetFilePath(uint32_t package_index,
                              const base::FilePath& relative_path);

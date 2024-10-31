@@ -8008,6 +8008,8 @@ static_library("browser") {
       "component_updater/translate_kit_language_pack_component_installer.h",
       "on_device_translation/component_manager.cc",
       "on_device_translation/component_manager.h",
+      "on_device_translation/file_operation_proxy_impl.cc",
+      "on_device_translation/file_operation_proxy_impl.h",
       "on_device_translation/service_controller.cc",
       "on_device_translation/service_controller.h",
       "on_device_translation/translation_manager_impl.cc",

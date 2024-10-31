@@ -89,8 +89,7 @@ void FakeFileOperationProxy::Open(uint32_t package_index,
                                                     base::File::FLAG_READ));
 }
 
-base::ScopedTempDir FakeFileOperationProxy::SetupDataDir(
-    const std::vector<TestFile>& files) {
+base::ScopedTempDir SetupDataDir(const std::vector<TestFile>& files) {
   base::ScopedTempDir tmp_dir;
   CHECK(tmp_dir.CreateUniqueTempDir());
   for (const auto& file : files) {

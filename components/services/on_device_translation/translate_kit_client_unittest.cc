@@ -27,7 +27,7 @@ class TranslateKitClientTest : public testing::Test {
   std::unique_ptr<TranslateKitClient> CreateClient(
       const base::FilePath& library_path,
       const std::vector<std::pair<std::string, std::string>>& packages,
-      const std::vector<FakeFileOperationProxy::TestFile>& files) {
+      const std::vector<TestFile>& files) {
     auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
     auto config = mojom::OnDeviceTranslationServiceConfig::New();
 

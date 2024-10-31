@@ -36,7 +36,7 @@ class OnDeviceTranslationServiceTest : public testing::Test {
   // needs to be kept alive for the duration of the test.
   std::unique_ptr<FakeFileOperationProxy, base::OnTaskRunnerDeleter> SendConfig(
       const std::vector<std::pair<std::string, std::string>>& packages,
-      const std::vector<FakeFileOperationProxy::TestFile>& files) {
+      const std::vector<TestFile>& files) {
     auto config = mojom::OnDeviceTranslationServiceConfig::New();
 
     for (const auto& pair : packages) {

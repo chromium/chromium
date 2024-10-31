@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
+#include "chrome/browser/on_device_translation/file_operation_proxy_impl.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
@@ -37,7 +37,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
 using blink::mojom::CanCreateTranslatorResult;
@@ -84,67 +83,6 @@ OnDeviceTranslationServiceController::PendingTask::PendingTask(PendingTask&&) =
 OnDeviceTranslationServiceController::PendingTask&
 OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
     default;
-
-// Implementation of FileOperationProxy. It is used to provide file operations
-// to the OnDeviceTranslationService. This is created on the UI thread and
-// destroyed on the background thread of the passed `task_runner`.
-class OnDeviceTranslationServiceController::FileOperationProxyImpl
-    : public FileOperationProxy {
- public:
-  FileOperationProxyImpl(
-      mojo::PendingReceiver<FileOperationProxy> proxy_receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::vector<base::FilePath> package_pathes)
-      : receiver_(this, std::move(proxy_receiver), task_runner),
-        package_pathes_(std::move(package_pathes)) {}
-  ~FileOperationProxyImpl() override = default;
-
-  // FileOperationProxy implementation:
-  void FileExists(uint32_t package_index,
-                  const base::FilePath& relative_path,
-                  FileExistsCallback callback) override {
-    const base::FilePath file_path = GetFilePath(package_index, relative_path);
-    if (file_path.empty()) {
-      // Invalid `path` was passed.
-      std::move(callback).Run(/*exists=*/false, /*is_directory=*/false);
-      return;
-    }
-    if (!base::PathExists(file_path)) {
-      // File doesn't exist.
-      std::move(callback).Run(/*exists=*/false, /*is_directory=*/false);
-      return;
-    }
-    std::move(callback).Run(
-        /*exists=*/true,
-        /*is_directory=*/base::DirectoryExists(file_path));
-  }
-  void Open(uint32_t package_index,
-            const base::FilePath& relative_path,
-            OpenCallback callback) override {
-    const base::FilePath file_path = GetFilePath(package_index, relative_path);
-    std::move(callback).Run(
-        file_path.empty() ? base::File()
-                          : base::File(file_path, base::File::FLAG_OPEN |
-                                                      base::File::FLAG_READ));
-  }
-
- private:
-  base::FilePath GetFilePath(uint32_t package_index,
-                             const base::FilePath& relative_path) {
-    if (package_index >= package_pathes_.size()) {
-      // Invalid package index.
-      return base::FilePath();
-    }
-    if (relative_path.IsAbsolute() || relative_path.ReferencesParent()) {
-      // Invalid relative path.
-      return base::FilePath();
-    }
-    return package_pathes_[package_index].Append(relative_path);
-  }
-
-  mojo::Receiver<FileOperationProxy> receiver_{this};
-  std::vector<base::FilePath> package_pathes_;
-};
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
     : file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
