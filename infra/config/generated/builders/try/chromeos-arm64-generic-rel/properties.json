@@ -69,7 +69,7 @@
     "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "minimum",
     "project": "rbe-chromium-untrusted",
-    "remote_jobs": 150
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

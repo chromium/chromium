@@ -250,6 +250,7 @@ try_.builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
 
@@ -292,7 +293,6 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_enabled = True,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
