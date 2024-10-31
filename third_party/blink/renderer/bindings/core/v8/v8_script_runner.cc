@@ -126,6 +126,15 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     bool can_use_crowdsourced_compile_hints,
     std::optional<inspector_compile_script_event::V8ConsumeCacheResult>*
         cache_result) {
+  // Record the script compilation in ScriptState (accessible via
+  // internals.idl).
+  {
+    const bool use_code_cache =
+        (compile_options & v8::ScriptCompiler::kConsumeCodeCache) != 0;
+    script_state->RecordScriptCompilation(classic_script.SourceUrl(),
+                                          use_code_cache);
+  }
+
   v8::Local<v8::String> code = V8String(isolate, classic_script.SourceText());
 
   // TODO(kouhei): Plumb the ScriptState into this function and replace all

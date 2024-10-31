@@ -3961,6 +3961,16 @@ Vector<String> Internals::getCreatorScripts(HTMLImageElement* img) {
   return Vector<String>(img->creator_scripts());
 }
 
+String Internals::lastCompiledScriptFileName(Document* document) {
+  return ToScriptStateForMainWorld(document->GetFrame())
+      ->last_compiled_script_file_name();
+}
+
+bool Internals::lastCompiledScriptUsedCodeCache(Document* document) {
+  return ToScriptStateForMainWorld(document->GetFrame())
+      ->last_compiled_script_used_code_cache();
+}
+
 ScriptPromise<IDLString> Internals::LCPPrediction(ScriptState* script_state,
                                                   Document* document) {
   auto* resolver =

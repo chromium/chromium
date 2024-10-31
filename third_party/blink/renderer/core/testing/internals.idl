@@ -459,4 +459,7 @@ interface Internals {
     // NetworkContext. Intended to be used to allow remote context executors to
     // continue functioning in fenced frame WPTs after network is revoked.
     [CallWith=ScriptState] Promise<undefined> exemptUrlFromNetworkRevocation(USVString url);
+
+    DOMString lastCompiledScriptFileName(Document document);
+    boolean lastCompiledScriptUsedCodeCache(Document document);
 };

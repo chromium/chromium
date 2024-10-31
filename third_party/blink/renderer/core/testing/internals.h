@@ -629,6 +629,8 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise<IDLUndefined> exemptUrlFromNetworkRevocation(ScriptState*,
                                                              const String& url);
+  String lastCompiledScriptFileName(Document* document);
+  bool lastCompiledScriptUsedCodeCache(Document* document);
 
  private:
   Document* ContextDocument() const;
