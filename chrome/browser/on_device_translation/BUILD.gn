@@ -73,3 +73,21 @@ source_set("unit_tests") {
     "//content/test:test_support",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/test_util.cc",
+    "test/test_util.h",
+  ]
+  deps = [
+    ":language_pack_util",
+    ":prefs",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//components/services/on_device_translation/:test_support",
+    "//content/test:test_support",
+  ]
+}

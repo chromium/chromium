@@ -17,6 +17,7 @@
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
+#include "chrome/browser/on_device_translation/test/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -54,140 +55,6 @@ constexpr std::string_view kOriginTrialToken =
     "4K5+79dQUiOwIAAABheyJvcmlnaW4iOiAiaHR0cHM6Ly90cmFuc2xhdGlvbi1hcGkudGVzdDo0"
     "NDMiLCAiZmVhdHVyZSI6ICJUcmFuc2xhdGlvbkFQSSIsICJleHBpcnkiOiAyMDQ1NDUxMTAxfQ"
     "==";
-
-std::string CreateFakeDictionaryData(const std::string& sourceLang,
-                                     const std::string& targetLang) {
-  return base::StringPrintf("%s to %s: ", sourceLang, targetLang);
-}
-
-class MockComponentManager : public ComponentManager {
- public:
-  explicit MockComponentManager(const base::FilePath& package_dir)
-      : package_dir_(package_dir) {
-    ComponentManager::SetForTesting(this);
-  }
-
-  ~MockComponentManager() override { ComponentManager::SetForTesting(nullptr); }
-
-  // Disallow copy and assign.
-  MockComponentManager(const MockComponentManager&) = delete;
-  MockComponentManager& operator=(const MockComponentManager&) = delete;
-
-  // ComponentManager implements:
-  MOCK_METHOD(void, RegisterTranslateKitComponentImpl, (), (override));
-  MOCK_METHOD(void,
-              RegisterTranslateKitLanguagePackComponent,
-              (LanguagePackKey),
-              (override));
-  MOCK_METHOD(void,
-              UninstallTranslateKitLanguagePackComponent,
-              (LanguagePackKey),
-              (override));
-  base::FilePath GetTranslateKitComponentPathImpl() override {
-    return package_dir_;
-  }
-
-  // Installs the mock TranslateKit component.
-  // The mock component's translate method returns the concatenation of the
-  // content of "dict.dat" in the language pack and the input text.
-  // See comments in mock_translate_kit_lib.cc for more details.
-  void InstallMockTranslateKitComponent() {
-    base::ScopedAllowBlockingForTesting allow_io;
-    const auto mock_library_path = GetMockLibraryPath();
-    const auto binary_path = package_dir_.Append(mock_library_path.BaseName());
-    if (!base::DirectoryExists(binary_path.DirName())) {
-      CHECK(base::CreateDirectory(binary_path.DirName()));
-    }
-    CHECK(base::CopyFile(mock_library_path, binary_path));
-    g_browser_process->local_state()->SetFilePath(
-        prefs::kTranslateKitBinaryPath, binary_path);
-  }
-
-  // Installs the mock language pack.
-  void InstallMockLanguagePack(LanguagePackKey language_pack_key,
-                               const std::string& fake_dictionary_data) {
-    base::ScopedAllowBlockingForTesting allow_io;
-    const auto dict_dir_path =
-        package_dir_.AppendASCII(GetPackageInstallDirName(language_pack_key));
-    const auto dict_path = dict_dir_path.AppendASCII("dict.dat");
-    if (!base::DirectoryExists(dict_dir_path)) {
-      CHECK(base::CreateDirectory(dict_dir_path));
-    }
-    CHECK(
-        base::File(dict_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE)
-            .WriteAndCheck(0, base::as_byte_span(fake_dictionary_data)));
-    const LanguagePackComponentConfig* config =
-        kLanguagePackComponentConfigMap.at(language_pack_key);
-    g_browser_process->local_state()->SetBoolean(
-        GetRegisteredFlagPrefName(*config), true);
-    g_browser_process->local_state()->SetFilePath(
-        GetComponentPathPrefName(*config), dict_dir_path);
-  }
-
-  // Post a task to call InstallMockLanguagePack()
-  void InstallMockLanguagePackLater(
-      LanguagePackKey language_pack_key,
-      const std::string_view fake_dictionary_data) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MockComponentManager::InstallMockLanguagePack,
-                       weak_ptr_factory_.GetWeakPtr(), language_pack_key,
-                       std::string(fake_dictionary_data)));
-  }
-
- private:
-  const base::FilePath package_dir_;
-  base::WeakPtrFactory<MockComponentManager> weak_ptr_factory_{this};
-};
-
-void TestSimpleTranslationWorks(Browser* browser,
-                                const std::string& sourceLang,
-                                const std::string& targetLang) {
-  // Translate "hello" from `sourceLang` to `targetLang`.
-  // Note: the mock TranslateKit component returns the concatenation of the
-  // content of "dict.dat" in the language pack and the input text.
-  // See comments in mock_translate_kit_lib.cc for more details.
-  EXPECT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                   base::StringPrintf(R"(
-        (async () => {
-          try {
-            const translator = await translation.createTranslator({
-              sourceLanguage: '%s',
-              targetLanguage: '%s',
-            });
-            return await translator.translate('hello');
-          } catch (e) {
-            return e.toString();
-          }
-        })();
-      )",
-                                      sourceLang, targetLang))
-                .ExtractString(),
-            base::StringPrintf("%s to %s: hello", sourceLang, targetLang));
-}
-
-void TestCreateTranslator(Browser* browser,
-                          const std::string& sourceLang,
-                          const std::string& targetLang,
-                          const std::string& result) {
-  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                   base::StringPrintf(R"(
-  (async () => {
-    try {
-      await translation.createTranslator({
-          sourceLanguage: '%s',
-          targetLanguage: '%s',
-        });
-      return 'OK';
-    } catch (e) {
-      return e.toString();
-    }
-    })();
-  )",
-                                      sourceLang, targetLang))
-                .ExtractString(),
-            result);
-}
 
 }  // namespace
 
