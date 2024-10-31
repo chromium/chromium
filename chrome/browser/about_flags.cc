@@ -2167,6 +2167,12 @@ const FeatureEntry::FeatureParam kJumpStartOmnibox120Minutes[] = {
     {"jump_start_min_away_time_minutes", "120"}};
 const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited[] = {
     {"jump_start_cover_recently_visited_page", "true"}};
+const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited1Minute[] = {
+    {"jump_start_cover_recently_visited_page", "true"},
+    {"jump_start_min_away_time_minutes", "1"}};
+const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited120Minutes[] =
+    {{"jump_start_cover_recently_visited_page", "true"},
+     {"jump_start_min_away_time_minutes", "120"}};
 
 const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
     {"(after 1min)", kJumpStartOmnibox1Minute,
@@ -2175,6 +2181,10 @@ const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
      std::size(kJumpStartOmnibox120Minutes)},
     {"(recent page)", kJumpStartOmniboxRecentlyVisited,
      std::size(kJumpStartOmniboxRecentlyVisited)},
+    {"(recent page, 1min)", kJumpStartOmniboxRecentlyVisited1Minute,
+     std::size(kJumpStartOmniboxRecentlyVisited1Minute)},
+    {"(recent page, 120min)", kJumpStartOmniboxRecentlyVisited120Minutes,
+     std::size(kJumpStartOmniboxRecentlyVisited120Minutes)},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
