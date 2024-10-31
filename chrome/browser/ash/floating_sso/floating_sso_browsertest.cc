@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
@@ -331,6 +332,14 @@ class FloatingSsoTest : public policy::PolicyTest {
                                    net::CookieChangeCause::INSERTED)));
     commit_future.Get();
   }
+
+  // This will switch the channel to beta for branded builds, but will be a
+  // no-op for non-branded builds which are always set to
+  // `version_info::Channel::UNKNOWN`. CQ/CI builders which use branded Chrome
+  // rely on this field to set the beta channel, builders for non-branded Chrome
+  // rely on Floating SSO being allowed on unknown channel.
+  base::test::ScopedChromeOSVersionInfo scoped_channel_override_{
+      "CHROMEOS_RELEASE_TRACK=beta-channel", base::Time::Now()};
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   base::test::ScopedFeatureList feature_list_;

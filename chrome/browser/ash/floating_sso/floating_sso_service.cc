@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -128,6 +130,15 @@ void FloatingSsoService::StartOrStop() {
 }
 
 bool FloatingSsoService::IsFloatingSsoEnabled() {
+  // The feature is restricted to Beta users for the initial testing
+  // period. Unknown channel is added to support test execution in CQ,
+  // where tests are run on non-branded builds.
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel != version_info::Channel::BETA &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::UNKNOWN) {
+    return false;
+  }
   // Check FloatingSsoEnabled policy.
   if (!prefs_->GetBoolean(::prefs::kFloatingSsoEnabled)) {
     return false;
