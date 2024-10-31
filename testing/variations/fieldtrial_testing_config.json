@@ -12821,6 +12821,7 @@
                         "ForceSupervisedUserReauthenticationForBlockedSites",
                         "ForceSupervisedUserReauthenticationForYouTube",
                         "HideGuestModeForSupervisedUsers",
+                        "IPH_SupervisedUserProfileSignin",
                         "ShowKiteForSupervisedUsers",
                         "UncredentialedFilteringFallbackForSupervisedUsers"
                     ]
