@@ -264,28 +264,24 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
     ASSERT_TRUE(future.Wait());
   }
 
-  // OCR result arrived, but the second OCR has not finished, so the result text
-  // has been inserted into the page, but has not been committed. Thus the page
-  // knows Searchify is happening, but there is still no text.
-  EXPECT_TRUE(page.IsPageSearchified());
+  // OCR result arrived, but the second OCR has not finished, so there is still
+  // nothing added to the page.
+  EXPECT_FALSE(page.IsPageSearchified());
   ASSERT_EQ(GetPageText(page), "");
 
-  // Unloading the page, while `searchifier` continues to do its work.
+  // Unloading the page, resulting in canceling the task in `searchifier`.
   page.Unload();
-  ASSERT_TRUE(searchifier->IsPageScheduled(0));
+  ASSERT_FALSE(searchifier->IsPageScheduled(0));
 
   // Let `searchifier` finish.
-  // TODO(crbug.com/376146225): If the test gets very unlucky, then this can
-  // crash. The chances of crashing are higher if the input PDF had more images.
   base::test::TestFuture<void> future;
   WaitUntilIdle(searchifier, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  // Searchify finished, but some OCR results have been lost.
-  // TODO(crbug.com/376303942): Avoid this and get consistent OCR results like
-  // the OnePageWithImages test case.
+  // Searchify finished, but OCR results are not added to the page.
   ASSERT_EQ(performed_ocrs(), 2);
-  ASSERT_EQ(GetPageText(page), "OCR Text 1");
+  EXPECT_FALSE(page.IsPageSearchified());
+  ASSERT_EQ(GetPageText(page), "");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
