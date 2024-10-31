@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/chromeos/registered_mailbox_frame_converter.h"
+#include "media/gpu/chromeos/registered_frame_converter.h"
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "media/gpu/chromeos/mailbox_frame_registry.h"
+#include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/macros.h"
 
 namespace media {
 
 // static
-std::unique_ptr<FrameResourceConverter> RegisteredMailboxFrameConverter::Create(
-    scoped_refptr<MailboxFrameRegistry> registry) {
+std::unique_ptr<FrameResourceConverter> RegisteredFrameConverter::Create(
+    scoped_refptr<FrameRegistry> registry) {
   return base::WrapUnique<FrameResourceConverter>(
-      new RegisteredMailboxFrameConverter(std::move(registry)));
+      new RegisteredFrameConverter(std::move(registry)));
 }
 
-RegisteredMailboxFrameConverter::RegisteredMailboxFrameConverter(
-    scoped_refptr<MailboxFrameRegistry> registry)
+RegisteredFrameConverter::RegisteredFrameConverter(
+    scoped_refptr<FrameRegistry> registry)
     : registry_(std::move(registry)) {}
 
-RegisteredMailboxFrameConverter::~RegisteredMailboxFrameConverter() = default;
+RegisteredFrameConverter::~RegisteredFrameConverter() = default;
 
-void RegisteredMailboxFrameConverter::ConvertFrameImpl(
+void RegisteredFrameConverter::ConvertFrameImpl(
     scoped_refptr<FrameResource> frame) {
   DVLOGF(4);
 
@@ -50,7 +50,7 @@ void RegisteredMailboxFrameConverter::ConvertFrameImpl(
   // dropped at the end of this function.
   registry_->RegisterFrame(frame);
   video_frame->AddDestructionObserver(base::BindOnce(
-      [](scoped_refptr<MailboxFrameRegistry> registry,
+      [](scoped_refptr<FrameRegistry> registry,
          const base::UnguessableToken& token) {
         registry->UnregisterFrame(token);
       },

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_CHROMEOS_MAILBOX_FRAME_REGISTRY_H_
-#define MEDIA_GPU_CHROMEOS_MAILBOX_FRAME_REGISTRY_H_
+#ifndef MEDIA_GPU_CHROMEOS_FRAME_REGISTRY_H_
+#define MEDIA_GPU_CHROMEOS_FRAME_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,7 +16,7 @@ namespace media {
 // This class is used for storing and accessing a frame using a
 // base::UnguessableToken as a key. An instance retains a reference to any
 // frame that is currently registered and releases the frame when
-// UnregisterFrame() is called, or when the MailboxFrameRegistry is destroyed.
+// UnregisterFrame() is called, or when the FrameRegistry is destroyed.
 //
 // This class is reference counted because it needs to be used by the
 // VideoDecoderPipeline to register output frames, by the
@@ -25,16 +25,15 @@ namespace media {
 // asynchronously destroyed. Frames may be unregistered after its destruction.
 // Use of reference counting allows for safe unregistration of frames.
 //
-// All public methods of this class are thread-safe. A MailboxFrameRegistry can
+// All public methods of this class are thread-safe. A FrameRegistry can
 // be constructed and destroyed on any sequence.
-class MailboxFrameRegistry final
-    : public base::RefCountedThreadSafe<MailboxFrameRegistry> {
+class FrameRegistry final : public base::RefCountedThreadSafe<FrameRegistry> {
  public:
-  MailboxFrameRegistry();
+  FrameRegistry();
 
-  // MailboxFrameRegistry is not copyable or movable.
-  MailboxFrameRegistry(const MailboxFrameRegistry&) = delete;
-  MailboxFrameRegistry& operator=(const MailboxFrameRegistry&) = delete;
+  // FrameRegistry is not copyable or movable.
+  FrameRegistry(const FrameRegistry&) = delete;
+  FrameRegistry& operator=(const FrameRegistry&) = delete;
 
   // Registers |frame| in the registry, using |frame->tracking_token()| as key.
   // A reference to |frame| is taken and will be held until the frame is
@@ -52,8 +51,8 @@ class MailboxFrameRegistry final
       const base::UnguessableToken& token) const;
 
  private:
-  friend class base::RefCountedThreadSafe<MailboxFrameRegistry>;
-  ~MailboxFrameRegistry();
+  friend class base::RefCountedThreadSafe<FrameRegistry>;
+  ~FrameRegistry();
 
   // Each method that accesses |map_| acquires this lock. A lock is required
   // because frames are registered from a different thread than where they are
@@ -70,4 +69,4 @@ class MailboxFrameRegistry final
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_CHROMEOS_MAILBOX_FRAME_REGISTRY_H_
+#endif  // MEDIA_GPU_CHROMEOS_FRAME_REGISTRY_H_

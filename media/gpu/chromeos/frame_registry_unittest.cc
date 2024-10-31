@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/chromeos/mailbox_frame_registry.h"
+#include "media/gpu/chromeos/frame_registry.h"
 
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/video_frame.h"
@@ -27,21 +27,20 @@ scoped_refptr<FrameResource> GenerateFrame(base::TimeDelta timestamp) {
 
 }  // namespace
 
-class MailboxFrameRegistryTest : public ::testing::Test {
+class FrameRegistryTest : public ::testing::Test {
  public:
-  MailboxFrameRegistryTest()
-      : registry_(base::MakeRefCounted<MailboxFrameRegistry>()) {}
-  MailboxFrameRegistryTest(const MailboxFrameRegistryTest&) = delete;
-  MailboxFrameRegistryTest& operator=(const MailboxFrameRegistryTest&) = delete;
-  ~MailboxFrameRegistryTest() override = default;
+  FrameRegistryTest() : registry_(base::MakeRefCounted<FrameRegistry>()) {}
+  FrameRegistryTest(const FrameRegistryTest&) = delete;
+  FrameRegistryTest& operator=(const FrameRegistryTest&) = delete;
+  ~FrameRegistryTest() override = default;
 
  protected:
-  scoped_refptr<MailboxFrameRegistry> registry_;
+  scoped_refptr<FrameRegistry> registry_;
 };
 
 // This tests registering a frame, accessing it, unregistering it, and ensuring
 // that it is cleared from the registry.
-TEST_F(MailboxFrameRegistryTest, RegisterAccessUnregister) {
+TEST_F(FrameRegistryTest, RegisterAccessUnregister) {
   constexpr base::TimeDelta kTimestamp = base::Microseconds(42);
   auto frame = GenerateFrame(kTimestamp);
   const base::UnguessableToken token = frame->tracking_token();
@@ -83,7 +82,7 @@ TEST_F(MailboxFrameRegistryTest, RegisterAccessUnregister) {
 }
 
 // This tests registering a frame, accessing it, and the frame's lifecycle.
-TEST_F(MailboxFrameRegistryTest, CheckRegistryLifecycle) {
+TEST_F(FrameRegistryTest, CheckRegistryLifecycle) {
   constexpr base::TimeDelta kTimestamp = base::Microseconds(42);
   auto frame = GenerateFrame(kTimestamp);
   const base::UnguessableToken token = frame->tracking_token();
@@ -112,7 +111,7 @@ TEST_F(MailboxFrameRegistryTest, CheckRegistryLifecycle) {
 }
 
 // The does a negative test of registering a frame with an unregistered token.
-TEST_F(MailboxFrameRegistryTest, InvalidFrameAccess) {
+TEST_F(FrameRegistryTest, InvalidFrameAccess) {
   const base::UnguessableToken token = base::UnguessableToken::Create();
   ASSERT_DEATH({ auto frame = registry_->AccessFrame(token); }, "");
 }
