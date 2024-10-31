@@ -128,6 +128,11 @@ TipsNotificationClient::TipsNotificationClient()
       &TipsNotificationClient::OnPermittedPrefChanged, base::Unretained(this));
   pref_change_registrar_.Add(prefs::kAppLevelPushNotificationPermissions,
                              pref_callback);
+  PrefChangeRegistrar::NamedChangeCallback auth_pref_callback =
+      base::BindRepeating(&TipsNotificationClient::OnAuthPrefChanged,
+                          base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kPushNotificationAuthorizationStatus,
+                             auth_pref_callback);
   permitted_ = IsPermitted();
   user_type_ = GetUserType(local_state_);
 }
@@ -705,6 +710,16 @@ void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   bool newpermitted_ = IsPermitted();
   if (permitted_ != newpermitted_ && IsSceneLevelForegroundActive()) {
     ClearAllRequestedNotifications();
+    CheckAndMaybeRequestNotification(base::DoNothing());
+  }
+}
+
+void TipsNotificationClient::OnAuthPrefChanged(const std::string& name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UNAuthorizationStatus auth_status =
+      [PushNotificationUtil getSavedPermissionSettings];
+  if (IsSceneLevelForegroundActive() &&
+      auth_status == UNAuthorizationStatusProvisional) {
     CheckAndMaybeRequestNotification(base::DoNothing());
   }
 }

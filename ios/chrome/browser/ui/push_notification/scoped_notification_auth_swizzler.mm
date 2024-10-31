@@ -24,8 +24,14 @@ ScopedNotificationAuthSwizzler::ScopedNotificationAuthSwizzler(
   auto request_block =
       ^(id center, UNAuthorizationOptions options,
         void (^completionHandler)(BOOL granted, NSError* error)) {
-        status_ = grant ? UNAuthorizationStatusAuthorized
-                        : UNAuthorizationStatusDenied;
+        if (grant) {
+          // If app asked for provisional, grant provisional.
+          status_ = options & UNAuthorizationOptionProvisional
+                        ? UNAuthorizationStatusProvisional
+                        : UNAuthorizationStatusAuthorized;
+        } else {
+          status_ = UNAuthorizationStatusDenied;
+        }
         completionHandler(grant, nil);
       };
   request_swizzler_ = std::make_unique<EarlGreyScopedBlockSwizzler>(

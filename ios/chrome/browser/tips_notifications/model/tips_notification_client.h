@@ -141,6 +141,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // changes.
   void OnPermittedPrefChanged(const std::string& name);
 
+  // Called when the pref that stores the app's notification authorization
+  // status changes.
+  void OnAuthPrefChanged(const std::string& name);
+
   // Classifies the user and sets the `user_type`, if possible.
   void ClassifyUser();
 

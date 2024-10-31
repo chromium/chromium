@@ -14,12 +14,14 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
+#import "ios/chrome/browser/ui/push_notification/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -104,7 +106,14 @@ void MaybeDismissNotification() {
       kIOSTipsNotificationsUnknownTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsLessEngagedTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsActiveSeekerTriggerTimeParam, triggerTime.c_str());
+
+  if ([self isRunningTest:@selector(testReactivation)]) {
+    std::string enableReactivation =
+        base::StringPrintf(",%s", kIOSReactivationNotifications.name);
+    enableFeatures.append(enableReactivation);
+  }
   config.additional_args.push_back(enableFeatures);
+
   return config;
 }
 
@@ -363,4 +372,33 @@ void MaybeDismissNotification() {
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 }
+
+// Tests that the app adds a Reactivation notification request.
+- (void)testReactivation {
+  ScopedNotificationAuthSwizzler auth(YES);
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kPushNotificationAuthorizationStatus];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:kReactivationNotificationsCanceledCount];
+  __block BOOL notificationRequested = NO;
+  auto requestBlock = ^(id center, UNNotificationRequest* request,
+                        void (^completionHandler)(NSError* error)) {
+    XCTAssert(IsTipsNotification(request),
+              @"Requested notification was not recognized.");
+    notificationRequested = YES;
+    completionHandler(nil);
+  };
+  EarlGreyScopedBlockSwizzler addRequest(
+      @"UNUserNotificationCenter",
+      @"addNotificationRequest:withCompletionHandler:", requestBlock);
+
+  // Backgrounding and re-foregrounding the app will force it to re-request
+  // a Reactivation notification.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  GREYAssert(notificationRequested,
+             @"Reactivation notification request was not added.");
+}
+
 @end

@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -413,6 +414,16 @@ void SendNAUFConfigurationForProfileWithSettings(
     [self sendSettingsChangeNAUForProfile:profile];
   }
   [PushNotificationUtil updateAuthorizationStatusPref];
+
+  // For Reactivation Notifications, ask for provisional auth right away.
+  if (IsFirstRunRecent(base::Days(28)) &&
+      IsIOSReactivationNotificationsEnabled()) {
+    UNAuthorizationStatus auth_status =
+        [PushNotificationUtil getSavedPermissionSettings];
+    if (auth_status == UNAuthorizationStatusNotDetermined) {
+      [PushNotificationUtil enableProvisionalPushNotificationPermission:nil];
+    }
+  }
 }
 
 - (void)sendSettingsChangeNAUForProfile:(ProfileIOS*)profile {
