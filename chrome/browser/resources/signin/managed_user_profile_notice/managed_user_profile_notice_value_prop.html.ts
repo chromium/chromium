@@ -19,7 +19,10 @@ export function getHtml(this: ManagedUserProfileNoticeValuePropElement) {
         <p class="account-name">${this.accountName}</p>
         <p class="email">${this.email}</p>
       </div>
-      <cr-icon class="icon" icon="cr:domain"></cr-icon>
+      ${
+      this.showEnterpriseBadge ?
+          html`<cr-icon class="icon" icon="cr:domain"></cr-icon>` :
+          ''}
   </div>
 </main>
 <!--_html_template_end_-->`;

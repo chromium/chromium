@@ -243,7 +243,12 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
   int state = args[0].GetIfInt().value_or(0);
   CHECK_NE(state, ManagedUserProfileNoticeHandler::State::kProcessing)
       << "User should not be able to click the proceed button while processing";
-  if (state == ManagedUserProfileNoticeHandler::State::kValueProposition &&
+
+  bool is_consumer_domain =
+      enterprise_util::IsKnownConsumerDomain(domain_name_);
+
+  if (!is_consumer_domain &&
+      state == ManagedUserProfileNoticeHandler::State::kValueProposition &&
       IsJavascriptAllowed()) {
     FireWebUIListener("on-state-changed",
                       ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -251,7 +256,16 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (show_link_data_option_ &&
+  if (is_consumer_domain && show_link_data_option_ &&
+      state == ManagedUserProfileNoticeHandler::State::kValueProposition &&
+      IsJavascriptAllowed() && UseMultiscreen()) {
+    FireWebUIListener(
+        "on-state-changed",
+        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+    return;
+  }
+
+  if (!is_consumer_domain && show_link_data_option_ &&
       state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
       IsJavascriptAllowed() && UseMultiscreen()) {
     FireWebUIListener(

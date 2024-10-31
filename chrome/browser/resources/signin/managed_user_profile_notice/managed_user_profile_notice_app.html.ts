@@ -18,7 +18,8 @@ ${this.useUpdatedUi_ ? html`
             title="$i18n{valuePropositionTitle}"
             subtitle="$i18n{valuePropSubtitle}"
             picture-url="${this.pictureUrl_}"
-            email="${this.email_}" account-name="${this.accountName_}">
+            email="${this.email_}" account-name="${this.accountName_}"
+            ?show-enterprise-badge="${this.showEnterpriseBadge_}">
         ` : ''}
         </managed-user-profile-notice-value-prop>
       ${this.showDisclosure_ ? html`

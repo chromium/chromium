@@ -31,6 +31,7 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
       subtitle: {type: String},
       email: {type: String},
       accountName: {type: String},
+      showEnterpriseBadge: {type: Boolean},
     };
   }
 
@@ -39,6 +40,7 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
   subtitle: string = '';
   email: string = '';
   accountName: string = '';
+  showEnterpriseBadge: boolean = false;
 }
 
 declare global {
