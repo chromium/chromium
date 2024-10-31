@@ -134,13 +134,11 @@ bool IsLacrosAllowedToBeEnabled() {
 }
 
 bool IsLacrosEnabled() {
-  return ash::standalone_browser::BrowserSupport::IsEnabledInternal(
-      GetPrimaryUser(), GetCachedLacrosAvailability(),
-      /*check_migration_status=*/true);
+  return false;
 }
 
 bool IsAshWebBrowserEnabled() {
-  return !IsLacrosEnabled();
+  return true;
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
@@ -168,9 +166,7 @@ bool IsLacrosAllowedToLaunch() {
 }
 
 bool IsLacrosChromeAppsEnabled() {
-  return !base::FeatureList::IsEnabled(
-             ash::standalone_browser::features::kLacrosDisableChromeApps) &&
-         IsLacrosEnabled();
+  return false;
 }
 
 bool IsLacrosWindow(const aura::Window* window) {

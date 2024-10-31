@@ -54,12 +54,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   // Returns true if the standalone browser is allowed to be enabled.
   bool IsAllowed() const { return is_allowed_; }
 
-  // Temporarily exposing internal function for transition period.
-  // TODO(crbug.com/40286020): Hide the function along with refactoring.
-  static bool IsEnabledInternal(const user_manager::User* user,
-                                LacrosAvailability lacros_availability,
-                                bool check_migration_status);
-
  private:
   BrowserSupport(bool is_allowed);
   ~BrowserSupport();

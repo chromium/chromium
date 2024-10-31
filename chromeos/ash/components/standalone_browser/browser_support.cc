@@ -25,10 +25,6 @@ namespace {
 BrowserSupport* g_instance = nullptr;
 std::optional<bool> g_cpu_supported_override_ = std::nullopt;
 
-bool IsLacrosEnabledForTesting() {
-  return false;
-}
-
 // Returns true if `kDisallowLacros` is set by command line.
 bool IsLacrosDisallowedByCommand() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
@@ -88,31 +84,6 @@ bool IsAllowedInternal(const user_manager::User* user,
     case LacrosAvailability::kLacrosOnly:
       return true;
   }
-}
-
-// Returns whether the standalone browser (a.k.a. Lacros) is enabled.
-// Practically, before invoking this, BrowserSupport::IsAllowedInternal()
-// needs to be called and make sure it returns true.
-bool IsEnabledInternal(const user_manager::User* user,
-                       LacrosAvailability lacros_availability,
-                       bool check_migration_status) {
-  DCHECK(user);
-
-  switch (lacros_availability) {
-    case LacrosAvailability::kUserChoice:
-      break;
-    case LacrosAvailability::kLacrosDisallowed:
-      NOTREACHED();  // Guarded by IsLacrosAllowedInternal, called before.
-    case LacrosAvailability::kLacrosOnly:
-      // Lacros can no longer be enabled via policy.
-      break;
-  }
-
-  if (IsLacrosEnabledForTesting()) {
-    return true;
-  }
-
-  return false;
 }
 
 }  // namespace
@@ -190,17 +161,6 @@ bool BrowserSupport::IsCpuSupported() {
 
 void BrowserSupport::SetCpuSupportedForTesting(std::optional<bool> value) {
   g_cpu_supported_override_ = value;
-}
-
-bool BrowserSupport::IsEnabledInternal(const user_manager::User* user,
-                                       LacrosAvailability lacros_availability,
-                                       bool check_migration_status) {
-  if (!IsAllowedInternal(user, lacros_availability)) {
-    return false;
-  }
-
-  return ash::standalone_browser::IsEnabledInternal(user, lacros_availability,
-                                                    check_migration_status);
 }
 
 }  // namespace ash::standalone_browser

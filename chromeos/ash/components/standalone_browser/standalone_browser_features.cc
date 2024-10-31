@@ -9,11 +9,6 @@ namespace ash::standalone_browser::features {
 // On adding a new flag, please sort in the lexicographical order by
 // the variable name.
 
-// A kill switch for lacros chrome apps.
-BASE_FEATURE(kLacrosDisableChromeApps,
-             "LacrosDisableChromeApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Makes LaCrOS allowed for Family Link users.
 // With this feature disabled LaCrOS cannot be enabled for Family Link users.
 // When this feature is enabled LaCrOS availability is a under control of other
