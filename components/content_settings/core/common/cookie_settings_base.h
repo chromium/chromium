@@ -374,6 +374,11 @@ class CookieSettingsBase {
                                            ContentSettingsType content_type,
                                            SettingInfo* info) const = 0;
 
+  struct IsAllowedWithMetadata {
+    bool allowed;
+    SettingInfo info;
+  };
+
   bool IsAllowedByStorageAccessGrant(
       const GURL& url,
       const GURL& first_party_url,
@@ -389,9 +394,9 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  bool IsAllowedByTrackingProtectionSetting(const GURL& url,
-                                            const GURL& first_party_url,
-                                            SettingInfo& out_info) const;
+  IsAllowedWithMetadata IsAllowedByTrackingProtectionSetting(
+      const GURL& url,
+      const GURL& first_party_url) const;
 
   bool IsAllowedByTopLevel3pcdTrialSettings(
       const GURL& first_party_url,
@@ -408,11 +413,10 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  bool IsAllowedBy3pcdMetadataGrantsSettings(
+  IsAllowedWithMetadata IsAllowedBy3pcdMetadataGrantsSettings(
       const GURL& url,
       const GURL& first_party_url,
-      net::CookieSettingOverrides overrides,
-      SettingInfo* out_info) const;
+      net::CookieSettingOverrides overrides) const;
 
   struct AllowAllCookies {
     ThirdPartyCookieAllowMechanism mechanism =
