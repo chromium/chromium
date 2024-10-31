@@ -17,17 +17,18 @@
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {Route, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './os_settings_animated_pages.html.js';
-import {OsSettingsSubpageElement} from './os_settings_subpage.js';
+import type {OsSettingsSubpageElement} from './os_settings_subpage.js';
 
 interface OsSettingsAnimatedPagesElement {
   $: {
