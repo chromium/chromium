@@ -1021,7 +1021,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (BOOL)isLensOverlayVisible {
-  return self.baseViewController.presentedViewController != nil;
+  return _containerViewController.presentingViewController != nil;
 }
 
 - (void)showConsentViewController {
