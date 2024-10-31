@@ -67,8 +67,8 @@
 </style>
 <div id="graduationDiv" role="application">
   <div class="back-button-container">
-    <cr-button id="backButton" class="cancel-button" on-click="onBackClicked_">
-      <iron-icon icon="[[getBackButtonIcon_()]]"></iron-icon>
+    <cr-button id="backButton" class="cancel-button" on-click="onBackClicked">
+      <iron-icon icon="[[getBackButtonIcon()]]"></iron-icon>
       $i18n{backButtonLabel}
     </cr-button>
   </div>
@@ -81,7 +81,7 @@
     </div>
   </div>
   <div class="done-button-container">
-    <cr-button id="doneButton" class="action-button" on-click="onDoneClicked_"
+    <cr-button id="doneButton" class="action-button" on-click="onDoneClicked"
         hidden$="[[webviewLoading]]" disabled$="[[!takeoutFlowCompleted]]">
       $i18n{doneButtonLabel}
     </cr-button>

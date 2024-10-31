@@ -32,6 +32,60 @@ declare global {
 const TAKEOUT_COMPLETED_BANNER_BASE_URL: string =
     'https://www.gstatic.com/ac/takeout/migration/migration-banner';
 
+/**
+ * There are some cases wherein the Takeout tool fires a loadabort event
+ * that is benign and does not indicate a fatal error (i.e. when double-clicking
+ * the `Start Transfer` button).
+ *
+ * Therefore, on loadabort, the webview is reloaded until the limit on
+ * consecutive failed reload attempts is reached. If that limit is reached, the
+ * terminal error screen is triggered.
+ *
+ * Reloads are attempted with an exponential backoff that starts at 500ms and
+ * plateaus at 2000ms to limit perceived latency. The first reload occurs after
+ * the first backoff.
+ * Backoff pattern: 500ms, 1000ms, 2000ms, 2000ms, ...
+ */
+export class WebviewReloadHelper {
+  static readonly MAX_RELOAD_ATTEMPTS: number = 3;
+  private static readonly INITIAL_RELOAD_DELAY_IN_MS: number = 500;
+  private static readonly MAXIMUM_RELOAD_DELAY_IN_MS: number = 2000;
+  private static readonly BACKOFF_FACTOR: number = 2;
+
+  private reloadCount: number = 0;
+  private reloadDelay: number = WebviewReloadHelper.INITIAL_RELOAD_DELAY_IN_MS;
+  private reloadTimer: number = 0;
+
+  reset(): void {
+    this.reloadCount = 0;
+    this.reloadDelay = WebviewReloadHelper.INITIAL_RELOAD_DELAY_IN_MS;
+    // Cancels any future reload.
+    window.clearTimeout(this.reloadTimer);
+  }
+
+  isReloadCountLimitReached(): boolean {
+    return this.reloadCount === WebviewReloadHelper.MAX_RELOAD_ATTEMPTS;
+  }
+
+  private updateReloadDelay(): void {
+    const multipliedReloadDelay =
+        this.reloadDelay * WebviewReloadHelper.BACKOFF_FACTOR;
+    this.reloadDelay = Math.min(
+        multipliedReloadDelay, WebviewReloadHelper.MAXIMUM_RELOAD_DELAY_IN_MS);
+  }
+
+  scheduleReload(webview: chrome.webviewTag.WebView): void {
+    if (this.isReloadCountLimitReached()) {
+      return;
+    }
+    this.reloadCount++;
+    window.clearTimeout(this.reloadTimer);
+    this.reloadTimer =
+        window.setTimeout(webview.reload.bind(this), this.reloadDelay);
+    this.updateReloadDelay();
+  }
+}
+
 export class GraduationTakeoutUi extends PolymerElement {
   static get is() {
     return 'graduation-takeout-ui' as const;
@@ -62,6 +116,8 @@ export class GraduationTakeoutUi extends PolymerElement {
   webviewLoading: boolean;
   takeoutFlowCompleted: boolean;
   private webview: chrome.webviewTag.WebView;
+  private webviewReloadHelper: WebviewReloadHelper;
+  private startTransferUrl: string;
 
   override ready() {
     super.ready();
@@ -69,29 +125,29 @@ export class GraduationTakeoutUi extends PolymerElement {
     this.webview =
         this.shadowRoot!.querySelector<chrome.webviewTag.WebView>('webview')!;
 
-    this.configureWebviewListeners_();
+    this.configureWebviewListeners();
 
     this.addEventListener(ScreenSwitchedEvent, () => {
       this.shadowRoot!.querySelector<HTMLElement>('#backButton')!.focus();
     });
 
+    this.webviewReloadHelper = new WebviewReloadHelper();
+
     // The webview source should be set after all event listeners are created
     // because the webview starts loading immediately after it is set.
-    const webviewUrl = loadTimeData.getString('webviewUrl');
-    this.webview.src = webviewUrl.toString();
+    this.startTransferUrl =
+        loadTimeData.getString('startTransferUrl').toString();
+    this.webview.src = this.startTransferUrl;
   }
 
-  private configureWebviewListeners_(): void {
+  private configureWebviewListeners(): void {
     this.webview.addEventListener('contentload', () => {
-      this.webviewLoading = false;
+      this.webviewReloadHelper.reset();
+      this.hideLoadingScreen();
     });
 
     this.webview.addEventListener('loadabort', () => {
-      this.webviewLoading = false;
-      this.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_ERROR, {
-        bubbles: true,
-        composed: true,
-      }));
+      this.onLoadAbort();
     });
 
     this.webview.addEventListener(
@@ -100,10 +156,8 @@ export class GraduationTakeoutUi extends PolymerElement {
           window.open(e.targetUrl);
         });
 
-    /**
-     * The done button is made visible when the image shown at the end of the
-     * Takeout flow is displayed to the user.
-     */
+    // The done button is made visible when the image shown at the end of the
+    // Takeout flow is displayed to the user.
     this.webview.request.onCompleted.addListener((details: any) => {
       if (details.statusCode === 200 &&
           details.url.startsWith(TAKEOUT_COMPLETED_BANNER_BASE_URL)) {
@@ -113,18 +167,64 @@ export class GraduationTakeoutUi extends PolymerElement {
     }, {urls: ['<all_urls>']});
   }
 
-  private getBackButtonIcon_(): string {
-    return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
+  private onLoadAbort(): void {
+    if (this.webviewReloadHelper.isReloadCountLimitReached()) {
+      this.webviewReloadHelper.reset();
+      this.hideLoadingScreen();
+      this.triggerErrorScreen();
+      return;
+    }
+    this.showLoadingScreen();
+    this.webviewReloadHelper.scheduleReload(this.webview);
   }
 
-  private onBackClicked_(): void {
+  private showLoadingScreen(): void {
+    this.webviewLoading = true;
+  }
+
+  private hideLoadingScreen(): void {
+    this.webviewLoading = false;
+  }
+
+  private triggerErrorScreen(): void {
+    this.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_ERROR, {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private triggerWelcomeScreen(): void {
     this.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_WELCOME, {
       bubbles: true,
       composed: true,
     }));
   }
 
-  private onDoneClicked_(): void {
+  // Expects the loading screen to be shown by the caller.
+  private loadStartTransferPage(): void {
+    // If the user has navigated away from the Transfer page in the webview
+    // before, navigate the webview back to the Transfer page.
+    if (this.webview.src !== this.startTransferUrl) {
+      // Re-setting the source reloads the webview.
+      this.webview.src = this.startTransferUrl;
+      return;
+    }
+    this.webview.reload();
+  }
+
+  private getBackButtonIcon(): string {
+    return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
+  }
+
+  private onBackClicked(): void {
+    this.triggerWelcomeScreen();
+    this.webview.stop();
+    this.webviewReloadHelper.reset();
+    this.showLoadingScreen();
+    this.loadStartTransferPage();
+  }
+
+  private onDoneClicked(): void {
     window.close();
   }
 }

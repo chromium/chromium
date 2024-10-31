@@ -25,8 +25,9 @@ suite('GraduationAppTest', function() {
 
     graduationApp = new GraduationApp();
 
-    // Set a mock webview URL to avoid a loadabort event in the Takeout webview.
-    loadTimeData.overrideValues({webviewUrl: ''});
+    // Set an empty webview URL to avoid a loadabort event in the Takeout
+    // webview.
+    loadTimeData.overrideValues({startTransferUrl: ''});
 
     document.body.appendChild(graduationApp);
 

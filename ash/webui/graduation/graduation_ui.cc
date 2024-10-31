@@ -74,7 +74,7 @@ void AddResources(content::WebUIDataSource* source) {
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("webviewUrl", GetTransferUrl());
+  source->AddString("startTransferUrl", GetTransferUrl());
 
   // Set up test resources used in browser tests.
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
