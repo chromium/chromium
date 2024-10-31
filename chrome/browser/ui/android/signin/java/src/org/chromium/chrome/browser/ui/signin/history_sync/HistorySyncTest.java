@@ -167,7 +167,7 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
                 .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
 
@@ -194,7 +194,7 @@ public class HistorySyncTest {
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
                 .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
@@ -222,7 +222,7 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
                 .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
     }
 
     @Test
@@ -248,7 +248,7 @@ public class HistorySyncTest {
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
                 .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
@@ -267,7 +267,8 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
-        verify(mHistorySyncDelegateMock, atLeastOnce()).dismissHistorySync();
+        verify(mHistorySyncDelegateMock, atLeastOnce())
+                .dismissHistorySync(/* isHistorySyncAccepted= */ false);
         CriteriaHelper.pollUiThread(
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -287,7 +288,7 @@ public class HistorySyncTest {
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
 
         histogramWatcher.assertExpected();
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
     }
 
     @Test

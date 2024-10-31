@@ -85,7 +85,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         void addAccount();
 
         /** Called when the whole flow finishes. */
-        void onFlowComplete();
+        void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result);
 
         /**
          * Returns whether the history sync modal dialog is shown in full screen mode instead of
@@ -241,7 +241,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         }
         final boolean isBottomSheetShown = mAccountPickerCoordinator != null;
         if (!isBottomSheetShown && mNoAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
-            onFlowComplete();
+            onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
         }
     }
 
@@ -326,7 +326,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
         mAccountPickerCoordinator.destroy();
         mAccountPickerCoordinator = null;
-        onFlowComplete();
+        onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
     }
 
     /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
@@ -349,12 +349,17 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync() {
+    public void dismissHistorySync(boolean isHistorySyncAccepted) {
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
-        onFlowComplete();
+        @SigninAndHistorySyncCoordinator.Result
+        int flowResult =
+                isHistorySyncAccepted
+                        ? SigninAndHistorySyncCoordinator.Result.COMPLETED
+                        : SigninAndHistorySyncCoordinator.Result.INTERRUPTED;
+        onFlowComplete(flowResult);
     }
 
     private void onProfileAvailable(Profile profile) {
@@ -401,7 +406,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                 break;
             case NoAccountSigninMode.NO_SIGNIN:
                 // TODO(crbug.com/41493768): Implement the error state UI.
-                onFlowComplete();
+                onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
                 break;
         }
     }
@@ -439,7 +444,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         if (!shouldShowHistorySync(profile, mHistoryOptInMode)) {
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
-            onFlowComplete();
+            // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
+            onFlowComplete(SigninAndHistorySyncCoordinator.Result.COMPLETED);
             return;
         }
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
@@ -464,9 +470,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                                             PropertyModel model,
                                             @DialogDismissalCause int dismissalCause) {
                                         if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync();
+                                            dismissHistorySync(/* isHistorySyncAccepted= */ false);
                                         } else {
-                                            onFlowComplete();
+                                            onFlowComplete(
+                                                    SigninAndHistorySyncCoordinator.Result
+                                                            .INTERRUPTED);
                                         }
                                     }
                                 })
@@ -476,9 +484,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                                     @Override
                                     public void handleOnBackPressed() {
                                         if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync();
+                                            dismissHistorySync(/* isHistorySyncAccepted= */ false);
                                         } else {
-                                            onFlowComplete();
+                                            onFlowComplete(
+                                                    SigninAndHistorySyncCoordinator.Result
+                                                            .INTERRUPTED);
                                         }
                                     }
                                 })
@@ -531,8 +541,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         };
     }
 
-    private void onFlowComplete() {
-        mDelegate.onFlowComplete();
+    private void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result) {
+        mDelegate.onFlowComplete(result);
     }
 
     private @ColorInt int getHistorySyncBackgroundColor() {

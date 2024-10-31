@@ -64,7 +64,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
          */
         Promise<Void> getNativeInitializationPromise();
 
-        void onFlowComplete();
+        void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result);
     }
 
     /**
@@ -189,11 +189,11 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                                     .getSigninManager(mProfileSupplier.get().getOriginalProfile());
                     signinManager.signOut(SignoutReason.ABORT_SIGNIN);
                 }
-                mDelegate.onFlowComplete();
+                mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
                 break;
             case ChildView.HISTORY_SYNC:
                 if (!mDidShowSignin) {
-                    mDelegate.onFlowComplete();
+                    mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
                     return BackPressResult.SUCCESS;
                 }
                 showChildView(ChildView.SIGNIN);
@@ -212,7 +212,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     @Override
     public void advanceToNextPage() {
         if (!isSignedIn() || mCurrentView == ChildView.HISTORY_SYNC) {
-            mDelegate.onFlowComplete();
+            mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
             return;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
@@ -224,7 +224,8 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
         if (historySyncHelper.shouldSuppressHistorySync() || historySyncHelper.isDeclinedOften()) {
             historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.SIGNIN_PROMO);
-            mDelegate.onFlowComplete();
+            // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
+            mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.COMPLETED);
             return;
         }
         showChildView(ChildView.HISTORY_SYNC);
@@ -274,13 +275,18 @@ public final class FullscreenSigninAndHistorySyncCoordinator
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync() {
+    public void dismissHistorySync(boolean isHistorySyncAccepted) {
         mViewHolder.removeAllViews();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
-        mDelegate.onFlowComplete();
+        @SigninAndHistorySyncCoordinator.Result
+        int flowResult =
+                isHistorySyncAccepted
+                        ? SigninAndHistorySyncCoordinator.Result.COMPLETED
+                        : SigninAndHistorySyncCoordinator.Result.INTERRUPTED;
+        mDelegate.onFlowComplete(flowResult);
     }
 
     private void inflateViewBundle() {

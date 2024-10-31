@@ -23,9 +23,10 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 public class HistorySyncCoordinator {
+
     /*Delegate for the History Sync MVC */
     public interface HistorySyncDelegate {
-        void dismissHistorySync();
+        void dismissHistorySync(boolean isHistorySyncAccepted);
 
         default void maybeRecordFreProgress(@MobileFreProgress int state) {}
     }

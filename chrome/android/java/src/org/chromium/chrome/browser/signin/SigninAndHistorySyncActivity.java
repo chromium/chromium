@@ -279,7 +279,12 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
      * FullscreenSigninAndHistorySyncCoordinator.Delegate}.
      */
     @Override
-    public void onFlowComplete() {
+    public void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result) {
+        int resultCode =
+                result == SigninAndHistorySyncCoordinator.Result.COMPLETED
+                        ? Activity.RESULT_OK
+                        : Activity.RESULT_CANCELED;
+        setResult(resultCode);
         finish();
         // Override activity animation to avoid visual glitches due to the semi-transparent
         // background.
