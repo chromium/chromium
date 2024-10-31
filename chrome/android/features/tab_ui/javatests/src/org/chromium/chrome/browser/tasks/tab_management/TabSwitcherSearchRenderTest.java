@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
+import static org.chromium.ui.base.DeviceFormFactor.PHONE;
+import static org.chromium.ui.base.DeviceFormFactor.TABLET;
 
 import androidx.test.filters.MediumTest;
 
@@ -19,12 +21,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -74,6 +78,30 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction(PHONE)
+    public void testHubSearchBox_Phone() throws IOException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_switcher_view_holder), "hub_searchbox_phone");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction(TABLET)
+    public void testHubSearchLoupe_Tablet() throws IOException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        mRenderTestRule.render(
+                cta.findViewById(R.id.tab_switcher_view_holder), "hub_searchloupe_tablet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testZeroPrefixSuggestions() throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ false);
@@ -82,7 +110,7 @@ public class TabSwitcherSearchRenderTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.checkSuggestionsShown(true);
 
@@ -100,7 +128,7 @@ public class TabSwitcherSearchRenderTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.checkSuggestionsShown(false);
 
@@ -119,7 +147,7 @@ public class TabSwitcherSearchRenderTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.requestFocus();
@@ -141,7 +169,7 @@ public class TabSwitcherSearchRenderTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.requestFocus();

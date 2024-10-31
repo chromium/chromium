@@ -19,8 +19,9 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
@@ -31,7 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -82,8 +83,9 @@ public class HubToolbarViewUnitTest {
     private HubToolbarView mToolbar;
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
-    private FrameLayout mMenuButtonContainer;
+    private LinearLayout mMenuButtonContainer;
     private View mSearchBox;
+    private View mSearchLoupe;
     private EditText mSearchBoxText;
     private PropertyModel mPropertyModel;
 
@@ -102,6 +104,7 @@ public class HubToolbarViewUnitTest {
         mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
         mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
         mSearchBox = mToolbar.findViewById(R.id.search_box);
+        mSearchLoupe = mToolbar.findViewById(R.id.search_loupe);
         mSearchBoxText = mToolbar.findViewById(R.id.search_box_text);
         mActivity.setContentView(mToolbar);
 
@@ -247,8 +250,11 @@ public class HubToolbarViewUnitTest {
     public void testSearchBoxVisibility() {
         // GONE by default (defined in the xml).
         assertEquals(View.GONE, mSearchBox.getVisibility());
+        assertEquals(View.GONE, mSearchLoupe.getVisibility());
         mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
         assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+        mPropertyModel.set(SEARCH_LOUPE_VISIBLE, true);
+        assertEquals(View.VISIBLE, mSearchLoupe.getVisibility());
     }
 
     @Test
@@ -261,9 +267,11 @@ public class HubToolbarViewUnitTest {
                 };
 
         assertEquals(0, callbackHelper.getCallCount());
-        mPropertyModel.set(SEARCH_BOX_LISTENER, testListener);
+        mPropertyModel.set(SEARCH_LISTENER, testListener);
         mSearchBox.performClick();
         assertEquals(1, callbackHelper.getCallCount());
+        mSearchLoupe.performClick();
+        assertEquals(2, callbackHelper.getCallCount());
     }
 
     @Test

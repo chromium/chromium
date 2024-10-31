@@ -12,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -35,9 +34,10 @@ import java.util.List;
 public class HubToolbarView extends LinearLayout {
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
-    private FrameLayout mMenuButtonContainer;
+    private LinearLayout mMenuButtonContainer;
     private View mSearchBoxLayout;
     private EditText mSearchBoxTextView;
+    private View mSearchLoupeView;
 
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
@@ -57,6 +57,7 @@ public class HubToolbarView extends LinearLayout {
         // SearchBoxLayout is GONE by default, and enabled via the mediator.
         mSearchBoxLayout = findViewById(R.id.search_box);
         mSearchBoxTextView = findViewById(R.id.search_box_text);
+        mSearchLoupeView = findViewById(R.id.search_loupe);
     }
 
     void setMenuButtonVisible(boolean visible) {
@@ -138,9 +139,14 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    void setSearchBoxListener(Runnable searchBarListener) {
+    public void setSearchLoupeVisible(boolean visible) {
+        mSearchLoupeView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setSearchListener(Runnable searchBarListener) {
         mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
         mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
+        mSearchLoupeView.setOnClickListener(v -> searchBarListener.run());
     }
 
     void updateIncognitoElements(boolean isIncognito) {

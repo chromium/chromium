@@ -38,7 +38,8 @@ public class HubToolbarCoordinator {
             @NonNull SearchActivityClient searchActivityClient) {
         PropertyModel model = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
-        mMediator = new HubToolbarMediator(model, paneManager, tracker, searchActivityClient);
+        mMediator =
+                new HubToolbarMediator(activity, model, paneManager, tracker, searchActivityClient);
 
         MenuButton menuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
         menuButtonCoordinator.setMenuButton(menuButton);

@@ -14,10 +14,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
+import static org.chromium.ui.base.DeviceFormFactor.PHONE;
+import static org.chromium.ui.base.DeviceFormFactor.TABLET;
 
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
@@ -34,6 +38,7 @@ import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -83,7 +88,32 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(PHONE)
+    public void testHubSearchBox_Phone() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        View tabSwitcher = cta.findViewById(R.id.tab_switcher_view_holder);
+        assertEquals(ViewGroup.VISIBLE, tabSwitcher.findViewById(R.id.search_box).getVisibility());
+        assertEquals(ViewGroup.GONE, tabSwitcher.findViewById(R.id.search_loupe).getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(TABLET)
+    public void testHubSearchLoupe_Tablet() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        View tabSwitcher = cta.findViewById(R.id.tab_switcher_view_holder);
+        assertEquals(ViewGroup.GONE, tabSwitcher.findViewById(R.id.search_box).getVisibility());
+        assertEquals(
+                ViewGroup.VISIBLE, tabSwitcher.findViewById(R.id.search_loupe).getVisibility());
     }
 
     @Test
@@ -96,7 +126,7 @@ public class TabSwitcherSearchTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
@@ -119,7 +149,7 @@ public class TabSwitcherSearchTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.checkSuggestionsShown(/* shown= */ false);
@@ -136,7 +166,7 @@ public class TabSwitcherSearchTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // Tab URLs will be de-duped.
         ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
@@ -156,7 +186,7 @@ public class TabSwitcherSearchTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.requestFocus();
@@ -177,7 +207,7 @@ public class TabSwitcherSearchTest {
         enterTabSwitcher(cta);
 
         SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.requestFocus();
@@ -194,7 +224,7 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad();
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // Click the back button which is setup as the status view icon.
         onView(withId(R.id.location_bar_status)).perform(click());

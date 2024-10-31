@@ -11,10 +11,14 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
+import android.content.ComponentCallbacks;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -31,6 +35,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -42,12 +47,26 @@ import java.util.Objects;
 public class HubToolbarMediator {
     private static final int INVALID_PANE_SWITCHER_INDEX = -1;
 
+    private final ComponentCallbacks mComponentCallbacks =
+            new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(@NonNull Configuration configuration) {
+                    boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+                    mPropertyModel.set(SEARCH_BOX_VISIBLE, !isTablet);
+                    mPropertyModel.set(SEARCH_LOUPE_VISIBLE, isTablet);
+                }
+
+                @Override
+                public void onLowMemory() {}
+            };
+
     private final @NonNull PropertyModel mPropertyModel;
 
     private final @NonNull Callback<FullButtonData> mOnActionButtonChangeCallback =
             this::onActionButtonChange;
     private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
 
+    private final @NonNull Context mContext;
     private final @NonNull PaneManager mPaneManager;
     private final @NonNull Tracker mTracker;
     private final @NonNull SearchActivityClient mSearchActivityClient;
@@ -65,10 +84,12 @@ public class HubToolbarMediator {
 
     /** Creates the mediator. */
     public HubToolbarMediator(
+            @NonNull Context context,
             @NonNull PropertyModel propertyModel,
             @NonNull PaneManager paneManager,
             @NonNull Tracker tracker,
             @NonNull SearchActivityClient searchActivityClient) {
+        mContext = context;
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
         mTracker = tracker;
@@ -104,8 +125,12 @@ public class HubToolbarMediator {
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
 
-        mPropertyModel.set(SEARCH_BOX_VISIBLE, ChromeFeatureList.sAndroidHubSearch.isEnabled());
-        mPropertyModel.set(SEARCH_BOX_LISTENER, this::onSearchClicked);
+        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+            mPropertyModel.set(SEARCH_LISTENER, this::onSearchClicked);
+            // Fire an event for the original setup.
+            mComponentCallbacks.onConfigurationChanged(null);
+            mContext.registerComponentCallbacks(mComponentCallbacks);
+        }
     }
 
     /** Cleans up observers. */
@@ -117,6 +142,9 @@ public class HubToolbarMediator {
         mRemoveReferenceButtonObservers.stream().forEach(r -> r.run());
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
+        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+            mContext.unregisterComponentCallbacks(mComponentCallbacks);
+        }
     }
 
     /** Returns the button view for a given pane if present. */

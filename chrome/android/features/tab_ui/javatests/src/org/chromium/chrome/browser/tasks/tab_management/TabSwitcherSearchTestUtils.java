@@ -9,6 +9,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.content.Context;
+
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -17,18 +19,26 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
 /** Test utils for hub search. */
 public class TabSwitcherSearchTestUtils {
     /** Launch the SearchActivity and wait for ZPS to load. */
-    public static SearchActivity launchSearchActivityFromTabSwitcherAndWaitForLoad() {
+    public static SearchActivity launchSearchActivityFromTabSwitcherAndWaitForLoad(
+            Context context) {
         SearchActivity searchActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
                         SearchActivity.class,
-                        () -> onView(withId(R.id.search_box_text)).perform(click()));
+                        () -> {
+                            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+                                onView(withId(R.id.search_loupe)).perform(click());
+                            } else {
+                                onView(withId(R.id.search_box_text)).perform(click());
+                            }
+                        });
 
         OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
         omniboxTestUtils.waitAnimationsComplete();

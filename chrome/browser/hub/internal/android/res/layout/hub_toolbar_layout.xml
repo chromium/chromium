@@ -13,35 +13,6 @@ found in the LICENSE file.
   android:layout_height="wrap_content"
   android:orientation="vertical">
 
-  <!-- Hub search is selectively hidden based on the feature flag. -->
-  <view
-    class="org.chromium.chrome.browser.ntp.search.SearchBoxContainerView"
-    android:id="@+id/search_box"
-    android:visibility="gone"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/hub_search_box_height"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="8dp"
-    android:paddingStart="24dp"
-    android:paddingEnd="12dp"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:background="@drawable/hub_search_box_background">
-
-    <EditText
-      tools:ignore="Autofill,LabelFor"
-      style="@style/TextAppearance.TextMedium.Primary"
-      android:id="@+id/search_box_text"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@null"
-      android:ellipsize="end"
-      android:focusableInTouchMode="false"
-      android:focusable="false"
-      android:inputType="text"
-      android:singleLine="true" />
-  </view>
-
   <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow">
@@ -71,13 +42,53 @@ found in the LICENSE file.
       app:tabIndicator="@drawable/m3_tabs_line_indicator"
       app:tabIndicatorFullWidth="true"/>
 
-    <FrameLayout
+    <LinearLayout
       android:id="@+id/menu_button_container"
+      android:orientation="horizontal"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
       android:layout_gravity="end" >
+      <!-- On tablets, the searchbox (R.id.search_box) is hidden in favor of a button. -->
+      <org.chromium.ui.widget.ChromeImageButton
+          android:id="@+id/search_loupe"
+          android:visibility="gone"
+          android:gravity="center_vertical"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:contentDescription="@string/search"
+          android:src="@drawable/ic_search"
+          style="@style/ToolbarButton" />
         <include layout="@layout/menu_button" />
-    </FrameLayout>
+    </LinearLayout>
 
   </FrameLayout>
+
+  <!-- Hub search is selectively hidden based on the feature flag. -->
+  <view
+    class="org.chromium.chrome.browser.ntp.search.SearchBoxContainerView"
+    android:id="@+id/search_box"
+    android:visibility="gone"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/hub_search_box_height"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="8dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="12dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/hub_search_box_background">
+
+    <EditText
+      tools:ignore="Autofill,LabelFor"
+      style="@style/TextAppearance.TextMedium.Primary"
+      android:id="@+id/search_box_text"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      android:ellipsize="end"
+      android:focusableInTouchMode="false"
+      android:focusable="false"
+      android:inputType="text"
+      android:singleLine="true" />
+  </view>
 </org.chromium.chrome.browser.hub.HubToolbarView>
