@@ -33,7 +33,7 @@
     Save
   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS" desc="Text displayed on the footer of the save dialog giving users details about how Autofill with AI data is saved.">
-    Info you have saved and this page get sent to Google to see if autofill can help fill this form. Data may be seen by human reviewers to improve this feature.
+    Saved info and the page from <ph name="WEBSITE">$1<ex>airline.com</ex></ph> are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
 
   <!-- Error state-->

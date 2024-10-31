@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
 
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
@@ -12,6 +14,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -124,7 +127,8 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
 }
 
 std::unique_ptr<views::View> CreateFooterView(
-    base::WeakPtr<SaveAutofillPredictionImprovementsController> controller) {
+    base::WeakPtr<SaveAutofillPredictionImprovementsController> controller,
+    const std::u16string& domain) {
   auto footer_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -134,8 +138,9 @@ std::unique_ptr<views::View> CreateFooterView(
           .Build();
   footer_container->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS))
+          .SetText(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS,
+              domain))
           .SetMultiLine(true)
           .SetTextStyle(views::style::STYLE_BODY_5)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -232,7 +237,10 @@ SaveAutofillPredictionImprovementsBubbleView::
         prediction_improvement.key(), prediction_improvement.value()));
   }
 
-  SetFootnoteView(CreateFooterView(controller_));
+  SetFootnoteView(CreateFooterView(
+      controller_,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          web_contents->GetLastCommittedURL())));
 
   DialogDelegate::SetButtonLabel(
       ui::mojom::DialogButton::kCancel,
