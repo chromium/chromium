@@ -101,3 +101,22 @@ JOIN slice USING (slice_id)
 JOIN args USING (arg_set_id)
 WHERE step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
   AND args.flat_key = 'chrome_latency_info.coalesced_trace_ids';
+
+-- Slices with information about non-blocking touch move inputs
+-- that were converted into gesture scroll updates.
+CREATE PERFETTO TABLE chrome_touch_move_to_scroll_update(
+  -- Latency id of the touch move input (LatencyInfo).
+  touch_move_latency_id INT,
+  -- Latency id of the corresponding scroll update input (LatencyInfo).
+  scroll_update_latency_id INT
+) AS
+SELECT
+  scroll_update_step.latency_id AS scroll_update_latency_id,
+  touch_move_step.latency_id AS touch_move_latency_id
+FROM chrome_input_pipeline_steps scroll_update_step
+JOIN ancestor_slice(scroll_update_step.slice_id) AS ancestor
+JOIN chrome_input_pipeline_steps touch_move_step
+  ON ancestor.id = touch_move_step.slice_id
+WHERE scroll_update_step.step = 'STEP_SEND_INPUT_EVENT_UI'
+AND scroll_update_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
+AND touch_move_step.step = 'STEP_TOUCH_EVENT_HANDLED';
