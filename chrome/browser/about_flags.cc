@@ -3750,6 +3750,20 @@ const FeatureEntry::FeatureParam
         {"proactive_nudge_text_change_count", "10"}};
 
 const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactNoFocusDelay_10_5[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "0"},
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "10"},
+        {"nudge_field_change_event_max", "5"}};
+
+const FeatureEntry::FeatureParam
+    kComposeProactiveNudge_CompactNoFocusDelay_10_10[] = {
+        {"proactive_nudge_focus_delay_milliseconds", "0"},
+        {"proactive_nudge_compact_ui", "true"},
+        {"proactive_nudge_text_change_count", "10"},
+        {"nudge_field_change_event_max", "10"}};
+
+const FeatureEntry::FeatureParam
     kComposeProactiveNudge_CompactNoFocusDelay_50[] = {
         {"proactive_nudge_focus_delay_milliseconds", "0"},
         {"proactive_nudge_compact_ui", "true"},
@@ -3792,29 +3806,35 @@ const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeNoFocusDelay_50[] =
      {"proactive_nudge_text_change_count", "50"}};
 
 const FeatureEntry::FeatureVariation kComposeProactiveNudgeVariations[] = {
-    {"Compact UI - No focus delay - 10 edits",
+    {"Compact UI - No focus delay - Show (10 edits)",
      kComposeProactiveNudge_CompactNoFocusDelay_10,
      std::size(kComposeProactiveNudge_CompactNoFocusDelay_10), nullptr},
-    {"Compact UI - No focus delay - 50 edits",
+    {"Compact UI - No focus delay - Show (10 edits) - Dismiss (5 edits)",
+     kComposeProactiveNudge_CompactNoFocusDelay_10_5,
+     std::size(kComposeProactiveNudge_CompactNoFocusDelay_10_5), nullptr},
+    {"Compact UI - No focus delay - Show (10 edits) - Dismiss (10 edits)",
+     kComposeProactiveNudge_CompactNoFocusDelay_10_10,
+     std::size(kComposeProactiveNudge_CompactNoFocusDelay_10_10), nullptr},
+    {"Compact UI - No focus delay - Show (50 edits)",
      kComposeProactiveNudge_CompactNoFocusDelay_50,
      std::size(kComposeProactiveNudge_CompactNoFocusDelay_50), nullptr},
-    {"Compact UI - Long focus delay - 10 edits",
+    {"Compact UI - Long focus delay - Show (10 edits)",
      kComposeProactiveNudge_CompactLongFocusDelay_10,
      std::size(kComposeProactiveNudge_CompactLongFocusDelay_10), nullptr},
-    {"Compact UI - Long focus delay - 50 edits",
+    {"Compact UI - Long focus delay - Show (50 edits)",
      kComposeProactiveNudge_CompactLongFocusDelay_50,
      std::size(kComposeProactiveNudge_CompactLongFocusDelay_50), nullptr},
 
-    {"Compact UI - No Focus delay - 10 edits long text delay",
+    {"Compact UI - No Focus delay - Show (10 edits) - long text delay",
      kComposeProactiveNudge_CompactLongTextDelay_10,
      std::size(kComposeProactiveNudge_CompactLongTextDelay_10), nullptr},
-    {"Compact UI - No Focus delay - 50 edits long text delay",
+    {"Compact UI - No Focus delay - Show (50 edits) - long text delay",
      kComposeProactiveNudge_CompactLongTextDelay_50,
      std::size(kComposeProactiveNudge_CompactLongTextDelay_50), nullptr},
-    {"Large UI - No focus delay - 10 edits",
+    {"Large UI - No focus delay - Show (10 edits)",
      kComposeProactiveNudge_LargeNoFocusDelay_10,
      std::size(kComposeProactiveNudge_LargeNoFocusDelay_10), nullptr},
-    {"Large UI - Long focus delay - 50 edits",
+    {"Large UI - Long focus delay - Show (50 edits)",
      kComposeProactiveNudge_LargeNoFocusDelay_50,
      std::size(kComposeProactiveNudge_LargeNoFocusDelay_50), nullptr}};
 

@@ -120,6 +120,7 @@ struct Config {
   // once per field per focus.
   bool proactive_nudge_field_per_navigation = true;
 
+  // How many text change events to wait for before dismissing the nudge.
   unsigned int nudge_field_change_event_max = 3;
 
   // The duration that the saved state notification is shown before
