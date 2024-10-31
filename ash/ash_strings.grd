@@ -8571,10 +8571,10 @@ To shut down the device, press and hold the power button on the device again.
 
 
       <!-- Compat Mode Resize States-->
-      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PORTRAIT" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size.">
+      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PORTRAIT" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size." meaning="Orientation whose height is larger than width">
         Portrait
       </message>
-      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_LANDSCAPE" desc="Item in a list of possible sizes for the app. Makes the app bigger and wider in a tablet size.">
+      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_LANDSCAPE" desc="Item in a list of possible sizes for the app. Makes the app bigger and wider in a tablet size." meaning="Orientation whose width is larger than height">
         Landscape
       </message>
       <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
