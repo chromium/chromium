@@ -302,10 +302,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
                         + "instead of holding strong references to blink::WebElement objects."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ALWAYS_PARSE_PLACEHOLDERS,
-                "When enabled, Autofill local heuristics consider the placeholder attribute "
-                        + "for determining field types."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_AU_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Australia."),
         Flag.baseFeature(

@@ -1076,11 +1076,8 @@ std::optional<InferredLabel> InferLabelForElement(
   if (auto r = InferLabelFromPrevious(element)) {
     return r;
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAlwaysParsePlaceholders)) {
-    if (auto r = InferLabelFromPlaceholder(element)) {
-      return r;
-    }
+  if (auto r = InferLabelFromPlaceholder(element)) {
+    return r;
   }
   if (auto r = InferLabelFromOverlayingSuccessor(element)) {
     return r;

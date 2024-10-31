@@ -110,8 +110,6 @@ struct ParsingContext {
   const bool autofill_enable_support_for_parsing_with_shared_labels{
       base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForParsingWithSharedLabels)};
-  const bool autofill_always_parse_placeholders{
-      base::FeatureList::IsEnabled(features::kAutofillAlwaysParsePlaceholders)};
 
   std::optional<RegexMatchesCache> matches_cache;
   raw_ref<AutofillRegexCache> regex_cache;

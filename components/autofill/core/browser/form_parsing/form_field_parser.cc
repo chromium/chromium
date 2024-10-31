@@ -584,8 +584,7 @@ bool FormFieldParser::Match(ParsingContext& context,
 
   const std::u16string& name = field->parseable_name();
 
-  const bool match_label = match_attributes.contains(MatchAttribute::kLabel);
-  if (match_label &&
+  if (match_attributes.contains(MatchAttribute::kLabel) &&
       MatchesRegexWithCache(context, label, pattern, capture_destination)) {
     found_match = true;
     match_type_string = "Match in label";
@@ -596,20 +595,6 @@ bool FormFieldParser::Match(ParsingContext& context,
     found_match = true;
     match_type_string = "Match in name";
     value = name;
-  } else if (match_label && pattern != kEmptyLabelRegex &&
-             context.autofill_always_parse_placeholders &&
-             MatchesRegexWithCache(context, field->placeholder(), pattern,
-                                   capture_destination)) {
-    // Placeholders are matched against the same regexes as labels. However, to
-    // prevent false positives in `ParseEmptyLabel()`, matches in placeholders
-    // are explicitly prevented for `kEmptyLabelRegex`.
-    // TODO(crbug.com/40222716): The label and placeholder cases should
-    // logically be grouped together. Placeholder is currently last, because for
-    // the finch study we want the group assignment to happen as late as
-    // possible. Reorder once the change is rolled out.
-    found_match = true;
-    match_type_string = "Match in placeholder";
-    value = field->placeholder();
   }
 
   if (found_match && capture_destination) {

@@ -448,16 +448,6 @@ BASE_FEATURE(kAutofillParseEmailLabelAndPlaceholder,
              "AutofillParseEmailLabelAndPlaceholder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the placeholder is not used as a fallback during label inference.
-// Instead, local heuristics treat it as a separate source in addition to the
-// label. The placeholder is matched against the same regex as the label.
-// Since placeholders are often used as example values, this should allow us to
-// extract a more appropriate label instead.
-// TODO(crbug.com/40222716): Remove once launched.
-BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
-             "AutofillAlwaysParsePlaceholders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If the feature is enabled, paint checks over individual `PopupCellView`s (to
 // verify that a user's cursor has been outside the cell before accepting it)
 // are disabled.
