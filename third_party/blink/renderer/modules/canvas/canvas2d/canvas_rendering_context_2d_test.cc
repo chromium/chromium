@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -2294,8 +2295,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
   base::RunLoop run_loop;
 
   // Install a minimal delay for testing to ensure that the test remains fast
@@ -2353,8 +2353,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
 
   // Install a minimal delay for testing to ensure that the test remains fast
   // to execute.
@@ -2431,8 +2430,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
 
   // Install a minimal delay for testing to ensure that the test remains fast
   // to execute.
@@ -2484,8 +2482,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
 
   // Install a minimal delay for testing to ensure that the test remains fast
   // to execute.
@@ -2538,8 +2535,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
 
   // Install a minimal delay for testing to ensure that the test remains fast
   // to execute.
@@ -2601,8 +2597,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
 
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
 
   // Install a minimal delay for testing to ensure that the test remains fast
   // to execute.
@@ -2770,8 +2765,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // is present, while GPU compositing is necessary for hibernation to succeed.
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
 
   // Install a minimal delay for testing to ensure that the test remains fast
   // to execute.
@@ -2817,8 +2811,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
   base::RunLoop run_loop;
 
   // Install a minimal delay for testing to ensure that the test remains fast
@@ -2877,8 +2870,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       RasterModeHint::kPreferGPU));
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
-  auto& handler = bridge->GetHibernationHandler();
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
   base::RunLoop run_loop;
 
   // Install a minimal delay for testing to ensure that the test remains fast
