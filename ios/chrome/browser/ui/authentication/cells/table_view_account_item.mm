@@ -10,16 +10,17 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
-// Padding used between the text and error icon.
-constexpr CGFloat kHorizontalPaddingBetweenTextAndError = 5;
+// Padding used between the text and status icon.
+constexpr CGFloat kHorizontalPaddingBetweenTextAndStatus = 5;
 
 // Size of the error icon image.
-constexpr CGFloat KErrorIconImageSize = 22.;
+constexpr CGFloat kErrorIconImageSize = 22.;
 
 }  // namespace
 
@@ -46,10 +47,11 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   if (self.shouldDisplayError) {
-    [cell setErrorImage:DefaultSymbolWithPointSize(kErrorCircleFillSymbol,
-                                                   KErrorIconImageSize)];
+    [cell setStatusViewWithImage:DefaultSymbolWithPointSize(
+                                     kErrorCircleFillSymbol,
+                                     kErrorIconImageSize)];
   } else {
-    [cell setErrorImage:nil];
+    [cell setStatusView:nil];
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 
@@ -72,19 +74,20 @@ constexpr CGFloat KErrorIconImageSize = 22.;
 
 @end
 
-@interface TableViewAccountCell ()
-
-// Error icon that will be displayed on the left side of the cell.
-@property(nonatomic, readonly, strong) UIImageView* errorIcon;
-
-@end
-
-@implementation TableViewAccountCell
+@implementation TableViewAccountCell {
+  // Status icon that will be displayed on the trailing side of the cell.
+  // It is similar to the accessoryView. But accessoryView’s move to
+  // top-trailing part of the cell on iOS 18. According to some online comment,
+  // it seems `accessoryView` generates conflicting constraints when some
+  // content of the cell uses `translatesAutoresizingMaskIntoConstraints = NO`.
+  UIView* _statusView;
+  // Container for the status view.
+  UIView* _statusContainerView;
+}
 
 @synthesize imageView = _imageView;
 @synthesize textLabel = _textLabel;
 @synthesize detailTextLabel = _detailTextLabel;
-@synthesize errorIcon = _errorIcon;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -110,15 +113,15 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   _imageView.layer.cornerRadius = kTableViewIconImageSize / 2.0f;
   [contentView addSubview:_imageView];
 
-  _errorIcon = [[UIImageView alloc] init];
-  _errorIcon.tintColor = [UIColor colorNamed:kRed500Color];
-  _errorIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  [_errorIcon setContentHuggingPriority:UILayoutPriorityRequired
-                                forAxis:UILayoutConstraintAxisHorizontal];
-  [_errorIcon
+  _statusContainerView = [[UIView alloc] init];
+  _statusContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_statusContainerView
+      setContentHuggingPriority:UILayoutPriorityRequired
+                        forAxis:UILayoutConstraintAxisHorizontal];
+  [_statusContainerView
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
-  [contentView addSubview:_errorIcon];
+  [contentView addSubview:_statusContainerView];
 
   _textLabel = [[UILabel alloc] init];
   _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -134,7 +137,7 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   _detailTextLabel.adjustsFontForContentSizeCategory = YES;
   _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [contentView addSubview:_detailTextLabel];
-  [self setErrorImage:nil];
+  [self setStatusView:nil];
 }
 
 // Set constraints on subviews.
@@ -181,7 +184,7 @@ constexpr CGFloat KErrorIconImageSize = 22.;
         constraintEqualToAnchor:verticalCenteringView.bottomAnchor],
     [verticalCenteringView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
-    [_errorIcon.centerYAnchor
+    [_statusContainerView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
     [verticalCenteringView.topAnchor
         constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
@@ -193,21 +196,23 @@ constexpr CGFloat KErrorIconImageSize = 22.;
                                      kTableViewTwoLabelsCellVerticalSpacing],
 
     // Set trailing anchors.
-    [_errorIcon.trailingAnchor
+    [_statusContainerView.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:-kTableViewHorizontalSpacing],
     [_detailTextLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_errorIcon.leadingAnchor
+        constraintLessThanOrEqualToAnchor:_statusContainerView.leadingAnchor
                                  constant:
-                                     -kHorizontalPaddingBetweenTextAndError],
+                                     -kHorizontalPaddingBetweenTextAndStatus],
     [_textLabel.leadingAnchor
         constraintEqualToAnchor:_imageView.trailingAnchor
                        constant:kTableViewOneLabelCellVerticalSpacing],
     [_textLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_errorIcon.leadingAnchor
+        constraintLessThanOrEqualToAnchor:_statusContainerView.leadingAnchor
                                  constant:
-                                     -kHorizontalPaddingBetweenTextAndError],
+                                     -kHorizontalPaddingBetweenTextAndStatus],
+
   ]];
+  _statusContainerView.hidden = YES;
 
   // This is needed so the image doesn't get pushed out if both text and detail
   // are long.
@@ -219,13 +224,27 @@ constexpr CGFloat KErrorIconImageSize = 22.;
                                       forAxis:UILayoutConstraintAxisHorizontal];
 }
 
-- (void)setErrorImage:(UIImage*)errorImage {
-  _errorIcon.image = errorImage;
-  if (errorImage) {
-    _errorIcon.hidden = NO;
-  } else {
-    _errorIcon.hidden = YES;
+- (void)setStatusView:(UIView*)statusView {
+  _statusContainerView.hidden = statusView == nil;
+  if (statusView == nil) {
+    _statusView = nil;
+    // Hide the status view but don’t delete it so that constraints still holds.
+    return;
   }
+  [_statusView removeFromSuperview];
+  _statusView = statusView;
+  [_statusContainerView addSubview:statusView];
+  AddSameConstraints(_statusContainerView, statusView);
+}
+
+- (void)setStatusViewWithImage:(UIImage*)statusImage {
+  CHECK(statusImage);
+
+  UIImageView* statusIcon = [[UIImageView alloc] init];
+  statusIcon.tintColor = [UIColor colorNamed:kRed500Color];
+  statusIcon.translatesAutoresizingMaskIntoConstraints = NO;
+  statusIcon.image = statusImage;
+  [self setStatusView:statusIcon];
 }
 
 #pragma mark - UITableViewCell
@@ -237,7 +256,7 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   self.detailTextLabel.text = nil;
   self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  [self setErrorImage:nil];
+  [self setStatusView:nil];
   self.userInteractionEnabled = YES;
   self.contentView.alpha = 1;
   UIImageView* accessoryImage =
@@ -253,7 +272,8 @@ constexpr CGFloat KErrorIconImageSize = 22.;
 }
 
 - (NSString*)accessibilityValue {
-  if (self.errorIcon.image != nil) {
+  UIImageView* statusIcon = base::apple::ObjCCast<UIImageView>(_statusView);
+  if (statusIcon.image != nil) {
     return
         [NSString stringWithFormat:
                       @"%@, %@", self.detailTextLabel.text,

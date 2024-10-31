@@ -162,7 +162,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       [[UIActivityIndicatorView alloc] init];
   activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   activityIndicatorView.color = [UIColor colorNamed:kTextSecondaryColor];
-  cell.accessoryView = activityIndicatorView;
+  [cell setStatusView:activityIndicatorView];
   [activityIndicatorView startAnimating];
 }
 
@@ -553,7 +553,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   TableViewAccountCell* cell =
       base::apple::ObjCCastStrict<TableViewAccountCell>(
           [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
-  cell.accessoryView = nil;
+  [cell setStatusView:nil];
   _selectedIndexPath = nil;
   self.modalInPresentation = NO;
   _ellipsisButton.enabled = YES;

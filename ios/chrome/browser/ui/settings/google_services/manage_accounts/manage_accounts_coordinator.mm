@@ -120,10 +120,7 @@ using signin_metrics::PromoAction;
     _mediator.consumer = viewController;
     _mediator.delegate = self;
     _viewController.modelIdentityDataSource = _mediator;
-    ManageAccountsTableViewController* accountsTableViewController =
-        base::apple::ObjCCast<ManageAccountsTableViewController>(
-            _viewController);
-    accountsTableViewController.mutator = _mediator;
+    viewController.mutator = _mediator;
   } else {
     LegacyAccountsTableViewController* viewController =
         [[LegacyAccountsTableViewController alloc]
