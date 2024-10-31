@@ -10,31 +10,22 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdfium/pdfium_engine.h"
-#include "pdf/pdfium/pdfium_engine_exports.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_helpers.h"
-#include "printing/units.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
-#include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 
@@ -85,34 +76,6 @@ std::unique_ptr<PdfInkBrush> CreateTestBrush() {
 base::FilePath GetReferenceFilePath(std::string_view test_filename) {
   return base::FilePath(FILE_PATH_LITERAL("pdfium_ink"))
       .AppendASCII(test_filename);
-}
-
-// Takes `pdf_data` and loads it using PDFium. Then renders the page at
-// `page_index` to a bitmap of `size_in_points` and checks if it matches
-// `expected_png_file`.
-void CheckPdfRendering(base::span<const uint8_t> pdf_data,
-                       int page_index,
-                       const gfx::Size& size_in_points,
-                       const base::FilePath& expected_png_file) {
-  const gfx::Rect page_rect(size_in_points);
-  SkBitmap page_bitmap;
-  page_bitmap.allocPixels(
-      SkImageInfo::Make(gfx::SizeToSkISize(page_rect.size()),
-                        kBGRA_8888_SkColorType, kPremul_SkAlphaType));
-
-  PDFiumEngineExports::RenderingSettings settings(
-      gfx::Size(printing::kPointsPerInch, printing::kPointsPerInch), page_rect,
-      /*fit_to_bounds=*/false,
-      /*stretch_to_bounds=*/false,
-      /*keep_aspect_ratio=*/true,
-      /*center_in_bounds=*/false,
-      /*autorotate=*/false, /*use_color=*/true, /*render_for_printing=*/false);
-
-  PDFiumEngineExports exports;
-  ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_index, settings,
-                                            page_bitmap.getPixels()));
-
-  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
 }
 
 }  // namespace

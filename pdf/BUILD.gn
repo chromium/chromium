@@ -399,6 +399,7 @@ if (enable_pdf) {
       "//base",
       "//cc:test_support",
       "//pdf/loader",
+      "//printing",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",
