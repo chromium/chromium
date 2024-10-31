@@ -1307,6 +1307,7 @@ policies:
   1306: SelectParserRelaxationEnabled
   1307: ClassManagementEnabled
   1308: EnterpriseSearchAggregatorSettings
+  1309: TranslatorAPIAllowed
 
 atomic_groups:
   1: Homepage

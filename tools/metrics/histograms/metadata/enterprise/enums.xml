@@ -2173,6 +2173,7 @@ chromium-metrics-reviews@google.com.
   <int value="1306" label="SelectParserRelaxationEnabled"/>
   <int value="1307" label="ClassManagementEnabled"/>
   <int value="1308" label="EnterpriseSearchAggregatorSettings"/>
+  <int value="1309" label="TranslatorAPIAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

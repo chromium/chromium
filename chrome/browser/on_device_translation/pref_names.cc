@@ -16,6 +16,9 @@ const char kTranslateKitBinaryPath[] =
 const char kTranslateKitPreviouslyRegistered[] =
     "on_device_translation.translate_kit_registered";
 
+const char kTranslatorAPIAllowed[] =
+    "on_device_translation.translator_api_allowed";
+
 }  // namespace prefs
 
 namespace on_device_translation {

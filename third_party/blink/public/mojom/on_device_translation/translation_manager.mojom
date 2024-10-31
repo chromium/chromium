@@ -33,6 +33,10 @@ enum CanCreateTranslatorResult {
 
   // The translator cannot be created, because the translator service crashed.
   kNoServiceCrashed = 7,
+
+  // The translator cannot be created, because the use of Translator API is
+  // disallowed by `TranslatorAPIAllowed` Enterprise policy
+  kNoDisallowedByPolicy = 8,
 };
 
 // The client interface that receives a Translator from a TranslationManager.

@@ -21,6 +21,11 @@ extern const char kTranslateKitBinaryPath[];
 // initialized.
 extern const char kTranslateKitPreviouslyRegistered[];
 
+// A pref of the boolean value which indicates whether the use of the Translator
+// API is allowed. This pref is set per profile by the "TranslatorAPIAllowed"
+// Enterprise policy.
+extern const char kTranslatorAPIAllowed[];
+
 }  // namespace prefs
 
 namespace on_device_translation {

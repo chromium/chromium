@@ -125,6 +125,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/sharing_message/buildflags.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -234,6 +235,10 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "chrome/browser/on_device_translation/pref_names.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_pref_names.h"
@@ -359,6 +364,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kTranslateEnabled,
     translate::prefs::kOfferTranslateEnabled,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  { key::kTranslatorAPIAllowed,
+    prefs::kTranslatorAPIAllowed,
+    base::Value::Type::BOOLEAN },
+#endif
   { key::kURLAllowlist,
     policy_prefs::kUrlAllowlist,
     base::Value::Type::LIST

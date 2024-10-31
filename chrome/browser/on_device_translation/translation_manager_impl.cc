@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/on_device_translation/translator.h"
@@ -69,12 +70,17 @@ void TranslationManagerImpl::CanCreateTranslator(
     const std::string& target_lang,
     CanCreateTranslatorCallback callback) {
   CHECK(browser_context_);
+  PrefService* profile_pref =
+      Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
   RecordTranslationAPICallForLanguagePair("CanTranslate", source_lang,
                                           target_lang);
+  if (!profile_pref->GetBoolean(prefs::kTranslatorAPIAllowed)) {
+    std::move(callback).Run(
+        blink::mojom::CanCreateTranslatorResult::kNoDisallowedByPolicy);
+    return;
+  }
   if (!PassAcceptLanguagesCheck(
-          Profile::FromBrowserContext(browser_context_.get())
-              ->GetPrefs()
-              ->GetString(language::prefs::kAcceptLanguages),
+          profile_pref->GetString(language::prefs::kAcceptLanguages),
           source_lang, target_lang)) {
     std::move(callback).Run(
         blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
@@ -91,10 +97,14 @@ void TranslationManagerImpl::CreateTranslator(
   RecordTranslationAPICallForLanguagePair("Create", options->source_lang,
                                           options->target_lang);
   CHECK(browser_context_);
+  PrefService* profile_pref =
+      Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
+  if (!profile_pref->GetBoolean(prefs::kTranslatorAPIAllowed)) {
+    mojo::Remote(std::move(client))->OnResult(mojo::NullRemote());
+    return;
+  }
   if (!PassAcceptLanguagesCheck(
-          Profile::FromBrowserContext(browser_context_.get())
-              ->GetPrefs()
-              ->GetString(language::prefs::kAcceptLanguages),
+          profile_pref->GetString(language::prefs::kAcceptLanguages),
           options->source_lang, options->target_lang)) {
     mojo::Remote(std::move(client))->OnResult(mojo::NullRemote());
     return;
@@ -124,7 +134,8 @@ void TranslationManagerImpl::CreateTranslator(
             }
             mojo::PendingRemote<::blink::mojom::Translator> blink_remote;
             self->translators_.Add(
-                std::make_unique<Translator>(source_lang, target_lang,
+                std::make_unique<Translator>(self->browser_context_,
+                                             source_lang, target_lang,
                                              std::move(remote)),
                 blink_remote.InitWithNewPipeAndPassReceiver());
             mojo::Remote<
