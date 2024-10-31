@@ -34,6 +34,7 @@ struct PageVisitInfo {
   PageVisitInfo();
   PageVisitInfo(PageVisitInfo&& other);
 
+  GURL url;
   std::string site;
   ukm::SourceId source_id;
   bool did_page_access_cookies;
@@ -116,6 +117,10 @@ class DipsNavigationFlowDetector
   std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
   std::optional<dips::PageVisitInfo> previous_page_visit_info_;
   std::optional<dips::PageVisitInfo> current_page_visit_info_;
+
+  // Tracks a navigational cookie access notification that is received before
+  // the navigation finishes.
+  std::optional<GURL> navigation_cookie_access_url_;
 
   base::Time last_page_change_time_;
   long bucketized_previous_page_visit_duration_;

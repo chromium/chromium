@@ -361,8 +361,9 @@ class DipsNavigationFlowDetectorPATApiTest
   network::test::TrustTokenRequestHandler trust_token_request_handler_;
 };
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmNotEmittedWhenLessThanThreePagesVisited) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeNotEmittedWhenLessThanThreePagesVisited) {
   // Visit a page on site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -376,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmNotEmittedWhenSameSiteWithPriorPage) {
+                       NavigationFlowNodeNotEmittedWhenSameSiteWithPriorPage) {
   // Visit a page on site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -394,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmNotEmittedWhenSameSiteWithNextPage) {
+                       NavigationFlowNodeNotEmittedWhenSameSiteWithNextPage) {
   // Visit a page on site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -411,16 +412,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-// TODO - crbug.com/353556432: flaky on Linux release builds
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
-#define MAYBE_UkmNotEmittedWhenSiteDidNotAccessStorage \
-  DISABLED_UkmNotEmittedWhenSiteDidNotAccessStorage
-#else
-#define MAYBE_UkmNotEmittedWhenSiteDidNotAccessStorage \
-  UkmNotEmittedWhenSiteDidNotAccessStorage
-#endif
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       MAYBE_UkmNotEmittedWhenSiteDidNotAccessStorage) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeNotEmittedWhenSiteDidNotAccessStorage) {
   // Visit A->B->C without storage access on B.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -436,16 +430,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-// TODO - crbug.com/353556432: flaky on Mac and Linux release builds
-#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || BUILDFLAG(IS_MAC)
-#define MAYBE_UkmNotEmittedWhenCookiesReadViaHeaders \
-  DISABLED_UkmNotEmittedWhenCookiesReadViaHeaders
-#else
-#define MAYBE_UkmNotEmittedWhenCookiesReadViaHeaders \
-  UkmNotEmittedWhenCookiesReadViaHeaders
-#endif
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       MAYBE_UkmNotEmittedWhenCookiesReadViaHeaders) {
+                       NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders) {
   // Pre-write a cookie for site B so it can be passed in request headers later.
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(
@@ -473,14 +459,15 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 // TODO - crbug.com/353556432: flaky on Linux release builds and on Android
 #if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_MAC)
-#define MAYBE_UkmNotEmittedForCookieAccessInPrerenders \
-  DISABLED_UkmNotEmittedForCookieAccessInPrerenders
+#define MAYBE_NavigationFlowNodeNotEmittedForCookieAccessInPrerenders \
+  DISABLED_NavigationFlowNodeNotEmittedForCookieAccessInPrerenders
 #else
-#define MAYBE_UkmNotEmittedForCookieAccessInPrerenders \
-  UkmNotEmittedForCookieAccessInPrerenders
+#define MAYBE_NavigationFlowNodeNotEmittedForCookieAccessInPrerenders \
+  NavigationFlowNodeNotEmittedForCookieAccessInPrerenders
 #endif
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorPrerenderTest,
-                       MAYBE_UkmNotEmittedForCookieAccessInPrerenders) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorPrerenderTest,
+    MAYBE_NavigationFlowNodeNotEmittedForCookieAccessInPrerenders) {
   // Visit site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -490,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorPrerenderTest,
   GURL second_page_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents, second_page_url));
-  // While still on that site B page, rerender a different page on site B that
+  // While still on that site B page, prerender a different page on site B that
   // accesses cookies with both response headers and Javascript.
   const GURL prerendering_url =
       embedded_https_test_server_.GetURL(kSiteB, "/set-cookie?name=value");
@@ -518,8 +505,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorPrerenderTest,
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorPATApiTest,
-                       UkmNotEmittedWhenOnlyStorageAccessIsTopicsApi) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorPATApiTest,
+    NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsTopicsApi) {
   // Visit site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -549,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorPATApiTest,
 
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorPATApiTest,
-    UkmNotEmittedWhenOnlyStorageAccessIsProtectedAudienceApi) {
+    NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsProtectedAudienceApi) {
   // Visit site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -596,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorPATApiTest,
-    UkmNotEmittedWhenOnlyStorageAccessIsPrivateStateTokensApi) {
+    NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsPrivateStateTokensApi) {
   // Visit site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -637,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorPATApiTest,
-    UkmNotEmittedWhenOnlyStorageAccessIsAttributionReportingApi) {
+    NavigationFlowNodeNotEmittedWhenOnlyStorageAccessIsAttributionReportingApi) {
   // Visit site A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -672,14 +660,8 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-// TODO - crbug.com/353556432: flaky on Mac and Linux release builds
-#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || BUILDFLAG(IS_MAC)
-#define MAYBE_UkmEmitsWhenVisitingABA DISABLED_UkmEmitsWhenVisitingABA
-#else
-#define MAYBE_UkmEmitsWhenVisitingABA UkmEmitsWhenVisitingABA
-#endif
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       MAYBE_UkmEmitsWhenVisitingABA) {
+                       NavigationFlowNodeEmitsWhenVisitingABA) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -722,16 +704,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                                        visit_duration.InMilliseconds()));
 }
 
-// TODO - crbug.com/353556432: flaky on Linux release builds
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
-#define MAYBE_UkmEmitsWhenWritingCookiesInHeaders \
-  DISABLED_UkmEmitsWhenWritingCookiesInHeaders
-#else
-#define MAYBE_UkmEmitsWhenWritingCookiesInHeaders \
-  UkmEmitsWhenWritingCookiesInHeaders
-#endif
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       MAYBE_UkmEmitsWhenWritingCookiesInHeaders) {
+                       NavigationFlowNodeEmitsWhenWritingCookiesInHeaders) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -769,8 +743,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                                        visit_duration.InMilliseconds()));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmEmitsWhenIframeWritesCookiesInHeaders) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeEmitsWhenIframeWritesCookiesInHeaders) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -817,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorTest,
-    UkmNotEmittedWhenReadingNonexistentCookiesWithJavascript) {
+    NavigationFlowNodeNotEmittedWhenReadingNonexistentCookiesWithJavascript) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -837,8 +812,9 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmEmitsWhenReadingCookiesWithJavascript) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeEmitsWhenReadingCookiesWithJavascript) {
   // Pre-write a cookie for site B so it can be read later.
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(
@@ -881,8 +857,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntryMetric(ukm_entry, "VisitDurationMilliseconds", 0l);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmEmitsWhenWritingCookiesWithJavascript) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeEmitsWhenWritingCookiesWithJavascript) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -927,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmEmitsWhenLocalStorageAccessed) {
+                       NavigationFlowNodeEmitsWhenLocalStorageAccessed) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -969,8 +946,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                                        visit_duration.InMilliseconds()));
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmCorrectWhenEntryAndExitRendererInitiated) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeCorrectWhenEntryAndExitRendererInitiated) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -1013,8 +991,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntryMetric(ukm_entry, "VisitDurationMilliseconds", 0l);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmCorrectWhenOnlyEntryRendererInitiated) {
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    NavigationFlowNodeCorrectWhenOnlyEntryRendererInitiated) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -1058,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmCorrectWhenOnlyExitRendererInitiated) {
+                       NavigationFlowNodeCorrectWhenOnlyExitRendererInitiated) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -1101,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       UkmReportsNegativeDurationAsZero) {
+                       NavigationFlowNodeReportsNegativeDurationAsZero) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =
@@ -1235,7 +1214,8 @@ class DipsNavigationFlowDetectorWebAuthnTest : public CertVerifierBrowserTest {
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorWebAuthnTest, UkmReportsWAA) {
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorWebAuthnTest,
+                       NavigationFlowNodeReportsWAA) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL first_page_url =

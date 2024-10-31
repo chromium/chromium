@@ -15,7 +15,6 @@
 namespace dips {
 
 PageVisitInfo::PageVisitInfo() {
-  site = "";
   source_id = ukm::kInvalidSourceId;
   did_page_access_cookies = false;
   did_page_access_storage = false;
@@ -54,7 +53,9 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
     return;
   }
 
-  bool is_first_page_load_in_tab = current_page_visit_info_->site.empty();
+  bool is_first_page_load_in_tab =
+      !current_page_visit_info_->was_navigation_to_page_renderer_initiated
+           .has_value();
   if (!is_first_page_load_in_tab) {
     if (previous_page_visit_info_) {
       two_pages_ago_visit_info_.emplace(std::move(*previous_page_visit_info_));
@@ -65,6 +66,7 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
     current_page_visit_info_.emplace(dips::PageVisitInfo());
   }
 
+  current_page_visit_info_->url = current_page_url;
   current_page_visit_info_->site = GetSiteForDIPS(current_page_url);
   current_page_visit_info_->source_id = render_frame_host->GetPageUkmSourceId();
   current_page_visit_info_->was_navigation_to_page_renderer_initiated =
@@ -72,6 +74,10 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
   current_page_visit_info_->was_navigation_to_page_user_initiated =
       !navigation_handle->IsRendererInitiated() ||
       navigation_handle->HasUserGesture();
+  if (navigation_cookie_access_url_ == current_page_url) {
+    current_page_visit_info_->did_page_access_cookies = true;
+  }
+  navigation_cookie_access_url_ = std::nullopt;
 
   base::Time now = clock_->Now();
   if (!is_first_page_load_in_tab) {
@@ -125,18 +131,10 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   if (!first_party_url.has_value()) {
     return;
   }
-  const std::string first_party_site = GetSiteForDIPS(first_party_url.value());
   // DIPS mitigations are only turned on when non-CHIPS 3PCs are blocked, so
   // mirror that behavior by ignoring non-CHIPS 3PC accesses.
   if (!HasCHIPS(details.cookie_access_result_list) &&
       !IsSameSiteForDIPS(first_party_url.value(), details.url)) {
-    return;
-  }
-  // If the site we received the cookie access notification for is not the same
-  // as the current site, that means that site has since been navigated away
-  // from. In that case, we've already emitted UKM (or decided not to emit) for
-  // that page, so ignore the notification.
-  if (first_party_site != current_page_visit_info_->site) {
     return;
   }
 
@@ -174,8 +172,16 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   // For accesses in main frame navigations, only count writes, as the browser
   // sends cookies automatically and so sites have no control over whether they
   // read cookies or not.
-  if (details.type == network::mojom::CookieAccessDetails_Type::kChange) {
+  if (details.type != CookieOperation::kChange) {
+    return;
+  }
+
+  if (details.url == current_page_visit_info_->url) {
     current_page_visit_info_->did_page_access_cookies = true;
+  } else {
+    // This notification might be for an in-progress navigation, so we should
+    // remember this notification until the next navigation finishes.
+    navigation_cookie_access_url_ = details.url;
   }
 }
 
