@@ -54,8 +54,9 @@ if (is_win || is_mac || is_linux) {
   action("updater_license") {
     script = "//chrome/updater/fix_licenses.py"
     deps = [ ":generate_updater_license" ]
-    _trimmed_license_path = "$root_out_dir/LICENSE.chromium_updater"
-    _orig_license_path = "$target_gen_dir/UNTRIMMED_LICENSE.chromium_updater"
+    _trimmed_license_path =
+        "$root_out_dir/LICENSE.$updater_product_full_name_dashed_lowercase"
+    _orig_license_path = "$target_gen_dir/UNTRIMMED_LICENSE.$updater_product_full_name_dashed_lowercase"
     args = [
       "--src",
       rebase_path(_orig_license_path, root_build_dir),
@@ -66,7 +67,7 @@ if (is_win || is_mac || is_linux) {
   }
   action("generate_updater_license") {
     script = "//tools/licenses/licenses.py"
-    _license_path = "$target_gen_dir/UNTRIMMED_LICENSE.chromium_updater"
+    _license_path = "$target_gen_dir/UNTRIMMED_LICENSE.$updater_product_full_name_dashed_lowercase"
     depfile = "$target_gen_dir/$target_name.d"
 
     args = [
