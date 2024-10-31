@@ -154,7 +154,6 @@ BASE_DECLARE_FEATURE(kSidePanelWebView);
 BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
 #endif
 
-BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 BASE_DECLARE_FEATURE(kSidePanelResizing);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 

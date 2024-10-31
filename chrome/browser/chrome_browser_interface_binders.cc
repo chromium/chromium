@@ -1044,19 +1044,13 @@ void PopulateChromeWebUIFrameBinders(
           render_frame_host->GetProcess()->GetBrowserContext());
   if (history_clusters_service &&
       history_clusters_service->is_journeys_feature_flag_enabled()) {
-    if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
-      RegisterWebUIControllerInterfaceBinder<
-          history_clusters::mojom::PageHandler, HistoryUI,
-          HistoryClustersSidePanelUI>(map);
-    } else {
-      RegisterWebUIControllerInterfaceBinder<
-          history_clusters::mojom::PageHandler, HistoryUI>(map);
-    }
+    RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
+                                           HistoryUI,
+                                           HistoryClustersSidePanelUI>(map);
   }
   if (history_embeddings::IsHistoryEmbeddingsEnabled()) {
     if (history_clusters_service &&
-        history_clusters_service->is_journeys_feature_flag_enabled() &&
-        base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
+        history_clusters_service->is_journeys_feature_flag_enabled()) {
       RegisterWebUIControllerInterfaceBinder<
           history_embeddings::mojom::PageHandler, HistoryUI,
           HistoryClustersSidePanelUI>(map);

@@ -3474,17 +3474,6 @@ const char kSegmentationSurveyPageName[] =
 const char kSegmentationSurveyPageDescription[] =
     "Enable internals page for survey and fetching model";
 
-const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
-const char kSidePanelJourneysName[] = "Side panel journeys";
-const char kSidePanelJourneysDescription[] =
-    "Enables Journeys within the side panel.";
-
-const char kSidePanelJourneysQuerylessFlagId[] =
-    "side-panel-journeys-queryless";
-const char kSidePanelJourneysQuerylessName[] = "Side panel journeys queryless";
-const char kSidePanelJourneysQuerylessDescription[] =
-    "Enables Journeys queryless view within the side panel.";
-
 const char kSharedZstdName[] = "Shared Zstd";
 const char kSharedZstdDescription[] =
     "Enables compression dictionary transport with Zstandard (aka Shared "

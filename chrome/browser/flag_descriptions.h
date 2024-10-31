@@ -1973,14 +1973,6 @@ extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[];
 extern const char kSegmentationSurveyPageName[];
 extern const char kSegmentationSurveyPageDescription[];
 
-extern const char kSidePanelJourneysFlagId[];
-extern const char kSidePanelJourneysName[];
-extern const char kSidePanelJourneysDescription[];
-
-extern const char kSidePanelJourneysQuerylessFlagId[];
-extern const char kSidePanelJourneysQuerylessName[];
-extern const char kSidePanelJourneysQuerylessDescription[];
-
 extern const char kSharedZstdName[];
 extern const char kSharedZstdDescription[];
 

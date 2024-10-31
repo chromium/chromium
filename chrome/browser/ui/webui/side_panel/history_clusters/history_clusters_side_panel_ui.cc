@@ -46,11 +46,6 @@ HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
           content::kChromeUIScheme,
           chrome::kChromeUIHistoryClustersSidePanelHost) {}
 
-bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
-}
-
 bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
   return true;
 }

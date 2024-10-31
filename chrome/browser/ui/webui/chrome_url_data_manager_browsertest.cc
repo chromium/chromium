@@ -187,7 +187,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
     enabled_features.push_back(ntp_features::kCustomizeChromeWallpaperSearch);
     enabled_features.push_back(

@@ -219,10 +219,6 @@ BASE_FEATURE(kSidePanelWebView,
              "SidePanelWebView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSidePanelJourneysQueryless,
-             "SidePanelJourneysQueryless",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !defined(ANDROID)
 BASE_FEATURE(kSidePanelCompanionDefaultPinned,
              "SidePanelCompanionDefaultPinned",

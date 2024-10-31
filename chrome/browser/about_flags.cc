@@ -1259,16 +1259,6 @@ const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
 
-const FeatureEntry::FeatureParam kSidePanelJourneysOpensFromOmniboxParams[] = {
-    {"SidePanelJourneysOpensFromOmnibox", "true"},
-};
-const FeatureEntry::FeatureVariation
-    kSidePanelJourneysOpensFromOmniboxVariations[] = {
-        {"Omnibox opens Side Panel Journeys",
-         kSidePanelJourneysOpensFromOmniboxParams,
-         std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
-};
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kShortcutBoostSingleUrl[] = {
@@ -6747,19 +6737,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSplitTabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kSplitTabStrip)},
 #endif
-
-    {flag_descriptions::kSidePanelJourneysFlagId,
-     flag_descriptions::kSidePanelJourneysName,
-     flag_descriptions::kSidePanelJourneysDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         history_clusters::kSidePanelJourneys,
-         kSidePanelJourneysOpensFromOmniboxVariations,
-         "SidePanelJourneys")},
-
-    {flag_descriptions::kSidePanelJourneysQuerylessFlagId,
-     flag_descriptions::kSidePanelJourneysQuerylessName,
-     flag_descriptions::kSidePanelJourneysQuerylessDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanelJourneysQueryless)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kToolbarPinningFlagId,

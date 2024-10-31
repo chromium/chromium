@@ -546,11 +546,6 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 
 bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) ||
-      !history_clusters::kSidePanelJourneysOpensFromOmnibox.Get()) {
-    return false;
-  }
-
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser)
     return false;
