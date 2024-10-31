@@ -653,6 +653,11 @@ SEQUENCE_CHECKER(_sequenceChecker);
     // Ensure that the tab group sync services are created to observe updates.
     tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   }
+
+  // Stop forcing the orientation at the application level. ProfileController
+  // take care of forcing the orientation of the application until done with
+  // the early UI initialisation.
+  _scopedForceOrientation.reset();
 }
 
 #pragma mark - AppStateObserver
@@ -721,15 +726,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
       [self maybeContinueForegroundInitialization];
       break;
     case AppInitStage::kNormalUI:
-      // Stop forcing the orientation at the application level. If needed,
-      // the ProfileControllers will be forcing the orientation until they
-      // also are ready.
-      _scopedForceOrientation.reset();
-
-      // Scene controllers use this stage to create the normal UI if needed.
-      // There is no specific agent (other than SceneController) handling
-      // this stage.
-      [appState queueTransitionToNextInitStage];
       break;
     case AppInitStage::kFirstRun:
       break;
