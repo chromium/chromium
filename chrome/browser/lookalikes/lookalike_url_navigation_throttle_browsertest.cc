@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   SetEngagementScore(browser(),
                      GURL("chrome://site-not-in-top-domain-list.com"),
                      kHighEngagement);
-  const GURL low_engagement_url("http://síte-not-ín-top-domaín-líst.com");
+  const GURL low_engagement_url("https://síte-not-ín-top-domaín-líst.com");
   SetEngagementScore(browser(), low_engagement_url, kLowEngagement);
   TestInterstitialNotShown(browser(), low_engagement_url);
 
