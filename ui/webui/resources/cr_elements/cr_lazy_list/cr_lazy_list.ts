@@ -169,12 +169,17 @@ export class CrLazyListElement<T = object> extends CrLitElement {
 
   private addRemoveScrollTargetListeners_(oldTarget: HTMLElement|null) {
     if (oldTarget) {
-      oldTarget.removeEventListener('scroll', this.scrollListener_);
+      const target =
+          oldTarget === document.documentElement ? window : oldTarget;
+      target.removeEventListener('scroll', this.scrollListener_);
       assert(this.resizeObserver_);
       this.resizeObserver_.disconnect();
     }
     if (this.scrollTarget) {
-      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+      const target = this.scrollTarget === document.documentElement ?
+          window :
+          this.scrollTarget;
+      target.addEventListener('scroll', this.scrollListener_);
       this.resizeObserver_ = new ResizeObserver(() => {
         requestAnimationFrame(() => {
           const newHeight = this.getViewHeight_();
@@ -216,9 +221,18 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     }
   }
 
+  private getScrollTop_(): number {
+    return this.scrollTarget === document.documentElement ?
+        window.pageYOffset :
+        this.scrollTarget.scrollTop;
+  }
+
   private getViewHeight_() {
-    return this.scrollTarget.scrollTop - this.scrollOffset +
-        Math.max(this.minViewportHeight || 0, this.scrollTarget.offsetHeight);
+    const offsetHeight = this.scrollTarget === document.documentElement ?
+        window.innerHeight :
+        this.scrollTarget.offsetHeight;
+    return this.getScrollTop_() - this.scrollOffset +
+        Math.max(this.minViewportHeight || 0, offsetHeight);
   }
 
   private async update_(forceUpdateHeight: boolean): Promise<void> {
@@ -312,7 +326,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
    * interactions.
    */
   private async onScroll_() {
-    const scrollTop = this.scrollTarget.scrollTop;
+    const scrollTop = this.getScrollTop_();
     if (scrollTop <= 0 || this.numItemsDisplayed_ === this.items.length) {
       return;
     }
