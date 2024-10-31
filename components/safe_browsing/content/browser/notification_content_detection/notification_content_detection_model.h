@@ -13,6 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/bert_model_handler.h"
+#include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -37,9 +39,9 @@ class NotificationContentDetectionModel
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~NotificationContentDetectionModel() override;
 
-  // Perform inference on the model with `contents` as input. Pass
-  // `PostprocessCategories` as the `ExecuteModelWithInput` callback.
-  void Execute(const std::u16string& contents);
+  // Perform inference on the model with the provided notification contents.
+  // Pass `PostprocessCategories` as the `ExecuteModelWithInput` callback.
+  void Execute(blink::PlatformNotificationData& notification_data);
 
  private:
   // Log UMA metrics, given the `output` result of model inference.

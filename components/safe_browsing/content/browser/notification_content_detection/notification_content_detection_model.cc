@@ -17,6 +17,29 @@
 
 namespace safe_browsing {
 
+namespace {
+
+std::string GetFormattedNotificationContentsForModelInput(
+    blink::PlatformNotificationData& notification_data) {
+  // Enforce this crash on debug builds only.
+  DCHECK_LE(notification_data.actions.size(),
+            blink::mojom::NotificationData::kMaximumActions)
+      << "There can only be at most "
+      << blink::mojom::NotificationData::kMaximumActions << " actions but "
+      << notification_data.actions.size() << " were provided.";
+  std::vector<std::u16string> action_titles;
+  for (const auto& action : notification_data.actions) {
+    action_titles.push_back(action->title);
+  }
+  // Format notification content as comma-separated string value.
+  return base::UTF16ToUTF8(
+      base::JoinString({notification_data.title, notification_data.body,
+                        base::JoinString(action_titles, u",")},
+                       u","));
+}
+
+}  // namespace
+
 NotificationContentDetectionModel::NotificationContentDetectionModel(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
@@ -30,18 +53,19 @@ NotificationContentDetectionModel::~NotificationContentDetectionModel() =
     default;
 
 void NotificationContentDetectionModel::Execute(
-    const std::u16string& contents) {
+    blink::PlatformNotificationData& notification_data) {
   // If there is no model version, then there is no valid notification content
   // detection model loaded from the server so don't check the model.
   if (!GetModelInfo() || !GetModelInfo()->GetVersion()) {
     return;
   }
+
   // Invoke parent to execute the notification content detection tflite model
   // with `contents` as input.
   ExecuteModelWithInput(
       base::BindOnce(&NotificationContentDetectionModel::PostprocessCategories,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::UTF16ToUTF8(contents));
+      GetFormattedNotificationContentsForModelInput(notification_data));
 }
 
 void NotificationContentDetectionModel::PostprocessCategories(

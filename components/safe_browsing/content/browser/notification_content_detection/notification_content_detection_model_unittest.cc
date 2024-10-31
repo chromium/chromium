@@ -36,6 +36,13 @@ base::FilePath GetValidModelFile() {
   return model_file_path;
 }
 
+struct NotificationContentDetectionModelTestCase {
+  std::u16string title;
+  std::u16string body;
+  std::vector<std::u16string> action_titles;
+  std::string expected_input;
+};
+
 }  // namespace
 
 class NotificationContentDetectionModelTest : public testing::Test {
@@ -112,12 +119,47 @@ TEST_F(NotificationContentDetectionModelTest, LogNotificationSuspiciousScore) {
   // Update with a notification content detection model.
   SendModelToNotificationContentDetectionModel();
 
-  std::u16string notification_contents = u"Data breach reported";
-  notification_content_detection_model()->Execute(notification_contents);
+  // Create tests cases for checking formatting of model input.
+  std::vector<NotificationContentDetectionModelTestCase> tests = {
+      {u"Notification title",
+       u"Notification body",
+       {},
+       "Notification title,Notification body,"},
+      {u"title", u" body ", {u"action1"}, "title, body ,action1"},
+      {u"title",
+       u" body ",
+       {u"action1", u"action2"},
+       "title, body ,action1,action2"},
+  };
+
+  for (size_t i = 0; i < tests.size(); ++i) {
+    auto test = tests[i];
+    blink::PlatformNotificationData notification_data;
+    notification_data.title = test.title;
+    notification_data.body = test.body;
+    for (const auto& action_title : test.action_titles) {
+      auto action = blink::mojom::NotificationAction::New();
+      action->title = action_title;
+      notification_data.actions.push_back(std::move(action));
+    }
+    notification_content_detection_model()->Execute(notification_data);
+    histogram_tester().ExpectUniqueSample(
+        kSuspiciousScoreHistogram, 100 * kSuspiciousScoreTestValue, 1 + i);
+    EXPECT_EQ(notification_content_detection_model()->inputs()[i],
+              test.expected_input);
+  }
+}
+
+TEST_F(NotificationContentDetectionModelTest,
+       LogNotificationSuspiciousScoreWithEmptyNotificationData) {
+  // Update with a notification content detection model.
+  SendModelToNotificationContentDetectionModel();
+
+  blink::PlatformNotificationData notification_data;
+  notification_content_detection_model()->Execute(notification_data);
   histogram_tester().ExpectUniqueSample(kSuspiciousScoreHistogram,
                                         100 * kSuspiciousScoreTestValue, 1);
-  EXPECT_EQ(notification_content_detection_model()->inputs()[0],
-            base::UTF16ToUTF8(notification_contents));
+  EXPECT_EQ(notification_content_detection_model()->inputs()[0], ",,");
 }
 
 }  // namespace safe_browsing
