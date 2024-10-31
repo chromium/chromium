@@ -277,8 +277,8 @@ void TestSyncUserSettings::ClearInitialSyncFeatureSetupComplete() {
   initial_sync_feature_setup_complete_ = false;
 }
 
-void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,
-                                            bool managed) {
+void TestSyncUserSettings::SetTypeIsManagedByPolicy(UserSelectableType type,
+                                                    bool managed) {
   if (managed) {
     managed_by_policy_types_.Put(type);
   } else {

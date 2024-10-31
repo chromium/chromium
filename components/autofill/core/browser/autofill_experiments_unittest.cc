@@ -165,7 +165,7 @@ TEST_F(AutofillExperimentsTest,
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
-  sync_service_.GetUserSettings()->SetTypeIsManaged(
+  sync_service_.GetUserSettings()->SetTypeIsManagedByPolicy(
       syncer::UserSelectableType::kPayments, true);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));

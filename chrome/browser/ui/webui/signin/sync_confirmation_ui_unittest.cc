@@ -68,7 +68,7 @@ const TestParam kGetSyncBenefitsListJSONParams[] = {
 void DisableTypes(syncer::TestSyncService& test_sync_service,
                   syncer::UserSelectableTypeSet types) {
   for (auto type : types) {
-    test_sync_service.GetUserSettings()->SetTypeIsManaged(type, true);
+    test_sync_service.GetUserSettings()->SetTypeIsManagedByPolicy(type, true);
   }
 }
 

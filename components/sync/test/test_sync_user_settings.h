@@ -87,7 +87,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetRegisteredSelectableTypes(UserSelectableTypeSet types);
   void SetInitialSyncFeatureSetupComplete();
   void ClearInitialSyncFeatureSetupComplete();
-  void SetTypeIsManaged(UserSelectableType type, bool managed);
+  void SetTypeIsManagedByPolicy(UserSelectableType type, bool managed);
   void SetTypeIsManagedByCustodian(UserSelectableType type, bool managed);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
