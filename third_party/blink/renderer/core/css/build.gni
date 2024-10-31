@@ -65,8 +65,6 @@ blink_core_sources_css = [
   "counters_attachment_context.h",
   "counters_attachment_context.cc",
   "css_anchor_query_enums.h",
-  "css_attr_type.cc",
-  "css_attr_type.h",
   "css_attr_value_tainting.cc",
   "css_attr_value_tainting.h",
   "css_view_transition_rule.cc",

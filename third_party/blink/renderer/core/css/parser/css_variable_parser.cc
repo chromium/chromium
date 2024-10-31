@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
-#include "third_party/blink/renderer/core/css/css_attr_type.h"
+#include "third_party/blink/renderer/core/css/css_syntax_component.h"
+#include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -167,7 +170,8 @@ static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
   return stream.AtEnd();
 }
 
-// attr() = attr( <attr-name> <attr-type>? , <declaration-value>?)
+// attr() = attr( <attr-name> <syntax>? , <declaration-value>?)
+// https://drafts.csswg.org/css-values-5/#attr-notation
 static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
                                       bool& has_references,
                                       bool& has_font_units,
@@ -186,16 +190,10 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
     return true;
   }
 
-  if (stream.Peek().GetType() == kIdentToken) {
-    // Parse <attr-type>.
-    CSSParserToken token = stream.ConsumeIncludingWhitespace();
-    if (!CSSAttrType::Parse(token.Value()).IsValid()) {
-      return false;
-    }
-    if (stream.AtEnd()) {
-      // attr = attr(<attr-name> <attr-type>) is allowed, so return true.
-      return true;
-    }
+  std::optional<CSSSyntaxDefinition> syntax =
+      CSSSyntaxDefinition::Consume(stream);
+  if (syntax.has_value() && stream.AtEnd()) {
+    return true;
   }
 
   if (stream.Peek().GetType() != kCommaToken) {
@@ -203,7 +201,7 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   }
   stream.Consume();
   if (stream.AtEnd()) {
-    // attr = attr(<attr-name>,) and attr = attr(<attr-name> <attr-type>,) is
+    // attr = attr(<attr-name>,) and attr = attr(<attr-name> <syntax>,) is
     // allowed, so return true.
     return true;
   }

@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
-#include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
@@ -90,20 +89,6 @@ bool ConsumeComma(CSSParserTokenStream& stream) {
     return true;
   }
   return false;
-}
-
-CSSAttrType ConsumeAttributeType(CSSParserTokenStream& stream) {
-  stream.ConsumeWhitespace();
-  // <attr-type> defaults to string if omitted.
-  // https://drafts.csswg.org/css-values-5/#funcdef-attr
-  if (stream.Peek().GetType() != kIdentToken) {
-    return CSSAttrType(CSSAttrType::Category::kString);
-  }
-  CSSAttrType type =
-      CSSAttrType::Parse(stream.ConsumeIncludingWhitespace().Value());
-  // Invalid types should be omitted during parse time.
-  DCHECK(type.IsValid());
-  return type;
 }
 
 const CSSValue* Parse(const CSSProperty& property,
@@ -199,59 +184,23 @@ bool IsInterpolation(CascadePriority priority) {
 }
 
 // https://drafts.csswg.org/css-values-5/#attr-substitution-value
-std::optional<CSSParserToken> GetAttrSubstitutionValue(
-    CSSParserTokenStream& stream,
+const CSSValue* GetAttrSubstitutionValue(
     const String& attribute_value,
-    const CSSAttrType& attribute_type,
+    std::optional<CSSSyntaxDefinition> syntax,
     const CSSParserContext& context) {
-  // Unknown attr() types should be handled during parse time.
-  DCHECK(attribute_type.category != CSSAttrType::Category::kUnknown);
-
-  if (attribute_value.IsNull() ||
-      attribute_type.category == CSSAttrType::Category::kFrequency) {
-    // TODO(crbug.com/40320391): <frequency> is not yet supported in chrome.
-    return std::nullopt;
+  if (attribute_value.IsNull()) {
+    return nullptr;
   }
 
-  // For kString, the substitution value is the literal attribute value
-  // without any parsing or other processing.
-  // https://drafts.csswg.org/css-values-5/#attr-types
-  if (attribute_type.category == CSSAttrType::Category::kString) {
-    return CSSParserToken(kStringToken, attribute_value);
+  if (!syntax.has_value()) {
+    // Omitting the <syntax> argument causes the attribute’s literal value to be
+    // treated as the value of a CSS string, with no CSS parsing performed at
+    // all (including CSS escapes, whitespace removal, comments, etc).
+    // https://drafts.csswg.org/css-values-5/#attr-notation
+    return MakeGarbageCollected<CSSStringValue>(attribute_value);
   }
 
-  std::optional<CSSSyntaxDefinition> syntax_definition =
-      attribute_type.ConvertToCSSSyntaxDefinition();
-  if (syntax_definition.has_value()) {
-    if (!syntax_definition->Parse(attribute_value, context, false)) {
-      return std::nullopt;
-    }
-  } else {
-    // <flex> has special handling because it's not supported
-    // by CSSSyntaxDefinition.
-    CHECK_EQ(attribute_type.category, CSSAttrType::Category::kFlex);
-    stream.ConsumeWhitespace();
-    CSSParserToken token = stream.ConsumeIncludingWhitespace();
-    if (!stream.AtEnd() || token.GetType() != kDimensionToken ||
-        token.GetUnitType() != CSSPrimitiveValue::UnitType::kFlex) {
-      return std::nullopt;
-    }
-    return token;
-  }
-
-  stream.ConsumeWhitespace();
-  CSSParserToken token = stream.ConsumeIncludingWhitespaceRaw();
-  if (!stream.AtEnd()) {
-    // Only single token is allowed, see
-    // https://drafts.csswg.org/css-values-5/#attr-notation.
-    return std::nullopt;
-  }
-
-  if (attribute_type.category == CSSAttrType::Category::kDimensionUnit) {
-    token.ConvertToDimensionWithUnit(
-        CSSPrimitiveValue::UnitTypeToString(attribute_type.dimension_unit));
-  }
-  return token;
+  return syntax->Parse(attribute_value, context, false);
 }
 
 }  // namespace
@@ -999,15 +948,18 @@ static bool IsNonWhitespaceToken(const CSSParserToken& token) {
          token.GetType() != kCommentToken;
 }
 
-bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
+bool StyleCascade::TokenSequence::Append(StringView str,
                                          wtf_size_t byte_limit) {
   // https://drafts.csswg.org/css-variables/#long-variables
-  if (original_text_.length() + data->OriginalText().length() > byte_limit) {
+  if (original_text_.length() + str.length() > byte_limit) {
     return false;
   }
-  CSSTokenizer tokenizer(data->OriginalText());
+  CSSTokenizer tokenizer(str);
   const CSSParserToken first_token = tokenizer.TokenizeSingleWithComments();
   if (first_token.GetType() != kEOFToken) {
+    CSSVariableData::ExtractFeatures(first_token, has_font_units_,
+                                     has_root_font_units_,
+                                     has_line_height_units_);
     if (NeedsInsertedComment(last_token_, first_token)) {
       original_text_.Append("/**/");
     }
@@ -1020,6 +972,9 @@ bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
       if (token.GetType() == kEOFToken) {
         break;
       } else {
+        CSSVariableData::ExtractFeatures(token, has_font_units_,
+                                         has_root_font_units_,
+                                         has_line_height_units_);
         last_token_ = token.CopyWithoutValue();
         if (IsNonWhitespaceToken(token)) {
           last_non_whitespace_token_ = token;
@@ -1027,11 +982,21 @@ bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
       }
     }
   }
-  original_text_.Append(data->OriginalText());
+  original_text_.Append(str);
+  return true;
+}
+
+bool StyleCascade::TokenSequence::Append(const CSSValue* value,
+                                         wtf_size_t byte_limit) {
+  return Append(value->CssText(), byte_limit);
+}
+
+bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
+                                         wtf_size_t byte_limit) {
+  if (!Append(data->OriginalText(), byte_limit)) {
+    return false;
+  }
   is_animation_tainted_ |= data->IsAnimationTainted();
-  has_font_units_ |= data->HasFontUnits();
-  has_root_font_units_ |= data->HasRootFontUnits();
-  has_line_height_units_ |= data->HasLineHeightUnits();
   return true;
 }
 
@@ -1694,13 +1659,15 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
   AtomicString attribute_name = ConsumeVariableName(stream);
-  CSSAttrType attribute_type = ConsumeAttributeType(stream);
+  std::optional<CSSSyntaxDefinition> syntax =
+      CSSSyntaxDefinition::Consume(stream);
+  DCHECK(syntax.has_value() || stream.AtEnd() ||
+         stream.Peek().GetType() == kCommaToken);
   const String& attribute_value =
-      state_.GetElement().getAttribute(attribute_name);
+      state_.GetUltimateOriginatingElementOrSelf().getAttribute(attribute_name);
 
-  CSSParserTokenStream attribute_value_stream(attribute_value);
-  std::optional<CSSParserToken> substitution_value = GetAttrSubstitutionValue(
-      attribute_value_stream, attribute_value, attribute_type, context);
+  const CSSValue* substitution_value =
+      GetAttrSubstitutionValue(attribute_value, syntax, context);
 
   // Validate fallback value.
   if (ConsumeComma(stream)) {
@@ -1711,26 +1678,23 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                            /* stop_type */ kEOFToken, fallback)) {
       return false;
     }
-    if (!substitution_value.has_value()) {
+    if (!substitution_value) {
       AppendTaintToken(out);
       return out.AppendFallback(fallback, CSSVariableData::kMaxVariableBytes);
     }
   }
 
-  if (!substitution_value.has_value() &&
-      attribute_type.category == CSSAttrType::Category::kString) {
-    // If the <attr-type> argument is string, <declaration-value> defaults to
-    // the empty string if omitted.
-    // https://drafts.csswg.org/css-values-5/#funcdef-attr
+  if (!syntax.has_value() && !substitution_value) {
+    // If the <syntax> argument is omitted, the fallback defaults to the empty
+    // string if omitted.
+    // https://drafts.csswg.org/css-values-5/#attr-notation
     out.Append(CSSParserToken(kStringToken, g_empty_atom), g_empty_atom);
     AppendTaintToken(out);
     return true;
   }
 
-  if (substitution_value.has_value()) {
-    StringBuilder serialized_substitution_value;
-    substitution_value->Serialize(serialized_substitution_value);
-    out.Append(*substitution_value, serialized_substitution_value);
+  if (substitution_value) {
+    out.Append(substitution_value, CSSVariableData::kMaxVariableBytes);
     AppendTaintToken(out);
     return true;
   }
