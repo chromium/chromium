@@ -431,16 +431,17 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       }
       if (const gfx::Rect* cull_rect =
               scroll_tree.ScrollingContentsCullRect(element_id)) {
-        const auto* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
-        CHECK(scroll_node);
-        gfx::RectF visible_rect(
-            gfx::Rect(scroll_node->container_origin,
-                      scroll_tree.container_bounds(scroll_node->id)));
-        visible_rect.Offset(
-            scroll_tree.current_scroll_offset(element_id).OffsetFromOrigin());
-        if (!cull_rect->Contains(gfx::ToEnclosedRect(visible_rect))) {
-          append_quads_data->checkerboarded_needs_record = true;
-          break;
+        if (const auto* scroll_node =
+                scroll_tree.FindNodeFromElementId(element_id)) {
+          gfx::RectF visible_rect(
+              gfx::Rect(scroll_node->container_origin,
+                        scroll_tree.container_bounds(scroll_node->id)));
+          visible_rect.Offset(
+              scroll_tree.current_scroll_offset(element_id).OffsetFromOrigin());
+          if (!cull_rect->Contains(gfx::ToEnclosedRect(visible_rect))) {
+            append_quads_data->checkerboarded_needs_record = true;
+            break;
+          }
         }
       }
     }
