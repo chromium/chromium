@@ -110,7 +110,10 @@ const CGFloat kMenuSymbolSize = 18;
                                       LensOverlayPanTrackerDelegate>
 
 // Whether the `_containerViewController` is currently presented.
-@property(nonatomic, assign, readonly) BOOL isOverlayPresented;
+@property(nonatomic, assign, readonly) BOOL isLensOverlayVisible;
+
+// Whether the UI is created.
+@property(nonatomic, assign, readonly) BOOL isUICreated;
 
 @end
 
@@ -289,7 +292,7 @@ const CGFloat kMenuSymbolSize = 18;
 - (void)createAndShowLensUI:(BOOL)animated
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion {
-  if ([self isUICreated]) {
+  if (self.isUICreated) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
     [self destroyLensUI:NO
@@ -352,7 +355,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)showLensUI:(BOOL)animated {
-  if (![self isUICreated] || self.isOverlayPresented) {
+  if (!self.isUICreated || self.isLensOverlayVisible) {
     return;
   }
 
@@ -408,6 +411,10 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)hideLensUI:(BOOL)animated {
+  if (!self.isUICreated) {
+    return;
+  }
+
   // Add the foreground duration and reset the timer.
   _foregroundDuration =
       _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
@@ -902,11 +909,6 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (BOOL)isUICreated {
   return _containerViewController != nil;
-}
-
-- (BOOL)isOverlayPresented {
-  // The overlay is presented over of the base view controller.
-  return self.baseViewController.presentedViewController != nil;
 }
 
 - (BOOL)isResultsBottomSheetOpen {
