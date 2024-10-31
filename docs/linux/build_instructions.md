@@ -21,6 +21,10 @@ Are you a Google employee? See
     to a Python v3.8+ binary). Depot_tools bundles an appropriate version
     of Python in `$depot_tools/python-bin`, if you don't have an appropriate
     version already on your system.
+* `libc++` is currently the only supported STL. `clang` is the only
+  officially-supported compiler, though external community members generally
+  keep things building with `gcc`. For more details, see the
+  [supported toolchains doc](../toolchain_support.md).
 
 Most development is done on Ubuntu (Chromium's build infrastructure currently
 runs 22.04, Jammy Jellyfish). There are some instructions for other distros
