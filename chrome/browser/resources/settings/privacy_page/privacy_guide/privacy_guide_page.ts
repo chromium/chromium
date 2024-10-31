@@ -135,7 +135,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       },
 
       shouldShowAdTopicsCard_: {
@@ -149,7 +149,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   static get observers() {
     return [
-      'onPrefsChanged_(prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
+      'onPrefsChanged_(prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
@@ -541,12 +541,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return false;
     }
-    // Don't show the 3PC card if the user has chosen to allow 3PCs or block
-    // 1PCs.
-    return this.getPref('profile.cookie_controls_mode').value !==
-        CookieControlsMode.OFF &&
-        this.getPref('generated.cookie_default_content_setting').value !==
-        ContentSetting.BLOCK;
+    // Don't show the 3PC card if the user has chosen to allow 3PCs, block
+    // 1PCs, or if AlwaysBlock3pcsIncognito is disabled.
+    return this.getPref('generated.cookie_default_content_setting').value !==
+        ContentSetting.BLOCK &&
+        (this.getPref('profile.cookie_controls_mode').value !==
+             CookieControlsMode.OFF ||
+         loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled'));
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {

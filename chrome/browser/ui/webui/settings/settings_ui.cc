@@ -532,6 +532,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isTrackingProtectionUxEnabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kTrackingProtection3pcdUx));
 
+  html_source->AddBoolean(
+      "isAlwaysBlock3pcsIncognitoEnabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
+
   // ACT UX
   html_source->AddBoolean(
       "isIpProtectionUxEnabled",
