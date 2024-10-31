@@ -2470,7 +2470,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       // Instead, check that all the important properties are the same.
       CHECK(owner_document && owner_document->domWindow());
       CHECK(origin_to_commit_->IsLocal());
-      CHECK(origin_to_commit_->IsOpaque());
+      CHECK(!origin_to_commit_->IsOpaque());
       CHECK(origin_to_commit_->block_local_access_from_local_origin());
       CHECK_EQ(origin->Protocol(), origin_to_commit_->Protocol());
       CHECK_EQ(origin->Host(), origin_to_commit_->Host());
