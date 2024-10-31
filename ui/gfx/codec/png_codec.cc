@@ -30,11 +30,10 @@
 namespace gfx {
 
 PNGCodec::DecodeOutput::DecodeOutput() = default;
-PNGCodec::DecodeOutput::~DecodeOutput() = default;
-PNGCodec::DecodeOutput::DecodeOutput(const PNGCodec::DecodeOutput& other) =
-    default;
+PNGCodec::DecodeOutput::DecodeOutput(PNGCodec::DecodeOutput&& other) = default;
 PNGCodec::DecodeOutput& PNGCodec::DecodeOutput::operator=(
-    const PNGCodec::DecodeOutput& other) = default;
+    PNGCodec::DecodeOutput&& other) = default;
+PNGCodec::DecodeOutput::~DecodeOutput() = default;
 
 // Decoder --------------------------------------------------------------------
 
@@ -135,11 +134,10 @@ std::optional<PNGCodec::DecodeOutput> PNGCodec::Decode(
   SkCodec::Result result = preparation_output->codec->getPixels(
       info_srgb, output.output.data(),
       preparation_output->image_info.minRowBytes());
-  if (result == SkCodec::kSuccess) {
-    return output;
-  } else {
+  if (result != SkCodec::kSuccess) {
     return std::nullopt;
   }
+  return output;
 }
 
 SkBitmap PNGCodec::Decode(base::span<const uint8_t> input) {

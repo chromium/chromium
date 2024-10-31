@@ -143,9 +143,14 @@ class CODEC_EXPORT PNGCodec {
   // TODO(https://crbug.com/371926662): There are few callers; remove.
   struct CODEC_EXPORT DecodeOutput {
     DecodeOutput();
+
+    // Move-only type to intentionally prevent large copies.
+    DecodeOutput(const DecodeOutput& other) = delete;
+    DecodeOutput& operator=(const DecodeOutput& other) = delete;
+    DecodeOutput(DecodeOutput&& other);
+    DecodeOutput& operator=(DecodeOutput&& other);
+
     ~DecodeOutput();
-    DecodeOutput(const DecodeOutput& other);
-    DecodeOutput& operator=(const DecodeOutput& other);
 
     std::vector<uint8_t> output;
     int width = 0;
