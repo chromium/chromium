@@ -5,13 +5,13 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/data_sharing/public/features.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -31,7 +31,8 @@ class ShareKitServiceFactoryTest : public PlatformTest {
   ShareKitServiceFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
         {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
-         data_sharing::features::kDataSharingFeature},
+         data_sharing::features::kDataSharingFeature,
+         data_sharing::features::kDataSharingJoinOnly},
         {});
 
     TestProfileIOS::Builder builder;
@@ -45,7 +46,7 @@ class ShareKitServiceFactoryTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_coordinator.h"
 
-#import "ios/chrome/browser/data_sharing/model/features.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"

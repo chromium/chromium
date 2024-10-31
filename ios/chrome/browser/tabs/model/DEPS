@@ -19,6 +19,7 @@ specific_include_rules = {
   # The TabHelperUtil can depend on everything.
   "^tab_helper_util.mm": [
     "+ios/chrome/browser",
+    "+ios/chrome/browser/collaboration/model/features.h",
     "+components/data_sharing/public",
   ],
 }

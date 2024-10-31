@@ -6,8 +6,8 @@
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/saved_tab_groups/messaging/messaging_backend_service_impl.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
-#import "ios/chrome/browser/data_sharing/model/features.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

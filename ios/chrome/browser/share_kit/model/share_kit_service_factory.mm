@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
-#import "ios/chrome/browser/data_sharing/model/features.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -36,6 +37,7 @@ ShareKitServiceFactory::ShareKitServiceFactory()
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+  DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(IOSChromeFaviconLoaderFactory::GetInstance());
 }

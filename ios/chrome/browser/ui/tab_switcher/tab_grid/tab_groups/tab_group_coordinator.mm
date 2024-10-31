@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
-#import "ios/chrome/browser/data_sharing/model/features.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
