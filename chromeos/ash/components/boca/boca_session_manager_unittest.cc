@@ -747,6 +747,19 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithInactiveSession) {
   boca_session_manager()->UpdateTabActivity(u"any");
 }
 
+TEST_F(BocaSessionManagerTest, UpdateTabActivityWithSameTabShouldSkip) {
+  ::boca::Session session;
+  session.set_session_id(kSessionId);
+  session.set_session_state(::boca::Session::ACTIVE);
+  EXPECT_CALL(*boca_app_client(), GetDeviceId()).WillOnce(Return(""));
+
+  EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_)).Times(1);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+  boca_session_manager()->UpdateTabActivity(u"tab");
+  boca_session_manager()->UpdateTabActivity(u"tab");
+}
+
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionActivityUpdated) {
   auto session_1 = std::make_unique<::boca::Session>();
   session_1->set_session_state(::boca::Session::ACTIVE);

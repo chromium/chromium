@@ -181,6 +181,7 @@ class BocaSessionManager
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_{this};
   AccountId account_id_;
+  std::u16string active_tab_title_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};

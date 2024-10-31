@@ -31,6 +31,7 @@
 
 using ::boca::LockedNavigationOptions;
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::StrictMock;
 
 namespace {
@@ -288,18 +289,22 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   on_task_blocklist->MaybeSetURLRestrictionLevel(
       tab_strip_model->GetWebContentsAt(1), url_subdomain,
       LockedNavigationOptions::BLOCK_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   NavigateAndCommitActiveTab(url_subdomain);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
                                                          TabChangeType::kAll);
 
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::OPEN_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
 
   NavigateAndCommitActiveTab(url_with_query);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
                                                          TabChangeType::kAll);
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::OPEN_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   NavigateAndCommitActiveTab(url_with_path);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
                                                          TabChangeType::kAll);
@@ -345,7 +350,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NavigateNonParentTab) {
 
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::OPEN_NAVIGATION);
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   browser()->tab_strip_model()->ActivateTabAt(1);
   task_environment()->RunUntilIdle();
 
@@ -382,6 +387,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   window_tracker->RefreshUrlBlocklist();
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::OPEN_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   NavigateAndCommitActiveTab(url_subdomain);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
                                                          TabChangeType::kAll);
@@ -420,7 +426,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::LIMITED_NAVIGATION);
 
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_,
@@ -468,6 +474,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::
                 SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   NavigateAndCommitActiveTab(url);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
                                                          TabChangeType::kAll);
@@ -488,7 +495,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::
                 SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION);
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_, OnTabAdded(active_tab_id, _, url_redirect))
@@ -528,7 +535,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, SwitchTabWithNewRestrictedLevel) {
   window_tracker->RefreshUrlBlocklist();
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::BLOCK_NAVIGATION);
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::OPEN_NAVIGATION);
@@ -778,22 +785,22 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, ObserveAddTabAndRemoveTab) {
   window_tracker->InitializeBrowserInfoForTracking(browser());
   ASSERT_EQ(window_tracker->browser(), browser());
 
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
   auto* const tab_strip_model = browser()->tab_strip_model();
   const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_, OnTabAdded(active_tab_id, _, url_b))
       .Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   AddTab(browser(), url_b);
   // Sanity check to make sure child tabs aren't added as parent tabs.
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   EXPECT_FALSE(
       on_task_blocklist->IsParentTab(tab_strip_model->GetWebContentsAt(0)));
 
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_, OnTabRemoved(tab_id)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   tab_strip_model->DetachAndDeleteWebContentsAt(0);
 }
 
@@ -862,6 +869,8 @@ TEST_F(OnTaskNavigationThrottleTest, AllowUrlSuccessfullyForUnrestrictedNav) {
 
   ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::OPEN_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   {
     auto simulator = StartNavigation(
         url_a_front_subdomain,
@@ -915,6 +924,8 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlSuccessfullyForRestrictedNav) {
 
   ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::BLOCK_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   {
     auto simulator = StartNavigation(
         url_a_front_subdomain,
@@ -986,6 +997,8 @@ TEST_F(OnTaskNavigationThrottleTest,
 
   ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::DOMAIN_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   {
     auto simulator = StartNavigation(
         url_a_front_subdomain,
@@ -1048,6 +1061,8 @@ TEST_F(OnTaskNavigationThrottleTest,
             LockedNavigationOptions::LIMITED_NAVIGATION);
   ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   auto simulator = StartNavigation(
       url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
   simulator->Commit();
@@ -1096,7 +1111,7 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Add a new tab to the browser to simulate opening a link in a new tab
   ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(2);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_, OnTabAdded(active_tab_id, _, url_a))
@@ -1113,6 +1128,7 @@ TEST_F(OnTaskNavigationThrottleTest,
   // didn't navigate away from the original url in the current tab.
   EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(1)));
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
 
   auto simulator = StartNavigation(
       url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
@@ -1170,6 +1186,8 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Same domain and one level deep works on the current page.
   ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   auto simulator = StartNavigation(
       url_a_front_subdomain,
       tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
@@ -1232,7 +1250,7 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Add a new tab to the browser to simulate opening a link in a new tab
   ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_, OnTabAdded(active_tab_id, _, url_a))
@@ -1241,6 +1259,8 @@ TEST_F(OnTaskNavigationThrottleTest,
   AddTab(browser(), url_a);
   EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   auto simulator = StartNavigation(
       url_a_front_subdomain,
       tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
@@ -1249,6 +1269,8 @@ TEST_F(OnTaskNavigationThrottleTest,
   simulator->Commit();
   EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
 
   // Attempt to navigate on this new page for a completely new domain should
   // pass.
@@ -1259,6 +1281,8 @@ TEST_F(OnTaskNavigationThrottleTest,
             simulator_on_new_page->GetLastThrottleCheckResult());
   EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
 
   // Further navigation on this page fails.
   auto simulator_on_new_page_after_one_level_deep = StartNavigation(
@@ -1312,6 +1336,8 @@ TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
   AddTab(popup_browser.get(), url_a);
   const auto* const popup_tab_strip_model =
       popup_browser.get()->tab_strip_model();
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   std::unique_ptr<content::NavigationSimulator> simulator = StartNavigation(
       url_a_front_subdomain,
       popup_tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
@@ -1358,6 +1384,7 @@ TEST_F(OnTaskNavigationThrottleTest, OauthPopupAllowed) {
   EXPECT_FALSE(
       static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   AddTab(popup_browser.get(), url_a);
   const auto* const popup_tab_strip_model =
       popup_browser.get()->tab_strip_model();
@@ -1401,7 +1428,7 @@ TEST_F(OnTaskNavigationThrottleTest, SuccessNavigationWorksEvenWithRedirects) {
       LockedNavigationOptions::DOMAIN_NAVIGATION);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
-
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   auto simulator = StartNavigation(
       url_a, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
   for (const GURL& redirect_url : redirect_chain) {
@@ -1429,7 +1456,7 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlInNewTabShouldClose) {
       LockedNavigationOptions::BLOCK_NAVIGATION);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
-  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(2);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
       tab_strip_model->GetWebContentsAt(0));
   EXPECT_CALL(boca_window_observer_, OnTabAdded(active_tab_id, _, url_b))
@@ -1446,6 +1473,7 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlInNewTabShouldClose) {
 
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(new_tab);
   EXPECT_CALL(boca_window_observer_, OnTabRemoved(tab_id)).Times(1);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   auto simulator = StartNavigation(url_b, new_tab->GetPrimaryMainFrame());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return tab_strip_model->GetIndexOfWebContents(new_tab) ==
@@ -1481,6 +1509,8 @@ TEST_F(OnTaskNavigationThrottleTest, BackForwardReloadNavigationSuccess) {
 
   ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::DOMAIN_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   auto simulator = StartNavigation(
       url_a_front_subdomain,
       tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
@@ -1546,6 +1576,8 @@ TEST_F(OnTaskNavigationThrottleTest,
 
   ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
             LockedNavigationOptions::LIMITED_NAVIGATION);
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
+
   auto simulator = StartNavigation(
       url_a_front_subdomain,
       tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
@@ -1599,6 +1631,7 @@ TEST_F(OnTaskNavigationThrottleTest,
 
 TEST_F(OnTaskNavigationThrottleTest, BlockNavigationForPostMethodRequest) {
   CreateWindowTrackerServiceForTesting();
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
   const GURL url_a(kTabUrl1);
@@ -1664,6 +1697,7 @@ TEST_F(OnTaskNavigationThrottleTest,
   AddTab(popup_browser.get(), url_a);
   const auto* const popup_tab_strip_model =
       popup_browser.get()->tab_strip_model();
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   std::unique_ptr<content::NavigationSimulator> simulator = StartNavigation(
       url_a, popup_tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
   const std::vector<GURL>& redirect_chain = {
@@ -1712,6 +1746,7 @@ TEST_F(OnTaskNavigationThrottleTest, AllowClientRedirectToPass) {
   const std::unique_ptr<content::NavigationSimulator> simulator =
       content::NavigationSimulator::CreateRendererInitiated(
           url_a, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_CALL(boca_window_observer_, OnActiveTabChanged(_)).Times(AtLeast(1));
   simulator->SetTransition(ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT);
   simulator->Start();
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
