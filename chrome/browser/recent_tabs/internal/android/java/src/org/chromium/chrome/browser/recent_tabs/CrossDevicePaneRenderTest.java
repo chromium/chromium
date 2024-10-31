@@ -27,6 +27,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -100,6 +101,7 @@ public class CrossDevicePaneRenderTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/376355289")
     @MediumTest
     @Feature("RenderTest")
     public void testCrossDevicePane_emptyStateVisible() throws IOException, InterruptedException {
