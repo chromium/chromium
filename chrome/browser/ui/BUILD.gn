@@ -3064,7 +3064,7 @@ static_library("ui") {
 
     deps += [
       "//chrome/app:generated_resources",
-      "//chrome/browser/contextual_cueing",
+      "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/shortcuts",
       "//components/capture_mode",

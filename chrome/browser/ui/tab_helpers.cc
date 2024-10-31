@@ -242,11 +242,6 @@
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/contextual_cueing/contextual_cueing_client.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#endif
-
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
@@ -661,13 +656,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) &&
-      (!profile->IsOffTheRecord())) {
-    ContextualCueingClient::CreateForWebContents(web_contents);
-  }
-#endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   // We need to create the ChromeComposeClient to listen for the feature

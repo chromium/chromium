@@ -11,6 +11,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
@@ -110,6 +111,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (!profile->IsIncognitoProfile()) {
       commerce_ui_tab_helper_ =
           CreateCommerceUiTabHelper(tab.GetContents(), profile);
+    }
+
+    if (!profile->IsIncognitoProfile()) {
+      contextual_cueing_helper_ =
+          contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
+              tab.GetContents());
     }
 
     privacy_sandbox_tab_observer_ =

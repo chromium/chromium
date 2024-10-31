@@ -4186,6 +4186,7 @@ static_library("browser") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/autofill_ai:util",
+      "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
@@ -6907,7 +6908,6 @@ static_library("browser") {
       "supervised_user/supervised_user_verification_page_youtube.h",
     ]
     deps += [
-      "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",

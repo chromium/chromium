@@ -305,6 +305,7 @@ if (!is_android) {
       "//chrome/app/vector_icons",
       "//chrome/browser/commerce",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/favicon",
       "//chrome/browser/fingerprinting_protection",
       "//chrome/browser/image_fetcher",
