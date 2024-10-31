@@ -81,6 +81,7 @@ void DeskModelWrapper::AddOrUpdateEntry(
                                                      std::move(callback));
       return;
     // Return kInvalidArgument on an unknown desk type.
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kUnknown:
       std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
                               std::move(new_entry));
@@ -173,6 +174,7 @@ ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
     case ash::DeskTemplateType::kSaveAndRecall:
       return save_and_recall_desks_model_->FindOtherEntryWithName(name, type,
                                                                   uuid);
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kUnknown:
       return nullptr;
   }

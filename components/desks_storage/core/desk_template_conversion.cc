@@ -87,6 +87,7 @@ constexpr char kDesk[] = "desk";
 constexpr char kDeskType[] = "desk_type";
 constexpr char kDeskTypeTemplate[] = "TEMPLATE";
 constexpr char kDeskTypeSaveAndRecall[] = "SAVE_AND_RECALL";
+constexpr char kDeskTypeCoral[] = "CORAL";
 constexpr char kDeskTypeFloatingWorkspace[] = "FLOATING_WORKSPACE";
 constexpr char kDeskTypeUnknown[] = "UNKNOWN";
 constexpr char kDisplayId[] = "display_id";
@@ -154,7 +155,8 @@ constexpr char kZIndex[] = "z_index";
 
 // Valid value sets.
 constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<std::string_view>(
-    {kDeskTypeTemplate, kDeskTypeSaveAndRecall, kDeskTypeFloatingWorkspace});
+    {kDeskTypeTemplate, kDeskTypeSaveAndRecall, kDeskTypeCoral,
+     kDeskTypeFloatingWorkspace});
 constexpr auto kValidLaunchContainers =
     base::MakeFixedFlatSet<std::string_view>(
         {kLaunchContainerWindow, kLaunchContainerPanelDeprecated,
@@ -1018,6 +1020,8 @@ std::string SerializeDeskTypeAsString(ash::DeskTemplateType desk_type) {
       return kDeskTypeTemplate;
     case ash::DeskTemplateType::kSaveAndRecall:
       return kDeskTypeSaveAndRecall;
+    case ash::DeskTemplateType::kCoral:
+      return kDeskTypeCoral;
     case ash::DeskTemplateType::kFloatingWorkspace:
       return kDeskTypeFloatingWorkspace;
     case ash::DeskTemplateType::kUnknown:
@@ -1033,14 +1037,19 @@ bool IsValidDeskTemplateType(const std::string& desk_template_type) {
 // SaveAndRecall. Fix by crash / signal some error instead.
 ash::DeskTemplateType GetDeskTypeFromString(const std::string& desk_type) {
   DCHECK(IsValidDeskTemplateType(desk_type));
-  if (desk_type == kDeskTypeTemplate)
+  if (desk_type == kDeskTypeTemplate) {
     return ash::DeskTemplateType::kTemplate;
-  else if (desk_type == kDeskTypeFloatingWorkspace)
+  }
+  if (desk_type == kDeskTypeFloatingWorkspace) {
     return ash::DeskTemplateType::kFloatingWorkspace;
-  else if (desk_type == kDeskTypeSaveAndRecall)
+  }
+  if (desk_type == kDeskTypeSaveAndRecall) {
     return ash::DeskTemplateType::kSaveAndRecall;
-  else
-    return ash::DeskTemplateType::kUnknown;
+  }
+  if (desk_type == kDeskTypeCoral) {
+    return ash::DeskTemplateType::kCoral;
+  }
+  return ash::DeskTemplateType::kUnknown;
 }
 
 // Convert from apps::LaunchContainer to sync proto LaunchContainer.
@@ -1926,6 +1935,7 @@ void FillDeskType(const DeskTemplate* desk_template,
           SyncDeskType::WorkspaceDeskSpecifics_DeskType_FLOATING_WORKSPACE);
       return;
     // Do nothing if type is unknown.
+    case DeskTemplateType::kCoral:
     case DeskTemplateType::kUnknown:
       return;
   }

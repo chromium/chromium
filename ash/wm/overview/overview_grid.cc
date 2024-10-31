@@ -564,6 +564,7 @@ int GetTooltipID(DeskTemplateType type, TooltipStatus status) {
       return kSaveAsTemplateButtonTooltipIDs[static_cast<int>(status)];
     case DeskTemplateType::kSaveAndRecall:
       return kSaveForLaterButtonTooltipIDs[static_cast<int>(status)];
+    case DeskTemplateType::kCoral:
     case DeskTemplateType::kFloatingWorkspace:
     case DeskTemplateType::kUnknown:
       NOTREACHED();

@@ -52,6 +52,7 @@ constexpr size_t kMaxDeskTemplateCount = 6u;
 // Currently, the save for later button is dependent on the the max number of
 // entries total.
 constexpr size_t kMaxSaveAndRecallDeskCount = 6u;
+constexpr size_t kMaxCoralDeskCount = 6u;
 
 // Set of valid desk types.
 constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<ash::DeskTemplateType>(
@@ -651,6 +652,8 @@ size_t LocalDeskDataManager::GetMaxEntryCountByDeskType(
       return kMaxDeskTemplateCount + policy_entries_.size();
     case ash::DeskTemplateType::kSaveAndRecall:
       return kMaxSaveAndRecallDeskCount;
+    case ash::DeskTemplateType::kCoral:
+      return kMaxCoralDeskCount;
     case ash::DeskTemplateType::kFloatingWorkspace:
     case ash::DeskTemplateType::kUnknown:
       return 0;

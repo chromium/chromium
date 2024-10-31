@@ -111,6 +111,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // depending on which features are enabled.
   raw_ptr<SavedDeskGridView> desk_template_grid_view_ = nullptr;
   raw_ptr<SavedDeskGridView> save_and_recall_grid_view_ = nullptr;
+  raw_ptr<SavedDeskGridView> coral_grid_view_ = nullptr;
 
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.

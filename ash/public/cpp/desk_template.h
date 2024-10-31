@@ -40,6 +40,9 @@ enum class ASH_PUBLIC_EXPORT DeskTemplateType {
   // Desk saved for Save & Recall.
   kSaveAndRecall,
 
+  // Desk saved for coral feature.
+  kCoral,
+
   // Desk saved for Floating Workspace.
   kFloatingWorkspace,
 

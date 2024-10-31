@@ -90,6 +90,7 @@ const char* GetHistogramName(DeskTemplateType type,
         default:
           return nullptr;
       }
+    case DeskTemplateType::kCoral:
     case DeskTemplateType::kUnknown:
       return nullptr;
   }
@@ -145,6 +146,7 @@ void RecordUserSavedDeskCountHistogram(DeskTemplateType type,
                                  entry_count, max_entry_count);
 
       break;
+    case DeskTemplateType::kCoral:
     case DeskTemplateType::kFloatingWorkspace:
     case DeskTemplateType::kUnknown:
       break;

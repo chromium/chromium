@@ -41,7 +41,8 @@ crosapi::mojom::SavedDeskType ToSavedDeskType(
       return crosapi::mojom::SavedDeskType::kTemplate;
     case ash::DeskTemplateType::kSaveAndRecall:
       return crosapi::mojom::SavedDeskType::kSaveAndRecall;
-    // Desk API does not save/restore Floating Workspace.
+    // Desk API does not save/restore for Coral or Floating Workspace.
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kFloatingWorkspace:
     case ash::DeskTemplateType::kUnknown:
       return crosapi::mojom::SavedDeskType::kUnknown;

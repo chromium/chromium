@@ -6,7 +6,9 @@
 
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
+#include "ash/public/cpp/coral_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
@@ -440,9 +442,14 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
     case base::to_underlying(CommandId::kCoralNewDesk):
       item_->PerformAction();
       break;
-    case base::to_underlying(CommandId::kCoralSaveForLater):
-      // TODO(zxdan) implement behavior
+    case base::to_underlying(CommandId::kCoralSaveForLater): {
+      CHECK_EQ(BirchItemType::kCoral, item_->GetType());
+      auto* coral_provider = BirchCoralProvider::Get();
+      Shell::Get()->coral_delegate()->CreateSavedDeskFromGroup(
+          coral_provider->ExtractGroupById(
+              static_cast<BirchCoralItem*>(item_)->group_id()));
       break;
+    }
     case base::to_underlying(CommandId::kProvideFeedback):
       birch_bar_controller->ProvideFeedbackForCoral();
       break;
