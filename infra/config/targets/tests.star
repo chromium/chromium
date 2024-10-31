@@ -1029,8 +1029,8 @@ targets.tests.gtest_test(
         "--env-var",
         "LIBVA_DRIVER_NAME",
         "libfake",
-        "../../media/test/data/test-25fps.av1.ivf",
-        "../../media/test/data/test-25fps.av1.ivf.json",
+        "../../media/test/data/av1-1-b8-02-allintra.ivf",
+        "../../media/test/data/av1-1-b8-02-allintra.ivf.json",
     ],
     binary = "video_decode_accelerator_tests",
 )
