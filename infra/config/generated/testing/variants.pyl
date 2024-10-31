@@ -74,10 +74,30 @@
       'intel_uhd_630_or_770',
     ],
   },
+  'IPHONE_14_PRO_MAX': {
+    'identifier': 'iPhone 14 Pro Max',
+    'swarming': {
+      'dimensions': {
+        'device': 'iPhone14,5',
+      },
+    },
+  },
   'NVIDIA_GEFORCE_GTX_1660': {
     'identifier': 'NVIDIA GeForce GTX 1660',
     'mixins': [
       'nvidia_geforce_gtx_1660',
+    ],
+  },
+  'SIM_IPHONE_14_18_0': {
+    'identifier': 'iPhone 14 18.0',
+    'args': [
+      '--platform',
+      'iPhone 14',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
     ],
   },
 }

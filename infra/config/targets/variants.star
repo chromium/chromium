@@ -93,6 +93,16 @@ targets.variant(
 )
 
 targets.variant(
+    name = "IPHONE_14_PRO_MAX",
+    identifier = "iPhone 14 Pro Max",
+    swarming = targets.swarming(
+        dimensions = {
+            "device": "iPhone14,5",
+        },
+    ),
+)
+
+targets.variant(
     name = "IPHONE_15_PRO_18_0",
     identifier = "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
     generate_pyl_entry = False,
@@ -385,7 +395,6 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_18_0",
     identifier = "iPhone 14 18.0",
-    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],

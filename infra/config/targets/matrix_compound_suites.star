@@ -575,6 +575,28 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_ios_sim_gtests",
+    basic_suites = {
+        "optimization_guide_ios_unittests": targets.legacy_matrix_config(
+            variants = [
+                "SIM_IPHONE_14_18_0",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_ios_device_gtests",
+    basic_suites = {
+        "optimization_guide_ios_unittests": targets.legacy_matrix_config(
+            variants = [
+                "IPHONE_14_PRO_MAX",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "optimization_guide_mac_script_tests",
     basic_suites = {
         "model_validation_tests_suite": None,

@@ -327,6 +327,16 @@
       },
     },
   },
+  'ios_runtime_cache_18_0': {
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'runtime_ios_18_0',
+          'path': 'Runtime-ios-18.0',
+        },
+      ],
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },

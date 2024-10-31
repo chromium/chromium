@@ -1910,6 +1910,18 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "optimization_guide_ios_unittests",
+    tests = {
+        "optimization_guide_unittests": targets.legacy_test_config(),
+        "optimization_guide_gpu_unittests": targets.legacy_test_config(
+            args = [
+                "--ui-test-action-timeout=30000",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "optimization_guide_nogpu_gtests",
     tests = {
         "chrome_ml_unittests": targets.legacy_test_config(

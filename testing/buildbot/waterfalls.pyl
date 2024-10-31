@@ -1575,6 +1575,34 @@
         },
         'os_type': 'chromeos',
       },
+      'optimization_guide-ios-device': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xctest',
+          'xcode_16_main',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_ios_device_gtests',
+        },
+        'os_type': 'ios',
+      },
+      'optimization_guide-ios-simulator': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xctest',
+          'xcode_16_main',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_ios_sim_gtests',
+        },
+        'os_type': 'ios',
+      },
       'optimization_guide-linux': {
         'mixins': [
           'chrome-intelligence-swarming-pool',

@@ -77,6 +77,182 @@
       }
     ]
   },
+  "optimization_guide-ios-device": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--ui-test-action-timeout=30000",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xctest",
+          "--xcode-build-version",
+          "16a242d"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_gpu_unittests iPhone 14 Pro Max",
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "device": "iPhone14,5",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_16a242d",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "iPhone 14 Pro Max"
+      },
+      {
+        "args": [
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xctest",
+          "--xcode-build-version",
+          "16a242d"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_unittests iPhone 14 Pro Max",
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "device": "iPhone14,5",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_16a242d",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/",
+        "variant_id": "iPhone 14 Pro Max"
+      }
+    ]
+  },
+  "optimization_guide-ios-simulator": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--ui-test-action-timeout=30000",
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "18.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xctest",
+          "--xcode-build-version",
+          "16a242d"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_gpu_unittests iPhone 14 18.0",
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_18_0",
+              "path": "Runtime-ios-18.0"
+            },
+            {
+              "name": "xcode_ios_16a242d",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_gpu_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
+        "variant_id": "iPhone 14 18.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "18.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xctest",
+          "--xcode-build-version",
+          "16a242d"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_unittests iPhone 14 18.0",
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_18_0",
+              "path": "Runtime-ios-18.0"
+            },
+            {
+              "name": "xcode_ios_16a242d",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/",
+        "variant_id": "iPhone 14 18.0"
+      }
+    ]
+  },
   "optimization_guide-linux": {
     "gtest_tests": [
       {

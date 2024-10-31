@@ -181,6 +181,8 @@
       # take significantly longer to compile, and thus are only for these two builders.
       'optimization_guide-android-arm64': 'optimization_guide_android_arm64_rel',
       'optimization_guide-chromeos': 'optimization_guide_cros_rel',
+      'optimization_guide-ios-device': 'optimization_guide_ios_device_rel',
+      'optimization_guide-ios-simulator': 'optimization_guide_ios_sim_rel',
       'optimization_guide-linux': 'optimization_guide_rel',
       'optimization_guide-mac-arm64': 'optimization_guide_mac_arm64_rel',
       'optimization_guide-mac-x64': 'optimization_guide_rel',
@@ -256,6 +258,8 @@
       'model_validation-win64': 'optimization_guide_rel',
       'optimization_guide-android-arm64': 'optimization_guide_android_arm64_rel',
       'optimization_guide-chromeos': 'optimization_guide_cros_rel',
+      'optimization_guide-ios-device': 'optimization_guide_ios_device_rel',
+      'optimization_guide-ios-simulator': 'optimization_guide_ios_sim_rel',
       'optimization_guide-linux': 'optimization_guide_rel',
       'optimization_guide-mac-arm64': 'optimization_guide_mac_arm64_rel',
       'optimization_guide-mac-x64': 'optimization_guide_rel',
@@ -589,6 +593,13 @@
     'optimization_guide_cros_rel': [
       'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'chromeos',
     ],
+    'optimization_guide_ios_device_rel': [
+      'arm64', 'codesigning_identity', 'ios', 'ios_default_args', 'ios_device', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'xctest',
+    ],
+
+    'optimization_guide_ios_sim_rel': [
+      'arm64', 'codesigning_identity', 'ios', 'ios_default_args', 'ios_simulator', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'xctest',
+    ],
 
     'optimization_guide_mac_arm64_rel': [
       'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'arm64',
@@ -794,6 +805,10 @@
                  'blink_enable_generated_code_formatting'],
     },
 
+    'codesigning_identity': {
+      'gn_args': 'ios_code_signing_identity_description="Apple Development: Google Development"',
+    },
+
     # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_android': {
       'mixins': ['cronet_common'],
@@ -885,9 +900,21 @@
       'gn_args': 'target_os="ios"',
     },
 
+    'ios_default_args': {
+      'args_file': '//ios_internal/build/default-args.gn',
+    },
+
+    'ios_device': {
+      'gn_args': 'target_environment="device"'
+    },
+
     'ios_disable_code_signing': {
       # defaults to true under ios_sdk.gni
       'gn_args': 'ios_enable_code_signing=false'
+    },
+
+    'ios_simulator': {
+      'gn_args': 'target_environment="simulator"',
     },
 
     'is_cronet_build': {
@@ -1112,6 +1139,10 @@
 
     'x86': {
       'gn_args': 'target_cpu="x86"',
+    },
+
+    'xctest': {
+      'gn_args': 'enable_run_ios_unittests_with_xctest=true'
     },
   },
 }

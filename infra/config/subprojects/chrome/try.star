@@ -289,6 +289,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "optimization_guide-ios-device",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-ios-simulator",
+)
+
+chrome_internal_verifier(
     builder = "optimization_guide-linux",
 )
 

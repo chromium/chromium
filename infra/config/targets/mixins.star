@@ -970,7 +970,6 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_runtime_cache_18_0",
-    generate_pyl_entry = False,
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(

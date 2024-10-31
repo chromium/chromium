@@ -2613,6 +2613,15 @@
       },
     },
 
+    'optimization_guide_ios_unittests': {
+      'optimization_guide_gpu_unittests': {
+        'args': [
+          '--ui-test-action-timeout=30000',
+        ],
+      },
+      'optimization_guide_unittests': {},
+    },
+
     'optimization_guide_nogpu_gtests': {
       'chrome_ml_unittests': {
         'linux_args': [
@@ -3436,6 +3445,22 @@
     'optimization_guide_desktop_gtests': {
       'optimization_guide_gpu_gtests': {},
       'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_ios_device_gtests': {
+      'optimization_guide_ios_unittests': {
+        'variants': [
+          'IPHONE_14_PRO_MAX',
+        ],
+      },
+    },
+
+    'optimization_guide_ios_sim_gtests': {
+      'optimization_guide_ios_unittests': {
+        'variants': [
+          'SIM_IPHONE_14_18_0',
+        ],
+      },
     },
 
     'optimization_guide_linux_gtests': {
