@@ -337,7 +337,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   StartObservingPref(AnalysisConnector::FILE_TRANSFER);
 #endif
-  ConnectorsManagerBase::StartObservingPref(ReportingConnector::SECURITY_EVENT);
+  ConnectorsManagerBase::StartObservingPref();
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {

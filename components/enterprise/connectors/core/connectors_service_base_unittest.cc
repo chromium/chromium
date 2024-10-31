@@ -175,11 +175,9 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_ValidMachinePolicy) {
 class ConnectorsServiceBaseReportingSettingsTest
     : public TestConnectorsService,
       public testing::Test,
-      public testing::WithParamInterface<
-          std::tuple<ReportingConnector, const char*>> {
+      public testing::WithParamInterface<const char*> {
  public:
-  ReportingConnector connector() const { return std::get<0>(GetParam()); }
-  const char* pref_value() const { return std::get<1>(GetParam()); }
+  const char* pref_value() const { return GetParam(); }
 
   const char* pref() const { return kOnSecurityEventPref; }
 
@@ -198,8 +196,7 @@ TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
     service.GetPrefs()->SetInteger(scope_pref(), policy::POLICY_SCOPE_MACHINE);
   }
 
-  auto settings =
-      service.GetConnectorsManagerBase()->GetReportingSettings(connector());
+  auto settings = service.GetConnectorsManagerBase()->GetReportingSettings();
   EXPECT_EQ(reporting_enabled(), settings.has_value());
   EXPECT_EQ(pref_value() == kNormalReportingSettingsPref,
             !service.GetConnectorsManagerBase()
@@ -207,12 +204,10 @@ TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
                  .empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceBaseReportingSettingsTest,
-    testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
-                     testing::Values(nullptr,
-                                     kNormalReportingSettingsPref,
-                                     kEmptySettingsPref)));
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceBaseReportingSettingsTest,
+                         testing::Values(nullptr,
+                                         kNormalReportingSettingsPref,
+                                         kEmptySettingsPref));
 
 }  // namespace enterprise_connectors

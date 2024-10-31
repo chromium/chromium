@@ -78,10 +78,6 @@ inline constexpr char kWildcardMimeType[] = "*";
 inline constexpr base::FilePath::CharType RC_BASE_DIR[] =
     FILE_PATH_LITERAL("Enterprise/ReportingConnector/");
 
-enum class ReportingConnector {
-  SECURITY_EVENT,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep this enum in sync with
 // EnterpriseReportingEventType in enums.xml.

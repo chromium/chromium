@@ -35,11 +35,9 @@ class ConnectorsServiceBase {
   // Returns whether the Connectors are enabled.
   virtual bool IsConnectorEnabled(AnalysisConnector connector) const = 0;
 
-  std::vector<std::string> GetReportingServiceProviderNames(
-      ReportingConnector connector);
+  std::vector<std::string> GetReportingServiceProviderNames();
 
-  virtual std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector);
+  virtual std::optional<ReportingSettings> GetReportingSettings();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::optional<std::string> GetProfileDmToken() const;

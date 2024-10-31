@@ -190,12 +190,8 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
       /*off_the_record=*/false, prefs(),
       /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
 
-  EXPECT_FALSE(
-      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
-  EXPECT_TRUE(
-      service
-          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
-          .empty());
+  EXPECT_FALSE(service.GetReportingSettings());
+  EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
   prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
                                          R"([
@@ -206,8 +202,7 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
                                          base::JSON_ALLOW_TRAILING_COMMAS));
   prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
 
-  auto settings =
-      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  auto settings = service.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_FALSE(settings->per_profile);
   EXPECT_EQ(settings->dm_token, kTestBrowserDmToken);
@@ -215,13 +210,12 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
             std::set<std::string>(kAllReportingEvents.begin(),
                                   kAllReportingEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
-  auto provider_names = service.GetReportingServiceProviderNames(
-      ReportingConnector::SECURITY_EVENT);
+  auto provider_names = service.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 
   prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
 
-  settings = service.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  settings = service.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_TRUE(settings->per_profile);
   EXPECT_EQ(settings->dm_token, kTestProfileDmToken);
@@ -229,8 +223,7 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
             std::set<std::string>(kAllReportingEvents.begin(),
                                   kAllReportingEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
-  provider_names = service.GetReportingServiceProviderNames(
-      ReportingConnector::SECURITY_EVENT);
+  provider_names = service.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 }
 
@@ -239,12 +232,8 @@ TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
       /*off_the_record=*/true, prefs(),
       /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
 
-  EXPECT_FALSE(
-      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
-  EXPECT_TRUE(
-      service
-          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
-          .empty());
+  EXPECT_FALSE(service.GetReportingSettings());
+  EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
   prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
                                          R"([
@@ -255,21 +244,13 @@ TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
                                          base::JSON_ALLOW_TRAILING_COMMAS));
   prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_MACHINE);
 
-  EXPECT_FALSE(
-      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
-  EXPECT_TRUE(
-      service
-          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
-          .empty());
+  EXPECT_FALSE(service.GetReportingSettings());
+  EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 
   prefs()->SetInteger(kOnSecurityEventScopePref, policy::POLICY_SCOPE_USER);
 
-  EXPECT_FALSE(
-      service.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
-  EXPECT_TRUE(
-      service
-          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
-          .empty());
+  EXPECT_FALSE(service.GetReportingSettings());
+  EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
 }
 
 }  // namespace enterprise_connectors

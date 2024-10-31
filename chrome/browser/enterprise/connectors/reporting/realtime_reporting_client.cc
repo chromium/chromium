@@ -160,7 +160,7 @@ RealtimeReportingClient::GetReportingSettings() {
     return std::nullopt;
   }
 
-  return service->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  return service->GetReportingSettings();
 }
 
 void RealtimeReportingClient::ReportRealtimeEvent(

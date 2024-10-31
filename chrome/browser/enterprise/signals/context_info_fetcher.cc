@@ -322,8 +322,7 @@ ContextInfoFetcher::GetRealtimeUrlCheckMode() {
 }
 
 std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
-  return connectors_service_->GetReportingServiceProviderNames(
-      enterprise_connectors::ReportingConnector::SECURITY_EVENT);
+  return connectors_service_->GetReportingServiceProviderNames();
 }
 
 SettingValue ContextInfoFetcher::GetOSFirewall() {

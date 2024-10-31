@@ -191,11 +191,9 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsServiceReportingFeatureTest
     : public ConnectorsServiceTest,
-      public testing::WithParamInterface<
-          std::tuple<ReportingConnector, const char*>> {
+      public testing::WithParamInterface<const char*> {
  public:
-  ReportingConnector connector() const { return std::get<0>(GetParam()); }
-  const char* pref_value() const { return std::get<1>(GetParam()); }
+  const char* pref_value() const { return GetParam(); }
 
   const char* pref() const { return kOnSecurityEventPref; }
 
@@ -282,13 +280,11 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceReportingFeatureTest,
-    testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
-                     testing::Values(nullptr,
-                                     kNormalReportingSettingsPref,
-                                     kEmptySettingsPref)));
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceReportingFeatureTest,
+                         testing::Values(nullptr,
+                                         kNormalReportingSettingsPref,
+                                         kEmptySettingsPref));
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

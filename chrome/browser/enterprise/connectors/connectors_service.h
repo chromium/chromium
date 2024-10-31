@@ -44,8 +44,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   ~ConnectorsService() override;
 
   // Accessors that call the corresponding method in ConnectorsManager.
-  std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector) override;
+  std::optional<ReportingSettings> GetReportingSettings() override;
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);

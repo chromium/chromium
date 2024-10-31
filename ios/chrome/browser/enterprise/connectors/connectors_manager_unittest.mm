@@ -38,14 +38,9 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
 
   ConnectorsManager manager(prefs(), GetServiceProviderConfig());
 
-  EXPECT_FALSE(
-      manager.IsReportingConnectorEnabled(ReportingConnector::SECURITY_EVENT));
-  EXPECT_FALSE(
-      manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT));
-  EXPECT_TRUE(
-      manager
-          .GetReportingServiceProviderNames(ReportingConnector::SECURITY_EVENT)
-          .empty());
+  EXPECT_FALSE(manager.IsReportingConnectorEnabled());
+  EXPECT_FALSE(manager.GetReportingSettings());
+  EXPECT_TRUE(manager.GetReportingServiceProviderNames().empty());
 
   prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
                                          R"([
@@ -55,17 +50,14 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
                                             ])",
                                          base::JSON_ALLOW_TRAILING_COMMAS));
 
-  EXPECT_TRUE(
-      manager.IsReportingConnectorEnabled(ReportingConnector::SECURITY_EVENT));
-  auto settings =
-      manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  EXPECT_TRUE(manager.IsReportingConnectorEnabled());
+  auto settings = manager.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_EQ(settings->enabled_event_names,
             std::set<std::string>(kAllReportingEvents.begin(),
                                   kAllReportingEvents.end()));
   EXPECT_TRUE(settings->enabled_opt_in_events.empty());
-  auto provider_names = manager.GetReportingServiceProviderNames(
-      ReportingConnector::SECURITY_EVENT);
+  auto provider_names = manager.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 
   prefs()->Set(kOnSecurityEventPref, *base::JSONReader::Read(
@@ -93,9 +85,8 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
                                               }])",
                                          base::JSON_ALLOW_TRAILING_COMMAS));
 
-  EXPECT_TRUE(
-      manager.IsReportingConnectorEnabled(ReportingConnector::SECURITY_EVENT));
-  settings = manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  EXPECT_TRUE(manager.IsReportingConnectorEnabled());
+  settings = manager.GetReportingSettings();
   EXPECT_TRUE(settings.has_value());
   EXPECT_EQ(settings->enabled_event_names,
             std::set<std::string>({"passwordReuseEvent", "interstitialEvent"}));
@@ -105,8 +96,7 @@ TEST_F(ConnectorsManagerTest, ReportingSettings) {
   EXPECT_TRUE(settings->enabled_opt_in_events.count("passwordBreachEvent"));
   EXPECT_EQ(settings->enabled_opt_in_events["passwordBreachEvent"],
             std::vector<std::string>({"baz.com"}));
-  provider_names = manager.GetReportingServiceProviderNames(
-      ReportingConnector::SECURITY_EVENT);
+  provider_names = manager.GetReportingServiceProviderNames();
   EXPECT_EQ(provider_names, std::vector<std::string>({"google"}));
 }
 

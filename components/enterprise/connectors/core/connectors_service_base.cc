@@ -53,8 +53,7 @@ ConnectorsServiceBase::GetAppliedRealTimeUrlCheck() const {
 }
 
 std::vector<std::string>
-ConnectorsServiceBase::GetReportingServiceProviderNames(
-    ReportingConnector connector) {
+ConnectorsServiceBase::GetReportingServiceProviderNames() {
   if (!ConnectorsEnabled()) {
     return {};
   }
@@ -63,18 +62,16 @@ ConnectorsServiceBase::GetReportingServiceProviderNames(
     return {};
   }
 
-  return GetConnectorsManagerBase()->GetReportingServiceProviderNames(
-      connector);
+  return GetConnectorsManagerBase()->GetReportingServiceProviderNames();
 }
 
-std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings(
-    ReportingConnector connector) {
+std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings() {
   if (!ConnectorsEnabled()) {
     return std::nullopt;
   }
 
   std::optional<ReportingSettings> settings =
-      GetConnectorsManagerBase()->GetReportingSettings(connector);
+      GetConnectorsManagerBase()->GetReportingSettings();
   if (!settings.has_value()) {
     return std::nullopt;
   }

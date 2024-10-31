@@ -203,15 +203,14 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata(
   return metadata;
 }
 
-std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
-    ReportingConnector connector) {
+std::optional<ReportingSettings> ConnectorsService::GetReportingSettings() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!ConnectorsEnabled()) {
     return std::nullopt;
   }
 
   std::optional<ReportingSettings> settings =
-      connectors_manager_->GetReportingSettings(connector);
+      connectors_manager_->GetReportingSettings();
   if (!settings.has_value())
     return std::nullopt;
 
@@ -229,7 +228,7 @@ std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   }
 #endif
 
-  return ConnectorsServiceBase::GetReportingSettings(connector);
+  return ConnectorsServiceBase::GetReportingSettings();
 }
 
 std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
@@ -552,8 +551,7 @@ ConnectorsService::GetManagedUserCloudPolicyManager() const {
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     bool is_cloud) {
-  auto reporting_settings =
-      GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  auto reporting_settings = GetReportingSettings();
 
   Profile* profile = Profile::FromBrowserContext(context_);
   if (is_cloud && !reporting_settings.has_value()) {

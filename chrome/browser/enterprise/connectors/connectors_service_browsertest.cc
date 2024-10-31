@@ -294,21 +294,17 @@ class ConnectorsServiceProfileBrowserTest
 
 class ConnectorsServiceReportingProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<ReportingConnector, ManagementStatus>> {
+      public testing::WithParamInterface<ManagementStatus> {
  public:
   ConnectorsServiceReportingProfileBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {}
-  ReportingConnector connector() { return std::get<0>(GetParam()); }
+      : ConnectorsServiceProfileBrowserTest(GetParam()) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceReportingProfileBrowserTest,
-    testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
-                     testing::Values(ManagementStatus::AFFILIATED,
-                                     ManagementStatus::UNAFFILIATED,
-                                     ManagementStatus::UNMANAGED)));
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceReportingProfileBrowserTest,
+                         testing::Values(ManagementStatus::AFFILIATED,
+                                         ManagementStatus::UNAFFILIATED,
+                                         ManagementStatus::UNMANAGED));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
@@ -316,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
 
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetReportingSettings(connector());
+          ->GetReportingSettings();
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
