@@ -128,12 +128,13 @@ class IDBIndex final : public ScriptWrappable {
                           ExceptionState&,
                           bool key_only,
                           IDBRequest::AsyncTraceState metrics);
-  IDBRequest* GetAllInternal(ScriptState*,
-                             const ScriptValue& range,
-                             uint32_t max_count,
-                             ExceptionState&,
-                             bool key_only,
-                             IDBRequest::AsyncTraceState metrics);
+  IDBRequest* CreateGetAllRequest(IDBRequest::TypeForMetrics,
+                                  ScriptState*,
+                                  const ScriptValue& range,
+                                  mojom::blink::IDBGetAllResultType result_type,
+                                  uint32_t max_count,
+                                  mojom::blink::IDBCursorDirection direction,
+                                  ExceptionState&);
 
   scoped_refptr<IDBIndexMetadata> metadata_;
   Member<IDBObjectStore> object_store_;

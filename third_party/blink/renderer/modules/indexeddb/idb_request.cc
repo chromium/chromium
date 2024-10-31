@@ -479,11 +479,12 @@ void IDBRequest::OnClear(bool success) {
 }
 
 void IDBRequest::OnGetAll(
-    bool key_only,
+    mojom::blink::IDBGetAllResultType result_type,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
         receiver) {
   probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
                               "success");
+  bool key_only = (result_type == mojom::blink::IDBGetAllResultType::Keys);
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, key_only, std::move(receiver),
       WTF::BindOnce(&IDBTransaction::OnResultReady,

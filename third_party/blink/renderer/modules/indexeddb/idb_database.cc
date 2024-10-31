@@ -602,23 +602,19 @@ void IDBDatabase::GetAll(int64_t transaction_id,
                          int64_t object_store_id,
                          int64_t index_id,
                          const IDBKeyRange* key_range,
+                         mojom::blink::IDBGetAllResultType result_type,
                          int64_t max_count,
-                         bool key_only,
+                         mojom::blink::IDBCursorDirection direction,
                          IDBRequest* request) {
   IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-
-  mojom::blink::IDBGetAllResultType result_type =
-      key_only ? mojom::blink::IDBGetAllResultType::Keys
-               : mojom::blink::IDBGetAllResultType::Values;
-
   database_remote_->GetAll(
       transaction_id, object_store_id, index_id, std::move(key_range_ptr),
-      result_type, max_count, mojom::blink::IDBCursorDirection::Next,
+      result_type, max_count, direction,
       WTF::BindOnce(&IDBRequest::OnGetAll, WrapWeakPersistent(request),
-                    key_only));
+                    result_type));
 }
 
 void IDBDatabase::SetIndexKeys(int64_t transaction_id,

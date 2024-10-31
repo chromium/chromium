@@ -195,8 +195,9 @@ class MODULES_EXPORT IDBDatabase final
               int64_t object_store_id,
               int64_t index_id,
               const IDBKeyRange*,
+              mojom::blink::IDBGetAllResultType result_type,
               int64_t max_count,
-              bool key_only,
+              mojom::blink::IDBCursorDirection direction,
               IDBRequest*);
   void SetIndexKeys(int64_t transaction_id,
                     int64_t object_store_id,

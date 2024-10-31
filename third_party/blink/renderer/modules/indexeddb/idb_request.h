@@ -298,7 +298,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   void OnPut(mojom::blink::IDBTransactionPutResultPtr result);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
   void OnGetAll(
-      bool key_only,
+      mojom::blink::IDBGetAllResultType result_type,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);

@@ -206,6 +206,14 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
 
   int64_t FindIndexId(const String& name) const;
 
+  IDBRequest* CreateGetAllRequest(IDBRequest::TypeForMetrics,
+                                  ScriptState*,
+                                  const ScriptValue& range,
+                                  mojom::blink::IDBGetAllResultType,
+                                  uint32_t max_count,
+                                  mojom::blink::IDBCursorDirection,
+                                  ExceptionState&);
+
   // The IDBObjectStoreMetadata is shared with the object store map in the
   // database's metadata.
   scoped_refptr<IDBObjectStoreMetadata> metadata_;

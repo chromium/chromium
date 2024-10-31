@@ -258,9 +258,10 @@ IDBRequest* IDBIndex::getAll(ScriptState* script_state,
                              ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBIndex::getAllRequestSetup", "index_name",
                metadata_->name.Utf8());
-  IDBRequest::AsyncTraceState metrics(IDBRequest::TypeForMetrics::kIndexGetAll);
-  return GetAllInternal(script_state, range, max_count, exception_state, false,
-                        std::move(metrics));
+  return CreateGetAllRequest(
+      IDBRequest::TypeForMetrics::kIndexGetAll, script_state, range,
+      mojom::blink::IDBGetAllResultType::Values, max_count,
+      mojom::blink::IDBCursorDirection::Next, exception_state);
 }
 
 IDBRequest* IDBIndex::getAllKeys(ScriptState* script_state,
@@ -276,10 +277,10 @@ IDBRequest* IDBIndex::getAllKeys(ScriptState* script_state,
                                  ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBIndex::getAllKeysRequestSetup", "index_name",
                metadata_->name.Utf8());
-  IDBRequest::AsyncTraceState metrics(
-      IDBRequest::TypeForMetrics::kIndexGetAllKeys);
-  return GetAllInternal(script_state, range, max_count, exception_state,
-                        /*key_only=*/true, std::move(metrics));
+  return CreateGetAllRequest(
+      IDBRequest::TypeForMetrics::kIndexGetAllKeys, script_state, range,
+      mojom::blink::IDBGetAllResultType::Keys, max_count,
+      mojom::blink::IDBCursorDirection::Next, exception_state);
 }
 
 IDBRequest* IDBIndex::getKey(ScriptState* script_state,
@@ -331,12 +332,16 @@ IDBRequest* IDBIndex::GetInternal(ScriptState* script_state,
   return request;
 }
 
-IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
-                                     const ScriptValue& range,
-                                     uint32_t max_count,
-                                     ExceptionState& exception_state,
-                                     bool key_only,
-                                     IDBRequest::AsyncTraceState metrics) {
+IDBRequest* IDBIndex::CreateGetAllRequest(
+    IDBRequest::TypeForMetrics type_for_metrics,
+    ScriptState* script_state,
+    const ScriptValue& range,
+    mojom::blink::IDBGetAllResultType result_type,
+    uint32_t max_count,
+    mojom::blink::IDBCursorDirection direction,
+    ExceptionState& exception_state) {
+  IDBRequest::AsyncTraceState metrics(type_for_metrics);
+
   if (!max_count)
     max_count = std::numeric_limits<uint32_t>::max();
 
@@ -365,7 +370,7 @@ IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().GetAll(transaction_->Id(), object_store_->Id(), Id(), key_range,
-              max_count, key_only, request);
+              result_type, max_count, direction, request);
   return request;
 }
 
