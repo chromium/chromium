@@ -33,8 +33,9 @@ StubAuthenticator::StubAuthenticator(AuthStatusConsumer* consumer,
 void StubAuthenticator::CompleteLogin(
     bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
-  if (expected_user_context_ != *user_context)
-    NOTREACHED_IN_MIGRATION();
+  if (expected_user_context_ != *user_context) {
+    NOTREACHED();
+  }
   OnAuthSuccess();
 }
 

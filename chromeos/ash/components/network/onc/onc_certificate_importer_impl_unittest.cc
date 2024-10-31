@@ -101,7 +101,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
                            base::Unretained(this), expected_import_success));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     task_runner_->RunUntilIdle();

@@ -676,9 +676,9 @@ TEST_F(SecureChannelBleAdvertiserImplTest, EdgeCases) {
   DeviceIdPair pair("remoteDeviceId", "localDeviceId");
 
   // Cannot update or remove an advertisement which was not added.
-  EXPECT_DCHECK_DEATH(advertiser()->UpdateAdvertisementRequestPriority(
+  EXPECT_NOTREACHED_DEATH(advertiser()->UpdateAdvertisementRequestPriority(
       pair, ConnectionPriority::kMedium));
-  EXPECT_DCHECK_DEATH(advertiser()->RemoveAdvertisementRequest(pair));
+  EXPECT_NOTREACHED_DEATH(advertiser()->RemoveAdvertisementRequest(pair));
 }
 
 TEST_F(SecureChannelBleAdvertiserImplTest, FailToGenerateAdvertisement_Simple) {

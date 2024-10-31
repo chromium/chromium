@@ -43,8 +43,7 @@ int32_t GetBytesPerSample(const assistant_client::OutputStreamFormat& format) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 1;
+  NOTREACHED();
 }
 
 int32_t GetBytesPerFrame(const assistant_client::OutputStreamFormat& format) {

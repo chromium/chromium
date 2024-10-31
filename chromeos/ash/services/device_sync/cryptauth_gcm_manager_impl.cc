@@ -337,13 +337,13 @@ void CryptAuthGCMManagerImpl::OnMessagesDeleted(const std::string& app_id) {}
 void CryptAuthGCMManagerImpl::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& details) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CryptAuthGCMManagerImpl::OnSendAcknowledged(
     const std::string& app_id,
     const std::string& message_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CryptAuthGCMManagerImpl::OnRegistrationCompleted(

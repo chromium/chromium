@@ -395,8 +395,7 @@ EnumTraits<crosapi::mojom::AppType, apps::AppType>::ToMojom(
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::AppType::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -424,8 +423,7 @@ bool EnumTraits<crosapi::mojom::AppType, apps::AppType>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::Readiness
@@ -454,7 +452,7 @@ EnumTraits<crosapi::mojom::Readiness, apps::Readiness>::ToMojom(
       return crosapi::mojom::Readiness::kDisabledByLocalSettings;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::Readiness, apps::Readiness>::FromMojom(
@@ -493,8 +491,7 @@ bool EnumTraits<crosapi::mojom::Readiness, apps::Readiness>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::IconUpdateVersionDataView::Tag UnionTraits<
@@ -507,8 +504,7 @@ crosapi::mojom::IconUpdateVersionDataView::Tag UnionTraits<
   if (absl::holds_alternative<int32_t>(r)) {
     return crosapi::mojom::IconUpdateVersionDataView::Tag::kTimeline;
   }
-  NOTREACHED_IN_MIGRATION();
-  return crosapi::mojom::IconUpdateVersionDataView::Tag::kRawIconUpdated;
+  NOTREACHED();
 }
 
 bool UnionTraits<crosapi::mojom::IconUpdateVersionDataView,
@@ -525,8 +521,7 @@ bool UnionTraits<crosapi::mojom::IconUpdateVersionDataView,
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr>::Read(
@@ -570,7 +565,7 @@ EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason>::ToMojom(
       return crosapi::mojom::InstallReason::kCommandLine;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason>::FromMojom(
@@ -609,8 +604,7 @@ bool EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<crosapi::mojom::IntentFilterDataView, apps::IntentFilterPtr>::
@@ -668,7 +662,7 @@ EnumTraits<crosapi::mojom::ConditionType, apps::ConditionType>::ToMojom(
       return crosapi::mojom::ConditionType::kFile;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool StructTraits<
@@ -711,8 +705,7 @@ bool EnumTraits<crosapi::mojom::ConditionType, apps::ConditionType>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::PatternMatchType
@@ -735,7 +728,7 @@ EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType>::ToMojom(
       return crosapi::mojom::PatternMatchType::kSuffix;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType>::
@@ -766,8 +759,7 @@ bool EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::UninstallSource
@@ -786,7 +778,7 @@ EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource>::ToMojom(
       return crosapi::mojom::UninstallSource::kMigration;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource>::
@@ -810,8 +802,7 @@ bool EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -866,7 +857,7 @@ EnumTraits<crosapi::mojom::IconType, apps::IconType>::ToMojom(
       return crosapi::mojom::IconType::kStandard;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::IconType, apps::IconType>::FromMojom(
@@ -887,8 +878,7 @@ bool EnumTraits<crosapi::mojom::IconType, apps::IconType>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<crosapi::mojom::IconValueDataView, apps::IconValuePtr>::Read(
@@ -930,7 +920,7 @@ EnumTraits<crosapi::mojom::WindowMode, apps::WindowMode>::ToMojom(
       return crosapi::mojom::WindowMode::kTabbedWindow;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::WindowMode, apps::WindowMode>::FromMojom(
@@ -951,8 +941,7 @@ bool EnumTraits<crosapi::mojom::WindowMode, apps::WindowMode>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::LaunchSource
@@ -1040,10 +1029,9 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
     case apps::LaunchSource::kFromAppHomePage:
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::LaunchSource::kUnknown;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::FromMojom(
@@ -1163,8 +1151,7 @@ bool EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<crosapi::mojom::PermissionDataView, apps::PermissionPtr>::
@@ -1203,8 +1190,7 @@ EnumTraits<crosapi::mojom::PermissionType, apps::PermissionType>::ToMojom(
     case apps::PermissionType::kFileHandling:
       return crosapi::mojom::PermissionType::kFileHandling;
     case apps::PermissionType::kPrinting:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::PermissionType::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -1239,8 +1225,7 @@ bool EnumTraits<crosapi::mojom::PermissionType,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::TriState
@@ -1255,7 +1240,7 @@ EnumTraits<crosapi::mojom::TriState, apps::TriState>::ToMojom(
       return crosapi::mojom::TriState::kAsk;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::TriState, apps::TriState>::FromMojom(
@@ -1273,8 +1258,7 @@ bool EnumTraits<crosapi::mojom::TriState, apps::TriState>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::PermissionValueDataView::Tag
@@ -1287,8 +1271,7 @@ UnionTraits<crosapi::mojom::PermissionValueDataView,
   if (absl::holds_alternative<apps::TriState>(r)) {
     return crosapi::mojom::PermissionValueDataView::Tag::kTristateValue;
   }
-  NOTREACHED_IN_MIGRATION();
-  return crosapi::mojom::PermissionValueDataView::Tag::kBoolValue;
+  NOTREACHED();
 }
 
 bool UnionTraits<crosapi::mojom::PermissionValueDataView,
@@ -1308,8 +1291,7 @@ bool UnionTraits<crosapi::mojom::PermissionValueDataView,
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<crosapi::mojom::PreferredAppDataView, apps::PreferredAppPtr>::

@@ -13,8 +13,7 @@ EnumTraits<crosapi::mojom::SharesheetLaunchSource,
            sharesheet::LaunchSource>::ToMojom(sharesheet::LaunchSource input) {
   switch (input) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case sharesheet::LaunchSource::kUnknown:
       return crosapi::mojom::SharesheetLaunchSource::kUnknown;
     case sharesheet::LaunchSource::kWebShare:
@@ -40,8 +39,7 @@ bool EnumTraits<crosapi::mojom::SharesheetLaunchSource,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::SharesheetResult EnumTraits<
@@ -57,7 +55,7 @@ crosapi::mojom::SharesheetResult EnumTraits<
     case sharesheet::SharesheetResult::kErrorWindowClosed:
       return crosapi::mojom::SharesheetResult::kErrorWindowClosed;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool EnumTraits<crosapi::mojom::SharesheetResult,
@@ -79,8 +77,7 @@ bool EnumTraits<crosapi::mojom::SharesheetResult,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

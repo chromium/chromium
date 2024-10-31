@@ -104,8 +104,7 @@ std::string_view GetLacrosSelectionPolicyName(LacrosSelectionPolicy value) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string_view();
+  NOTREACHED();
 }
 
 void ClearLacrosSelectionCacheForTest() {

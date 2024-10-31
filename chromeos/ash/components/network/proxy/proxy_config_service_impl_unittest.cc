@@ -612,8 +612,7 @@ class ProxyConfigServiceImplWithDescriptionTest : public testing::Test {
         return ProxyConfigDictionary::CreateFixedServers(input.server,
                                                          input.bypass_rules);
     }
-    NOTREACHED_IN_MIGRATION();
-    return base::Value::Dict();
+    NOTREACHED();
   }
 
   void SetUserConfigInShill(const base::Value::Dict* pref_proxy_config_dict) {

@@ -303,7 +303,7 @@ void DeviceSettingsController::OnModifyDeviceSetting(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DeviceSettingsController::OnGetDeviceSettings(

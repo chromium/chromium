@@ -82,11 +82,10 @@ void BleAdvertiserImpl::AddAdvertisementRequest(
   requests_already_removed_due_to_failed_advertisement_.erase(request);
 
   if (base::Contains(all_requests_, request)) {
-    PA_LOG(ERROR) << "BleAdvertiserImpl::AddAdvertisementRequest(): Tried to "
-                  << "add advertisement request which was already present. "
-                  << "Request: " << request
-                  << ", Priority: " << connection_priority;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleAdvertiserImpl::AddAdvertisementRequest(): Tried to "
+                 << "add advertisement request which was already present. "
+                 << "Request: " << request
+                 << ", Priority: " << connection_priority;
   }
   all_requests_.insert(request);
 
@@ -110,11 +109,10 @@ void BleAdvertiserImpl::UpdateAdvertisementRequestPriority(
     return;
 
   if (!base::Contains(all_requests_, request)) {
-    PA_LOG(ERROR) << "BleAdvertiserImpl::UpdateAdvertisementRequestPriority(): "
-                  << "Tried to update request priority for a request, but that "
-                  << "request was not present. Request: " << request
-                  << ", Priority: " << connection_priority;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleAdvertiserImpl::UpdateAdvertisementRequestPriority(): "
+                 << "Tried to update request priority for a request, but that "
+                 << "request was not present. Request: " << request
+                 << ", Priority: " << connection_priority;
   }
 
   std::optional<size_t> index_for_active_request =
@@ -171,10 +169,9 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
   }
 
   if (!base::Contains(all_requests_, request)) {
-    PA_LOG(ERROR) << "BleAdvertiserImpl::RemoveAdvertisementRequest(): Tried "
-                  << "to remove an advertisement request, but that request was "
-                  << "not present. Request: " << request;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleAdvertiserImpl::RemoveAdvertisementRequest(): Tried "
+                 << "to remove an advertisement request, but that request was "
+                 << "not present. Request: " << request;
   }
   all_requests_.erase(request);
 

@@ -32,10 +32,8 @@ BluetoothHelper::IdentifyRemoteDevice(
       return potential_device_with_background_bool;
   }
 
-  PA_LOG(ERROR) << "BluetoothHelper::IdentifyRemoteDevice(): Identified "
-                   "device was not present in the provided DeviceIdPairSet.";
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED() << "BluetoothHelper::IdentifyRemoteDevice(): Identified "
+                  "device was not present in the provided DeviceIdPairSet.";
 }
 
 }  // namespace ash::secure_channel

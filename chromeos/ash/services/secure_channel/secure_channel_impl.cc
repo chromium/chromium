@@ -163,10 +163,9 @@ void SecureChannelImpl::OnConnection(
   ActiveConnectionManager::ConnectionState state =
       active_connection_manager_->GetConnectionState(connection_details);
   if (state != ActiveConnectionManager::ConnectionState::kNoConnectionExists) {
-    PA_LOG(ERROR) << "SecureChannelImpl::OnConnection(): Connection created "
-                  << "for detail " << connection_details << ", but a "
-                  << "connection already existed for those details.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "SecureChannelImpl::OnConnection(): Connection created "
+                 << "for detail " << connection_details << ", but a "
+                 << "connection already existed for those details.";
   }
 
   // Build string of clients whose connection attempts succeeded.

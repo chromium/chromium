@@ -235,7 +235,7 @@ void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
 }
 
 void WebmEncoderMuxer::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 EncodeAudioCallback WebmEncoderMuxer::GetEncodeAudioCallback() {

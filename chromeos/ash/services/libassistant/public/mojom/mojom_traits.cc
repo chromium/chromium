@@ -326,8 +326,7 @@ MojoResolution EnumTraits<MojoResolution, AssistantResolution>::ToMojom(
     case AssistantResolution::kMultiDeviceHotwordLoss:
       return MojoResolution::kMultiDeviceHotwordLoss;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MojoResolution::kNormal;
+  NOTREACHED();
 }
 
 bool EnumTraits<MojoResolution, AssistantResolution>::FromMojom(
@@ -350,8 +349,7 @@ bool EnumTraits<MojoResolution, AssistantResolution>::FromMojom(
       *output = AssistantResolution::kMultiDeviceHotwordLoss;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -560,8 +558,7 @@ EnumTraits<MojoSuggestionType, AssistantSuggestionType>::ToMojom(
     case AssistantSuggestionType::kBetterOnboarding:
       return MojoSuggestionType::kBetterOnboarding;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MojoSuggestionType::kUnspecified;
+  NOTREACHED();
 }
 
 bool EnumTraits<MojoSuggestionType, AssistantSuggestionType>::FromMojom(
@@ -578,8 +575,7 @@ bool EnumTraits<MojoSuggestionType, AssistantSuggestionType>::FromMojom(
       *output = AssistantSuggestionType::kBetterOnboarding;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

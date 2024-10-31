@@ -59,9 +59,7 @@ const base::Value* CrosSettings::GetPref(std::string_view path) const {
   CrosSettingsProvider* provider = GetProvider(path);
   if (provider)
     return provider->Get(path);
-  NOTREACHED_IN_MIGRATION()
-      << path << " preference was not found in the signed settings.";
-  return nullptr;
+  NOTREACHED() << path << " preference was not found in the signed settings.";
 }
 
 CrosSettingsProvider::TrustedStatus CrosSettings::PrepareTrustedValues(
@@ -196,8 +194,7 @@ bool CrosSettings::FindEmailInList(const base::Value::List& list,
   bool found_wildcard_match = false;
   for (const auto& entry : list) {
     if (!entry.is_string()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     std::string canonicalized_entry(
         gaia::CanonicalizeEmail(gaia::SanitizeEmail(entry.GetString())));

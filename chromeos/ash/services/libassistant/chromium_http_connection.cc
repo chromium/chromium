@@ -318,7 +318,7 @@ void ChromiumHttpConnection::OnComplete(bool success) {
 void ChromiumHttpConnection::OnRetry(base::OnceClosure start_retry) {
   DCHECK(handle_partial_response_);
   // Retries are not enabled for these requests.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Attempts to send more of the upload body, if more data is available, and

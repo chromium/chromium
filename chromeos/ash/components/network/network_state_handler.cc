@@ -63,8 +63,7 @@ std::string GetManagedStateLogType(const ManagedState* state) {
     case ManagedState::MANAGED_TYPE_DEVICE:
       return "Device";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetLogName(const ManagedState* state) {
@@ -1871,7 +1870,7 @@ void NetworkStateHandler::ManagedStateListChanged(
       SyncStubCellularNetworks();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NetworkStateHandler::SortNetworkList() {
@@ -2168,8 +2167,7 @@ NetworkStateHandler::ManagedStateList* NetworkStateHandler::GetManagedList(
     case ManagedState::MANAGED_TYPE_DEVICE:
       return &device_list_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void NetworkStateHandler::OnNetworkConnectionStateChanged(

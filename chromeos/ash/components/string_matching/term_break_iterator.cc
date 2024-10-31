@@ -69,9 +69,7 @@ TermBreakIterator::State TermBreakIterator::GetNewState(char16_t ch) {
   const bool is_lower = !!u_isULowercase(ch);
 
   if (is_upper && is_lower) {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid state for ch=" << std::u16string(1, ch);
-    return STATE_CHAR;
+    NOTREACHED() << "Invalid state for ch=" << std::u16string(1, ch);
   }
 
   if (is_upper)

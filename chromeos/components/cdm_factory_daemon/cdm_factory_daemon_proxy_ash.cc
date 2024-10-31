@@ -44,7 +44,7 @@ class BrowserCdmFactoryProxy : public cdm::mojom::BrowserCdmFactory {
   // chromeos::cdm::mojom::BrowserCdmFactoryDaemon:
   void CreateFactory(const std::string& key_system,
                      CreateFactoryCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetHwConfigData(GetHwConfigDataCallback callback) override {
@@ -61,7 +61,7 @@ class BrowserCdmFactoryProxy : public cdm::mojom::BrowserCdmFactory {
 
   void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
                                output_protection) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetScreenResolutions(GetScreenResolutionsCallback callback) override {

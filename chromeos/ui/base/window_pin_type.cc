@@ -18,8 +18,7 @@ std::ostream& operator<<(std::ostream& out, WindowPinType pin_type) {
       return out << "kTrustedPinned";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return out;
+  NOTREACHED();
 }
 
 }  // namespace chromeos

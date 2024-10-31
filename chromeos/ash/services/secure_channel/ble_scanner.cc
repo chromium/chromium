@@ -18,9 +18,8 @@ BleScanner::~BleScanner() = default;
 
 void BleScanner::AddScanRequest(const ConnectionAttemptDetails& scan_request) {
   if (base::Contains(scan_requests_, scan_request)) {
-    PA_LOG(ERROR) << "BleScanner::AddScanRequest(): Tried to add a scan "
-                  << "request which already existed: " << scan_request;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleScanner::AddScanRequest(): Tried to add a scan "
+                 << "request which already existed: " << scan_request;
   }
 
   scan_requests_.insert(scan_request);
@@ -30,9 +29,8 @@ void BleScanner::AddScanRequest(const ConnectionAttemptDetails& scan_request) {
 void BleScanner::RemoveScanRequest(
     const ConnectionAttemptDetails& scan_request) {
   if (!base::Contains(scan_requests_, scan_request)) {
-    PA_LOG(ERROR) << "BleScanner::RemoveScanRequest(): Tried to remove a scan "
-                  << "request which was not present: " << scan_request;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleScanner::RemoveScanRequest(): Tried to remove a scan "
+                 << "request which was not present: " << scan_request;
   }
 
   scan_requests_.erase(scan_request);

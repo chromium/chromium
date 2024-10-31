@@ -72,8 +72,7 @@ AuthFactorType AuthFactorInput::GetType() const {
           factor_input_)) {
     return AuthFactorType::kRecovery;
   }
-  NOTREACHED_IN_MIGRATION();
-  return AuthFactorType::kUnknownLegacy;
+  NOTREACHED();
 }
 
 bool AuthFactorInput::UsableForCreation() const {

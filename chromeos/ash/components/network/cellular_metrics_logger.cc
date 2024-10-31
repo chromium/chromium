@@ -192,7 +192,7 @@ void CellularMetricsLogger::RecordSimLockNotificationLockType(
     base::UmaHistogramEnumeration(kSimLockNotificationLockType,
                                   SimPinLockType::kCarrierLocked);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -793,7 +793,7 @@ void CellularMetricsLogger::CheckForSIMStatusMetric(
   } else if (sim_lock_type.empty()) {
     lock_type = SimPinLockType::kUnlocked;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (managed_network_configuration_handler_->AllowCellularSimLock()) {

@@ -330,7 +330,7 @@ void ResourcedClientImpl::ReportBrowserProcesses(
   } else if (component == ResourcedClient::Component::kLacros) {
     request.set_browser_type(resource_manager::BrowserType::LACROS);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   for (auto it = processes.begin(); it != processes.end(); ++it) {

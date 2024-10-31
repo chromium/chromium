@@ -129,8 +129,7 @@ std::string GetAuthenticationSurfaceName(AuthenticationSurface screen) {
     case AuthenticationSurface::kLogin:
       return "Login";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Suffix for grouping by screen exit type. Should match suffixes of the
@@ -145,8 +144,7 @@ std::string GetAuthenticationOutcomeSuffix(AuthenticationOutcome exit_type) {
     case AuthenticationOutcome::kRecovery:
       return "UntilRecovery";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Complete name of the login flow histogram.
@@ -180,10 +178,8 @@ std::string GetConfiguredAuthFactorsHistogramSuffix(
     case cryptohome::AuthFactorType::kSmartCard:
       return "SmartCard";
     case cryptohome::AuthFactorType::kPassword:
-      NOTREACHED_IN_MIGRATION()
-          << "For password factor use "
-             "`GetConfiguredPasswordFactorsHistogramSuffix()`";
-      return "";
+      NOTREACHED() << "For password factor use "
+                      "`GetConfiguredPasswordFactorsHistogramSuffix()`";
     case cryptohome::AuthFactorType::kUnknownLegacy:
     case cryptohome::AuthFactorType::kLegacyFingerprint:
     case cryptohome::AuthFactorType::kFingerprint:
@@ -274,8 +270,7 @@ std::string GetUserLoginTypeName(AuthEventsRecorder::UserLoginType type) {
     case UserLoginType::kEphemeral:
       return "ephemeral";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
@@ -287,8 +282,7 @@ std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
     case AuthenticationOutcome::kRecovery:
       return "recovery";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetUserVaultTypeName(
@@ -302,8 +296,7 @@ std::string GetUserVaultTypeName(
     case UserVaultType::kGuest:
       return "guest";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string GetCrashKeyStringWithStatus(const std::string& event_name,

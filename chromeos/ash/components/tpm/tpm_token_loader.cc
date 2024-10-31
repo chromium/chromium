@@ -141,8 +141,7 @@ void TPMTokenLoader::ContinueTokenInitialization() {
       return;
     }
     case TPM_INITIALIZATION_STARTED: {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     case TPM_TOKEN_INFO_RECEIVED: {
       crypto_task_runner_->PostTask(

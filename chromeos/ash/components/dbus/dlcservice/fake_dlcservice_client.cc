@@ -90,7 +90,7 @@ void FakeDlcserviceClient::GetExistingDlcs(GetExistingDlcsCallback callback) {
 }
 
 void FakeDlcserviceClient::DlcStateChangedForTest(dbus::Signal* signal) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeDlcserviceClient::NotifyObserversForTest(

@@ -92,9 +92,7 @@ PinMetadata ParsePinMetadata(const user_data_auth::AuthFactor& proto) {
 user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
   switch (type) {
     case AuthFactorType::kUnknownLegacy:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown factor type should never be sent to cryptohome";
-      return user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED;
+      NOTREACHED() << "Unknown factor type should never be sent to cryptohome";
     case AuthFactorType::kPassword:
       return user_data_auth::AUTH_FACTOR_TYPE_PASSWORD;
     case AuthFactorType::kPin:
@@ -180,7 +178,7 @@ ChallengeSignatureAlgorithmToProtoEnum(
     case Algorithm::kRsassaPkcs1V15Sha512:
       return user_data_auth::CHALLENGE_RSASSA_PKCS1_V1_5_SHA512;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SerializeAuthFactor(const AuthFactor& factor,

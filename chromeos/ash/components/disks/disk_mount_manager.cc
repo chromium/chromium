@@ -69,9 +69,7 @@ std::string FormatFileSystemTypeToString(FormatFileSystemType filesystem) {
     case FormatFileSystemType::kNtfs:
       return "ntfs";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown filesystem type " << static_cast<int>(filesystem);
-  return "";
+  NOTREACHED() << "Unknown filesystem type " << static_cast<int>(filesystem);
 }
 
 // The DiskMountManager implementation.

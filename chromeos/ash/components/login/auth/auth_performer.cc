@@ -198,7 +198,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     AuthOperationCallback callback) {
   DCHECK(context->GetChallengeResponseKeys().empty());
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
@@ -286,7 +286,7 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
     AuthOperationCallback callback) {
   DCHECK(!context->GetChallengeResponseKeys().empty());
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
@@ -319,7 +319,7 @@ void AuthPerformer::AuthenticateWithPassword(
   DCHECK(!password.empty()) << "Caller should check for empty password";
   DCHECK(!key_label.empty()) << "Caller should provide correct label";
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
@@ -360,7 +360,7 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   DCHECK(!pin.empty()) << "Caller should check for empty PIN";
   DCHECK(!pin_salt.empty()) << "Client code should provide correct salt";
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   // Use Key until proper migration to AuthFactors API.
@@ -444,7 +444,7 @@ void AuthPerformer::AuthenticateWithLegacyFingerprint(
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Authenticating as Kiosk";
@@ -475,7 +475,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                                          AuthSessionStatusCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Requesting authsession status";
@@ -493,8 +493,7 @@ void AuthPerformer::ExtendAuthSessionLifetime(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
-    return;
+    NOTREACHED() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Requesting authsession lifetime extension";
   user_data_auth::ExtendAuthSessionRequest request;
@@ -515,7 +514,7 @@ void AuthPerformer::GetRecoveryRequest(
     std::unique_ptr<UserContext> context,
     RecoveryRequestCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Obtaining RecoveryRequest";
@@ -559,7 +558,7 @@ void AuthPerformer::AuthenticateWithRecovery(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Authenticating via Recovery";

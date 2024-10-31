@@ -44,8 +44,7 @@ HttpConnection::Method ConvertToHttpConnectionMethod(
     case StreamHttpConnectionResponse::DELETE:
       return HttpConnection::DELETE;
     case StreamHttpConnectionResponse::METHOD_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return HttpConnection::GET;
+      NOTREACHED();
   }
 }
 
@@ -280,7 +279,7 @@ void GrpcHttpConnectionClient::OnRpcReadAvailable(
                                response.chunked_data().is_last_chunk());
       break;
     case StreamHttpConnectionResponse::COMMAND_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

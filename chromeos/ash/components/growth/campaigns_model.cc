@@ -326,8 +326,7 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
       return campaign->FindDictByDottedPath(base::StringPrintf(
           kPayloadPathTemplate, kOobePerkDiscoveryPayloadPath));
     case Slot::kDemoModeFreePlayApps:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return nullptr;

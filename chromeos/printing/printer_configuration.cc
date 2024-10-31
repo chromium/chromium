@@ -57,8 +57,7 @@ std::string ToString(PrinterClass pclass) {
     case PrinterClass::kSaved:
       return "Saved";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {

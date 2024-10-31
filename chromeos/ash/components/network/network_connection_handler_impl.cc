@@ -112,8 +112,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
       return !client_cert_id.empty();
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::string VPNCheckCredentials(const std::string& service_path,
@@ -225,7 +224,7 @@ std::ostream& operator<<(std::ostream& stream, client_cert::ConfigType type) {
       stream << "EAP";
       return stream;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

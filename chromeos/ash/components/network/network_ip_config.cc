@@ -21,8 +21,7 @@ std::string IPConfigTypeAsString(IPConfigType type) {
     ENUM_CASE(IPCONFIG_TYPE_DHCP6);
     ENUM_CASE(IPCONFIG_TYPE_PPP);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 #undef ENUM_CASE
 }  // namespace

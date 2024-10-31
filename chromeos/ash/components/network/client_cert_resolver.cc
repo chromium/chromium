@@ -257,8 +257,7 @@ struct MatchCertWithCertConfig {
              cert_and_issuer.provisioning_profile_id;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const client_cert::ClientCertConfig cert_config;

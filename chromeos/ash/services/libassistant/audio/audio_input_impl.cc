@@ -133,10 +133,7 @@ class AudioInputBufferImpl : public assistant_client::AudioBuffer {
     return g_current_format;
   }
   const void* GetData() const override { return data_.data(); }
-  void* GetWritableData() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  void* GetWritableData() override { NOTREACHED(); }
   int GetFrameCount() const override { return frame_count_; }
 
  private:

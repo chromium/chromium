@@ -141,8 +141,7 @@ metrics::RemoteSecuritySettingsState GetRemoteSecuritySettingsState(
       }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return metrics::RemoteSecuritySettingsState::UNKNOWN;
+  NOTREACHED();
 }
 
 std::string GetHistogramStatusSuffix(bool unlockable) {
@@ -751,8 +750,7 @@ UnlockManagerImpl::GetScreenlockStateFromRemoteUpdate(
       return RemoteScreenlockState::UNKNOWN;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return RemoteScreenlockState::UNKNOWN;
+  NOTREACHED();
 }
 
 Messenger* UnlockManagerImpl::GetMessenger() {
@@ -772,10 +770,8 @@ void UnlockManagerImpl::RecordFirstRemoteStatusReceived(bool unlockable) {
 
   if (initial_scan_start_time_.is_null() ||
       attempt_get_remote_status_start_time_.is_null()) {
-    PA_LOG(WARNING) << "Attempted to RecordFirstRemoteStatusReceived() "
-                       "without initial timestamps recorded.";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Attempted to RecordFirstRemoteStatusReceived() "
+                    "without initial timestamps recorded.";
   }
 
   const std::string histogram_status_suffix =
@@ -822,10 +818,8 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
   has_user_been_shown_first_status_ = true;
 
   if (show_lock_screen_time_.is_null()) {
-    PA_LOG(WARNING) << "Attempted to RecordFirstStatusShownToUser() "
-                       "without initial timestamp recorded.";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Attempted to RecordFirstStatusShownToUser() "
+                    "without initial timestamp recorded.";
   }
 
   base::UmaHistogramEnumeration("SmartLock.FirstStatusToUser",

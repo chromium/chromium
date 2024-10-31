@@ -41,8 +41,7 @@ class FakePolicyCertificateProvider : public PolicyCertificateProvider {
   net::CertificateList GetAllServerAndAuthorityCertificates(
       const chromeos::onc::CertificateScope& scope) const override {
     // NetworkCertLoader does not call this.
-    NOTREACHED_IN_MIGRATION();
-    return net::CertificateList();
+    NOTREACHED();
   }
 
   net::CertificateList GetAllAuthorityCertificates(
@@ -56,22 +55,19 @@ class FakePolicyCertificateProvider : public PolicyCertificateProvider {
   net::CertificateList GetWebTrustedCertificates(
       const chromeos::onc::CertificateScope& scope) const override {
     // NetworkCertLoader does not call this.
-    NOTREACHED_IN_MIGRATION();
-    return net::CertificateList();
+    NOTREACHED();
   }
 
   net::CertificateList GetCertificatesWithoutWebTrust(
       const chromeos::onc::CertificateScope& scope) const override {
     // NetworkCertLoader does not call this.
-    NOTREACHED_IN_MIGRATION();
-    return net::CertificateList();
+    NOTREACHED();
   }
 
   const std::set<std::string>& GetExtensionIdsWithPolicyCertificates()
       const override {
     // NetworkCertLoader does not call this.
-    NOTREACHED_IN_MIGRATION();
-    return kNoExtensions;
+    NOTREACHED();
   }
 
   void SetAuthorityCertificates(

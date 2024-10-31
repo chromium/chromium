@@ -133,7 +133,7 @@ DeviceSyncRequestFailureReason GetDeviceSyncRequestFailureReason(
     default:
       return DeviceSyncRequestFailureReason::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // The exponential back off is: base * 2^(num_failures - 1)
@@ -197,8 +197,7 @@ DeviceSyncSetSoftwareFeature GetDeviceSyncSoftwareFeature(
     case multidevice::SoftwareFeature::kMessagesForWebHost:
       return DeviceSyncSetSoftwareFeature::kMessages;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return DeviceSyncSetSoftwareFeature::kUnexpectedClientFeature;
+      NOTREACHED();
   }
 }
 
@@ -788,8 +787,7 @@ void DeviceSyncImpl::RunNextInitializationStep() {
       CompleteInitializationAfterSuccessfulEnrollment();
       break;
     case InitializationStatus::kReady:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1075,10 +1073,8 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateError(
 
   auto it = id_to_pending_set_software_feature_request_map_.find(request_id);
   if (it == id_to_pending_set_software_feature_request_map_.end()) {
-    PA_LOG(ERROR) << "DeviceSyncImpl::OnSetSoftwareFeatureStateError(): "
-                  << "Could not find request entry with ID " << request_id;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "DeviceSyncImpl::OnSetSoftwareFeatureStateError(): "
+                 << "Could not find request entry with ID " << request_id;
   }
 
   RecordSetSoftwareFeatureStateResult(false /* success */);
@@ -1112,10 +1108,8 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
 
   auto it = id_to_pending_set_feature_status_request_map_.find(request_id);
   if (it == id_to_pending_set_feature_status_request_map_.end()) {
-    PA_LOG(ERROR) << "DeviceSyncImpl::OnSetFeatureStatusError(): "
-                  << "Could not find request entry with ID " << request_id;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "DeviceSyncImpl::OnSetFeatureStatusError(): "
+                 << "Could not find request entry with ID " << request_id;
   }
 
   it->second->InvokeCallback(
@@ -1183,10 +1177,8 @@ void DeviceSyncImpl::OnNotifyDevicesSuccess(
 
   auto it = pending_notify_devices_callbacks_.find(request_id);
   if (it == pending_notify_devices_callbacks_.end()) {
-    PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesSuccess(): "
-                  << "Could not find request entry with ID " << request_id;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "DeviceSyncImpl::OnNotifyDevicesSuccess(): "
+                 << "Could not find request entry with ID " << request_id;
   }
 
   std::move(it->second).Run(mojom::NetworkRequestResult::kSuccess);
@@ -1200,10 +1192,8 @@ void DeviceSyncImpl::OnNotifyDevicesError(
 
   auto it = pending_notify_devices_callbacks_.find(request_id);
   if (it == pending_notify_devices_callbacks_.end()) {
-    PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesError(): "
-                  << "Could not find request entry with ID " << request_id;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "DeviceSyncImpl::OnNotifyDevicesError(): "
+                 << "Could not find request entry with ID " << request_id;
   }
 
   std::move(it->second)

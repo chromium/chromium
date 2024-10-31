@@ -187,8 +187,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_COUNT:
         break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool IsEnabled(views::CaptionButtonIcon type) const override {
     if (type == views::CAPTION_BUTTON_ICON_CLOSE) {

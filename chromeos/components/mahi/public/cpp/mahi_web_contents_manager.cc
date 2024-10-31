@@ -50,8 +50,7 @@ ScopedMahiWebContentsManagerOverride::ScopedMahiWebContentsManagerOverride(
     MahiWebContentsManager* delegate) {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   instance_ = this;
   g_instance_for_testing = delegate;
@@ -59,8 +58,7 @@ ScopedMahiWebContentsManagerOverride::ScopedMahiWebContentsManagerOverride(
 
 ScopedMahiWebContentsManagerOverride::~ScopedMahiWebContentsManagerOverride() {
   if (instance_ != this) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   instance_ = nullptr;
   g_instance_for_testing = nullptr;

@@ -181,8 +181,7 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
   };
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 crosapi::mojom::WebAppUninstallResultCode EnumTraits<
@@ -234,8 +233,7 @@ bool EnumTraits<crosapi::mojom::WebAppUninstallResultCode,
       return true;
   };
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

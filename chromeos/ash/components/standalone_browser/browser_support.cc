@@ -102,9 +102,7 @@ bool IsEnabledInternal(const user_manager::User* user,
     case LacrosAvailability::kUserChoice:
       break;
     case LacrosAvailability::kLacrosDisallowed:
-      NOTREACHED_IN_MIGRATION();  // Guarded by IsLacrosAllowedInternal, called
-                                  // before.
-      return false;
+      NOTREACHED();  // Guarded by IsLacrosAllowedInternal, called before.
     case LacrosAvailability::kLacrosOnly:
       // Lacros can no longer be enabled via policy.
       break;

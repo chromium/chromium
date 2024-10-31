@@ -273,9 +273,7 @@ class PpdMetadataPathSpecifier {
     }
 
     // This function cannot fail except by maintainer error.
-    NOTREACHED_IN_MIGRATION();
-
-    return std::string();
+    NOTREACHED();
   }
 
  private:
