@@ -897,7 +897,7 @@ source_set("skcms") {
 # these source sets are considered unknown and skipped by gn check.
 if (skia_support_gpu) {
   skia_source_set("skia_graphite_public") {
-    public = skia_graphite_public
+    public = skia_graphite_public + skia_graphite_precompile_public
     if (skia_use_dawn) {
       public += skia_graphite_dawn_public
       public_deps = [
@@ -915,7 +915,7 @@ if (skia_support_gpu) {
   # If a source set contains only sources and no public files, then dependents can
   # include any file from sources.
   skia_source_set("skia_graphite_private") {
-    sources = skia_graphite_sources
+    sources = skia_graphite_sources + skia_graphite_precompile_sources
     if (skia_use_dawn) {
       sources += skia_graphite_dawn_sources
     }

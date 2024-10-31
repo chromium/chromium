@@ -14,6 +14,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -41,6 +43,8 @@
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/precompile/PaintOptions.h"
+#include "third_party/skia/include/gpu/graphite/precompile/Precompile.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
@@ -95,6 +99,35 @@ size_t MaxNumSkSurface() {
 #else
   return kNormalMaxNumSkSurface;
 #endif
+}
+
+// TODO: crbug.com/376667859 - passing the graphite::Context to here isn't safe.
+// Correct when a suitable Skia object is added.
+void PerformPrecompilation(skgpu::graphite::Context* context) {
+  constexpr skgpu::graphite::RenderPassProperties kProps = {
+      skgpu::graphite::DepthStencilFlags::kDepth, kBGRA_8888_SkColorType,
+      /* requiresMSAA= */ false};
+
+  // TODO: crbug.com/358074434 - add actually relevant precompilation
+  skgpu::graphite::PaintOptions paintOptions;
+  paintOptions.setBlendModes({SkBlendMode::kSrcOver});
+
+  Precompile(context, paintOptions,
+             skgpu::graphite::DrawTypeFlags::kBitmapText_Mask, {&kProps, 1});
+}
+
+void InitiatePrecompilation(skgpu::graphite::Context* context) {
+  constexpr base::TaskTraits precompile_traits = {
+      base::TaskPriority::BEST_EFFORT,
+      base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
+
+  // TODO: crbug.com/358074434 - need to determine the actual delay or initiate
+  // precompilation at first idle
+  constexpr base::TimeDelta precompile_wait = base::Seconds(1);
+
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, precompile_traits,
+      base::BindOnce(&PerformPrecompilation, context), precompile_wait);
 }
 
 // Creates a Graphite recorder, supplying it with a GraphiteImageProvider.
@@ -648,6 +681,11 @@ bool SharedContextState::InitializeGraphite(
   if (!graphite_context_) {
     LOG(ERROR) << "Skia Graphite disabled: Graphite Context creation failed.";
     return false;
+  }
+
+  if (features::IsSkiaGraphitePrecompilationEnabled(
+          base::CommandLine::ForCurrentProcess())) {
+    InitiatePrecompilation(graphite_context_);
   }
 
   // We need image providers for both the OOP-R (gpu_main) recorder and the
