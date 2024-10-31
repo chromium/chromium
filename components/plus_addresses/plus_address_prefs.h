@@ -24,6 +24,10 @@ inline constexpr std::string_view kPreallocatedAddresses =
 inline constexpr std::string_view kPreallocatedAddressesNext =
     "plus_addresses.preallocation.next";
 
+// The first time the user creates a plus address in Chrome.
+inline constexpr std::string_view kFirstPlusAddressCreationTime =
+    "plus_addresses.creation.first.time";
+
 // Registers the plus address profile prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

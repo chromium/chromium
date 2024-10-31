@@ -24,6 +24,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
@@ -219,6 +220,9 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     // notice.
     if (was_notice_shown) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
+          ->GetPrefs()
+          ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
       if (Browser* browser = chrome::FindBrowserWithTab(&GetWebContents())) {
         browser->window()->MaybeShowFeaturePromo(
             feature_engagement::kIPHPlusAddressFirstSaveFeature);

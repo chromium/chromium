@@ -50,6 +50,7 @@ source_set("prefs") {
   ]
   deps = [
     "//base",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 }

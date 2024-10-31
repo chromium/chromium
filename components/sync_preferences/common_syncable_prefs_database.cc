@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -119,6 +120,7 @@ enum {
   kAutoPinNewTabGroups = 74,
   kShowGoogleLensShortcut = 75,
   kSharingVapidKey = 76,
+  kFirstPlusAddressCreationTime = 77,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -303,6 +305,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {prefs::kSharingVapidKey,
          {syncable_prefs_ids::kSharingVapidKey, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {plus_addresses::prefs::kFirstPlusAddressCreationTime,
+         {syncable_prefs_ids::kFirstPlusAddressCreationTime,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
 #if BUILDFLAG(IS_ANDROID)
         {autofill::prefs::kFacilitatedPaymentsPix,
          {syncable_prefs_ids::kFacilitatedPaymentsPix, syncer::PREFERENCES,
