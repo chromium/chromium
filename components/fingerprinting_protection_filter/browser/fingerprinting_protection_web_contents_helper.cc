@@ -45,7 +45,7 @@ using ::subresource_filter::GetSubresourceFilterRootPage;
 using ::subresource_filter::IsInSubresourceFilterRoot;
 using ::subresource_filter::VerifiedRulesetDealer;
 
-bool WillCreateNewThrottleManager(content::NavigationHandle& handle) {
+bool IsRootNavigationToNewDocument(content::NavigationHandle& handle) {
   return IsInSubresourceFilterRoot(&handle) && !handle.IsSameDocument() &&
          !handle.IsPageActivation();
 }
@@ -189,7 +189,7 @@ ThrottleManager* FingerprintingProtectionWebContentsHelper::GetThrottleManager(
   // TODO(https://crbug.com/40280666): Consider storing pointers to existing
   // throttle managers to enable short-circuiting this function in most cases.
 
-  if (WillCreateNewThrottleManager(handle)) {
+  if (IsRootNavigationToNewDocument(handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(handle);
     if (!container) {
@@ -258,10 +258,14 @@ void FingerprintingProtectionWebContentsHelper::FrameDeleted(
 
 void FingerprintingProtectionWebContentsHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!WillCreateNewThrottleManager(*navigation_handle)) {
-    return;
+  if (IsRootNavigationToNewDocument(*navigation_handle)) {
+    CreateThrottleManagerForNavigation(navigation_handle);
   }
+}
 
+void FingerprintingProtectionWebContentsHelper::
+    CreateThrottleManagerForNavigation(
+        content::NavigationHandle* navigation_handle) {
   std::unique_ptr<ThrottleManager> new_manager =
       ThrottleManager::CreateForNewPage(dealer_handle_.get(), *this,
                                         *navigation_handle, is_incognito_);
@@ -325,7 +329,7 @@ void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
       !navigation_handle->IsSameDocument() &&
       navigated_frames_.insert(navigation_handle->GetFrameTreeNodeId()).second;
 
-  if (WillCreateNewThrottleManager(*navigation_handle)) {
+  if (IsRootNavigationToNewDocument(*navigation_handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(
             *navigation_handle);

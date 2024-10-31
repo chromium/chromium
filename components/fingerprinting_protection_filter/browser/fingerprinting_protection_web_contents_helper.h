@@ -173,6 +173,13 @@ class FingerprintingProtectionWebContentsHelper
   // set.
   base::flat_set<raw_ptr<ThrottleManager, CtnExperimental>> throttle_managers_;
 
+  // Called when a navigation starts. Creates a new throttle manager for the
+  // navigation. Should only be called for a navigation in the subresource
+  // filter root that's not a same-document navigation or a page-activation
+  // navigation.
+  void CreateThrottleManagerForNavigation(
+      content::NavigationHandle* navigation_handle);
+
   bool is_subresource_blocked_ = false;
 
   base::ObserverList<FingerprintingProtectionObserver>::Unchecked
