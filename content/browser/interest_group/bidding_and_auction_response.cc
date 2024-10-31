@@ -251,7 +251,8 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
 
   base::Value::Dict* triggered_updates = input_dict->FindDict("updateGroups");
-  if (triggered_updates) {
+  if (base::FeatureList::IsEnabled(features::kEnableBandATriggeredUpdates) &&
+      triggered_updates) {
     for (const auto owner_groups : *triggered_updates) {
       url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
       auto it = group_names.find(owner);
