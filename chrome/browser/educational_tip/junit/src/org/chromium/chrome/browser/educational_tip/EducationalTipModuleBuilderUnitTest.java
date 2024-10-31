@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -22,12 +23,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
@@ -41,11 +44,17 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
+    @Mock private ObservableSupplier<Profile> mProfileSupplier;
+    @Mock private Profile mProfile;
 
     private EducationalTipModuleBuilder mModuleBuilder;
 
     @Before
     public void setUp() {
+        when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
+        when(mProfileSupplier.hasValue()).thenReturn(true);
+        when(mProfileSupplier.get()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mModuleBuilder = new EducationalTipModuleBuilder(mActionDelegate);
     }
 

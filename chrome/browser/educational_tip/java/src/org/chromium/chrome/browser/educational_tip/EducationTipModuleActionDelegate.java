@@ -8,7 +8,9 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** The delegate to provide actions for the educational tips module. */
@@ -17,6 +19,10 @@ public interface EducationTipModuleActionDelegate {
     /** Gets the application context. */
     @NonNull
     Context getContext();
+
+    /** Gets the profile supplier. */
+    @NonNull
+    ObservableSupplier<Profile> getProfileSupplier();
 
     /** Gets the instance of {@link BottomSheetController}. */
     @NonNull

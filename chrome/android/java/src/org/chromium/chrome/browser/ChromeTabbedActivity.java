@@ -2356,6 +2356,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             @NonNull
             @Override
+            public ObservableSupplier<Profile> getProfileSupplier() {
+                return mTabModelProfileSupplier;
+            }
+
+            @NonNull
+            @Override
             public BottomSheetController getBottomSheetController() {
                 return mRootUiCoordinator.getBottomSheetController();
             }
