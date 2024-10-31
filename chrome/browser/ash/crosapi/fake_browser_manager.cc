@@ -65,20 +65,8 @@ FakeBrowserManager::FakeBrowserManager()
 
 FakeBrowserManager::~FakeBrowserManager() = default;
 
-void FakeBrowserManager::SignalMojoDisconnected() {
-  OnMojoDisconnected();
-}
-
-void FakeBrowserManager::StartRunning() {
-  SetState(State::RUNNING);
-}
-
 void FakeBrowserManager::StopRunning() {
   SetState(State::STOPPED);
-}
-
-void FakeBrowserManager::InitializeAndStartIfNeeded() {
-  StartRunning();
 }
 
 void FakeBrowserManager::OnSessionStateChanged() {}

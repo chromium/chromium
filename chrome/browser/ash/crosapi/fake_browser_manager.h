@@ -7,7 +7,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 
 namespace crosapi {
 
@@ -20,19 +19,9 @@ class FakeBrowserManager : public BrowserManager {
 
   ~FakeBrowserManager() override;
 
-  // Simulates crosapi mojo disconnection event observed.
-  void SignalMojoDisconnected();
-
-  // Sets the state of `BrowserManager` to `Running`, and triggers all
-  // registered observers.
-  void StartRunning();
-
   // Sets the state of `BrowserManager` to `Stopped`, and triggers all
   // registered observers.
   void StopRunning();
-
-  // BrowserManager:
-  void InitializeAndStartIfNeeded() override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;

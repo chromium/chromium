@@ -667,8 +667,7 @@
                   '|chrome/browser/ash/crosapi/browser_loader' \
                   '|chrome/browser/ash/crosapi/lacros_selection_loader' \
                   '|chrome/browser/ash/crosapi/rootfs_lacros_loader' \
-                  '|chrome/browser/ash/crosapi/stateful_lacros_loader' \
-                  '|chrome/browser/ash/crosapi/browser_launcher'
+                  '|chrome/browser/ash/crosapi/stateful_lacros_loader'
     },
     'browser_params': {
       'filepath': 'chromeos/startup/browser_init_params'\

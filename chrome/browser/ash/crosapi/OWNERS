@@ -1,6 +1,5 @@
 file://chromeos/LACROS_OWNERS
 
-per-file browser_launcher*.*=andreaorru@chromium.org
 per-file browser_manager*.*=andreaorru@chromium.org
 
 per-file browser_data_back_migrator*.*=janagrill@google.com,vsavu@google.com

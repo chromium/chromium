@@ -57,7 +57,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
-#include "chrome/browser/ash/crosapi/browser_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -137,11 +136,6 @@ constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
-
-void SetLaunchOnLoginPref(bool launch_on_login) {
-  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
-      browser_util::kLaunchOnLoginPref, launch_on_login);
-}
 
 bool GetLaunchOnLoginPref() {
   return ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
@@ -283,16 +277,12 @@ BrowserManager::~BrowserManager() {
     session_manager::SessionManager::Get()->RemoveObserver(this);
   }
 
-  // Try to kill the lacros-chrome binary.
-  browser_launcher_.TriggerTerminate(/*exit_code=*/0);
-  SetState(State::WAITING_FOR_MOJO_DISCONNECTED);
-
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
 bool BrowserManager::IsRunning() const {
-  return state_ == State::RUNNING;
+  return false;
 }
 
 void BrowserManager::NewWindow(bool incognito,
@@ -302,10 +292,6 @@ void BrowserManager::NewWindow(bool incognito,
   PerformOrEnqueue(BrowserAction::NewWindow(
       incognito, should_trigger_session_restore, target_display_id,
       ash::desks_util::GetActiveDeskLacrosProfileId()));
-}
-
-void BrowserManager::OpenForFullRestore(bool skip_crash_restore) {
-  PerformOrEnqueue(BrowserAction::OpenForFullRestore(skip_crash_restore));
 }
 
 void BrowserManager::NewGuestWindow() {
@@ -437,23 +423,6 @@ void BrowserManager::Shutdown() {
   UpdateKeepAliveInBrowserIfNecessary(false);
   shutdown_requested_ = true;
   pending_actions_.Clear();
-  browser_launcher_.Shutdown();
-
-  // The lacros-chrome process may have already been terminated as the result of
-  // a previous mojo pipe disconnection in `OnMojoDisconnected()` and not yet
-  // restarted. If, on the other hand, process is alive, terminate it now.
-  if (browser_launcher_.TriggerTerminate(/*exit_code=*/0)) {
-    LOG(WARNING) << "Ash-chrome shutdown initiated. Terminating lacros-chrome";
-    SetState(State::WAITING_FOR_PROCESS_TERMINATED);
-
-    // Synchronously post a shutdown blocking task that waits for lacros-chrome
-    // to cleanly exit. Terminate() will eventually result in a callback into
-    // OnMojoDisconnected(), however this resolves asynchronously and there is a
-    // risk that ash exits before this is called.
-    // The 2.5s wait for a successful lacros exit stays below the 3s timeout
-    // after which ash is forcefully terminated by the session_manager.
-    EnsureLacrosChromeTermination(base::Milliseconds(2500));
-  }
 }
 
 void BrowserManager::SetState(State state) {
@@ -562,56 +531,17 @@ void BrowserManager::OnBrowserServiceConnected(
     mojo::RemoteSetElementId mojo_id,
     mojom::BrowserService* browser_service,
     uint32_t browser_service_version) {
-  if (id != crosapi_id_) {
-    // This BrowserService is unrelated to this instance. Skipping.
-    return;
-  }
-
-  is_terminated_ = false;
-
-  DCHECK(!browser_service_.has_value());
-  browser_service_ =
-      BrowserServiceInfo{mojo_id, browser_service, browser_service_version};
-
-  base::UmaHistogramMediumTimes("ChromeOS.Lacros.StartTime",
-                                base::TimeTicks::Now() - lacros_launch_time_);
-
-  // Set the launch-on-login pref every time lacros-chrome successfully starts,
-  // instead of once during ash-chrome shutdown, so we have the right value
-  // even if ash-chrome crashes.
-  SetLaunchOnLoginPref(true);
-  LOG(WARNING) << "Connection to lacros-chrome is established.";
-
-  DCHECK_EQ(state_, State::STARTING);
-  SetState(State::RUNNING);
-
-  // There can be a chance that keep_alive status is updated between the
-  // process launching timing (where initial_keep_alive is set) and the
-  // crosapi mojo connection timing (i.e., this function).
-  // So, send it to lacros-chrome to update to fill the possible gap.
-  UpdateKeepAliveInBrowserIfNecessary(!keep_alive_features_.empty());
-
-  while (!pending_actions_.IsEmpty()) {
-    PerformAction(pending_actions_.Pop());
-    DCHECK_EQ(state_, State::RUNNING);
-  }
+  NOTREACHED();
 }
 
 void BrowserManager::OnBrowserServiceDisconnected(
     CrosapiId id,
     mojo::RemoteSetElementId mojo_id) {
-  // No need to check CrosapiId here, because |mojo_id| is unique within a
-  // process.
-  if (browser_service_.has_value() && browser_service_->mojo_id == mojo_id) {
-    browser_service_.reset();
-  }
+  NOTREACHED();
 }
 
 void BrowserManager::OnBrowserRelaunchRequested(CrosapiId id) {
-  if (id != crosapi_id_) {
-    return;
-  }
-  relaunch_requested_ = true;
+  NOTREACHED();
 }
 
 void BrowserManager::OnCoreConnected(policy::CloudPolicyCore* core) {}
@@ -624,47 +554,6 @@ void BrowserManager::OnCoreDisconnecting(policy::CloudPolicyCore* core) {}
 
 void BrowserManager::OnCoreDestruction(policy::CloudPolicyCore* core) {
   core->RemoveObserver(this);
-}
-
-void BrowserManager::OnMojoDisconnected() {
-  LOG(WARNING)
-      << "Mojo to lacros-chrome is disconnected. Terminating lacros-chrome";
-  SetState(State::WAITING_FOR_PROCESS_TERMINATED);
-  EnsureLacrosChromeTermination(base::Seconds(5));
-  for (auto& observer : observers_) {
-    observer.OnMojoDisconnected();
-  }
-}
-
-void BrowserManager::EnsureLacrosChromeTermination(base::TimeDelta timeout) {
-  // This may be called following a synchronous termination in `Shutdown()` or
-  // when the mojo pipe with the lacros-chrome process has disconnected. Early
-  // return if already handling lacros-chrome termination.
-  if (!browser_launcher_.IsProcessValid()) {
-    return;
-  }
-  CHECK_EQ(state_, State::WAITING_FOR_PROCESS_TERMINATED);
-
-  browser_service_.reset();
-  crosapi_id_.reset();
-  browser_launcher_.EnsureProcessTerminated(
-      base::BindOnce(&BrowserManager::OnLacrosChromeTerminated,
-                     weak_factory_.GetWeakPtr()),
-      timeout);
-}
-
-void BrowserManager::OnLacrosChromeTerminated() {
-  CHECK(state_ == State::WAITING_FOR_PROCESS_TERMINATED ||
-        state_ == State::WAITING_FOR_MOJO_DISCONNECTED);
-  LOG(WARNING) << "Lacros-chrome is terminated";
-  is_terminated_ = true;
-  SetState(State::STOPPED);
-
-  if (relaunch_requested_) {
-    pending_actions_.Push(
-        BrowserAction::OpenForFullRestore(/*skip_crash_restore=*/true));
-  }
-  StartIfNeeded();
 }
 
 void BrowserManager::OnSessionStateChanged() {
@@ -914,44 +803,12 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
                                     mojom::CreationResult::kBrowserNotRunning);
       return;
 
-    case State::WAITING_FOR_MOJO_DISCONNECTED:
-    case State::WAITING_FOR_PROCESS_TERMINATED:
-      LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
-      pending_actions_.PushOrCancel(std::move(action),
-                                    mojom::CreationResult::kBrowserNotRunning);
-      return;
-
-    case State::PREPARING_FOR_LAUNCH:
-      LOG(WARNING) << "lacros-chrome is preparing for launch";
-      pending_actions_.PushOrCancel(std::move(action),
-                                    mojom::CreationResult::kBrowserNotRunning);
-      return;
-
-    case State::STARTING:
-      LOG(WARNING) << "lacros-chrome is in the process of launching";
-      pending_actions_.PushOrCancel(std::move(action),
-                                    mojom::CreationResult::kBrowserNotRunning);
-      return;
-
     case State::STOPPED:
       DCHECK(!IsKeepAliveEnabled());
       DCHECK(pending_actions_.IsEmpty());
       pending_actions_.PushOrCancel(std::move(action),
                                     mojom::CreationResult::kBrowserNotRunning);
       StartIfNeeded();
-      return;
-
-    case State::RUNNING:
-      if (!browser_service_.has_value()) {
-        LOG(ERROR) << "BrowserService was disconnected";
-        // We expect that OnMojoDisconnected will get called very soon, which
-        // will transition us to STOPPED state. Hence it's okay to enqueue the
-        // action.
-        pending_actions_.PushOrCancel(
-            std::move(action), mojom::CreationResult::kServiceDisconnected);
-        return;
-      }
-      PerformAction(std::move(action));
       return;
   }
 }

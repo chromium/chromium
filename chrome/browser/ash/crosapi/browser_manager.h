@@ -21,7 +21,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_action_queue.h"
-#include "chrome/browser/ash/crosapi/browser_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_manager_feature.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
@@ -135,11 +134,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // startup URLs, etc). Otherwise, don't restore the session and instead open a
   // new window with the default blank tab.
   void NewWindow(bool incognito, bool should_trigger_session_restore);
-
-  // Performs a full restore of the lacros browser. This must be done after
-  // Lacros has been launched from a background state. If `skip_crash_restore`
-  // is true lacros will perform a full restore and skip any restore prompts.
-  void OpenForFullRestore(bool skip_crash_restore);
 
   // NOTE on callbacks:
   // An action's callback (e.g. the last parameter to NewWindowForDetachingTab
@@ -288,47 +282,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
     // Lacros-chrome is loaded and ready for launching.
     STOPPED,
-
-    // Params for lacros-chrome are parepared on a background thread.
-    PREPARING_FOR_LAUNCH,
-
-    // Lacros-chrome is launching.
-    STARTING,
-
-    // Mojo connection to lacros-chrome is established so, it's in
-    // the running state.
-    RUNNING,
-
-    // Following two states represent the Lacros-chrome termination related
-    // state. There are two types of Lacros-chrome termination. It proceeds in
-    // the following ways from Ash perspective.
-    //
-    // Ash initiated termination:
-    // 1. Ash requests Lacros to terminate.
-    // 2. Wait for mojo disconnection. (NOTE: If Ash is shutdown, we skip this
-    // step since the main message loop may be stopped before receiving mojo
-    // disconnection.)
-    // 3. Wait for the process to be terminated.
-    // The state should be set to WAITING_FOR_MOJO_DISCONNECTED on 1, set to
-    // WAITING_FOR_PROCESS_TERMINATED on 2 completed and then move forward to
-    // the next task scheduled after the termination on 3 completed.
-    // If Ash is shutdown, we skip the step 2, so we immediately enter
-    // WAITING_FOR_PROCESS_TERMINATED state on 1.
-    //
-    // Lacros initiated termination:
-    // 1. Ash receives mojo disconnection.
-    // 2. Wait for the process to be terminated
-    //
-    // Lacros-chrome is requested to terminate from Ash.
-    WAITING_FOR_MOJO_DISCONNECTED,
-
-    // Mojo connection is disconnected and Lacros-chrome is being terminated
-    // soon.
-    // Waiting for the process to be terminated. This is usually set after
-    // WAITING_FOR_MOJO_DISCONNECTED on mojo disconnected except for the
-    // scenario when Ash is shutdown, in other word, when Ash skips
-    // WAITING_FOR_MOJO_DISCONNECTED phase.
-    WAITING_FOR_PROCESS_TERMINATED,
   };
   // Changes |state| value and potentially notify observers of the change.
   void SetState(State state);
@@ -345,17 +298,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                                  uint32_t browser_service_version) override;
   void OnBrowserServiceDisconnected(CrosapiId id,
                                     mojo::RemoteSetElementId mojo_id) override;
-
-  // Called when the Mojo connection to lacros-chrome is disconnected. It may be
-  // "just a Mojo error" or "lacros-chrome crash". This method posts a
-  // shutdown-blocking async task that waits lacros-chrome to exit, giving it a
-  // chance to gracefully exit. The task will send a terminate signal to
-  // lacros-chrome if the process has not terminated within the graceful
-  // shutdown window.
-  void OnMojoDisconnected();
-
-  // Called when lacros-chrome is terminated and successfully wait(2)ed.
-  void OnLacrosChromeTerminated();
 
   // ID for the current Crosapi connection.
   // Available only when lacros-chrome is running.
@@ -443,20 +385,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void StartIfNeeded();
 
-  // This may be called synchronously by the BrowserManager following a
-  // Terminate() signal during shutdown, or following a call to
-  // OnMojoDisconnected(). This posts a shutdown blocking task that waits for
-  // lacros-chrome to cleanly exit for `timeout` duration before forcefully
-  // killing the process.
-  void EnsureLacrosChromeTermination(base::TimeDelta timeout);
-
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
-
-  // Called on launch process completed.
-  void OnLaunchComplete(
-      base::expected<BrowserLauncher::LaunchResults,
-                     BrowserLauncher::LaunchFailureReason> launch_results);
 
   // BrowserServiceHostObserver:
   void OnBrowserRelaunchRequested(CrosapiId id) override;
@@ -532,8 +462,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
 
-  crosapi::BrowserLauncher browser_launcher_;
-
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
   // Path to the lacros-chrome disk image directory.
@@ -545,16 +473,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Time when the lacros process was launched.
   base::TimeTicks lacros_launch_time_;
 
-  // Remembers the request from Lacros-chrome whether it needs to be
-  // relaunched. Reset on new process start in any cases.
-  bool relaunch_requested_ = false;
-
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
-
-  // Tracks whether lacros-chrome is terminated.
-  bool is_terminated_ = false;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when
