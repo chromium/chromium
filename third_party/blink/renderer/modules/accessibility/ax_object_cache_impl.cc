@@ -3134,8 +3134,6 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
   // Upon exiting this function, listen for tree updates again.
   absl::Cleanup lifecycle_returns_to_queueing_updates = [this] {
     lifecycle_.EnsureStateAtMost(AXObjectCacheLifecycle::kDeferTreeUpdates);
-    // TODO(https://crbug.com/372508699): Remove after bug fixed.
-    can_mark_all_dirty_ = true;
   };
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
@@ -3162,7 +3160,6 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       // If MarkDocumentDirty() was called, do it now, so that the entire tree
       // is invalidated before updating it.
       if (mark_all_dirty_) {
-        EnsureFocusedObject();
         MarkDocumentDirtyWithCleanLayout();
       }
 
@@ -3201,9 +3198,6 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
 #endif
 
       mark_all_dirty_ = false;
-      // TODO(https://crbug.com/372508699): Remove after bug fixed.
-      // Do not mark document dirty after the point that we expect to.
-      can_mark_all_dirty_ = false;
 
       // All tree updates have been processed.
       DUMP_WILL_BE_CHECK(!IsMainDocumentDirty());
@@ -3217,6 +3211,14 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       relation_cache_->ProcessUpdatesWithCleanLayout();
 
       EnsureFocusedObject();
+      if (mark_all_dirty_) {
+        // In some cases, EnsureFocusedObject() causes bad aria-hidden subtrees
+        // to be removed, if they contained the focus. This can in turn lead to
+        // marking the entire document dirty if a modal dialog or focus within
+        // the modal dialog is removed.
+        MarkDocumentDirtyWithCleanLayout();
+        mark_all_dirty_ = false;
+      }
 
       CHECK(tree_update_callback_queue_main_.empty());
       CHECK(tree_update_callback_queue_popup_.empty());
@@ -5000,8 +5002,6 @@ void AXObjectCacheImpl::MarkSubtreeDirty(Node* node) {
 
 void AXObjectCacheImpl::MarkDocumentDirty() {
   CHECK(!IsFrozen());
-  // TODO(https://crbug.com/372508699): Remove after bug fixed.
-  DUMP_WILL_BE_CHECK(can_mark_all_dirty_);
 
   mark_all_dirty_ = true;
 
