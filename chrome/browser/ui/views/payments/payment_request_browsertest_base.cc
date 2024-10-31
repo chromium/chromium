@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -35,7 +36,6 @@
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/ui/address_combobox_model.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/payment_prefs.h"
@@ -739,16 +739,7 @@ void PaymentRequestBrowserTestBase::SetComboboxValue(
 
 void PaymentRequestBrowserTestBase::SelectBillingAddress(
     const std::string& billing_address_id) {
-  views::Combobox* address_combobox(static_cast<views::Combobox*>(
-      dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
-          autofill::ADDRESS_HOME_LINE1))));
-  ASSERT_NE(address_combobox, nullptr);
-  autofill::AddressComboboxModel* address_combobox_model(
-      static_cast<autofill::AddressComboboxModel*>(
-          address_combobox->GetModel()));
-  address_combobox->SetSelectedRow(
-      address_combobox_model->GetIndexOfIdentifier(billing_address_id));
-  address_combobox->OnBlur();
+  NOTIMPLEMENTED();
 }
 
 bool PaymentRequestBrowserTestBase::IsEditorTextfieldInvalid(

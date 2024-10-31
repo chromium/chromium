@@ -268,12 +268,6 @@
   <message name="IDS_AUTOFILL_LOADING_REGIONS" desc="The string to display in the regions combobox while loading the region data.">
     Loading...
   </message>
-  <message name="IDS_AUTOFILL_SELECT" desc="The string to display in comboboxes when nothing got selected yet.">
-    Select
-  </message>
-  <message name="IDS_AUTOFILL_NO_SAVED_ADDRESS" desc="The string to display in comboboxes when no addresses are available.">
-    No saved addresses
-  </message>
 
   <!-- Autofill settings -->
   <message name="IDS_AUTOFILL_ADDRESSES" desc="Title for the list of addresses that chrome has saved for use in filling in forms.">
