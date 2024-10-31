@@ -4,6 +4,9 @@
 
 package org.chromium.components.search_engines;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -16,6 +19,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+
+import static org.chromium.base.test.util.Matchers.fulfilledPromise;
+import static org.chromium.base.test.util.Matchers.rejectedPromise;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
@@ -84,7 +90,7 @@ public class SearchEngineChoiceServiceUnitTest {
         var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate() {});
 
         // The default implementation should be set to not trigger anything disruptive.
-        assertTrue(service.getDeviceCountry().isRejected());
+        assertThat(service.getDeviceCountry(), is(rejectedPromise()));
 
         assertFalse(service.isDeviceChoiceDialogEligible());
         assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
@@ -105,7 +111,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         if (mIsClayBlockingEnabled) {
             // It should have generally sensible values and make the dialog be shown.
-            assertTrue(service.getDeviceCountry().isFulfilled());
+            assertThat(service.getDeviceCountry(), is(fulfilledPromise()));
 
             assertTrue(service.isDeviceChoiceDialogEligible());
 
@@ -114,7 +120,7 @@ public class SearchEngineChoiceServiceUnitTest {
             assertTrue(supplier.get());
         } else {
             // Same as the abstract delegate.
-            assertTrue(service.getDeviceCountry().isRejected());
+            assertThat(service.getDeviceCountry(), is(rejectedPromise()));
 
             assertFalse(service.isDeviceChoiceDialogEligible());
 
@@ -140,12 +146,12 @@ public class SearchEngineChoiceServiceUnitTest {
 
         var service = new SearchEngineChoiceService(mDelegate);
 
-        assertTrue(service.getDeviceCountry().isRejected());
+        assertThat(service.getDeviceCountry(), is(rejectedPromise()));
         verify(mDelegate, times(1)).getDeviceCountry();
 
         // Even if it changes, the device country is not fetched again afterwards.
         reset(mDelegate);
-        assertTrue(service.getDeviceCountry().isRejected());
+        assertThat(service.getDeviceCountry(), is(rejectedPromise()));
         verifyNoInteractions(mDelegate);
     }
 
@@ -156,9 +162,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
         var service = new SearchEngineChoiceService(mDelegate);
 
-        var deviceCountryPromise = service.getDeviceCountry();
-        assertTrue(deviceCountryPromise.isFulfilled());
-        assertEquals("countryCode", deviceCountryPromise.getResult());
+        assertThat(service.getDeviceCountry(), is(fulfilledPromise(equalTo("countryCode"))));
         verify(mDelegate, times(1)).getDeviceCountry();
 
         // Even if it changes, the device country is not fetched again afterwards.

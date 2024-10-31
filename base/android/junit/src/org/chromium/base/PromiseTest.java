@@ -4,10 +4,16 @@
 
 package org.chromium.base;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import static org.chromium.base.test.util.Matchers.fulfilledPromise;
+import static org.chromium.base.test.util.Matchers.pendingPromise;
+import static org.chromium.base.test.util.Matchers.rejectedPromise;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -304,10 +310,10 @@ public class PromiseTest {
                         .andFinally(() -> value.set(value.get() * 10))
                         .then(String::length);
         assertEquals(0, value.get());
-        assertTrue(chainedPromise.isPending());
+        assertThat(chainedPromise, is(pendingPromise()));
 
         promise.fulfill(123);
-        assertTrue(chainedPromise.isFulfilled());
+        assertThat(chainedPromise, is(fulfilledPromise()));
         assertEquals(10, value.get());
         assertEquals(3, chainedPromise.getResult().intValue());
     }
@@ -323,11 +329,11 @@ public class PromiseTest {
                         .andFinally(() -> value.set(value.get() * 10))
                         .then(String::length);
         assertEquals(0, value.get());
-        assertTrue(chainedPromise.isPending());
+        assertThat(chainedPromise, is(pendingPromise()));
 
         promise.reject();
         assertEquals(10, value.get()); // Both `andFinally()` still run.
-        assertTrue(chainedPromise.isRejected());
+        assertThat(chainedPromise, is(rejectedPromise()));
     }
 
     /** Convenience method that returns a Callback that does nothing with its result. */
