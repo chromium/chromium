@@ -48,10 +48,7 @@ if (is_component_build) {
 # This config should be applied to targets using generated code from the proto
 # compiler. It sets up the include directories properly.
 config("using_proto") {
-  include_dirs = [
-    "src",
-    "$root_gen_dir/protoc_out",
-  ]
+  include_dirs = [ "src" ]
 }
 
 config("allow_deprecated_proto_fields") {
