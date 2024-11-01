@@ -5845,34 +5845,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Media.Video.Capture.Mac.CameraSystemPermission.FixedTime.SinceFirstFailure"
-    units="ms" expires_after="2023-07-01">
-  <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The time from the first camera access failure due to blocked system
-    permission before the last browser restart to startup after browser restart.
-    Logged once at browser startup if the system permission then is allowed.
-    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
-    be missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.Video.Capture.Mac.CameraSystemPermission.FixedTime.SinceLastFailure"
-    units="ms" expires_after="2023-07-01">
-  <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The time from the last camera access failure due to blocked system
-    permission before the last browser restart to startup after browser restart.
-    Logged once at browser startup if the system permission then is allowed.
-    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.Startup"
     enum="SystemMediaCapturePermission" expires_after="2024-02-04">
   <owner>toprice@chromium.org</owner>
@@ -5880,21 +5852,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The Mac system permission state for camera. Logged once at browser startup.
     For more information on the values, see
-    https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
-    Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
-    be missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.Video.Capture.Mac.CameraSystemPermission.StartupAfterFailure"
-    enum="SystemMediaCapturePermission" expires_after="2023-07-01">
-  <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The Mac system permission state for camera. Logged once at browser startup
-    if there was a failure accessing the camera due to blocked system permission
-    before the last browser restart. For more information on the values, see
     https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
     Warning: this histogram was expired from 2020-03-01 to 2022-03-09; data may
     be missing.
