@@ -51,7 +51,15 @@ struct CONTENT_EXPORT AdditionalBidDecodeResult {
 // `auction` will only be used to populate the `auction` field of the
 // returned result's `bid`, so may be null for tests.
 //
-// `auction_nonce` is the expected nonce for the bid.
+// `auction_nonce_from_header` is the expected `auctionNonce` for the bid (if
+// the bid specifies an `auctionNonce`), or an input into the calculation of the
+// expected `bidNonce` of the bid (if the bid specifies a `bidNonce`).
+//
+// `seller_nonce_from_header`, if present, is used as an input into the
+// calculation of the expected `bidNonce` of the bid.
+//
+// `interest_group_buyers` is the set of interest group owners participating in
+// the auction, from the auction config.
 //
 // `seller` is expected seller for the auction the bid is to participate in.
 //
@@ -63,12 +71,14 @@ struct CONTENT_EXPORT AdditionalBidDecodeResult {
 //
 // On failure, returns an error message.
 CONTENT_EXPORT base::expected<AdditionalBidDecodeResult, std::string>
-DecodeAdditionalBid(InterestGroupAuction* auction,
-                    const base::Value& bid_in,
-                    const base::Uuid& auction_nonce,
-                    const base::flat_set<url::Origin>& interest_group_buyers,
-                    const url::Origin& seller,
-                    base::optional_ref<const url::Origin> top_level_seller);
+DecodeAdditionalBid(
+    InterestGroupAuction* auction,
+    const base::Value& bid_in,
+    const base::Uuid& auction_nonce_from_header,
+    base::optional_ref<const std::string> seller_nonce_from_header,
+    const base::flat_set<url::Origin>& interest_group_buyers,
+    const url::Origin& seller,
+    base::optional_ref<const url::Origin> top_level_seller);
 
 struct CONTENT_EXPORT SignedAdditionalBidSignature {
   blink::InterestGroup::AdditionalBidKey key;

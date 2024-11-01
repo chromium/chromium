@@ -306,6 +306,18 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//content/services/auction_worklet/public/mojom/private_aggregation_request.mojom:BaseValue) -->
 
+<!-- LINT.IfChange(AdditionalBidHeaderType) -->
+
+<enum name="AdditionalBidHeaderType">
+  <int value="0" label="Auction Nonce"/>
+  <int value="1" label="Auction Nonce and Seller Nonce"/>
+  <int value="2" label="Malformed header (wrong number of colons)"/>
+  <int value="3" label="Malformed header (wrong auction nonce size)"/>
+  <int value="4" label="Malformed header (wrong seller nonce size)"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/ad_auction_headers_util.cc:AdditionalBidHeaderType) -->
+
 <enum name="AdditionalBidResult">
   <int value="0" label="Sent for Scoring"/>
   <int value="1" label="Negative Targeted"/>

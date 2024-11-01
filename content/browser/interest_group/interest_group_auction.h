@@ -970,17 +970,21 @@ class CONTENT_EXPORT InterestGroupAuction
   // `num_scoring_dependencies_`.
   void DecodeAdditionalBidsIfReady();
 
-  // Processes a singled signed additional bid.
+  // Processes a single signed additional bid.
   void HandleDecodedSignedAdditionalBid(
+      std::optional<std::string> seller_nonce,
       data_decoder::DataDecoder::ValueOrError result);
 
   // Processes payload of a single additionalBids entry.
   // `signatures` are the signatures it was supposedly signed with.
   // `valid_signatures` are the indices of signatures in `signatures` that
-  // actually verify.
+  //   actually verify.
+  // `seller_nonce`, if provided in the additional bid response header, is used
+  //   to validate the bidNonce in the additional bid.
   void HandleDecodedAdditionalBid(
       const std::vector<SignedAdditionalBidSignature>& signatures,
       const std::vector<size_t>& valid_signatures,
+      std::optional<std::string> seller_nonce,
       data_decoder::DataDecoder::ValueOrError result);
 
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
@@ -1302,8 +1306,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // finds. This is only populated when encoded_signed_additional_bids_ is.
   base::flat_set<url::Origin> interest_group_buyers_;
 
-  // Base64-encoded signed additional bid entries.
-  std::vector<std::string> encoded_signed_additional_bids_;
+  // Base64-encoded signed additional bid entries, with metadata.
+  std::vector<SignedAdditionalBidWithMetadata> encoded_signed_additional_bids_;
 
   // This needs pointer stability for the BidState*.
   std::vector<std::unique_ptr<BidState>> bid_states_for_additional_bids_;

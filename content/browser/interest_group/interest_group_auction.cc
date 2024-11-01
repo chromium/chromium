@@ -4947,9 +4947,10 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
       get_data_decoder_callback_.Run(config_->seller);
 
   num_scoring_dependencies_ += encoded_signed_additional_bids_.size();
-  for (const auto& encoded_signed_bid : encoded_signed_additional_bids_) {
+  for (auto& encoded_signed_bid : encoded_signed_additional_bids_) {
     std::string signed_additional_bid_data;
-    if (!base::Base64Decode(encoded_signed_bid, &signed_additional_bid_data,
+    if (!base::Base64Decode(encoded_signed_bid.signed_additional_bid,
+                            &signed_additional_bid_data,
                             base::Base64DecodePolicy::kForgiving)) {
       HandleAdditionalBidError(
           AdditionalBidResult::kRejectedDueToInvalidBase64,
@@ -4964,13 +4965,15 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
     data_decoder->ParseJson(
         signed_additional_bid_data,
         base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(encoded_signed_bid.seller_nonce)));
   }
   encoded_signed_additional_bids_.clear();
   currently_decoding_additional_bids_ = true;
 }
 
 void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
+    std::optional<std::string> seller_nonce,
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
@@ -5005,12 +5008,13 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
       base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(maybe_signed_additional_bid->signatures),
-                     std::move(valid_signatures)));
+                     std::move(valid_signatures), std::move(seller_nonce)));
 }
 
 void InterestGroupAuction::HandleDecodedAdditionalBid(
     const std::vector<SignedAdditionalBidSignature>& signatures,
     const std::vector<size_t>& valid_signatures,
+    std::optional<std::string> seller_nonce,
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
@@ -5024,7 +5028,7 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
       DecodeAdditionalBid(
           this, result.value(),
           config_->non_shared_params.auction_nonce.value(),
-          interest_group_buyers_, config_->seller,
+          std::move(seller_nonce), interest_group_buyers_, config_->seller,
           parent_
               ? base::optional_ref<const url::Origin>(parent_->config_->seller)
               : base::optional_ref<const url::Origin>(std::nullopt));

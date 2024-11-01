@@ -45,8 +45,8 @@ std::string GenerateSignedAdditionalBidHeader(
     const std::vector<const uint8_t*>& private_keys,
     const std::vector<std::string>& base64_public_keys);
 
-// Generates just the payload portion (e.g. stuff after Nonce:) of
-// Ad-Auction-Additional-Bid.
+// Generates just the payload portion (e.g. stuff after [Auction Nonce]:[Seller
+// Nonce]) of Ad-Auction-Additional-Bid.
 std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
     SignedAdditionalBidFault inject_fault,
     const std::string& bid_string,
