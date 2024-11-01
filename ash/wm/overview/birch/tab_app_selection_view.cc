@@ -328,27 +328,27 @@ class UserFeedbackView : public views::BoxLayoutView {
         AddChildView(std::make_unique<views::BoxLayoutView>());
     thumb_buttons_container->SetOrientation(
         views::BoxLayout::Orientation::kHorizontal);
-    auto* thumb_up_button =
+    thumb_up_button_ =
         thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
             base::BindOnce(&UserFeedbackView::OnThumbUpButtonPressed,
                            base::Unretained(this)),
             IconButton::Type::kMediumFloating, &kThumbUpIcon,
             l10n_util::GetStringUTF16(
                 IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME),
-            /*is_togglable=*/false, /*has_border=*/false));
-    StyleUtil::SetUpInkDropForButton(thumb_up_button, gfx::Insets(),
+            /*is_togglable=*/true, /*has_border=*/false));
+    StyleUtil::SetUpInkDropForButton(thumb_up_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
 
-    auto* thumb_down_button =
+    thumb_down_button_ =
         thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
             base::BindOnce(&UserFeedbackView::OnThumbDownButtonPressed,
                            base::Unretained(this)),
             IconButton::Type::kMediumFloating, &kThumbDownIcon,
             l10n_util::GetStringUTF16(
                 IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME),
-            /*is_togglable=*/false, /*has_border=*/false));
-    StyleUtil::SetUpInkDropForButton(thumb_down_button, gfx::Insets(),
+            /*is_togglable=*/true, /*has_border=*/false));
+    StyleUtil::SetUpInkDropForButton(thumb_down_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
   }
@@ -359,15 +359,50 @@ class UserFeedbackView : public views::BoxLayoutView {
 
  private:
   void OnThumbUpButtonPressed() {
+    // `thumb_up_button_` should only be toggled one time.
+    // Please note, the `thumb_up_button_` theoratically should be untoggled if
+    // the `thumb_down_button_` is pressed and `thumb_down_button_` should be
+    // untoggle if the `thumb_up_button_` is pressed. For now once
+    // `thumb_down_button_` is pressed, it will exit overview mode. Hence we
+    // don't support un-toggle for now.
+    if (thumb_up_button_->toggled()) {
+      return;
+    }
+
+    // Currently `thumb_up_button_` is set to toggled the first time it's
+    // pressed and remains toggled the the rest of its life time. Hence remove
+    // the hover effect for it the first time it's pressed.
+    StyleUtil::SetUpInkDropForButton(thumb_up_button_, gfx::Insets(),
+                                     /*highlight_on_hover=*/false,
+                                     /*highlight_on_focus=*/false);
+    thumb_up_button_->SetToggled(/*toggled=*/true);
     base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", true);
   }
 
   void OnThumbDownButtonPressed() {
+    // `thumb_down_button_` should only be toggled one time.
+    if (thumb_down_button_->toggled()) {
+      return;
+    }
+
+    // Even overview mode will be ended and `this` will be destroyed after
+    // `thumb_down_button_` is pressed, there's a very short amount time that
+    // both buttons will be shown as toggled. Hence manually set
+    // `thumb_up_button_` untoggled for correct visual effect.
+    if (thumb_up_button_->toggled()) {
+      thumb_up_button_->SetToggled(/*toggled=*/false);
+    }
+
+    thumb_down_button_->SetToggled(/*toggled=*/true);
+    base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", false);
     if (auto* birch_bar_controller = BirchBarController::Get()) {
       birch_bar_controller->ProvideFeedbackForCoral();
     }
-    base::UmaHistogramBoolean("Ash.Birch.Coral.UserFeedback", false);
   }
+
+  // Owned by the views hierarchy.
+  raw_ptr<IconButton> thumb_up_button_;
+  raw_ptr<IconButton> thumb_down_button_;
 };
 
 BEGIN_METADATA(UserFeedbackView)
