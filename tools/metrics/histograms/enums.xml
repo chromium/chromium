@@ -10826,6 +10826,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5153" label="V8AILanguageModel_MaxTokens_AttributeGetter"/>
   <int value="5154" label="V8AILanguageModel_TokensSoFar_AttributeGetter"/>
   <int value="5155" label="V8AILanguageModel_TokensLeft_AttributeGetter"/>
+  <int value="5156" label="SvgContextFillOrStroke"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33748,6 +33749,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="152" label="AudioWorklet"/>
   <int value="153" label="WebMidi"/>
   <int value="154" label="RequestVideoFrameCallback"/>
+  <int value="155" label="SvgContextFillOrStroke"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

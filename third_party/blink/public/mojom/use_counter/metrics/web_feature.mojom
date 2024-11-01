@@ -4527,6 +4527,7 @@ enum WebFeature {
   kV8AILanguageModel_MaxTokens_AttributeGetter = 5153,
   kV8AILanguageModel_TokensSoFar_AttributeGetter = 5154,
   kV8AILanguageModel_TokensLeft_AttributeGetter = 5155,
+  kSvgContextFillOrStroke = 5156,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

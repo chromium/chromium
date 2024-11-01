@@ -2673,6 +2673,7 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
           DCHECK(!paint.resource);
           if (RuntimeEnabledFeatures::SvgContextPaintEnabled()) {
             paint.type = SVGPaintType::kContextFill;
+            state.GetDocument().CountUse(WebFeature::kSvgContextFillOrStroke);
           } else {
             local_identifier_value = nullptr;
           }
@@ -2682,6 +2683,7 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
           DCHECK(!paint.resource);
           if (RuntimeEnabledFeatures::SvgContextPaintEnabled()) {
             paint.type = SVGPaintType::kContextStroke;
+            state.GetDocument().CountUse(WebFeature::kSvgContextFillOrStroke);
           } else {
             local_identifier_value = nullptr;
           }
