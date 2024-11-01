@@ -827,6 +827,8 @@ optimization_guide::proto::AXIntListAttribute IntListAttributeToProto(
     case ax::mojom::IntListAttribute::kIndirectChildIds:
       return optimization_guide::proto::AXIntListAttribute::
           AX_ILA_INDIRECTCHILDIDS;
+    case ax::mojom::IntListAttribute::kActionsIds:
+      return optimization_guide::proto::AXIntListAttribute::AX_ILA_ACTIONSIDS;
     case ax::mojom::IntListAttribute::kControlsIds:
       return optimization_guide::proto::AXIntListAttribute::AX_ILA_CONTROLSIDS;
     case ax::mojom::IntListAttribute::kDetailsIds:

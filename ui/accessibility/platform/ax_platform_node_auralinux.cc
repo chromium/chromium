@@ -152,6 +152,8 @@ constexpr AtkRole kSuperscriptRole = ATK_ROLE_SUPERSCRIPT;
 
 constexpr AtkRole kAtkFootnoteRole = ATK_ROLE_FOOTNOTE;
 
+constexpr std::string kAriaActionsPrefix = "custom";
+
 using GetTypeFunc = GType (*)();
 using GetColumnHeaderCellsFunc = GPtrArray* (*)(AtkTableCell* cell);
 using GetRowHeaderCellsFunc = GPtrArray* (*)(AtkTableCell* cell);
@@ -571,11 +573,31 @@ gboolean DoAction(AtkAction* atk_action, gint index) {
 
   const std::vector<ax::mojom::Action> actions =
       obj->GetDelegate()->GetSupportedActions();
-  g_return_val_if_fail(index < static_cast<gint>(actions.size()), FALSE);
+  const std::vector<int32_t>& aria_actions =
+      obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
+  // Actions can be from Blink for the given markup, or from the aria-actions
+  // attribute defined by the author.
+  g_return_val_if_fail(
+      index < static_cast<gint>(actions.size() + aria_actions.size()), FALSE);
   AXActionData data;
-  data.action = actions[index];
-  return obj->GetDelegate()->AccessibilityPerformAction(data);
+
+  // Handle Blink action.
+  if (index < static_cast<gint>(actions.size())) {
+    data.action = actions[index];
+    return obj->GetDelegate()->AccessibilityPerformAction(data);
+  }
+
+  // index refers to a position in the combined Blink actions and aria-actions
+  // vector. To find the corresponding index in the aria_actions vector,
+  // subtract the number of Blink actions.
+  int32_t aria_action_id = aria_actions[index - actions.size()];
+  if (AXPlatformNodeAuraLinux* aria_action_obj =
+          obj->GetFromNodeID(aria_action_id)) {
+    data.action = ax::mojom::Action::kDoDefault;
+    return aria_action_obj->GetDelegate()->AccessibilityPerformAction(data);
+  }
+  return FALSE;
 }
 
 gint GetNActions(AtkAction* atk_action) {
@@ -587,13 +609,49 @@ gint GetNActions(AtkAction* atk_action) {
   if (!obj)
     return 0;
 
-  return static_cast<gint>(obj->GetDelegate()->GetSupportedActions().size());
+  return static_cast<gint>(
+      obj->GetDelegate()->GetSupportedActions().size() +
+      obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds)
+          .size());
 }
 
 const gchar* GetDescription(AtkAction*, gint) {
   // Not implemented. Right now Orca does not provide this and
   // Chromium is not providing a string for the action description.
   return nullptr;
+}
+
+const gchar* GetLocalizedName(AtkAction* atk_action, gint index) {
+  g_return_val_if_fail(ATK_IS_ACTION(atk_action), nullptr);
+
+  AtkObject* atk_object = ATK_OBJECT(atk_action);
+  AXPlatformNodeAuraLinux* obj =
+      AXPlatformNodeAuraLinux::FromAtkObject(atk_object);
+  if (!obj) {
+    return nullptr;
+  }
+
+  const std::vector<ax::mojom::Action> actions =
+      obj->GetDelegate()->GetSupportedActions();
+  const std::vector<int32_t>& aria_actions =
+      obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  g_return_val_if_fail(
+      index < static_cast<gint>(actions.size() + aria_actions.size()), FALSE);
+
+  // Localized name is only specified for aria-actions, not for Blink actions.
+  if (index < static_cast<gint>(actions.size())) {
+    return nullptr;
+  }
+
+  // index refers to a position in the combined Blink actions and aria-actions
+  // vector. To find the corresponding index in the aria_actions vector,
+  // subtract the number of Blink actions.
+  int32_t aria_action_id = aria_actions[index - actions.size()];
+  AXPlatformNodeAuraLinux* aria_action_obj = obj->GetFromNodeID(aria_action_id);
+
+  aria_action_obj->accessible_name_ = aria_action_obj->GetName();
+  return aria_action_obj->accessible_name_.c_str();
 }
 
 const gchar* GetName(AtkAction* atk_action, gint index) {
@@ -607,13 +665,33 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
 
   const std::vector<ax::mojom::Action> actions =
       obj->GetDelegate()->GetSupportedActions();
-  g_return_val_if_fail(index < static_cast<gint>(actions.size()), nullptr);
+  const std::vector<int32_t>& aria_actions =
+      obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  g_return_val_if_fail(
+      index < static_cast<gint>(actions.size() + aria_actions.size()), FALSE);
 
   if (index == 0 && obj->GetDelegate()->HasDefaultActionVerb()) {
     // If there is a default action, it will always be at index 0.
     return obj->GetDefaultActionName();
   }
-  return ToString(actions[index]);
+
+  // Handle Blink action.
+  if (index < static_cast<gint>(actions.size())) {
+    return ToString(actions[index]);
+  }
+
+  // index refers to a position in the combined Blink actions and aria-actions
+  // vector. To find the corresponding index in the aria_actions vector,
+  // subtract the number of Blink actions.
+  int32_t aria_action_id = aria_actions[index - actions.size()];
+  AXPlatformNodeAuraLinux* aria_action_obj = obj->GetFromNodeID(aria_action_id);
+  std::string html_id =
+      aria_action_obj->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
+  if (html_id.empty()) {
+    ATK_AURALINUX_RETURN_STRING(kAriaActionsPrefix);
+  }
+  ATK_AURALINUX_RETURN_STRING(kAriaActionsPrefix + "#" + html_id);
 }
 
 const gchar* GetKeybinding(AtkAction* atk_action, gint index) {
@@ -642,6 +720,7 @@ void Init(AtkActionIface* iface) {
   iface->do_action = DoAction;
   iface->get_n_actions = GetNActions;
   iface->get_description = GetDescription;
+  iface->get_localized_name = GetLocalizedName;
   iface->get_name = GetName;
   iface->get_keybinding = GetKeybinding;
 }
@@ -3274,6 +3353,16 @@ gfx::NativeViewAccessible AXPlatformNodeAuraLinux::GetOrCreateAtkObject() {
     atk_object_ = CreateAtkObject();
   }
   return atk_object_;
+}
+
+AXPlatformNodeAuraLinux* AXPlatformNodeAuraLinux::GetFromNodeID(
+    int32_t node_id) {
+  if (AXPlatformNode* node = GetDelegate()->GetFromNodeID(node_id)) {
+    if (AtkObject* atk_obj = node->GetNativeViewAccessible()) {
+      return AXPlatformNodeAuraLinux::FromAtkObject(atk_obj);
+    }
+  }
+  return nullptr;
 }
 
 void AXPlatformNodeAuraLinux::OnCheckedStateChanged() {

@@ -95,6 +95,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable aria-colindextext and aria-rowindextext.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AriaRowColIndexText");
+  // Enable aria-actions.
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "AriaActions");
   // Enable CSSReadingFlow, used by AccessibilityCSSReadingFlow.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CSSReadingFlow");
@@ -652,6 +655,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySvgStyleElement) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-style-element.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaActions) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-actions.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaActionsReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-actions-reference-target.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaActionsTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-actions-target-id-change.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

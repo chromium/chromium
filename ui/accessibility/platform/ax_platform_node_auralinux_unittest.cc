@@ -1081,6 +1081,60 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionDoAction) {
   g_object_unref(root_obj);
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionAriaAction) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kActionsIds, {2, 3});
+
+  AXNodeData child1;
+  child1.id = 2;
+  child1.role = ax::mojom::Role::kButton;
+  child1.SetName("close");
+  root.child_ids.push_back(2);
+
+  AXNodeData child2;
+  child2.id = 3;
+  child2.role = ax::mojom::Role::kButton;
+  child2.SetName("open");
+  child2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId, "open-button");
+  root.child_ids.push_back(3);
+
+  Init(root, child1, child2);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+
+  // Root node should have the default 2 actions (kDoDefault and
+  // kShowContextMenu) + 2 actions from aria-actions (child1 and child2).
+  gint number_of_actions = atk_action_get_n_actions(ATK_ACTION(root_obj));
+  EXPECT_EQ(4, number_of_actions);
+
+  // The third action refers to child1.
+  const gchar* action_name = atk_action_get_name(ATK_ACTION(root_obj), 2);
+  const gchar* action_localized_name =
+      atk_action_get_localized_name(ATK_ACTION(root_obj), 2);
+  EXPECT_STREQ("custom", action_name);
+  EXPECT_STREQ("close", action_localized_name);
+  EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 2));
+  EXPECT_EQ(GetRoot()->GetChildAtIndex(0),
+            TestAXNodeWrapper::GetNodeFromLastDefaultAction());
+
+  // The fourth action refers to child2.
+  action_name = atk_action_get_name(ATK_ACTION(root_obj), 3);
+  action_localized_name =
+      atk_action_get_localized_name(ATK_ACTION(root_obj), 3);
+  EXPECT_STREQ("custom#open-button", action_name);
+  EXPECT_STREQ("open", action_localized_name);
+  EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 3));
+  EXPECT_EQ(GetRoot()->GetChildAtIndex(1),
+            TestAXNodeWrapper::GetNodeFromLastDefaultAction());
+
+  g_object_unref(root_obj);
+}
+
 //
 // AtkValue tests
 //

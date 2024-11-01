@@ -484,6 +484,17 @@ void FillSparseAttributes(AXObject& ax_object,
                                    AXValueTypeEnum::String)));
   }
 
+  if (node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds)) {
+    const auto ax_ids = node_data.GetIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kActionsIds);
+    AXObject::AXObjectVector ax_objects;
+    GetObjectsFromAXIDs(ax_object.AXObjectCache(), ax_ids, &ax_objects);
+    properties.emplace_back(
+        CreateRelatedNodeListProperty(AXPropertyNameEnum::Actions, ax_objects,
+                                      html_names::kAriaActionsAttr, ax_object));
+  }
+
   if (node_data.HasIntAttribute(
           ax::mojom::blink::IntAttribute::kActivedescendantId)) {
     AXObject* target =

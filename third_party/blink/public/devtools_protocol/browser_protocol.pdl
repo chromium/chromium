@@ -117,6 +117,7 @@ experimental domain Accessibility
   # - from 'activedescendant' to 'owns' - relationships between elements other than parent/child/sibling.
   type AXPropertyName extends string
     enum
+      actions
       busy
       disabled
       editable

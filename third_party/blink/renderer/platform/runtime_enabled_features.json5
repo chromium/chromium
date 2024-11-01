@@ -393,6 +393,10 @@
       base_feature: "WebAppEnableAppTitle",
     },
     {
+      name: "AriaActions",
+      status: "experimental",
+    },
+    {
       name: "AriaNotify",
       status: "test",
     },

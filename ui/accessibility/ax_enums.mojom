@@ -406,6 +406,8 @@ enum Action {
   // Collapse the collapsible node.
   kCollapse = 4,
 
+  // Used for custom actions in Android window. See kCustomActionIds for
+  // more info.
   kCustomAction = 5,
 
   // Decrement a slider or range control by one step value.
@@ -914,8 +916,8 @@ enum BoolAttribute {
   [MinVersion=2] kHasHiddenOffscreenNodes = 22,
 };
 
-// Next version: 7
-// Next value: 29
+// Next version: 8
+// Next value: 30
 // Note: if changing an IntListAttribute property that stores a relation where
 // the reverse should be computed, be sure to also update
 // kReverseRelationIntListAttributes in AXTree.
@@ -937,6 +939,7 @@ enum IntListAttribute {
   kFlowtoIds = 5,
   kLabelledbyIds = 6,
   kRadioGroupIds = 7,
+  [MinVersion=7]kActionsIds = 29,
 
   // For static text. These int lists must be the same size; they represent
   // the start and end character offset of each marker. Examples of markers

@@ -192,7 +192,7 @@ class AXRelationCache {
   // Get ids that the element points to via aria-labelledby/describedby.
   Vector<AtomicString> GetTextRelationIds(Element& relation_source);
   // Get ids that the element points to via aria-controls, aria-details,
-  // aria-flowto and aria-errormessage.
+  // aria-flowto, aria-errormessage, and aria-actions.
   Vector<AtomicString> GetOtherRelationIds(Element& relation_source);
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;

@@ -1075,11 +1075,13 @@ enum AXBoolAttribute {
 }
 
 // AX IntList attribute enum.
-// Next ID: 29
+// Next ID: 30
 enum AXIntListAttribute {
   AX_ILA_NONE = 0;
 
   AX_ILA_INDIRECTCHILDIDS = 1;
+
+  AX_ILA_ACTIONSIDS = 29;
 
   AX_ILA_CONTROLSIDS = 2;
 

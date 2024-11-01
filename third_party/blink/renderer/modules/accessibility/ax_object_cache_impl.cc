@@ -4256,7 +4256,8 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
           MarkElementDirty(element);
         }
       }
-    } else if (attr_name == html_names::kAriaControlsAttr ||
+    } else if (attr_name == html_names::kAriaActionsAttr ||
+               attr_name == html_names::kAriaControlsAttr ||
                attr_name == html_names::kAriaDetailsAttr ||
                attr_name == html_names::kAriaErrormessageAttr ||
                attr_name == html_names::kAriaFlowtoAttr) {

@@ -1862,6 +1862,8 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "none";
     case ax::mojom::IntListAttribute::kIndirectChildIds:
       return "indirectChildIds";
+    case ax::mojom::IntListAttribute::kActionsIds:
+      return "actionsIds";
     case ax::mojom::IntListAttribute::kControlsIds:
       return "controlsIds";
     case ax::mojom::IntListAttribute::kDetailsIds:

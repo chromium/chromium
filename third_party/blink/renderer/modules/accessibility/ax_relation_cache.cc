@@ -100,7 +100,8 @@ void AXRelationCache::CacheRelationIds(Element& element) {
   // Register aria-activedescendant.
   UpdateReverseActiveDescendantRelations(element);
 
-  // Register aria-controls, aria-details, aria-errormessage and aria-flowto.
+  // Register aria-controls, aria-details, aria-errormessage, aria-flowto, and
+  // aria-actions.
   UpdateReverseOtherRelations(element);
 }
 
@@ -420,11 +421,14 @@ Vector<AtomicString> AXRelationCache::GetOtherRelationIds(
       relation_source.FastGetAttribute(html_names::kAriaErrormessageAttr));
   SpaceSplitString ids_4(
       relation_source.FastGetAttribute(html_names::kAriaFlowtoAttr));
+  SpaceSplitString ids_5(
+      relation_source.FastGetAttribute(html_names::kAriaActionsAttr));
   Vector<AtomicString> ids;
   ids.AppendRange(ids_1.begin(), ids_1.end());
   ids.AppendRange(ids_2.begin(), ids_2.end());
   ids.AppendRange(ids_3.begin(), ids_3.end());
   ids.AppendRange(ids_4.begin(), ids_4.end());
+  ids.AppendRange(ids_5.begin(), ids_5.end());
   return ids;
 }
 
@@ -1041,7 +1045,8 @@ void AXRelationCache::UpdateRelatedTreeForIdChange(Element& element) {
   // the label or description subtree changes.
   MarkOldAndNewRelationSourcesDirty(element, id_attr_to_text_relation_mapping_);
 
-  // aria-controls, aria-details, aria-errormessage and aria-flowto.
+  // aria-controls, aria-details, aria-errormessage, aria-flowto, and
+  // aria-actions.
   MarkOldAndNewRelationSourcesDirty(element,
                                     id_attr_to_other_relation_mapping_);
   UpdateReverseOtherRelations(element);

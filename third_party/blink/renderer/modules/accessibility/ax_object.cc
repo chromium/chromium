@@ -2202,6 +2202,12 @@ void AXObject::SerializeRelationAttributes(ui::AXNodeData* node_data) const {
         active_descendant->AXObjectID());
   }
 
+  if (RuntimeEnabledFeatures::AriaActionsEnabled()) {
+    AddIntListAttributeFromObjects(
+        ax::mojom::blink::IntListAttribute::kActionsIds,
+        RelationVectorFromAria(html_names::kAriaActionsAttr), node_data);
+  }
+
   AddIntListAttributeFromObjects(
       ax::mojom::blink::IntListAttribute::kControlsIds,
       RelationVectorFromAria(html_names::kAriaControlsAttr), node_data);
