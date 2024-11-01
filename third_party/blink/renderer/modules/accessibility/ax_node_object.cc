@@ -163,6 +163,7 @@
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
@@ -178,6 +179,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -5420,14 +5422,84 @@ void AXNodeObject::AddInlineTextBoxChildren() {
   CHECK(AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates())
       << AXObjectCache();
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  AXBlockFlowIterator it;
+  if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
+    it = AXBlockFlowIterator(this);
+  }
+#endif
+
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
        box = box->NextInlineTextBox()) {
     AXObject* ax_box = AXObjectCache().GetOrCreate(box, this);
-    if (!ax_box)
+    if (!ax_box) {
       continue;
+    }
 
     children_.push_back(ax_box);
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
+      DCHECK(it.Next());
+      WTF::String fragment_text = it.GetText();
+      WTF::String abstract_inline_text = box->GetText();
+
+      if (!layout_text->GetFirstLetterPart()) {
+        // Explicitly skip the check if the layout text has a first letter
+        // pseudo-element part. Currently, this is prefixed to the text, but
+        // this is problematic since:
+        //   * not accounted for in the glyph vector
+        //   * can have a different style including flow direction
+        //   * can be multiple characters due to punctuation
+        DCHECK_EQ(fragment_text, abstract_inline_text)
+            << "Mismatch in extracted text fragment: " << abstract_inline_text
+            << " vs " << fragment_text;
+      }
+      AbstractInlineTextBox* next_on_line_box = box->NextOnLine();
+      AbstractInlineTextBox* previous_on_line_box = box->PreviousOnLine();
+
+      std::optional<AXBlockFlowIterator::MapKey> next_fragment_key =
+          it.NextOnLine();
+      std::optional<AXBlockFlowIterator::MapKey> previous_fragment_key =
+          it.PreviousOnLine();
+
+      if (next_on_line_box) {
+        DCHECK(next_fragment_key) << "Failed to find next on line fragment";
+        InlineCursor cursor = next_on_line_box->GetCursor();
+        DCHECK_EQ(&cursor.Items(), next_fragment_key->first);
+        wtf_size_t item_index = static_cast<wtf_size_t>(
+            cursor.CurrentItem() - &cursor.Items().front());
+        DCHECK_EQ(item_index, next_fragment_key->second)
+            << "Mismatched fragment indices";
+      } else {
+        // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
+        // box fragments. Currently, we fall back to the parent when
+        // AbstractInlineTextBox::NextOnLine is null. This fallback should no
+        // longer be necessary.
+        DCHECK(!next_fragment_key)
+            << "Expected not to find a next on line fragment";
+      }
+
+      if (previous_on_line_box) {
+        DCHECK(previous_fragment_key)
+            << "Failed to find previous on line fragment";
+        InlineCursor cursor = previous_on_line_box->GetCursor();
+        DCHECK_EQ(&cursor.Items(), previous_fragment_key->first);
+        wtf_size_t item_index = static_cast<wtf_size_t>(
+            cursor.CurrentItem() - &cursor.Items().front());
+        DCHECK_EQ(item_index, previous_fragment_key->second)
+            << "Mismatched fragment indices";
+      } else {
+        // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
+        // box fragments. Currently, we fall back to the parent when
+        // AbstractInlineTextBox::NextOnLine is null. This fallback should no
+        // longer be necessary.
+        DCHECK(!previous_fragment_key)
+            << "Expected not to find a previous on line fragment";
+      }
+    }
+#endif
   }
 }
 

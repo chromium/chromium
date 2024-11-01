@@ -107,6 +107,7 @@
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_control.h"
@@ -3415,6 +3416,27 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   return success;
 }
 
+void AXObjectCacheImpl::ResetActiveBlockFlowContainer() {
+  active_block_flow_container_ = nullptr;
+  active_block_flow_data_ = nullptr;
+}
+
+const AXBlockFlowData* AXObjectCacheImpl::GetBlockFlowData(
+    const AXObject* object) {
+  // TODO: Assumption that we are only really working on one paragraph at a
+  // time turned out to be incorrect. Ideally, we can come up with a strategy
+  // to make this work in order to avoid memory bloat.
+  LayoutBlockFlow* block_flow =
+      object->GetLayoutObject()->FragmentItemsContainer();
+
+  if (block_flow != active_block_flow_container_) {
+    active_block_flow_container_ = block_flow;
+    active_block_flow_data_ = MakeGarbageCollected<AXBlockFlowData>(block_flow);
+  }
+
+  return active_block_flow_data_;
+}
+
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
   return GetDocument().Parser() &&
          !GetDocument().GetAgent().isolate()->InContext();
@@ -6046,6 +6068,9 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(node_to_parse_before_more_tree_updates_);
   visitor->Trace(weak_factory_for_serialization_pipeline_);
   visitor->Trace(weak_factory_for_loc_updates_pipeline_);
+
+  visitor->Trace(active_block_flow_data_);
+  visitor->Trace(active_block_flow_container_);
 
   AXObjectCache::Trace(visitor);
 }

@@ -68,6 +68,7 @@
 
 namespace blink {
 
+class AXBlockFlowData;
 class AXRelationCache;
 class AbstractInlineTextBox;
 class HTMLAreaElement;
@@ -164,6 +165,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     // Force a cache reset for mutable cached object properties. Any property
     // values cached while the tree is frozen is valid until the next thaw.
     IncrementGenerationalCacheId();
+    ResetActiveBlockFlowContainer();
 
     CHECK(FocusedObject());
     DUMP_WILL_BE_CHECK(!IsDirty());
@@ -620,6 +622,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void CheckStyleIsComplete(Document& document) const;
 
   bool SerializeUpdatesAndEvents();
+
+  void ResetActiveBlockFlowContainer();
+  const AXBlockFlowData* GetBlockFlowData(const AXObject* ax_object);
 
   // Returns the `TextChangedOperation` associated with the `id` from the
   // `text_operation_in_node_ids_` map, if `id` is in the map.
@@ -1214,6 +1219,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
   HashMap<AXID, AriaNotifications> aria_notifications_;
+
+  // Collect information for generation of inline text boxes at the block flow
+  // container level.
+  Member<LayoutObject> active_block_flow_container_;
+  Member<AXBlockFlowData> active_block_flow_data_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

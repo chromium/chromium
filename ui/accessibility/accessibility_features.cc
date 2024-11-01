@@ -36,6 +36,14 @@ bool IsAccessibilityExposeSummaryAsHeadingEnabled() {
       ::features::kAccessibilityExposeSummaryAsHeading);
 }
 
+BASE_FEATURE(kAccessibilityBlockFlowIterator,
+             "AccessibilityBlockFlowIterator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityBlockFlowIteratorEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityBlockFlowIterator);
+}
+
 BASE_FEATURE(kAccessibilityPruneRedundantInlineText,
              "AccessibilityPruneRedundantInlineText",
              base::FEATURE_DISABLED_BY_DEFAULT);
