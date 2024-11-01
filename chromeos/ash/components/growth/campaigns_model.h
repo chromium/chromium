@@ -45,7 +45,11 @@ enum class Slot {
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
-enum class BuiltInVectorIcon { kRedeem = 0, kMaxValue = kRedeem };
+enum class BuiltInVectorIcon {
+  kRedeem = 0,
+  kHelpApp = 1,
+  kMaxValue = kHelpApp
+};
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.

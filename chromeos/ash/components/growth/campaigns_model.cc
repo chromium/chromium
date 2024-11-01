@@ -13,6 +13,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -871,14 +872,22 @@ const gfx::VectorIcon* VectorIcon::GetVectorIcon() const {
 
 const gfx::VectorIcon* VectorIcon::GetBuiltInVectorIcon() const {
   const auto icon = GetBuiltInVectorIconType(vector_icon_dict_);
-  if (!icon || icon.value() != BuiltInVectorIcon::kRedeem) {
-    // TODO: b/340895798 - record error metric.
-    CAMPAIGNS_LOG(ERROR) << "Unrecognized built in vector icon.";
+  if (!icon) {
+    // TODO: b/376659798 - record error metric.
+    CAMPAIGNS_LOG(ERROR) << "Missing built in vector icon.";
 
     return nullptr;
   }
 
-  return &chromeos::kRedeemIcon;
+  switch (icon.value()) {
+    case BuiltInVectorIcon::kRedeem:
+      return &chromeos::kRedeemIcon;
+    case BuiltInVectorIcon::kHelpApp:
+      return &ash::kNotificationHelpAppIcon;
+  }
+
+  // TODO: b/376659798 - record error metric.
+  CAMPAIGNS_LOG(ERROR) << "Unrecognized built in vector icon.";
 }
 
 // Image Model.

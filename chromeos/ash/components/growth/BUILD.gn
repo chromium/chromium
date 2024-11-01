@@ -25,6 +25,7 @@ component("growth") {
   deps = [
     ":utils",
     "//ash/constants",
+    "//ash/resources/vector_icons",
     "//base",
     "//build:branding_buildflags",
     "//chromeos/ash/components/channel",

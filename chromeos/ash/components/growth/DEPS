@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants",
+  "+ash/resources/vector_icons",
   "+base",
   "+chromeos/ash/components/demo_mode",
   "+chromeos/ash/components/channel",
