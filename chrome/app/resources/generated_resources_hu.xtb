@@ -169,6 +169,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1108938384783527433">Előzmények szinkronizálása</translation>
 <translation id="1110155001042129815">Várakozás</translation>
 <translation id="1110965959145884739">Válassza ki, hogy mely nyelveket szeretné telepíteni erre az eszközre. A nyelvi fájlok a helytakarékosság érdekében megosztottak a különböző felhasználók között. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Gyermeke ezzel a PIN-kóddal jelentkezhet be az eszközére</translation>
 <translation id="1112420131909513020">A háttérben futó lap Bluetooth-t használ</translation>
 <translation id="1112998165730922436">Az átküldés szünetel</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="113050636487300043">A profilok megkülönböztetéséhez adjon meg nevet és színtémát</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – a(z) <ph name="GROUP_NAME" /> csoport része</translation>
 <translation id="1130676589211693127">Jobb akkumulátorszint: <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Gyermeke PIN-kódja frissítve</translation>
 <translation id="1133418583142946603">Jelenlegi lap felvétele</translation>
 <translation id="1134363466745332968">A böngészési előzmények között nem csak az oldal címe és URL-címe, de az oldal általános tartalma alapján is kereshet. Ennek révén hasznosabb találatok biztosíthatók függetlenül attól, hogy hol keres: a @history kifejezés segítségével a címsávban, vagy az Előzmények oldalon.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />/<ph name="EMOJI_INDEX" />.</translation>
@@ -564,6 +566,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1397594434718759194">Be van jelentkezve a Chrome-ba ezeken az eszközökön, ezért használhatja őket biztonsági kulcsként.</translation>
 <translation id="1398853756734560583">Teljes méret</translation>
 <translation id="1399261165075500043">Nem sikerült betölteni a Google Play Általános Szerződési Feltételeit</translation>
+<translation id="1400243387594338234">Ezzel a PIN-kóddal bejelentkezhet eszközére</translation>
 <translation id="1401216725754314428">További információ a kapcsolódó webhelyekről új lapon</translation>
 <translation id="1402426911829176748">Csatlakozás az eszközhöz…</translation>
 <translation id="1403222014593521787">A proxyhoz való kapcsolódás sikertelen</translation>
@@ -1938,6 +1941,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2326931316514688470">Alkalmazás új&amp;ratöltése</translation>
 <translation id="2327492829706409234">Alkalmazás engedélyezése</translation>
 <translation id="2327920026543055248"><ph name="CHARACTER" />. karakter megadása az összesen <ph name="TOTAL" /> karakterből</translation>
+<translation id="2328137272841210255">PIN-kód visszaállítása</translation>
 <translation id="2328561734797404498">A(z) <ph name="APP_NAME" /> használatához indítsa újra eszközét.</translation>
 <translation id="2328636661627946415">Inkognitó módban való böngészés közben az egyes webhelyek az Ön által csak az adott webhelyen végzett böngészési tevékenységek nyomon követésére használhatják a cookie-kat. Az inkognitó munkamenet végén a böngésző törli a cookie-kat.</translation>
 <translation id="2329597144923131178">Jelentkezzen be, hogy könyvjelzőit, előzményeit, jelszavait és más beállításait az összes eszközén elérje.</translation>
@@ -3786,6 +3790,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3670480940339182416">A webhelyek használhatják a V8 optimalizálót</translation>
 <translation id="3672681487849735243">A rendszer gyári hibát észlelt</translation>
 <translation id="3673097791729989571">Bejelentkezés a következővel: <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">A PIN-kód frissült</translation>
 <translation id="3673622964532248901">Önnek nincs engedélyezve az erre az eszközre való átküldés.</translation>
 <translation id="3675683621636519363">Összeomlási jelentések, valamint diagnosztikai és használati adatok küldése a ChromeOS Flex rendszerre</translation>
 <translation id="367645871420407123">hagyja üresen, ha a root jelszót az alapértelmezett tesztkép értékére szeretné állítani</translation>
@@ -11322,6 +11327,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9101691533782776290">Alkalmazás indítása</translation>
 <translation id="9102610709270966160">Bővítmény engedélyezése</translation>
 <translation id="9102864637938129124">A webhelyek és a hirdetők megismerhetik a hirdetések teljesítményét. Ez a beállítás be van kapcsolva.</translation>
+<translation id="9103341231213089378">Az átküldéshez adjon hozzáférést a Chrome-nak itt: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Helyi hálózat &gt; Chrome</translation>
 <translation id="9103868373786083162">Nyomja meg a visszalépéshez, illetve választhatja a helyi menüt az előzmények megtekintéséshez</translation>
 <translation id="9107096627210171112">Fordítás…</translation>
 <translation id="9107624673674616016">Színes ceruza</translation>

@@ -169,6 +169,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1108938384783527433">Cysoni hanes</translation>
 <translation id="1110155001042129815">Aros</translation>
 <translation id="1110965959145884739">Dewis pa ieithoedd i'w gosod ar y ddyfais hon. Rhennir ffeiliau iaith ymhlith defnyddwyr i gadw lle ar y disg. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Gall eich plentyn ddefnyddio'r PIN hwn i fewngofnodi i'w ddyfais</translation>
 <translation id="1112420131909513020">Mae tab cefndir yn defnyddio Bluetooth</translation>
 <translation id="1112998165730922436">Mae castio wedi'i seibio</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="113050636487300043">Dewiswch enw a thema lliw i wahaniaethau rhwng proffiliau</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Rhan o'r grŵp <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Lefel batri dde <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Cafodd PIN eich plentyn ei ddiweddaru</translation>
 <translation id="1133418583142946603">Ychwanegu'r tab presennol</translation>
 <translation id="1134363466745332968">Gallwch chwilio eich hanes pori yn seiliedig ar gynnwys tudalen cyffredinol, nid yn unig teitl tudalen ac URL. Mae hyn yn rhoi canlyniadau gwell i chi, p'un a ydych yn chwilio hanes pori yn y bar cyfeiriad gan ddefnyddio @history neu o'r dudalen Hanes.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> o <ph name="EMOJI_COUNT" />.</translation>
@@ -568,6 +570,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1397594434718759194">Rydych wedi mewngofnodi i Chrome ar y dyfeisiau hyn, felly gallwch eu defnyddio fel allweddi diogelwch.</translation>
 <translation id="1398853756734560583">Mwyhau</translation>
 <translation id="1399261165075500043">Methu â llwytho Telerau Gwasanaeth Google Play</translation>
+<translation id="1400243387594338234">Gallwch ddefnyddio'r PIN hwn i fewngofnodi i'ch dyfais</translation>
 <translation id="1401216725754314428">Dysgu rhagor am wefannau cysylltiedig mewn tab newydd</translation>
 <translation id="1402426911829176748">Wrthi'n cysylltu â'ch dyfais</translation>
 <translation id="1403222014593521787">Methu cysylltu â'r dirprwy weinydd</translation>
@@ -1942,6 +1945,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2326931316514688470">&amp;Ail-lwytho'r ap</translation>
 <translation id="2327492829706409234">Galluogi ap</translation>
 <translation id="2327920026543055248">Rhowch nod <ph name="CHARACTER" /> o <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Ailosod eich PIN</translation>
 <translation id="2328561734797404498">Ailgychwynnwch eich dyfais i ddefnyddio <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Pan fyddwch yn y modd Anhysbys, dim ond cwcis y gall gwefannau eu defnyddio i weld eich gweithgarwch pori ar eu gwefannau eu hunain. Mae cwcis yn cael eu dileu ar ddiwedd y sesiwn anhysbys.</translation>
 <translation id="2329597144923131178">Mewngofnodwch i gael eich nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill ar eich holl ddyfeisiau.</translation>
@@ -3790,6 +3794,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3670480940339182416">Gall gwefannau ddefnyddio'r optimeiddiwr V8</translation>
 <translation id="3672681487849735243">Mae gwall ffatri wedi'i ganfod</translation>
 <translation id="3673097791729989571">Cynhelir mewngofnodi gan <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Mae eich PIN wedi'i ddiweddaru</translation>
 <translation id="3673622964532248901">Ni chaniateir i chi gastio i'r ddyfais hon.</translation>
 <translation id="3675683621636519363">Anfon adroddiadau toriadau a data diagnostig a defnydd at ChromeOS Flex</translation>
 <translation id="367645871420407123">gadewch yn wag os ydych am osod y cyfrinair gwraidd i werth diofyn y llun prawf</translation>
@@ -11337,6 +11342,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9101691533782776290">Lansio'r ap</translation>
 <translation id="9102610709270966160">Galluogi Estyniad</translation>
 <translation id="9102864637938129124">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
+<translation id="9103341231213089378">I gastio, rhowch fynediad i Chrome yn: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Rhwydwaith Lleol &gt; Chrome</translation>
 <translation id="9103868373786083162">Pwyswch i fynd yn ôl, dewislen gyd-destunol i weld hanes</translation>
 <translation id="9107096627210171112">Cyfieithu...</translation>
 <translation id="9107624673674616016">Pensil Lliw</translation>

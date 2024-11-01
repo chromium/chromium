@@ -272,6 +272,7 @@
 <translation id="2723001399770238859">ήχος</translation>
 <translation id="2737898226590637227">Δεν υπάρχει επόμενο ορόσημο ARIA.</translation>
 <translation id="2749275490991666823">Επιλεγμένο</translation>
+<translation id="2751454300227269244">Κουνήστε το στόμα σας προς τα δεξιά</translation>
 <translation id="27527859628328957">Μετάβαση στο επόμενο αντικείμενο με δυνατότητα εστίασης</translation>
 <translation id="2756452585631602151">Εισαγάγετε μια προσαρμοσμένη ετικέτα.</translation>
 <translation id="2766299274563946262">Δεν υπάρχει κελί αριστερά.</translation>
@@ -353,6 +354,7 @@
 <translation id="3153928844647607688">Πίνακας <ph name="TABLENAME" />, <ph name="TABLEROWS" /> επί <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Μπεζ</translation>
 <translation id="316542773973815724">Πλοήγηση</translation>
+<translation id="3167446923957429259">Κουνήστε το στόμα σας προς τα αριστερά</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{διάστημα}other{# διαστήματα}}</translation>
 <translation id="3179119189286472195">Δεν είναι σύνδεσμος</translation>
 <translation id="3180990259147710757">Μετακινήστε το σαγόνι σας προς τα αριστερά</translation>

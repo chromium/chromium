@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
 <translation id="1061864016440983342">Не учитывать местоположение</translation>
 <translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> из <ph name="COUNT" />).</translation>
+<translation id="1069150558259542054">Быструю вставку нельзя использовать для специальных сочетаний клавиш.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6526200165918397681">Подобрать цвет под обои</translation>
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
+<translation id="6531528791584205545">быстрая вставка</translation>
 <translation id="6535178685492749208">Нет подключения к интернету. Отзыв будет отправлен позже.</translation>
 <translation id="6543412779435705598">тако</translation>
 <translation id="6550369542114086980">в четверг</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6673898378497337661">увеличить яркость клавиатуры</translation>
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
 <translation id="6694534975463174713">Блокировка</translation>
+<translation id="6700703207451721535">По данной ссылке доступ запрещен. Обратитесь к преподавателю.</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6712933881624804031">долина</translation>
 <translation id="6716013206176357696">клубника</translation>

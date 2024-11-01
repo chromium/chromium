@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">Тарихты синхрондау</translation>
 <translation id="1110155001042129815">Күту</translation>
 <translation id="1110965959145884739">Осы құрылғыға орнатылатын тілдерді таңдаңыз. Диск жадын үнемдеу үшін тілдік файлдар пайдаланушыларға қолжетімді болады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Балаңыз құрылғысына кіру үшін осы PIN кодын пайдалана алады.</translation>
 <translation id="1112420131909513020">Фондық қойынды Bluetooth функциясын қолдануда</translation>
 <translation id="1112998165730922436">Трансляциялау кідіртілді</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">Профильдерді бір-бірінен ажырату үшін атау қойып, түрлі-түсті тақырып таңдаңыз.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: <ph name="GROUP_NAME" /> тобына кіреді</translation>
 <translation id="1130676589211693127">Оқ құлақаспап батареясының деңгейі: <ph name="PERCENTAGE" />%</translation>
+<translation id="1131201598497838573">Балаңыздың PIN коды өзгертілді</translation>
 <translation id="1133418583142946603">Ағымдағы қойындыны қосу</translation>
 <translation id="1134363466745332968">Браузерді қолдану тарихынан тек бет атауы мен URL мекенжайы емес, жалпы бет контенті бойынша іздеуге болады. Бұл @history арқылы мекенжай жолағында немесе Тарих беті арқылы браузерді қолдану тарихынан іздеп жатсаңыз да, жақсартылған нәтижелер береді.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">Осы құрылғылардағы Chrome браузеріне кіресіз және оларды қауіпсіздік кілттері ретінде пайдалана аласыз.</translation>
 <translation id="1398853756734560583">Жаю</translation>
 <translation id="1399261165075500043">Google Play Қызмет көрсету шарттарын жүктеу мүмкін емес</translation>
+<translation id="1400243387594338234">Бұл PIN кодымен құрылғыға кіруге болады.</translation>
 <translation id="1401216725754314428">Жаңа қойындыдағы қатысты сайттар туралы толық ақпарат</translation>
 <translation id="1402426911829176748">Құрылғыңызға қосылып жатыр</translation>
 <translation id="1403222014593521787">Прокси-серверге қосылу мүмкін болмады.</translation>
@@ -1923,6 +1926,7 @@
 <translation id="2326931316514688470">Қолданбаны &amp;қайта жүктеу</translation>
 <translation id="2327492829706409234">Қолданбаны қосу</translation>
 <translation id="2327920026543055248"><ph name="CHARACTER" />/<ph name="TOTAL" /> таңба енгізіңіз.</translation>
+<translation id="2328137272841210255">PIN кодын қайта орнатыңыз</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> пайдалану үшін құрылғыңызды қайта қосыңыз.</translation>
 <translation id="2328636661627946415">Инкогнито режимінде болғаныңызда, сайттар cookie файлдарын тек браузерді қолдану мәліметіңізді көру үшін пайдалана алады. Инкогнито сеансының соңында cookie файлдары жойылады.</translation>
 <translation id="2329597144923131178">Барлық құрылғыларда бетбелгілеріңізді, журналыңызды, құпия сөздеріңізді және басқа параметрлеріңізді алу үшін кіріңіз.</translation>
@@ -3769,6 +3773,7 @@
 <translation id="3670480940339182416">Сайттар V8 оңтайландырғышын пайдалана алады</translation>
 <translation id="3672681487849735243">Зауыттық қате анықталды</translation>
 <translation id="3673097791729989571">Кіру хосы: <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">PIN кодыңыз өзгертілді</translation>
 <translation id="3673622964532248901">Сізге бұл құрылғыға трансляциялауға рұқсат берілмеген.</translation>
 <translation id="3675683621636519363">Бұзылу туралы есептерді және диагностика мен пайдалану туралы деректі ChromeOS Flex-ке жіберу</translation>
 <translation id="367645871420407123">түпкі құпия сөзді әдепкі сынақ кескіні мәніне орнатқыңыз келсе, бос қалдырыңыз</translation>
@@ -11298,6 +11303,7 @@
 <translation id="9101691533782776290">Қолданбаны іске қосу</translation>
 <translation id="9102610709270966160">Кеңейтімді қосу</translation>
 <translation id="9102864637938129124">Сайттар мен жарнама берушілер жарнамалардың тиімділігін түсіне алады. Бұл параметр қосулы.</translation>
+<translation id="9103341231213089378">Трансляциялау үшін келесі бөлімге өтіп, Chrome-ға рұқсат беріңіз: "<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Жергілікті желі &gt; Chrome".</translation>
 <translation id="9103868373786083162">Журналды көру үшін, оралу, контекстік мәзір түймесін басыңыз</translation>
 <translation id="9107096627210171112">А&amp;удару...</translation>
 <translation id="9107624673674616016">Түрлі түсті қарындаш</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Скандалып башталган жок</translation>
 <translation id="1061864016440983342">Жүргөн жерсиз колдонуу</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> ичинен <ph name="INDEX" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Ыкчам киргизүүнү жеке ыкчам баскычтар үчүн колдонууга болот.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Тармактык коргоо аныкталды</translation>
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Изилдөө</translation>
 <translation id="6526200165918397681">Тушкагазды дал келтирүү</translation>
 <translation id="6527081081771465939">Белгисиз WiFi коопсуздук протоколу</translation>
+<translation id="6531528791584205545">ыкчам киргизүү</translation>
 <translation id="6535178685492749208">Сиз офлайндасыз Пикир кийинчерээк жөнөтүлөт.</translation>
 <translation id="6543412779435705598">таколор</translation>
 <translation id="6550369542114086980">бейшембиде</translation>

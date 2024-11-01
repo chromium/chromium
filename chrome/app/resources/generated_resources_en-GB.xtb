@@ -169,6 +169,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1108938384783527433">History sync</translation>
 <translation id="1110155001042129815">Wait</translation>
 <translation id="1110965959145884739">Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Your child can use this PIN to sign in to their device</translation>
 <translation id="1112420131909513020">Background tab is using Bluetooth</translation>
 <translation id="1112998165730922436">Casting is paused</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="113050636487300043">Choose a name and colour theme to differentiate between profiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Part of group <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Right battery level <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Your child’s PIN has been updated</translation>
 <translation id="1133418583142946603">Add current tab</translation>
 <translation id="1134363466745332968">You can search your browsing history based on general page content, not only page title and URL. This gives you improved results, whether you're searching browsing history in the address bar using @history or from the History page.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> of <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1397594434718759194">You're signed in to Chrome on these devices, so you can use them as security keys.</translation>
 <translation id="1398853756734560583">Maximise</translation>
 <translation id="1399261165075500043">Can't load Google Play Terms of Service</translation>
+<translation id="1400243387594338234">You can use this PIN to sign in to your device</translation>
 <translation id="1401216725754314428">Learn more about related sites in a new tab</translation>
 <translation id="1402426911829176748">Connecting to your device</translation>
 <translation id="1403222014593521787">Unable to connect to the proxy</translation>
@@ -1939,6 +1942,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2326931316514688470">&amp;Reload app</translation>
 <translation id="2327492829706409234">Enable app</translation>
 <translation id="2327920026543055248">Enter character <ph name="CHARACTER" /> of <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Reset your PIN</translation>
 <translation id="2328561734797404498">Please restart your device to use <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">When you’re in Incognito mode, sites can only use cookies to see your browsing activity on their own site. Cookies are deleted at the end of the Incognito session.</translation>
 <translation id="2329597144923131178">Sign in to get your bookmarks, history, passwords and other settings on all your devices</translation>
@@ -3787,6 +3791,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3670480940339182416">Sites can use the V8 optimiser</translation>
 <translation id="3672681487849735243">A factory error has been detected</translation>
 <translation id="3673097791729989571">Sign-in hosted by <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Your PIN has been updated</translation>
 <translation id="3673622964532248901">You aren't allowed to cast to this device.</translation>
 <translation id="3675683621636519363">Send crash reports and diagnostic and usage data to ChromeOS Flex</translation>
 <translation id="367645871420407123">leave empty if you want to set the root password to the default test image value</translation>
@@ -11324,6 +11329,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9101691533782776290">Launch app</translation>
 <translation id="9102610709270966160">Enable Extension</translation>
 <translation id="9102864637938129124">Sites and advertisers can understand how ads perform. This setting is on.</translation>
+<translation id="9103341231213089378">To cast, give Chrome access in: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Local Network &gt; Chrome</translation>
 <translation id="9103868373786083162">Press to go back, context menu to see history</translation>
 <translation id="9107096627210171112">Translate...</translation>
 <translation id="9107624673674616016">Coloured pencil</translation>

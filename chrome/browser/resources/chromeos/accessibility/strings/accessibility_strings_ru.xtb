@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2737898226590637227">Следующей метки ARIA нет</translation>
 <translation id="2749275490991666823">Выбрано</translation>
+<translation id="2751454300227269244">Сдвиньте губы вправо</translation>
 <translation id="27527859628328957">Перейти к следующему активируемому элементу</translation>
 <translation id="2756452585631602151">Добавьте свою метку</translation>
 <translation id="2766299274563946262">Ячейки слева нет</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Таблица "<ph name="TABLENAME" />", <ph name="TABLEROWS" /> на <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Бежевый</translation>
 <translation id="316542773973815724">Навигация</translation>
+<translation id="3167446923957429259">Сдвиньте губы влево</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{пробел}one{# пробел}few{# пробела}many{# пробелов}other{# spaces}}</translation>
 <translation id="3179119189286472195">Текст без ссылки</translation>
 <translation id="3180990259147710757">Сместить губы влево</translation>

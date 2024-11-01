@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">No hay puntos de referencia de ARIA siguientes</translation>
 <translation id="2749275490991666823">Seleccionado</translation>
+<translation id="2751454300227269244">Mueve la boca hacia la derecha</translation>
 <translation id="27527859628328957">Saltar al siguiente elemento enfocable</translation>
 <translation id="2756452585631602151">Ingresa una etiqueta personalizada</translation>
 <translation id="2766299274563946262">No hay celdas a la izquierda</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabla <ph name="TABLENAME" />, <ph name="TABLEROWS" /> por <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navegación</translation>
+<translation id="3167446923957429259">Mueve la boca hacia la izquierda</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{espacio}other{# espacios}}</translation>
 <translation id="3179119189286472195">No vinculado</translation>
 <translation id="3180990259147710757">Mover la mandíbula a la izquierda</translation>

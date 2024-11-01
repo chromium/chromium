@@ -213,7 +213,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1358223345833465883">Az Ön keresőmotorja a Chromiumban</translation>
 <translation id="1359836962251219822">Konyha és ebédlő</translation>
 <translation id="1360955481084547712">Privát böngészéshez nyisson új inkognitó ablakot</translation>
-<translation id="1361528602584216624">Pix-korlát: <ph name="TRANSACTION_LIMIT" /> BRL</translation>
+<translation id="1361528602584216624">Pix-korlát <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">A fizetés folytatásához kiválasztható fizetési módok teljes magasságban megnyitva</translation>
 <translation id="1363028406613469049">Szám</translation>
 <translation id="1364822246244961190">Ez a házirend le van tiltva, ezért az értékét figyelmen kívül hagyja a rendszer.</translation>

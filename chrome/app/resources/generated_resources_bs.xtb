@@ -169,7 +169,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1108938384783527433">Sihnronizacija historije</translation>
 <translation id="1110155001042129815">Sačekaj</translation>
 <translation id="1110965959145884739">Odaberite koje jezike želite instalirati na ovaj uređaj. Fajlovi za jezik se dijele između korisnika da se uštedi prostor na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1111932478203988717">Vaše se dijete može prijaviti na svoj uređaj pomoću tog PIN-a</translation>
+<translation id="1111932478203988717">Dijete možete koristiti ovaj PIN da se prijavi na svoj uređaj</translation>
 <translation id="1112420131909513020">Kartica u pozadini koristi bluetooth</translation>
 <translation id="1112998165730922436">Emitiranje je pauzirano</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -199,7 +199,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="113050636487300043">Odaberite naziv i boju teme da možete razlikovati profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – dio grupe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivo napunjenosti desne baterije: <ph name="PERCENTAGE" />%.</translation>
-<translation id="1131201598497838573">Ažuriran je PIN vašeg djeteta</translation>
+<translation id="1131201598497838573">Djetetov PIN je ažuriran</translation>
 <translation id="1133418583142946603">Dodaj trenutnu karticu</translation>
 <translation id="1134363466745332968">Možete pretraživati historiju pregledanja na osnovu općeg sadržaja stranice, a ne samo naslova i URL-a stranice. Ovako ćete dobiti poboljšane rezultate, bez obzira na to pretražujete li historiju pregledanja u traci za adresu koristeći @history ili na stranici Historija.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> od <ph name="EMOJI_COUNT" />.</translation>
@@ -569,7 +569,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1397594434718759194">Prijavili ste se u Chrome na ovim uređajima, pa ih možete koristiti kao sigurnosne ključeve.</translation>
 <translation id="1398853756734560583">Povećaj maksimalno</translation>
 <translation id="1399261165075500043">Nije moguće učitati Uslove korištenja usluge Google Play</translation>
-<translation id="1400243387594338234">Pomoću tog PIN-a možete se prijaviti na uređaj</translation>
+<translation id="1400243387594338234">Možete koristiti ovaj PIN da se prijavite na uređaj</translation>
 <translation id="1401216725754314428">Saznajte više o srodnim web lokacijama na novoj kartici</translation>
 <translation id="1402426911829176748">Povezivanje s vašim uređajem</translation>
 <translation id="1403222014593521787">Nije se moguće povezati s proksi serverom</translation>
@@ -3800,7 +3800,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3670480940339182416">Web lokacije mogu koristiti V8 optimizator</translation>
 <translation id="3672681487849735243">Otkrivena je tvornička greška</translation>
 <translation id="3673097791729989571">Prijavu hostira domena <ph name="SAML_DOMAIN" /></translation>
-<translation id="3673287357837016374">Ažuriran je vaš PIN</translation>
+<translation id="3673287357837016374">Vaš PIN je ažuriran</translation>
 <translation id="3673622964532248901">Nije vam dozvoljeno da emitirate na ovaj uređaj.</translation>
 <translation id="3675683621636519363">Šalji izvještaje o padovima aplikacije i podatke o dijagnostici i korištenju ChromeOS Flexu</translation>
 <translation id="367645871420407123">ostavite prazno ako korijensku lozinku želite postaviti na zadanu vrijednost testne slike</translation>
@@ -11359,7 +11359,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="9101691533782776290">Pokreni aplikaciju</translation>
 <translation id="9102610709270966160">Omogući ekstenziju</translation>
 <translation id="9102864637938129124">Web lokacije i oglašivači mogu razumjeti performanse oglasa. Postavka je uključena.</translation>
-<translation id="9103341231213089378">Da biste emitirali, odobrite Chromeu pristup ovdje: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalna mreža &gt; Chrome</translation>
+<translation id="9103341231213089378">Da emitirate, odobrite pristup Chromeu odlaskom u <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalna mreža &gt; Chrome</translation>
 <translation id="9103868373786083162">Pritisnite da se vratite nazad i na kontekstni meni da pogledate historiju</translation>
 <translation id="9107096627210171112">P&amp;revođenje…</translation>
 <translation id="9107624673674616016">Olovka u boji</translation>

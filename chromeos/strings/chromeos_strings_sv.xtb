@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Det gick inte att börja söka</translation>
 <translation id="1061864016440983342">Använd utan plats</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Det går inte att använda snabbinfogning i anpassade kortkommandon.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6526200165918397681">Matcha bakgrund</translation>
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för wifi</translation>
+<translation id="6531528791584205545">snabbinfogning</translation>
 <translation id="6535178685492749208">Du är offline. Din feedback skickas senare.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">på torsdag</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
 <translation id="1061864016440983342">Выкарыстоўваць без даных пра месцазнаходжанне</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> з <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Клавішу хуткай устаўкі нельга выкарыстоўваць у карыстальніцкіх спалучэннях клавіш.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Агляд</translation>
 <translation id="6526200165918397681">Прывесці ў адпаведнасць з колерам шпалер</translation>
 <translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>
+<translation id="6531528791584205545">хуткая ўстаўка</translation>
 <translation id="6535178685492749208">Вы па-за сеткай. Водгук будзе адпраўлены пазней.</translation>
 <translation id="6543412779435705598">така</translation>
 <translation id="6550369542114086980">у чацвер</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6673898378497337661">павялічыць яркасць клавіятуры</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6694534975463174713">блакіроўка</translation>
+<translation id="6700703207451721535">Доступ да гэтай спасылкі забаронены. Спытайце пра доступ у выкладчыка.</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6712933881624804031">даліна</translation>
 <translation id="6716013206176357696">суніцы</translation>

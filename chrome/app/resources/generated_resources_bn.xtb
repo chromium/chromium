@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1110155001042129815">অপেক্ষা করুন</translation>
 <translation id="1110965959145884739">এই ডিভাইসে কোন ভাষা ইনস্টল করতে হবে তা বেছে নিন। ডিস্ক স্টোরেজে খালি জায়গা সেভ করার জন্য ব্যবহারকারীদের মধ্যে ভাষার ফাইল শেয়ার করা হয়। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">আপনার সন্তান তার ডিভাইসে সাইন-ইন করতে এই পিন ব্যবহার করতে পারবে</translation>
 <translation id="1112420131909513020">ব্যাকগ্রাউন্ড ট্যাব ব্লুটুথ ব্যবহার করছে</translation>
 <translation id="1112998165730922436">কাস্ট করা থামানো হয়েছে</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">বিভিন্ন প্রোফাইল আলাদা করে দেখাতে, কোনও নাম ও কালার প্রোফাইল বেছে নিন</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> গ্রুপের অংশ</translation>
 <translation id="1130676589211693127">ডানদিকের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
+<translation id="1131201598497838573">আপনার সন্তানের পিন আপডেট করা হয়েছে</translation>
 <translation id="1133418583142946603">বর্তমান ট্যাব যোগ করুন</translation>
 <translation id="1134363466745332968">শুধু পৃষ্ঠার শীর্ষক ও URL নয়, আপনি পৃষ্ঠার সাধারণ কন্টেন্টের উপর নির্ভর করেও ব্রাউজিং ইতিহাসে সার্চ করতে পারেন। আপনি অ্যাড্রেস বারে @history লিখে ব্রাউজিং ইতিহাসে সার্চ করুন বা ইতিহাস পৃষ্ঠাতেই করুন দুটি ক্ষেত্রেই এর ফলে আপনি আরও ভালো ফলাফল পাবেন।</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />। <ph name="EMOJI_COUNT" />টির মধ্যে <ph name="EMOJI_INDEX" /> নম্বর।</translation>
@@ -565,6 +567,7 @@
 <translation id="1397594434718759194">আপনি এইসব ডিভাইসে Chrome-এ সাইন-ইন করেছেন, তার জন্য এগুলি নিরাপত্তা কী হিসেবে ব্যবহার করতে পারবেন।</translation>
 <translation id="1398853756734560583">বড় করুন</translation>
 <translation id="1399261165075500043">Google Play পরিষেবার শর্তাবলী লোড করা যাচ্ছে না</translation>
+<translation id="1400243387594338234">আপনার ডিভাইসে সাইন-ইন করতে এই পিন আপনি ব্যবহার করতে পারবেন</translation>
 <translation id="1401216725754314428">নতুন ট্যাবে সম্পর্কিত সাইটের বিষয়ে আরও জানুন</translation>
 <translation id="1402426911829176748">আপনার ডিভাইসে কানেক্ট করা হচ্ছে</translation>
 <translation id="1403222014593521787">প্রক্সিতে কানেক্ট করা যাচ্ছে না</translation>
@@ -1940,6 +1943,7 @@
 <translation id="2326931316514688470">&amp;অ্যাপ্লিকেশান আবার লোড করুন</translation>
 <translation id="2327492829706409234">অ্যাপ্লিকেশন সক্ষম করুন</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" />টির মধ্যে <ph name="CHARACTER" />টি অক্ষর লিখুন</translation>
+<translation id="2328137272841210255">পিন রিসেট করুন</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> চালু করার আগে আপনার ডিভাইস রিস্টার্ট করতে হবে।</translation>
 <translation id="2328636661627946415">আপনি যখন ছদ্মবেশী মোডে থাকেন, তখন সাইটগুলি শুধুমাত্র তাদের নিজস্ব সাইটে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখতে কুকি ব্যবহার করতে পারে। ছদ্মবেশী সেশনের শেষে কুকি মুছে ফেলা হয়।</translation>
 <translation id="2329597144923131178">আপনার সকল ডিভাইসে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস পেতে সাইন-ইন করুন।</translation>
@@ -3788,6 +3792,7 @@
 <translation id="3670480940339182416">সাইট ভি৮ অপ্টিমাইজার ব্যবহার করতে পারে</translation>
 <translation id="3672681487849735243">একটি ফ্যাক্টরি ত্রুটি শনাক্ত করা হয়েছে</translation>
 <translation id="3673097791729989571">সাইন-ইন ফিচারটি <ph name="SAML_DOMAIN" /> দ্বারা হোস্ট করা হয়েছে</translation>
+<translation id="3673287357837016374">আপনার পিন আপডেট করা হয়েছে</translation>
 <translation id="3673622964532248901">আপনার এই ডিভাইসে কাস্ট করার অনুমতি নেই।</translation>
 <translation id="3675683621636519363">ChromeOS Flex-এ ক্র্যাশ রিপোর্ট ও ডায়াগনস্টিকস এবং ব্যবহারের ডেটা পাঠান</translation>
 <translation id="367645871420407123">যদি আপনি ডিফল্ট টেস্ট ছবি মানে রুট পাসওয়ার্ড সেট করতে চান তবে খালি ছাড়ুন</translation>
@@ -11328,6 +11333,7 @@
 <translation id="9101691533782776290">অ্যাপ্লিকেশন লঞ্চ করুন</translation>
 <translation id="9102610709270966160">এক্সটেনশন চালু করুন</translation>
 <translation id="9102864637938129124">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি চালু করা আছে।</translation>
+<translation id="9103341231213089378">কাস্ট করতে, এটিতে Chrome-কে অ্যাক্সেস দিন: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; স্থানীয় নেটওয়ার্ক &gt; Chrome</translation>
 <translation id="9103868373786083162">ইতিহাস দেখার জন্য ফিরে গিয়ে সংশ্লিষ্ট মেনুতে যেতে টিপুন</translation>
 <translation id="9107096627210171112">অনুবাদ...</translation>
 <translation id="9107624673674616016">রঙিন পেন্সিল</translation>

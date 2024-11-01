@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
 <translation id="1061864016440983342">Utilitza sense la ubicació</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Inserció ràpida no es pot utilitzar per a dreceres personalitzades.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6526200165918397681">Fes coincidir el fons de pantalla</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
+<translation id="6531528791584205545">inserció ràpida</translation>
 <translation id="6535178685492749208">No tens connexió. Els suggeriments s'enviaran més tard.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">dijous</translation>

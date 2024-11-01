@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">سرگزشت سِنک کریں</translation>
 <translation id="1110155001042129815">انتظار کریں</translation>
 <translation id="1110965959145884739">منتخب کریں کہ کون سی زبانیں اس آلہ پر انسٹال کی جائیں۔ ڈسک اسپیس محفوظ کرنے کے لیے زبان کی فائلیں صارفین کے درمیان اشتراک کی جاتی ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">‏آپ کا بچہ اپنے آلے میں سائن ان کرنے کے لیے اس PIN کا استعمال کر سکتا ہے۔</translation>
 <translation id="1112420131909513020">پس منظر ٹیب بلوٹوتھ استعمال کر رہا ہے</translation>
 <translation id="1112998165730922436">کاسٹ کرنا موقوف ہے</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">پروفائلوں کے درمیان امتیاز کرنے کیلئے ایک نام اور رنگ کی تھیم کا انتخاب کریں</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - گروپ کا حصہ <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">بائیں بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
+<translation id="1131201598497838573">‏آپ کے بچے کا PIN اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="1133418583142946603">موجودہ ٹیب شامل کریں</translation>
 <translation id="1134363466745332968">‏آپ اپنی براؤزنگ کی سرگزشت کو عام صفحہ کے مواد کی بنیاد پر تلاش کر سکتے ہیں، نہ صرف صفحہ کے عنوان اور URL کی بنیاد پر۔ یہ آپ کو بہتر کردہ نتائج دیتا ہے، چاہے آپ ایڈریس بار میں history@ کا استعمال کر کے براؤزنگ کی سرگزشت تلاش کر رہے ہوں یا سرگزشت کا صفحہ سے تلاش کر رہے ہوں۔</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />۔ <ph name="EMOJI_COUNT" /> میں سے <ph name="EMOJI_INDEX" />۔</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">‏آپ ان آلات پر Chrome میں سائن ان ہیں، لہذا آپ انہیں سیکیورٹی کلیدوں کے طور پر استعمال کر سکتے ہیں۔</translation>
 <translation id="1398853756734560583">بڑا کریں</translation>
 <translation id="1399261165075500043">‏Google Play کی سروس کی شرائط کو لوڈ نہیں کیا جا سکتا</translation>
+<translation id="1400243387594338234">‏آپ اپنے آلے میں سائن ان کرنے کے لیے یہ PIN استعمال کر سکتے ہیں۔</translation>
 <translation id="1401216725754314428">ایک نئے ٹیب میں متعلقہ سائٹس کے بارے میں مزید جانیں</translation>
 <translation id="1402426911829176748">آپ کے آلے سے منسلک ہو رہا ہے</translation>
 <translation id="1403222014593521787">پراکسی سے منسلک ہونے سے قاصر</translation>
@@ -1928,6 +1931,7 @@
 <translation id="2326931316514688470">ایپ &amp;دوبارہ لوڈ کریں</translation>
 <translation id="2327492829706409234">ایپ فعال کریں</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" /> میں سے <ph name="CHARACTER" /> حرف درج کریں</translation>
+<translation id="2328137272841210255">‏اپنا PIN ری سیٹ کریں</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> کو استعمال کرنے کے لیے براہ کرم اپنا آلہ ری سٹارٹ کریں۔</translation>
 <translation id="2328636661627946415">آپ کے پوشیدگی وضع میں ہونے پر سائٹس کوکیز کو صرف اپنی خود کی سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں۔ پوشیدگی سیشن ختم ہونے پر کوکیز کو حذف کر دیا جاتا ہے۔</translation>
 <translation id="2329597144923131178">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔</translation>
@@ -3774,6 +3778,7 @@
 <translation id="3670480940339182416">‏سائٹس V8 کو بہتر بنانے والا استعمال کر سکتی ہیں</translation>
 <translation id="3672681487849735243">ایک فیکٹری کی خرابی کا پتہ لگا ہے</translation>
 <translation id="3673097791729989571">سائن ان کی میزبانی <ph name="SAML_DOMAIN" /> کے ذریعے کی گئی</translation>
+<translation id="3673287357837016374">‏آپ کا PIN اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="3673622964532248901">آپ کو اس آلہ پر کاسٹ کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="3675683621636519363">‏کریش رپورٹس، ڈائیگناسٹک اور استعمال کا ڈیٹا ChromeOS Flex کو بھیجیں</translation>
 <translation id="367645871420407123">‏خالی چھوڑیں اگر آپ root پاس ورڈ کو ڈیفالٹ ٹیسٹ تصویر کی قدر میں سیٹ کرنا چاہتے ہیں۔</translation>
@@ -11306,6 +11311,7 @@
 <translation id="9101691533782776290">ایپ شروع کریں</translation>
 <translation id="9102610709270966160">ایکسٹینشن کو فعال کریں</translation>
 <translation id="9102864637938129124">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آن ہے۔</translation>
+<translation id="9103341231213089378">‏کاسٹ کرنے کیلئے، Chrome کو <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> میں رسائی فراہم کریں &gt; مقامی نیٹ ورک &gt; Chrome</translation>
 <translation id="9103868373786083162">پیچھے جانے کیلئے دبائیں، سرگزشت دیکھنے کیلئے سیاق وسباق کا مینیو</translation>
 <translation id="9107096627210171112">ترجمہ...</translation>
 <translation id="9107624673674616016">رنگین پنسل</translation>

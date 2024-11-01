@@ -169,6 +169,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1110155001042129815">Espera</translation>
 <translation id="1110965959145884739">Tria quins idiomes vols instal·lar en aquest dispositiu. Els fitxers d'idioma es comparteixen entre els usuaris per estalviar espai de disc. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">El teu fill o filla pot utilitzar aquest PIN per iniciar la sessió al seu dispositiu</translation>
 <translation id="1112420131909513020">Una pestanya de fons utilitza el Bluetooth</translation>
 <translation id="1112998165730922436">L'emissió s'ha posat en pausa</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="113050636487300043">Tria un nom i un tema de color per diferenciar els perfils</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (part del grup <ph name="GROUP_NAME" />)</translation>
 <translation id="1130676589211693127">Nivell de bateria de l'auricular dret: <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">S'ha actualitzat el PIN del teu fill o filla</translation>
 <translation id="1133418583142946603">Afegeix la pestanya actual</translation>
 <translation id="1134363466745332968">Pots fer cerques a l'historial de navegació en funció del contingut general de la pàgina, no només en funció del títol i de l'URL de la pàgina. Això t'ofereix resultats millorats, tant si fas cerques a l'historial de navegació des de la barra d'adreces mitjançant @history o des de la pàgina Historial.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1397594434718759194">Tens la sessió iniciada a Chrome en els dispositius següents i, per tant, els pots fer servir com a claus de seguretat.</translation>
 <translation id="1398853756734560583">Maximitza</translation>
 <translation id="1399261165075500043">No es poden carregar les condicions del servei de Google Play</translation>
+<translation id="1400243387594338234">Pots utilitzar aquest PIN per iniciar la sessió al dispositiu</translation>
 <translation id="1401216725754314428">Més informació sobre els llocs web relacionats en una pestanya nova</translation>
 <translation id="1402426911829176748">S'està connectant amb el dispositiu</translation>
 <translation id="1403222014593521787">No s'ha pogut connectar amb el servidor intermediari</translation>
@@ -1926,6 +1929,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2326931316514688470">&amp;Tornar a carregar l'aplicació</translation>
 <translation id="2327492829706409234">Activa l'aplicació</translation>
 <translation id="2327920026543055248">Introdueix el caràcter <ph name="CHARACTER" /> de <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Restableix el PIN</translation>
 <translation id="2328561734797404498">Reinicia el dispositiu per utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quan estàs en mode d'incògnit, els llocs web només poden fer servir les galetes per veure la teva activitat de navegació en aquests mateixos llocs web. Les galetes se suprimeixen en finalitzar la sessió d'incògnit.</translation>
 <translation id="2329597144923131178">Inicieu la sessió per tenir adreces d'interès, historial, contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
@@ -3772,6 +3776,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3670480940339182416">Els llocs web poden utilitzar l'optimitzador de V8</translation>
 <translation id="3672681487849735243">S'ha detectat un error de fàbrica</translation>
 <translation id="3673097791729989571">Inici de sessió allotjat per <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">S'ha actualitzat el teu PIN</translation>
 <translation id="3673622964532248901">No tens permís per emetre en aquest dispositiu.</translation>
 <translation id="3675683621636519363">Envia informes d'error i dades d'ús i de diagnòstic a ChromeOS Flex</translation>
 <translation id="367645871420407123">deixeu-ho en blanc si voleu establir el valor predeterminat de la imatge de prova com a contrasenya arrel</translation>
@@ -11306,6 +11311,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9101691533782776290">Inicia l'aplicació</translation>
 <translation id="9102610709270966160">Activa l'extensió</translation>
 <translation id="9102864637938129124">Els llocs web i els anunciants poden entendre el rendiment dels anuncis. Aquesta opció de configuració està activada.</translation>
+<translation id="9103341231213089378">Per emetre-la, dona accés a Chrome a <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Xarxa local &gt; Chrome</translation>
 <translation id="9103868373786083162">Premeu per anar cap enrere, menú contextual per veure l'historial</translation>
 <translation id="9107096627210171112">T&amp;radueix...</translation>
 <translation id="9107624673674616016">Llapis de color</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1061864016440983342">Usar sem localização</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">A Inserção multimídia não pode ser usada para criar atalhos personalizados.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6526200165918397681">Combinar com plano de fundo</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido</translation>
+<translation id="6531528791584205545">inserção multimídia</translation>
 <translation id="6535178685492749208">Você está off-line. O feedback será enviado mais tarde.</translation>
 <translation id="6543412779435705598">tacos mexicanos</translation>
 <translation id="6550369542114086980">na quinta feira</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6673898378497337661">aumentar brilho do teclado</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6694534975463174713">cadeado</translation>
+<translation id="6700703207451721535">Não é permitido acessar este link. Entre em contato com seu professor se precisar de acesso.</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6712933881624804031">vale</translation>
 <translation id="6716013206176357696">morangos</translation>

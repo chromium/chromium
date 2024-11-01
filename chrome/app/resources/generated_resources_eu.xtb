@@ -169,6 +169,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1108938384783527433">Historiaren sinkronizazioa</translation>
 <translation id="1110155001042129815">Itxaron</translation>
 <translation id="1110965959145884739">Aukeratu gailuan instalatu nahi dituzun hizkuntza-paketeak. Erabiltzaileek hizkuntza-fitxategiak partekatzen dituzte, diskoko tokia aurrezteko. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Haurrak gailuan saioa hasteko erabil dezake PIN hau</translation>
 <translation id="1112420131909513020">Atzeko planoko fitxa bat Bluetootha erabiltzen ari da</translation>
 <translation id="1112998165730922436">Igortzea pausatu da</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="113050636487300043">Aukeratu izen eta kolore-gai bat profilak bereizteko</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />, <ph name="GROUP_NAME" /> taldekoa</translation>
 <translation id="1130676589211693127">Eskuineko aurikularrari bateriaren ehuneko <ph name="PERCENTAGE" /> geratzen zaio.</translation>
+<translation id="1131201598497838573">Eguneratu da haurraren PINa</translation>
 <translation id="1133418583142946603">Gehitu fitxa hau</translation>
 <translation id="1134363466745332968">Orrien eduki orokorrean oinarrituta egin ditzakezu arakatze-historiako bilaketak, ez orriaren izenean eta URLan oinarrituta soilik. Horrela, emaitza hobeagoak lortuko dituzu, eta ez du axola helbide-barratik (@history erabiliz) edo Historia orritik egiten duzun arakatze-historiako bilaketa.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />: <ph name="EMOJI_COUNT" />/<ph name="EMOJI_INDEX" />.</translation>
@@ -564,6 +566,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1397594434718759194">Gailu hauetan Chrome-ko saioa hasita daukazunez, segurtasun-giltza gisa erabil ditzakezu.</translation>
 <translation id="1398853756734560583">Maximizatu</translation>
 <translation id="1399261165075500043">Ezin dira kargatu Google Play-ren Zerbitzu-baldintzak</translation>
+<translation id="1400243387594338234">Gailuan saioa hasteko erabil dezakezu PIN hau</translation>
 <translation id="1401216725754314428">Lortu erlazionatutako webguneei buruzko informazio gehiago beste fitxa batean</translation>
 <translation id="1402426911829176748">Gailura konektatzen</translation>
 <translation id="1403222014593521787">Ezin da konektatu proxyra</translation>
@@ -1926,6 +1929,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2326931316514688470">&amp;Kargatu berriro aplikazioa</translation>
 <translation id="2327492829706409234">Gaitu aplikazioa</translation>
 <translation id="2327920026543055248">Idatzi <ph name="TOTAL" /> karakteretatik <ph name="CHARACTER" />garrena</translation>
+<translation id="2328137272841210255">Berrezarri PINa</translation>
 <translation id="2328561734797404498">Berrabiarazi gailua <ph name="APP_NAME" /> erabiltzeko.</translation>
 <translation id="2328636661627946415">Ezkutuko moduan zaudenean, webguneek bertan egiten dituzun arakatze-jarduerak soilik ikusteko erabil ditzakete cookieak. Cookieak ezabatu egiten dira ezkutuko moduko saioa amaitzen denean.</translation>
 <translation id="2329597144923131178">Hasi saioa laster-markak, historia, pasahitzak eta bestelakoak gailu guztietan izateko.</translation>
@@ -3772,6 +3776,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3670480940339182416">Webguneek V8 optimizatzailea erabil dezakete</translation>
 <translation id="3672681487849735243">Errore bat hauteman da jatorrizko hardwarean</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> domeinuak ostatatzen du saio-hasiera</translation>
+<translation id="3673287357837016374">Eguneratu da PINa</translation>
 <translation id="3673622964532248901">Ez duzu gailu honetara edukia igortzeko baimenik.</translation>
 <translation id="3675683621636519363">Bidali hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak ChromeOS Flex-era</translation>
 <translation id="367645871420407123">Utzi hutsik erroko pasahitza testu-irudiaren balio lehenetsi gisa ezarri nahi baduzu</translation>
@@ -11301,6 +11306,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9101691533782776290">Exekutatu aplikazioa</translation>
 <translation id="9102610709270966160">Gaitu luzapena</translation>
 <translation id="9102864637938129124">Webguneek eta iragarleek iragarkien errendimendua uler dezakete. Aktibatuta dago ezarpena.</translation>
+<translation id="9103341231213089378">Igorri ahal izateko, Chrome-ri erabiltzeko baimena eman behar diozu <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Tokiko sarea &gt; Chrome atalean</translation>
 <translation id="9103868373786083162">Sakatu itzultzeko, laster-menua historia ikusteko</translation>
 <translation id="9107096627210171112">Itzuli…</translation>
 <translation id="9107624673674616016">Koloretako arkatza</translation>

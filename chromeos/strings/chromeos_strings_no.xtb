@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
 <translation id="1061864016440983342">Bruk uten posisjon</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Hurtiginnsetting kan ikke brukes for egendefinerte hurtigtaster.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6526200165918397681">Match bakgrunnen</translation>
 <translation id="6527081081771465939">Ukjent Wifi-sikkerhetsprotokoll</translation>
+<translation id="6531528791584205545">hurtiginnsetting</translation>
 <translation id="6535178685492749208">Du er uten nett. Tilbakemeldingen blir sendt senere.</translation>
 <translation id="6543412779435705598">tacoer</translation>
 <translation id="6550369542114086980">på torsdag</translation>

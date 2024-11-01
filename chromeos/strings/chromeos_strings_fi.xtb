@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Poista näytönsäästäjä käytöstä</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
+<translation id="3112413615003385433">Opettaja on poistanut sisältöä School Toolsista</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3122614491980756867">uima-altaat</translation>
 <translation id="3122883569442693641">Lisätietoja</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Muokkaus valmis</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3533790840489634638">uima-allas</translation>
+<translation id="3535802910192338629">Opettaja on lisännyt uutta sisältöä School Toolsiin</translation>
 <translation id="3547264467365135390">Kaava</translation>
 <translation id="3557205324756024651">Paikallinen identiteetti (valinnainen)</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
@@ -1561,6 +1563,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8576249514688522074">Ei ole alustettu</translation>
 <translation id="8584654835905316966">Laiteohjelmiston (<ph name="DEVICE_NAME" />) asennuksen viimeisteleminen versioon <ph name="VERSION" /> edellyttää uudelleenkäynnistystä. Tietokoneesi saattaa käynnistyä uudelleen useita kertoja. Tämä on normaalia.</translation>
 <translation id="8593058461203131755">keskeytä media</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />: lisää toimintoja</translation>
 <translation id="86356131183441916">Vaaleanvioletti</translation>

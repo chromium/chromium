@@ -169,6 +169,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1108938384783527433">Loggsynkronisering</translation>
 <translation id="1110155001042129815">Vent</translation>
 <translation id="1110965959145884739">Velg hvilke språk som skal installeres på denne enheten. Språkfiler deles blant brukere for å spare diskplass. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Barnet kan bruke denne PIN-koden til å logge på enheten sin</translation>
 <translation id="1112420131909513020">En bakgrunnsfane bruker Bluetooth</translation>
 <translation id="1112998165730922436">Castingen er satt på pause</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="113050636487300043">Velg et navn og en farge for å differensiere profilene</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – del av gruppen <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Batterinivået til høyre øreplugg er <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Barnets PIN-kode er oppdatert</translation>
 <translation id="1133418583142946603">Legg til gjeldende fane</translation>
 <translation id="1134363466745332968">Du kan søke i nettleserloggen din basert på generelt sideinnhold – ikke bare sidetitler og nettadresser. Dette gir bedre resultater, enten du søker i nettleserloggen i adressefeltet ved å bruke @history eller via loggsiden.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" /> – <ph name="EMOJI_INDEX" /> av <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1397594434718759194">Du er logget på Chrome på disse enhetene, så du kan bruke dem som sikkerhetsnøkler.</translation>
 <translation id="1398853756734560583">Maksimer</translation>
 <translation id="1399261165075500043">Kan ikke laste inn vilkårene for bruk av Google Play</translation>
+<translation id="1400243387594338234">Du kan bruke denne PIN-koden til å logge på enheten din</translation>
 <translation id="1401216725754314428">Finn ut mer om relaterte nettsteder på en ny fane</translation>
 <translation id="1402426911829176748">Kobler til enheten din</translation>
 <translation id="1403222014593521787">Kunne ikke koble til proxy-tjeneren</translation>
@@ -1933,6 +1936,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2326931316514688470">&amp;Last inn appen på nytt</translation>
 <translation id="2327492829706409234">Aktiver appen</translation>
 <translation id="2327920026543055248">Skriv inn tegn <ph name="CHARACTER" /> av <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Tilbakestill PIN-koden</translation>
 <translation id="2328561734797404498">Start enheten på nytt for å bruke <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Når du er i inkognitomodus, kan nettsteder bare bruke informasjonskapsler for å se nettleseraktiviteten din på sitt eget nettsted. Informasjonskapslene slettes når inkognitoøkten avsluttes.</translation>
 <translation id="2329597144923131178">Logg på for å få bokmerkene, loggen, passordene og de andre innstillingene dine på alle enhetene du bruker.</translation>
@@ -3781,6 +3785,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3670480940339182416">Nettsteder kan bruke V8-optimalisering</translation>
 <translation id="3672681487849735243">En fabrikkfeil har blitt oppdaget</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> er vert for påloggingen</translation>
+<translation id="3673287357837016374">PIN-koden din er oppdatert</translation>
 <translation id="3673622964532248901">Du har ikke tillatelse til å caste til denne enheten.</translation>
 <translation id="3675683621636519363">Send krasjrapporter, diagnostikkdata og bruksdata til ChromeOS Flex</translation>
 <translation id="367645871420407123">la stå tomt hvis du ønsker å sette rot-passordet til standard testbildeverdi</translation>
@@ -11313,6 +11318,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9101691533782776290">Start appen</translation>
 <translation id="9102610709270966160">Slå på utvidelsen</translation>
 <translation id="9102864637938129124">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er på.</translation>
+<translation id="9103341231213089378">For å caste må du gi Chrome tilgang i <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalt nettverk &gt; Chrome</translation>
 <translation id="9103868373786083162">Trykk for å gå tilbake, eller trykk på kontekstmenyen for å se loggen</translation>
 <translation id="9107096627210171112">O&amp;versett…</translation>
 <translation id="9107624673674616016">Fargeblyant</translation>

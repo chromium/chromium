@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">इतिहास सिंक करें</translation>
 <translation id="1110155001042129815">इंतज़ार करें</translation>
 <translation id="1110965959145884739">चुनें कि इस डिवाइस पर कौनसी भाषाएं इंस्टॉल करनी है. डिस्क में बचा स्टोरेज सेव करने के लिए, भाषा फ़ाइलों को उपयोगकर्ताओं में शेयर किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">डिवाइस में साइन इन करने के लिए, आपका बच्चा इस पिन का इस्तेमाल कर सकता है</translation>
 <translation id="1112420131909513020">बैकग्राउंड टैब ब्लूटूथ का इस्तेमाल कर रहा है</translation>
 <translation id="1112998165730922436">कास्ट करने की प्रोसेस रोकी गई</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">प्रोफ़ाइलों के बीच फ़र्क़ करने के लिए, कोई भी नाम और कलर थीम चुनें</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ग्रुप का हिस्सा</translation>
 <translation id="1130676589211693127">दाएं बड में <ph name="PERCENTAGE" />% बैटरी बची है.</translation>
+<translation id="1131201598497838573">आपके बच्चे के खाते का पिन अपडेट कर दिया गया है</translation>
 <translation id="1133418583142946603">मौजूदा टैब जोड़ें</translation>
 <translation id="1134363466745332968">अपना ब्राउज़िंग इतिहास, पेज के टाइटल और यूआरएल के साथ-साथ, पेज के सामान्य कॉन्टेंट के हिसाब से खोजा जा सकता है. ब्राउज़िंग इतिहास को @history का इस्तेमाल करके पता बार में खोजें या इतिहास पेज से खोजें. इससे आपको बेहतर नतीजे मिलते हैं.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> में से <ph name="EMOJI_INDEX" />.</translation>
@@ -565,6 +567,7 @@
 <translation id="1397594434718759194">आपने इन डिवाइसों पर Chrome में साइन इन किया है, इसलिए इन डिवाइसों का इस्तेमाल सुरक्षा कुंजी के तौर पर किया जा सकता है.</translation>
 <translation id="1398853756734560583">बड़ा करें</translation>
 <translation id="1399261165075500043">Google Play की सेवा की शर्तों वाला पेज लोड नहीं किया जा सका</translation>
+<translation id="1400243387594338234">इस पिन का इस्तेमाल करके अपने डिवाइस पर साइन इन किया जा सकेगा</translation>
 <translation id="1401216725754314428">मिलती-जुलती साइटों को नए टैब में देखने के बारे में ज़्यादा जानें</translation>
 <translation id="1402426911829176748">आपके डिवाइस से कनेक्ट किया जा रहा है</translation>
 <translation id="1403222014593521787">प्रॉक्सी सर्वर से कनेक्ट नहीं किया जा सका</translation>
@@ -1940,6 +1943,7 @@
 <translation id="2326931316514688470">और ऐप्लिकेशन रीलोड करें</translation>
 <translation id="2327492829706409234">ऐप्लिकेशन चालू करें</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" /> में से <ph name="CHARACTER" /> वर्ण डालें</translation>
+<translation id="2328137272841210255">अपना पिन रीसेट करें</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> का इस्तेमाल करने के लिए, कृपया अपने डिवाइस को रीस्टार्ट करें.</translation>
 <translation id="2328636661627946415">गुप्त मोड में ब्राउज़ करने पर साइटें, कुकी का इस्तेमाल सिर्फ़ अपनी साइट पर आपकी ब्राउज़िंग गतिविधि देखने के लिए कर सकती हैं. गुप्त मोड वाला सेशन खत्म होने पर कुकी अपने-आप मिट जाती हैं.</translation>
 <translation id="2329597144923131178">अपने सभी डिवाइस पर बुकमार्क, इतिहास, पासवर्ड और दूसरी तरह की सेटिंग पाने के लिए साइन इन करें</translation>
@@ -3788,6 +3792,7 @@
 <translation id="3670480940339182416">साइटें, V8 ऑप्टिमाइज़र का इस्तेमाल कर सकती हैं</translation>
 <translation id="3672681487849735243">फ़ैक्टरी गड़बड़ी का पता लगाया गया है</translation>
 <translation id="3673097791729989571">साइन इन करने की यह सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्ट की गई है</translation>
+<translation id="3673287357837016374">आपका पिन अपडेट कर दिया गया है</translation>
 <translation id="3673622964532248901">आपको इस डिवाइस पर कास्ट करने की अनुमति नहीं है.</translation>
 <translation id="3675683621636519363">ChromeOS Flex को क्रैश रिपोर्ट, ऐप्लिकेशन की परफ़ॉर्मेंस से जुड़ी जानकारी, और इसके इस्तेमाल से जुड़ा डेटा भेजें</translation>
 <translation id="367645871420407123">अगर आप रूट पासवर्ड को इमेज की 'डिफ़ॉल्‍ट टेस्ट वैल्यू' पर सेट करना चाहते हैं, तो खाली छोड़ दें</translation>
@@ -11323,6 +11328,7 @@
 <translation id="9101691533782776290">ऐप्लिकेशन लॉन्च करें</translation>
 <translation id="9102610709270966160">एक्‍सटेंशन चालू करें</translation>
 <translation id="9102864637938129124">साइटें और विज्ञापन देने वाले यह पता कर सकते हैं कि विज्ञापनों की परफ़ॉर्मेंस कैसी है. यह सेटिंग चालू है.</translation>
+<translation id="9103341231213089378">कास्ट करने के लिए, <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Local Network &gt; Chrome में जाकर, Chrome को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="9103868373786083162">वापस जाने के लिए इसे दबाएं, इतिहास देखने के लिए संदर्भ मेन्यू पर जाएं</translation>
 <translation id="9107096627210171112">अनुवाद करें...</translation>
 <translation id="9107624673674616016">पेंसिल कलर</translation>

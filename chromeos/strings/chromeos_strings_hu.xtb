@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
 <translation id="1061864016440983342">Használat helyadatok nélkül</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />/<ph name="INDEX" />. APN, APN neve: <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">A Gyors beillesztés nem használható egyéni gyorsparancsokhoz.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
@@ -1129,6 +1130,7 @@
 <translation id="6517239166834772319">Felfedezés</translation>
 <translation id="6526200165918397681">Háttérkép igazítása</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
+<translation id="6531528791584205545">Gyors beillesztés</translation>
 <translation id="6535178685492749208">Offline állapotban van. A visszajelzést később küldi majd el a rendszer.</translation>
 <translation id="6543412779435705598">tacók</translation>
 <translation id="6550369542114086980">csütörtökön</translation>

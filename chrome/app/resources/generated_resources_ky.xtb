@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">Таржымалды шайкештирүү</translation>
 <translation id="1110155001042129815">Күтө туруңуз</translation>
 <translation id="1110965959145884739">Бул түзмөккө кайсы тилди орнотуу керек экенин тандаңыз. Дисктеги орунду үнөмдөө үчүн тил файлдары бир нече колдонуучунун ортосунда бөлүшүлөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Балаңыз түзмөгүнө кирүү үчүн ушул PIN кодду колдоно алат</translation>
 <translation id="1112420131909513020">Фондогу өтмөк Bluetooth'ду колдонууда</translation>
 <translation id="1112998165730922436">Тышкы экранга чыгаруу тындырылды</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">Профилдерди ажыратып билүү үчүн аталыштарын коюп, темаларынын түстөрүн тандаңыз</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – <ph name="GROUP_NAME" /> тобунун бөлүгү</translation>
 <translation id="1130676589211693127">Оң кулакчындын батареясынын деңгээли: <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Балаңыздын PIN коду жаңыртылды</translation>
 <translation id="1133418583142946603">Учурдагы түзмөктү кошуу</translation>
 <translation id="1134363466745332968">Көрүлгөн вебсайттарды барактын аталышы жана URL дареги боюнча гана эмес, барактын жалпы мазмуну боюнча да издей аласыз. Муну менен дарек тилкесинде көрүлгөн вебсайттарды @history аркылуу же Таржымал барагынан издеп, тагыраак маалымат ала аласыз.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> быйтыкчанын ичинен <ph name="EMOJI_INDEX" />.</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">Chrome'го бул түзмөктөрдөн кирдиңиз, андыктан аларды коопсуздук ачкычтары катары колдоно аласыз.</translation>
 <translation id="1398853756734560583">Чоңойтуу</translation>
 <translation id="1399261165075500043">Google Play Тейлөө шарттарын жүктөгөн жок</translation>
+<translation id="1400243387594338234">Түзмөгүңүзгө кирүү үчүн ушул PIN кодду колдоно аласыз</translation>
 <translation id="1401216725754314428">Окшош сайттар жөнүндө кошумча маалыматты жаңы өтмөктө көрүү</translation>
 <translation id="1402426911829176748">Түзмөгүңүзгө туташууда</translation>
 <translation id="1403222014593521787">Проксиге туташкан жок</translation>
@@ -1939,6 +1942,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2326931316514688470">&amp;Колдонмону кайра жүктөө</translation>
 <translation id="2327492829706409234">Колдонмону иштетүү</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" /> ичинен <ph name="CHARACTER" /> символду киргизиңиз</translation>
+<translation id="2328137272841210255">PIN'иңизди баштапкы абалга келтириңиз</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> колдонмосун ачуудан мурда үчүн түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="2328636661627946415">Жашыруун режимде болгонуңузда сайттар cookie файлдары аркылуу гана сайтында көрүлгөн барактарды көрө алышат. Жашыруун сеанстын аягында cookie файлдары өчүрүлөт.</translation>
 <translation id="2329597144923131178">Бардык түзмөктөрүңүздөн кыстармаларды, таржымалды, сырсөздөрдү жана башка параметрлериңизди алуу үчүн аккаунтка кириңиз.</translation>
@@ -3787,6 +3791,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3670480940339182416">Сайттар V8 оптималдаштыргычын колдоно алышат</translation>
 <translation id="3672681487849735243">Жасалышында ката табылды</translation>
 <translation id="3673097791729989571">Кирүү хосту: <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">PIN кодуңуз жаңырды</translation>
 <translation id="3673622964532248901">Бул түзмөккө тышкы экранга чыгара албайсыз.</translation>
 <translation id="3675683621636519363">Ката жөнүндө кабарларды, мүчүлүштүктөрдү аныктоо маалыматын жана колдонуу статистикасын ChromeOS Flex'ке жөнөтүү</translation>
 <translation id="367645871420407123">эгер тамыр сырсөзүн демейки сынак сүрөтүнүн маанисине койгуңуз келсе бош калтырыңыз</translation>
@@ -11322,6 +11327,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9101691533782776290">Колдонмону ишке киргизүү</translation>
 <translation id="9102610709270966160">Кеңейтүүнү иштетүү</translation>
 <translation id="9102864637938129124">Сайттар менен жарнамачылар жарнамалардын майнаптуулугун талдай алышат. Бул параметр күйүк.</translation>
+<translation id="9103341231213089378">Тышкы экранга чыгаруу үчүн Chrome'го: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Жергиликтүү тармак &gt; Chrome бөлүмүнөн уруксат бериңиз</translation>
 <translation id="9103868373786083162">Артка кайрылуу үчүн басыңыз, таржымалды көрүү үчүн мазмундук меню</translation>
 <translation id="9107096627210171112">Которуу…</translation>
 <translation id="9107624673674616016">Түстүү калем</translation>
