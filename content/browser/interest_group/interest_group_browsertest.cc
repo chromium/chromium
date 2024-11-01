@@ -751,7 +751,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeReportingTimeout, {}},
          {blink::features::kFledgeAuctionDealSupport, {}},
          {blink::features::kFledgeDeprecatedRenderURLReplacements, {}},
-         {blink::features::kFledgeSellerNonce, {}}},
+         {blink::features::kFledgeSellerNonce, {}},
+         {blink::features::kFledgeTrustedSignalsKVv2Support,{}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
