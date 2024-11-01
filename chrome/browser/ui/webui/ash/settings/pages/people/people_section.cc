@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/people/people_section.h"
 
+#include <array>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/edusumer/graduation_utils.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -73,17 +75,10 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const char* GetAccountsPath() {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kPeopleSectionPath
-             : mojom::kMyAccountsSubpagePath;
-}
-
-const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
-  const char* kAccountsPath = GetAccountsPath();
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPeopleSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS,
-       kAccountsPath,
+       mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
@@ -95,31 +90,30 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kPeople}},
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD_V2,
-       kAccountsPath,
+       mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddAccount}},
   });
 
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetRemoveAccountSearchConcepts(
-    const char* accounts_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetRemoveAccountSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_REMOVE,
-       accounts_path,
+       mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kRemoveAccount}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetParentalSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetParentalSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS,
        mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
@@ -129,11 +123,11 @@ const std::vector<SearchConcept>& GetParentalSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT1,
         IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT2, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetGraduationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetGraduationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_GRADUATION,
        mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kGraduation,
@@ -141,7 +135,7 @@ const std::vector<SearchConcept>& GetGraduationSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kGraduation}},
   });
-  return *tags;
+  return tags;
 }
 
 void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
@@ -746,7 +740,7 @@ void PeopleSection::UpdateAccountManagerSearchTags(
 
   // Start with no Account Manager search tags.
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.RemoveSearchTags(GetRemoveAccountSearchConcepts(GetAccountsPath()));
+  updater.RemoveSearchTags(GetRemoveAccountSearchConcepts());
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
   DCHECK(user);
@@ -757,7 +751,7 @@ void PeopleSection::UpdateAccountManagerSearchTags(
     }
 
     // If a non-device account exists, add the "Remove Account" search tag.
-    updater.AddSearchTags(GetRemoveAccountSearchConcepts(GetAccountsPath()));
+    updater.AddSearchTags(GetRemoveAccountSearchConcepts());
     return;
   }
 }
