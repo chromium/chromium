@@ -196,6 +196,8 @@ static_library("ui") {
     "webui/flags/flags_ui_handler.h",
     "webui/gcm_internals_ui.cc",
     "webui/gcm_internals_ui.h",
+    "webui/history_clusters/history_clusters_internals_ui_config.cc",
+    "webui/history_clusters/history_clusters_internals_ui_config.h",
     "webui/internals/internals_ui.cc",
     "webui/internals/internals_ui.h",
     "webui/interstitials/interstitial_ui.cc",
