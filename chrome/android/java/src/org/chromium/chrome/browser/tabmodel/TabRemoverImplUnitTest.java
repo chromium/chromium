@@ -120,6 +120,47 @@ public class TabRemoverImplUnitTest {
     }
 
     @Test
+    public void testCloseTabsHandler_Group_Deletion() {
+        int id = 0;
+        Tab tab0 = mTabModel.addTab(id);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setRootId(id);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(id)).thenReturn(List.of(tab0));
+        TabClosureParams params =
+                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, id).build();
+
+        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = id;
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = TAB_GROUP_ID;
+        savedTabGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
+        when(mTabGroupSyncService.getGroup(SYNC_ID)).thenReturn(savedTabGroup);
+
+        GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
+        assertFalse(groupsPendingDestroy.isEmpty());
+        assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
+        assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
+
+        // No placeholder tabs created.
+
+        handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(mOnResultCaptor.capture());
+        mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener).onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+
+        handler.performAction();
+        verify(mTabGroupModelFilter).closeTabs(any(TabClosureParams.class));
+
+        verifyNoMoreInteractions(mListener);
+    }
+
+    @Test
     public void testCloseTabsHandler_Deletion() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);

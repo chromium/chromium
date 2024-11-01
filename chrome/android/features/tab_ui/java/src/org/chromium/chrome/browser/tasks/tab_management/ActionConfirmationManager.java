@@ -84,8 +84,8 @@ public class ActionConfirmationManager {
     }
 
     /**
-     * A close group is an operation on tab group(s), and while it may contain non-grouped tabs, it
-     * is not an action on individual tabs within a group.
+     * Process a close tab group operation that would delete the group. This does not include
+     * per-tab operations, for that {@see processCloseTabAttempt}.
      */
     public void processDeleteGroupAttempt(Callback<Integer> onResult) {
         processMaybeSyncAndPrefAction(

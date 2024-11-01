@@ -113,8 +113,12 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
-            mActionConfirmationManager.processCloseTabAttempt(
-                    adaptOnResultCallback(onResult, takeListener()));
+            var adaptedCallback = adaptOnResultCallback(onResult, takeListener());
+            if (mOriginalTabClosureParams.isTabGroup) {
+                mActionConfirmationManager.processDeleteGroupAttempt(adaptedCallback);
+            } else {
+                mActionConfirmationManager.processCloseTabAttempt(adaptedCallback);
+            }
         }
 
         @Override
