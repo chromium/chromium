@@ -265,6 +265,13 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self updatePlaceholderView];
   [self updateTrailingButtonState];
   [self switchToEditing:NO];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateTrailingButtonState)];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -281,10 +288,15 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
               object:nil];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [self updateTrailingButtonState];
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateTrailingButtonState];
 }
+#endif
 
 #pragma mark - FullscreenUIElement
 
