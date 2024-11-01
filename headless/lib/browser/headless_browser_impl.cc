@@ -140,6 +140,11 @@ Builder& Builder::SetWindowSize(const gfx::Size& size) {
   return *this;
 }
 
+Builder& Builder::SetScreenScaleFactor(float scale_factor) {
+  options_.screen_scale_factor = scale_factor;
+  return *this;
+}
+
 Builder& Builder::SetIncognitoMode(bool incognito) {
   options_.incognito_mode = incognito;
   return *this;

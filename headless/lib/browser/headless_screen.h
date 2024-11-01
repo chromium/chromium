@@ -8,13 +8,15 @@
 #include "ui/display/display.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace headless {
 
 class HeadlessScreen : public display::ScreenBase {
  public:
-  // Creates a display::Screen of the specified size (physical pixels).
-  static HeadlessScreen* Create(const gfx::Size& size);
+  // Creates a display::Screen of the specified size and scale factor.
+  static HeadlessScreen* Create(const gfx::Size& size, float scale_factor);
 
   HeadlessScreen(const HeadlessScreen&) = delete;
   HeadlessScreen& operator=(const HeadlessScreen&) = delete;
@@ -36,7 +38,7 @@ class HeadlessScreen : public display::ScreenBase {
       gfx::NativeWindow window) const override;
 
  private:
-  explicit HeadlessScreen(const gfx::Rect& screen_bounds);
+  HeadlessScreen(const gfx::Rect& bounds, float scale_factor);
 
   void UpdateScreenSizeForScreenOrientationImpl(
       display::mojom::ScreenOrientation screen_orientation);

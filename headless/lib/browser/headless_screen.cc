@@ -7,8 +7,9 @@
 namespace headless {
 
 // static
-HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size) {
-  return new HeadlessScreen(gfx::Rect(size));
+HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size,
+                                       float scale_factor) {
+  return new HeadlessScreen(gfx::Rect(size), scale_factor);
 }
 
 HeadlessScreen::~HeadlessScreen() = default;
@@ -37,10 +38,10 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   return GetPrimaryDisplay();
 }
 
-HeadlessScreen::HeadlessScreen(const gfx::Rect& screen_bounds) {
+HeadlessScreen::HeadlessScreen(const gfx::Rect& bounds, float scale_factor) {
   static int64_t synthesized_display_id = 2000;
   display::Display display(synthesized_display_id++);
-  display.SetScaleAndBounds(1.0f, screen_bounds);
+  display.SetScaleAndBounds(scale_factor, bounds);
   ProcessDisplayChanged(display, /*is_primary=*/true);
 }
 

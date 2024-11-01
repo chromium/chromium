@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -36,6 +37,24 @@ namespace {
 
 static const base::FilePath kTestsDirectory(
     FILE_PATH_LITERAL("headless/test/data/protocol"));
+
+// This is a very simple command line switches parser intended to process '--'
+// separated switches with or without values. It will not process nested command
+// line switches specifications like --js-flags=--expose-gc. Use with caution!
+void AppendCommandLineExtras(base::CommandLine* command_line,
+                             std::string_view extras) {
+  std::vector<std::string> switches = base::SplitStringUsingSubstr(
+      extras, "--", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const auto& a_switch : switches) {
+    if (size_t pos = a_switch.find('=', 1); pos != std::string::npos) {
+      command_line->AppendSwitchASCII(a_switch.substr(0, pos),
+                                      a_switch.substr(pos + 1));
+    } else {
+      command_line->AppendSwitch(a_switch);
+    }
+  }
+}
 
 }  // namespace
 
@@ -524,5 +543,29 @@ class HeadlessProtocolBrowserTestWithExposeGC
 HEADLESS_PROTOCOL_TEST_WITH_EXPOSE_GC(
     GetDOMCountersForLeakDetection,
     "sanity/get-dom-counters-for-leak-detection.js")
+
+#define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
+    TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \
+                                                                      \
+  class HeadlessProtocolBrowserTestWithCommandLineExtras_##TEST_NAME  \
+      : public HeadlessProtocolBrowserTest {                          \
+   public:                                                            \
+    void SetUpCommandLine(base::CommandLine* command_line) override { \
+      HeadlessProtocolBrowserTest::SetUpCommandLine(command_line);    \
+      AppendCommandLineExtras(command_line, COMMAND_LINE_EXTRAS);     \
+    }                                                                 \
+  };                                                                  \
+                                                                      \
+  IN_PROC_BROWSER_TEST_F(                                             \
+      HeadlessProtocolBrowserTestWithCommandLineExtras_##TEST_NAME,   \
+      TEST_NAME) {                                                    \
+    test_folder_ = "/protocol/";                                      \
+    script_name_ = SCRIPT_NAME;                                       \
+    RunTest();                                                        \
+  }
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(ScreenScaleFactor,
+                                                "sanity/screen-scale-factor.js",
+                                                "--screen-scale-factor=3.0")
 
 }  // namespace headless

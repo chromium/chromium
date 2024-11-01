@@ -114,8 +114,11 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   std::unique_ptr<net::ProxyConfig> proxy_config;
 
   // Default window size. This is also used to create the window tree host and
-  // as initial screen size. Defaults to 800x600.
+  // as the headless screen size. Defaults to 800x600.
   gfx::Size window_size;
+
+  // Headless screen scale factor.
+  float screen_scale_factor = 1.0;
 
   // Path to user data directory, where browser will look for its state.
   // If empty, default directory (where the binary is located) will be used.
@@ -175,6 +178,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetUserAgent(const std::string& agent);
   Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> config);
   Builder& SetWindowSize(const gfx::Size& size);
+  Builder& SetScreenScaleFactor(float scale_factor);
   Builder& SetUserDataDir(const base::FilePath& dir);
   Builder& SetDiskCacheDir(const base::FilePath& dir);
   Builder& SetIncognitoMode(bool incognito);
