@@ -6,7 +6,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
-import {CookieControlsMode, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CookieControlsMode, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -32,6 +32,13 @@ suite('CookiesPageTest', function() {
     return group;
   }
 
+  function thirdPartyCookieBlockingSettingGroup(): SettingsRadioGroupElement {
+    const group = page.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+        '#thirdPartyCookieBlockingSettingGroup');
+    assertTrue(!!group);
+    return group;
+  }
+
   function blockThirdParty(): SettingsCollapseRadioButtonElement {
     return page.shadowRoot!.querySelector('#blockThirdParty')!;
   }
@@ -42,6 +49,14 @@ suite('CookiesPageTest', function() {
 
   function allowThirdParty(): SettingsCollapseRadioButtonElement {
     return page.shadowRoot!.querySelector('#allowThirdParty')!;
+  }
+
+  function blockAll3pc(): SettingsCollapseRadioButtonElement {
+    return page.shadowRoot!.querySelector('#blockAll3pc')!;
+  }
+
+  function block3pcIncognito(): SettingsCollapseRadioButtonElement {
+    return page.shadowRoot!.querySelector('#block3pcIncognito')!;
   }
 
   suiteSetup(function() {
@@ -68,6 +83,9 @@ suite('CookiesPageTest', function() {
     page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
     page.set(
         'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+    page.set(
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
     document.body.appendChild(page);
     flush();
   });
@@ -130,6 +148,40 @@ suite('CookiesPageTest', function() {
     testMetricsBrowserProxy.reset();
   });
 
+  test(
+      'thirdPartyCookiesRadioClicksRecorded_alwaysBlock3pcsIncognito',
+      async function() {
+        loadTimeData.overrideValues({
+          isAlwaysBlock3pcsIncognitoEnabled: true,
+          is3pcdCookieSettingsRedesignEnabled: false,
+        });
+
+        blockAll3pc().click();
+        await eventToPromise(
+            'selected-changed', thirdPartyCookieBlockingSettingGroup());
+        assertEquals(
+            page.getPref('generated.third_party_cookie_blocking_setting.value'),
+            ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+        let result = await testMetricsBrowserProxy.whenCalled(
+            'recordSettingsPageHistogram');
+        assertEquals(
+            PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK, result);
+        testMetricsBrowserProxy.reset();
+
+        block3pcIncognito().click();
+        await eventToPromise(
+            'selected-changed', thirdPartyCookieBlockingSettingGroup());
+        assertEquals(
+            page.getPref('generated.third_party_cookie_blocking_setting.value'),
+            ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+        result = await testMetricsBrowserProxy.whenCalled(
+            'recordSettingsPageHistogram');
+        assertEquals(
+            PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO,
+            result);
+        testMetricsBrowserProxy.reset();
+      });
+
   test('privacySandboxToast', async function() {
     assertFalse(page.$.toast.open);
 
@@ -149,7 +201,7 @@ suite('CookiesPageTest', function() {
     // TODO(crbug.com/40244046): Check historgrams.
     assertFalse(page.$.toast.open);
 
-    // Renabling 3P cookies for regular sessions should not display the toast.
+    // Re-enabling 3P cookies for regular sessions should not display the toast.
     blockThirdPartyIncognito().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     await flushTasks();
@@ -158,7 +210,7 @@ suite('CookiesPageTest', function() {
         CookieControlsMode.INCOGNITO_ONLY);
     assertFalse(page.$.toast.open);
 
-    // The toast should not be displayed if the user has all privacy sandbox
+    // The toast should not be displayed if the user has any privacy sandbox
     // APIs disabled.
     page.set('prefs.privacy_sandbox.m1.topics_enabled.value', false);
     blockThirdParty().click();
@@ -206,6 +258,72 @@ suite('CookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
+  test('privacySandboxToast_alwaysBlock3pcsIncognito', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isPrivacySandboxRestricted: false,
+    });
+    assertFalse(page.$.toast.open);
+
+    // Disabling third-party cookies should display the privacy sandbox toast.
+    page.set(
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    blockAll3pc().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    assertTrue(page.$.toast.open);
+
+    // Re-enabling 3P cookies for regular sessions should not display the toast.
+    block3pcIncognito().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    assertFalse(page.$.toast.open);
+
+    // The toast should not be displayed if the user has any privacy sandbox
+    // APIs disabled.
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', false);
+    blockAll3pc().click();
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    assertFalse(page.$.toast.open);
+
+    // Reset the state to show the toast.
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
+    page.set(
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    blockAll3pc().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    assertTrue(page.$.toast.open);
+
+    // Reselecting a non-3P cookie blocking setting should hide the toast.
+    block3pcIncognito().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    assertFalse(page.$.toast.open);
+  });
+
   test('privacySandboxToast_restrictedSandbox', async function() {
     // No toast should be shown if the privacy sandbox is restricted
     loadTimeData.overrideValues({isPrivacySandboxRestricted: true});
@@ -246,6 +364,38 @@ suite('CookiesPageTest', function() {
     assertEquals(
         CookieControlsMode.INCOGNITO_ONLY,
         page.prefs.profile.cookie_controls_mode.value);
+    assertTrue(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
+  });
+
+  test('disabledRWSToggle_alwaysBlock3pcsIncognito', async () => {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+      is3pcdCookieSettingsRedesignEnabled: false,
+    });
+    resetRouterForTesting();
+
+    // Verify the RWS toggle is enabled iff the user has selected block 3PCs.
+    const relatedWebsiteSetsToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#relatedWebsiteSetsToggle3pcSetting')!;
+    blockAll3pc().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY,
+        page.prefs.generated.third_party_cookie_blocking_setting.value);
+    assertFalse(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be enabled');
+
+    block3pcIncognito().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY,
+        page.prefs.generated.third_party_cookie_blocking_setting.value);
     assertTrue(
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
   });
