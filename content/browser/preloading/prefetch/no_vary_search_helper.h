@@ -168,8 +168,6 @@ void IterateCandidates(
       } else {
         return MatchType::kOther;
       }
-
-      NOTREACHED();
     }();
 
     if (callback.Run(it->second, match_type) ==
