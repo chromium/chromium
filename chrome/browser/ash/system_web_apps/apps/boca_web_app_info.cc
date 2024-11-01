@@ -32,8 +32,8 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
   info->title = l10n_util::GetStringUTF16(IDS_SCHOOL_TOOLS_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url(),
-      {{"app_icon_120.png", 120, IDR_ASH_BOCA_UI_APP_ICON_120_PNG}}, *info);
+      info->start_url(), {{"icon_256.png", 256, IDR_ASH_BOCA_UI_ICON_256_PNG}},
+      *info);
   info->theme_color =
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
   info->dark_mode_theme_color =
