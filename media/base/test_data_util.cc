@@ -74,6 +74,7 @@ using FileToMimeTypeMap = base::flat_map<std::string, std::string>;
 // main profile, a new mime type should be added.
 const FileToMimeTypeMap& GetFileToMimeTypeMap() {
   static const base::NoDestructor<FileToMimeTypeMap> kFileToMimeTypeMap({
+      {"bear-1280x720-av_frag.mp4", kMp4AacAudioAvc1Video},
       {"bear-1280x720-a_frag-cenc-key_rotation.mp4", kMp4AacAudio},
       {"bear-1280x720-a_frag-cenc.mp4", kMp4AacAudio},
       {"bear-1280x720-a_frag-cenc_clear-all.mp4", kMp4AacAudio},
