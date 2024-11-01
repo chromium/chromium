@@ -135,6 +135,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       const base::UnguessableToken& nonce,
       const std::set<GURL>& exemptions);
 
+  // Returns whether CORS preflight request flowing through this
+  // URLLoaderFactory should represent an error or not.
+  bool IsCorsPreflighLoadOptionAllowed() const;
+
  private:
   class FactoryOverride;
 

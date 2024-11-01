@@ -18,9 +18,11 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/url_request/url_request_context.h"
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/network_service.h"
@@ -246,6 +248,21 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
   DCHECK_NE(mojom::kInvalidProcessId, process_id_);
   DCHECK_EQ(net::IsolationInfo::RequestType::kOther,
             params->isolation_info.request_type());
+  if (context_->url_request_context()->bound_network() !=
+      net::handles::kInvalidNetworkHandle) {
+    // CorsURLLoaderFactories bound to a network allow CORS preflight load
+    // options (see CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed for
+    // the rationale). To prevent security issues, such a factory must not be
+    // issuing CORS preflight requests itself. This is, for example, to prevent
+    // compromised renderers from using a CorsURLLoaderFactory that doesn't
+    // trigger CORS preflight requests, but also does not fail requests which
+    // represent CORS preflights. In other words, these two things are mutually
+    // exclusive and a CorsURLLoaderFactory must either:
+    // 1. Perform CORS, but fail loads that represent CORS preflight requests
+    // 2. Allow loads that represent CORS preflight requests, but do not perform
+    //    CORS
+    DCHECK(disable_web_security_);
+  }
   if (params->automatically_assign_isolation_info) {
     DCHECK(params->isolation_info.IsEmpty());
     // Only the browser process is currently permitted to use automatically
@@ -535,6 +552,45 @@ bool CorsURLLoaderFactory::IsValidCorsExemptHeaders(
   return true;
 }
 
+bool CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed() const {
+  // kURLLoadOptionAsCorsPreflight is set by CorsURLLoader itself, when
+  // starting a request, if CORS preflight request is needed.
+  // More precisely:
+  // - CorsURLLoader will create an additional request
+  // - Set kURLLoadOptionAsCorsPreflight within that one
+  // - Send that request via the network URLLoaderFactory that
+  //   CorsURLLoaderFactory is wrapping
+  // The code then makes the following assumption: the network
+  // URLLoaderFactory should not be a CorsURLLoaderFactory. As such,
+  // we should never see kURLLoadOptionAsCorsPreflight for a
+  // request going through CorsURLLoaderFactory (since they should only be sent
+  // via network URLLoaderFactories, which we're assuming are not
+  // CorsURLLoaderFactories).
+  // This is generally true, with the exception of two special scenarios:
+  // 1) PreflightControllerTest, tracked at crbug.com/40203308 and allowed via
+  //    `allow_external_preflights_for_testing_`.
+  // 2) Multi-network CCT, tracked at crbug.com/366242716 and allowed via
+  //    context_->url_request_context()->bound_network().
+  // In both scenarios, we end up with a CorsURLLoaderFactory acting as another
+  // CorsURLLoaderFactory's network URLLoaderFactory (for different reasons,
+  // see associated bugs for context). This is due to the way
+  // `URLLoaderFactoryParams.disable_web_security` works: the generated
+  // URLLoaderFactory won't create CorsURLLoaders but it will still be a
+  // CorsURLLoaderFactory. Due to that, the CORS preflight request will be
+  // flowing through the inner CorsURLLoaderFactory: here, we must not fail
+  // them, as this happening is "correct".
+  //
+  // Note: we could also just check for `disable_web_security_`. This is
+  // "simpler", but it casts a widernet : the subset of calling sites disabling
+  // web security is bigger than those creating a CorsURLLoaderFactory targeting
+  // a valid network. So, given that this config is security critical, it's best
+  // to "peek into implementation details" rather than granting this exception
+  // to a bigger group.
+  return allow_external_preflights_for_testing_ ||
+         context_->url_request_context()->bound_network() !=
+             net::handles::kInvalidNetworkHandle;
+}
+
 bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
                                           uint32_t options) {
   if (request.url.SchemeIs(url::kDataScheme)) {
@@ -742,14 +798,11 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  if (!allow_external_preflights_for_testing_) {
-    // kURLLoadOptionAsCorsPreflight should be set only by the network service.
-    // Otherwise the network service will be confused.
-    if (options & mojom::kURLLoadOptionAsCorsPreflight) {
-      mojo::ReportBadMessage(
-          "CorsURLLoaderFactory: kURLLoadOptionAsCorsPreflight is set");
-      return false;
-    }
+  if ((options & mojom::kURLLoadOptionAsCorsPreflight) &&
+      !IsCorsPreflighLoadOptionAllowed()) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: kURLLoadOptionAsCorsPreflight is set");
+    return false;
   }
 
   if (!VerifyTrustTokenParamsIntegrityIfPresent(

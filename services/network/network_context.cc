@@ -942,6 +942,14 @@ void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(
   url_loader_factory_params->process_id = mojom::kBrowserProcessId;
   url_loader_factory_params->automatically_assign_isolation_info = true;
   url_loader_factory_params->is_orb_enabled = false;
+  if (url_request_context()->bound_network() !=
+      net::handles::kInvalidNetworkHandle) {
+    // This is done to maintain consistency with network-bound
+    // URLLoaderFactories used by multi-network CCT. See
+    // CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed
+    // http://crrev.com/c/5899528.
+    url_loader_factory_params->disable_web_security = true;
+  }
   CreateURLLoaderFactory(std::move(factory_receiver),
                          std::move(url_loader_factory_params));
 }
