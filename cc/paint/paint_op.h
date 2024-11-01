@@ -518,6 +518,7 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
   }
   bool EqualsForTesting(const DrawImageOp& other) const;
   bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
+  PaintFlags::FilterQuality GetImageQuality() const;
   bool HasNonAAPaint() const { return false; }
   HAS_SERIALIZATION_FUNCTIONS();
 
@@ -560,6 +561,7 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
   }
   bool EqualsForTesting(const DrawImageRectOp& other) const;
   bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
+  PaintFlags::FilterQuality GetImageQuality() const;
   HAS_SERIALIZATION_FUNCTIONS();
 
   PaintImage image;

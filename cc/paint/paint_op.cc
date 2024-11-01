@@ -78,13 +78,13 @@ PaintFlags::FilterQuality sampling_to_quality(
 
 DrawImage CreateDrawImage(const PaintImage& image,
                           const PaintFlags* flags,
-                          const SkSamplingOptions& sampling,
+                          const PaintFlags::FilterQuality& quality,
                           const SkM44& matrix) {
   if (!image)
     return DrawImage();
   return DrawImage(image, flags->useDarkModeForImage(),
-                   SkIRect::MakeWH(image.width(), image.height()),
-                   sampling_to_quality(sampling), matrix);
+                   SkIRect::MakeWH(image.width(), image.height()), quality,
+                   matrix);
 }
 
 bool IsScaleAdjustmentIdentity(const SkSize& scale_adjustment) {
@@ -482,9 +482,9 @@ void DrawImageOp::Serialize(PaintOpWriter& writer,
   writer.Write(*flags_to_serialize, current_ctm);
 
   SkSize serialized_scale_adjustment = SkSize::Make(1.f, 1.f);
-  writer.Write(
-      CreateDrawImage(image, flags_to_serialize, sampling, current_ctm),
-      &serialized_scale_adjustment);
+  writer.Write(CreateDrawImage(image, flags_to_serialize, GetImageQuality(),
+                               current_ctm),
+               &serialized_scale_adjustment);
   writer.Write(serialized_scale_adjustment.width());
   writer.Write(serialized_scale_adjustment.height());
 
@@ -504,8 +504,9 @@ void DrawImageRectOp::Serialize(PaintOpWriter& writer,
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize serialized_scale_adjustment = SkSize::Make(1.f, 1.f);
-  writer.Write(CreateDrawImage(image, flags_to_serialize, sampling, matrix),
-               &serialized_scale_adjustment);
+  writer.Write(
+      CreateDrawImage(image, flags_to_serialize, GetImageQuality(), matrix),
+      &serialized_scale_adjustment);
   writer.Write(serialized_scale_adjustment.width());
   writer.Write(serialized_scale_adjustment.height());
 
@@ -1316,9 +1317,9 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   }
 
   // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(
-      op->image, false, SkIRect::MakeWH(op->image.width(), op->image.height()),
-      sampling_to_quality(op->sampling), canvas->getLocalToDevice());
+  DrawImage draw_image(op->image, false,
+                       SkIRect::MakeWH(op->image.width(), op->image.height()),
+                       op->GetImageQuality(), canvas->getLocalToDevice());
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -1446,8 +1447,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   op->src.roundOut(&int_src_rect);
 
   // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(op->image, false, int_src_rect,
-                       sampling_to_quality(op->sampling), matrix);
+  DrawImage draw_image(op->image, false, int_src_rect, op->GetImageQuality(),
+                       matrix);
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -2490,6 +2491,10 @@ bool DrawImageOp::HasDiscardableImages(
   return IsDiscardableImage(image, content_color_usage);
 }
 
+PaintFlags::FilterQuality DrawImageOp::GetImageQuality() const {
+  return sampling_to_quality(sampling);
+}
+
 DrawImageOp::~DrawImageOp() = default;
 
 DrawImageRectOp::DrawImageRectOp() : PaintOpWithFlags(kType) {}
@@ -2520,6 +2525,10 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
 bool DrawImageRectOp::HasDiscardableImages(
     gfx::ContentColorUsage* content_color_usage) const {
   return IsDiscardableImage(image, content_color_usage);
+}
+
+PaintFlags::FilterQuality DrawImageRectOp::GetImageQuality() const {
+  return sampling_to_quality(sampling);
 }
 
 DrawImageRectOp::~DrawImageRectOp() = default;
