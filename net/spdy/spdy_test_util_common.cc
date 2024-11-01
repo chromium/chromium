@@ -26,6 +26,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/proxy_delegate.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -474,7 +475,8 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
   base::WeakPtr<SpdySession> spdy_session;
   rv =
       http_session->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-          key, std::move(connection), net_log, &spdy_session);
+          key, std::move(connection), net_log,
+          MultiplexedSessionCreationInitiator::kUnknown, &spdy_session);
   // Failure is reported asynchronously.
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
@@ -563,7 +565,8 @@ base::WeakPtr<SpdySession> CreateFakeSpdySession(SpdySessionPool* pool,
   handle->SetSocket(std::make_unique<FakeSpdySessionClientSocket>());
   base::WeakPtr<SpdySession> spdy_session;
   int rv = pool->CreateAvailableSessionFromSocketHandle(
-      key, std::move(handle), NetLogWithSource(), &spdy_session);
+      key, std::move(handle), NetLogWithSource(),
+      MultiplexedSessionCreationInitiator::kUnknown, &spdy_session);
   // Failure is reported asynchronously.
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);

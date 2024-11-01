@@ -1127,10 +1127,16 @@ int HttpStreamFactory::Job::DoCreateStream() {
     connection_->CloseIdleSocketsInGroup("Switching to HTTP2 session");
   }
 
+  auto initiator =
+      (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
+          ? MultiplexedSessionCreationInitiator::kPreconnect
+          : MultiplexedSessionCreationInitiator::kUnknown;
+
   base::WeakPtr<SpdySession> spdy_session;
   int rv =
       session_->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-          spdy_session_key_, std::move(connection_), net_log_, &spdy_session);
+          spdy_session_key_, std::move(connection_), net_log_, initiator,
+          &spdy_session);
 
   if (rv != OK) {
     return rv;

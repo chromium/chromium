@@ -21,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -174,6 +175,7 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       std::unique_ptr<StreamSocketHandle> stream_socket_handle,
       const NetLogWithSource& net_log,
+      const MultiplexedSessionCreationInitiator session_creation_initiator,
       base::WeakPtr<SpdySession>* session);
 
   // Just like the above method, except it takes a SocketStream instead of a
@@ -395,8 +397,10 @@ class NET_EXPORT SpdySessionPool
 
   // Creates a new session. The session must be initialized before
   // InsertSession() is invoked.
-  std::unique_ptr<SpdySession> CreateSession(const SpdySessionKey& key,
-                                             NetLog* net_log);
+  std::unique_ptr<SpdySession> CreateSession(
+      const SpdySessionKey& key,
+      NetLog* net_log,
+      const MultiplexedSessionCreationInitiator session_creation_initiator);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.
   base::expected<base::WeakPtr<SpdySession>, int> InsertSession(

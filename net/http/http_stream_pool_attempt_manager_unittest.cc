@@ -25,6 +25,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -637,7 +638,7 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     base::WeakPtr<SpdySession> spdy_session;
     int rv = spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
         group.spdy_session_key(), std::move(handle), NetLogWithSource(),
-        &spdy_session);
+        MultiplexedSessionCreationInitiator::kUnknown, &spdy_session);
     CHECK_EQ(rv, OK);
     // See the comment of CreateFakeSpdySession() in spdy_test_util_common.cc.
     spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());

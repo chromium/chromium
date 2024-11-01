@@ -30,6 +30,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -339,7 +340,8 @@ class NET_EXPORT SpdySession
               bool enable_priority_update,
               TimeFunc time_func,
               NetworkQualityEstimator* network_quality_estimator,
-              NetLog* net_log);
+              NetLog* net_log,
+              MultiplexedSessionCreationInitiator session_creation_initiator);
 
   ~SpdySession() override;
 
@@ -1274,6 +1276,9 @@ class NET_EXPORT SpdySession
   // Network quality estimator to which the ping RTTs should be reported. May be
   // nullptr.
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
+
+  // Represents how this session is created.
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
 
   // Used for accessing the SpdySession from asynchronous tasks. An asynchronous
   // must check if its WeakPtr<SpdySession> is valid before accessing it, to

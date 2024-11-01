@@ -217,6 +217,7 @@ component("net") {
     "base/mime_sniffer.h",
     "base/mime_util.cc",
     "base/mime_util.h",
+    "base/multiplexed_session_creation_initiator.h",
     "base/net_error_details.h",
     "base/net_error_list.h",
     "base/net_errors.cc",

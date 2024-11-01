@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
@@ -152,12 +153,13 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const SpdySessionKey& key,
     std::unique_ptr<StreamSocketHandle> stream_socket_handle,
     const NetLogWithSource& net_log,
+    const MultiplexedSessionCreationInitiator session_creation_initiator,
     base::WeakPtr<SpdySession>* session) {
   TRACE_EVENT0(NetTracingCategory(),
                "SpdySessionPool::CreateAvailableSessionFromSocketHandle");
 
   std::unique_ptr<SpdySession> new_session =
-      CreateSession(key, net_log.net_log());
+      CreateSession(key, net_log.net_log(), session_creation_initiator);
   std::set<std::string> dns_aliases =
       stream_socket_handle->socket()->GetDnsAliases();
 
@@ -183,8 +185,8 @@ SpdySessionPool::CreateAvailableSessionFromSocket(
   TRACE_EVENT0(NetTracingCategory(),
                "SpdySessionPool::CreateAvailableSessionFromSocket");
 
-  std::unique_ptr<SpdySession> new_session =
-      CreateSession(key, net_log.net_log());
+  std::unique_ptr<SpdySession> new_session = CreateSession(
+      key, net_log.net_log(), MultiplexedSessionCreationInitiator::kUnknown);
   std::set<std::string> dns_aliases = socket_stream->GetDnsAliases();
 
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
@@ -702,7 +704,8 @@ void SpdySessionPool::CloseCurrentSessionsHelper(Error error,
 
 std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
     const SpdySessionKey& key,
-    NetLog* net_log) {
+    NetLog* net_log,
+    const MultiplexedSessionCreationInitiator session_creation_initiator) {
   UMA_HISTOGRAM_ENUMERATION("Net.SpdySessionGet", IMPORTED_FROM_SOCKET,
                             SPDY_SESSION_GET_MAX);
 
@@ -729,7 +732,7 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       session_max_queued_capped_frames_, initial_settings_,
       enable_http2_settings_grease_, greased_http2_frame_,
       http2_end_stream_with_data_frame_, enable_priority_update_, time_func_,
-      network_quality_estimator_, net_log);
+      network_quality_estimator_, net_log, session_creation_initiator);
 }
 
 base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(

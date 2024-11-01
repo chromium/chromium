@@ -18,6 +18,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/multiplexed_session_creation_initiator.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -1392,7 +1393,8 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
         std::move(stream_socket), reuse_type, std::move(connect_timing));
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-            spdy_session_key(), std::move(handle), net_log(), &spdy_session_);
+            spdy_session_key(), std::move(handle), net_log(),
+            MultiplexedSessionCreationInitiator::kUnknown, &spdy_session_);
     if (create_result != OK) {
       HandleAttemptFailure(std::move(in_flight_attempt), create_result);
       return;
