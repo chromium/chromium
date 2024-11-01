@@ -130,7 +130,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
               // well.
               html_element->AddConsoleMessage(
                   mojom::blink::ConsoleMessageSource::kRecommendation,
-                  mojom::blink::ConsoleMessageLevel::kWarning,
+                  mojom::blink::ConsoleMessageLevel::kError,
                   "A descendant of a <select> does not follow the content "
                   "model.");
               break;

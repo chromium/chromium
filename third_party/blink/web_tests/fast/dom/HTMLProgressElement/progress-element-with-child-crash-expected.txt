@@ -1,2 +1,2 @@
-CONSOLE WARNING: A descendant of a <select> does not follow the content model.
+CONSOLE ERROR: A descendant of a <select> does not follow the content model.
 Test for Bug 48019. It is OK not to crash.
