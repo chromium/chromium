@@ -122,6 +122,7 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           display_root_window_);
+  display_id_ = display.id();
 
   display_root_window_->GetHost()->compositor()->AddAnimationObserver(this);
 
@@ -155,6 +156,9 @@ void ArcScreenCaptureSession::Close() {
 }
 
 ArcScreenCaptureSession::~ArcScreenCaptureSession() {
+  // This needs to be done because |buffer_queue_| might own a mojo callback and
+  // the message pipe must be closed before those callbacks are destroyed.
+  receiver_.reset();
   GetContextProvider()->RemoveObserver(this);
 
   if (!display_root_window_) {
@@ -421,6 +425,18 @@ void ArcScreenCaptureSession::OnCompositingShuttingDown(
 void ArcScreenCaptureSession::OnContextLost() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Close();
+}
+
+void ArcScreenCaptureSession::OnWillRemoveDisplays(
+    const display::Displays& removed_displays) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  bool removed = false;
+  for (const auto& display : removed_displays) {
+    removed |= (display.id() == display_id_);
+  }
+  if (removed) {
+    Close();
+  }
 }
 
 }  // namespace arc
