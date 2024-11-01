@@ -261,7 +261,13 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
   EXPECT_EQ(423ul, edge1.target_id());
 }
 
-TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
+// TODO(crbug.com/376824014): Re-enable this test.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AddOsDumpToTraceIfEnabled DISABLED_AddOsDumpToTraceIfEnabled
+#else
+#define MAYBE_AddOsDumpToTraceIfEnabled AddOsDumpToTraceIfEnabled
+#endif
+TEST_F(TracingObserverProtoTest, MAYBE_AddOsDumpToTraceIfEnabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);
