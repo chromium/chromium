@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -59,6 +60,7 @@ class AppMenuHandlerImpl
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<Rect> mAppRect;
     private final WindowAndroid mWindowAndroid;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private ModelList mModelList;
     private ListObserver<Void> mListObserver;
     private Callback<Integer> mTestOptionsItemSelectedListener;
@@ -72,6 +74,7 @@ class AppMenuHandlerImpl
 
     /**
      * Constructs an AppMenuHandlerImpl object.
+     *
      * @param context The activity context.
      * @param delegate Delegate used to check the desired AppMenu properties on show.
      * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
@@ -85,6 +88,7 @@ class AppMenuHandlerImpl
      *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch {@link KeyboardVisibilityDelegate}
+     * @param browserControlsStateProvider a provider that can provide the state of the toolbar
      */
     public AppMenuHandlerImpl(
             Context context,
@@ -94,7 +98,8 @@ class AppMenuHandlerImpl
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             View hardwareButtonAnchorView,
             Supplier<Rect> appRect,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -104,6 +109,7 @@ class AppMenuHandlerImpl
         mHardwareButtonMenuAnchor = hardwareButtonAnchorView;
         mAppRect = appRect;
         mWindowAndroid = windowAndroid;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -600,7 +606,8 @@ class AppMenuHandlerImpl
                 mDelegate.getGroupDividerId(),
                 mHighlightMenuId,
                 customViewBinders,
-                mDelegate.isMenuIconAtStart());
+                mDelegate.isMenuIconAtStart(),
+                mBrowserControlsStateProvider.getControlsPosition());
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");

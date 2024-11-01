@@ -43,6 +43,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
@@ -82,6 +84,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
     @Mock private Canvas mCanvas;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     // Tell R8 not to break the ability to mock the class.
     @Mock private AppMenu mUnused;
@@ -122,7 +125,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         getActivity().getWindow().getDecorView(),
                         getActivity().findViewById(R.id.menu_anchor_stub),
                         this::getAppRect,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mBrowserControlsStateProvider);
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
@@ -230,6 +234,30 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         + popupRect,
                 viewRect.right,
                 popupRect.right);
+    }
+
+    @Test
+    @MediumTest
+    public void testShowAppMenu_AnimationTop() throws TimeoutException {
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+        showMenuAndAssert();
+
+        Assert.assertEquals(
+                "Popup should use animation from top",
+                R.style.EndIconMenuAnim,
+                mAppMenuHandler.getAppMenu().getPopup().getAnimationStyle());
+    }
+
+    @Test
+    @MediumTest
+    public void testShowAppMenu_AnimationBottom() throws TimeoutException {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        showMenuAndAssert();
+
+        Assert.assertEquals(
+                "Popup should use animation from bottom",
+                R.style.EndIconMenuAnimBottom,
+                mAppMenuHandler.getAppMenu().getPopup().getAnimationStyle());
     }
 
     @Test

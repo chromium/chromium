@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -19,6 +20,7 @@ public class AppMenuCoordinatorFactory {
 
     /**
      * Create a new AppMenuCoordinator.
+     *
      * @param context The activity context.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the containing
      *     activity.
@@ -30,6 +32,7 @@ public class AppMenuCoordinatorFactory {
      *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
+     * @param browserControlsStateProvider a provider that can provide the state of the toolbar
      */
     public static AppMenuCoordinator createAppMenuCoordinator(
             Context context,
@@ -39,7 +42,8 @@ public class AppMenuCoordinatorFactory {
             View decorView,
             View hardwareButtonAnchorView,
             Supplier<Rect> appRect,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         return new AppMenuCoordinatorImpl(
                 context,
                 activityLifecycleDispatcher,
@@ -48,7 +52,8 @@ public class AppMenuCoordinatorFactory {
                 decorView,
                 hardwareButtonAnchorView,
                 appRect,
-                windowAndroid);
+                windowAndroid,
+                browserControlsStateProvider);
     }
 
     /**

@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -52,6 +53,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
 
     /**
      * Construct a new AppMenuCoordinatorImpl.
+     *
      * @param context The activity context.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the containing
      *     activity.
@@ -63,6 +65,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
+     * @param browserControlsStateProvider a provider that can provide the state of the toolbar
      */
     public AppMenuCoordinatorImpl(
             Context context,
@@ -72,7 +75,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
             View decorView,
             View hardwareButtonAnchorView,
             Supplier<Rect> appRect,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
@@ -87,7 +91,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         activityLifecycleDispatcher,
                         hardwareButtonAnchorView,
                         appRect,
-                        windowAndroid);
+                        windowAndroid,
+                        browserControlsStateProvider);
     }
 
     @Override
