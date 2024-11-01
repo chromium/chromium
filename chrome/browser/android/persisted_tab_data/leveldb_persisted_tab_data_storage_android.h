@@ -18,6 +18,7 @@ class LevelDBPersistedTabDataStorageAndroid
     : public PersistedTabDataStorageAndroid,
       public KeyedService {
  public:
+  explicit LevelDBPersistedTabDataStorageAndroid(Profile* profile);
   ~LevelDBPersistedTabDataStorageAndroid() override;
 
   // Save |data| into the database for a |tab_id| and |data_id| combination.
@@ -39,7 +40,6 @@ class LevelDBPersistedTabDataStorageAndroid
 
  private:
   friend class LevelDBPersistedTabDataStorageAndroidFactory;
-  explicit LevelDBPersistedTabDataStorageAndroid(Profile* profile);
 
   // Per profile/per proto storage
   raw_ptr<SessionProtoDB<persisted_state_db::PersistedStateContentProto>>

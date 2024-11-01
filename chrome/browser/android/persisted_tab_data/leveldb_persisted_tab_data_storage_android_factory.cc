@@ -39,9 +39,9 @@ LevelDBPersistedTabDataStorageAndroidFactory::
             persisted_state_db::PersistedStateContentProto>::GetInstance());
 }
 
-KeyedService*
-LevelDBPersistedTabDataStorageAndroidFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> LevelDBPersistedTabDataStorageAndroidFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new LevelDBPersistedTabDataStorageAndroid(profile);
+  return std::make_unique<LevelDBPersistedTabDataStorageAndroid>(profile);
 }
