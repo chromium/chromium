@@ -506,6 +506,11 @@ void DefaultProvider::RecordHistogramMetrics() {
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::ANTI_ABUSE))),
       CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultJavascriptOptimizationSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::JAVASCRIPT_OPTIMIZER))),
+      CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

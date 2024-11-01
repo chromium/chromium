@@ -482,6 +482,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting"
+    enum="ContentSetting" expires_after="2025-10-20">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>src/chrome/browser/site_protection/OWNERS</owner>
+  <summary>
+    The default JavaScript optimization setting at profile open.
+
+    This histogram is only recorded for regular profiles.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.RegularProfile.DefaultStorageAccessSetting"
     enum="ContentSetting" expires_after="2024-12-30">
   <owner>dullweber@chromium.org</owner>
