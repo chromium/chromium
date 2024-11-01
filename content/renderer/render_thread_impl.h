@@ -30,6 +30,7 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
@@ -489,6 +490,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // Updated via an IPC from the browser process. If nullopt, the browser
   // process has yet to send an update and the state is unknown.
   std::optional<base::Process::Priority> process_priority_;
+  perfetto::NamedTrack process_priority_track_;
   std::optional<mojom::RenderProcessVisibleState> visible_state_;
 
   // A read-only mapping of a std::atomic<base::TimeTicks> set to

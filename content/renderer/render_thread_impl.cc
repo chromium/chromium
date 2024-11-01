@@ -59,7 +59,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -348,6 +347,19 @@ bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
   }
 }
 
+perfetto::StaticString ProcessPriorityToString(
+    base::Process::Priority priority) {
+  switch (priority) {
+    case base::Process::Priority::kBestEffort:
+      return "Best effort";
+    case base::Process::Priority::kUserVisible:
+      return "User visible";
+    case base::Process::Priority::kUserBlocking:
+      return "User blocking";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -477,8 +489,10 @@ RenderThreadImpl::RenderThreadImpl(
               .ExposesInterfacesToBrowser()
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
+      process_priority_track_("Renderer priority"),
       client_id_(client_id) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
   Init();
 }
 
@@ -507,8 +521,10 @@ RenderThreadImpl::RenderThreadImpl(
               .SetUrgentMessageObserver(scheduler.get())
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
+      process_priority_track_("Renderer priority"),
       client_id_(GetClientIdFromCommandLine()) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
   Init();
 }
 
@@ -664,6 +680,8 @@ void RenderThreadImpl::Init() {
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
+  TRACE_EVENT_END("renderer", process_priority_track_);
+
   // The destructor should not run in multi-process mode because Shutdown()
   // terminates the process. The destructor only needs to clean up for tests.
   CHECK(IsSingleProcess());
@@ -1380,6 +1398,11 @@ void RenderThreadImpl::SetProcessState(
       OnRendererHidden();
   }
 
+  if (process_priority_ != process_priority) {
+    TRACE_EVENT_END("renderer", process_priority_track_);
+    TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority),
+                      process_priority_track_);
+  }
   process_priority_ = process_priority;
   visible_state_ = visible_state;
 }
