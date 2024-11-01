@@ -250,7 +250,7 @@ export class FaceGazeUtils {
       case FacialGesture.MOUTH_SMILE:
         return 'smile';
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'wrinkle-nose';
+        return 'mouth-upper-up';
       default:
         console.error(
             'Icon requested for unsupported FacialGesture ' + gesture);

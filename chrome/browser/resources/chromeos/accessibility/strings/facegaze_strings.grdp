@@ -138,20 +138,20 @@
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_FUNNEL" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should make a circle with their lips.">
     Make a circle with your lips
   </message>
-  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should stretch the left corner of their mouth.">
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should move their mouth left.">
     Move your mouth left
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_PUCKER" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should pucker their lips.">
     Pucker by squeezing lips together
   </message>
-  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should stretch the right corner of their mouth.">
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should move their mouth right.">
     Move your mouth right
   </message>
   <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_SMILE" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should smile.">
     Smile
   </message>
-  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should wrinkle their nose.">
-    Wrinkle your nose
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should show all of their teeth.">
+    Show all of your teeth
   </message>
   <message name="IDS_FACEGAZE_DISPLAY_TEXT" desc="This text is the finalized text that shows up in the FaceGaze bubble UI when a gesture triggers an action. It contains the facial gesture that was recognized and the action that it triggered.">
     <ph name="action">$1<ex>Left-click the mouse</ex></ph> (<ph name="gesture">$2<ex>Smile</ex></ph>)
