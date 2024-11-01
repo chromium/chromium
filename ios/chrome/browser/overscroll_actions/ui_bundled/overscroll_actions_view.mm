@@ -343,6 +343,13 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
                                                 action:@selector(tapGesture:)];
     [_tapGesture setDelegate:self];
     [self addGestureRecognizer:_tapGesture];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits =
+          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateLayerColors)];
+    }
   }
   return self;
 }
@@ -480,10 +487,16 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     [CATransaction commit];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   [self updateLayerColors];
 }
+#endif
 
 #pragma mark - Private
 
