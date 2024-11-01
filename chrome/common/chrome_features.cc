@@ -328,14 +328,6 @@ BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
-// Lazy initialize IndividualSettings for extensions from enterprise policy
-// that are not installed.
-BASE_FEATURE(kExtensionDeferredIndividualSettings,
-             "ExtensionDeferredIndividualSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",
