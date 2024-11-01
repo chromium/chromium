@@ -12,11 +12,14 @@ import './dummy_data_sharing_sdk.js';
 
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {AbslStatusCode} from '//resources/mojo/mojo/public/mojom/base/absl_status.mojom-webui.js';
 import {CustomElement} from 'chrome-untrusted://resources/js/custom_element.js';
+
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './data_sharing_app.html.js';
-import type {DataSharingSdk, DataSharingSdkGetLinkParams} from './data_sharing_sdk_types.js';
+import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview} from './data_sharing_sdk_types.js';
+import {Code, LearnMoreUrlType} from './data_sharing_sdk_types.js';
 
 // Param names in loaded URL. Should match those in
 // chrome/browser/ui/views/data_sharing/data_sharing_utils.cc.
@@ -32,6 +35,16 @@ enum FlowValues {
   JOIN = 'join',
   MANAGE = 'manage',
 }
+
+// TODO(crbug.com/376347328): Replace with real learn more urls.
+const learnMoreUrlMap = {
+  [LearnMoreUrlType.LEARN_MORE_URL_TYPE_UNSPECIFIED]: () =>
+      'about:blank',
+  [LearnMoreUrlType.PEOPLE_WITH_ACCESS_SUBTITLE]: () => 'about:blank',
+  [LearnMoreUrlType.DESCRIPTION_INVITE]: () => 'about:blank',
+  [LearnMoreUrlType.DESCRIPTION_JOIN]: () => 'about:blank',
+  [LearnMoreUrlType.BLOCK]: () => 'about:blank',
+};
 
 export class DataSharingApp extends CustomElement {
   private initialized_: boolean = false;
@@ -77,6 +90,29 @@ export class DataSharingApp extends CustomElement {
         .then(res => res.url.url);
   }
 
+  private getTabGroupPreview(groupId: string, tokenSecret: string):
+      Promise<DataSharingSdkSitePreview[]> {
+    return new Promise((resolve) => {
+      const previews: DataSharingSdkSitePreview[] = [];
+      this.browserProxy_.handler!.getTabGroupPreview(groupId, tokenSecret)
+          .then((res) => {
+            if (res.groupPreview.statusCode !== AbslStatusCode.kOk) {
+              // TODO(crbug.com/368634445): Ask Chrome to handle different
+              // errors in addition to closing the WebUI.
+              this.browserProxy_.handler!.closeUI(Code.UNKNOWN);
+            }
+
+            res.groupPreview.sharedTabs.map((sharedTab) => {
+              previews.push({
+                url: sharedTab.displayUrl,
+                faviconUrl: sharedTab.faviconUrl.url,
+              });
+            });
+            resolve(previews);
+          });
+    });
+  }
+
   private processUrl() {
     const currentUrl = urlForTesting ? urlForTesting : window.location.href;
     const params = new URL(currentUrl).searchParams;
@@ -96,6 +132,9 @@ export class DataSharingApp extends CustomElement {
                     this.makeTabGroupShared(tabGroupId!, params.groupId);
                     return this.getShareLink(params);
                   },
+              // TODO(crbug.com/376348102): Provide group name to share flow.
+              groupName: '',
+              learnMoreUrlMap,
             })
             .then((res) => {
               this.browserProxy_.closeUi(res.status);
@@ -104,7 +143,18 @@ export class DataSharingApp extends CustomElement {
       case FlowValues.JOIN:
         // group_id and token_secret cannot be null for join flow.
         this.dataSharingSdk_
-            .runJoinFlow({parent, groupId: groupId!, tokenSecret: tokenSecret!})
+            .runJoinFlow({
+              parent,
+              groupId: groupId!,
+              tokenSecret: tokenSecret!,
+              learnMoreUrlMap,
+              // TODO(crbug.com/376348679): Hook up with Chrome open group logic
+              // once join successful.
+              onJoinSuccessful: () => {},
+              fetchPreviewData: () => {
+                return this.getTabGroupPreview(groupId!, tokenSecret!);
+              },
+            })
             .then((res) => {
               this.browserProxy_.closeUi(res.status);
             });
@@ -119,6 +169,7 @@ export class DataSharingApp extends CustomElement {
                   Promise<string> => {
                     return this.getShareLink(params);
                   },
+              learnMoreUrlMap,
             })
             .then((res) => {
               this.browserProxy_.closeUi(res.status);
