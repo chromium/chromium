@@ -1117,6 +1117,7 @@ void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
 
   auto& copy = matches->emplace_back(*iter);
   copy.answer_template.reset();
+  copy.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
   copy.actions.clear();
   copy.allowed_to_be_default_match = orig_allowed_to_be_default_match;
   copy.suggestion_group_id = omnibox::GROUP_SEARCH;
