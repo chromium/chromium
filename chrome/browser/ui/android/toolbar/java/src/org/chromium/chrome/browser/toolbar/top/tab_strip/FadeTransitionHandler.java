@@ -27,8 +27,7 @@ class FadeTransitionHandler {
 
     private int mTabStripTransitionThreshold;
     private int mTabStripWidth;
-    // The current opacity of the tab strip scrim layer.
-    private float mScrimOpacity;
+    private boolean mForceFadeInStrip;
 
     FadeTransitionHandler(
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
@@ -53,6 +52,10 @@ class FadeTransitionHandler {
         requestTransition();
     }
 
+    void setForceFadeInStrip(boolean forceFadeInStrip) {
+        mForceFadeInStrip = forceFadeInStrip;
+    }
+
     private void requestTransition() {
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW)) {
@@ -65,16 +68,15 @@ class FadeTransitionHandler {
     private void maybeUpdateTabStripVisibility() {
         if (mTabStripWidth <= 0) return;
 
-        boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold;
-
+        boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold || mForceFadeInStrip;
         var newOpacity = showTabStrip ? 0f : 1f;
-        if (newOpacity == mScrimOpacity) return;
 
         var delegate = mTabStripTransitionDelegateSupplier.get();
         assert delegate != null : "TabStripTransitionDelegate should be available.";
 
-        delegate.onFadeTransitionRequested(mScrimOpacity, newOpacity, FADE_TRANSITION_DURATION_MS);
-        mScrimOpacity = newOpacity;
+        delegate.onFadeTransitionRequested(newOpacity, FADE_TRANSITION_DURATION_MS);
+        // Reset internal state after use.
+        mForceFadeInStrip = false;
     }
 
     /** Get the min strip width (in dp) required for it to become visible. */

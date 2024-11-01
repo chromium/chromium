@@ -24,7 +24,6 @@ import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -82,6 +81,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -103,8 +103,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,21 +144,6 @@ public class StripLayoutHelperManager
             this.createdStandardTabOnStartup = createdStandardTabOnStartup;
             this.createdIncognitoTabOnStartup = createdIncognitoTabOnStartup;
         }
-    }
-
-    /** Defines if the strip is visible or hidden. */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({
-        StripVisibilityState.UNKNOWN,
-        StripVisibilityState.VISIBLE,
-        StripVisibilityState.GONE,
-        StripVisibilityState.INVISIBLE,
-    })
-    @interface StripVisibilityState {
-        int UNKNOWN = 0; // Strip visibility is unknown.
-        int VISIBLE = 1; // Strip is visible.
-        int GONE = 2; // Strip is hidden by a height transition.
-        int INVISIBLE = 3; // Strip is hidden by an in-place fade transition.
     }
 
     private static final FloatProperty<StripLayoutHelperManager> SCRIM_OPACITY =
@@ -886,8 +869,11 @@ public class StripLayoutHelperManager
     }
 
     @Override
-    public void onFadeTransitionRequested(float startOpacity, float endOpacity, int durationMs) {
-        boolean showStrip = endOpacity == 0f;
+    public void onFadeTransitionRequested(float newOpacity, int durationMs) {
+        // Opacity is already the desired value, return early.
+        if (newOpacity == mStripTransitionScrimOpacity) return;
+
+        boolean showStrip = newOpacity == 0f;
         if (mAnimationsDisabledForTesting) {
             onFadeTransitionEnd(showStrip);
             return;
@@ -900,8 +886,8 @@ public class StripLayoutHelperManager
                         mUpdateHost.getAnimationHandler(),
                         this,
                         StripLayoutHelperManager.SCRIM_OPACITY,
-                        startOpacity,
-                        endOpacity,
+                        mStripTransitionScrimOpacity,
+                        newOpacity,
                         durationMs);
         mFadeTransitionAnimator.addListener(
                 new AnimatorListenerAdapter() {
@@ -1528,9 +1514,8 @@ public class StripLayoutHelperManager
         return mIsIncognito ? mNormalHelper : mIncognitoHelper;
     }
 
-    @VisibleForTesting
-    @StripVisibilityState
-    int getStripVisibilityState() {
+    @Override
+    public @StripVisibilityState int getStripVisibilityState() {
         return mStripVisibilityStateSupplier.get();
     }
 

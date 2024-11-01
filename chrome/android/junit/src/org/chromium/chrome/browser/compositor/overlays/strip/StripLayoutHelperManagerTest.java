@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.StripVisibilityState;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
@@ -86,6 +85,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
@@ -676,6 +676,7 @@ public class StripLayoutHelperManagerTest {
                         true);
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPaddingPx);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
 
         // Invoke the method.
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
@@ -1008,6 +1009,7 @@ public class StripLayoutHelperManagerTest {
                         true);
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(newHeight);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
@@ -1041,6 +1043,7 @@ public class StripLayoutHelperManagerTest {
         initializeTest();
         int topPadding = 10;
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
@@ -1093,11 +1096,11 @@ public class StripLayoutHelperManagerTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
 
-        float startOpacity = showStrip ? 1f : 0f;
-        float endOpacity = showStrip ? 0f : 1f;
+        float newOpacity = showStrip ? 0f : 1f;
         mStripLayoutHelperManager.onFadeTransitionRequested(
-                startOpacity, endOpacity, FADE_TRANSITION_DURATION_MS);
+                newOpacity, FADE_TRANSITION_DURATION_MS);
 
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
@@ -1168,6 +1171,7 @@ public class StripLayoutHelperManagerTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
         verify(mToolbarContainerView)
@@ -1229,6 +1233,7 @@ public class StripLayoutHelperManagerTest {
         int topPadding = 5;
         // Simulate the |mTopPadding| update when switching to a desktop window.
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
         // Simulate a window size change in a desktop window.
         var appHeaderState =
                 new AppHeaderState(
@@ -1239,12 +1244,11 @@ public class StripLayoutHelperManagerTest {
                                 (int) (SCREEN_WIDTH - rightPadding),
                                 TAB_STRIP_HEIGHT_PX + topPadding),
                         true);
-        float startOpacity = showStrip ? 1f : 0f;
-        float endOpacity = showStrip ? 0f : 1f;
+        float newOpacity = showStrip ? 0f : 1f;
         mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-        mStripLayoutHelperManager.onFadeTransitionRequested(startOpacity, endOpacity, 0);
+        mStripLayoutHelperManager.onFadeTransitionRequested(newOpacity, 0);
 
         var expectedVisibilityState =
                 showStrip ? StripVisibilityState.VISIBLE : StripVisibilityState.INVISIBLE;
