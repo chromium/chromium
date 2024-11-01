@@ -174,7 +174,7 @@ class BocaSessionManager
   base::RepeatingTimer timer_;
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;
-  bool is_network_conntected_ = false;
+  bool is_network_connected_ = false;
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;

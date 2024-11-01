@@ -77,16 +77,16 @@ void BocaSessionManager::OnNetworkStateChanged(
   // chromeos/services/network_config/public/mojom/network_types.mojom
   if (chromeos::network_config::StateIsConnected(
           network_state->connection_state)) {
-    if (!is_network_conntected_) {
+    if (!is_network_connected_) {
       // Explicitly trigger a load whenever network back online. This will cover
       // the case for initial ctor too.
       // Other network change may trigger this events too, only handle when
       // flipped from offline to online.
-      is_network_conntected_ = true;
+      is_network_connected_ = true;
       LoadCurrentSession();
     }
   } else {
-    is_network_conntected_ = false;
+    is_network_connected_ = false;
   }
 }
 
@@ -208,7 +208,7 @@ void BocaSessionManager::OnNetworkStateFetched(
   for (const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
            network : networks) {
     if (chromeos::network_config::StateIsConnected(network->connection_state)) {
-      is_network_conntected_ = true;
+      is_network_connected_ = true;
       break;
     }
   }
