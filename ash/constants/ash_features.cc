@@ -80,11 +80,6 @@ BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the logic for managed screensaver is enabled or not.
-BASE_FEATURE(kAmbientModeManagedScreensaver,
-             "ChromeOSAmbientModeManagedScreensaver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Adds support for allowing or disabling APN modification by policy.
 BASE_FEATURE(kAllowApnModificationPolicy,
              "AllowApnModificationPolicy",
@@ -3484,10 +3479,6 @@ bool IsAltClickAndSixPackCustomizationEnabled() {
 
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
-}
-
-bool IsAmbientModeManagedScreensaverEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeManagedScreensaver);
 }
 
 bool IsAnnotatorModeEnabled() {

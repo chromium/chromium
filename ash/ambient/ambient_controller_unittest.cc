@@ -26,7 +26,6 @@
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ambient_video.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/lock_screen.h"
@@ -55,7 +54,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
@@ -427,15 +425,6 @@ TEST_F(AmbientControllerTest, ConsumerShouldNotRecordManagedMetrics) {
   SetAmbientModeEnabled(true);
 
   SetAmbientModeEnabled(false);
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list(
-        ash::features::kAmbientModeManagedScreensaver);
-
-    SetAmbientModeEnabled(true);
-
-    SetAmbientModeEnabled(false);
-  }
 
   histogram_tester.ExpectTotalCount(
       GetManagedScreensaverHistogram(kManagedScreensaverEnabledUMA),
@@ -1742,8 +1731,6 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
             ash::DIR_DEVICE_POLICY_SCREENSAVER_DATA, temp_dir_.GetPath());
   }
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAmbientModeManagedScreensaver);
     AmbientAshTestBase::SetUp();
     // Disable consumer ambient mode
     SetAmbientModeEnabled(false);
@@ -1777,7 +1764,6 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
     EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   InProcessDataDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
   base::ScopedTempDir temp_dir_;
@@ -2341,9 +2327,6 @@ class AmbientControllerDurationTest : public AmbientAshTestBase {
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AmbientControllerDurationTest, SetScreenSaverDuration) {

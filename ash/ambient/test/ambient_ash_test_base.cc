@@ -34,7 +34,6 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -641,19 +640,12 @@ AmbientPhotoController* AmbientAshTestBase::photo_controller() {
 }
 
 AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
-  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return nullptr;
-  }
   AmbientManagedSlideshowUiLauncher* ui_launcher =
       static_cast<AmbientManagedSlideshowUiLauncher*>(ambient_ui_launcher());
   return &ui_launcher->photo_controller_;
 }
 
 ScreensaverImagesPolicyHandler* AmbientAshTestBase::managed_policy_handler() {
-  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return nullptr;
-  }
-
   return ambient_controller()->screensaver_images_policy_handler_.get();
 }
 

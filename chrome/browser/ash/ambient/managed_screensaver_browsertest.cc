@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -22,7 +21,6 @@
 #include "base/path_service.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -77,8 +75,6 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   ManagedScreensaverBrowserTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kAmbientModeManagedScreensaver);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   }
   ~ManagedScreensaverBrowserTest() override = default;
@@ -349,7 +345,6 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   std::unique_ptr<base::test::TestFuture<void>> test_future_;
   std::unique_ptr<ScreenLockerTester> screen_locker_;
 
-  base::test::ScopedFeatureList feature_list_;
   policy::DevicePolicyBuilder device_policy_;
   policy::UserPolicyTestHelper user_policy_test_helper_{kTestEmail,
                                                         &policy_server_mixin_};
