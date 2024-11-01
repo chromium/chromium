@@ -1000,7 +1000,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("WebAuthnAssertionRequestSucceeded", false)));
 }
 
-TEST_F(DIPSBounceDetectorTest, SiteHadUserActivation) {
+TEST_F(DIPSBounceDetectorTest, SiteHadUserActivationInteraction) {
   NavigateTo("http://a.test", kWithUserGesture);
   ActivatePage();
   AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() +
@@ -1017,10 +1017,41 @@ TEST_F(DIPSBounceDetectorTest, SiteHadUserActivation) {
             GURL("http://a.test"));
   EXPECT_EQ(CommittedRedirectContext().GetRedirectChainLength(), 2u);
 
-  EXPECT_TRUE(CommittedRedirectContext().SiteHadUserActivation("a.test"));
-  EXPECT_FALSE(CommittedRedirectContext().SiteHadUserActivation("b.test"));
-  EXPECT_TRUE(CommittedRedirectContext().SiteHadUserActivation("c.test"));
-  EXPECT_FALSE(CommittedRedirectContext().SiteHadUserActivation("d.test"));
+  EXPECT_TRUE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("a.test"));
+  EXPECT_FALSE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("b.test"));
+  EXPECT_TRUE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("c.test"));
+  EXPECT_FALSE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("d.test"));
+}
+
+TEST_F(DIPSBounceDetectorTest, SiteHadWebAuthnInteraction) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  ActivatePage();
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() +
+                  base::Seconds(1));
+
+  StartNavigation("http://b.test", kNoUserGesture)
+      .RedirectTo("http://c.test")
+      .Finish(/*commit=*/true);
+  TriggerWebAuthnAssertionRequestSucceeded();
+  NavigateTo("http://d.test", kNoUserGesture);
+
+  // Expect one initial URL (a.test) and two redirects (b.test, c.test).
+  EXPECT_EQ(CommittedRedirectContext().GetInitialURLForTesting(),
+            GURL("http://a.test"));
+  EXPECT_EQ(CommittedRedirectContext().GetRedirectChainLength(), 2u);
+
+  EXPECT_TRUE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("a.test"));
+  EXPECT_FALSE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("b.test"));
+  EXPECT_TRUE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("c.test"));
+  EXPECT_FALSE(
+      CommittedRedirectContext().SiteHadUserActivationOrAuthn("d.test"));
 }
 
 TEST_F(DIPSBounceDetectorTest, ClientCookieAccessDuringNavigation) {
@@ -1073,7 +1104,8 @@ std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
 DIPSRedirectInfoPtr MakeClientRedirect(
     std::string url,
     SiteDataAccessType access_type = SiteDataAccessType::kReadWrite,
-    bool has_sticky_activation = false) {
+    bool has_sticky_activation = false,
+    bool has_web_authn_assertion = false) {
   return std::make_unique<DIPSRedirectInfo>(
       /*url=*/MakeUrlAndId(url),
       /*redirect_type=*/DIPSRedirectType::kClient,
@@ -1081,7 +1113,7 @@ DIPSRedirectInfoPtr MakeClientRedirect(
       /*time=*/base::Time::Now(),
       /*client_bounce_delay=*/base::Seconds(1),
       /*has_sticky_activation=*/has_sticky_activation,
-      /*web_authn_assertion_request_succeeded*/ false);
+      /*web_authn_assertion_request_succeeded*/ has_web_authn_assertion);
 }
 
 MATCHER_P(HasUrl, url, "") {
@@ -1569,7 +1601,7 @@ TEST(DIPSRedirectContextTest,
                           current_interaction_url, false);
   context.AppendCommitted(
       MakeClientRedirect("http://b.test/", SiteDataAccessType::kNone,
-                         /*has_sticky_activation=*/true),
+                         /*has_sticky_activation=*/false, true),
       {}, first_party_url, false);
 
   ASSERT_EQ(context.size(), 2u);

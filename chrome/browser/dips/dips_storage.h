@@ -60,6 +60,8 @@ class DIPSStorage {
   // Record that |url| wrote to storage.
   void RecordStorage(const GURL& url, base::Time time, DIPSCookieMode mode);
   // Record that the user interacted on |url|.
+  // TODO (crbug.com/371304526): Change "Interaction" in DIPS to
+  // "UserActivation"
   void RecordInteraction(const GURL& url, base::Time time, DIPSCookieMode mode);
   void RecordWebAuthnAssertion(const GURL& url,
                                base::Time time,
@@ -97,11 +99,23 @@ class DIPSStorage {
       std::optional<base::TimeDelta> grace_period) const;
 
   // Returns true if `url`'s site has had user interaction since `bound`.
+  // TODO (crbug.com/371304526): Change "Interaction" in DIPS to
+  // "UserActivation"
   bool DidSiteHaveInteractionSince(const GURL& url, base::Time bound);
 
   // Returns the timestamp of the last user interaction time on `url`, or
   // std::nullopt if there has been no user interaction on `url`.
-  std::optional<base::Time> LastInteractionTime(const GURL& url);
+  std::optional<base::Time> LastUserActivationTime(const GURL& url);
+
+  // Returns the timestamp of the last web authentication time on `url`, or
+  // std::nullopt if there has been no authentication on `url`.
+  std::optional<base::Time> LastWebAuthnAssertionTime(const GURL& url);
+
+  // Returns the timestamp of the most recent of the last user activation or
+  // authentication on `url`, or std::nullopt if there has been no user
+  // activation or authentication on `url`.
+  std::optional<base::Time> LastUserActivationOrAuthnAssertionTime(
+      const GURL& url);
 
   std::optional<base::Time> GetTimerLastFired();
   bool SetTimerLastFired(base::Time time);

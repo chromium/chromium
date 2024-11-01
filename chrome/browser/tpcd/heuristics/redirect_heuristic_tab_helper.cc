@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tpcd/heuristics/redirect_heuristic_tab_helper.h"
 
+#include "base/barrier_callback.h"
+#include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/dips_service_impl.h"
@@ -75,7 +77,7 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
   ukm::SourceId third_party_source_id =
       third_party_site_info->second->url.source_id;
   bool is_current_interaction =
-      detector_->CommittedRedirectContext().SiteHadUserActivation(
+      detector_->CommittedRedirectContext().SiteHadUserActivationOrAuthn(
           third_party_site);
 
   auto first_party_site_info =
@@ -97,7 +99,7 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
   CHECK(dips_service_);
   CHECK(!dips_service_->storage()->is_null());
   dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::LastInteractionTime)
+      ->AsyncCall(&DIPSStorage::LastUserActivationOrAuthnAssertionTime)
       .WithArgs(details.url)
       .Then(base::BindOnce(&RedirectHeuristicTabHelper::RecordRedirectHeuristic,
                            weak_factory_.GetWeakPtr(), first_party_source_id,
@@ -204,7 +206,7 @@ void RedirectHeuristicTabHelper::CreateAllRedirectHeuristicGrants(
       CHECK(dips_service_);
       CHECK(!dips_service_->storage()->is_null());
       dips_service_->storage()
-          ->AsyncCall(&DIPSStorage::LastInteractionTime)
+          ->AsyncCall(&DIPSStorage::LastUserActivationOrAuthnAssertionTime)
           .WithArgs(url)
           .Then(std::move(create_grant));
     }
