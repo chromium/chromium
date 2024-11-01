@@ -41,6 +41,11 @@ def blink_mac_builder(*, name, **kwargs):
     kwargs.setdefault("cores", None)
     kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", True)
+
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    kwargs.setdefault("experiments", {
+        "chromium.use_per_builder_build_dir_name": 0,
+    })
     return try_.builder(
         name = name,
         **kwargs
@@ -98,6 +103,10 @@ try_.builder(
         },
     ),
     os = os.LINUX_DEFAULT,
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
     main_list_view = "try",
 )
 
@@ -115,6 +124,10 @@ try_.builder(
     gn_args = "ci/linux-wpt-chromium-rel",
     os = os.LINUX_DEFAULT,
     contact_team_email = "chrome-blink-engprod@google.com",
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
     main_list_view = "try",
 )
 
@@ -128,6 +141,10 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-blink-engprod@google.com",
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
     main_list_view = "try",
 )
 
@@ -191,6 +208,10 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_ANY,
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
 )
 
 try_.builder(
@@ -253,6 +274,10 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_ANY,
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
 )
 
 try_.builder(
@@ -312,6 +337,10 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_ANY,
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
 )
 
 blink_mac_builder(
@@ -578,6 +607,10 @@ try_.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     contact_team_email = "chrome-blink-engprod@google.com",
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 0,
+    },
     main_list_view = "try",
 )
 
