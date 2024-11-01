@@ -1342,6 +1342,14 @@ bool ui::IsNSRange(id value) {
 - (NSString*)sortDirection {
   if (![self instanceActive])
     return nil;
+
+  // If we know this object does not support `sortDirection`, don't return
+  // anything.
+  if (![[self internalAccessibilityAttributeNames]
+          containsObject:NSAccessibilitySortDirectionAttribute]) {
+    return nil;
+  }
+
   int sortDirection;
   if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                                &sortDirection))
@@ -2393,8 +2401,18 @@ bool ui::IsNSRange(id value) {
     [ret addObjectsFromArray:@[
       NSAccessibilityColumnIndexRangeAttribute,
       NSAccessibilityRowIndexRangeAttribute,
-      @"AXSortDirection",
     ]];
+    if ([self internalRole] == ax::mojom::Role::kRowHeader ||
+        [self internalRole] == ax::mojom::Role::kColumnHeader) {
+      // The Core-AAM states that `aria-sort=none` is "not mapped".
+      int sortDirection;
+      if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                                  &sortDirection) &&
+          static_cast<ax::mojom::SortDirection>(sortDirection) !=
+              ax::mojom::SortDirection::kUnsorted) {
+        [ret addObject:@"AXSortDirection"];
+      }
+    }
     if ([self internalRole] != ax::mojom::Role::kRowHeader)
       [ret addObject:NSAccessibilityRowHeaderUIElementsAttribute];
   } else if ([role isEqualToString:NSAccessibilityTabGroupRole]) {

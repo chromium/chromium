@@ -1,60 +1,60 @@
 AXWebArea
 ++AXTable
 ++++AXRow AXTitle='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXRow AXTitle='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXRow AXTitle='B'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXGroup
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
 ++AXTable
 ++++AXRow AXTitle='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXRow AXTitle='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXRow AXTitle='B'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXGroup
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
 ++AXTable
 ++++AXRow AXTitle='Alphabet'
 ++++++AXCell AXSortDirection='AXAscendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXRow AXTitle='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXRow AXTitle='B'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
 ++++++AXCell AXSortDirection='AXAscendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXGroup
 ++++++AXCell AXSortDirection='AXAscendingSortDirection'
@@ -64,17 +64,17 @@ AXWebArea
 ++++++AXCell AXSortDirection='AXDescendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXRow AXTitle='B'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXRow AXTitle='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
 ++++++AXCell AXSortDirection='AXDescendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXGroup
 ++++++AXCell AXSortDirection='AXDescendingSortDirection'
@@ -84,108 +84,108 @@ AXWebArea
 ++++++AXCell AXSortDirection='AXUnknownSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXRow AXTitle='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXRow AXTitle='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
 ++++++AXCell AXSortDirection='AXUnknownSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXGroup
 ++++++AXCell AXSortDirection='AXUnknownSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++AXTable
 ++++AXRow AXTitle='AlphabetAB'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXGroup
 ++AXTable
 ++++AXRow AXTitle='AlphabetAB'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXGroup
 ++AXTable
 ++++AXRow AXTitle='AlphabetAB'
 ++++++AXCell AXSortDirection='AXAscendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
 ++++++AXCell AXSortDirection='AXAscendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXGroup
 ++AXTable
 ++++AXRow AXTitle='AlphabetBA'
 ++++++AXCell AXSortDirection='AXDescendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
 ++++++AXCell AXSortDirection='AXDescendingSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='B'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXGroup
 ++AXTable
 ++++AXRow AXTitle='AlphabetAA'
 ++++++AXCell AXSortDirection='AXUnknownSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
 ++++++AXCell AXSortDirection='AXUnknownSortDirection'
 ++++++++AXStaticText AXValue='Alphabet'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXColumn
-++++++AXCell AXSortDirection='AXUnknownSortDirection'
+++++++AXCell
 ++++++++AXStaticText AXValue='A'
 ++++AXGroup
