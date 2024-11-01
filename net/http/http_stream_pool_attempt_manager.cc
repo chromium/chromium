@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,6 +45,12 @@
 namespace net {
 
 namespace {
+
+constexpr NextProtoSet kTcpBasedProtocols = {
+    NextProto::kProtoUnknown, NextProto::kProtoHTTP11, NextProto::kProtoHTTP2};
+
+constexpr NextProtoSet kQuicBasedProtocols = {NextProto::kProtoUnknown,
+                                              NextProto::kProtoQUIC};
 
 StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
     const StreamSocket& stream_socket) {
@@ -211,6 +218,8 @@ void HttpStreamPool::AttemptManager::StartJob(
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+
+  RestrictAllowedProtocols(job->allowed_alpns());
 
   MaybeChangeServiceEndpointRequestPriority();
 
@@ -634,6 +643,25 @@ void HttpStreamPool::AttemptManager::ResolveServiceEndpoint(
   }
 }
 
+void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
+    NextProtoSet allowed_alpns) {
+  allowed_alpns_ = base::Intersection(allowed_alpns_, allowed_alpns);
+  CHECK(!allowed_alpns_.empty());
+
+  if (!CanUseTcpBasedProtocols()) {
+    CancelInFlightAttempts();
+  }
+
+  if (!CanUseQuic()) {
+    if (quic_task_) {
+      // TODO(crbug.com/346835898): Use other error code?
+      quic_task_result_ = ERR_ABORTED;
+      quic_task_.reset();
+    }
+    UpdateStreamAttemptState();
+  }
+}
+
 void HttpStreamPool::AttemptManager::
     MaybeChangeServiceEndpointRequestPriority() {
   if (service_endpoint_request_ && !service_endpoint_request_finished_) {
@@ -800,6 +828,10 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   }
 
   if (group_->force_quic()) {
+    return;
+  }
+
+  if (!CanUseTcpBasedProtocols()) {
     return;
   }
 
@@ -1501,8 +1533,13 @@ void HttpStreamPool::AttemptManager::MaybeUpdateQuicVersionWhenForced(
   }
 }
 
+bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() {
+  return allowed_alpns_.HasAny(kTcpBasedProtocols);
+}
+
 bool HttpStreamPool::AttemptManager::CanUseQuic() {
-  return pool()->CanUseQuic(stream_key(), enable_ip_based_pooling_,
+  return allowed_alpns_.HasAny(kQuicBasedProtocols) &&
+         pool()->CanUseQuic(stream_key(), enable_ip_based_pooling_,
                             enable_alternative_services_);
 }
 

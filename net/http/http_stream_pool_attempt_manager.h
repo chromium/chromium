@@ -30,6 +30,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tls_stream_attempt.h"
@@ -216,6 +217,8 @@ class HttpStreamPool::AttemptManager
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
 
+  void RestrictAllowedProtocols(NextProtoSet allowed_alpns);
+
   void MaybeChangeServiceEndpointRequestPriority();
 
   // Called when service endpoint results have changed or finished.
@@ -332,6 +335,8 @@ class HttpStreamPool::AttemptManager
   // try the preferred QUIC version that is supported by default.
   void MaybeUpdateQuicVersionWhenForced(quic::ParsedQuicVersion& quic_version);
 
+  bool CanUseTcpBasedProtocols();
+
   bool CanUseQuic();
 
   bool CanUseExistingQuicSession();
@@ -359,6 +364,8 @@ class HttpStreamPool::AttemptManager
   bool enable_ip_based_pooling_ = true;
 
   bool enable_alternative_services_ = true;
+
+  NextProtoSet allowed_alpns_ = NextProtoSet::All();
 
   // Holds jobs that are waiting for notifications.
   JobQueue jobs_;

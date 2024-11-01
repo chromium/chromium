@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
@@ -84,8 +85,12 @@ using test::QuicTestPacketMaker;
 
 using Group = HttpStreamPool::Group;
 using AttemptManager = HttpStreamPool::AttemptManager;
+using Job = HttpStreamPool::Job;
 
 namespace {
+
+constexpr std::string_view kDefaultServerName = "www.example.org";
+constexpr std::string_view kDefaultDestination = "https://www.example.org";
 
 IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
   return IPEndPoint(*IPAddress::FromIPLiteral(addr), port);
@@ -439,8 +444,86 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   ProxyInfo used_proxy_info_;
 };
 
-constexpr std::string_view kDefaultServerName = "www.example.org";
-constexpr std::string_view kDefaultDestination = "https://www.example.org";
+class TestJobDelegate : public Job::Delegate {
+ public:
+  explicit TestJobDelegate(
+      std::optional<HttpStreamKey> stream_key = std::nullopt) {
+    if (stream_key.has_value()) {
+      key_builder_.from_key(*stream_key);
+    } else {
+      key_builder_.set_destination(kDefaultDestination);
+    }
+  }
+
+  TestJobDelegate(const TestJobDelegate&) = delete;
+  TestJobDelegate& operator=(const TestJobDelegate&) = delete;
+  ~TestJobDelegate() override = default;
+
+  TestJobDelegate& set_expected_protocol(NextProto expected_protocol) {
+    expected_protocol_ = expected_protocol;
+    return *this;
+  }
+
+  TestJobDelegate& set_quic_version(quic::ParsedQuicVersion quic_version) {
+    quic_version_ = quic_version;
+    return *this;
+  }
+
+  void CreateAndStartJob(HttpStreamPool& pool) {
+    CHECK(!job_);
+    job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
+               .CreateJob(this, expected_protocol_,
+                          /*is_http1_allowed=*/true, ProxyInfo::Direct());
+
+    job_->Start(RequestPriority::DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
+                HttpStreamPool::RespectLimits::kRespect,
+                /*enable_ip_based_pooling=*/true,
+                /*enable_alternative_services=*/true, quic_version_,
+                NetLogWithSource());
+  }
+
+  int GetResult() { return result_future_.Get(); }
+
+  void OnStreamReady(Job* job,
+                     std::unique_ptr<HttpStream> stream,
+                     NextProto negotiated_protocol) override {
+    negotiated_protocol_ = negotiated_protocol;
+    SetResult(OK);
+  }
+
+  void OnStreamFailed(Job* job,
+                      int status,
+                      const NetErrorDetails& net_error_details,
+                      ResolveErrorInfo resolve_error_info) override {
+    SetResult(status);
+  }
+
+  void OnCertificateError(Job* job,
+                          int status,
+                          const SSLInfo& ssl_info) override {
+    SetResult(status);
+  }
+
+  void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) override {}
+
+  HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
+
+  NextProto negotiated_protocol() const { return negotiated_protocol_; }
+
+ private:
+  void SetResult(int result) { result_future_.SetValue(result); }
+
+  StreamKeyBuilder key_builder_;
+
+  NextProto expected_protocol_ = NextProto::kProtoUnknown;
+  quic::ParsedQuicVersion quic_version_ =
+      quic::ParsedQuicVersion::Unsupported();
+
+  std::unique_ptr<Job> job_;
+
+  base::test::TestFuture<int> result_future_;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
+};
 
 }  // namespace
 
@@ -561,7 +644,8 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     return spdy_session;
   }
 
-  void AddQuicData(std::string_view host = kDefaultServerName) {
+  void AddQuicData(std::string_view host = kDefaultServerName,
+                   MockConnectCompleter* connect_completer = nullptr) {
     auto client_maker = std::make_unique<QuicTestPacketMaker>(
         quic_version(),
         quic::QuicUtils::CreateRandomConnectionId(
@@ -573,7 +657,11 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
     int packet_number = 1;
     quic_data->AddReadPauseForever();
-    quic_data->AddConnect(ASYNC, OK);
+    if (connect_completer) {
+      quic_data->AddConnect(connect_completer);
+    } else {
+      quic_data->AddConnect(ASYNC, OK);
+    }
     // HTTP/3 SETTINGS are always the first thing sent on a connection.
     quic_data->AddWrite(SYNCHRONOUS, client_maker->MakeInitialSettingsPacket(
                                          /*packet_number=*/packet_number++));
@@ -5014,6 +5102,146 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // The TCP attempt should be aborted.
   EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
   EXPECT_EQ(group.ActiveStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2Only) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData data(reads, writes);
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  HttpStreamKey stream_key = StreamKeyBuilder(kDefaultDestination).Build();
+  TestJobDelegate delegate;
+  delegate.set_expected_protocol(NextProto::kProtoHTTP2);
+  delegate.CreateAndStartJob(pool());
+  EXPECT_THAT(delegate.GetResult(), IsOk());
+  EXPECT_EQ(delegate.negotiated_protocol(), NextProto::kProtoHTTP2);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2OnlyCancelQuicAttempt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter h3_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&h3_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  MockConnectCompleter h2_completer;
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  SequencedSocketData data(reads, writes);
+  data.set_connect_data(MockConnect(&h2_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  HttpStreamKey stream_key = StreamKeyBuilder(kDefaultDestination).Build();
+
+  // Set the destination is known to support H2. This prevents the
+  // AttemptManager from attempting more than one TCP handshake.
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
+  // Create the first job that allows all protocols to attempt.
+  TestJobDelegate delegate1(stream_key);
+  delegate1.set_quic_version(quic_version());
+  delegate1.CreateAndStartJob(pool());
+
+  // Create the second job that only allows H2.
+  TestJobDelegate delegate2(stream_key);
+  delegate2.set_expected_protocol(NextProto::kProtoHTTP2);
+  delegate2.CreateAndStartJob(pool());
+
+  h3_completer.Complete(OK);
+  h2_completer.Complete(OK);
+
+  EXPECT_THAT(delegate1.GetResult(), IsOk());
+  EXPECT_EQ(delegate1.negotiated_protocol(), NextProto::kProtoHTTP2);
+  EXPECT_THAT(delegate2.GetResult(), IsOk());
+  EXPECT_EQ(delegate2.negotiated_protocol(), NextProto::kProtoHTTP2);
+
+  EXPECT_THAT(pool()
+                  .GetOrCreateGroupForTesting(stream_key)
+                  .GetAttemptManagerForTesting()
+                  ->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_ABORTED)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3Only) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  AddQuicData();
+
+  TestJobDelegate delegate;
+  delegate.set_expected_protocol(NextProto::kProtoQUIC);
+  delegate.set_quic_version(quic_version());
+  delegate.CreateAndStartJob(pool());
+  EXPECT_THAT(delegate.GetResult(), IsOk());
+  EXPECT_EQ(delegate.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyCancelTcpBasedAttempt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter quic_completer;
+
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer);
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  HttpStreamKey stream_key = StreamKeyBuilder(kDefaultDestination).Build();
+
+  // Create the first job that allows all protocols to attempt.
+  TestJobDelegate delegate1(stream_key);
+  delegate1.set_quic_version(quic_version());
+  delegate1.CreateAndStartJob(pool());
+
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+
+  // Create the second job that only allows H3.
+  TestJobDelegate delegate2(stream_key);
+  delegate2.set_quic_version(quic_version());
+  delegate2.set_expected_protocol(NextProto::kProtoQUIC);
+  delegate2.CreateAndStartJob(pool());
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+
+  quic_completer.Complete(OK);
+
+  EXPECT_THAT(delegate1.GetResult(), IsOk());
+  EXPECT_EQ(delegate1.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  EXPECT_THAT(delegate2.GetResult(), IsOk());
+  EXPECT_EQ(delegate2.negotiated_protocol(), NextProto::kProtoQUIC);
 }
 
 }  // namespace net
