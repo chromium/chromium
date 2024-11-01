@@ -39,11 +39,27 @@
   width: 100vw;
 }
 
+#timeout-main-container {
+  margin-block-start: auto;
+  flex: 0 1 auto;
+}
+
 .action-container {
   align-items: flex-end;
   box-sizing: border-box;
   flex: 0 0 auto;
   margin-block-start: auto;
+  width: 100vw;
+}
+
+#timeout-action-container {
+  align-items: center;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  flex-flow: column;
+  gap: 12px;
+  justify-content: center;
+  margin: 0 auto auto auto;
   width: 100vw;
 }
 

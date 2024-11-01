@@ -9,7 +9,8 @@ export function getHtml(this: ManagedUserProfileNoticeAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${this.useUpdatedUi_ ? html`
-  <div class="main-container tangible-sync-style">
+  <div class="main-container tangible-sync-style"
+    id="${this.showTimeout_ ? 'timeout-main-container' : ''}">
     <img class="tangible-sync-style-left-banner" alt="">
     <img class="tangible-sync-style-right-banner" alt="">
     <div id="content-container">
@@ -61,7 +62,8 @@ ${this.useUpdatedUi_ ? html`
       ` : ''}
     </div>
   </div>
-  <div class="action-container tangible-sync-style">
+  <div class="action-container tangible-sync-style"
+    id="${this.showTimeout_ ? 'timeout-action-container' : ''}">
     <cr-button id="proceed-button" class="action-button"
         @click="${this.onProceed_}" ?autofocus="${this.isModalDialog_}"
         ?disabled="${!this.allowProceedButton_()}"
