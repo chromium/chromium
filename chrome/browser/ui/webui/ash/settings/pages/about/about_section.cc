@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/about/about_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -56,15 +59,11 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetAboutSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAboutSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_DETAILED_BUILD,
        mojom::kDetailedBuildInfoSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kDetailedBuild
-                        : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kDetailedBuild,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kDetailedBuildInfo}},
@@ -82,52 +81,45 @@ const std::vector<SearchConcept>& GetAboutSearchConcepts() {
        {.section = mojom::Section::kAboutChromeOs}},
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_CHANNEL,
        mojom::kDetailedBuildInfoSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kDetailedBuild
-                        : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kDetailedBuild,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChangeChromeChannel}},
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_COPY_DETAILED_BUILD,
        mojom::kDetailedBuildInfoSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kDetailedBuild
-                        : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kDetailedBuild,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCopyDetailedBuildInfo}},
       {IDS_OS_SETTINGS_TAG_ABOUT_OS_UPDATE,
        mojom::kAboutChromeOsSectionPath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kCheckForUpdate
-                        : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kCheckForUpdate,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCheckForOsUpdate}},
       {IDS_OS_SETTINGS_TAG_ABOUT_HELP,
        mojom::kAboutChromeOsSectionPath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kHelp
-                        : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kHelp,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kGetHelpWithChromeOs}},
       {IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES,
        mojom::kAboutChromeOsSectionPath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kReleaseNotes
-                        : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kReleaseNotes,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSeeWhatsNew},
        {IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDiagnosticsAppSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS,
        mojom::kAboutChromeOsSectionPath,
-       ash::features::IsOsSettingsRevampWayfindingEnabled()
-           ? mojom::SearchResultIcon::kDiagnostics
-           : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kDiagnostics,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDiagnostics},
@@ -136,25 +128,23 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
         IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT3,
         IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT4, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFirmwareUpdatesAppSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetFirmwareUpdatesAppSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES,
        mojom::kAboutChromeOsSectionPath,
-       ash::features::IsOsSettingsRevampWayfindingEnabled()
-           ? mojom::SearchResultIcon::kFirmwareUpdates
-           : mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultIcon::kFirmwareUpdates,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFirmwareUpdates}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDeviceNameSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDeviceNameSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME,
        mojom::kDetailedBuildInfoSubpagePath,
        mojom::SearchResultIcon::kChrome,
@@ -163,12 +153,12 @@ const std::vector<SearchConcept>& GetDeviceNameSearchConcepts() {
        {.setting = mojom::Setting::kChangeDeviceName},
        {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const std::vector<SearchConcept>& GetAboutTermsOfServiceSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAboutTermsOfServiceSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE,
        mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
@@ -176,11 +166,11 @@ const std::vector<SearchConcept>& GetAboutTermsOfServiceSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTermsOfService}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAboutReportIssueSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAboutReportIssueSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE,
        mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
@@ -190,15 +180,15 @@ const std::vector<SearchConcept>& GetAboutReportIssueSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE_ALT1,
         IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Returns the link to the safety info for the device (if it exists).
 std::string GetSafetyInfoLink() {
-  const std::vector<std::string> board =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const std::vector<std::string_view> board =
+      base::SplitStringPiece(base::SysInfo::GetLsbReleaseBoard(), "-",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (board[0] == "nocturne") {
     return chrome::kChromeUISafetyPixelSlateURL;
   }
