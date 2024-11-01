@@ -2371,12 +2371,6 @@ BASE_FEATURE_PARAM(size_t,
                    &kSharedStorageAPI,
                    "url_selection_operation_input_url_size_limit",
                    8);
-// We use a max of 5 MB = 5 * 1024 * 1024 B = 5242880 B.
-BASE_FEATURE_PARAM(size_t,
-                   kMaxSharedStorageBytesPerOrigin,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageBytesPerOrigin",
-                   5242880);
 BASE_FEATURE_PARAM(int,
                    kMaxSharedStoragePageSize,
                    &kSharedStorageAPI,

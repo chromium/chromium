@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
@@ -2139,7 +2140,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
 
   // Divide the byte limit by two to get the character limit for a key or value.
   const std::string kInvalidValue(
-      blink::features::kMaxSharedStorageBytesPerOrigin.Get() / 2u + 1u, '*');
+      blink::kMaxSharedStorageBytesPerOrigin / 2u + 1u, '*');
 
   const char kScript[] = R"(
     function testSet(...args) {

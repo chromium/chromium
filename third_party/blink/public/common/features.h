@@ -1532,10 +1532,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPI);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     size_t,
     kSharedStorageURLSelectionOperationInputURLSizeLimit);
-// Maximum number of total bytes in database entries at a time that any single
-// origin is permitted.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
-                                               kMaxSharedStorageBytesPerOrigin);
 // Maximum database page size in bytes. Must be a power of two between
 // 512 and 65536, inclusive.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStoragePageSize);

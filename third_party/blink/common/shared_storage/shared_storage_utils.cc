@@ -16,7 +16,7 @@ namespace {
 
 size_t MaxChar16StringLength() {
   // Each char16_t takes 2 bytes.
-  return features::kMaxSharedStorageBytesPerOrigin.Get() / 2u;
+  return kMaxSharedStorageBytesPerOrigin / 2u;
 }
 
 }  // namespace
