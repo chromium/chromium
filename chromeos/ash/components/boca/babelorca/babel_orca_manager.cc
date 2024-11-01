@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_consumer.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_producer.h"
+#include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper_impl.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
@@ -53,14 +54,11 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
     std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    captions::LiveCaptionController* live_caption_controller,
-    std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+    std::unique_ptr<babelorca::CaptionController> caption_controller,
     const std::string& gaia_id) {
-  ControllerFactory controller_factory = base::BindOnce(
-      babelorca::BabelOrcaConsumer::Create, url_loader_factory,
-      identity_manager, gaia_id,
-      std::make_unique<babelorca::LiveCaptionControllerWrapperImpl>(
-          live_caption_controller, std::move(caption_bubble_context)));
+  ControllerFactory controller_factory =
+      base::BindOnce(babelorca::BabelOrcaConsumer::Create, url_loader_factory,
+                     identity_manager, gaia_id, std::move(caption_controller));
   return std::make_unique<BabelOrcaManager>(
       identity_manager, url_loader_factory, std::move(controller_factory));
 }

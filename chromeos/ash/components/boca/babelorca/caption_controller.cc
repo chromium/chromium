@@ -36,12 +36,12 @@ class CaptionControllerDelgateImpl : public CaptionController::Delegate {
   CaptionControllerDelgateImpl() = default;
   ~CaptionControllerDelgateImpl() override = default;
 
-  std::unique_ptr<captions::CaptionBubbleController>
+  std::unique_ptr<::captions::CaptionBubbleController>
   CreateCaptionBubbleController(
       PrefService* profile_prefs,
       const std::string& application_locale) override {
-    return captions::CaptionBubbleController::Create(profile_prefs,
-                                                     application_locale);
+    return ::captions::CaptionBubbleController::Create(profile_prefs,
+                                                       application_locale);
   }
 
   void AddCaptionStyleObserver(ui::NativeThemeObserver* observer) override {
@@ -56,7 +56,7 @@ class CaptionControllerDelgateImpl : public CaptionController::Delegate {
 }  // namespace
 
 CaptionController::CaptionController(
-    std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+    std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
     PrefService* profile_prefs,
     const std::string& application_locale,
     std::unique_ptr<Delegate> delegate)
@@ -124,7 +124,7 @@ void CaptionController::OnAudioStreamEnd() {
 }
 
 void CaptionController::OnCaptionStyleUpdated() {
-  caption_style_ = captions::GetCaptionStyleFromUserSettings(
+  caption_style_ = ::captions::GetCaptionStyleFromUserSettings(
       profile_prefs_, false /* record_metrics */);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 }

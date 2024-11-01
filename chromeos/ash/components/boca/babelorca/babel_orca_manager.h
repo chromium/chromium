@@ -20,6 +20,7 @@
 
 namespace ash::babelorca {
 class BabelOrcaController;
+class CaptionController;
 class LiveCaptionControllerWrapper;
 }  // namespace ash::babelorca
 
@@ -64,8 +65,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       std::unique_ptr<::captions::TranslationDispatcher> translation_dispatcher,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ::captions::LiveCaptionController* live_caption_controller,
-      std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
+      std::unique_ptr<babelorca::CaptionController> caption_controller,
       const std::string& gaia_id);
 
   BabelOrcaManager(

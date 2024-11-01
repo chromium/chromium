@@ -27,7 +27,9 @@ class FakeCaptionBubbleController : public captions::CaptionBubbleController {
   explicit FakeCaptionBubbleController(FakeCaptionControllerDelegate* delegate)
       : delegate_(delegate) {}
 
-  ~FakeCaptionBubbleController() override = default;
+  ~FakeCaptionBubbleController() override {
+    delegate_->SetCaptionBubbleDestroyed();
+  }
 
   bool OnTranscription(captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
@@ -68,6 +70,7 @@ std::unique_ptr<captions::CaptionBubbleController>
 FakeCaptionControllerDelegate::CreateCaptionBubbleController(
     PrefService*,
     const std::string&) {
+  caption_bubble_alive_ = true;
   return std::make_unique<FakeCaptionBubbleController>(this);
 }
 
@@ -117,6 +120,14 @@ void FakeCaptionControllerDelegate::OnAudioStreamEnd() {
 void FakeCaptionControllerDelegate::AddStyleUpdate(
     std::optional<ui::CaptionStyle> style) {
   caption_style_updates_.push_back(std::move(style));
+}
+
+bool FakeCaptionControllerDelegate::IsCaptionBubbleAlive() {
+  return caption_bubble_alive_;
+}
+
+void FakeCaptionControllerDelegate::SetCaptionBubbleDestroyed() {
+  caption_bubble_alive_ = false;
 }
 
 }  // namespace ash::babelorca

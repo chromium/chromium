@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_receiver.h"
@@ -32,6 +31,7 @@ class IdentityManager;
 
 namespace ash::babelorca {
 
+class CaptionController;
 class TachyonRequestDataProvider;
 class TachyonResponse;
 class TokenManager;
@@ -42,7 +42,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       std::string gaia_id,
-      std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+      std::unique_ptr<CaptionController> caption_controller,
       TokenManager* tachyon_oauth_token_manager,
       TachyonRequestDataProvider* tachyon_request_data_provider);
 
@@ -50,7 +50,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       const std::string& gaia_id,
-      std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+      std::unique_ptr<CaptionController> caption_controller,
       TokenManager* tachyon_oauth_token_manager,
       TachyonRequestDataProvider* tachyon_request_data_provider,
       TranscriptReceiver::StreamingClientGetter streaming_client_getter);
@@ -84,8 +84,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const std::string gaia_id_;
-  const std::unique_ptr<LiveCaptionControllerWrapper>
-      caption_controller_wrapper_;
+  const std::unique_ptr<CaptionController> caption_controller_;
   const raw_ptr<TokenManager> tachyon_oauth_token_manager_;
   const raw_ptr<TachyonRequestDataProvider> tachyon_request_data_provider_;
   TranscriptReceiver::StreamingClientGetter streaming_client_getter_;

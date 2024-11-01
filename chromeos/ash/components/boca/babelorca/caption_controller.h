@@ -36,7 +36,7 @@ class CaptionController : public ui::NativeThemeObserver {
 
     virtual ~Delegate() = default;
 
-    virtual std::unique_ptr<captions::CaptionBubbleController>
+    virtual std::unique_ptr<::captions::CaptionBubbleController>
     CreateCaptionBubbleController(PrefService* profile_prefs,
                                   const std::string& application_locale) = 0;
 
@@ -50,7 +50,7 @@ class CaptionController : public ui::NativeThemeObserver {
   };
 
   CaptionController(
-      std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
+      std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       PrefService* profile_prefs,
       const std::string& application_locale,
       std::unique_ptr<Delegate> delegate = nullptr);
@@ -75,12 +75,13 @@ class CaptionController : public ui::NativeThemeObserver {
   // ui::NativeThemeObserver:
   void OnCaptionStyleUpdated() override;
 
-  std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context_;
+  std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
   raw_ptr<PrefService> profile_prefs_;
   const std::string application_locale_;
   const std::unique_ptr<Delegate> delegate_;
 
-  std::unique_ptr<captions::CaptionBubbleController> caption_bubble_controller_;
+  std::unique_ptr<::captions::CaptionBubbleController>
+      caption_bubble_controller_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::optional<ui::CaptionStyle> caption_style_;
 

@@ -13,8 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper_impl.h"
+#include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/babelorca/oauth_token_fetcher.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
@@ -94,14 +93,14 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     std::string gaia_id,
-    std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+    std::unique_ptr<CaptionController> caption_controller,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider) {
   auto streaming_client_getter =
       base::BindRepeating(CreateStreamingClient, tachyon_oauth_token_manager);
   return std::make_unique<BabelOrcaConsumer>(
       url_loader_factory, identity_manager, gaia_id,
-      std::move(caption_controller_wrapper), tachyon_oauth_token_manager,
+      std::move(caption_controller), tachyon_oauth_token_manager,
       tachyon_request_data_provider, std::move(streaming_client_getter));
 }
 
@@ -109,14 +108,14 @@ BabelOrcaConsumer::BabelOrcaConsumer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     const std::string& gaia_id,
-    std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+    std::unique_ptr<CaptionController> caption_controller,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider,
     TranscriptReceiver::StreamingClientGetter streaming_client_getter)
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       gaia_id_(gaia_id),
-      caption_controller_wrapper_(std::move(caption_controller_wrapper)),
+      caption_controller_(std::move(caption_controller)),
       tachyon_oauth_token_manager_(tachyon_oauth_token_manager),
       tachyon_request_data_provider_(tachyon_request_data_provider),
       streaming_client_getter_(std::move(streaming_client_getter)) {}
@@ -176,7 +175,7 @@ void BabelOrcaConsumer::StartReceiving() {
     JoinSessionTachyonGroup();
     return;
   }
-  caption_controller_wrapper_->ToggleLiveCaptionForBabelOrca(/*enabled=*/true);
+  caption_controller_->StartLiveCaption();
   transcript_receiver_ = std::make_unique<TranscriptReceiver>(
       url_loader_factory_, tachyon_request_data_provider_,
       streaming_client_getter_);
@@ -240,7 +239,7 @@ void BabelOrcaConsumer::OnTrasncriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
   bool dispatch_success =
-      caption_controller_wrapper_->DispatchTranscription(transcript);
+      caption_controller_->DispatchTranscription(transcript);
   // TODO(crbug.com/373692250): add dispatch attempts error limit and report
   // failure.
   VLOG_IF(1, !dispatch_success)
@@ -257,8 +256,7 @@ void BabelOrcaConsumer::OnReceivingFailed() {
 }
 
 void BabelOrcaConsumer::StopReceiving() {
-  caption_controller_wrapper_->OnAudioStreamEnd();
-  caption_controller_wrapper_->ToggleLiveCaptionForBabelOrca(/*enabled=*/false);
+  caption_controller_->StopLiveCaption();
   transcript_receiver_.reset();
 }
 

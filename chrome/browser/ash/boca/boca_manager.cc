@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
+#include "chromeos/ash/components/boca/babelorca/caption_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
@@ -40,14 +41,8 @@ namespace {
 
 std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     Profile* profile,
+    const std::string& application_locale,
     bool is_consumer) {
-  // TODO(crbug.com/373692250): Check only for producer once we remove the
-  // recognition dependency for the consumer.
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kOnDeviceSpeechRecognition)) {
-    return nullptr;
-  }
-
   auto translation_dispatcher =
       std::make_unique<::captions::TranslationDispatcher>(
           google_apis::GetBocaAPIKey(), profile);
@@ -62,10 +57,16 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
         std::move(translation_dispatcher),
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetURLLoaderFactory(),
-        ::captions::LiveCaptionControllerFactory::GetForProfile(profile),
-        std::move(caption_bubble_context), account_id.GetGaiaId());
+        std::make_unique<babelorca::CaptionController>(
+            std::move(caption_bubble_context), profile->GetPrefs(),
+            application_locale),
+        account_id.GetGaiaId());
   }
   // Producer
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kOnDeviceSpeechRecognition)) {
+    return nullptr;
+  }
   auto speech_recognizer =
       std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(profile);
   return boca::BabelOrcaManager::CreateAsProducer(
@@ -102,7 +103,11 @@ BocaManager::BocaManager(Profile* profile)
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
-  babel_orca_manager_ = CreateBabelOrcaManager(profile, is_consumer);
+  // TODO(crbug.com/373692250): use system application locale instead of
+  // hardcoded en-US.
+  const std::string kApplicationLocale = "en-US";
+  babel_orca_manager_ =
+      CreateBabelOrcaManager(profile, kApplicationLocale, is_consumer);
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),

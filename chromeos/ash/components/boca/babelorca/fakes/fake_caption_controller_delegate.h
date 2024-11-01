@@ -61,7 +61,12 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
 
   void AddStyleUpdate(std::optional<ui::CaptionStyle> style);
 
+  bool IsCaptionBubbleAlive();
+
+  void SetCaptionBubbleDestroyed();
+
  private:
+  bool caption_bubble_alive_ = false;
   bool on_transcritption_success_ = true;
   size_t audio_stream_end_count_ = 0;
   std::vector<std::optional<ui::CaptionStyle>> caption_style_updates_;

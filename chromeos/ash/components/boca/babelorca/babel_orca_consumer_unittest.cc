@@ -8,22 +8,25 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
+#include "chromeos/ash/components/boca/babelorca/caption_controller.h"
+#include "chromeos/ash/components/boca/babelorca/fakes/fake_caption_controller_delegate.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_token_manager.h"
-#include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
-#include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-forward.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
+#include "components/live_caption/caption_bubble_context.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -36,49 +39,60 @@
 namespace ash::babelorca {
 namespace {
 
+const std::string kApplicationLocale = "en-US";
 const std::string kGaiaId = "gaia-id";
 const std::string kSessionId = "session_id";
 const std::string kEmail = "test@school.edu";
 
-class MockLiveCaptionControllerWrapper : public LiveCaptionControllerWrapper {
- public:
-  MockLiveCaptionControllerWrapper() = default;
-  ~MockLiveCaptionControllerWrapper() override = default;
-  MOCK_METHOD(bool,
-              DispatchTranscription,
-              (const media::SpeechRecognitionResult&),
-              (override));
-  MOCK_METHOD(void, ToggleLiveCaptionForBabelOrca, (bool), (override));
-  MOCK_METHOD(void, OnAudioStreamEnd, (), (override));
-};
+const std::string kCaptionsTextSize = "20%";
+const std::string kCaptionsTextFont = "aerial";
+const std::string kCaptionsTextColor = "255,99,71";
+const std::string kCaptionsBackgroundColor = "90,255,50";
+const std::string kCaptionsTextShadow = "10px";
 
+constexpr int kCaptionsTextOpacity = 50;
+constexpr int kCaptionsBackgroundOpacity = 30;
+
+void RegisterPrefs(TestingPrefServiceSimple* pref_service) {
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextSize, kCaptionsTextSize);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextFont, kCaptionsTextFont);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextColor, kCaptionsTextColor);
+  pref_service->registry()->RegisterIntegerPref(
+      prefs::kAccessibilityCaptionsTextOpacity, kCaptionsTextOpacity);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsBackgroundColor, kCaptionsBackgroundColor);
+  pref_service->registry()->RegisterStringPref(
+      prefs::kAccessibilityCaptionsTextShadow, kCaptionsTextShadow);
+  pref_service->registry()->RegisterIntegerPref(
+      prefs::kAccessibilityCaptionsBackgroundOpacity,
+      kCaptionsBackgroundOpacity);
+}
 class BabelOrcaConsumerTest : public testing::Test {
  protected:
   void SetUp() override {
+    RegisterPrefs(&pref_service_);
     account_info_ = identity_test_env_.MakeAccountAvailable("test@school.edu");
     identity_test_env_.SetPrimaryAccount(account_info_.email,
                                          signin::ConsentLevel::kSync);
   }
 
-  void TearDown() override {
-    EXPECT_CALL(*caption_controller_wrapper_, OnAudioStreamEnd).Times(1);
-    caption_controller_wrapper_ = nullptr;
-    consumer_.reset();
-  }
+  void TearDown() override { caption_controller_delegate_ = nullptr; }
 
   void CreateConsumer() {
-    auto caption_controller_wrapper =
-        std::make_unique<testing::NiceMock<MockLiveCaptionControllerWrapper>>();
-    caption_controller_wrapper_ = caption_controller_wrapper.get();
-    live_caption_enabled_ = false;
-    ON_CALL(*caption_controller_wrapper_, ToggleLiveCaptionForBabelOrca)
-        .WillByDefault(
-            [this](bool enabled) { live_caption_enabled_ = enabled; });
+    auto caption_controller_delegate =
+        std::make_unique<FakeCaptionControllerDelegate>();
+    caption_controller_delegate_ = caption_controller_delegate.get();
+    auto caption_controller = std::make_unique<CaptionController>(
+        /*caption_bubble_context=*/nullptr, &pref_service_, kApplicationLocale,
+        std::move(caption_controller_delegate));
 
     consumer_ = std::make_unique<BabelOrcaConsumer>(
         url_loader_factory_.GetSafeWeakWrapper(),
         identity_test_env_.identity_manager(), kGaiaId,
-        std::move(caption_controller_wrapper), &token_manager_,
+        std::move(caption_controller), &token_manager_,
         request_data_provider_.get(),
         base::BindLambdaForTesting(
             [this](
@@ -115,6 +129,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<FakeTachyonRequestDataProvider> request_data_provider_;
   AccountInfo account_info_;
@@ -123,8 +138,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   TachyonStreamingClient::OnMessageCallback on_message_cb_;
   std::unique_ptr<BabelOrcaConsumer> consumer_;
   base::test::RepeatingTestFuture<void> streaming_client_waiter_;
-  raw_ptr<MockLiveCaptionControllerWrapper> caption_controller_wrapper_;
-  bool live_caption_enabled_;
+  raw_ptr<FakeCaptionControllerDelegate> caption_controller_delegate_;
 };
 
 TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledNotSignedIn) {
@@ -148,15 +162,17 @@ TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledNotSignedIn) {
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
 
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
   ASSERT_FALSE(on_message_cb_.is_null());
   mojom::BabelOrcaMessagePtr message = CreateMessage();
-  EXPECT_CALL(*caption_controller_wrapper_,
-              DispatchTranscription(media::SpeechRecognitionResult(
-                  message->current_transcript->text,
-                  message->current_transcript->is_final)))
-      .Times(1);
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
   on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
 }
 
 TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledNotSignedIn) {
@@ -180,15 +196,17 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledNotSignedIn) {
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
 
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
   ASSERT_FALSE(on_message_cb_.is_null());
   mojom::BabelOrcaMessagePtr message = CreateMessage();
-  EXPECT_CALL(*caption_controller_wrapper_,
-              DispatchTranscription(media::SpeechRecognitionResult(
-                  message->current_transcript->text,
-                  message->current_transcript->is_final)))
-      .Times(1);
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
   on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
 }
 
 TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledSignedIn) {
@@ -205,15 +223,17 @@ TEST_F(BabelOrcaConsumerTest, SessionThenLocalEnabledSignedIn) {
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
 
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
   ASSERT_FALSE(on_message_cb_.is_null());
   mojom::BabelOrcaMessagePtr message = CreateMessage();
-  EXPECT_CALL(*caption_controller_wrapper_,
-              DispatchTranscription(media::SpeechRecognitionResult(
-                  message->current_transcript->text,
-                  message->current_transcript->is_final)))
-      .Times(1);
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
   on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
 }
 
 TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledSignedIn) {
@@ -230,15 +250,17 @@ TEST_F(BabelOrcaConsumerTest, LocalThenSessionEnabledSignedIn) {
       "oauth_token", base::Time::Max());
   ASSERT_TRUE(streaming_client_waiter_.Wait());
 
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
   ASSERT_FALSE(on_message_cb_.is_null());
   mojom::BabelOrcaMessagePtr message = CreateMessage();
-  EXPECT_CALL(*caption_controller_wrapper_,
-              DispatchTranscription(media::SpeechRecognitionResult(
-                  message->current_transcript->text,
-                  message->current_transcript->is_final)))
-      .Times(1);
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
   on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
 }
 
 TEST_F(BabelOrcaConsumerTest, OnSessionEnded) {
@@ -255,11 +277,10 @@ TEST_F(BabelOrcaConsumerTest, OnSessionEnded) {
       "oauth_token", base::Time::Max());
 
   ASSERT_TRUE(streaming_client_waiter_.Wait());
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
 
-  EXPECT_CALL(*caption_controller_wrapper_, OnAudioStreamEnd).Times(1);
   consumer_->OnSessionEnded();
-  EXPECT_FALSE(live_caption_enabled_);
+  EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
 }
 
 TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
@@ -276,11 +297,10 @@ TEST_F(BabelOrcaConsumerTest, DisableSessionCaptions) {
       "oauth_token", base::Time::Max());
 
   ASSERT_TRUE(streaming_client_waiter_.Wait());
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
 
-  EXPECT_CALL(*caption_controller_wrapper_, OnAudioStreamEnd).Times(1);
   consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/false);
-  EXPECT_FALSE(live_caption_enabled_);
+  EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
 }
 
 TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
@@ -297,11 +317,10 @@ TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
       "oauth_token", base::Time::Max());
 
   ASSERT_TRUE(streaming_client_waiter_.Wait());
-  EXPECT_TRUE(live_caption_enabled_);
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
 
-  EXPECT_CALL(*caption_controller_wrapper_, OnAudioStreamEnd).Times(1);
   consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/false);
-  EXPECT_FALSE(live_caption_enabled_);
+  EXPECT_FALSE(caption_controller_delegate_->IsCaptionBubbleAlive());
 }
 
 }  // namespace
