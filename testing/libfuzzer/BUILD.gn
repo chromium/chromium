@@ -12,6 +12,12 @@ import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
+# This file is depended upon from builds that don't include all
+# of Chromium, so nothing in here should assume the existence of
+# Chromium or Blink. It's OK for subdirectories (e.g. the fuzzers
+# or research subdirectories) to have dependencies on other parts
+# of Chromium, but not this file.
+
 declare_args() {
   # Build individual_fuzztest_wrapper if use_fuzztest_wrapper is set.
   # Some projects doesn't have //base and cannot build
@@ -134,20 +140,6 @@ if (use_fuzzing_engine) {
   }
 }
 
-if (build_with_chromium && use_blink) {
-  source_set("renderer_fuzzing") {
-    testonly = true
-    sources = [
-      "renderer_fuzzing/renderer_fuzzing.cc",
-      "renderer_fuzzing/renderer_fuzzing.h",
-    ]
-    deps = [
-      "//base",
-      "//third_party/blink/public:blink",
-    ]
-  }
-}
-
 buildflag_header("fuzztest_wrapper_buildflags") {
   header = "fuzztest_wrapper_buildflags.h"
   flags = [ "USE_CENTIPEDE=$use_centipede" ]
@@ -168,7 +160,28 @@ if (use_fuzztest_wrapper) {
   }
 }
 
-group("research") {
+source_set("fuzztest_init_support") {
   testonly = true
-  deps = [ "research:research" ]
+  sources = [
+    "fuzztest_init_helper.cc",
+    "fuzztest_init_helper.h",
+  ]
+}
+
+buildflag_header("confirm_fuzztest_init_buildflags") {
+  header = "confirm_fuzztest_init_buildflags.h"
+  flags =
+      [ "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites" ]
+}
+
+# Contains a static initializer which will arrange for fuzztests to be
+# registered. Usually invoked from testing/test.gni
+source_set("confirm_fuzztest_init") {
+  sources = [ "confirm_fuzztest_init.cc" ]
+  testonly = true
+  deps = [
+    ":confirm_fuzztest_init_buildflags",
+    ":fuzztest_init_support",
+    "//third_party/fuzztest:init_fuzztest",
+  ]
 }

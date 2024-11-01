@@ -27,7 +27,7 @@ if (fuzzing_engine_supports_custom_main) {
       "//chrome/test:test_support",
       "//chrome/test/fuzzing:in_process_fuzzer_runner",
       "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
-      "//testing/libfuzzer:renderer_fuzzing",
+      "//testing/libfuzzer/renderer_fuzzing",
     ]
   }
 }
@@ -116,8 +116,8 @@ if (renderer_ipc_fuzzing_enabled) {
       "//chrome/test:test_support",
       "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
       "//content/test/fuzzer:mojolpm_fuzzer_support",
-      "//testing/libfuzzer:renderer_fuzzing",
       "//testing/libfuzzer/proto:url_proto_converter",
+      "//testing/libfuzzer/renderer_fuzzing",
       "//third_party/blink/public/common:storage_key_proto_converter",
     ]
 

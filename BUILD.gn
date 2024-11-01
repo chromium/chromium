@@ -792,6 +792,7 @@ group("gn_all") {
         ((is_win || is_mac) && use_fuzzing_engine)) {
       deps += [
         "//testing/libfuzzer/fuzzers",
+        "//testing/libfuzzer/research",
         "//third_party/freetype-testing:fuzzers",
         "//third_party/grpc:fuzzers",
         "//third_party/icu/fuzzers",

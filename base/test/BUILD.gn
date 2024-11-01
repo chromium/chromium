@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/compiled_action.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
@@ -70,8 +69,6 @@ static_library("test_support") {
     "bind.h",
     "copy_only_int.cc",
     "copy_only_int.h",
-    "fuzztest_init_helper.cc",
-    "fuzztest_init_helper.h",
     "gmock_callback_support.h",
     "gmock_expected_support.h",
     "gmock_move_support.h",
@@ -204,6 +201,7 @@ static_library("test_support") {
   deps = [
     ":proto_test_support",
     "//build:chromeos_buildflags",
+    "//testing/libfuzzer:fuzztest_init_support",
     "//third_party/google_benchmark",
     "//third_party/icu:icuuc",
     "//third_party/libxml:libxml_utils",
@@ -753,23 +751,5 @@ source_set("fuzztest_support") {
   deps = [
     "//base",
     "//third_party/fuzztest:fuzztest_internal",
-  ]
-}
-
-buildflag_header("confirm_fuzztest_init_buildflags") {
-  header = "confirm_fuzztest_init_buildflags.h"
-  flags =
-      [ "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites" ]
-}
-
-# Contains a static initializer which will arrange for fuzztests to be
-# registered. Usually invoked from testing/test.gni
-source_set("confirm_fuzztest_init") {
-  sources = [ "confirm_fuzztest_init.cc" ]
-  testonly = true
-  deps = [
-    ":confirm_fuzztest_init_buildflags",
-    ":test_support",
-    "//third_party/fuzztest:init_fuzztest",
   ]
 }
