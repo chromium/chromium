@@ -17,7 +17,11 @@
         { data: { url: url } })
     }
 
+    let isReady = false;
     function notifyReady(delay) {
+      // Mostly as a back-stop to detect bugs in the test setup, we verify that
+      // isReady was set to true when we proceed to run our test action.
+      isReady = true;
       // Launches can simply focus this window without navigating, so this
       // intentionally starts listening too.
       signalNavigationCompleteAndListenForNextLaunch(delay);

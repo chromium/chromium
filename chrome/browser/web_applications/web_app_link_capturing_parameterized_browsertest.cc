@@ -1407,6 +1407,16 @@ class WebAppLinkCapturingParameterizedBrowserTest
         contents_a = LaunchPageInTab(url_a);
       }
 
+      // Verify that the the start page is actually ready. This should be
+      // guaranteed by waiting for the FinishedNavigation message above, but
+      // bugs in the test setup can cause us to not wait for enough navigations
+      // to finish, resulting in hard to debug test failures. This assertion
+      // intends to make it easier to detect these cases.
+      ASSERT_EQ(true, content::EvalJs(contents_a, "isReady"))
+          << "Page signaled navigation finished, but is not yet ready. This "
+             "could mean the test setup didn't wait for enough navigations to "
+             "finish.";
+
       browser_a = chrome::FindBrowserWithTab(contents_a);
       ASSERT_TRUE(browser_a != nullptr);
       ASSERT_EQ(StartInAppWindow() ? Browser::Type::TYPE_APP
@@ -2146,15 +2156,14 @@ class NavigationCapturingTestWithBLaunchedAndBrowserTab
                                      launch_future.GetCallback());
     ASSERT_TRUE(launch_future.Wait());
     url_observer.Wait();
+    // Launching a web app should listen to a single navigation message.
+    WaitForNavigationFinishedMessage(message_queue);
 
     DLOG(INFO) << "Navigating to browser tab b.";
     EnsureValidNewTabPage();
 
     GURL url_b_dest = embedded_test_server()->GetURL(kDestinationPageScopeB);
     LaunchPageInTab(url_b_dest);
-
-    // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(message_queue);
   }
 
   std::string GetTestClassName() const override {

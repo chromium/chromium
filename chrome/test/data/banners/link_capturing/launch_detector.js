@@ -54,7 +54,14 @@ async function listenForNextLaunchParams(delay) {
 // 'string contains' functionality is added to the Kombucha tests.
 function signalNavigationCompleteAndListenForNextLaunch(delay) {
   // Always set timeout, which also helps with trying to catch any launch params
-  // that haven't hit the consumer.
+  // that haven't hit the consumer. Increase this timeout if we haven't received
+  // initial launch params yet as a workaround for chrome not always delivering
+  // launch params on time.
+  let initialDelay = delay;
+  if (launchParamsTargetUrls.length === 0) {
+    console.log('Waiting some extra time for initial launch params');
+    initialDelay += 100;
+  }
   setTimeout(() => {
     let message = 'FinishedNavigating in ' +
         (window.frameElement === null ? 'frame' : 'iframe') + ' for url ' +
@@ -68,12 +75,12 @@ function signalNavigationCompleteAndListenForNextLaunch(delay) {
       unsentLaunchParamUrl = null;
     }
     console.log(message);
-    domAutomationController.send('FinishedNavigating');
+    domAutomationController.send(message);
 
     // Listen for the next launch param (which, in our tests, should occur in
     // the 'focus-existing' client mode).
     listenForNextLaunchParams(delay);
-  }, delay)
+  }, initialDelay)
 }
 
 function showParams(params) {
