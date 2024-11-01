@@ -176,7 +176,9 @@ class WizardContext {
   bool skip_to_update_for_tests = false;
 
   // Whether the post login screens should be skipped. Used in MaybeSkip by
-  // screens in tests. Is set by WizardController::SkipPostLoginScreensForTests.
+  // screens in tests. Is set by WizardController::SkipPostLoginScreensForTests
+  // and LoginDisplayHost::SkipPostLoginScreensForDemoMode.
+  // TODO(crbug.com/376527458): Rename to `skip_post_login_screens`.
   bool skip_post_login_screens_for_tests = false;
 
   // Whether CHOOBE screen should be skipped. Setting this flag will force skip

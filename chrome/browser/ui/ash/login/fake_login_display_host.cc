@@ -140,6 +140,8 @@ bool FakeLoginDisplayHost::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
 
+void FakeLoginDisplayHost::SkipPostLoginScreensForDemoMode() {}
+
 void FakeLoginDisplayHost::HandleDisplayCaptivePortal() {}
 
 void FakeLoginDisplayHost::UpdateAddUserButtonStatus() {}

@@ -125,8 +125,6 @@ void LoginDemoAccount(const std::string& email,
                       const std::string& device_id) {
   // TODO(crbug.com/364195755): Allow list this user in CrosSetting when the
   // request is success.
-  // TODO(crbug.com/364195323):After login with a demo account, several screens
-  // (e.g. Chrome sync consent/personalization...)appears. Skips these screen.
   const AccountId account_id =
       AccountId::FromNonCanonicalEmail(email, gaia_id, AccountType::GOOGLE);
   // The user type is known to be regular. The unicorn flow transitions to the
@@ -147,9 +145,7 @@ void LoginDemoAccount(const std::string& email,
   // Enforced auto-login for given account creds.
   auto* login_display_host = LoginDisplayHost::default_host();
   CHECK(login_display_host);
-  // TODO(crbug.com/364214790): Login scoped device id for ephemeral account is
-  // generated after demo account creation. Get it before calling
-  // `CompleteLogin`.
+  login_display_host->SkipPostLoginScreensForDemoMode();
   login_display_host->CompleteLogin(*user_context);
 }
 

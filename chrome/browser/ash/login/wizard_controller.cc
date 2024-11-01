@@ -421,8 +421,10 @@ WizardController::WizardController(WizardContext* wizard_context)
       wizard_context_(wizard_context),
       shared_url_loader_factory_(
           g_browser_process->shared_url_loader_factory()) {
+  const auto has_been_skipped =
+      wizard_context_->skip_post_login_screens_for_tests;
   wizard_context_->skip_post_login_screens_for_tests =
-      switches::ShouldSkipOobePostLogin();
+      has_been_skipped || switches::ShouldSkipOobePostLogin();
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (accessibility_manager) {
     // accessibility_manager could be null in Tests.

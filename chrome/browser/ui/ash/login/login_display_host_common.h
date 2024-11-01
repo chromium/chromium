@@ -67,6 +67,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   GetQuickStartBootstrapController() final;
   // Most of the accelerators are handled in a same way, but not all.
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+  void SkipPostLoginScreensForDemoMode() override;
 
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;

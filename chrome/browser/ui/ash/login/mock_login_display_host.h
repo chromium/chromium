@@ -73,6 +73,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               HandleAccelerator,
               (LoginAcceleratorAction action),
               (override));
+  MOCK_METHOD(void, SkipPostLoginScreensForDemoMode, (), (override));
   MOCK_METHOD(void, HandleDisplayCaptivePortal, (), (override));
   MOCK_METHOD(void, UpdateAddUserButtonStatus, (), (override));
   MOCK_METHOD(void, RequestSystemInfoUpdate, (), (override));
