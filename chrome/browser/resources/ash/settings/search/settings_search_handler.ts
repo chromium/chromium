@@ -9,7 +9,8 @@
  * OS settings search.
  */
 
-import {SearchHandler, SearchHandlerInterface} from '../mojom-webui/search.mojom-webui.js';
+import type {SearchHandlerInterface} from '../mojom-webui/search.mojom-webui.js';
+import {SearchHandler} from '../mojom-webui/search.mojom-webui.js';
 
 let settingsSearchHandler: SearchHandlerInterface|null = null;
 
