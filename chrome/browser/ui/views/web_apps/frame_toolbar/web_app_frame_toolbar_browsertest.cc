@@ -1368,12 +1368,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // Regression test for https://crbug.com/1448878.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DraggableRegionsIgnoredForOwnedWidgets) {
-  // TODO(https://crbug.com/329235190): Lacros using accelerated widget for
-  // bubble, so the point within browser_view is still draggable and returns
+  // TODO(https://crbug.com/329235190): In case accelerated widget is used for
+  // bubble, the point within browser_view is still draggable and returns
   // `HTCAPTION`.
-  //
-  // TODO(https://crbug.com/375937556): Revise this now that Lacros support is
-  // removed.
   if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
     GTEST_SKIP();
   }
