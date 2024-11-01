@@ -150,12 +150,10 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
-                + "transition_to_native_pages/true"
-    })
+    @EnableFeatures(
+            "BackForwardTransitions"
+                    + ":transition_from_native_pages/true"
+                    + "/transition_to_native_pages/true")
     public void testSwipeBackToNTPWithTransition() throws InterruptedException {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -198,12 +196,10 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
-                + "transition_to_native_pages/false"
-    })
+    @EnableFeatures(
+            "BackForwardTransitions"
+                    + ":transition_from_native_pages/true"
+                    + "/transition_to_native_pages/false")
     public void testSwipeBackToNTPWithoutTransition() throws InterruptedException {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -228,12 +224,10 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:transition_from_native_pages/false/"
-                + "transition_to_native_pages/false"
-    })
+    @EnableFeatures(
+            "BackForwardTransitions"
+                    + ":transition_from_native_pages/false"
+                    + "/transition_to_native_pages/false")
     public void testSwipeBackFromNTPWithoutTransition() throws InterruptedException {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -260,12 +254,10 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
-                + "transition_to_native_pages/true"
-    })
+    @EnableFeatures(
+            "BackForwardTransitions"
+                    + ":transition_from_native_pages/true"
+                    + "/transition_to_native_pages/true")
     public void testSwipeBackToNativeBookmarksPageWithTransition() throws InterruptedException {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl("chrome-native://bookmarks/folder/0");
@@ -306,12 +298,10 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=BackForwardTransitions<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
-                + "transition_to_native_pages/true"
-    })
+    @EnableFeatures(
+            "BackForwardTransitions"
+                    + ":transition_from_native_pages/true"
+                    + "/transition_to_native_pages/true")
     public void testSwipeBackWithoutTransition_AnimationsDisabled() throws InterruptedException {
         TestAnimations.setEnabled(false);
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());

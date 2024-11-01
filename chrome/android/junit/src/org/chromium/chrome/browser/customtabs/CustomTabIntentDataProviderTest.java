@@ -58,7 +58,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -644,13 +643,10 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:"
-                + "default_policy/use-denylist"
-                + "/denylist_entries/com.dc.joker|com.marvel.thanos"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES
+                    + ":default_policy/use-denylist"
+                    + "/denylist_entries/com.dc.joker|com.marvel.thanos")
     public void isAllowedThirdParty_denylist() {
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-denylist");
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
@@ -667,13 +663,10 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:"
-                + "default_policy/use-allowlist"
-                + "/allowlist_entries/com.pixar.woody|com.disney.ariel"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES
+                    + ":default_policy/use-allowlist"
+                    + "/allowlist_entries/com.pixar.woody|com.disney.ariel")
     public void isAllowedThirdParty_allowlist() {
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-allowlist");
         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES.setForTesting(

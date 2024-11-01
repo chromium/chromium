@@ -27,23 +27,7 @@ import java.util.Map;
 
 /** Util class for survey related testing. */
 public class TestSurveyUtils {
-    /**
-     * Template for trigger Id override for command line. Usage:
-     *
-     * <pre>
-     *  &#64;Features.Add({MySurveyFeature + "&#60Study"})
-     *  &#64;CommandlineFlags.Add({
-     *      "force-fieldtrials=Study/Group",
-     *      "force-fieldtrial-param=Study.Group:" +
-     *          TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE + &#60triggerId&#62})
-     *  public class MySurveyTest {
-     *      // ...
-     *  }
-     * </pre>
-     */
-    public static final String TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE =
-            "probability/1.0/en_site_id/";
-
+    public static final String TRIGGER_ID_PARAM_NAME = "en_site_id";
     public static final String TEST_TRIGGER_ID_FOO = "test_trigger_id_foo";
 
     /**

@@ -55,11 +55,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Test relating to {@link ShoppingPersistedTabData} */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"
-})
+@EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING)
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -109,7 +106,7 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
+    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
     public void testShoppingProto() {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
@@ -213,9 +210,9 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING
+                    + ":price_tracking_stale_tab_threshold_seconds/86400")
     public void test2DayTabWithStaleOverride1day() {
         MockTab tab =
                 ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
@@ -237,9 +234,9 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_stale_tab_threshold_seconds/86400"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING
+                    + ":price_tracking_stale_tab_threshold_seconds/86400")
     public void testHalfDayTabWithStaleOverride1day() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -1119,7 +1116,7 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
+    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
     public void testIsCurrentPriceDropSeen_PriceChange() throws TimeoutException {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -1160,7 +1157,7 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
+    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
     public void testIsCurrentPriceDropSeen_CurrencyChange() throws TimeoutException {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -1201,7 +1198,7 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:check_if_price_drop_is_seen/true"})
+    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
     public void testIsCurrentPriceDropSeen_NoPriceChange() throws TimeoutException {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,

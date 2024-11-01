@@ -114,11 +114,9 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @CommandLineFlags.Add({
-        "enable-features=" + PermissionsAndroidFeatureList.ONE_TIME_PERMISSION + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:show_allow_always_as_first_button/true"
-    })
+    @Features.EnableFeatures(
+            PermissionsAndroidFeatureList.ONE_TIME_PERMISSION
+                    + ":show_allow_always_as_first_button/true")
     public void testGeolocationOneTimePromptWithAllowAlwaysFirst() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -129,12 +127,11 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @CommandLineFlags.Add({
-        "enable-features=" + PermissionsAndroidFeatureList.ONE_TIME_PERMISSION + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:show_allow_always_as_first_button/true/"
-                + "use_stronger_prompt_language/true/use_while_visiting_language/true"
-    })
+    @Features.EnableFeatures(
+            PermissionsAndroidFeatureList.ONE_TIME_PERMISSION
+                    + ":show_allow_always_as_first_button/true"
+                    + "/use_stronger_prompt_language/true"
+                    + "/use_while_visiting_language/true")
     public void testGeolocationOneTimePromptWithAllowWhileVisitingFirst() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());

@@ -43,13 +43,15 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION,
-    "enable-features="
-            + ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
-            + "<Study,DynamicSafeAreaInsets,DynamicSafeAreaInsetsOnScroll,DrawCutoutEdgeToEdge,"
-            + ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:disable_bottom_controls_stacker_y_offset/false"
+    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
+})
+@EnableFeatures({
+    ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
+            + ":disable_bottom_controls_stacker_y_offset/false",
+    "DynamicSafeAreaInsets",
+    "DynamicSafeAreaInsetsOnScroll",
+    "DrawCutoutEdgeToEdge",
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
 @Batch(Batch.PER_CLASS)
 // Bots <= VERSION_CODES.S use 3-bottom nav bar. See crbug.com/352402600

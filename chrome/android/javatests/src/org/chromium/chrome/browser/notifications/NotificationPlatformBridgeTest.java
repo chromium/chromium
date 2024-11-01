@@ -896,11 +896,8 @@ public class NotificationPlatformBridgeTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Notifications"})
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:use_service_intent/true"
-    })
+    @Features.EnableFeatures(
+            ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + ":use_service_intent/true")
     @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testNotificationProvisionalUnsubscribeWithServiceIntent() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1036,11 +1033,8 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:use_service_intent/false"
-    })
+    @Features.EnableFeatures(
+            ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + ":use_service_intent/false")
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     @RequiresApi(Build.VERSION_CODES.S)
     public void testNotificationProvisionalUnsubscribeIsBroadcast() throws Exception {
@@ -1059,11 +1053,8 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:use_service_intent/true"
-    })
+    @Features.EnableFeatures(
+            ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + ":use_service_intent/true")
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     @RequiresApi(Build.VERSION_CODES.S)
     public void testNotificationProvisionalUnsubscribeIsService() throws Exception {

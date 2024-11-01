@@ -44,11 +44,8 @@ import java.util.concurrent.Semaphore;
 
 /** Tests the deferred startup of {@link ShoppingPersistedTabData} */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"
-})
+@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING, ChromeFeatureList.PRICE_CHANGE_MODULE})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataDeferredStartupTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -90,10 +87,9 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/false"
-    })
-    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING
+                    + ":return_empty_price_drops_until_init/false")
     public void testDeferredStartup() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -126,10 +122,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
-    })
-    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
     public void testReturnEmptyPriceDropsUntilInit() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -178,10 +172,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_NotSkip() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -206,10 +198,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_Skip() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -241,10 +231,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_SkipForNullTab() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,
@@ -268,10 +256,8 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @SmallTest
     @Test
-    @EnableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:return_empty_price_drops_until_init/true"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_SkipForDestroyedTab() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeMock,

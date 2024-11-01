@@ -218,11 +218,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":allow_disable_price_annotations/true")
     public void testPriceTrackingAnnotations() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -255,11 +252,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/false"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":allow_disable_price_annotations/false")
     public void testPriceTrackingAnnotations_FeatureDisabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -280,11 +274,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"
-    })
+    @EnableFeatures(
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":allow_disable_price_annotations/true")
     public void testPriceTrackingAnnotations_NotSignedIn() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

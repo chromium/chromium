@@ -79,20 +79,14 @@ import java.io.IOException;
 
 /** End-to-end tests for TabGridIph component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=IPH_TabGroupsDragAndDrop<TabGroupsDragAndDrop",
-    "force-fieldtrials=TabGroupsDragAndDrop/Enabled",
-    "force-fieldtrial-params=TabGroupsDragAndDrop.Enabled:availability/any/"
-            + "event_trigger/"
-            + "name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365/"
-            + "event_trigger2/"
-            + "name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365/"
-            + "event_used/"
-            + "name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365/"
-            + "session_rate/<1"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@EnableFeatures(
+        "IPH_TabGroupsDragAndDrop:availability/any"
+            + "/event_trigger/name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365"
+            + "/event_trigger2/name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365"
+            + "/event_used/name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365"
+            + "/session_rate/<1")
 // Remove the ANDROID_HUB_FLOATING_ACTION_BUTTON restriction and regenerate goldens when launching.
 @DisableFeatures({
     ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON,
