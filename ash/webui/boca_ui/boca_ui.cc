@@ -73,7 +73,8 @@ BocaUI::BocaUI(content::WebUI* web_ui,
   // images from data URLs passed to the page.
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src data: https://lh3.googleusercontent.com;");
+      "img-src data: https://lh3.googleusercontent.com "
+      "https://www.gstatic.com/chromecast/home/chromeos;");
 
   // For testing
   host_source->OverrideContentSecurityPolicy(
