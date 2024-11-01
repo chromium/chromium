@@ -14,6 +14,7 @@ import {
   ModelState,
 } from '../../core/on_device_model/types.js';
 import {signal} from '../../core/reactive/signal.js';
+import {LanguageCode} from '../../core/soda/language_info.js';
 import {
   assertExhaustive,
   assertExists,
@@ -21,6 +22,7 @@ import {
 } from '../../core/utils/assert.js';
 import {getWordCount} from '../../core/utils/utils.js';
 
+import {PlatformHandler} from './handler.js';
 import {
   FormatFeature,
   LoadModelResult,
@@ -233,7 +235,10 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
 
   abstract createModel(remote: OnDeviceModelRemote): OnDeviceModel<T>;
 
-  constructor(protected readonly remote: PageHandlerRemote) {
+  constructor(
+    protected readonly remote: PageHandlerRemote,
+    private readonly platformHandler: PlatformHandler,
+  ) {
     super();
   }
 
@@ -267,8 +272,14 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
     return this.createModel(newModel);
   }
 
-  override async loadAndExecute(content: string): Promise<ModelResponse<T>> {
-    const wordCount = getWordCount(content);
+  override async loadAndExecute(content: string, language: LanguageCode):
+    Promise<ModelResponse<T>> {
+    // TODO: b/357526521 - Create and use `UNSUPPORTED_LANGUAGE` error.
+    if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
+
+    const wordCount = getWordCount(content, language);
     if (wordCount < MIN_WORD_LENGTH) {
       return {
         kind: 'error',

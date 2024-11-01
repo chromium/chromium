@@ -152,14 +152,15 @@ export class RecordingTitle extends ReactiveLitElement {
     // TODO(pihsun): Have a specific format for transcription to be used as
     // model input.
     const text = this.transcription.value.toPlainText();
-
+    const language = this.transcription.value.language;
     this.platformHandler.perfLogger.start({
       kind: 'titleSuggestion',
-      wordCount: this.transcription.value.wordCount,
+      wordCount: this.transcription.value.getWordCount(),
     });
 
     const {titleSuggestionModelLoader} = this.platformHandler;
-    const suggestions = await titleSuggestionModelLoader.loadAndExecute(text);
+    const suggestions =
+      await titleSuggestionModelLoader.loadAndExecute(text, language);
     this.platformHandler.perfLogger.finish('titleSuggestion');
 
     return suggestions;
@@ -266,7 +267,7 @@ export class RecordingTitle extends ReactiveLitElement {
       @close=${this.closeSuggestionDialog}
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
-      .wordCount=${this.transcription.value?.wordCount ?? 0}
+      .wordCount=${this.transcription.value?.getWordCount() ?? 0}
       ${ref(this.recordingTitleSuggestion)}
     ></recording-title-suggestion>`;
   }

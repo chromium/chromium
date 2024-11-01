@@ -82,6 +82,7 @@ async function getAudioContext(): Promise<AudioContext> {
 }
 
 interface SodaSessionInfo {
+  language: LanguageCode;
   session: SodaSession;
   startOffsetMs: number;
   unsubscribe: Unsubscribe;
@@ -329,7 +330,7 @@ export class RecordingSession {
         return;
       }
       if (this.transcription.value === null) {
-        this.transcription.value = new Transcription([]);
+        this.transcription.value = new Transcription([], language);
       }
       await this.ensureSodaInstalled(language);
       // Abort current running job if there's a new enable/disable request.
@@ -344,9 +345,11 @@ export class RecordingSession {
           ev,
           assertExists(this.currentSodaSession).startOffsetMs,
         );
-        this.transcription.value = this.sodaEventTransformer.getTranscription();
+        this.transcription.value =
+          this.sodaEventTransformer.getTranscription(language);
       });
       this.currentSodaSession = {
+        language,
         session,
         unsubscribe,
         startOffsetMs: (this.processedSamples / SAMPLE_RATE) * 1000,
@@ -365,6 +368,7 @@ export class RecordingSession {
       // TODO: b/369277555 - Investigate why SODA does not convert all results
       // to final.
       this.transcription.value = this.sodaEventTransformer.getTranscription(
+        this.currentSodaSession.language,
         /* shouldFinalizeTranscription= */ true,
       );
       this.currentSodaSession = null;

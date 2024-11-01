@@ -16,6 +16,7 @@ import {
 import {ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 
 /**
  * Dev page of Recorder App.
@@ -67,9 +68,11 @@ export class DevPage extends ReactiveLitElement {
       return;
     }
     // TODO(shik): Add loading state.
+    // TODO(hsuanling): Supports different language
     this.titles.value =
       await this.platformHandler.titleSuggestionModelLoader.loadAndExecute(
         value,
+        LanguageCode.EN_US,
       );
   }
 

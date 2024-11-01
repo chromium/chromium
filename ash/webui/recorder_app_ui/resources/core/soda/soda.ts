@@ -5,8 +5,9 @@
 import {i18n} from '../i18n.js';
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
-import {lazyInit, sliceWhen} from '../utils/utils.js';
+import {getWordCount, lazyInit, sliceWhen} from '../utils/utils.js';
 
+import {LanguageCode} from './language_info.js';
 import {
   FinalResult,
   PartialResult,
@@ -131,7 +132,8 @@ export class SodaEventTransformer {
 
   constructor(private readonly speakerLabelEnabled: boolean) {}
 
-  getTranscription(shouldFinalizeTranscription = false): Transcription {
+  getTranscription(language: LanguageCode, shouldFinalizeTranscription = false):
+    Transcription {
     const tokens = [...this.tokens];
     if (this.partialResultTokens !== null) {
       if (tokens.length > 0) {
@@ -149,7 +151,7 @@ export class SodaEventTransformer {
         tokens.push(...this.partialResultTokens);
       }
     }
-    return new Transcription(tokens);
+    return new Transcription(tokens, language);
   }
 
   private handleSpeakerLabelCorrectionEvent(
@@ -252,22 +254,23 @@ export const transcriptionSchema = z.transform(
     // If the transcription is never enabled while recording, `textTokens` will
     // be null (to show a different state in playback view).
     textTokens: z.nullable(z.array(textTokenSchema)),
+    language: z.withDefault(z.nativeEnum(LanguageCode), LanguageCode.EN_US),
   }),
   {
     test(input) {
       return input instanceof Transcription;
     },
-    decode({textTokens}) {
+    decode({textTokens, language}) {
       if (textTokens === null) {
         return null;
       }
-      return new Transcription(textTokens);
+      return new Transcription(textTokens, language);
     },
     encode(val) {
       if (val === null) {
-        return {textTokens: null};
+        return {textTokens: null, language: LanguageCode.EN_US};
       }
-      return {textTokens: val.textTokens};
+      return {textTokens: val.textTokens, language: val.language};
     },
   },
 );
@@ -275,17 +278,18 @@ export const transcriptionSchema = z.transform(
 const MAX_DESCRIPTION_LENGTH = 512;
 
 export class Transcription {
-  constructor(readonly textTokens: TextToken[]) {}
+  constructor(
+    readonly textTokens: TextToken[],
+    readonly language: LanguageCode,
+  ) {}
 
   isEmpty(): boolean {
     return this.textTokens.length === 0;
   }
 
-  get wordCount(): number {
-    // TODO(kamchonlathorn): The definition of "word count" can be ambiguous and
-    // the word count for non-English languages can be different.
-    return this.textTokens.filter((token) => token.kind === 'textPart').length;
-  }
+  getWordCount = lazyInit((): number => {
+    return getWordCount(this.toPlainText(), this.language);
+  });
 
   /**
    * Concatenates textTokens into the string representation of the

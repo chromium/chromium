@@ -107,7 +107,9 @@ export class TestHelper {
         durationMs: durationMs,
         recordedAt: Date.now(),
         powers: powers,
-        transcription: tokens !== undefined ? new Transcription(tokens) : null,
+        transcription: tokens !== undefined ?
+          new Transcription(tokens, LanguageCode.EN_US) :
+          null,
       };
       await useRecordingDataManager().createRecording(params, blob);
     }

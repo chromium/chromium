@@ -85,9 +85,10 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   constructor() {
     super();
-    this.summaryModelLoader = new SummaryModelLoader(this.remote);
+    this.summaryModelLoader = new SummaryModelLoader(this.remote, this);
     this.titleSuggestionModelLoader = new TitleSuggestionModelLoader(
       this.remote,
+      this,
     );
     this.quietMode = computed({
       get: () => {

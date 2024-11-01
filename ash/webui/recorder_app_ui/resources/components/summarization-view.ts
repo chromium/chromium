@@ -32,6 +32,7 @@ import {
 } from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {HELP_URL} from '../core/url_constants.js';
@@ -220,12 +221,16 @@ export class SummarizationView extends ReactiveLitElement {
 
     this.platformHandler.perfLogger.start({
       kind: 'summary',
-      wordCount: this.transcription?.wordCount ?? 0,
+      wordCount: this.transcription?.getWordCount() ?? 0,
     });
 
     const text = this.transcription?.toPlainText() ?? '';
+    const language = this.transcription?.language ?? LanguageCode.EN_US;
     this.summary.value =
-      await this.platformHandler.summaryModelLoader.loadAndExecute(text);
+      await this.platformHandler.summaryModelLoader.loadAndExecute(
+        text,
+        language,
+      );
     this.sendSummarizeEvent();
     this.platformHandler.perfLogger.finish('summary');
   }
@@ -238,7 +243,7 @@ export class SummarizationView extends ReactiveLitElement {
 
     this.platformHandler.eventsSender.sendSummarizeEvent({
       responseError: response.kind === 'error' ? response.error : null,
-      wordCount: this.transcription.wordCount,
+      wordCount: this.transcription.getWordCount(),
     });
   }
 

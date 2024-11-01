@@ -25,6 +25,7 @@ import {
   Model,
   ModelLoader,
   ModelResponse,
+  ModelResponseError,
   ModelState,
 } from '../../core/on_device_model/types.js';
 import {PerfLogger} from '../../core/perf.js';
@@ -86,7 +87,10 @@ class SummaryModelDev implements Model<string> {
 }
 
 class ModelLoaderDev<T> extends ModelLoader<T> {
-  constructor(private readonly model: Model<T>) {
+  constructor(
+    private readonly model: Model<T>,
+    private readonly platformHandler: PlatformHandler,
+  ) {
     super();
   }
 
@@ -112,7 +116,12 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
     return this.model;
   }
 
-  override async loadAndExecute(content: string): Promise<ModelResponse<T>> {
+  override async loadAndExecute(content: string, language: LanguageCode):
+    Promise<ModelResponse<T>> {
+    // TODO: b/357526521 - Create and use `UNSUPPORTED_LANGUAGE` error.
+    if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
     const model = await this.load();
     try {
       return await model.execute(content);
@@ -385,10 +394,11 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.langPacks.get(language));
   }
 
-  override summaryModelLoader = new ModelLoaderDev(new SummaryModelDev());
+  override summaryModelLoader = new ModelLoaderDev(new SummaryModelDev(), this);
 
   override titleSuggestionModelLoader = new ModelLoaderDev(
     new TitleSuggestionModelDev(),
+    this,
   );
 
   override eventsSender = new EventsSender();

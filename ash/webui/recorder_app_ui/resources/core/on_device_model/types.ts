@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ReadonlySignal} from '../reactive/signal.js';
+import {LanguageCode} from '../soda/language_info.js';
 
 /**
  * Model installation state.
@@ -75,7 +76,8 @@ export abstract class ModelLoader<T> {
   /**
    * Loads the model and execute it on an input.
    */
-  abstract loadAndExecute(content: string): Promise<ModelResponse<T>>;
+  abstract loadAndExecute(content: string, language: LanguageCode):
+    Promise<ModelResponse<T>>;
 
   /**
    * Requests download of the given model.

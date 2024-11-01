@@ -516,7 +516,7 @@ export class RecordPage extends ReactiveLitElement {
       transcriptionAvailable: this.transcriptionAvailable.value,
       transcriptionEnableState: settings.value.transcriptionEnabled,
       transcriptionLocale: locale,
-      wordCount: transcription?.wordCount ?? 0,
+      wordCount: transcription?.getWordCount() ?? 0,
     });
   }
 
@@ -547,7 +547,7 @@ export class RecordPage extends ReactiveLitElement {
     this.platformHandler.perfLogger.start({
       audioDuration: Math.round(session.progress.value.length * 1000),
       kind: 'record',
-      wordCount: session.progress.value.transcription?.wordCount ?? 0,
+      wordCount: session.progress.value.transcription?.getWordCount() ?? 0,
     });
 
     const audioData = await session.finish();
