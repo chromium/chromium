@@ -21,7 +21,7 @@
 #include "content/public/test/test_navigation_observer.h"
 
 namespace {
-const char kExampleUrl[] = "http://example.com/";
+const char kExampleUrl[] = "https://example.com/";
 }  // namespace
 
 // Tests ShoppingUiHandlerDelegate.
