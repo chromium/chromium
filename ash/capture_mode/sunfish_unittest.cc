@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
@@ -29,7 +30,6 @@
 #include "ash/scanner/scanner_controller.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -574,7 +574,7 @@ TEST_F(SunfishTest, AddActionButton) {
       &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kOther, 0));
 
   // There should only be one valid button in the session.
-  const std::vector<PillButton*> action_buttons =
+  const std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 1u);
 
@@ -886,9 +886,10 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   // Copy text button should have been created.
   // TODO(crbug.com/376174530): Add a test API to get buttons of a particular
   // type / rank and use it here.
-  std::vector<PillButton*> action_buttons = session_test_api.GetActionButtons();
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
   ASSERT_THAT(action_buttons,
-              ElementsAre(Property(&PillButton::GetText, u"Copy text")));
+              ElementsAre(Property(&ActionButtonView::GetText, u"Copy text")));
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
   ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -920,8 +921,9 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              Not(Contains(Property(&PillButton::GetText, u"Copy text"))));
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      Not(Contains(Property(&ActionButtonView::GetText, u"Copy text"))));
 }
 
 // Tests that the copy text button is not shown if the selected region changes
@@ -945,8 +947,9 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              Not(Contains(Property(&PillButton::GetText, u"Copy text"))));
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      Not(Contains(Property(&ActionButtonView::GetText, u"Copy text"))));
 }
 
 }  // namespace ash
