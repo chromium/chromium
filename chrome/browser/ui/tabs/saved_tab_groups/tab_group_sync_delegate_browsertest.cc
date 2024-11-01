@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -39,11 +40,15 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
+namespace {
+
+using testing::NotNull;
 
 class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
@@ -258,4 +263,45 @@ IN_PROC_BROWSER_TEST_F(
                            ->guid());
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       PreserveCollapsedStateOnRemoteUpdate) {
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+  service->AddObserver(this);
+
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), 0, false);
+  const LocalTabGroupID local_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  TabGroup* local_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
+  ASSERT_THAT(local_group, NotNull());
+  local_group->SetVisualData(
+      TabGroupVisualData(u"Title", tab_groups::TabGroupColorId::kBlue,
+                         /*is_collapsed=*/true),
+      /*is_customized=*/true);
+
+  // Verify that the group is saved.
+  std::optional<SavedTabGroup> saved_group = service->GetGroup(local_id);
+  ASSERT_TRUE(saved_group.has_value());
+
+  // Simulate a remote update to the group.
+  model_->MergeRemoteGroupMetadata(
+      saved_group->saved_guid(), u"title", TabGroupColorId::kRed,
+      /*position=*/std::nullopt, /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      /*update_time=*/base::Time::Now());
+
+  // Wait for the tab group update to complete because sync updates are
+  // asynchronous.
+  ASSERT_TRUE(base::test::RunUntil([local_group]() {
+    return local_group->visual_data()->color() ==
+           tab_groups::TabGroupColorId::kRed;
+  }));
+
+  // The local group should still be collapsed.
+  EXPECT_TRUE(local_group->visual_data()->is_collapsed());
+}
+
+}  // namespace
 }  // namespace tab_groups

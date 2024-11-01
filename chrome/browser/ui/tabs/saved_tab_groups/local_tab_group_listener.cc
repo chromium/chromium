@@ -254,13 +254,17 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   TabStripModel* const tab_strip_model =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_id_)
           ->tab_strip_model();
+  CHECK(tab_strip_model);
 
   // Update the group to use the saved title and color.
-  tab_groups::TabGroupVisualData visual_data(saved_group->title(),
-                                             saved_group->color(),
-                                             /*is_collapsed=*/false);
-  tab_strip_model->group_model()->GetTabGroup(local_id_)->SetVisualData(
-      visual_data, /*is_customized=*/true);
+  TabGroup* local_tab_group =
+      tab_strip_model->group_model()->GetTabGroup(local_id_);
+  CHECK(local_tab_group);
+  const bool is_collapsed = local_tab_group->visual_data()->is_collapsed();
+  local_tab_group->SetVisualData(
+      tab_groups::TabGroupVisualData(saved_group->title(), saved_group->color(),
+                                     is_collapsed),
+      /*is_customized=*/true);
 
   std::unordered_map<base::Token, tabs::TabModel*, base::TokenHash>
       saved_id_tab_mapping;
@@ -269,8 +273,7 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   }
 
   // Add, navigate, and reorder local tabs to match saved tabs.
-  const gfx::Range group_index_range =
-      tab_strip_model->group_model()->GetTabGroup(local_id_)->ListTabs();
+  const gfx::Range group_index_range = local_tab_group->ListTabs();
   CHECK_LE(group_index_range.length(), saved_group->saved_tabs().size());
 
   // Parallel iterate over saved tabs and local indices. For each saved tab and
