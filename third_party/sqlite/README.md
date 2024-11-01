@@ -208,19 +208,13 @@ exported by the linker and may be omitted.
 
 ```sh
 autoninja -C out/Default
-nm -B out/Default/libchromium_sqlite3.so | cut -c 18- | sort | grep '^T'
+nm -B out/Default/libthird_party_sqlite_chromium_sqlite3.so | cut -c 18- | sort | grep '^T'
 ```
 
 ### Running unit tests
 
 ```sh
 out/Default/sql_unittests
-```
-
-### Running web tests
-
-```sh
-third_party/blink/tools/run_web_tests.py -t Default storage/websql/
 ```
 
 ### Running SQLite's TCL test suite within the Chromium checkout.
