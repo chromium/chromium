@@ -7,6 +7,7 @@ import 'chrome://graduation/strings.m.js';
 
 import {ScreenSwitchEvents} from 'chrome://graduation/js/graduation_app.js';
 import {GraduationTakeoutUi, WebviewReloadHelper} from 'chrome://graduation/js/graduation_takeout_ui.js';
+import {AuthResult} from 'chrome://graduation/mojom/graduation_ui.mojom-webui.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
@@ -77,18 +78,27 @@ suite('GraduationTakeoutUiTest', function() {
     graduationUi.remove();
   });
 
-  test('Spinner is hidden and the UI is shown on contentload', function() {
-    assertLoadingScreenActive();
-    assertTrue(isVisible(getBackButton()));
-    assertTrue(getDoneButton().hidden);
+  test(
+      'Spinner is hidden when authentication is complete and the webview loads',
+      function() {
+        assertLoadingScreenActive();
+        assertTrue(isVisible(getBackButton()));
+        assertTrue(getDoneButton().hidden);
 
-    getWebview().dispatchEvent(new CustomEvent('contentload'));
+        // Simulate that authentication has succeeded.
+        graduationUi.onAuthComplete(AuthResult.kSuccess);
 
-    assertLoadingScreenHidden();
-    assertTrue(isVisible(getBackButton()));
-    assertFalse(getDoneButton().hidden);
-    assertTrue(getDoneButton().disabled);
-  });
+        assertLoadingScreenActive();
+        assertTrue(isVisible(getBackButton()));
+        assertTrue(getDoneButton().hidden);
+
+        getWebview().dispatchEvent(new CustomEvent('contentload'));
+
+        assertLoadingScreenHidden();
+        assertTrue(isVisible(getBackButton()));
+        assertFalse(getDoneButton().hidden);
+        assertTrue(getDoneButton().disabled);
+      });
 
   test(
       'Error screen is shown after the maximum allowed failed reload attempts',
@@ -99,6 +109,10 @@ suite('GraduationTakeoutUiTest', function() {
         graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
           errorPageTriggered = true;
         });
+
+        // Simulate that authentication has succeeded.
+        graduationUi.onAuthComplete(AuthResult.kSuccess);
+        assertLoadingScreenActive();
 
         getWebview().dispatchEvent(new CustomEvent('loadabort'));
 
@@ -123,6 +137,21 @@ suite('GraduationTakeoutUiTest', function() {
         assertTrue(errorPageTriggered);
       });
 
+  test('Error screen is triggered if authentication has failed', function() {
+    let errorPageTriggered = false;
+    assertLoadingScreenActive();
+
+    graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
+      errorPageTriggered = true;
+    });
+
+    // Simulate that authentication has failed.
+    graduationUi.onAuthComplete(AuthResult.kError);
+    assertLoadingScreenHidden();
+
+    assertTrue(errorPageTriggered);
+  })
+
   test('UI is shown if reload succeeds after a loadabort event', function() {
     let errorPageTriggered = false;
     assertLoadingScreenActive();
@@ -130,6 +159,10 @@ suite('GraduationTakeoutUiTest', function() {
     graduationUi.addEventListener(ScreenSwitchEvents.SHOW_ERROR, () => {
       errorPageTriggered = true;
     });
+
+    // Simulate that authentication has succeeded.
+    graduationUi.onAuthComplete(AuthResult.kSuccess);
+    assertLoadingScreenActive();
 
     getWebview().dispatchEvent(new CustomEvent('loadabort'));
 
@@ -160,6 +193,10 @@ suite('GraduationTakeoutUiTest', function() {
       errorPageTriggered = true;
     });
 
+    // Simulate that authentication has succeeded.
+    graduationUi.onAuthComplete(AuthResult.kSuccess);
+    assertLoadingScreenActive();
+
     assertTrue(isVisible(getBackButton()));
 
     // Simulate one failed load and one failed reload.
@@ -183,6 +220,10 @@ suite('GraduationTakeoutUiTest', function() {
   });
 
   test('Reload occurs on Back button click', function() {
+    assertLoadingScreenActive();
+
+    // Simulate that authentication has succeeded.
+    graduationUi.onAuthComplete(AuthResult.kSuccess);
     assertLoadingScreenActive();
 
     getWebview().dispatchEvent(new CustomEvent('contentload'));

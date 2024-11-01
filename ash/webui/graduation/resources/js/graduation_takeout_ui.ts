@@ -14,6 +14,8 @@ import {isRTL} from '//resources/js/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AuthResult} from '../mojom/graduation_ui.mojom-webui.js';
+
 import {ScreenSwitchedEvent, ScreenSwitchEvents} from './graduation_app.js';
 import {getTemplate} from './graduation_takeout_ui.html.js';
 import {getGraduationUiHandler} from './graduation_ui_handler.js';
@@ -22,6 +24,12 @@ declare global {
   interface HTMLElementEventMap {
     'newwindow': chrome.webviewTag.NewWindowEvent;
   }
+}
+
+enum AuthStatus {
+  IN_PROGRESS = 0,
+  SUCCESS = 1,
+  ERROR = 2,
 }
 
 /**
@@ -97,9 +105,9 @@ export class GraduationTakeoutUi extends PolymerElement {
 
   static get properties() {
     return {
-      webviewLoading: {
+      showLoadingScreen: {
         type: Boolean,
-        value: true,
+        computed: 'computeShowLoadingScreen(authStatus, isWebviewLoading)',
       },
 
       /**
@@ -113,7 +121,8 @@ export class GraduationTakeoutUi extends PolymerElement {
     };
   }
 
-  webviewLoading: boolean;
+  authStatus: AuthStatus = AuthStatus.IN_PROGRESS;
+  isWebviewLoading: boolean = false;
   takeoutFlowCompleted: boolean;
   private webview: chrome.webviewTag.WebView;
   private webviewReloadHelper: WebviewReloadHelper;
@@ -133,17 +142,32 @@ export class GraduationTakeoutUi extends PolymerElement {
 
     this.webviewReloadHelper = new WebviewReloadHelper();
 
-    // The webview source should be set after all event listeners are created
-    // because the webview starts loading immediately after it is set.
     this.startTransferUrl =
         loadTimeData.getString('startTransferUrl').toString();
-    this.webview.src = this.startTransferUrl;
+  }
+
+  onAuthComplete(result: AuthResult): void {
+    switch (result) {
+      case (AuthResult.kSuccess):
+        this.setIsWebviewLoading(true);
+        this.authStatus = AuthStatus.SUCCESS;
+        this.loadStartTransferPage();
+        break;
+      case (AuthResult.kError):
+        this.authStatus = AuthStatus.ERROR;
+        this.triggerErrorScreen();
+    }
+  }
+
+  private computeShowLoadingScreen(
+      authStatus: AuthStatus, isWebviewLoading: boolean) {
+    return authStatus === AuthStatus.IN_PROGRESS || isWebviewLoading === true;
   }
 
   private configureWebviewListeners(): void {
     this.webview.addEventListener('contentload', () => {
       this.webviewReloadHelper.reset();
-      this.hideLoadingScreen();
+      this.setIsWebviewLoading(false);
     });
 
     this.webview.addEventListener('loadabort', () => {
@@ -168,22 +192,22 @@ export class GraduationTakeoutUi extends PolymerElement {
   }
 
   private onLoadAbort(): void {
+    if (this.authStatus !== AuthStatus.SUCCESS) {
+      return;
+    }
+
     if (this.webviewReloadHelper.isReloadCountLimitReached()) {
       this.webviewReloadHelper.reset();
-      this.hideLoadingScreen();
+      this.setIsWebviewLoading(false);
       this.triggerErrorScreen();
       return;
     }
-    this.showLoadingScreen();
+    this.setIsWebviewLoading(true);
     this.webviewReloadHelper.scheduleReload(this.webview);
   }
 
-  private showLoadingScreen(): void {
-    this.webviewLoading = true;
-  }
-
-  private hideLoadingScreen(): void {
-    this.webviewLoading = false;
+  private setIsWebviewLoading(isWebviewLoading: boolean): void {
+    this.isWebviewLoading = isWebviewLoading;
   }
 
   private triggerErrorScreen(): void {
@@ -218,10 +242,13 @@ export class GraduationTakeoutUi extends PolymerElement {
 
   private onBackClicked(): void {
     this.triggerWelcomeScreen();
-    this.webview.stop();
-    this.webviewReloadHelper.reset();
-    this.showLoadingScreen();
-    this.loadStartTransferPage();
+
+    if (this.authStatus === AuthStatus.SUCCESS) {
+      this.webview.stop();
+      this.webviewReloadHelper.reset();
+      this.setIsWebviewLoading(true);
+      this.loadStartTransferPage();
+    }
   }
 
   private onDoneClicked(): void {

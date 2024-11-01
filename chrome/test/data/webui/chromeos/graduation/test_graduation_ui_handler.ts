@@ -7,6 +7,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestGraduationUiHandler extends TestBrowserProxy implements
     GraduationUiHandlerInterface {
+  private authResult: AuthResult;
   private email: string;
   private photoUrl: string;
   private profileInfo: ProfileInfo;
@@ -14,6 +15,7 @@ export class TestGraduationUiHandler extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'authenticateWebview',
       'getProfileInfo',
       'onScreenSwitched',
       'onTransferComplete',
@@ -23,13 +25,13 @@ export class TestGraduationUiHandler extends TestBrowserProxy implements
     this.photoUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQ'
     'AAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
     this.profileInfo = this.buildTestProfileInfo();
+    this.authResult = AuthResult.kSuccess;
     this.lastScreen = GraduationScreen.kWelcome;
   }
 
   authenticateWebview(): Promise<{result: AuthResult}> {
     this.methodCalled('authenticateWebview');
-    // TODO(b.corp.google.com/374815862): Handle different auth results.
-    return Promise.resolve({result: AuthResult.kSuccess});
+    return Promise.resolve({result: this.authResult});
   }
 
   getProfileInfo(): Promise<{profileInfo: ProfileInfo}> {
@@ -46,6 +48,10 @@ export class TestGraduationUiHandler extends TestBrowserProxy implements
   onTransferComplete(): Promise<void> {
     this.methodCalled('onTransferComplete');
     return Promise.resolve();
+  }
+
+  setAuthResult(authResult: AuthResult): void {
+    this.authResult = authResult;
   }
 
   getLastScreen(): GraduationScreen {

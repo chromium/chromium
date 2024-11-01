@@ -13,7 +13,7 @@ import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GraduationScreen} from '../mojom/graduation_ui.mojom-webui.js';
+import {AuthResult, GraduationScreen} from '../mojom/graduation_ui.mojom-webui.js';
 
 import {getTemplate} from './graduation_app.html.js';
 import {getGraduationUiHandler} from './graduation_ui_handler.js';
@@ -68,18 +68,27 @@ export class GraduationApp extends PolymerElement {
     return getTemplate();
   }
 
+  private authResult: AuthResult;
   private currentScreen: Screens;
 
   override ready() {
     super.ready();
     this.addEventListeners();
+
+    if (!navigator.onLine) {
+      this.switchToScreen(Screens.OFFLINE);
+      return;
+    }
+
     this.authenticate();
-    this.switchToScreen(navigator.onLine ? Screens.WELCOME : Screens.OFFLINE);
+    this.switchToScreen(Screens.WELCOME);
   }
 
   private async authenticate(): Promise<void> {
-    // TODO(b.corp.google.com/374815862): Handle authentication result.
-    getGraduationUiHandler().authenticateWebview();
+    const authResult = await getGraduationUiHandler().authenticateWebview();
+    this.authResult = authResult.result;
+    this.shadowRoot!.querySelector(Screens.TAKEOUT_UI)!.onAuthComplete(
+        this.authResult);
   }
 
   getCurrentScreenForTest(): Screens {
@@ -106,6 +115,11 @@ export class GraduationApp extends PolymerElement {
     });
 
     window.addEventListener(ScreenSwitchEvents.ONLINE, () => {
+      // If there is no authentication result, authentication has not been
+      // attempted for the lifetime of the app, so authenticate now.
+      if (this.authResult === null) {
+        this.authenticate();
+      }
       // If the app comes back online, start from the initial screen.
       this.switchToScreen(Screens.WELCOME);
     });

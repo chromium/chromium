@@ -72,9 +72,9 @@
       $i18n{backButtonLabel}
     </cr-button>
   </div>
-  <webview id="webview" hidden$="[[webviewLoading]]"></webview>
-  <div class="spinner-container" hidden$="[[!webviewLoading]]">
-    <paper-spinner-lite class="spinner" active="[[webviewLoading]]">
+  <webview id="webview" hidden$="[[showLoadingScreen]]"></webview>
+  <div class="spinner-container" hidden$="[[!showLoadingScreen]]">
+    <paper-spinner-lite class="spinner" active="[[showLoadingScreen]]">
     </paper-spinner-lite>
     <div aria-live="polite" aria-label$="$i18n{webviewLoadingMessage}">
       $i18n{webviewLoadingMessage}
@@ -82,7 +82,7 @@
   </div>
   <div class="done-button-container">
     <cr-button id="doneButton" class="action-button" on-click="onDoneClicked"
-        hidden$="[[webviewLoading]]" disabled$="[[!takeoutFlowCompleted]]">
+        hidden$="[[showLoadingScreen]]" disabled$="[[!takeoutFlowCompleted]]">
       $i18n{doneButtonLabel}
     </cr-button>
   </div>
