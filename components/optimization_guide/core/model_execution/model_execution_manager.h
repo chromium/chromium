@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -35,12 +36,13 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
-class OnDeviceModelComponentStateManager;
 class OnDeviceModelAdaptationLoader;
 class OnDeviceModelServiceController;
 class OptimizationGuideModelProvider;
 
-class ModelExecutionManager : public OptimizationTargetModelObserver {
+class ModelExecutionManager
+    : public OptimizationTargetModelObserver,
+      public OnDeviceModelComponentStateManager::Observer {
  public:
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -87,6 +89,9 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget target,
                       base::optional_ref<const ModelInfo> model_info) override;
+
+  // OnDeviceModelComponentStateManager::Observer:
+  void StateChanged(const OnDeviceModelComponentState* state) override;
 
   void Shutdown();
 
