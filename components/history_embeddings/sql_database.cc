@@ -223,8 +223,30 @@ bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
     return false;
   }
   statement.BindBlob(3, blob);
+  bool result = statement.Run();
 
-  return statement.Run();
+  if (result) {
+    size_t ascii_passages_count = 0;
+    size_t non_ascii_passages_count = 0;
+    for (const std::string& passage : url_passages.passages.passages()) {
+      if (base::IsStringASCII(passage)) {
+        ascii_passages_count++;
+      } else {
+        non_ascii_passages_count++;
+      }
+    }
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredAsciiPassages", ascii_passages_count);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredNonAsciiPassages",
+        non_ascii_passages_count);
+    base::UmaHistogramPercentage(
+        "History.Embeddings.DatabaseStoredNonAsciiPassageRatio",
+        100 * non_ascii_passages_count /
+            (ascii_passages_count + non_ascii_passages_count));
+  }
+
+  return result;
 }
 
 bool SqlDatabase::InsertOrReplaceEmbeddings(

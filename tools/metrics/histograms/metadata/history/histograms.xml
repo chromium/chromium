@@ -1932,6 +1932,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseStoredAsciiPassages"
+    units="passages" expires_after="2025-03-30">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of passages that contained only ASCII characters when passages are
+    stored to the database. Logged each time passages are successfully inserted
+    or replaced in the database. This happens for each page visit when the tab
+    is kept open for several seconds after all tabs finish loading. See also the
+    related metrics History.Embeddings.DatabaseStoredNonAsciiPassages and
+    History.Embeddings.DatabaseStoredNonAsciiPassageRatio.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseStoredNonAsciiPassageRatio"
+    units="%" expires_after="2025-03-30">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Percentage of passages that contain non-ASCII characters when passages are
+    stored to the database. Logged each time passages are successfully inserted
+    or replaced in the database. This happens for each page visit when the tab
+    is kept open for several seconds after all tabs finish loading. See also the
+    related metrics History.Embeddings.DatabaseStoredAsciiPassages and
+    History.Embeddings.DatabaseStoredNonAsciiPassages.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseStoredNonAsciiPassages"
+    units="passages" expires_after="2025-03-30">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of passages that contained any non-ASCII characters when passages are
+    stored to the database. Logged each time passages are successfully inserted
+    or replaced in the database. This happens for each page visit when the tab
+    is kept open for several seconds after all tabs finish loading. See also the
+    related metrics History.Embeddings.DatabaseStoredAsciiPassages and
+    History.Embeddings.DatabaseStoredNonAsciiPassageRatio.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
     expires_after="2025-03-02">
   <owner>sophiechang@chromium.org</owner>
