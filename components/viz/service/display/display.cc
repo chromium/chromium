@@ -1048,6 +1048,22 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     const bool main_frame_only_adpf_renderer_main =
         base::FeatureList::IsEnabled(
             features::kEnableMainFrameOnlyADPFRendererMain);
+
+    const bool interactive_only_adpf_renderer = base::FeatureList::IsEnabled(
+        features::kEnableInteractiveOnlyADPFRenderer);
+    bool has_interactive_surface = false;
+    if (interactive_only_adpf_renderer) {
+      for (const auto& surface_id :
+           aggregator_->previous_contained_surfaces()) {
+        surface = surface_manager_->GetSurfaceForId(surface_id);
+        if (surface && surface->HasActiveFrame() &&
+            surface->GetActiveFrameMetadata().is_handling_interaction) {
+          has_interactive_surface = true;
+          break;
+        }
+      }
+    }
+
     base::flat_set<base::PlatformThreadId> animation_thread_ids;
     base::flat_set<base::PlatformThreadId> renderer_main_thread_ids;
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
@@ -1060,6 +1076,21 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         const bool is_for_main_frame =
             surface_id == current_surface_id_ ||
             main_surfaces.find(surface_id) != main_surfaces.end();
+        if (interactive_only_adpf_renderer &&
+            surface_id != current_surface_id_) {
+          const bool is_handling_interaction =
+              surface->HasActiveFrame() &&
+              surface->GetActiveFrameMetadata().is_handling_interaction;
+          // If there's at least one frame handling an interaction, include
+          // only interactive Renderers. Otherwise include the main frame
+          // Renderer.
+          const bool should_be_included =
+              is_handling_interaction ||
+              (!has_interactive_surface && is_for_main_frame);
+          if (!should_be_included) {
+            continue;
+          }
+        }
         std::vector<Thread> surface_threads = surface->GetThreads();
         for (const auto& thread : surface_threads) {
           if (thread.type == Thread::Type::kMain &&

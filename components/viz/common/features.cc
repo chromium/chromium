@@ -318,6 +318,15 @@ BASE_FEATURE(kEnableMainFrameOnlyADPFRendererMain,
              "EnableMainFrameOnlyADPFRendererMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome's ADPF(Android Dynamic Performance Framework) hint
+// session includes Renderer threads only if:
+// - The Renderer is handling an interacton
+// - The Renderer is the main frame's Renderer, and there no Renderers handling
+//   an interaction.
+BASE_FEATURE(kEnableInteractiveOnlyADPFRenderer,
+             "EnableInteractiveOnlyADPFRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Chrome includes the Compositor GPU Thread into the
 // ADPF(Android Dynamic Performance Framework) hint session, instead
 // of the GPU Main Thread.
