@@ -5,7 +5,11 @@
 #include "components/page_load_metrics/google/browser/gws_page_load_metrics_observer.h"
 
 #include <string>
+#include <unordered_map>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -114,6 +118,13 @@ const char kHistogramGWSConnectionReuseStatus[] =
 }  // namespace internal
 
 namespace {
+
+// TODO(crbug.com/352578800): When this is enabled, the browser will log
+// response headers if those're unexpected to be in the navigation response.
+BASE_FEATURE(kSyntheticResponseReportUnexpectedHeader,
+             "SyntheticResponseReportUnexpectedHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNavigationFromNewTabPage(
     GWSPageLoadMetricsObserver::NavigationSourceType type) {
   switch (type) {
@@ -156,6 +167,85 @@ void RecordPageLoadHistogramWithVariants(bool is_safesites_filter_enabled,
                               ? kSafeSitesFilterEnabledSuffix
                               : kSafeSitesFilterDisabledSuffix}),
       sample);
+}
+
+struct ExpectedHeaderInfo {
+  std::unordered_set<std::string> values;
+  bool allow_value_mismatch = false;
+  bool found_in_actual_headers = false;
+};
+
+std::unordered_map<std::string, ExpectedHeaderInfo> GetExpectedHeaderInfo() {
+  std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers;
+  expected_headers.emplace(
+      "accept-ch",
+      ExpectedHeaderInfo(
+          {"Sec-CH-Prefers-Color-Scheme", "Sec-CH-UA-Form-Factors",
+           "Sec-CH-UA-Platform", "Sec-CH-UA-Platform-Version", "Sec-CH-UA-Arch",
+           "Sec-CH-UA-Model", "Sec-CH-UA-Bitness",
+           "Sec-CH-UA-Full-Version-List", "Sec-CH-UA-WoW64"},
+          true));
+  expected_headers.emplace(
+      "alt-svc",
+      ExpectedHeaderInfo({"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"},
+                         false));
+  expected_headers.emplace("cache-control",
+                           ExpectedHeaderInfo({"private, max-age=0"}, false));
+  expected_headers.emplace("content-encoding",
+                           ExpectedHeaderInfo({"br"}, false));
+  expected_headers.emplace(
+      "content-security-policy",
+      ExpectedHeaderInfo(
+          {"object-src 'none';base-uri 'self';script-src "
+           "'nonce-732GkElp7qZBZj5NI2fQIQ' 'strict-dynamic' 'report-sample' "
+           "'unsafe-eval' 'unsafe-inline' https: http:;report-uri "
+           "https://csp.withgoogle.com/csp/gws/clkf"},
+          true));
+  expected_headers.emplace(
+      "content-type", ExpectedHeaderInfo({"text/html; charset=UTF-8"}, false));
+  expected_headers.emplace(
+      "date", ExpectedHeaderInfo({"Wed, 09 Oct 2024 18:56:06 GMT"}, true));
+  expected_headers.emplace("expires", ExpectedHeaderInfo({"-1"}, false));
+  expected_headers.emplace("permissions-policy",
+                           ExpectedHeaderInfo({"unload=()"}, false));
+  expected_headers.emplace("server", ExpectedHeaderInfo({"gws"}, false));
+  expected_headers.emplace("strict-transport-security",
+                           ExpectedHeaderInfo({"max-age=31536000"}, false));
+  expected_headers.emplace("x-frame-options",
+                           ExpectedHeaderInfo({"SAMEORIGIN"}, false));
+  expected_headers.emplace("x-xss-protection",
+                           ExpectedHeaderInfo({"0"}, false));
+// At the OnCommit() phase, headers in `navigation_handle->GetResponseHeaders()`
+// don't have "set-cookie" headers, so it's excluded from the expected header
+// list.
+
+// TODO(crbug.com/376572257): Better platform detection aligning with GWS
+// response.
+#if BUILDFLAG(IS_ANDROID)
+#else
+  expected_headers.emplace(
+      "cross-origin-opener-policy",
+      ExpectedHeaderInfo({"same-origin-allow-popups; report-to=\"gws\""},
+                         false));
+  expected_headers.emplace(
+      "report-to",
+      ExpectedHeaderInfo(
+          {"{\"group\":\"gws\",\"max_age\":2592000,\"endpoints\":[{\"url\":"
+           "\"https://csp.withgoogle.com/csp/report-to/gws/cdt1\"}]}"},
+          false));
+#endif  // BUDILDFLAG(IS_ANDROID)
+
+  return expected_headers;
+}
+
+std::pair<base::debug::CrashKeyString*, base::debug::CrashKeyString*>
+AllocateCrashKeyString(const std::string& name) {
+  return std::make_pair(
+      base::debug::AllocateCrashKeyString(base::StrCat({name, "-name"}).c_str(),
+                                          base::debug::CrashKeySize::Size256),
+      base::debug::AllocateCrashKeyString(
+          base::StrCat({name, "-value"}).c_str(),
+          base::debug::CrashKeySize::Size256));
 }
 }  // namespace
 
@@ -218,6 +308,8 @@ GWSPageLoadMetricsObserver::OnCommit(
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
   was_cached_ = navigation_handle->WasResponseCached();
   RecordPreCommitHistograms();
+  MaybeRecordUnexpectedHeaders(navigation_handle->GetResponseHeaders());
+
   return CONTINUE_OBSERVING;
 }
 
@@ -579,5 +671,58 @@ void GWSPageLoadMetricsObserver::RecordLatencyHitograms(
   if (sct_time.has_value() && hct_time.has_value()) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSTimeBetweenHCTAndSCT,
                         sct_time.value() - hct_time.value());
+  }
+}
+
+void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
+    const net::HttpResponseHeaders* response_headers) {
+  if (!base::FeatureList::IsEnabled(kSyntheticResponseReportUnexpectedHeader)) {
+    return;
+  }
+
+  std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers =
+      GetExpectedHeaderInfo();
+  bool set_crash_key = false;
+
+  size_t iter = 0;
+  std::string name, value;
+  while (response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
+    if (!expected_headers.contains(name)) {
+      // GWSHeaderNotExpected: The header is not in the expected header list.
+      static const auto crash_keys =
+          AllocateCrashKeyString("GWSHeaderNotExpected");
+      base::debug::SetCrashKeyString(crash_keys.first, name);
+      base::debug::SetCrashKeyString(crash_keys.second, value);
+      set_crash_key = true;
+      continue;
+    }
+    auto* expected = &expected_headers[name];
+    expected->found_in_actual_headers = true;
+    if (!expected->allow_value_mismatch && !expected->values.contains(value)) {
+      // GWSHeaderValueMismatched: The header is in the expected header list,
+      // but the value is different or an inconsistent value is not allowed.
+      static const auto crash_keys =
+          AllocateCrashKeyString("GWSHeaderValueMismatched");
+      base::debug::SetCrashKeyString(crash_keys.first, name);
+      base::debug::SetCrashKeyString(crash_keys.second, value);
+      set_crash_key = true;
+      continue;
+    }
+  }
+
+  for (auto header : expected_headers) {
+    if (header.second.found_in_actual_headers) {
+      continue;
+    }
+    // GWSHeaderNotActuallyExist: The expected header does not exist in the
+    // actual headers.
+    static const auto crash_keys =
+        AllocateCrashKeyString("GWSHeaderNotActuallyExist");
+    base::debug::SetCrashKeyString(crash_keys.first, header.first);
+    set_crash_key = true;
+  }
+
+  if (set_crash_key) {
+    base::debug::DumpWithoutCrashing();
   }
 }
