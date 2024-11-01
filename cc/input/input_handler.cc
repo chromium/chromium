@@ -803,9 +803,19 @@ void InputHandler::SetNeedsAnimateInput() {
 
 bool InputHandler::IsCurrentlyScrollingViewport() const {
   auto* node = CurrentlyScrollingNode();
-  if (!node)
-    return false;
-  return GetViewport().ShouldScroll(*node);
+  if (node && GetViewport().ShouldScroll(*node)) {
+    return true;
+  } else if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // In the snap phase of a scroll gesture, InputHandler will de-latch from
+    // from the snapping ScrollNode (which, for viewport scrolls, is recorded as
+    // outer viewport scrolls). While this animation is ongoing, we consider
+    // InputHandler to still be scrolling the viewport, despite having
+    // de-latched from it.
+    if (auto* outer_viewport_node = OuterViewportScrollNode()) {
+      return IsAnimatingForSnap(outer_viewport_node->element_id);
+    }
+  }
+  return false;
 }
 
 EventListenerProperties InputHandler::GetEventListenerProperties(
@@ -858,8 +868,9 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
     *out_touch_action = region.GetAllowedTouchAction(point);
   }
 
-  if (!CurrentlyScrollingNode())
+  if (!IsCurrentlyScrolling()) {
     return InputHandler::TouchStartOrMoveEventListenerType::kHandler;
+  }
 
   // Check if the touch start (or move) hits on the current scrolling layer or
   // its descendant. layer_impl_with_touch_handler is the layer hit by the
@@ -868,11 +879,35 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
   // with the actual scrolling layer.
   LayerImpl* layer_impl =
       ActiveTree().FindLayerThatIsHitByPoint(device_viewport_point);
-  bool is_ancestor = IsScrolledBy(layer_impl, CurrentlyScrollingNode());
-  return is_ancestor
-             ? InputHandler::TouchStartOrMoveEventListenerType::
-                   kHandlerOnScrollingLayer
-             : InputHandler::TouchStartOrMoveEventListenerType::kHandler;
+
+  ScrollNode* currently_scroll_node = CurrentlyScrollingNode();
+  if (currently_scroll_node &&
+      IsScrolledBy(layer_impl, currently_scroll_node)) {
+    return InputHandler::TouchStartOrMoveEventListenerType::
+        kHandlerOnScrollingLayer;
+  } else if (features::MultiImplOnlyScrollAnimationsSupported() &&
+             !snap_animation_data_map_.empty()) {
+    // In the snap phase of a scroll gesture on a snap container, InputHandler
+    // will de-latch from from the snapping ScrollNode. While this animation is
+    // ongoing, we consider InputHandler to still be scrolling the node, despite
+    // having de-latched from it.
+    ScrollTree& scroll_tree = GetScrollTree();
+    for (const auto& entry : snap_animation_data_map_) {
+      // Empty targets means not snap-animating..
+      if (entry.second.animating_snap_target_ids_ ==
+          TargetSnapAreaElementIds()) {
+        continue;
+      }
+      if (ScrollNode* animating_node =
+              scroll_tree.FindNodeFromElementId(entry.first)) {
+        if (IsScrolledBy(layer_impl, animating_node)) {
+          return InputHandler::TouchStartOrMoveEventListenerType::
+              kHandlerOnScrollingLayer;
+        }
+      }
+    }
+  }
+  return InputHandler::TouchStartOrMoveEventListenerType::kHandler;
 }
 
 std::unique_ptr<LatencyInfoSwapPromiseMonitor>
@@ -1293,23 +1328,51 @@ void InputHandler::SetPrefersReducedMotion(bool prefers_reduced_motion) {
 }
 
 bool InputHandler::IsCurrentlyScrolling() const {
-  return CurrentlyScrollingNode();
+  if (CurrentlyScrollingNode()) {
+    return true;
+  }
+
+  // In the snap phase of a scroll gesture on a snap container, InputHandler
+  // will de-latch from from the snapping ScrollNode. While this animation is
+  // ongoing, we consider InputHandler to still be scrolling the node, despite
+  // having de-latched from it.
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    for (const auto& entry : snap_animation_data_map_) {
+      // Empty targets means not snap-animating.
+      if (entry.second.animating_snap_target_ids_ !=
+          TargetSnapAreaElementIds()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 ActivelyScrollingType InputHandler::GetActivelyScrollingType() const {
-  if (!CurrentlyScrollingNode())
-    return ActivelyScrollingType::kNone;
+  const ScrollNode* currently_scrolling_node = CurrentlyScrollingNode();
+  if (currently_scrolling_node && last_scroll_update_state_ &&
+      delta_consumed_for_scroll_gesture_) {
+    if (ShouldAnimateScroll(last_scroll_update_state_.value())) {
+      return ActivelyScrollingType::kAnimated;
+    }
+    return ActivelyScrollingType::kPrecise;
+  }
 
-  if (!last_scroll_update_state_)
-    return ActivelyScrollingType::kNone;
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // In the snap phase of a scroll gesture on a snap container, InputHandler
+    // will de-latch from from the snapping ScrollNode. While this animation is
+    // ongoing, we consider InputHandler to still be scrolling the node, despite
+    // having de-latched from it.
+    for (const auto& entry : snap_animation_data_map_) {
+      if (entry.second.animating_snap_target_ids_ !=
+          TargetSnapAreaElementIds()) {
+        return ActivelyScrollingType::kAnimated;
+      }
+    }
+  }
 
-  if (!delta_consumed_for_scroll_gesture_)
-    return ActivelyScrollingType::kNone;
-
-  if (ShouldAnimateScroll(last_scroll_update_state_.value()))
-    return ActivelyScrollingType::kAnimated;
-
-  return ActivelyScrollingType::kPrecise;
+  return ActivelyScrollingType::kNone;
 }
 
 bool InputHandler::IsHandlingTouchSequence() const {
@@ -1318,11 +1381,36 @@ bool InputHandler::IsHandlingTouchSequence() const {
 
 bool InputHandler::IsCurrentScrollMainRepainted() const {
   const ScrollNode* scroll_node = CurrentlyScrollingNode();
-  if (!scroll_node)
-    return false;
-  uint32_t repaint_reasons =
-      GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
-  return repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain;
+  if (scroll_node) {
+    uint32_t repaint_reasons =
+        GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
+    if (repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain) {
+      return true;
+    }
+  }
+
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // Ensure InputHandler factors in snap animations (during which
+    // InputHandler de-latches from the ScrollNode) when queried about
+    // nodes it's scrolling which require main thread repaints.
+    const auto& scroll_tree = GetScrollTree();
+    for (const auto& entry : snap_animation_data_map_) {
+      if (entry.second.animating_snap_target_ids_ ==
+          TargetSnapAreaElementIds()) {
+        continue;
+      }
+      if (const ScrollNode* animating_node =
+              scroll_tree.FindNodeFromElementId(entry.first)) {
+        uint32_t repaint_reasons =
+            GetScrollTree().GetMainThreadRepaintReasons(*animating_node);
+        if (repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 bool InputHandler::HasQueuedInput() const {
@@ -2136,6 +2224,12 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   }
   DCHECK(!IsAnimatingForSnap(CurrentlyScrollingNode()->element_id));
   if (did_animate) {
+    if (features::MultiImplOnlyScrollAnimationsSupported()) {
+      // Forget the scroll container that is currently
+      // latched so that any scroll gesture that occurs during the snap
+      // animation will be allowed to scroll the appropriate container.
+      ClearCurrentlyScrollingNode();
+    }
     EnsureSnapAnimationData(scroll_node->element_id);
     // The updated snap target will be set when the animation is completed.
     SetAnimatingSnapTargetsForElement(scroll_node->element_id,
@@ -2280,12 +2374,32 @@ void InputHandler::SetIsHandlingTouchSequence(bool is_handling_touch_sequence) {
 }
 
 bool InputHandler::CurrentScrollNeedsFrameAlignment() const {
-  if (const ScrollNode* node = CurrentlyScrollingNode()) {
-    // We need frame-aligned handling of GestureScrollUpdate if an animation
-    // is linked to the scroll position.  If we update the scroll offset between
-    // tick and draw, then things will be out of sync in the drawn frame.
-    if (compositor_delegate_->HasScrollLinkedAnimation(node->element_id)) {
-      return true;
+  // We need frame-aligned handling of GestureScrollUpdate if an animation
+  // is linked to the scroll position.  If we update the scroll offset between
+  // tick and draw, then things will be out of sync in the drawn frame.
+  const ScrollNode* node = CurrentlyScrollingNode();
+  if (node &&
+      compositor_delegate_->HasScrollLinkedAnimation(node->element_id)) {
+    return true;
+  }
+
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // Ensure InputHandler factors in snap animations (during which
+    // InputHandler de-latches from the ScrollNode) when queried about
+    // nodes it's scrolling which need frame alignment.
+    const auto& scroll_tree = GetScrollTree();
+    for (const auto& entry : snap_animation_data_map_) {
+      if (entry.second.animating_snap_target_ids_ ==
+          TargetSnapAreaElementIds()) {
+        continue;
+      }
+      if (const ScrollNode* animating_node =
+              scroll_tree.FindNodeFromElementId(entry.first)) {
+        if (compositor_delegate_->HasScrollLinkedAnimation(
+                animating_node->element_id)) {
+          return true;
+        }
+      }
     }
   }
   return false;

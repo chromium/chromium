@@ -2888,6 +2888,15 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapAfterAnimatedScroll) {
 }
 
 TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
+  // If MultiImplOnlyScrollAnimations is enabled this test is not valid because
+  // that flag makes InputHandler forget the latched ScrollNode at the beginning
+  // of the snap animation rather than at the end. And so, processing a
+  // ScrollUpdate (without a corresponding ScrollBegin) after the snap animation
+  // has kicked off is invalid.
+  // TODO(crbug.com/372627916): remove this test when deleting this flag.
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    return;
+  }
   LayerImpl* overflow = CreateLayerForSnapping();
 
   gfx::Point pointer_position(10, 10);
@@ -19351,6 +19360,8 @@ TEST_P(ConcurrentSnapAnimationsTest, TrackAnimatingSnapTargetIds) {
             ElementId(10));
   EXPECT_FALSE(snap_state_map.contains(container2_id_));
 
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 150), type).get(),
+                      type);
   // Manually latch on to |scroll_node2|.
   host_impl_->GetScrollTree().set_currently_scrolling_node(scroll_node2_->id);
 
