@@ -166,13 +166,11 @@ ResourceRequestsAllowedState ResourceRequestStateToHistogramValue(
   return RESOURCE_REQUESTS_NOT_ALLOWED;
 }
 
-// Returns the header value for |name| from |headers| or an empty string if not
-// set.
-std::string GetHeaderValue(const net::HttpResponseHeaders* headers,
-                           std::string_view name) {
-  std::string value;
-  headers->EnumerateHeader(nullptr, name, &value);
-  return value;
+// Returns the header value for |name| from |headers| or an empty string_view if
+// not set.
+std::string_view GetHeaderValue(const net::HttpResponseHeaders* headers,
+                                std::string_view name) {
+  return headers->EnumerateHeader(nullptr, name).value_or(std::string_view());
 }
 
 // Returns the list of values for |name| from |headers|. If the header in not
@@ -182,9 +180,9 @@ std::vector<std::string> GetHeaderValuesList(
     std::string_view name) {
   std::vector<std::string> values;
   size_t iter = 0;
-  std::string value;
-  while (headers->EnumerateHeader(&iter, name, &value)) {
-    values.push_back(value);
+  while (std::optional<std::string_view> value =
+             headers->EnumerateHeader(&iter, name)) {
+    values.emplace_back(*value);
   }
   return values;
 }
@@ -894,10 +892,11 @@ void VariationsService::OnSimpleLoaderComplete(
     return;
   }
 
-  std::string signature = GetHeaderValue(headers.get(), "X-Seed-Signature");
-  std::string country_code = GetHeaderValue(headers.get(), "X-Country");
-  StoreSeed(std::move(*response_body), std::move(signature),
-            std::move(country_code), response_date.value_or(base::Time()),
+  std::string_view signature =
+      GetHeaderValue(headers.get(), "X-Seed-Signature");
+  std::string_view country_code = GetHeaderValue(headers.get(), "X-Country");
+  StoreSeed(std::move(*response_body), std::string(signature),
+            std::string(country_code), response_date.value_or(base::Time()),
             is_delta_compressed, is_gzip_compressed);
 }
 
