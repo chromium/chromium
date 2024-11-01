@@ -211,7 +211,7 @@ void BluetoothRemoteGattCharacteristicWinrt::ReadRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicWinrt::WriteRemoteCharacteristic(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -293,7 +293,7 @@ void BluetoothRemoteGattCharacteristicWinrt::WriteRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicWinrt::
-    DeprecatedWriteRemoteCharacteristic(base::span<const uint8_t> value,
+    DeprecatedWriteRemoteCharacteristic(const std::vector<uint8_t>& value,
                                         base::OnceClosure callback,
                                         ErrorCallback error_callback) {
   if (!(GetProperties() & PROPERTY_WRITE) &&

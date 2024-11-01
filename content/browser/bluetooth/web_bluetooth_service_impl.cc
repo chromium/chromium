@@ -16,7 +16,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -1171,23 +1170,26 @@ void WebBluetoothServiceImpl::RemoteCharacteristicWriteValue(
   BluetoothGattCharacteristic::ErrorCallback write_error_callback =
       base::BindOnce(&WebBluetoothServiceImpl::OnCharacteristicWriteValueFailed,
                      weak_ptr_factory_.GetWeakPtr(), characteristic_instance_id,
-                     base::ToVector(value), write_type,
-                     std::move(split_callback.second));
+                     std::vector<uint8_t>(value.begin(), value.end()),
+                     write_type, std::move(split_callback.second));
   using WebBluetoothWriteType = blink::mojom::WebBluetoothWriteType;
   using WriteType = BluetoothRemoteGattCharacteristic::WriteType;
   switch (write_type) {
     case WebBluetoothWriteType::kWriteDefaultDeprecated:
       query_result.characteristic->DeprecatedWriteRemoteCharacteristic(
-          value, std::move(write_callback), std::move(write_error_callback));
+          std::vector<uint8_t>(value.begin(), value.end()),
+          std::move(write_callback), std::move(write_error_callback));
       break;
     case WebBluetoothWriteType::kWriteWithResponse:
       query_result.characteristic->WriteRemoteCharacteristic(
-          value, WriteType::kWithResponse, std::move(write_callback),
+          std::vector<uint8_t>(value.begin(), value.end()),
+          WriteType::kWithResponse, std::move(write_callback),
           std::move(write_error_callback));
       break;
     case WebBluetoothWriteType::kWriteWithoutResponse:
       query_result.characteristic->WriteRemoteCharacteristic(
-          value, WriteType::kWithoutResponse, std::move(write_callback),
+          std::vector<uint8_t>(value.begin(), value.end()),
+          WriteType::kWithoutResponse, std::move(write_callback),
           std::move(write_error_callback));
       break;
   }
@@ -1381,13 +1383,14 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.descriptor->WriteRemoteDescriptor(
-      value,
+      std::vector<uint8_t>(value.begin(), value.end()),
       base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorWriteValueSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),
       base::BindOnce(&WebBluetoothServiceImpl::OnDescriptorWriteValueFailed,
                      weak_ptr_factory_.GetWeakPtr(), descriptor_instance_id,
-                     base::ToVector(value), std::move(split_callback.second)));
+                     std::vector<uint8_t>(value.begin(), value.end()),
+                     std::move(split_callback.second)));
 }
 
 void WebBluetoothServiceImpl::RequestScanningStart(

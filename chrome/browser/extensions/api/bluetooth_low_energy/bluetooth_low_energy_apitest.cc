@@ -13,7 +13,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -60,7 +59,7 @@ using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 using testing::ReturnRefOfCopy;
-using testing::WithArg;
+using testing::SaveArg;
 
 namespace {
 
@@ -778,11 +777,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteCharacteristicValue) {
       .Times(2)
       .WillOnce(InvokeCallbackArgument<2>(
           BluetoothGattService::GattErrorCode::kFailed))
-      .WillOnce(
-          DoAll(WithArg<0>([&write_value](base::span<const uint8_t> value) {
-                  write_value = base::ToVector(value);
-                }),
-                InvokeCallbackArgument<1>()));
+      .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*chrc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
 
@@ -1074,11 +1069,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteDescriptorValue) {
       .Times(2)
       .WillOnce(InvokeCallbackArgument<2>(
           BluetoothGattService::GattErrorCode::kFailed))
-      .WillOnce(
-          DoAll(WithArg<0>([&write_value](base::span<const uint8_t> value) {
-                  write_value = base::ToVector(value);
-                }),
-                InvokeCallbackArgument<1>()));
+      .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*desc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
 

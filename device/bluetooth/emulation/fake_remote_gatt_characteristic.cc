@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -144,7 +143,7 @@ void FakeRemoteGattCharacteristic::ReadRemoteCharacteristic(
 }
 
 void FakeRemoteGattCharacteristic::WriteRemoteCharacteristic(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -162,7 +161,7 @@ void FakeRemoteGattCharacteristic::WriteRemoteCharacteristic(
   // characteristic only supports write without response but we still need to
   // run the callback because that's the guarantee the API makes.
   if (write_type == WriteType::kWithoutResponse) {
-    last_written_value_ = base::ToVector(value);
+    last_written_value_ = value;
     last_write_type_ = mojom_write_type;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
@@ -173,12 +172,11 @@ void FakeRemoteGattCharacteristic::WriteRemoteCharacteristic(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::DispatchWriteResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback), base::ToVector(value),
-                     mojom_write_type));
+                     std::move(error_callback), value, mojom_write_type));
 }
 
 void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   const mojom::WriteType write_type = mojom::WriteType::kWriteDefaultDeprecated;
@@ -186,7 +184,7 @@ void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
   // characteristic only supports write without response but we still need to
   // run the callback because that's the guarantee the API makes.
   if (properties_ & PROPERTY_WRITE_WITHOUT_RESPONSE) {
-    last_written_value_ = base::ToVector(value);
+    last_written_value_ = value;
     last_write_type_ = write_type;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
@@ -197,13 +195,12 @@ void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattCharacteristic::DispatchWriteResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback), base::ToVector(value),
-                     write_type));
+                     std::move(error_callback), value, write_type));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void FakeRemoteGattCharacteristic::PrepareWriteRemoteCharacteristic(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   NOTIMPLEMENTED();

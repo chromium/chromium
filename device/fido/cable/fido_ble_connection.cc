@@ -406,7 +406,7 @@ void FidoBleConnection::WriteServiceRevision(ServiceRevision service_revision) {
   DCHECK(service_revision_bitfield_id_);
   fido_service->GetCharacteristic(*service_revision_bitfield_id_)
       ->WriteRemoteCharacteristic(
-          base::byte_span_from_ref(static_cast<uint8_t>(service_revision)),
+          {static_cast<uint8_t>(service_revision)},
           BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
           base::BindOnce(OnWriteRemoteCharacteristic,
                          std::move(split_callback.first)),

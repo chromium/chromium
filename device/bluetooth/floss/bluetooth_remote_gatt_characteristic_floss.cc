@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
 
-#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -112,7 +111,7 @@ void BluetoothRemoteGattCharacteristicFloss::ReadRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristic(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     device::BluetoothRemoteGattCharacteristic::WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -127,7 +126,7 @@ void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicFloss::
-    DeprecatedWriteRemoteCharacteristic(base::span<const uint8_t> value,
+    DeprecatedWriteRemoteCharacteristic(const std::vector<uint8_t>& value,
                                         base::OnceClosure callback,
                                         ErrorCallback error_callback) {
   Properties props = GetProperties();
@@ -142,7 +141,7 @@ void BluetoothRemoteGattCharacteristicFloss::
 
 #if BUILDFLAG(IS_CHROMEOS)
 void BluetoothRemoteGattCharacteristicFloss::PrepareWriteRemoteCharacteristic(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   // Make sure we're using reliable writes before starting a prepared write.
@@ -158,7 +157,7 @@ void BluetoothRemoteGattCharacteristicFloss::PrepareWriteRemoteCharacteristic(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristicImpl(
-    base::span<const uint8_t> value,
+    const std::vector<uint8_t>& value,
     floss::WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -168,7 +167,7 @@ void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristicImpl(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          std::move(error_callback), base::ToVector(value)),
+          std::move(error_callback), value),
       device_address_, characteristic_->instance_id, write_type, auth, value);
 }
 
