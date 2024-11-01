@@ -517,6 +517,8 @@ experimental domain Audits
       ExcludeDomainNonASCII
       ExcludeThirdPartyCookieBlockedInFirstPartySet
       ExcludeThirdPartyPhaseout
+      ExcludePortMismatch
+      ExcludeSchemeMismatch
 
   type CookieWarningReason extends string
     enum

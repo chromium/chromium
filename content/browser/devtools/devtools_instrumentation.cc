@@ -1760,6 +1760,20 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeThirdPartyPhaseout);
   }
 
+  if (base::FeatureList::IsEnabled(net::features::kEnablePortBoundCookies) &&
+      status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_PORT_MISMATCH)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::CookieExclusionReasonEnum::ExcludePortMismatch);
+  }
+
+  if (base::FeatureList::IsEnabled(net::features::kEnableSchemeBoundCookies) &&
+      status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::CookieExclusionReasonEnum::ExcludeSchemeMismatch);
+  }
+
   return exclusion_reasons;
 }
 

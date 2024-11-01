@@ -304,7 +304,11 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
          status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
+             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_PORT_MISMATCH) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
 }
 
 // Parses AcceptCHFrame and removes client hints already in the headers.

@@ -1202,6 +1202,26 @@
     "owners": ["janiceliu@chromium.org"]
   },
 
+  {
+    "prefix": "port-bound-cookies",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases":[ "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js" ],
+    "expires": "Mar 1, 2025",
+    "exclusive_tests": "ALL",
+    "args": [ "--enable-features=EnablePortBoundCookies"],
+    "owners": ["amarjotgill@chromium.org"]
+  },
+
+  {
+    "prefix": "scheme-bound-cookies",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases":[ "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js" ],
+    "expires": "Mar 1, 2025",
+    "exclusive_tests": "ALL",
+    "args": [ "--enable-features=EnableSchemeBoundCookies"],
+    "owners": ["amarjotgill@chromium.org"]
+  },
+
   "isInputPending requires threaded compositing and layerized iframes, so ",
   "these tests are run exclusively with a virtual test suite that never ",
   "expires.",
