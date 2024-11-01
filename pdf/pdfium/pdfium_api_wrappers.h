@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
 
 // This file contains wrapper functions that let callers use modern C++
 // constructs to interact with PDFium. This is easier than accessing PDFium C
@@ -25,6 +26,10 @@ ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data);
 // cannot be a string_view, since it needs to be null-terminated.
 ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
                                            const std::string& password);
+
+// Wrapper around FPDFPageObjMark_GetName().
+// Returns the name of `mark`, or an empty string on failure.
+std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark);
 
 }  // namespace chrome_pdf
 
