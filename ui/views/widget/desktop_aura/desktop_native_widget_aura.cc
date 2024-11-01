@@ -818,14 +818,6 @@ void DesktopNativeWidgetAura::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                              app_icon);
 }
 
-const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowIcon() {
-  return nullptr;
-}
-
-const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowAppIcon() {
-  return nullptr;
-}
-
 void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   // 99% of the time, we should not be asked to create a
   // DesktopNativeWidgetAura that is modal. We only support window modal

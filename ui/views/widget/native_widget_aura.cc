@@ -533,14 +533,6 @@ void NativeWidgetAura::SetWindowIcons(const gfx::ImageSkia& window_icon,
   AssignIconToAuraWindow(window_, window_icon, app_icon);
 }
 
-const gfx::ImageSkia* NativeWidgetAura::GetWindowIcon() {
-  return window_->GetProperty(aura::client::kWindowIconKey);
-}
-
-const gfx::ImageSkia* NativeWidgetAura::GetWindowAppIcon() {
-  return window_->GetProperty(aura::client::kAppIconKey);
-}
-
 void NativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   if (modal_type != ui::mojom::ModalType::kNone) {
     window_->SetProperty(aura::client::kModalKey, modal_type);

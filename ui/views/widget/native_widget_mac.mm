@@ -505,13 +505,6 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   // Everything happens upon show.
 }
 
-const gfx::ImageSkia* NativeWidgetMac::GetWindowIcon() {
-  return nullptr;
-}
-const gfx::ImageSkia* NativeWidgetMac::GetWindowAppIcon() {
-  return nullptr;
-}
-
 gfx::Rect NativeWidgetMac::GetWindowBoundsInScreen() const {
   return ns_window_host_ ? ns_window_host_->GetWindowBoundsInScreen()
                          : gfx::Rect();

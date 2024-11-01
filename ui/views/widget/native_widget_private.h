@@ -167,8 +167,6 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // app switching UI.
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon) = 0;
-  virtual const gfx::ImageSkia* GetWindowIcon() = 0;
-  virtual const gfx::ImageSkia* GetWindowAppIcon() = 0;
 
   // Initializes the modal type of the window to |modal_type|. Called from
   // NativeWidgetDelegate::OnNativeWidgetCreated() before the widget is

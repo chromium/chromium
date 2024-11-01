@@ -68,8 +68,6 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               (const gfx::ImageSkia& window_icon,
                const gfx::ImageSkia& app_icon),
               (override));
-  MOCK_METHOD(const gfx::ImageSkia*, GetWindowIcon, (), (override));
-  MOCK_METHOD(const gfx::ImageSkia*, GetWindowAppIcon, (), (override));
   MOCK_METHOD(void,
               InitModalType,
               (ui::mojom::ModalType modal_type),

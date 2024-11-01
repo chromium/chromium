@@ -1265,31 +1265,9 @@ void Widget::UpdateWindowIcon() {
   if (non_client_view_)
     non_client_view_->UpdateWindowIcon();
 
-  gfx::ImageSkia window_icon =
-      widget_delegate_->GetWindowIcon().Rasterize(GetColorProvider());
-
-  // In general, icon information is read from a |widget_delegate_| and then
-  // passed to |native_widget_|. On ChromeOS, for lacros-chrome to support the
-  // initial window state as minimized state, a valid icon is added to
-  // |native_widget_| earlier stage of widget initialization. See
-  // https://crbug.com/1189981. As only lacros-chrome on ChromeOS supports this
-  // behavior other overrides of |native_widget_| will always have no icon
-  // information. This is also true for |app_icon| referred below.
-  if (window_icon.isNull()) {
-    const gfx::ImageSkia* icon = native_widget_->GetWindowIcon();
-    if (icon && !icon->isNull())
-      window_icon = *icon;
-  }
-
-  gfx::ImageSkia app_icon =
-      widget_delegate_->GetWindowAppIcon().Rasterize(GetColorProvider());
-  if (app_icon.isNull()) {
-    const gfx::ImageSkia* icon = native_widget_->GetWindowAppIcon();
-    if (icon && !icon->isNull())
-      app_icon = *icon;
-  }
-
-  native_widget_->SetWindowIcons(window_icon, app_icon);
+  native_widget_->SetWindowIcons(
+      widget_delegate_->GetWindowIcon().Rasterize(GetColorProvider()),
+      widget_delegate_->GetWindowAppIcon().Rasterize(GetColorProvider()));
 }
 
 FocusTraversable* Widget::GetFocusTraversable() {

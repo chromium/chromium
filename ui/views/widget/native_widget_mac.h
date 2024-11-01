@@ -147,8 +147,6 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
-  const gfx::ImageSkia* GetWindowIcon() override;
-  const gfx::ImageSkia* GetWindowAppIcon() override;
   void InitModalType(ui::mojom::ModalType modal_type) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
