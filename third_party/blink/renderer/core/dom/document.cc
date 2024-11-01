@@ -4717,11 +4717,10 @@ void Document::ProcessBaseElement() {
         GetExecutionContext()->GetContentSecurityPolicy()->AllowBaseURI(
             base_element_url)) {
       base_element_url_ = base_element_url;
-      UpdateBaseURL();
-    } else if (RuntimeEnabledFeatures::BaseElementUrlUseFallbackEnabled()) {
+    } else {
       base_element_url_ = FallbackBaseURL();
-      UpdateBaseURL();
     }
+    UpdateBaseURL();
   }
 
   AtomicString old_base_target = base_target_;

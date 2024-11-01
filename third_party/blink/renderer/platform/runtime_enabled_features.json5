@@ -533,13 +533,6 @@
       },
     },
     {
-      // When the <base> element href attribute scheme is "data" or "javascript",
-      // set element's frozen base URL to document's fallback base URL.
-      // This feature was shipped in M129, so this flag can be removed in M131.
-      name: "BaseElementUrlUseFallback",
-      status: "stable",
-    },
-    {
       name: "BidiCaretAffinity",
     },
     {
