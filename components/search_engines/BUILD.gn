@@ -136,6 +136,10 @@ static_library("search_engines") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
+      "enterprise/search_aggregator_policy_handler.cc",
+      "enterprise/search_aggregator_policy_handler.h",
+      "enterprise/search_engine_fields_validators.cc",
+      "enterprise/search_engine_fields_validators.h",
       "enterprise/site_search_policy_handler.cc",
       "enterprise/site_search_policy_handler.h",
     ]
@@ -240,7 +244,12 @@ source_set("unit_tests") {
   ]
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [ "enterprise/site_search_policy_handler_unittest.cc" ]
+    sources += [
+      "enterprise/field_validation_test_utils.cc",
+      "enterprise/field_validation_test_utils.h",
+      "enterprise/search_aggregator_policy_handler_unittest.cc",
+      "enterprise/site_search_policy_handler_unittest.cc",
+    ]
   }
 
   if (!is_ios) {
