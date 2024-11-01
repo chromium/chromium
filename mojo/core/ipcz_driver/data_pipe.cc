@@ -669,9 +669,9 @@ bool DataPipe::DeserializeRingBuffer(const RingBuffer::SerializedState& state) {
 
 DataPipe::Pair::Pair() = default;
 
-DataPipe::Pair::Pair(const Pair&) = default;
+DataPipe::Pair::Pair(Pair&&) = default;
 
-DataPipe::Pair& DataPipe::Pair::operator=(const Pair&) = default;
+DataPipe::Pair& DataPipe::Pair::operator=(Pair&&) = default;
 
 DataPipe::Pair::~Pair() = default;
 
