@@ -69,7 +69,6 @@ import org.chromium.ui.test.util.ViewUtils;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Batching causes flakes.")
-@DisabledTest(message = "https:/crbug.com/369532182")
 public class DeveloperUiTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
@@ -215,6 +214,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_switchProvider_shownOnNougat() throws Throwable {
         launchHomeFragment();
 
@@ -226,6 +226,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_reportBug() throws Throwable {
         launchHomeFragment();
 
@@ -255,6 +256,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_checkUpdates_withPlayStore() throws Throwable {
         launchHomeFragment();
 
@@ -288,6 +290,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_aboutDevTools() throws Throwable {
         launchHomeFragment();
 
@@ -307,6 +310,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_components() throws Throwable {
         launchHomeFragment();
         openOptionsMenu();
@@ -318,6 +322,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_safeMode() throws Throwable {
         launchHomeFragment();
 
