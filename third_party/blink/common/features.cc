@@ -1961,16 +1961,6 @@ BASE_FEATURE(kUseAncestorRenderFrameForWorker,
              "UseAncestorRenderFrameForWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPreInitializePageAndFrameForSVGImage,
-             "PreInitializePageAndFrameForSVGImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(int,
-                   kMaxCountOfPreInitializePageAndFrameForSVGImage,
-                   &kPreInitializePageAndFrameForSVGImage,
-                   "max_pre_initialize_count",
-                   5);
-
 BASE_FEATURE(kPrecompileInlineScripts,
              "PrecompileInlineScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);
