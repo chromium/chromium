@@ -373,7 +373,7 @@ CHAR_LIMIT guidelines:
         Standard preloading:
       </message>
       <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_SUMMARY" desc="Short explanation of what the standard preloading mode does in the Preload Pages setting.">
-        Some of the pages you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.
+        Some of the pages you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site or app.
       </message>
       <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_ONE" desc="First bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
         Preloads pages that Chrome thinks you are likely to visit.
@@ -382,10 +382,10 @@ CHAR_LIMIT guidelines:
         If you allow cookies, Chrome may use them for preloading.
       </message>
       <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_THREE" desc="Third bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
-        When a Google site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.
+        When a Google site or app asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.
       </message>
       <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_FOUR" desc="Fourth bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
-        Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.
+        Because the preloaded pages are encrypted, and the site or app linking to the pages is a Google site or app, Google servers don’t receive new information when privately preloading these pages.
       </message>
       <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_TITLE" desc="Name of the extended preloading option for the Preload Pages settings page. This option enables more extensive preloading of pages that Chrome believes the user is likely to navigate to. [CHAR_LIMIT=32]">
         Extended preloading
@@ -394,7 +394,7 @@ CHAR_LIMIT guidelines:
         Extended preloading:
       </message>
       <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_SUMMARY" desc="Short explanation of what the extended preloading mode does in the Preload Pages setting.">
-        More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.
+        More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites or apps.
       </message>
       <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_ONE" desc="First bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
         More frequently preloads pages that Chrome thinks you are likely to visit. This setting may result in increased data use.
@@ -403,7 +403,7 @@ CHAR_LIMIT guidelines:
         If you allow cookies, Chrome may use them for preloading.
       </message>
       <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_THREE" desc="Third bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
-        When a site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.
+        When a site or app asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.
       </message>
       <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_FOUR" desc="Fourth bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
         Because the preloaded pages are encrypted, Google will not learn anything about the preloaded page content. Google servers will learn which sites are privately preloaded. This information is only used to preload the pages, and is not linked to other information from your Google Account.
