@@ -540,7 +540,7 @@ void Widget::Init(InitParams params) {
       saved_show_state_ = ui::mojom::WindowShowState::kMinimized;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // In ChromeOS, rounding window can involve rounding its client view and the
     // contents. Therefore, wait till the contents are set.
     // Since on ChromeOS, window can be square or rounded based on the window

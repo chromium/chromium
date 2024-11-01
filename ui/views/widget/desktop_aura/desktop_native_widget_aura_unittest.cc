@@ -13,7 +13,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -139,7 +138,7 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetNotVisibleOnlyWindowTreeHostShown) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_GlobalCursorState DISABLED_GlobalCursorState
 #else
@@ -276,7 +275,7 @@ std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_ReorderDoesntRecomputeOcclusion \
   DISABLED_ReorderDoesntRecomputeOcclusion
@@ -777,7 +776,7 @@ TEST_F(DesktopNativeWidgetAuraTest, CloseWidgetDuringMouseReleased) {
   RunCloseWidgetDuringDispatchTest(this, ui::EventType::kMouseReleased);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
 #define MAYBE_WindowMouseModalityTest DISABLED_WindowMouseModalityTest
 #else

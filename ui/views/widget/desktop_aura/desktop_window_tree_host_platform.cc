@@ -1045,16 +1045,11 @@ gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToDIP(
 
 gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // lacros should not use this.
-  NOTREACHED();
-#else
   // TODO(crbug.com/40222832): DIP should use gfx::PointF. Fix this as
   // a part of cleanup work(crbug.com/1318279).
   gfx::Point local_dip(screen_in_pixels);
   ConvertScreenInPixelsToDIP(&local_dip);
   return gfx::PointF(local_dip);
-#endif
 }
 
 gfx::Insets DesktopWindowTreeHostPlatform::ConvertInsetsToPixels(

@@ -19,7 +19,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -4077,9 +4076,7 @@ TEST_F(DesktopWidgetTest, ValidDuringOnNativeWidgetDestroyingFromClose) {
   EXPECT_EQ(gfx::Rect(), observer.bounds());
   base::RunLoop().RunUntilIdle();
 // Broken on Linux. See http://crbug.com/515379.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
   EXPECT_EQ(screen_rect, observer.bounds());
 #endif
 }

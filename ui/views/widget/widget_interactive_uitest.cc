@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
@@ -248,26 +247,9 @@ class DragView : public View, public DragController {
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override {
     data->provider().SetString(u"test");
-
-    // Without this, Lacros won't add the chromium/x-data-transfer-endpoint MIME
-    // type to the list of available types, and without that Exo won't start a
-    // drag session.
-    data->SetSource(
-        std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kDefault));
   }
 
   // View:
-
-  // See the comment for `received_drag_event_` for why this is Lacros-only.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::EventType::kMouseDragged) {
-      received_drag_event_ = true;
-    }
-    View::OnMouseEvent(event);
-  }
-#endif
-
   bool GetDropFormats(
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override {
@@ -296,26 +278,11 @@ class DragView : public View, public DragController {
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    // Depending on the initial mouse position and the timing when the OS
-    // informs us about it, we might get an extra mouse exit event that is
-    // unrelated to DnD.
-    if (received_drag_event_ && on_mouse_exit_) {
+    if (on_mouse_exit_) {
       std::move(on_mouse_exit_).Run();
     }
   }
 
-  // Whether we've received an EventType::kMouseDragged event yet.
-  //
-  // This is needed on Lacros, where we sometimes get an EventType::kMouseExited
-  // event that's unrelated to DnD. To prevent that from messing up the test
-  // flow, we ignore all such events until we receive an
-  // EventType::kMouseDragged event. On all other platforms, initializing it to
-  // true disables this workaround.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool received_drag_event_ = false;
-#else
-  bool received_drag_event_ = true;
-#endif
   base::OnceClosure on_drag_enter_, on_drag_exit_, on_capture_lost_,
       on_mouse_exit_;
 };
@@ -2057,7 +2024,7 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SystemModalWindowReleasesCapture \
   DISABLED_SystemModalWindowReleasesCapture
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 // Investigate enabling for Chrome OS. It probably requires help from the window
 // service.
 #define MAYBE_SystemModalWindowReleasesCapture \
@@ -2105,7 +2072,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 // Regression test for http://crbug.com/382421 (Linux-Aura issue).
 // TODO(pkotwicz): Make test pass on CrOS and Windows.
 // TODO(tapted): Investigate for toolkit-views on Mac http;//crbug.com/441064.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_MouseExitOnCaptureGrab DISABLED_MouseExitOnCaptureGrab
 #else
 #define MAYBE_MouseExitOnCaptureGrab MouseExitOnCaptureGrab
@@ -2524,10 +2491,10 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
     params.bounds = bounds;
     widget->Init(std::move(params));
 
-    // On X11 and Lacros, we need another mouse event after the drag has started
-    // for `DragView::OnDragEntered()` to be called. The best way to wait for
-    // the drag to start seems to be to wait for `DragView::OnMouseExited()`,
-    // which on these platforms happens only after the drag has started.
+    // On X11, we need another mouse event after the drag has started for
+    // `DragView::OnDragEntered()` to be called. The best way to wait for the
+    // drag to start seems to be to wait for `DragView::OnMouseExited()`, which
+    // on these platforms happens only after the drag has started.
     auto on_mouse_exit = base::BindLambdaForTesting([]() {
       gfx::Point target_location =
           aura::Env::GetInstance()->last_mouse_location();
