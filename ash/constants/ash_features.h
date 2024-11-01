@@ -481,6 +481,8 @@ BASE_DECLARE_FEATURE(kGrowthCampaignsInConsumerSession);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsInDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsRecordSessionUnlockEvent);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsShowNudgeInsideWindowBounds);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete);
@@ -1216,6 +1218,8 @@ bool IsGrowthCampaignsInConsumerSessionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsRecordSessionUnlockEventEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerAtLoadComplete();
 COMPONENT_EXPORT(ASH_CONSTANTS)

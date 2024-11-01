@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -380,6 +381,10 @@ void CampaignsManagerSession::OnSessionStateChanged() {
     return;
   }
 
+  if (ash::features::IsGrowthCampaignsRecordSessionUnlockEventEnabled()) {
+    RecordSessionUnlockEvent();
+  }
+
   SetCampaignManagerPrefService(GetProfile());
 
   ash::OwnerSettingsServiceAsh* service =
@@ -660,4 +665,11 @@ void CampaignsManagerSession::MaybeTriggerCampaignsWhenAppOpened() {
   }
 
   MaybeTriggerRuntimeCampaigns(growth::TriggerType::kAppOpened);
+}
+
+void CampaignsManagerSession::RecordSessionUnlockEvent() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  campaigns_manager->RecordEvent(growth::kGrowthCampaignsEventSessionUnlock);
 }

@@ -24,6 +24,10 @@ enum class CampaignEvent {
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 inline const char kGrowthCampaignsEventHotseatHover[] = "hotseat_hover";
 
+// The name of an event which is triggered when unlocking session.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
+inline const char kGrowthCampaignsEventSessionUnlock[] = "session_unlock";
+
 }  // namespace growth
 
 #endif  // CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_CONSTANTS_H_

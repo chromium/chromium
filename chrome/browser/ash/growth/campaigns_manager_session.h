@@ -79,6 +79,8 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
 
   void MaybeTriggerCampaignsWhenAppOpened();
 
+  void RecordSessionUnlockEvent();
+
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
