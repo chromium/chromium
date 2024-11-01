@@ -494,6 +494,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kAudioWorkletNodeConstructor,
            WebDXFeature::kAudioWorklet},
           {WebFeature::kMIDIPortOpen, WebDXFeature::kWebMidi},
+          {WebFeature::kV8HTMLVideoElement_RequestVideoFrameCallback_Method,
+           WebDXFeature::kRequestVideoFrameCallback},
       }};
 
   return *kMap;
