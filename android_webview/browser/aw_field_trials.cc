@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_field_trials.h"
 
 #include "android_webview/common/aw_switches.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/base_paths_android.h"
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -283,4 +284,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/336852432): Enable this feature for WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kNavigationPredictorNewViewportFeatures);
+
+  // This feature is global for the process and thus should not be enabled by
+  // WebView.
+  aw_feature_overrides.DisableFeature(
+      base::features::kPartitionAllocPermissiveMte);
 }
