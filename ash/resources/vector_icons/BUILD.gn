@@ -235,6 +235,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "launch.icon",
     "launcher_hide_continue_section.icon",
     "launcher_show_continue_section.icon",
+    "lens.icon",
     "lock_screen_alert.icon",
     "lock_screen_arrow.icon",
     "lock_screen_arrow_back.icon",

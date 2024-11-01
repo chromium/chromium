@@ -10,7 +10,10 @@
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -20,9 +23,10 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -34,6 +38,9 @@ inline constexpr int kPanelCornerRadius = 16;
 inline constexpr int kSearchResultsPanelWidth = 600;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
+inline constexpr int kHeaderRowSpacing = 10;
+inline constexpr int kHeaderIconSize = 20;
+inline constexpr gfx::Insets kHeaderPadding = gfx::Insets::TLBR(0, 0, 8, 0);
 
 }  // namespace
 
@@ -124,6 +131,52 @@ SearchResultsPanel::SearchResultsPanel() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetInteriorMargin(kPanelPadding)
       .SetCollapseMargins(true);
+
+  AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetCollapseMargins(true)
+          .SetInteriorMargin(kHeaderPadding)
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetDefault(views::kMarginsKey,
+                               gfx::Insets::VH(0, kHeaderRowSpacing));
+          }))
+          .AddChildren(
+              // Lens icon.
+              views::Builder<views::ImageView>().SetImage(
+                  ui::ImageModel::FromVectorIcon(kLensIcon, ui::kColorMenuIcon,
+                                                 kHeaderIconSize)),
+              // Title.
+              views::Builder<views::Label>()
+                  .SetText(u"Search with Lens")
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetFontList(
+                      TypographyProvider::Get()->ResolveTypographyToken(
+                          TypographyToken::kCrosButton1))
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
+              // Close Button, aligned to the right by setting a
+              // `FlexSpecification` with unbounded maximum flex size and
+              // `LayoutAlignment::kEnd`.
+              views::Builder<views::Button>(
+                  IconButton::Builder()
+                      .SetType(IconButton::Type::kMediumFloating)
+                      .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
+                      .SetAccessibleName(u"Close Panel")
+                      .Build())
+                  .SetCallback(base::BindRepeating(
+                      &SearchResultsPanel::OnCloseButtonPressed,
+                      weak_ptr_factory_.GetWeakPtr()))
+                  .SetProperty(
+                      views::kFlexBehaviorKey,
+                      views::FlexSpecification(
+                          views::LayoutOrientation::kHorizontal,
+                          views::MinimumFlexSizeRule::kPreferred,
+                          views::MaximumFlexSizeRule::kUnbounded)
+                          .WithAlignment(views::LayoutAlignment::kEnd)))
+          .Build());
+
   search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
   search_results_view_ =
       AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
@@ -190,6 +243,12 @@ bool SearchResultsPanel::HasFocus() const {
   }
 
   return Contains(focused_view);
+}
+
+void SearchResultsPanel::OnCloseButtonPressed() {
+  CHECK(GetWidget());
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 BEGIN_METADATA(SearchResultsPanel)

@@ -45,9 +45,13 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   bool HasFocus() const override;
 
  private:
+  void OnCloseButtonPressed();
+
   // Owned by the views hierarchy.
   raw_ptr<SunfishSearchBoxView> search_box_view_;
   raw_ptr<AshWebView> search_results_view_;
+
+  base::WeakPtrFactory<SearchResultsPanel> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
