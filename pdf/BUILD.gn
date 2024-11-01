@@ -114,6 +114,8 @@ if (enable_pdf) {
       "pdf_utils/dates.h",
       "pdfium/pdfium_api_string_buffer_adapter.cc",
       "pdfium/pdfium_api_string_buffer_adapter.h",
+      "pdfium/pdfium_api_wrappers.cc",
+      "pdfium/pdfium_api_wrappers.h",
       "pdfium/pdfium_document.cc",
       "pdfium/pdfium_document.h",
       "pdfium/pdfium_document_metadata.cc",

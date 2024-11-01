@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/pdf.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,8 +52,7 @@ class ScopedLibraryInitializer {
 
 // Returns all characters in the page.
 std::string GetText(base::span<const uint8_t> pdf, int page_index) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf.data(), pdf.size(), nullptr));
+  ScopedFPDFDocument document = LoadPdfData(pdf);
   CHECK(document);
   ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
   CHECK(page);
@@ -71,8 +71,7 @@ std::string GetText(base::span<const uint8_t> pdf, int page_index) {
 
 std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
                                          int page_index) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf.data(), pdf.size(), nullptr));
+  ScopedFPDFDocument document = LoadPdfData(pdf);
   CHECK(document);
   ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
   CHECK(page);

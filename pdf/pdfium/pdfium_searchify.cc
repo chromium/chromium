@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_ocr.h"
@@ -262,8 +263,7 @@ std::vector<uint8_t> PDFiumSearchify(
     base::span<const uint8_t> pdf_buffer,
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
         const SkBitmap& bitmap)> perform_ocr_callback) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf_buffer.data(), pdf_buffer.size(), nullptr));
+  ScopedFPDFDocument document = LoadPdfData(pdf_buffer);
   if (!document) {
     DLOG(ERROR) << "Failed to load document";
     return {};

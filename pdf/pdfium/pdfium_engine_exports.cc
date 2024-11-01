@@ -19,6 +19,7 @@
 #include "pdf/loader/document_loader.h"
 #include "pdf/loader/url_loader_wrapper.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_document.h"
 #include "pdf/pdfium/pdfium_document_metadata.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -161,11 +162,6 @@ int CalculatePosition(FPDF_PAGE page,
     dest->Offset(offset);
   }
   return rotate;
-}
-
-ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_buffer) {
-  return ScopedFPDFDocument(FPDF_LoadMemDocument64(
-      pdf_buffer.data(), pdf_buffer.size(), /*password=*/nullptr));
 }
 
 ScopedFPDFDocument CreatePdfDoc(
