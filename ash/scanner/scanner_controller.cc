@@ -27,11 +27,11 @@ ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
 
 ScannerController::~ScannerController() = default;
 
-bool ScannerController::IsEnabled() {
-  return switches::IsScannerUpdateSecretKeyMatched();
-}
-
 ScannerSession* ScannerController::StartNewSession() {
+  if (!switches::IsScannerUpdateSecretKeyMatched()) {
+    return nullptr;
+  }
+
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
   scanner_session_ =

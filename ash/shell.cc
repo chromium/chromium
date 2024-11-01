@@ -1836,7 +1836,7 @@ void Shell::Init(
     lobster_controller_ = std::make_unique<LobsterController>();
   }
 
-  if (features::IsScannerEnabled() && ScannerController::IsEnabled()) {
+  if (features::IsScannerEnabled()) {
     scanner_controller_ = std::make_unique<ScannerController>(
         shell_delegate_->CreateScannerDelegate());
   }

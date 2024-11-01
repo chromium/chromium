@@ -26,8 +26,6 @@ class ASH_EXPORT ScannerController {
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController();
 
-  static bool IsEnabled();
-
   // Creates a new ScannerSession and returns a pointer to the created session.
   // Note that the created session is owned by the ScannerController. If the
   // Scanner cannot be initialized due to system level constraints (e.g. pref
