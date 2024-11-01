@@ -65,6 +65,10 @@ WTF::Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
       String("sellerNonce"),
       FeatureVal(
           RuntimeEnabledFeatures::FledgeSellerNonceEnabled(execution_context)));
+  feature_status.emplace_back(
+      String("trustedSignalsKVv2"),
+      FeatureVal(RuntimeEnabledFeatures::FledgeTrustedSignalsKVv2SupportEnabled(
+          execution_context)));
   return feature_status;
 }
 

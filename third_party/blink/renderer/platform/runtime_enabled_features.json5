@@ -2065,7 +2065,8 @@
       implied_by: ["FledgeAuctionDealSupport",
                    "FledgePermitCrossOriginTrustedSignals",
                    "FledgeRealTimeReporting",
-                   "FledgeSellerNonce"],
+                   "FledgeSellerNonce",
+                   "FledgeTrustedSignalsKVv2Support"],
       base_feature: "none",
     },
     {
@@ -2078,7 +2079,8 @@
                    "FledgePermitCrossOriginTrustedSignals",
                    "FledgeRealTimeReporting",
                    "FledgeReportingTimeout",
-                   "FledgeSellerNonce"],
+                   "FledgeSellerNonce",
+                   "FledgeTrustedSignalsKVv2Support"],
       base_feature: "none",
     },
     {

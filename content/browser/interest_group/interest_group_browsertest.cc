@@ -23955,6 +23955,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'sellerNonce');
   )";
 
+  const char kQueryTrustedSignalsKVv2Support[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'trustedSignalsKVv2');
+  )";
+
   const char kQueryAll[] = R"(
     navigator.protectedAudience.queryFeatureSupport('*');
   )";
@@ -23963,6 +23968,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQueryUrlReplacements));
   EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
   EXPECT_EQ(true, EvalJs(shell(), kQuerySelectableReportingIds));
+  EXPECT_EQ(true, EvalJs(shell(), kQueryTrustedSignalsKVv2Support));
   EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
   EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
   EXPECT_EQ(true, EvalJs(shell(), kQuerySellerNonce));
@@ -23974,7 +23980,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
    "realTimeReporting": false,
    "reportingTimeout": true,
    "selectableReportingIds": true,
-   "sellerNonce": true
+   "sellerNonce": true,
+   "trustedSignalsKVv2": true
 })")) << all_result.error;
 }
 
@@ -25303,6 +25310,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                 "reportingTimeout": true,
                 "selectableReportingIds": true,
                 "sellerNonce": true,
+                "trustedSignalsKVv2": true,
               })"))
       << all_result.error;
 }
@@ -26726,6 +26734,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
                 "reportingTimeout": true,
                 "selectableReportingIds": true,
                 "sellerNonce": true,
+                "trustedSignalsKVv2": true,
               })"))
       << all_result.error;
 }
@@ -27212,6 +27221,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupUseMainThreadInRendererTest,
       /*expected_url=*/ad_url);
 }
 #endif
+
+class InterestGroupTrustedSignalsKVv2DisabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  explicit InterestGroupTrustedSignalsKVv2DisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeTrustedSignalsKVv2Support);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupTrustedSignalsKVv2DisabledTest,
+                       FeatureDetection) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+
+  const char kQueryTrustedSignalsKVv2Support[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'trustedSignalsKVv2');
+  )";
+  EXPECT_EQ(false, EvalJs(shell(), kQueryTrustedSignalsKVv2Support));
+}
 
 class InterestGroupTrustedSignalsKVv2BrowserTest
     : public InterestGroupBrowserTest {
