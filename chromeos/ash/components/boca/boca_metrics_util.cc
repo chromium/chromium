@@ -8,8 +8,9 @@
 
 namespace ash::boca {
 
-void RecordOnTaskLockedStateDuration(base::TimeDelta unlocked_state_duration,
-                                     base::TimeDelta locked_state_duration) {
+void RecordOnTaskLockedStateDurationPercentage(
+    base::TimeDelta unlocked_state_duration,
+    base::TimeDelta locked_state_duration) {
   const base::TimeDelta total_time =
       unlocked_state_duration + locked_state_duration;
   if (total_time.is_zero()) {
@@ -17,8 +18,9 @@ void RecordOnTaskLockedStateDuration(base::TimeDelta unlocked_state_duration,
   }
   const double percentage_locked = 100.0 * (locked_state_duration / total_time);
   const double percentage_unlocked = 100.0 - percentage_locked;
-  UMA_HISTOGRAM_PERCENTAGE(kBocaOnTaskLockedSessionDuration, percentage_locked);
-  UMA_HISTOGRAM_PERCENTAGE(kBocaOnTaskUnlockedSessionDuration,
+  UMA_HISTOGRAM_PERCENTAGE(kBocaOnTaskLockedSessionDurationPercentage,
+                           percentage_locked);
+  UMA_HISTOGRAM_PERCENTAGE(kBocaOnTaskUnlockedSessionDurationPercentage,
                            percentage_unlocked);
 }
 

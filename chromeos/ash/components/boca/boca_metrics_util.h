@@ -8,15 +8,16 @@
 #include "base/time/time.h"
 
 namespace ash::boca {
-inline constexpr char kBocaOnTaskLockedSessionDuration[] =
-    "Ash.Boca.OnTask.LockedSessionDuration";
-inline constexpr char kBocaOnTaskUnlockedSessionDuration[] =
-    "Ash.Boca.OnTask.UnlockedSessionDuration";
+inline constexpr char kBocaOnTaskLockedSessionDurationPercentage[] =
+    "Ash.Boca.OnTask.LockedSessionDurationPercentage";
+inline constexpr char kBocaOnTaskUnlockedSessionDurationPercentage[] =
+    "Ash.Boca.OnTask.UnlockedSessionDurationPercentage";
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
-void RecordOnTaskLockedStateDuration(base::TimeDelta unlocked_state_duration,
-                                     base::TimeDelta locked_state_duration);
+void RecordOnTaskLockedStateDurationPercentage(
+    base::TimeDelta unlocked_state_duration,
+    base::TimeDelta locked_state_duration);
 
 }  // namespace ash::boca
 

@@ -60,11 +60,11 @@ TEST_F(BocaMetricsManagerProducerTest,
       100.0 * (fast_forward_timeskip / total_duration);
   const double expected_percentage_unlocked =
       100.0 - expected_percentage_locked;
-  histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDuration, 1);
-  histograms.ExpectBucketCount(kBocaOnTaskLockedSessionDuration,
+  histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDurationPercentage, 1);
+  histograms.ExpectBucketCount(kBocaOnTaskLockedSessionDurationPercentage,
                                expected_percentage_locked, 1);
-  histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDuration, 1);
-  histograms.ExpectBucketCount(kBocaOnTaskUnlockedSessionDuration,
+  histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDurationPercentage, 1);
+  histograms.ExpectBucketCount(kBocaOnTaskUnlockedSessionDurationPercentage,
                                expected_percentage_unlocked, 1);
 }
 
@@ -84,7 +84,7 @@ TEST_F(BocaMetricsManagerConsumerTest,
   task_environment_.FastForwardBy(fast_forward_timeskip);
   metrics_manager_.OnSessionEnded("test_session_id");
 
-  histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDuration, 0);
-  histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDuration, 0);
+  histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDurationPercentage, 0);
+  histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDurationPercentage, 0);
 }
 }  // namespace ash::boca

@@ -27,8 +27,8 @@ void BocaMetricsManager::OnSessionEnded(const std::string& session_id) {
 
   CalculateDurationForContentState(is_lock_window_);
   if (is_producer_) {
-    RecordOnTaskLockedStateDuration(unlocked_mode_cumulative_duration_,
-                                    locked_mode_cumulative_duration_);
+    RecordOnTaskLockedStateDurationPercentage(
+        unlocked_mode_cumulative_duration_, locked_mode_cumulative_duration_);
   }
   last_switch_locked_mode_timestamp_ = base::TimeTicks();
   unlocked_mode_cumulative_duration_ = base::TimeDelta();
