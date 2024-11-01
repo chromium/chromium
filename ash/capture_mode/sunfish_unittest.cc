@@ -182,7 +182,9 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(controller->search_results_panel_widget());
+  auto* search_results_panel_widget = controller->search_results_panel_widget();
+  EXPECT_TRUE(search_results_panel_widget);
+  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
 
   // Test that the region selection UI remains visible.
   auto* session_layer = controller->capture_mode_session()->layer();
@@ -199,11 +201,13 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
             cursor_manager->GetCursor().type());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(gfx::Point(50, 50));
+  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 0.f);
   event_generator->ReleaseLeftButton();
   EXPECT_NE(controller->user_capture_region(), old_region);
 
   WaitForImageCapturedForSearch();
-  EXPECT_TRUE(controller->search_results_panel_widget());
+  EXPECT_TRUE(search_results_panel_widget);
+  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
 
   // Reposition the region.
   old_region = controller->user_capture_region();
@@ -211,11 +215,13 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   EXPECT_EQ(ui::mojom::CursorType::kMove, cursor_manager->GetCursor().type());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(gfx::Point(200, 200));
+  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 0.f);
   event_generator->ReleaseLeftButton();
   EXPECT_NE(controller->user_capture_region(), old_region);
 
   WaitForImageCapturedForSearch();
   EXPECT_TRUE(controller->search_results_panel_widget());
+  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
 }
 
 // Tests the sunfish capture label view.

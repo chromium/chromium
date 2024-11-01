@@ -645,6 +645,18 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   search_results_panel->search_results_view()->Navigate(url);
 }
 
+void CaptureModeController::OnModifyingRegionSelection() {
+  if (auto* panel = GetSearchResultsPanel()) {
+    // Clear the search box text for the next time the panel is opened. Note we
+    // don't need to reset the image or URL since the panel will always be
+    // re-opened with those.
+    panel->SetSearchBoxText(std::u16string());
+    capture_mode_util::AnimateToOpacity(
+        search_results_panel_widget_->GetLayer(),
+        /*opacity=*/0.f);
+  }
+}
+
 bool CaptureModeController::IsActive() const {
   return capture_mode_session_ && !capture_mode_session_->is_shutting_down();
 }

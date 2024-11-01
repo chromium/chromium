@@ -136,6 +136,12 @@ constexpr int kMinDistanceFromSettingsToScreen = 8;
 // The minimum height of the settings menu while constrained and scrollable.
 constexpr int kSettingsMenuMinHeight = 50;
 
+// Animation parameters for capture UI (capture bar, capture label) overlapping
+// the user capture region or camera preview. The default animation duration for
+// opacity changes to the capture UI.
+inline constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
+    base::Milliseconds(100);
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

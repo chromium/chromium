@@ -178,12 +178,6 @@ constexpr base::TimeDelta kCaptureLabelRegionPhaseChangeDelay =
 // widget will scale up from 80% -> 100%.
 constexpr float kLabelScaleDownOnPhaseChange = 0.8;
 
-// Animation parameters for capture UI (capture bar, capture label) overlapping
-// the user capture region or camera preview. The default animation duration for
-// opacity changes to the capture UI.
-constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
-    base::Milliseconds(100);
-
 // If the user is using keyboard only and they are on the selecting region
 // phase, they can create default region which is centered and sized to this
 // value times the root window's width and height.
@@ -854,6 +848,16 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   if (feedback_button_widget_) {
     widget_opacity_map[feedback_button_widget_.get()] = 1.f;
   }
+  // Although the results panel does not belong to the session, it behaves like
+  // a capture mode UI while the session is active.
+  // TODO(crbug.com/364718714): See if this needs to belong here, since in
+  // default mode with other capture mode UI, showing the panel will end capture
+  // mode session and the panel most likely won't need to interact with them.
+  views::Widget* search_results_panel_widget =
+      controller_->search_results_panel_widget();
+  if (search_results_panel_widget) {
+    widget_opacity_map[search_results_panel_widget] = 1.f;
+  }
 
   const bool is_settings_visible = capture_mode_settings_widget_ &&
                                    capture_mode_settings_widget_->IsVisible();
@@ -924,7 +928,8 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
       opacity = capture_mode::kCaptureUiOverlapOpacity;
     }
 
-    if (widget == action_container_widget_.get()) {
+    if (widget == action_container_widget_.get() ||
+        widget == search_results_panel_widget) {
       // If drag for capture region is in progress, action buttons should be
       // hidden.
       if (is_drag_in_progress_) {
@@ -952,16 +957,7 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   for (const auto& pair : widget_opacity_map) {
     ui::Layer* layer = pair.first->GetLayer();
     const float& opacity = pair.second;
-    if (layer->GetTargetOpacity() == opacity) {
-      continue;
-    }
-
-    views::AnimationBuilder()
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(kCaptureUIOpacityChangeDuration)
-        .SetOpacity(layer, opacity, gfx::Tween::FAST_OUT_SLOW_IN);
+    capture_mode_util::AnimateToOpacity(layer, opacity);
   }
 }
 

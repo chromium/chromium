@@ -173,6 +173,10 @@ void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
   search_box_view_->SetImage(image);
 }
 
+void SearchResultsPanel::SetSearchBoxText(const std::u16string& text) {
+  search_box_view_->textfield_->SetText(text);
+}
+
 bool SearchResultsPanel::HasFocus() const {
   // Returns true if `this` or any of its child views has focus.
   const views::FocusManager* focus_manager = GetFocusManager();

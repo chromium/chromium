@@ -39,6 +39,7 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
 
   // Sets the search box image thumbnail.
   void SetSearchBoxImage(const gfx::ImageSkia& image);
+  void SetSearchBoxText(const std::u16string& text);
 
   // SystemPanelView:
   bool HasFocus() const override;
