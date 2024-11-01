@@ -302,6 +302,11 @@ void BirchChipButton::ShutdownSelectionWidget() {
   tab_app_selection_widget_.reset();
 }
 
+void BirchChipButton::ReloadIcon() {
+  item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
+                                 weak_factory_.GetWeakPtr()));
+}
+
 void BirchChipButton::Init(BirchItem* item) {
   item_ = item;
 
@@ -329,9 +334,9 @@ void BirchChipButton::Init(BirchItem* item) {
           &BirchChipButton::OnCoralAddonClicked, base::Unretained(this));
       // Coral chip's addon button contains no text.
       auto button = birch_bar_util::CreateCoralAddonButton(
-          std::move(callback), vector_icons::kCaretUpIcon,
-          item->GetAddonAccessibleName());
-      button->SetTooltipText(item->GetAddonAccessibleName());
+          std::move(callback), vector_icons::kCaretUpIcon);
+      button->SetTooltipText(
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
       SetAddon(std::move(button));
       // Coral chip gets the real title from the group.
       auto* coral_provider = BirchCoralProvider::Get();

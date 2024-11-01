@@ -21,7 +21,8 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   METADATA_HEADER(TabAppSelectionView, views::BoxLayoutView)
 
  public:
-  explicit TabAppSelectionView(const base::Token& group_id);
+  TabAppSelectionView(const base::Token& group_id,
+                      base::RepeatingClosure on_item_removed);
   TabAppSelectionView(const TabAppSelectionView&) = delete;
   TabAppSelectionView& operator=(const TabAppSelectionView&) = delete;
   ~TabAppSelectionView() override;
@@ -54,6 +55,8 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
 
   // Unique identifier for the contents of the selection view.
   const base::Token group_id_;
+
+  base::RepeatingClosure on_item_removed_;
 
   raw_ptr<views::ScrollView> scroll_view_;
 

@@ -92,7 +92,9 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
   Init(std::move(params));
   SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
   SetContentsView(std::make_unique<TabAppSelectionView>(
-      static_cast<BirchCoralItem*>(coral_chip->GetItem())->group_id()));
+      static_cast<BirchCoralItem*>(coral_chip->GetItem())->group_id(),
+      base::BindRepeating(&TabAppSelectionHost::OnItemRemoved,
+                          base::Unretained(this))));
   widget_delegate()->set_desired_bounds_delegate(base::BindRepeating(
       &TabAppSelectionHost::GetDesiredBoundsInScreen, base::Unretained(this)));
   SetBounds(GetDesiredBoundsInScreen());
@@ -118,6 +120,10 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
   }
   views::AsViewClass<TabAppSelectionView>(GetContentsView())
       ->ProcessKeyEvent(event);
+}
+
+void TabAppSelectionHost::OnItemRemoved() {
+  owner_->ReloadIcon();
 }
 
 void TabAppSelectionHost::SlideOut() {

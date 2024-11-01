@@ -22,6 +22,10 @@ class TabAppSelectionHost : public views::Widget {
 
   void ProcessKeyEvent(ui::KeyEvent* event);
 
+  // Called when an item is removed from the selection view. Reloads the chip
+  // button image.
+  void OnItemRemoved();
+
   // Slides the widget under `owner_` before hiding it.
   void SlideOut();
 

@@ -410,8 +410,9 @@ END_METADATA
 
 // -----------------------------------------------------------------------------
 // TabAppSelectionView:
-TabAppSelectionView::TabAppSelectionView(const base::Token& group_id)
-    : group_id_(group_id) {
+TabAppSelectionView::TabAppSelectionView(const base::Token& group_id,
+                                         base::RepeatingClosure on_item_removed)
+    : group_id_(group_id), on_item_removed_(on_item_removed) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetBetweenChildSpacing(kChildSpacing);
@@ -614,6 +615,8 @@ void TabAppSelectionView::OnCloseButtonPressed(
       item_views_[i]->RemoveCloseButton();
     }
   }
+
+  on_item_removed_.Run();
 }
 
 void TabAppSelectionView::OnItemTapped(TabAppSelectionItemView* sender) {

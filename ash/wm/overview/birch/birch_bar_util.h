@@ -23,8 +23,7 @@ std::unique_ptr<views::Button> CreateAddonButton(
 // `button_icon`, e.g. the expand/collapse button of coral chip.
 std::unique_ptr<views::Button> CreateCoralAddonButton(
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon& button_icon,
-    const std::u16string& accessible_name);
+    const gfx::VectorIcon& button_icon);
 
 // Creates a weather temperature view which consists of two labels, one is for
 // the temperature degree and the other is for the degree unit (Fahrenheit v.s.

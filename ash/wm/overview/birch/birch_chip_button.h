@@ -50,6 +50,10 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
 
   void ShutdownSelectionWidget();
 
+  // Called when the coral selection view has an item removed, then we need to
+  // update the `CoralGroupedIconImage`.
+  void ReloadIcon();
+
   // BirchChipButtonBase:
   void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;
