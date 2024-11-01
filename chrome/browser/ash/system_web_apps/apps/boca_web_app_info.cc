@@ -18,6 +18,8 @@
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
@@ -25,8 +27,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
-  // TODO(aprilzhou): Convert the title to a localized string
-  info->title = u"BOCA";
+  info->title = l10n_util::GetStringUTF16(IDS_SCHOOL_TOOLS_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(),
       {{"app_icon_120.png", 120, IDR_ASH_BOCA_UI_APP_ICON_120_PNG}}, *info);

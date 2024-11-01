@@ -6887,6 +6887,12 @@
       <message name="IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE" desc="Notification message telling students that their teacher has removed content from the bundle.">
         Your teacher has removed content in School Tools
       </message>
+
+      <!-- Strings for School Tools -->
+      <message name="IDS_SCHOOL_TOOLS_TITLE" desc="Title of the School Tools App">
+        School Tools
+      </message>
+
     </messages>
   </release>
 </grit>
