@@ -199,13 +199,14 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
           connection = std::make_unique<
               testing::NiceMock<trusted_vault::MockTrustedVaultConnection>>();
       ON_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                               testing::_, testing::_))
+                               testing::_, testing::_, testing::_))
           .WillByDefault(
               [](const CoreAccountInfo&,
                  base::OnceCallback<void(
                      trusted_vault::
                          DownloadAuthenticationFactorsRegistrationStateResult)>
-                     callback) mutable {
+                     callback,
+                 base::RepeatingClosure _) mutable {
                 trusted_vault::
                     DownloadAuthenticationFactorsRegistrationStateResult result;
                 result.state = trusted_vault::

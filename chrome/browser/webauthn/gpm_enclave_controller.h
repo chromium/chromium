@@ -131,6 +131,10 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Called when fetching the account state took too long.
   void OnAccountStateTimeOut();
 
+  // Called when fetching the account state received partial data from the
+  // server.
+  void OnAccountStateKeepAlive();
+
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
       std::string gaia_id,

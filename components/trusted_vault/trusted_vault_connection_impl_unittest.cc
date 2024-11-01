@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -1123,7 +1124,8 @@ TEST_P(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadAuthenticationFactorsRegistrationState(
-          /*account_info=*/CoreAccountInfo(), callback.Get());
+          /*account_info=*/CoreAccountInfo(), callback.Get(),
+          base::NullCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback,
@@ -1283,10 +1285,11 @@ TEST_P(TrustedVaultConnectionImplTest,
             DownloadAuthenticationFactorsRegistrationStateResult in_result) {
           result.emplace(std::move(in_result));
         });
-
+    testing::StrictMock<base::MockRepeatingClosure> keep_alive_callback;
     std::unique_ptr<TrustedVaultConnection::Request> request =
         connection()->DownloadAuthenticationFactorsRegistrationState(
-            /*account_info=*/CoreAccountInfo(), std::move(callback));
+            /*account_info=*/CoreAccountInfo(), std::move(callback),
+            keep_alive_callback.Get());
     ASSERT_THAT(request, NotNull());
 
     std::optional<std::string> prev_next_page_token;
@@ -1300,6 +1303,7 @@ TEST_P(TrustedVaultConnectionImplTest,
 
       std::optional<std::string> next_page_token;
       if (i < test.responses.size() - 1) {
+        EXPECT_CALL(keep_alive_callback, Run());
         next_page_token = base::NumberToString(i);
       }
       ASSERT_TRUE(
@@ -1309,6 +1313,8 @@ TEST_P(TrustedVaultConnectionImplTest,
               MakeSecurityDomainMembers(security_domain(), test.responses[i],
                                         next_page_token)
                   .SerializeAsString()));
+      EXPECT_TRUE(
+          testing::Mock::VerifyAndClearExpectations(&keep_alive_callback));
       num_pages_downloaded++;
       prev_next_page_token = std::move(next_page_token);
     }
@@ -1341,7 +1347,8 @@ TEST_P(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadAuthenticationFactorsRegistrationState(
-          /*account_info=*/CoreAccountInfo(), callback.Get());
+          /*account_info=*/CoreAccountInfo(), callback.Get(),
+          base::NullCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback,
@@ -1362,7 +1369,8 @@ TEST_P(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadAuthenticationFactorsRegistrationState(
-          /*account_info=*/CoreAccountInfo(), callback.Get());
+          /*account_info=*/CoreAccountInfo(), callback.Get(),
+          base::NullCallback());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback,

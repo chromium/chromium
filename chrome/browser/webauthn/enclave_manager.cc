@@ -1931,7 +1931,8 @@ class EnclaveManager::StateMachine {
                       }
                       machine->Process(std::move(result));
                     },
-                    weak_ptr_factory_.GetWeakPtr()));
+                    weak_ptr_factory_.GetWeakPtr()),
+                /*keep_alive_callback=*/base::DoNothing());
   }
 
   void DoSyncingWithSecurityDomain(Event event) {

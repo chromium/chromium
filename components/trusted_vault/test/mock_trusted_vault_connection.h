@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -48,7 +49,8 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
   MOCK_METHOD(std::unique_ptr<Request>,
               DownloadAuthenticationFactorsRegistrationState,
               (const CoreAccountInfo& account_info,
-               DownloadAuthenticationFactorsRegistrationStateCallback callback),
+               DownloadAuthenticationFactorsRegistrationStateCallback callback,
+               base::RepeatingClosure keep_alive_callback),
               (override));
 };
 

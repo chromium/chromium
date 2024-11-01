@@ -559,6 +559,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       use_synced_device_cable_pairing_ = use_pairing;
     }
 
+    bool ui_shown() { return ui_shown_; }
+
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(delegate);
@@ -598,6 +600,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
+      ui_shown_ = true;
       run_loop_->QuitWhenIdle();
     }
 
@@ -613,6 +616,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::optional<device::FidoTransportProtocol> additional_transport_;
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     bool use_synced_device_cable_pairing_ = false;
+    bool ui_shown_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
     std::unique_ptr<base::RunLoop> tai_run_loop_;
     std::unique_ptr<base::RunLoop> destruction_run_loop_;
@@ -888,14 +892,15 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                                 testing::_, testing::_))
+                                 testing::_, testing::_, testing::_))
         .WillOnce(
             [result = std::move(result)](
                 const CoreAccountInfo&,
                 base::OnceCallback<void(
                     trusted_vault::
                         DownloadAuthenticationFactorsRegistrationStateResult)>
-                    callback) mutable {
+                    callback,
+                base::RepeatingClosure _) mutable {
               std::move(callback).Run(std::move(result));
               return std::make_unique<
                   trusted_vault::TrustedVaultConnection::Request>();
@@ -915,13 +920,14 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                                 testing::_, testing::_))
+                                 testing::_, testing::_, testing::_))
         .WillOnce(
             [](const CoreAccountInfo&,
                base::OnceCallback<void(
                    trusted_vault::
                        DownloadAuthenticationFactorsRegistrationStateResult)>
-                   callback) mutable {
+                   callback,
+               base::RepeatingClosure _) mutable {
               return std::make_unique<
                   trusted_vault::TrustedVaultConnection::Request>();
             });
@@ -940,13 +946,14 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
     EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                                 testing::_, testing::_))
+                                 testing::_, testing::_, testing::_))
         .WillRepeatedly(
             [](const CoreAccountInfo&,
                base::OnceCallback<void(
                    trusted_vault::
                        DownloadAuthenticationFactorsRegistrationStateResult)>
-                   callback)
+                   callback,
+               base::RepeatingClosure _)
                 -> std::unique_ptr<
                     trusted_vault::TrustedVaultConnection::Request> {
               CHECK(false) << "account state unexpectedly requested";
@@ -2002,14 +2009,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
       std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
   EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                               testing::_, testing::_))
+                               testing::_, testing::_, testing::_))
       .WillOnce(
           [&connection_cb](
               const CoreAccountInfo&,
               base::OnceCallback<void(
                   trusted_vault::
                       DownloadAuthenticationFactorsRegistrationStateResult)>
-                  callback) mutable {
+                  callback,
+              base::RepeatingClosure _) mutable {
             connection_cb = std::move(callback);
             return std::make_unique<
                 trusted_vault::TrustedVaultConnection::Request>();
@@ -2339,6 +2347,71 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+}
+
+// Tests that receiving partial data from the security domain server resets the
+// timeout timer.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       SecurityDomainKeepAlive) {
+  // Set up a trusted vault connection that lets us control the time it
+  // resolves.
+  base::OnceCallback<void(
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
+      connection_cb;
+  base::RepeatingClosure keep_alive_cb;
+  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
+      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
+                               testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&connection_cb, &keep_alive_cb](
+              const CoreAccountInfo&,
+              base::OnceCallback<void(
+                  trusted_vault::
+                      DownloadAuthenticationFactorsRegistrationStateResult)>
+                  callback,
+              base::RepeatingClosure keep_alive) mutable {
+            connection_cb = std::move(callback);
+            keep_alive_cb = std::move(keep_alive);
+            return std::make_unique<
+                trusted_vault::TrustedVaultConnection::Request>();
+          });
+  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+
+  // Execute a make credential request.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+
+  // Wait for the transport availability to be enumerated. The UI won't be shown
+  // yet because the enclave is not ready.
+  delegate_observer()->WaitForTransportAvailabilityEnumerated();
+
+  // Wait for 75% of the time it takes to time out. We should still be waiting.
+  timer_task_runner_->FastForwardBy(
+      GPMEnclaveController::kDownloadAccountStateTimeout * 0.75);
+
+  // Pretend we downloaded data but there's more to receive.
+  keep_alive_cb.Run();
+  ASSERT_FALSE(delegate_observer()->ui_shown());
+
+  // Wait for 75% of the time again. If everything goes right, we should not
+  // have timed out yet.
+  timer_task_runner_->FastForwardBy(
+      GPMEnclaveController::kDownloadAccountStateTimeout * 0.75);
+  ASSERT_FALSE(delegate_observer()->ui_shown());
+
+  // Resolve the connection.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  std::move(connection_cb).Run(std::move(registration_state_result));
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
 }
 
 #if BUILDFLAG(IS_MAC)

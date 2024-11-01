@@ -560,7 +560,13 @@ void GPMEnclaveController::DownloadAccountState() {
           account,
           base::BindOnce(&GPMEnclaveController::OnAccountStateDownloaded,
                          weak_ptr_factory_.GetWeakPtr(), account.gaia,
-                         std::move(trusted_vault_conn)));
+                         std::move(trusted_vault_conn)),
+          base::BindRepeating(&GPMEnclaveController::OnAccountStateKeepAlive,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GPMEnclaveController::OnAccountStateKeepAlive() {
+  account_state_timeout_->Reset();
 }
 
 void GPMEnclaveController::OnAccountStateTimeOut() {

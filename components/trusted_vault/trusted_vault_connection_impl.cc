@@ -355,13 +355,15 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
       TrustedVaultConnection::
-          DownloadAuthenticationFactorsRegistrationStateCallback callback)
+          DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback)
       : security_domain_(security_domain),
         base_url_(request_url),
         account_id_(account_id),
         url_loader_factory_(std::move(url_loader_factory)),
         access_token_fetcher_(std::move(access_token_fetcher)),
-        callback_(std::move(callback)) {
+        callback_(std::move(callback)),
+        keep_alive_callback_(std::move(keep_alive_callback)) {
     result_.state =
         DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
     StartOrContinueRequest();
@@ -486,6 +488,9 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
 
     if (!response.next_page_token().empty()) {
       StartOrContinueRequest(&response.next_page_token());
+      if (keep_alive_callback_) {
+        keep_alive_callback_.Run();
+      }
       return;
     }
 
@@ -507,6 +512,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
   const std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
   TrustedVaultConnection::DownloadAuthenticationFactorsRegistrationStateCallback
       callback_;
+  base::RepeatingClosure keep_alive_callback_;
   std::unique_ptr<TrustedVaultRequest> request_;
   DownloadAuthenticationFactorsRegistrationStateResult result_;
 };
@@ -649,13 +655,15 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
     const CoreAccountInfo& account_info,
-    DownloadAuthenticationFactorsRegistrationStateCallback callback) {
+    DownloadAuthenticationFactorsRegistrationStateCallback callback,
+    base::RepeatingClosure keep_alive_callback) {
   return std::make_unique<
       DownloadAuthenticationFactorsRegistrationStateRequest>(
       security_domain_,
       GetGetSecurityDomainMembersURL(trusted_vault_service_url_),
       account_info.account_id, GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_->Clone(), std::move(callback));
+      access_token_fetcher_->Clone(), std::move(callback),
+      std::move(keep_alive_callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
