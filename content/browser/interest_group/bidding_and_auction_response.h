@@ -59,6 +59,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
     std::optional<std::string> ad_metadata;
     std::optional<std::string> buyer_reporting_id;
     std::optional<std::string> buyer_and_seller_reporting_id;
+    std::optional<std::string> selected_buyer_and_seller_reporting_id;
   };
 
   struct CONTENT_EXPORT KAnonGhostWinner {

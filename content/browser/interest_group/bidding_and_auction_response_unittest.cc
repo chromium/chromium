@@ -71,6 +71,9 @@ std::ostream& operator<<(
      << testing::PrintToString(winner.buyer_reporting_id) << ", ";
   os << "buyer_and_seller_reporting_id: "
      << testing::PrintToString(winner.buyer_and_seller_reporting_id) << ")";
+  os << "selected_buyer_and_seller_reporting_id: "
+     << testing::PrintToString(winner.selected_buyer_and_seller_reporting_id)
+     << ")";
   return os;
 }
 
@@ -401,7 +404,12 @@ MATCHER_P(EqualsGhostWinnerForTopLevelAuction,
               "buyer_and_seller_reporting_id",
               &BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
                   buyer_and_seller_reporting_id,
-              testing::Eq(other.get().buyer_and_seller_reporting_id))),
+              testing::Eq(other.get().buyer_and_seller_reporting_id)),
+          testing::Field(
+              "selected_buyer_and_seller_reporting_id",
+              &BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction::
+                  selected_buyer_and_seller_reporting_id,
+              testing::Eq(other.get().selected_buyer_and_seller_reporting_id))),
       std::move(arg), result_listener);
 }
 
@@ -1915,6 +1923,19 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           CreateExpectedValidResponse(),
       },
       {
+          // Invalid selectedBuyerAndSellerReportingId type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("selectedBuyerAndSellerReportingId", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
           // Everything all together correct
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
@@ -1930,7 +1951,9 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                           .Set("bidCurrency", "USD")
                           .Set("adMetadata", "meta")
                           .Set("buyerReportingId", "bId")
-                          .Set("buyerAndSellerReportingId", "basId")))))),
+                          .Set("buyerAndSellerReportingId", "basId")
+                          .Set("selectedBuyerAndSellerReportingId",
+                               "sbasId")))))),
           [&]() {
             auto response = CreateMinimalkAnonGhostWinnersServerResponse();
             response.k_anon_ghost_winner->ghost_winner.emplace();
@@ -1948,6 +1971,8 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                 "bId";
             response.k_anon_ghost_winner->ghost_winner
                 ->buyer_and_seller_reporting_id = "basId";
+            response.k_anon_ghost_winner->ghost_winner
+                ->selected_buyer_and_seller_reporting_id = "sbasId";
             return response;
           }(),
       },

@@ -542,6 +542,19 @@ BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
     result.buyer_and_seller_reporting_id =
         std::move(*buyer_and_seller_reporting_id);
   }
+
+  base::Value* selected_buyer_and_seller_reporting_id_value =
+      ghost_winner_for_top_level_auction.Find(
+          "selectedBuyerAndSellerReportingId");
+  if (selected_buyer_and_seller_reporting_id_value) {
+    std::string* selected_buyer_and_seller_reporting_id =
+        selected_buyer_and_seller_reporting_id_value->GetIfString();
+    if (!selected_buyer_and_seller_reporting_id) {
+      return std::nullopt;
+    }
+    result.selected_buyer_and_seller_reporting_id =
+        std::move(*selected_buyer_and_seller_reporting_id);
+  }
   return result;
 }
 
