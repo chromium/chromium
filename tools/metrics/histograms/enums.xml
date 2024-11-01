@@ -17108,7 +17108,6 @@ from previous Chrome versions.
   <int value="-1260211490" label="FastPairLowPower:disabled"/>
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259809702" label="Enable16Desks:enabled"/>
-  <int value="-1259627326" label="AllowRepeatedUpdates:disabled"/>
   <int value="-1258793847" label="MagicStackAndroid:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
@@ -20365,7 +20364,6 @@ from previous Chrome versions.
   <int value="75207621" label="enable-stylus-virtual-keyboard:enabled"/>
   <int value="75237697" label="ash-enable-new-overview-ui"/>
   <int value="75747474" label="disable-webview-signin-flow"/>
-  <int value="77886794" label="AllowRepeatedUpdates:enabled"/>
   <int value="77946316" label="PrefixWebAppWindowsWithAppName:disabled"/>
   <int value="78296348" label="TaskManagerClank:enabled"/>
   <int value="78781399" label="AppDeduplicationServiceFondue:disabled"/>

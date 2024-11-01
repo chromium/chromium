@@ -54,11 +54,6 @@ BASE_FEATURE(kAllowCrossDeviceFeatureSuite,
              "AllowCrossDeviceFeatureSuite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether devices are updated before reboot after the first update.
-BASE_FEATURE(kAllowRepeatedUpdates,
-             "AllowRepeatedUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Always reinstall system web apps, instead of only doing so after version
 // upgrade or locale changes.
 BASE_FEATURE(kAlwaysReinstallSystemWebApps,
