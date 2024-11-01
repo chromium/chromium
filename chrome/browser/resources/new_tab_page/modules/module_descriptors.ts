@@ -9,7 +9,6 @@
 import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
-import {driveDescriptor} from './drive/module.js';
 import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {googleCalendarDescriptor} from './v2/calendar/google_calendar_module.js';
@@ -24,8 +23,7 @@ import {mostRelevantTabResumptionDescriptor} from './v2/most_relevant_tab_resump
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
-descriptors.push(
-    modulesRedesignedEnabled ? driveModuleV2Descriptor : driveDescriptor);
+descriptors.push(driveModuleV2Descriptor);
 descriptors.push(sharepointModuleDescriptor);
 descriptors.push(mostRelevantTabResumptionDescriptor);
 descriptors.push(googleCalendarDescriptor);

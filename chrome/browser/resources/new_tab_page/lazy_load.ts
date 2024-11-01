@@ -20,8 +20,6 @@ export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
 export {MobilePromoElement} from './mobile_promo.js';
-export {FileProxy} from './modules/drive/file_module_proxy.js';
-export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
@@ -41,6 +39,7 @@ export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/v2/dummy/module.js';
 // </if>
 export {DriveModuleElement as DriveModuleV2Element, driveModuleV2Descriptor} from './modules/v2/file_suggestion/drive_module.js';
+export {FileProxy} from './modules/v2/file_suggestion/file_module_proxy.js';
 export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestion.js';
 export {sharepointModuleDescriptor, SharepointModuleElement} from './modules/v2/file_suggestion/sharepoint_module.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';

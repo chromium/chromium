@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FileSuggestionHandlerRemote} from '../../file_suggestion.mojom-webui.js';
-import {FileSuggestionHandler} from '../../file_suggestion.mojom-webui.js';
+import type {FileSuggestionHandlerRemote} from '../../../file_suggestion.mojom-webui.js';
+import {FileSuggestionHandler} from '../../../file_suggestion.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler

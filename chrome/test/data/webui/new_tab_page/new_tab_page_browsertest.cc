@@ -136,10 +136,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, OutlookCalendarModule) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModule) {
-  RunTest("new_tab_page/modules/drive/module_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModuleV2) {
   RunTest("new_tab_page/modules/v2/file_suggestion/drive_module_test.js",
           "mocha.run()");
