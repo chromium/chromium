@@ -36,8 +36,7 @@ unsigned PropertyHandle::GetHash() const {
     case kHandleSVGAttribute:
       return WTF::GetHash(*svg_attribute_);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

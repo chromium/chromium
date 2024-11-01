@@ -33,8 +33,7 @@ class ImageListPropertyFunctions {
         fill_layer = &style.MaskLayers();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
 
     result->clear();
@@ -56,8 +55,7 @@ class ImageListPropertyFunctions {
         fill_layer = &builder.AccessMaskLayers();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
 
     FillLayer* prev = nullptr;

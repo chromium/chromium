@@ -108,8 +108,7 @@ bool ConsiderAnimationAsIncompatible(const Animation& animation,
       }
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -244,9 +243,8 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
       // target node - the effect namespace.
       return CompositorElementIdNamespace::kPrimaryEffect;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return CompositorElementIdNamespace::kPrimary;
 }
 
 CompositorAnimations::FailureReasons
@@ -819,8 +817,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
           out.fill_mode = Timing::FillMode::FORWARDS;
           break;
         case Timing::FillMode::AUTO:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else {
       switch (out.fill_mode) {
@@ -834,8 +831,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
           out.fill_mode = Timing::FillMode::BACKWARDS;
           break;
         case Timing::FillMode::AUTO:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -1060,9 +1056,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
                 cc::TargetProperty::TRANSFORM);
             break;
           default:
-            NOTREACHED_IN_MIGRATION()
-                << "only possible cases for nested switch";
-            break;
+            NOTREACHED() << "only possible cases for nested switch";
         }
         break;
       }
@@ -1107,8 +1101,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
     }
     DCHECK(curve.get());
     DCHECK(target_property_id.has_value());

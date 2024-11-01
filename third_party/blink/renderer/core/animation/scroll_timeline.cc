@@ -214,8 +214,7 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
   }
 
   if (!node) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   if (node->IsElementNode()) {
@@ -225,8 +224,7 @@ Element* ScrollTimeline::ComputeSourceNoLayout() const {
     return DynamicTo<Document>(node)->ScrollingElementNoLayout();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {

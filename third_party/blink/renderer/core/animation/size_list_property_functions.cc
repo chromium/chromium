@@ -16,8 +16,7 @@ static const FillLayer* GetFillLayerForSize(const CSSProperty& property,
     case CSSPropertyID::kMaskSize:
       return &style.MaskLayers();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -29,8 +28,7 @@ static FillLayer* AccessFillLayerForSize(const CSSProperty& property,
     case CSSPropertyID::kMaskSize:
       return &builder.AccessMaskLayers();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

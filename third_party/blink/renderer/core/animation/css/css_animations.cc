@@ -904,8 +904,7 @@ ScrollTimeline::ScrollAxis ComputeAxis(TimelineAxis axis) {
       return ScrollTimeline::ScrollAxis::kY;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ScrollTimeline::ScrollAxis::kBlock;
+  NOTREACHED();
 }
 
 // The CSSScrollTimelineOptions and CSSViewTimelineOptions structs exist
@@ -1729,7 +1728,7 @@ void CSSAnimations::CalculateAnimationUpdate(
 
             default:
               // kUnset and kPending.
-              NOTREACHED_IN_MIGRATION();
+              NOTREACHED();
           }
         } else if (!animation->GetIgnoreCSSPlayState()) {
           will_be_playing =

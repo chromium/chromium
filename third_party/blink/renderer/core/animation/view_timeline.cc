@@ -186,8 +186,7 @@ Length InsetValueToLength(const CSSValue* inset_value,
         ->ConvertToLength(length_conversion_data);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return Length(Length::Type::kAuto);
+  NOTREACHED();
 }
 
 enum class StickinessRange {

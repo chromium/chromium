@@ -1082,7 +1082,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (old_current_time && old_timeline &&
              !old_timeline->IsMonotonicallyIncreasing()) {
@@ -2015,7 +2015,7 @@ void Animation::updatePlaybackRate(double playback_rate,
       break;
 
     case V8AnimationPlayState::Enum::kPending:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -2589,7 +2589,7 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (snapshot_changed || needs_new_start_time || range_changed) {

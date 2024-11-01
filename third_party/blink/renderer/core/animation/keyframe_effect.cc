@@ -788,8 +788,7 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       }
       return local_time.value() - after_time;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return AnimationTimeDelta::Max();
+      NOTREACHED();
   }
 }
 

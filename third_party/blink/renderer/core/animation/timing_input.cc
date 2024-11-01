@@ -120,8 +120,7 @@ Timing TimingInput::Convert(
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return Timing();
+  NOTREACHED();
 }
 
 Timing TimingInput::Convert(
@@ -151,8 +150,7 @@ Timing TimingInput::Convert(
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return Timing();
+  NOTREACHED();
 }
 
 template <class InputTiming>

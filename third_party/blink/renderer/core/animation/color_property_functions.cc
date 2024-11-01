@@ -60,8 +60,7 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
     case CSSPropertyID::kTextDecorationColor:
       return OptionalStyleColor(style.TextDecorationColor());
     default:
-      NOTREACHED_IN_MIGRATION();
-      return OptionalStyleColor();
+      NOTREACHED();
   }
 }
 
@@ -119,8 +118,7 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
     case CSSPropertyID::kTextDecorationColor:
       return OptionalStyleColor(style.InternalVisitedTextDecorationColor());
     default:
-      NOTREACHED_IN_MIGRATION();
-      return OptionalStyleColor();
+      NOTREACHED();
   }
 }
 
@@ -184,8 +182,7 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       builder.SetTextStrokeColor(style_color);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -244,8 +241,7 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       builder.SetInternalVisitedTextStrokeColor(style_color);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

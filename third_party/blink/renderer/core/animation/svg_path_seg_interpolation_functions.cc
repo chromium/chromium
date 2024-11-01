@@ -341,8 +341,7 @@ InterpolableValue* SVGPathSegInterpolationFunctions::ConsumePathSeg(
 
     case kPathSegUnknown:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -389,8 +388,7 @@ PathSegmentData SVGPathSegInterpolationFunctions::ConsumeInterpolablePathSeg(
 
     case kPathSegUnknown:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PathSegmentData();
+      NOTREACHED();
   }
 }
 

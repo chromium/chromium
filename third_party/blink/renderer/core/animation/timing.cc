@@ -61,8 +61,7 @@ String Timing::PlaybackDirectionString(PlaybackDirection playback_direction) {
     case PlaybackDirection::ALTERNATE_REVERSE:
       return "alternate-reverse";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "normal";
+  NOTREACHED();
 }
 
 Timing::FillMode Timing::ResolvedFillMode(bool is_keyframe_effect) const {

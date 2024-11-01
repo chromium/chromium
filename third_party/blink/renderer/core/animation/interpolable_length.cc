@@ -123,8 +123,7 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
     case CSSValueID::kContent:  // only valid for flex-basis.
       return Length::Type::kContent;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Length::Type::kFixed;
+      NOTREACHED();
   }
 }
 
@@ -374,8 +373,7 @@ bool InterpolableLength::HasPercentage() const {
     case Type::kExpression:
       return expression_->HasPercentage();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void InterpolableLength::SetHasPercentage() {

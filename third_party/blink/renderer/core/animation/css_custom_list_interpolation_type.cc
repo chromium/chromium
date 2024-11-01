@@ -112,15 +112,14 @@ const CSSValue* CSSCustomListInterpolationType::CreateCSSValue(
   CSSValueList* list = nullptr;
 
   switch (syntax_repeat_) {
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case CSSSyntaxRepeat::kSpaceSeparated:
       list = CSSValueList::CreateSpaceSeparated();
       break;
     case CSSSyntaxRepeat::kCommaSeparated:
       list = CSSValueList::CreateCommaSeparated();
       break;
+    default:
+      NOTREACHED();
   }
 
   DCHECK(!non_interpolable_list ||

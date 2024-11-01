@@ -102,8 +102,7 @@ Vector<std::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
       return result;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 struct ParsedOffset {
@@ -213,8 +212,7 @@ std::optional<ParsedOffset> ParseOffset(Document& document,
 
   // If calling using a PropertyIndexKeyframe, we must already have handled
   // sequences.
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void SetKeyframeOffset(Keyframe& keyframe, ParsedOffset& offset) {
