@@ -406,6 +406,60 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
   return url_data;
 }
 
+std::vector<UrlPassagesEmbeddings> SqlDatabase::GetUrlDataInTimeRange(
+    base::Time from_time,
+    base::Time to_time,
+    size_t limit,
+    size_t offset) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return {};
+  }
+
+  constexpr char kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange[] =
+      "SELECT passages.url_id, passages.visit_id, passages.visit_time, "
+      "passages.passages_blob, embeddings.embeddings_blob "
+      "FROM passages "
+      "INNER JOIN embeddings ON passages.url_id = embeddings.url_id "
+      "WHERE passages.visit_time >= ? AND passages.visit_time < ? "
+      "ORDER BY passages.visit_time LIMIT ? OFFSET ?";
+  DCHECK(db_.IsSQLValid(kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange));
+  statement.BindTime(0, from_time);
+  statement.BindTime(1, to_time);
+  statement.BindInt(2, static_cast<int>(limit));
+  statement.BindInt(3, static_cast<int>(offset));
+
+  std::vector<UrlPassagesEmbeddings> url_datas;
+  while (statement.Step()) {
+    history::URLID url_id = statement.ColumnInt64(0);
+    history::VisitID visit_id = statement.ColumnInt64(1);
+    base::Time visit_time = statement.ColumnTime(2);
+    UrlPassagesEmbeddings& url_data =
+        url_datas.emplace_back(url_id, visit_id, visit_time);
+
+    std::optional<proto::PassagesValue> passages =
+        PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
+    if (passages.has_value()) {
+      url_data.url_passages.passages = std::move(passages.value());
+    }
+
+    proto::EmbeddingsValue value;
+    base::span<const uint8_t> embeddings_blob = statement.ColumnBlob(4);
+    if (value.ParseFromArray(embeddings_blob.data(), embeddings_blob.size())) {
+      for (const proto::EmbeddingVector& vector : value.vectors()) {
+        url_data.url_embeddings.embeddings.emplace_back(
+            std::vector(vector.floats().cbegin(), vector.floats().cend()),
+            vector.passage_word_count());
+      }
+    }
+  }
+
+  return url_datas;
+}
+
 std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -217,6 +217,25 @@ class HistoryEmbeddingsService : public KeyedService,
   // This can be overridden to gate answer generation for some accounts.
   virtual bool IsAnswererUseAllowed() const;
 
+  // Asynchronously gets passages and embeddings from storage for given
+  // `url_id`. Calls `callback` with the data or nullopt if no data is found in
+  // the HistoryEmbeddings database.
+  void GetUrlData(history::URLID url_id,
+                  base::OnceCallback<void(std::optional<UrlPassagesEmbeddings>)>
+                      callback) const;
+
+  // Asynchronously gets passages and embeddings from storage where visits
+  // are within a given time range. Calls `callback` with the data.
+  // The `limit` and `offset` can be used to control data range with
+  // standard SQL style paging.
+  void GetUrlDataInTimeRange(
+      base::Time from_time,
+      base::Time to_time,
+      size_t limit,
+      size_t offset,
+      base::OnceCallback<void(std::vector<UrlPassagesEmbeddings>)> callback)
+      const;
+
  private:
   friend class HistoryEmbeddingsBrowserTest;
   friend class HistoryEmbeddingsServicePublic;
@@ -261,6 +280,14 @@ class HistoryEmbeddingsService : public KeyedService,
     // Retrieves passages and embeddings from the database for use as a cache
     // to avoid recomputing embeddings that exist for identical passages.
     std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
+
+    // Retrieves passages and embeddings from the database that have visit times
+    // within specified range.
+    std::vector<UrlPassagesEmbeddings> GetUrlDataInTimeRange(
+        base::Time from_time,
+        base::Time to_time,
+        size_t limit,
+        size_t offset);
 
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;

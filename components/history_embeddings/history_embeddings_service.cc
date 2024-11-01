@@ -749,8 +749,37 @@ HistoryEmbeddingsService::Storage::GetUrlData(history::URLID url_id) {
   return sql_database.GetUrlData(url_id);
 }
 
+std::vector<UrlPassagesEmbeddings>
+HistoryEmbeddingsService::Storage::GetUrlDataInTimeRange(base::Time from_time,
+                                                         base::Time to_time,
+                                                         size_t limit,
+                                                         size_t offset) {
+  return sql_database.GetUrlDataInTimeRange(from_time, to_time, limit, offset);
+}
+
 bool HistoryEmbeddingsService::IsAnswererUseAllowed() const {
   return true;
+}
+
+void HistoryEmbeddingsService::GetUrlData(
+    history::URLID url_id,
+    base::OnceCallback<void(std::optional<UrlPassagesEmbeddings>)> callback)
+    const {
+  storage_.AsyncCall(&Storage::GetUrlData)
+      .WithArgs(url_id)
+      .Then(std::move(callback));
+}
+
+void HistoryEmbeddingsService::GetUrlDataInTimeRange(
+    base::Time from_time,
+    base::Time to_time,
+    size_t limit,
+    size_t offset,
+    base::OnceCallback<void(std::vector<UrlPassagesEmbeddings>)> callback)
+    const {
+  storage_.AsyncCall(&Storage::GetUrlDataInTimeRange)
+      .WithArgs(from_time, to_time, limit, offset)
+      .Then(std::move(callback));
 }
 
 QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
