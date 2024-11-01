@@ -287,7 +287,7 @@ MediaRecorderHandler::MediaRecorderHandler(
 
 bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                                               const String& web_codecs) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   // An empty |type| means MediaRecorderHandler can choose its preferred codecs.
   if (type.empty())
     return true;
@@ -445,7 +445,7 @@ bool MediaRecorderHandler::Initialize(
     const String& type,
     const String& codecs,
     AudioTrackRecorder::BitrateMode audio_bitrate_mode) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   // Save histogram data so we can see how much MediaStream Recorder is used.
   // The histogram counts the number of calls to the JS API.
   UpdateWebRTCMethodCount(RTCAPIName::kMediaStreamRecorder);
@@ -502,7 +502,7 @@ bool MediaRecorderHandler::Start(int timeslice,
                                  const String& type,
                                  uint32_t audio_bits_per_second,
                                  uint32_t video_bits_per_second) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!recording_);
   DCHECK(media_stream_);
   DCHECK(timeslice_.is_zero());
@@ -647,7 +647,7 @@ bool MediaRecorderHandler::Start(int timeslice,
 }
 
 void MediaRecorderHandler::Stop() {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   // Don't check |recording_| since we can go directly from pause() to stop().
 
   // TODO(crbug.com/719023): The video recorder needs to be flushed to retrieve
@@ -672,7 +672,7 @@ void MediaRecorderHandler::Stop() {
 }
 
 void MediaRecorderHandler::Pause() {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(recording_);
   recording_ = false;
   for (const auto& video_recorder : video_recorders_)
@@ -685,7 +685,7 @@ void MediaRecorderHandler::Pause() {
 }
 
 void MediaRecorderHandler::Resume() {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!recording_);
   recording_ = true;
   for (const auto& video_recorder : video_recorders_)
@@ -700,7 +700,7 @@ void MediaRecorderHandler::Resume() {
 void MediaRecorderHandler::EncodingInfo(
     const WebMediaConfiguration& configuration,
     OnMediaCapabilitiesEncodingInfoCallback callback) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(configuration.video_configuration ||
          configuration.audio_configuration);
 
@@ -753,7 +753,7 @@ void MediaRecorderHandler::EncodingInfo(
 }
 
 String MediaRecorderHandler::ActualMimeType() {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(recorder_) << __func__ << " should be called after Initialize()";
 
   const bool has_video_tracks = media_stream_->NumberOfVideoComponents();
@@ -883,7 +883,7 @@ void MediaRecorderHandler::OnEncodedVideo(
     scoped_refptr<media::DecoderBuffer> encoded_data,
     std::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   if (encoded_data->empty()) {
     // An encoder drops a frame. This can happen with VideoToolBox encoder as
@@ -934,7 +934,7 @@ void MediaRecorderHandler::OnPassthroughVideo(
     const media::Muxer::VideoParameters& params,
     scoped_refptr<media::DecoderBuffer> encoded_data,
     base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   // Update |video_codec_profile_| so that ActualMimeType() works.
   video_codec_profile_.codec_id = CodecIdFromMediaVideoCodec(params.codec);
@@ -946,7 +946,7 @@ void MediaRecorderHandler::HandleEncodedVideo(
     scoped_refptr<media::DecoderBuffer> encoded_data,
     std::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   if (!last_seen_codec_.has_value())
     last_seen_codec_ = params.codec;
@@ -974,7 +974,7 @@ void MediaRecorderHandler::OnEncodedAudio(
     scoped_refptr<media::DecoderBuffer> encoded_data,
     std::optional<media::AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   if (!muxer_adapter_) {
     return;
@@ -989,14 +989,14 @@ void MediaRecorderHandler::OnEncodedAudio(
 
 void MediaRecorderHandler::OnAudioEncodingError(
     media::EncoderStatus error_status) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   recorder_->OnError(DOMExceptionCode::kEncodingError,
                      String(media::EncoderStatusCodeToString(error_status)));
 }
 
 std::unique_ptr<media::VideoEncoderMetricsProvider>
 MediaRecorderHandler::CreateVideoEncoderMetricsProvider() {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   mojo::PendingRemote<media::mojom::VideoEncoderMetricsProvider>
       video_encoder_metrics_provider;
   recorder_->DomWindow()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
@@ -1008,7 +1008,7 @@ MediaRecorderHandler::CreateVideoEncoderMetricsProvider() {
 }
 
 void MediaRecorderHandler::WriteData(base::span<const uint8_t> data) {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DVLOG(3) << __func__ << " " << data.size() << "B";
 
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -1022,7 +1022,7 @@ void MediaRecorderHandler::WriteData(base::span<const uint8_t> data) {
 }
 
 void MediaRecorderHandler::UpdateTracksLiveAndEnabled() {
-  DCHECK(IsMainThread());
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   if (!video_tracks_.empty()) {
     UpdateTrackLiveAndEnabled(*video_tracks_[0], /*is_video=*/true);

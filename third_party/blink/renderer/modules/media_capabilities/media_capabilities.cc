@@ -1141,13 +1141,17 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   DCHECK_EQ(config->type(), "record");
   DCHECK(RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled());
 
+  auto task_runner = resolver->GetExecutionContext()->GetTaskRunner(
+      TaskType::kInternalMediaRealTime);
   if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
-          resolver->GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime),
-          KeyFrameRequestProcessor::Configuration())) {
-    handler->EncodingInfo(ToWebMediaConfiguration(config),
-                          WTF::BindOnce(&OnMediaCapabilitiesEncodingInfo,
-                                        WrapPersistent(resolver)));
+          task_runner, KeyFrameRequestProcessor::Configuration())) {
+    task_runner->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&MediaRecorderHandler::EncodingInfo, WrapPersistent(handler),
+                      ToWebMediaConfiguration(config),
+                      WTF::BindOnce(&OnMediaCapabilitiesEncodingInfo,
+                                    WrapPersistent(resolver))));
+
     return promise;
   }
 
