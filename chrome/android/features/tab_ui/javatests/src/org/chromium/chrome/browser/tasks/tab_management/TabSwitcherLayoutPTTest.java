@@ -170,6 +170,7 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @Feature({"RenderTest"})
     @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
+    @RequiresRestart("Disable batching while re-enabling other tests")
     public void testRenderGrid_3WebTabs() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         WebPageStation pageStation =
@@ -249,6 +250,7 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @Feature({"RenderTest"})
     @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
+    @RequiresRestart("Disable batching while re-enabling other tests")
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
@@ -272,9 +274,9 @@ public class TabSwitcherLayoutPTTest {
         mRenderTestRule.render(
                 cta.findViewById(R.id.pane_frame), "1_tab_group_GTS_card_item_color_icon");
 
-        WebPageStation previousPage =
-                tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
-        assertFinalDestination(previousPage);
+        secondPage =
+                tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(secondPage);
     }
 
     @Test
