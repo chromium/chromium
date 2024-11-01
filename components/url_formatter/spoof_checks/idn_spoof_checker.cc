@@ -155,8 +155,8 @@ IDNSpoofChecker::HuffmanTrieParams g_trie_params{
 // Allow these common words that are whole script confusables. They aren't
 // confusable with any words in Latin scripts.
 const char16_t* kAllowedWholeScriptConfusableWords[] = {
-    u"секс",  u"как",   u"коса",    u"курс",    u"парк",
-    u"такий", u"укроп", u"сахарок", u"покраска"};
+    u"секс",  u"как",     u"коса",     u"курс",  u"парк",  u"такий",
+    u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет"};
 
 }  // namespace
 
@@ -231,7 +231,7 @@ IDNSpoofChecker::IDNSpoofChecker() {
        {"am"}},
       {// Cyrillic
        "[[:Cyrl:]]",
-       "[аысԁеԍһіюкјӏорԗԛѕԝхуъьҽпгѵѡ]",
+       "[аысԁеԍһіюкјӏорԗԛѕтԝхуъьҽпгѵѡ]",
        // TLDs containing most of the Cyrillic domains.
        {"bg", "by", "kz", "pyc", "ru", "su", "ua", "uz"}},
       {// Ethiopic (Ge'ez). Variants of these characters such as ሁ and ሡ could

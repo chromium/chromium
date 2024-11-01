@@ -352,6 +352,8 @@ const IDNTestCase kIdnCases[] = {
     {"xn--j1amdg.com", u"\u043a\u0443\u0440\u0441.com", kSafe},
     // ск.com is a whole-script-confusable.
     {"xn--j1an.com", u"\u0441\u043a.com", kUnsafe},
+    // теѕт.com is a whole-script-confusable.
+    {"xn--e1azb9e.com", u"\u0442\u0435\u0455\u0442.com", kUnsafe},
 
     // The same as above three, but in IDN TLD (рф).
     // 1) ѕсоре.рф with ѕсоре in Cyrillic.
@@ -400,7 +402,7 @@ const IDNTestCase kIdnCases[] = {
     {"xn--q1a0a.com", u"\u0441\u044e.com", kUnsafe},
 
     // Regression test for lowercase letters in whole script confusable
-    // lookalike character lists.
+    // lookalike character lists (аьс.com).
     {"xn--80a8a6a.com", u"\u0430\u044c\u0441.com", kUnsafe},
 
     // googlе.한국 where е is Cyrillic. This tests the generic case when one
