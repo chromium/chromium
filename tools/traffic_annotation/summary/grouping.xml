@@ -361,6 +361,7 @@ after discussions on the right group.
       <annotation id="ash_babelorca_babel_orca_consumer"/>
       <annotation id="chromeos_scanner"/>
       <annotation id="lens_overlay_languages"/>
+      <annotation id="demo_login_controller_account_clean_up"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

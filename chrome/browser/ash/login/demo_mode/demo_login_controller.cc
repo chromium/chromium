@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -43,6 +44,7 @@ constexpr char kDemoAccountAuthCode[] = "authorizationCode";
 
 constexpr char kDemoModeServerUrl[] = "https://demomode-pa.googleapis.com";
 constexpr char kSetupDemoAccountEndpoint[] = "v1/accounts";
+constexpr char kCleanUpDemoAccountEndpoint[] = "v1/accounts:remove";
 constexpr char kApiKeyParam[] = "key";
 const char kContentTypeJSON[] = "application/json";
 // Request involves creating new account on server side. Setting a longer
@@ -54,11 +56,12 @@ const char kDeviceIdentifier[] = "device_identifier";
 // Attestation based device identifier.
 const char kDeviceADID[] = "cros_adid";
 const char kLoginScopeDeviceId[] = "login_scope_device_id";
+const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+constexpr net::NetworkTrafficAnnotationTag kSetupAccountTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("demo_login_controller", R"(
           semantics: {
             sender: "ChromeOS Demo mode"
@@ -82,7 +85,39 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             cookies_store: "user"
             setting:
               "You could enable or disable this feature via command line flag."
-              "This feature is diabled by default."
+              "This feature is disabled by default."
+            policy_exception_justification:
+              "Not implemented."
+          })");
+
+constexpr net::NetworkTrafficAnnotationTag kCleanUpTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "demo_login_controller_account_clean_up",
+        R"(
+          semantics: {
+            sender: "ChromeOS Demo mode"
+            description:
+              "Clean up demo account logged in last session."
+            trigger: "When login screen shown and demo mode sign in experience"
+                     " is enabled."
+            data: "The account id and device id to be clean up."
+            destination: GOOGLE_OWNED_SERVICE
+            internal {
+              contacts {
+                email: "cros-demo-mode-eng@google.com"
+              }
+            }
+            user_data {
+              type: DEVICE_ID
+              type: GAIA_ID
+            }
+            last_reviewed: "2024-10-30"
+          }
+          policy: {
+            cookies_allowed: NO
+            setting:
+              "You could enable or disable this feature via command line flag."
+              "This feature is disabled by default."
             policy_exception_justification:
               "Not implemented."
           })");
@@ -99,9 +134,8 @@ GURL GetDemoModeServerBaseUrl() {
           : kDemoModeServerUrl);
 }
 
-GURL GetSetupDemoAccountUrl() {
-  GURL setup_url =
-      GetDemoModeServerBaseUrl().Resolve(kSetupDemoAccountEndpoint);
+GURL GetDemoAccountUrl(const std::string& endpoint) {
+  GURL setup_url = GetDemoModeServerBaseUrl().Resolve(endpoint);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const std::string api_key =
       command_line->HasSwitch(switches::kDemoModeServerAPIKey)
@@ -122,7 +156,7 @@ std::string GenerateSigninScopedDeviceId() {
 void LoginDemoAccount(const std::string& email,
                       const std::string& gaia_id,
                       const std::string& auth_code,
-                      const std::string& device_id) {
+                      const std::string& sign_in_scoped_device_id) {
   // TODO(crbug.com/364195755): Allow list this user in CrosSetting when the
   // request is success.
   const AccountId account_id =
@@ -140,13 +174,89 @@ void LoginDemoAccount(const std::string& email,
           /*sync_trusted_vault_keys=*/std::nullopt,
           /*challenge_response_key=*/std::nullopt);
   user_context->SetAuthCode(auth_code);
-  user_context->SetDeviceId(device_id);
+  user_context->SetDeviceId(sign_in_scoped_device_id);
 
   // Enforced auto-login for given account creds.
   auto* login_display_host = LoginDisplayHost::default_host();
   CHECK(login_display_host);
   login_display_host->SkipPostLoginScreensForDemoMode();
   login_display_host->CompleteLogin(*user_context);
+}
+
+std::unique_ptr<network::SimpleURLLoader> CreateDemoAccountURLLoader(
+    const GURL& url,
+    net::NetworkTrafficAnnotationTag annotation) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = url;
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+
+  return network::SimpleURLLoader::Create(std::move(resource_request),
+                                          annotation);
+}
+
+// Send demo account related http requests to server. i.e. setup request,
+// cleanup request.
+void SendDemoAccountRequest(
+    const base::Value::Dict& post_data,
+    network::SimpleURLLoader* url_loader,
+    base::OnceCallback<void(std::unique_ptr<std::string> response_body)>
+        callback) {
+  url_loader->SetAllowHttpErrorResults(true);
+  url_loader->SetRetryOptions(
+      3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
+  std::string request_string;
+  CHECK(base::JSONWriter::Write(post_data, &request_string));
+  url_loader->AttachStringForUpload(request_string, kContentTypeJSON);
+  url_loader->SetTimeoutDuration(kDemoAccountRequestTimeout);
+  url_loader->DownloadToString(GetUrlLoaderFactory().get(), std::move(callback),
+                               kMaxResponseSize);
+}
+
+DemoLoginController::ResultCode GetDemoAccountRequestResult(
+    network::SimpleURLLoader* url_loader,
+    const std::string& response_body) {
+  if (url_loader->NetError() != net::OK) {
+    // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
+    // connection error) and fallback to MGS.
+    return DemoLoginController::ResultCode::kNetworkError;
+  }
+  auto hasHeaders =
+      url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers;
+  int response_code = -1;
+  if (hasHeaders) {
+    response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
+
+  if (response_body.empty()) {
+    return DemoLoginController::ResultCode::kEmptyReponse;
+  }
+
+  // A request was successful if there is response body and the response code is
+  // 2XX.
+  bool is_success = response_code >= 200 && response_code < 300;
+  return is_success ? DemoLoginController::ResultCode::kSuccess
+                    : DemoLoginController::ResultCode::kRequestFailed;
+}
+
+void OnCleanUpDemoAccountError(
+    const DemoLoginController::ResultCode result_code) {
+  // TODO(crbug.com/364214790): Record metric for the failure.
+  LOG(ERROR) << "Failed to clean up demo account. Result code: "
+             << static_cast<int>(result_code);
+}
+
+std::string GetDeviceADID() {
+  // TODO(crbug.com/372762477): Get device adid form enterprise. Temporary set
+  // as "0000" right now.
+  return "0000";
+}
+
+base::Value::Dict GetDeviceIdentifier(
+    const std::string& login_scope_device_id) {
+  return base::Value::Dict()
+      .Set(kDeviceADID, GetDeviceADID())
+      .Set(kLoginScopeDeviceId, login_scope_device_id);
 }
 
 }  // namespace
@@ -169,13 +279,10 @@ void DemoLoginController::OnLoginScreenShown() {
     return;
   }
 
-  // TODO(crbug.com/370806573): Implement account clean for backup on login
-  // screen in case the it fail on shutdown.
-
   // TODO(crbug.com/370806573): Skip auto login public account in
   // `ExistingUserController::StartAutoLoginTimer` if this feature enable
   // Maybe add a policy.
-  SendSetupDemoAccountRequest();
+  MaybeCleanupPreviousDemoAccount();
 }
 
 void DemoLoginController::SetSetupFailedCallbackForTest(
@@ -183,82 +290,49 @@ void DemoLoginController::SetSetupFailedCallbackForTest(
   setup_failed_callback_for_testing_ = std::move(callback);
 }
 
+void DemoLoginController::SetCleanUpFailedCallbackForTest(
+    base::OnceCallback<void(const ResultCode result_code)> callback) {
+  clean_up_failed_callback_for_testing_ = std::move(callback);
+}
+
 void DemoLoginController::SendSetupDemoAccountRequest() {
-  // We should not start a second request before current setup request finish.
-  if (setup_request_url_loader_) {
-    return;
-  }
+  CHECK(!url_loader_);
 
   // TODO(crbug.com/372333479): Demo server use auth the request with device
   // integrity check. Attach credential to the request once it is ready.
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(GetSetupDemoAccountUrl());
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
-  setup_request_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), kTrafficAnnotation);
-  setup_request_url_loader_->SetAllowHttpErrorResults(true);
-  setup_request_url_loader_->SetRetryOptions(
-      3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+  const auto sign_in_scoped_device_id = GenerateSigninScopedDeviceId();
+  auto post_data = base::Value::Dict().Set(
+      kDeviceIdentifier, GetDeviceIdentifier(sign_in_scoped_device_id));
+  url_loader_ =
+      CreateDemoAccountURLLoader(GetDemoAccountUrl(kSetupDemoAccountEndpoint),
+                                 kSetupAccountTrafficAnnotation);
 
-  auto post_data = base::Value::Dict();
-  // TODO(crbug.com/372762477): Get device adid form enterprise. Temporary set
-  // as "0000" right now.
-  const std::string device_id = GenerateSigninScopedDeviceId();
-  post_data.Set(kDeviceIdentifier, base::Value::Dict()
-                                       .Set(kDeviceADID, "0000")
-                                       .Set(kLoginScopeDeviceId, device_id));
-  std::string request_string;
-  CHECK(base::JSONWriter::Write(post_data, &request_string));
-  setup_request_url_loader_->AttachStringForUpload(request_string,
-                                                   kContentTypeJSON);
-  setup_request_url_loader_->SetTimeoutDuration(kDemoAccountRequestTimeout);
-  setup_request_url_loader_->DownloadToString(
-      GetUrlLoaderFactory().get(),
+  SendDemoAccountRequest(
+      post_data, url_loader_.get(),
       base::BindOnce(&DemoLoginController::OnSetupDemoAccountComplete,
-                     weak_ptr_factory_.GetWeakPtr(), device_id),
-      kMaxResponseSize);
+                     weak_ptr_factory_.GetWeakPtr(), sign_in_scoped_device_id));
 }
 
 void DemoLoginController::OnSetupDemoAccountComplete(
-    const std::string& device_id,
+    const std::string& sign_in_scoped_device_id,
     std::unique_ptr<std::string> response_body) {
-  if (setup_request_url_loader_->NetError() != net::OK) {
+  auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
+  url_loader_.reset();
+  if (result == ResultCode::kSuccess) {
+    HandleSetupDemoAcountResponse(sign_in_scoped_device_id,
+                                  std::move(response_body));
+  } else {
     // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
     // connection error) and fallback to MGS.
-    setup_request_url_loader_.reset();
-    OnSetupDemoAccountError(ResultCode::kNetworkError);
-    return;
+    OnSetupDemoAccountError(result);
   }
-
-  auto hasHeaders = setup_request_url_loader_->ResponseInfo() &&
-                    setup_request_url_loader_->ResponseInfo()->headers;
-  int response_code = -1;
-  if (hasHeaders) {
-    response_code =
-        setup_request_url_loader_->ResponseInfo()->headers->response_code();
-  }
-
-  // A request was successful if there is response body and the response code is
-  // 2XX.
-  bool is_success =
-      response_body && response_code >= 200 && response_code < 300;
-  if (is_success) {
-    HandleSetupDemoAcountResponse(device_id, *response_body);
-  } else if (!response_body) {
-    OnSetupDemoAccountError(ResultCode::kEmptyReponse);
-  } else {
-    // TODO(crbug.com/372333479): Instruct how to do retry on failed.
-    OnSetupDemoAccountError(ResultCode::kRequestFailed);
-  }
-  setup_request_url_loader_.reset();
 }
 
 void DemoLoginController::HandleSetupDemoAcountResponse(
-    const std::string& device_id,
-    const std::string& response_body) {
+    const std::string& sign_in_scoped_device_id,
+    const std::unique_ptr<std::string> response_body) {
   std::optional<base::Value::Dict> gaia_creds(
-      base::JSONReader::ReadDict(response_body));
-
+      base::JSONReader::ReadDict(*response_body));
   if (!gaia_creds) {
     OnSetupDemoAccountError(ResultCode::kResponseParsingError);
     return;
@@ -272,23 +346,66 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
     return;
   }
 
-  // TODO(crbug.com/370808139): Implement account clean up on next session
-  // start.
   auto* local_state = g_browser_process->local_state();
-  CHECK(local_state->GetString(prefs::kDemoAccountGaiaId).empty());
   local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
 
-  LoginDemoAccount(*email, *gaia_id, *auth_code, device_id);
+  LoginDemoAccount(*email, *gaia_id, *auth_code, sign_in_scoped_device_id);
 }
 
-// TODO(crbug.com/364214790): Handle Setup demo account errors.
 void DemoLoginController::OnSetupDemoAccountError(
     const DemoLoginController::ResultCode result_code) {
+  // TODO(crbug.com/372333479): Instruct how to do retry on failed according to
+  // the error code.
   LOG(ERROR) << "Failed to set up demo account. Result code: "
              << static_cast<int>(result_code);
   if (setup_failed_callback_for_testing_) {
     std::move(setup_failed_callback_for_testing_).Run(result_code);
   }
+}
+
+void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
+  CHECK(!url_loader_);
+
+  const std::string gaia_id_to_clean_up =
+      g_browser_process->local_state()->GetString(prefs::kDemoAccountGaiaId);
+  // For the first session of demo account, `gaia_id_to_clean_up` could be
+  // empty.
+  if (gaia_id_to_clean_up.empty()) {
+    SendSetupDemoAccountRequest();
+    return;
+  }
+
+  auto post_data = base::Value::Dict();
+  // TODO(crbug.com/370808139): Get last login scope device id in locale state
+  // use "0000" for now.
+  post_data.Set(kDeviceIdentifier,
+                GetDeviceIdentifier(/*login_scope_device_id=*/"0000"));
+  post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up);
+
+  url_loader_ =
+      CreateDemoAccountURLLoader(GetDemoAccountUrl(kCleanUpDemoAccountEndpoint),
+                                 kCleanUpTrafficAnnotation);
+
+  SendDemoAccountRequest(
+      post_data, url_loader_.get(),
+      base::BindOnce(&DemoLoginController::OnCleanUpDemoAccountComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DemoLoginController::OnCleanUpDemoAccountComplete(
+    std::unique_ptr<std::string> response_body) {
+  auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
+  if (result != ResultCode::kSuccess) {
+    if (clean_up_failed_callback_for_testing_) {
+      std::move(clean_up_failed_callback_for_testing_).Run(result);
+    } else {
+      OnCleanUpDemoAccountError(result);
+    }
+  }
+
+  url_loader_.reset();
+  // Try request for new demo account regardless clean up result.
+  SendSetupDemoAccountRequest();
 }
 
 }  // namespace ash

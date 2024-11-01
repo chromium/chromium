@@ -29,6 +29,9 @@ class DemoLoginController : public LoginScreenShownObserver {
     kRequestFailed = 5,         // Server side error or out of quota.
   };
 
+  using FailedRequestCallback =
+      base::OnceCallback<void(const ResultCode result_code)>;
+
   explicit DemoLoginController(LoginScreenClientImpl* login_screen_client);
   DemoLoginController(const DemoLoginController&) = delete;
   DemoLoginController& operator=(const DemoLoginController&) = delete;
@@ -39,24 +42,34 @@ class DemoLoginController : public LoginScreenShownObserver {
 
   void SetSetupFailedCallbackForTest(
       base::OnceCallback<void(const ResultCode result_code)> callback);
+  void SetCleanUpFailedCallbackForTest(
+      base::OnceCallback<void(const ResultCode result_code)> callback);
 
  private:
+  // Maybe send clean up request to clean up account used in last session if
+  // presents.
+  void MaybeCleanupPreviousDemoAccount();
+
   // Sends a request to create Demo accounts and login with this account.
   void SendSetupDemoAccountRequest();
   // Called on setup demo account complete.
   void OnSetupDemoAccountComplete(const std::string& device_id,
                                   std::unique_ptr<std::string> response_body);
   // Parses the setup demo account response body and maybe login demo account.
-  void HandleSetupDemoAcountResponse(const std::string& device_id,
-                                     const std::string& response_body);
+  void HandleSetupDemoAcountResponse(
+      const std::string& device_id,
+      const std::unique_ptr<std::string> response_body);
 
   void OnSetupDemoAccountError(const ResultCode result_code);
 
-  // We only allow 1 setup demo account request at a time.
-  std::unique_ptr<network::SimpleURLLoader> setup_request_url_loader_;
+  // Called on clean up demo account complete.
+  void OnCleanUpDemoAccountComplete(std::unique_ptr<std::string> response_body);
 
-  base::OnceCallback<void(const ResultCode result_code)>
-      setup_failed_callback_for_testing_;
+  // We only allow 1 demo account request at a time.
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+
+  FailedRequestCallback setup_failed_callback_for_testing_;
+  FailedRequestCallback clean_up_failed_callback_for_testing_;
 
   base::ScopedObservation<LoginScreenClientImpl, LoginScreenShownObserver>
       scoped_observation_{this};
