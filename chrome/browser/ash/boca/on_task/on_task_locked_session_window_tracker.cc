@@ -193,6 +193,13 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   if (change_type == TabChangeType::kAll) {
     RefreshUrlBlocklist();
   }
+
+  if (browser_ && browser_->tab_strip_model()->active_index() == index) {
+    // Only fire for active tab.
+    for (auto& observer : observers_) {
+      observer.OnActiveTabChanged(contents->GetTitle());
+    }
+  }
 }
 
 void LockedSessionWindowTracker::SetNotificationManagerForTesting(

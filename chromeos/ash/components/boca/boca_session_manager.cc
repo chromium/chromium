@@ -158,6 +158,10 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
       current_session_->session_state() != ::boca::Session::ACTIVE) {
     return;
   }
+  if (title == active_tab_title_) {
+    return;
+  }
+  active_tab_title_ = std::move(title);
   auto session_id = current_session_->session_id();
   auto gaia_id = account_id_.GetGaiaId();
   auto device_id = BocaAppClient::Get()->GetDeviceId();
@@ -174,8 +178,9 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
 
   // TODO(crbug.com/376550427):Make a permanet fix to provide URL resource for
   // home page, and remove this after that.
-  request->set_active_tab_title(title.empty() ? kHomePageTitle
-                                              : base::UTF16ToUTF8(title));
+  request->set_active_tab_title(active_tab_title_.empty()
+                                    ? kHomePageTitle
+                                    : base::UTF16ToUTF8(active_tab_title_));
   session_client_impl_->UpdateStudentActivity(std::move(request));
 }
 
