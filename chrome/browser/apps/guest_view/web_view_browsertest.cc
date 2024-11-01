@@ -1671,8 +1671,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestExecuteScriptFail) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestExecuteScript) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testExecuteScript", "web_view/shim", NO_TEST_SERVER);
 }
 

@@ -1431,18 +1431,17 @@ function testExecuteScriptFail() {
 }
 
 function testExecuteScript() {
+  var url = 'data:text/html,trigger navigation';
   var webview = document.createElement('webview');
   webview.setAttribute('partition', arguments.callee.name);
   webview.addEventListener('loadstop', function() {
-    webview.executeScript(
-      {code:'document.body.style.backgroundColor = "red";'},
-      function(results) {
-        embedder.test.assertEq(1, results.length);
-        embedder.test.assertEq('red', results[0]);
-        embedder.test.succeed();
-      });
+    webview.executeScript({code: 'window.location.href;'}, function(results) {
+      embedder.test.assertEq(1, results.length);
+      embedder.test.assertEq(url, results[0]);
+      embedder.test.succeed();
+    });
   });
-  webview.setAttribute('src', 'data:text/html,trigger navigation');
+  webview.setAttribute('src', url);
   document.body.appendChild(webview);
 }
 

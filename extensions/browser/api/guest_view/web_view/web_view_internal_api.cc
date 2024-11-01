@@ -26,6 +26,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/stop_find_action.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
@@ -513,6 +514,13 @@ WebViewInternalExecuteCodeFunction::GetScriptExecutor(std::string* error) {
 
 bool WebViewInternalExecuteCodeFunction::IsWebView() const {
   return true;
+}
+
+int WebViewInternalExecuteCodeFunction::GetRootFrameId() const {
+  WebViewGuest* guest =
+      WebViewGuest::FromInstanceID(source_process_id(), guest_instance_id_);
+  CHECK(guest);
+  return ExtensionApiFrameIdMap::GetFrameId(guest->GetGuestMainFrame());
 }
 
 const GURL& WebViewInternalExecuteCodeFunction::GetWebViewSrc() const {

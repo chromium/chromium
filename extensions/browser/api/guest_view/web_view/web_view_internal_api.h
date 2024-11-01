@@ -129,6 +129,7 @@ class WebViewInternalExecuteCodeFunction
   // Guarded by a process ID check.
   extensions::ScriptExecutor* GetScriptExecutor(std::string* error) final;
   bool IsWebView() const override;
+  int GetRootFrameId() const override;
   const GURL& GetWebViewSrc() const override;
   bool LoadFile(const std::string& file, std::string* error) override;
 
