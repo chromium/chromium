@@ -77,7 +77,7 @@ suite('DeclutterPageTest', () => {
 
   test('Shows tab list on nonzero stale tabs', async () => {
     await declutterPageSetup(1);
-    const tabList = declutterPage.shadowRoot!.querySelector('#tabList');
+    const tabList = declutterPage.shadowRoot!.querySelector('#staleTabList');
     assertTrue(!!tabList);
     assertTrue(isVisible(tabList));
     const emptyState =
@@ -87,7 +87,7 @@ suite('DeclutterPageTest', () => {
 
   test('Shows empty state on zero stale tabs', async () => {
     await declutterPageSetup(0);
-    const tabList = declutterPage.shadowRoot!.querySelector('#tabList');
+    const tabList = declutterPage.shadowRoot!.querySelector('#staleTabList');
     assertFalse(!!tabList);
     const emptyState =
         declutterPage.shadowRoot!.querySelector('.empty-content');

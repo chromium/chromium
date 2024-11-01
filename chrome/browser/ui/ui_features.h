@@ -193,6 +193,9 @@ bool IsTabOrganization();
 BASE_DECLARE_FEATURE(kTabstripDeclutter);
 bool IsTabstripDeclutterEnabled();
 
+BASE_DECLARE_FEATURE(kTabstripDedupe);
+bool IsTabstripDedupeEnabled();
+
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 
 BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);

@@ -65,15 +65,6 @@ tab-search-item {
   border-bottom: var(--scroll-border);
 }
 
-#tabList {
-  background-color: var(--color-tab-search-card-background);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 0;
-}
-
 .action-button {
   align-self: flex-end;
 }
@@ -112,6 +103,15 @@ tab-search-item {
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
+}
+
+.tabList {
+  background-color: var(--color-tab-search-card-background);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
 }
 
 .title {

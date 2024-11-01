@@ -292,6 +292,15 @@ bool IsTabstripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
 }
 
+BASE_FEATURE(kTabstripDedupe,
+             "TabstripDedupe",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabstripDedupeEnabled() {
+  return IsTabstripDeclutterEnabled() &&
+         base::FeatureList::IsEnabled(features::kTabstripDedupe);
+}
+
 BASE_FEATURE(kTabOrganizationAppMenuItem,
              "TabOrganizationAppMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);

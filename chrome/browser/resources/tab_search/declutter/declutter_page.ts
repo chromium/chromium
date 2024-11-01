@@ -5,8 +5,10 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 import '../tab_search_item.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -36,6 +38,7 @@ export class DeclutterPageElement extends CrLitElement {
       availableHeight: {type: Number},
       showBackButton: {type: Boolean},
       staleTabDatas_: {type: Array},
+      dedupeEnabled_: {type: Boolean},
     };
   }
 
@@ -43,6 +46,7 @@ export class DeclutterPageElement extends CrLitElement {
   showBackButton: boolean = false;
 
   protected staleTabDatas_: TabData[] = [];
+  protected dedupeEnabled_: boolean = loadTimeData.getBoolean('dedupeEnabled');
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
