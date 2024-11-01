@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -21,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -885,7 +883,6 @@ class
 IN_PROC_BROWSER_TEST_F(
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
     InterceptsRemoteHostContactedSignalInRenderer) {
-  base::HistogramTester histogram_tester;
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -951,17 +948,6 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
               RemoteHostInfo::EXTENSION);
   }
-  // Using MergeHistogramDeltasForTesting syncs the browser and renderer process
-  // logs.
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // A log of "false" represents the data being sent, while a log of "true"
-  // represents the data being received.
-  histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-      false, 1);
-  histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

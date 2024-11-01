@@ -133,11 +133,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Same URL"/>
 </enum>
 
-<enum name="BooleanSentOrReceived">
-  <int value="0" label="Sent"/>
-  <int value="1" label="Received"/>
-</enum>
-
 <enum name="BooleanSubsequentResponse">
   <int value="0" label="Initial Response"/>
   <int value="1" label="Subsequent Response"/>
