@@ -39,6 +39,7 @@ build_webui("build") {
   ]
   mojo_files = [
     "$root_gen_dir/components/commerce/core/internals/mojom/commerce_internals.mojom-webui.ts",
+    "$root_gen_dir/components/commerce/core/mojom/shared.mojom-webui.ts",
     "$root_gen_dir/components/commerce/core/mojom/shopping_service.mojom-webui.ts",
   ]
 

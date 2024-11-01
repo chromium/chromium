@@ -21,6 +21,7 @@
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -264,9 +265,9 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
   return specs_ptr;
 }
 
-shopping_service::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
+shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
     const ProductSpecificationsSet& set) {
-  auto set_ptr = shopping_service::mojom::ProductSpecificationsSet::New();
+  auto set_ptr = shared::mojom::ProductSpecificationsSet::New();
 
   set_ptr->name = set.name();
   set_ptr->uuid = set.uuid();
@@ -927,8 +928,7 @@ void ShoppingServiceHandler::GetAllProductSpecificationsSets(
 
   const auto& all_sets = shopping_service_->GetProductSpecificationsService()
                              ->GetAllProductSpecifications();
-  std::vector<shopping_service::mojom::ProductSpecificationsSetPtr>
-      all_sets_mojo;
+  std::vector<shared::mojom::ProductSpecificationsSetPtr> all_sets_mojo;
   for (const auto& set : all_sets) {
     all_sets_mojo.push_back(ProductSpecsSetToMojo(set));
   }

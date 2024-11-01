@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "components/commerce/core/mojom/shared.mojom";
 
 // This is a specialized version of shopping_specifics proto. The
 // struct here has most of the same information with the proto but
@@ -191,20 +192,7 @@ struct ProductSpecifications {
   array<ProductSpecificationsProduct> products;
 };
 
-// This struct represents information tied to sync (the product specifications
-// persistence layer).
-struct ProductSpecificationsSet {
-  // The human reabable name of this set.
-  string name;
-
-  // The UUID for this set in string form.
-  mojo_base.mojom.Uuid uuid;
-
-  // The user's product URLs.
-  array<url.mojom.Url> urls;
-};
-
-//TODO(b/311697865) move this to a common location.
+//TODO(crbug.com/311697865) move this to a common location.
 enum UserFeedback {
   kUnspecified,
   kThumbsUp,
@@ -305,15 +293,16 @@ interface ShoppingServiceHandler {
   ShowFeedbackForPriceInsights();
 
   // Get all of a user's product specifications sets.
-  GetAllProductSpecificationsSets() => (array<ProductSpecificationsSet> sets);
+  GetAllProductSpecificationsSets() => (
+      array<commerce.shared.mojom.ProductSpecificationsSet> sets);
 
   // Return product specification set corresponding to identifier |uuid|.
   GetProductSpecificationsSetByUuid(mojo_base.mojom.Uuid uuid)
-      => (ProductSpecificationsSet? set);
+      => (commerce.shared.mojom.ProductSpecificationsSet? set);
 
   // Creates a new product specifications set and returns the new entity.
   AddProductSpecificationsSet(string name, array<url.mojom.Url> urls)
-      => (ProductSpecificationsSet? created_set);
+      => (commerce.shared.mojom.ProductSpecificationsSet? created_set);
 
   // Deletes a product specifications set given its UUID.
   DeleteProductSpecificationsSet(mojo_base.mojom.Uuid uuid);
@@ -321,13 +310,13 @@ interface ShoppingServiceHandler {
   // Set the name for a product specifications set associated with the provided
   // Uuid. If no set with the provided Uuid exists, nullopt is returned.
   SetNameForProductSpecificationsSet(mojo_base.mojom.Uuid uuid, string name)
-      => (ProductSpecificationsSet? updated_set);
+      => (commerce.shared.mojom.ProductSpecificationsSet? updated_set);
 
   // Set the URLs for a product specifications set associated with the provided
   // Uuid. If no set with the provided Uuid exists, nullopt is returned.
   SetUrlsForProductSpecificationsSet(mojo_base.mojom.Uuid uuid,
-      array<url.mojom.Url> urls) => (ProductSpecificationsSet? updated_set);
-
+      array<url.mojom.Url> urls) => (
+      commerce.shared.mojom.ProductSpecificationsSet? updated_set);
   // Store the user feedback for product specifications supplied by the user.
   SetProductSpecificationsUserFeedback(UserFeedback feedback);
 
@@ -382,10 +371,12 @@ interface Page {
   OnProductBookmarkMoved(BookmarkProductInfo bookmark_product);
 
   // Callback when a product specifications set is created.
-  OnProductSpecificationsSetAdded(ProductSpecificationsSet set);
+  OnProductSpecificationsSetAdded(
+      commerce.shared.mojom.ProductSpecificationsSet set);
 
   // Callback when a product specifications set is updated.
-  OnProductSpecificationsSetUpdated(ProductSpecificationsSet set);
+  OnProductSpecificationsSetUpdated(
+      commerce.shared.mojom.ProductSpecificationsSet set);
 
   // Callback when a product specifications set is removed.
   OnProductSpecificationsSetRemoved(mojo_base.mojom.Uuid uuid);

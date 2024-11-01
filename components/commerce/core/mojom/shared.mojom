@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module commerce.shared.mojom;
+
+import "mojo/public/mojom/base/uuid.mojom";
+import "url/mojom/url.mojom";
+
+// This struct represents information tied to sync (the product specifications
+// persistence layer).
+struct ProductSpecificationsSet {
+  // The human reabable name of this set.
+  string name;
+
+  // The UUID for this set in string form.
+  mojo_base.mojom.Uuid uuid;
+
+  // The user's product URLs.
+  array<url.mojom.Url> urls;
+};

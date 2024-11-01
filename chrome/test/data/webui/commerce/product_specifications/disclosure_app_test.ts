@@ -6,8 +6,8 @@ import 'chrome://compare/header.js';
 import 'chrome://compare/disclosure/app.js';
 
 import type {DisclosureAppElement} from 'chrome://compare/disclosure/app.js';
+import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
 import {ProductSpecificationsDisclosureVersion} from 'chrome://compare/shopping_service.mojom-webui.js';
-import type {ProductSpecificationsSet} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
