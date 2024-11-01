@@ -1731,6 +1731,17 @@ TEST_F(HTMLPemissionElementIntersectionTest,
       HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ false);
+  auto& console_messages =
+      static_cast<frame_test_helpers::TestWebFrameClient*>(MainFrame().Client())
+          ->ConsoleMessages();
+  EXPECT_EQ(console_messages.size(), 2u);
+  EXPECT_EQ(
+      console_messages.front(),
+      String::Format("The permission element 'camera' cannot be activated due "
+                     "to intersection occluded or distorted."));
+  EXPECT_EQ(console_messages.back(),
+            String::Format("The permission element is occluded by node %s",
+                           div->ToString().Utf8().c_str()));
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest, ClickingDisablePseudoClass) {

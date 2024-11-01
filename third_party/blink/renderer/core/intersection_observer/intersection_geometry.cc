@@ -127,30 +127,47 @@ gfx::RectF InitializeTargetRect(const LayoutObject* target, unsigned flags) {
   return gfx::RectF(To<LayoutText>(target)->PhysicalLinesBoundingBox());
 }
 
-// Returns true if target has visual effects applied, or if rect, given in
-// absolute coordinates, is overlapped by any content painted after target
+struct VisibilityInfo {
+  bool is_visible = false;
+  DOMNodeId occluder_node_id = kInvalidDOMNodeId;
+};
+
+// When the return value has `is_visible` as true, it means target has visual
+// effects applied, or if rect, given in absolute coordinates, is overlapped by
+// any content painted after target
 //
-//   https://w3c.github.io/IntersectionObserver/v2/#calculate-visibility-algo
-bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
+// The `occluder_node_id` holds the ID of the node that's overlapping the target
+// (if there is one) as the result of hit testing.
+// https://w3c.github.io/IntersectionObserver/v2/#calculate-visibility-algo
+VisibilityInfo ComputeVisibilityInfo(const LayoutObject* target,
+                                     const PhysicalRect& rect,
+                                     unsigned flags) {
   if (!target->GetDocument().GetFrame() ||
       target->GetDocument().GetFrame()->LocalFrameRoot().GetOcclusionState() !=
           mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
-    return false;
+    return {false, kInvalidDOMNodeId};
   }
   if (target->HasDistortingVisualEffects())
-    return false;
+    return {false, kInvalidDOMNodeId};
   // TODO(layout-dev): This should hit-test the intersection rect, not the
   // target rect; it's not helpful to know that the portion of the target that
   // is clipped is also occluded.
   HitTestResult result(target->HitTestForOcclusion(rect));
-  const Node* hit_node = result.InnerNode();
+  Node* hit_node = result.InnerNode();
   if (!hit_node || hit_node == target->GetNode())
-    return true;
+    return {true, kInvalidDOMNodeId};
+  bool should_expose_occluder_id =
+      flags & IntersectionGeometry::kShouldExposeOccluderNodeId;
   // TODO(layout-dev): This IsDescendantOf tree walk could be optimized by
   // stopping when hit_node's containing LayoutBlockFlow is reached.
-  if (target->IsLayoutInline())
-    return hit_node->IsDescendantOf(target->GetNode());
-  return false;
+  if (target->IsLayoutInline()) {
+    bool is_visible = hit_node->IsDescendantOf(target->GetNode());
+    return {is_visible, (!is_visible && should_expose_occluder_id)
+                            ? hit_node->GetDomNodeId()
+                            : kInvalidDOMNodeId};
+  }
+  return {false, should_expose_occluder_id ? hit_node->GetDomNodeId()
+                                           : kInvalidDOMNodeId};
 }
 
 // Returns the transform that maps from object's local coordinates to the
@@ -210,7 +227,8 @@ static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldConvertToCSSPixels |
     IntersectionGeometry::kUseOverflowClipEdge |
     IntersectionGeometry::kRespectFilters |
-    IntersectionGeometry::kScrollAndVisibilityOnly;
+    IntersectionGeometry::kScrollAndVisibilityOnly |
+    IntersectionGeometry::kShouldExposeOccluderNodeId;
 
 }  // namespace
 
@@ -651,10 +669,15 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     intersection_ratio_ = 0;
     threshold_index_ = 0;
   }
-  if (IsIntersecting() && ShouldComputeVisibility() &&
-      ComputeIsVisible(target,
-                       PhysicalRect::FastAndLossyFromRectF(target_rect_))) {
-    flags_ |= kIsVisible;
+  if (IsIntersecting() && ShouldComputeVisibility()) {
+    auto visiblity_info = ComputeVisibilityInfo(
+        target, PhysicalRect::FastAndLossyFromRectF(target_rect_), flags_);
+    occluder_node_id_ = visiblity_info.occluder_node_id;
+    if (visiblity_info.is_visible) {
+      flags_ |= kIsVisible;
+    }
+  } else {
+    occluder_node_id_ = kInvalidDOMNodeId;
   }
 
   if (cached_rects) {

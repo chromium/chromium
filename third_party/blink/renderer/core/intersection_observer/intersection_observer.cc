@@ -355,7 +355,8 @@ IntersectionObserver::IntersectionObserver(
       track_visibility_(params.track_visibility),
       track_fraction_of_root_(params.semantics == kFractionOfRoot),
       always_report_root_bounds_(params.always_report_root_bounds),
-      use_overflow_clip_edge_(params.use_overflow_clip_edge) {
+      use_overflow_clip_edge_(params.use_overflow_clip_edge),
+      expose_occluder_id_(params.expose_occluder_id) {
   if (params.root) {
     if (params.root->IsDocumentNode()) {
       To<Document>(params.root)

@@ -126,6 +126,10 @@ class CORE_EXPORT IntersectionObserver final
     // bounding box if appropriate.
     bool use_overflow_clip_edge = false;
     bool needs_initial_observation_with_detached_target = true;
+
+    // Indicates whether we should compute and expose the occluder node Id.
+    // This only works if you've already set true `track_visibility`.
+    bool expose_occluder_id = false;
   };
 
   // Creates an IntersectionObserver that monitors changes to the intersection
@@ -168,6 +172,10 @@ class CORE_EXPORT IntersectionObserver final
   bool AlwaysReportRootBounds() const { return always_report_root_bounds_; }
   bool NeedsOcclusionTracking() const {
     return trackVisibility() && !observations_.empty();
+  }
+
+  bool ShouldExposeOccluderNodeId() const {
+    return trackVisibility() && expose_occluder_id_;
   }
 
   base::TimeDelta GetEffectiveDelay() const;
@@ -237,6 +245,7 @@ class CORE_EXPORT IntersectionObserver final
   const unsigned track_fraction_of_root_ : 1;
   const unsigned always_report_root_bounds_ : 1;
   const unsigned use_overflow_clip_edge_ : 1;
+  const unsigned expose_occluder_id_ : 1;
 };
 
 }  // namespace blink

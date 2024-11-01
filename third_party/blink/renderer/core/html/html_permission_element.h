@@ -546,6 +546,9 @@ class CORE_EXPORT HTMLPermissionElement final
   IntersectionVisibility intersection_visibility_ =
       IntersectionVisibility::kFullyVisible;
 
+  // Track the node which is overlapping this element.
+  DOMNodeId occluder_node_id_ = kInvalidDOMNodeId;
+
   // Store the up-to-date click state.
   ClickingEnabledState clicking_enabled_state_{false, AtomicString()};
 

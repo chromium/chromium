@@ -420,6 +420,7 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
           .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
           .delay = base::Milliseconds(100),
           .track_visibility = true,
+          .expose_occluder_id = true,
       });
 
   intersection_observer_->observe(this);
@@ -1136,6 +1137,15 @@ bool HTMLPermissionElement::IsClickingEnabled() {
           "The permission element '%s' cannot be activated due to %s.",
           GetType().Utf8().c_str(),
           DisableReasonToString(it->key).Utf8().c_str()));
+      if (it->key ==
+              DisableReason::kIntersectionVisibilityOccludedOrDistorted &&
+          occluder_node_id_ != kInvalidDOMNodeId) {
+        if (Node* node = DOMNodeIds::NodeForId(occluder_node_id_)) {
+          AddConsoleError(
+              String::Format("The permission element is occluded by node %s",
+                             node->ToString().Utf8().c_str()));
+        }
+      }
       base::UmaHistogramEnumeration(
           "Blink.PermissionElement.UserInteractionDeniedReason",
           DisableReasonToUserInteractionDeniedReason(it->key));
@@ -1348,6 +1358,7 @@ void HTMLPermissionElement::OnIntersectionChanged(
     return;
   }
   intersection_visibility_ = intersection_visibility;
+  occluder_node_id_ = kInvalidDOMNodeId;
   switch (intersection_visibility_) {
     case IntersectionVisibility::kFullyVisible: {
       std::optional<base::TimeDelta> interval =
@@ -1361,6 +1372,7 @@ void HTMLPermissionElement::OnIntersectionChanged(
       break;
     }
     case IntersectionVisibility::kOccludedOrDistorted:
+      occluder_node_id_ = latest_observation->GetGeometry().occluder_node_id();
       DisableClickingIndefinitely(
           DisableReason::kIntersectionVisibilityOccludedOrDistorted);
       break;

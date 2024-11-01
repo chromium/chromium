@@ -219,6 +219,9 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldReportRootBounds;
   if (Observer()->trackVisibility())
     geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
+  if (Observer()->ShouldExposeOccluderNodeId()) {
+    geometry_flags |= IntersectionGeometry::kShouldExposeOccluderNodeId;
+  }
   if (Observer()->trackFractionOfRoot())
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (Observer()->UseOverflowClipEdge())
