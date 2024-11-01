@@ -194,11 +194,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       const RegistrationContext*,
       attribution_reporting::mojom::RegistrationType);
 
-  [[nodiscard]] static bool CheckRegistrarSupport(
-      attribution_reporting::Registrar,
-      attribution_reporting::mojom::RegistrationType,
-      const RegistrationContext&);
-
   void OnReceiverDisconnected();
 
   struct HeaderPendingDecode;

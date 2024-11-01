@@ -263,57 +263,6 @@ void MaybeLogAuditIssue(GlobalRenderFrameHostId render_frame_id,
   render_frame_host->ReportInspectorIssue(std::move(issue));
 }
 
-void MaybeLogWebSourceIgnored(
-    GlobalRenderFrameHostId render_frame_id,
-    const GURL& request_url,
-    const std::optional<std::string>& request_devtools_id,
-    const std::optional<std::string>& web_source) {
-  if (!web_source.has_value()) {
-    return;
-  }
-  MaybeLogAuditIssue(render_frame_id, request_url, request_devtools_id,
-                     web_source, AttributionReportingIssueType::kSourceIgnored);
-}
-
-void MaybeLogWebTriggerIgnored(
-    GlobalRenderFrameHostId render_frame_id,
-    const GURL& request_url,
-    const std::optional<std::string>& request_devtools_id,
-    const std::optional<std::string>& web_trigger) {
-  if (!web_trigger.has_value()) {
-    return;
-  }
-  MaybeLogAuditIssue(render_frame_id, request_url, request_devtools_id,
-                     web_trigger,
-                     AttributionReportingIssueType::kTriggerIgnored);
-}
-
-void MaybeLogOsSourceIgnored(
-    GlobalRenderFrameHostId render_frame_id,
-    const GURL& request_url,
-    const std::optional<std::string>& request_devtools_id,
-    const std::optional<std::string>& os_source) {
-  if (!os_source.has_value()) {
-    return;
-  }
-  MaybeLogAuditIssue(render_frame_id, request_url, request_devtools_id,
-                     os_source,
-                     AttributionReportingIssueType::kOsSourceIgnored);
-}
-
-void MaybeLogOsTriggerIgnored(
-    GlobalRenderFrameHostId render_frame_id,
-    const GURL& request_url,
-    const std::optional<std::string>& request_devtools_id,
-    const std::optional<std::string>& os_trigger) {
-  if (!os_trigger.has_value()) {
-    return;
-  }
-  MaybeLogAuditIssue(render_frame_id, request_url, request_devtools_id,
-                     os_trigger,
-                     AttributionReportingIssueType::kOsTriggerIgnored);
-}
-
 Registrar ConvertToRegistrar(AttributionReportingOsRegistrar os_registrar) {
   switch (os_registrar) {
     case AttributionReportingOsRegistrar::kWeb:
@@ -542,6 +491,8 @@ class AttributionDataHostManagerImpl::RegistrationContext {
            navigation_id_ == other.navigation_id_;
   }
 
+  [[nodiscard]] bool CheckRegistrarSupport(Registrar, RegistrationType) const;
+
  private:
   // Context in which the attribution was initiated.
   AttributionSuitableContext suitable_context_;
@@ -715,6 +666,13 @@ class AttributionDataHostManagerImpl::Registrations {
 
   RegistrationsId id() const { return id_; }
 
+  void MaybeLogIssue(const GURL& request_url,
+                     std::optional<std::string> invalid_parameter,
+                     AttributionReportingIssueType issue_type) const {
+    MaybeLogAuditIssue(render_frame_id(), request_url, devtools_request_id(),
+                       std::move(invalid_parameter), issue_type);
+  }
+
  private:
   // True if navigation or beacon has completed.
   bool registrations_complete_ = false;
@@ -785,63 +743,64 @@ class AttributionDataHostManagerImpl::PendingRegistrationData {
       return std::nullopt;
     }
 
-    std::optional<RegistrationType> registration_type;
+    RegistrationType registration_type;
+    std::optional<std::string> web_header;
+    std::optional<std::string> os_header;
     switch (registrations.eligibility()) {
       case RegistrationEligibility::kSource:
-        MaybeLogWebTriggerIgnored(
-            registrations.render_frame_id(), reporting_url,
-            registrations.devtools_request_id(), web_trigger_header);
-        MaybeLogOsTriggerIgnored(registrations.render_frame_id(), reporting_url,
-                                 registrations.devtools_request_id(),
-                                 os_trigger_header);
-        if (has_source) {
-          registration_type = RegistrationType::kSource;
+        if (web_trigger_header.has_value()) {
+          registrations.MaybeLogIssue(
+              reporting_url, std::move(web_trigger_header),
+              AttributionReportingIssueType::kTriggerIgnored);
         }
+        if (os_trigger_header.has_value()) {
+          registrations.MaybeLogIssue(
+              reporting_url, std::move(os_trigger_header),
+              AttributionReportingIssueType::kOsTriggerIgnored);
+        }
+
+        registration_type = RegistrationType::kSource;
+        web_header = std::move(web_source_header);
+        os_header = std::move(os_source_header);
         break;
       case RegistrationEligibility::kTrigger:
-        MaybeLogWebSourceIgnored(registrations.render_frame_id(), reporting_url,
-                                 registrations.devtools_request_id(),
-                                 web_source_header);
-        MaybeLogOsSourceIgnored(registrations.render_frame_id(), reporting_url,
-                                registrations.devtools_request_id(),
-                                os_source_header);
-        if (has_trigger) {
-          registration_type = RegistrationType::kTrigger;
+        if (web_source_header.has_value()) {
+          registrations.MaybeLogIssue(
+              reporting_url, std::move(web_source_header),
+              AttributionReportingIssueType::kSourceIgnored);
         }
+        if (os_source_header.has_value()) {
+          registrations.MaybeLogIssue(
+              reporting_url, std::move(os_source_header),
+              AttributionReportingIssueType::kOsSourceIgnored);
+        }
+
+        registration_type = RegistrationType::kTrigger;
+        web_header = std::move(web_trigger_header);
+        os_header = std::move(os_trigger_header);
         break;
       case RegistrationEligibility::kSourceOrTrigger:
         if (has_source && has_trigger) {
-          MaybeLogAuditIssue(
-              registrations.render_frame_id(), reporting_url,
-              registrations.devtools_request_id(),
+          registrations.MaybeLogIssue(
+              reporting_url,
               /*invalid_parameter=*/std::nullopt,
               AttributionReportingIssueType::kSourceAndTriggerHeaders);
           return std::nullopt;
         }
         if (has_source) {
           registration_type = RegistrationType::kSource;
-        }
-        if (has_trigger) {
+          web_header = std::move(web_source_header);
+          os_header = std::move(os_source_header);
+        } else if (has_trigger) {
           registration_type = RegistrationType::kTrigger;
+          web_header = std::move(web_trigger_header);
+          os_header = std::move(os_trigger_header);
         }
         break;
-    }
-    // No eligible header available.
-    if (!registration_type.has_value()) {
-      return std::nullopt;
     }
 
-    std::optional<std::string> web_header;
-    std::optional<std::string> os_header;
-    switch (registration_type.value()) {
-      case RegistrationType::kSource:
-        web_header = std::move(web_source_header);
-        os_header = std::move(os_source_header);
-        break;
-      case RegistrationType::kTrigger:
-        web_header = std::move(web_trigger_header);
-        os_header = std::move(os_trigger_header);
-        break;
+    if (!web_header.has_value() && !os_header.has_value()) {
+      return std::nullopt;
     }
 
     std::string info_header =
@@ -850,7 +809,7 @@ class AttributionDataHostManagerImpl::PendingRegistrationData {
 
     return PendingRegistrationData(
         std::move(info_header), std::move(web_header), std::move(os_header),
-        *registration_type, cross_app_web_enabled, std::move(reporting_url),
+        registration_type, cross_app_web_enabled, std::move(reporting_url),
         std::move(reporting_origin));
   }
 
@@ -864,47 +823,35 @@ class AttributionDataHostManagerImpl::PendingRegistrationData {
       const Registrations& registrations,
       const attribution_reporting::RegistrarInfo& registrar_info,
       bool report_header_errors) && {
-    const GlobalRenderFrameHostId render_frame_id =
-        registrations.render_frame_id();
-    const std::optional<std::string>& devtools_request_id =
-        registrations.devtools_request_id();
-
-    const auto log_audit_issue = [&](AttributionReportingIssueType issue_type) {
-      MaybeLogAuditIssue(render_frame_id, reporting_url_, devtools_request_id,
-                         /*invalid_parameter=*/std::nullopt, issue_type);
-    };
-
     for (IssueType issue_type : registrar_info.issues) {
       switch (issue_type) {
         case IssueType::kWebAndOsHeaders:
-          log_audit_issue(AttributionReportingIssueType::kWebAndOsHeaders);
+          registrations.MaybeLogIssue(
+              reporting_url_, /*invalid_parameter=*/std::nullopt,
+              AttributionReportingIssueType::kWebAndOsHeaders);
           break;
         case IssueType::kWebIgnored:
-          if (is_source()) {
-            MaybeLogWebSourceIgnored(render_frame_id, reporting_url_,
-                                     devtools_request_id, web_header_);
-          } else {
-            MaybeLogWebTriggerIgnored(render_frame_id, reporting_url_,
-                                      devtools_request_id, web_header_);
-          }
+          registrations.MaybeLogIssue(
+              reporting_url_, std::move(web_header_),
+              is_source() ? AttributionReportingIssueType::kSourceIgnored
+                          : AttributionReportingIssueType::kTriggerIgnored);
           break;
         case IssueType::kOsIgnored:
-          if (is_source()) {
-            MaybeLogOsSourceIgnored(render_frame_id, reporting_url_,
-                                    devtools_request_id, os_header_);
-          } else {
-            MaybeLogOsTriggerIgnored(render_frame_id, reporting_url_,
-                                     devtools_request_id, os_header_);
-          }
+          registrations.MaybeLogIssue(
+              reporting_url_, std::move(os_header_),
+              is_source() ? AttributionReportingIssueType::kOsSourceIgnored
+                          : AttributionReportingIssueType::kOsTriggerIgnored);
           break;
         case IssueType::kNoWebHeader:
-          log_audit_issue(
+          registrations.MaybeLogIssue(
+              reporting_url_, /*invalid_parameter=*/std::nullopt,
               is_source()
                   ? AttributionReportingIssueType::kNoRegisterSourceHeader
                   : AttributionReportingIssueType::kNoRegisterTriggerHeader);
           break;
         case IssueType::kNoOsHeader:
-          log_audit_issue(
+          registrations.MaybeLogIssue(
+              reporting_url_, /*invalid_parameter=*/std::nullopt,
               is_source()
                   ? AttributionReportingIssueType::kNoRegisterOsSourceHeader
                   : AttributionReportingIssueType::kNoRegisterOsTriggerHeader);
@@ -944,10 +891,9 @@ class AttributionDataHostManagerImpl::PendingRegistrationData {
   bool cross_app_web_enabled() const { return cross_app_web_enabled_; }
 
   void MaybeLogInvalidInfoHeader(const Registrations& registrations) && {
-    MaybeLogAuditIssue(registrations.render_frame_id(), reporting_url_,
-                       registrations.devtools_request_id(),
-                       std::move(info_header_),
-                       AttributionReportingIssueType::kInvalidInfoHeader);
+    registrations.MaybeLogIssue(
+        reporting_url_, std::move(info_header_),
+        AttributionReportingIssueType::kInvalidInfoHeader);
   }
 
  private:
@@ -1551,8 +1497,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationCompleted(
 void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
     BackgroundRegistrationsId id,
     AttributionSuitableContext suitable_context,
-    attribution_reporting::mojom::RegistrationEligibility
-        registration_eligibility,
+    RegistrationEligibility registration_eligibility,
     std::optional<blink::AttributionSrcToken> attribution_src_token,
     std::optional<std::string> devtools_request_id) {
   CHECK(BackgroundRegistrationsEnabled());
@@ -1654,11 +1599,9 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
   auto reporting_origin = url::Origin::Create(reporting_url);
   auto suitable_reporting_origin = SuitableOrigin::Create(reporting_origin);
   if (!suitable_reporting_origin.has_value()) {
-    MaybeLogAuditIssue(
-        it->render_frame_id(),
-        /*request_url=*/reporting_url, it->devtools_request_id(),
+    it->MaybeLogIssue(
+        reporting_url,
         /*invalid_parameter=*/reporting_origin.Serialize(),
-        /*violation_type=*/
         AttributionReportingIssueType::kUntrustworthyReportingOrigin);
     return false;
   }
@@ -1743,8 +1686,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  if (!CheckRegistrarSupport(Registrar::kWeb, RegistrationType::kSource,
-                             *context)) {
+  if (!context->CheckRegistrarSupport(Registrar::kWeb,
+                                      RegistrationType::kSource)) {
     return;
   }
 
@@ -1782,8 +1725,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
-  if (!CheckRegistrarSupport(Registrar::kWeb, RegistrationType::kTrigger,
-                             *context)) {
+  if (!context->CheckRegistrarSupport(Registrar::kWeb,
+                                      RegistrationType::kTrigger)) {
     return;
   }
 
@@ -1810,7 +1753,7 @@ void AttributionDataHostManagerImpl::OsDataAvailable(
     return;
   }
 
-  if (!CheckRegistrarSupport(Registrar::kOs, registration_type, *context)) {
+  if (!context->CheckRegistrarSupport(Registrar::kOs, registration_type)) {
     return;
   }
 
@@ -2400,10 +2343,8 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
       },
       error_details);
 
-  MaybeLogAuditIssue(registrations.render_frame_id(),
-                     /*request_url=*/reporting_url,
-                     registrations.devtools_request_id(),
-                     /*invalid_parameter=*/header, issue_type);
+  registrations.MaybeLogIssue(reporting_url,
+                              /*invalid_parameter=*/header, issue_type);
 
   if (report_header_errors) {
     attribution_manager_->ReportRegistrationHeaderError(
@@ -2424,15 +2365,13 @@ void AttributionDataHostManagerImpl::ReportRegistrationHeaderError(
       context.is_within_fenced_frame(), context.render_frame_id());
 }
 
-// static
-bool AttributionDataHostManagerImpl::CheckRegistrarSupport(
+bool AttributionDataHostManagerImpl::RegistrationContext::CheckRegistrarSupport(
     Registrar registrar,
-    RegistrationType registration_type,
-    const RegistrationContext& context) {
+    RegistrationType registration_type) const {
   const bool is_source = registration_type == RegistrationType::kSource;
   AttributionReportingOsRegistrar os_registrar =
-      is_source ? context.os_registrars().source_registrar
-                : context.os_registrars().trigger_registrar;
+      is_source ? os_registrars().source_registrar
+                : os_registrars().trigger_registrar;
 
   network::mojom::AttributionSupport attribution_support =
       AttributionManager::GetAttributionSupport(
