@@ -167,7 +167,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity,
-                                SharedImageTilesType.CLICKABLE,
+                                SharedImageTilesType.DEFAULT,
                                 SharedImageTilesColor.DYNAMIC,
                                 dataSharingService);
             }

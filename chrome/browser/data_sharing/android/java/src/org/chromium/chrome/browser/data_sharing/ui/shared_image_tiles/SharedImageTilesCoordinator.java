@@ -38,6 +38,7 @@ public class SharedImageTilesCoordinator {
     private final Context mContext;
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
+    private final @SharedImageTilesType int mType;
     private final @NonNull DataSharingService mDataSharingService;
     private @NonNull String mCollaborationId;
     private int mAvailableMemberCount;
@@ -62,6 +63,7 @@ public class SharedImageTilesCoordinator {
                         .build();
         mContext = context;
         mDataSharingService = dataSharingService;
+        mType = type;
 
         mView =
                 (SharedImageTilesView)
@@ -122,8 +124,14 @@ public class SharedImageTilesCoordinator {
                 };
 
         List<ViewGroup> iconViews = getAllIconViews();
+        int sizeInDp =
+                (mType == SharedImageTilesType.SMALL)
+                        ? R.dimen.small_shared_image_tiles_icon_height
+                        : R.dimen.shared_image_tiles_icon_height;
         AvatarConfig config =
-                new AvatarConfig.Builder().setAvatarSizeInPixels(getAvatarSizeInPixels()).build();
+                new AvatarConfig.Builder()
+                        .setAvatarSizeInPixels(getAvatarSizeInPixels(sizeInDp))
+                        .build();
 
         dataSharingUiDelegate.showAvatars(
                 mContext,
@@ -133,9 +141,8 @@ public class SharedImageTilesCoordinator {
                 config);
     }
 
-    private int getAvatarSizeInPixels() {
-        return mContext.getResources()
-                .getDimensionPixelSize(R.dimen.shared_image_tiles_icon_height);
+    private int getAvatarSizeInPixels(int sizeInDp) {
+        return mContext.getResources().getDimensionPixelSize(sizeInDp);
     }
 
     /** Populate the shared_image_tiles container with the specific icons. */
@@ -161,6 +168,9 @@ public class SharedImageTilesCoordinator {
                     SharedImageTilesProperties.REMAINING_TILES,
                     mAvailableMemberCount - maxTilesToShowWithNumberTile);
         }
+
+        // Re-style everything.
+        mModel.set(SharedImageTilesProperties.TYPE, mType);
     }
 
     /** Get the view component of SharedImageTiles. */

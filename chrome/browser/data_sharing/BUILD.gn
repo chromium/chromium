@@ -40,7 +40,9 @@ if (is_android) {
       "android/java/res/layout/shared_image_tiles.xml",
       "android/java/res/layout/shared_image_tiles_icon.xml",
       "android/java/res/values/dimens.xml",
+      "android/java/res/values/styles.xml",
     ]
+    deps = [ "//components/browser_ui/styles/android:java_resources" ]
   }
 
   android_library("tab_group_ui_java") {

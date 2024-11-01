@@ -10,10 +10,13 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
+import androidx.annotation.StyleRes;
 
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -57,6 +60,34 @@ public class SharedImageTilesView extends LinearLayout {
                     SemanticColorUtils.getDefaultIconColorOnAccent1Container(mContext));
             setTileBackgroundColor(SemanticColorUtils.getColorPrimaryContainer(mContext));
         }
+    }
+
+    void setType(@SharedImageTilesType int type) {
+        switch (type) {
+            case SharedImageTilesType.DEFAULT:
+                setChildViewSize(
+                        R.dimen.shared_image_tiles_icon_total_height,
+                        R.style.TextAppearance_TextAccentMediumThick_Primary);
+                break;
+            case SharedImageTilesType.SMALL:
+                setChildViewSize(
+                        R.dimen.small_shared_image_tiles_icon_total_height,
+                        R.style.TextAppearance_SharedImageTilesSmall);
+                break;
+        }
+    }
+
+    void setChildViewSize(@DimenRes int iconSizeDp, @StyleRes int textStyle) {
+        int iconSizePx = mContext.getResources().getDimensionPixelSize(iconSizeDp);
+        // Loop through all child views.
+        for (int i = 0; i < getChildCount(); i++) {
+            ViewGroup viewGroup = (ViewGroup) getChildAt(i);
+            viewGroup.getLayoutParams().height = iconSizePx;
+            viewGroup.setMinimumWidth(iconSizePx);
+        }
+
+        // Set sizing for the number tile.
+        mCountTileView.setTextAppearance(textStyle);
     }
 
     void resetIconTiles(int count) {

@@ -235,7 +235,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity,
-                                SharedImageTilesType.CLICKABLE,
+                                SharedImageTilesType.DEFAULT,
                                 SharedImageTilesColor.DYNAMIC,
                                 dataSharingService);
                 FrameLayout container =

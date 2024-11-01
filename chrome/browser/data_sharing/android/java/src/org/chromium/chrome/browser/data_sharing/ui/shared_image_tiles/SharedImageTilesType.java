@@ -9,12 +9,12 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({SharedImageTilesType.DEFAULT, SharedImageTilesType.CLICKABLE})
+@IntDef({SharedImageTilesType.DEFAULT, SharedImageTilesType.SMALL})
 @Retention(RetentionPolicy.SOURCE)
 public @interface SharedImageTilesType {
     /** Standard SharedImageTiles behavior. */
     int DEFAULT = 0;
 
-    /** Clickable with add person button. */
-    int CLICKABLE = 1;
+    /** Smaller variant. */
+    int SMALL = 1;
 }

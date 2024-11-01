@@ -188,7 +188,7 @@ public class TabGroupColorViewProvider implements Destroyable {
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(
                         mContext,
-                        SharedImageTilesType.DEFAULT,
+                        SharedImageTilesType.SMALL,
                         SharedImageTilesColor.DEFAULT,
                         mDataSharingService);
         mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
