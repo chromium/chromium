@@ -1051,7 +1051,7 @@ suite('<facegaze-actions-add-dialog>', () => {
         faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
             .value[FacialGesture.MOUTH_SMILE] = MacroName.MOUSE_CLICK_RIGHT;
         faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
-            .value[FacialGesture.EYE_SQUINT_LEFT] =
+            .value[FacialGesture.MOUTH_UPPER_UP] =
             MacroName.OPEN_FACEGAZE_SETTINGS;
 
         // Select an already assigned gesture that also has conflicts assigned.
@@ -1084,8 +1084,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
     // Set gesture to macro bindings.
     faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
-        .value[FacialGesture.EYE_SQUINT_LEFT] =
-        MacroName.OPEN_FACEGAZE_SETTINGS;
+        .value[FacialGesture.MOUTH_UPPER_UP] = MacroName.OPEN_FACEGAZE_SETTINGS;
 
     // Select a gesture that has conflicts assigned.
     setGesturesListSelection(FacialGesture.MOUTH_SMILE);

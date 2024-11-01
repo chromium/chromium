@@ -81,15 +81,13 @@ export const ConflictingGestures: Partial<
   // Conflicts because MOUTH_FUNNEL is essentially a MOUTH_PUCKER with an open
   // mouth.
   [FacialGesture.MOUTH_FUNNEL]: [FacialGesture.MOUTH_PUCKER],
+  [FacialGesture.MOUTH_PUCKER]: [FacialGesture.MOUTH_FUNNEL],
   // Conflicts because lips may be pursed when performing MOUTH_LEFT and
   // MOUTH_RIGHT.
   [FacialGesture.MOUTH_LEFT]: [FacialGesture.MOUTH_PUCKER],
   [FacialGesture.MOUTH_RIGHT]: [FacialGesture.MOUTH_PUCKER],
-  [FacialGesture.MOUTH_SMILE]: [
-    FacialGesture.MOUTH_UPPER_UP,
-    FacialGesture.EYE_SQUINT_LEFT,
-    FacialGesture.EYE_SQUINT_RIGHT,
-  ],
+  [FacialGesture.MOUTH_SMILE]: [FacialGesture.MOUTH_UPPER_UP],
+  [FacialGesture.MOUTH_UPPER_UP]: [FacialGesture.MOUTH_SMILE],
 };
 
 export interface KeyCombination {
