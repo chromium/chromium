@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SMS Remote Fetcher"/>
   <int value="20" label="Translate"/>
   <int value="21" label="Virtual Card Enroll"/>
-  <int value="22" label="Virtual Card Manual Fallback"/>
+  <int value="22" label="Filled card information"/>
   <int value="23" label="Zoom"/>
   <int value="24" label="Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>

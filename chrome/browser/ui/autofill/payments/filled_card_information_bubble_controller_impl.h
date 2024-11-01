@@ -2,49 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
-
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "components/autofill/core/browser/metrics/payments/virtual_card_manual_fallback_bubble_metrics.h"
+#include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller.h"
+#include "components/autofill/core/browser/metrics/payments/filled_card_information_bubble_metrics.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
 
-// Implementation of per-tab class to control the virtual card manual fallback
-// bubble and the omnibox icon.
-class VirtualCardManualFallbackBubbleControllerImpl
+// Implementation of per-tab class to control the filled card information bubble
+// and the omnibox icon.
+class FilledCardInformationBubbleControllerImpl
     : public AutofillBubbleControllerBase,
-      public VirtualCardManualFallbackBubbleController,
+      public FilledCardInformationBubbleController,
       public content::WebContentsUserData<
-          VirtualCardManualFallbackBubbleControllerImpl> {
+          FilledCardInformationBubbleControllerImpl> {
  public:
   class ObserverForTest {
    public:
     virtual void OnBubbleShown() = 0;
   };
 
-  ~VirtualCardManualFallbackBubbleControllerImpl() override;
-  VirtualCardManualFallbackBubbleControllerImpl(
-      const VirtualCardManualFallbackBubbleControllerImpl&) = delete;
-  VirtualCardManualFallbackBubbleControllerImpl& operator=(
-      const VirtualCardManualFallbackBubbleControllerImpl&) = delete;
+  ~FilledCardInformationBubbleControllerImpl() override;
+  FilledCardInformationBubbleControllerImpl(
+      const FilledCardInformationBubbleControllerImpl&) = delete;
+  FilledCardInformationBubbleControllerImpl& operator=(
+      const FilledCardInformationBubbleControllerImpl&) = delete;
 
   // Show the bubble view.
-  void ShowBubble(const VirtualCardManualFallbackBubbleOptions& options);
+  void ShowBubble(const FilledCardInformationBubbleOptions& options);
 
   // Invoked when the omnibox icon is clicked.
   void ReshowBubble();
 
-  // VirtualCardManualFallbackBubbleController:
+  // FilledCardInformationBubbleController:
   AutofillBubbleBase* GetBubble() const override;
   std::u16string GetBubbleTitleText() const override;
-  const VirtualCardManualFallbackBubbleOptions& GetBubbleOptions()
-      const override;
+  const FilledCardInformationBubbleOptions& GetBubbleOptions() const override;
   std::u16string GetVirtualCardIndicatorLabel() const override;
   std::u16string GetLearnMoreLinkText() const override;
   std::u16string GetEducationalBodyLabel() const override;
@@ -53,16 +51,16 @@ class VirtualCardManualFallbackBubbleControllerImpl
   std::u16string GetCardholderNameFieldLabel() const override;
   std::u16string GetCvcFieldLabel() const override;
   std::u16string GetValueForField(
-      VirtualCardManualFallbackBubbleField field) const override;
+      FilledCardInformationBubbleField field) const override;
   std::u16string GetFieldButtonTooltip(
-      VirtualCardManualFallbackBubbleField field) const override;
+      FilledCardInformationBubbleField field) const override;
   bool ShouldIconBeVisible() const override;
   void OnLinkClicked(const GURL& url) override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
-  void OnFieldClicked(VirtualCardManualFallbackBubbleField field) override;
+  void OnFieldClicked(FilledCardInformationBubbleField field) override;
 
  protected:
-  explicit VirtualCardManualFallbackBubbleControllerImpl(
+  explicit FilledCardInformationBubbleControllerImpl(
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
@@ -73,16 +71,16 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
  private:
   friend class content::WebContentsUserData<
-      VirtualCardManualFallbackBubbleControllerImpl>;
-  friend class VirtualCardManualFallbackBubbleViewsInteractiveUiTest;
+      FilledCardInformationBubbleControllerImpl>;
+  friend class FilledCardInformationBubbleViewsInteractiveUiTest;
 
   // Updates the system clipboard with the |text|.
   void UpdateClipboard(const std::u16string& text) const;
 
   // Logs which field was clicked when the user selects a field from the manual
   // fallback bubble.
-  void LogVirtualCardManualFallbackBubbleFieldClicked(
-      VirtualCardManualFallbackBubbleField field) const;
+  void LogFilledCardInformationBubbleFieldClicked(
+      FilledCardInformationBubbleField field) const;
 
   // Returns whether the webcontents related to the controller is active.
   bool IsWebContentsActive();
@@ -90,7 +88,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
 
   // Options containing information to show in the bubble.
-  VirtualCardManualFallbackBubbleOptions options_;
+  FilledCardInformationBubbleOptions options_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
@@ -106,11 +104,11 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   // The field of the most-recently-clicked button, whose value
   // has been copied to the clipboard.
-  std::optional<VirtualCardManualFallbackBubbleField> clicked_field_;
+  std::optional<FilledCardInformationBubbleField> clicked_field_;
 
   raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
 
-  base::WeakPtrFactory<VirtualCardManualFallbackBubbleControllerImpl>
+  base::WeakPtrFactory<FilledCardInformationBubbleControllerImpl>
       weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -118,4 +116,4 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_CONTROLLER_IMPL_H_

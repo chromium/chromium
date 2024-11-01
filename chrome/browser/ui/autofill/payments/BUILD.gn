@@ -61,6 +61,8 @@ source_set("payments") {
 
   if (toolkit_views) {
     sources += [
+      "filled_card_information_bubble_controller.h",
+      "filled_card_information_bubble_controller_impl.h",
       "iban_bubble_controller.h",
       "iban_bubble_controller_impl.h",
       "local_card_migration_bubble_controller_impl.h",
@@ -78,8 +80,6 @@ source_set("payments") {
       "save_card_ui.h",
       "save_iban_ui.h",
       "save_payment_icon_controller.h",
-      "virtual_card_manual_fallback_bubble_controller.h",
-      "virtual_card_manual_fallback_bubble_controller_impl.h",
     ]
   }
 }
@@ -157,6 +157,7 @@ source_set("impl") {
 
   if (toolkit_views) {
     sources += [
+      "filled_card_information_bubble_controller_impl.cc",
       "iban_bubble_controller_impl.cc",
       "local_card_migration_bubble_controller_impl.cc",
       "local_card_migration_dialog_controller_impl.cc",
@@ -165,7 +166,6 @@ source_set("impl") {
       "save_card_bubble_controller_impl.cc",
       "save_card_ui.cc",
       "save_payment_icon_controller.cc",
-      "virtual_card_manual_fallback_bubble_controller_impl.cc",
     ]
     deps += [ "//chrome/browser/ui/hats" ]
   }

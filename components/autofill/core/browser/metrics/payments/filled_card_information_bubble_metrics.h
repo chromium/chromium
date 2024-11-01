@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_METRICS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_METRICS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_METRICS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_METRICS_H_
 
 namespace autofill::autofill_metrics {
 
-// Metrics to measure user interaction with the virtual card manual fallback
+// Metrics to measure user interaction with the filled card information
 // bubble after it has appeared upon unmasking and filling a virtual card.
-enum class VirtualCardManualFallbackBubbleResult {
+enum class FilledCardInformationBubbleResult {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
 
@@ -24,9 +24,9 @@ enum class VirtualCardManualFallbackBubbleResult {
   kMaxValue = kNotInteracted,
 };
 
-// Metric to measure which field in the virtual card manual fallback bubble
+// Metric to measure which field in the filled card information bubble
 // was selected by the user.
-enum class VirtualCardManualFallbackBubbleFieldClicked {
+enum class FilledCardInformationBubbleFieldClicked {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
 
@@ -38,15 +38,15 @@ enum class VirtualCardManualFallbackBubbleFieldClicked {
   kMaxValue = kCVC,
 };
 
-void LogVirtualCardManualFallbackBubbleShown(bool is_reshow);
+void LogFilledCardInformationBubbleShown(bool is_reshow);
 
-void LogVirtualCardManualFallbackBubbleResultMetric(
-    VirtualCardManualFallbackBubbleResult metric,
+void LogFilledCardInformationBubbleResultMetric(
+    FilledCardInformationBubbleResult metric,
     bool is_reshow);
 
-void LogVirtualCardManualFallbackBubbleFieldClicked(
-    VirtualCardManualFallbackBubbleFieldClicked metric);
+void LogFilledCardInformationBubbleFieldClicked(
+    FilledCardInformationBubbleFieldClicked metric);
 
 }  // namespace autofill::autofill_metrics
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_METRICS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_METRICS_H_

@@ -462,25 +462,25 @@ CGFloat GPayIconTopAnchorOffset() {
       setLabelText:
           (card.recordType == kVirtualCard
                ? l10n_util::GetNSString(
-                     IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS)
+                     IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD_IOS)
                : l10n_util::GetNSString(
                      IDS_AUTOFILL_REGULAR_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS))
       buttonTitles:@[ card.obfuscatedNumber ]];
   [self.expirationDateLabeledChip
       setLabelText:
           l10n_util::GetNSString(
-              IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EXP_DATE_LABEL_IOS)
+              IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EXP_DATE_LABEL_VIRTUAL_CARD_IOS)
       buttonTitles:@[ card.expirationMonth, card.expirationYear ]];
   [self.cardholderLabeledChip
       setLabelText:
           l10n_util::GetNSString(
-              IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NAME_ON_CARD_LABEL_IOS)
+              IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_NAME_ON_CARD_LABEL_VIRTUAL_CARD_IOS)
       buttonTitles:@[ card.cardHolder ]];
   if (card.recordType == kVirtualCard) {
     [self.CVCLabeledChip
         setLabelText:
             l10n_util::GetNSString(
-                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL_IOS)
+                IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CVC_LABEL_VIRTUAL_CARD_IOS)
         buttonTitles:@[ card.CVC ]];
   }
 

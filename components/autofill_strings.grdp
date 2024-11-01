@@ -115,7 +115,7 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries.">
     You are currently on a menu
   </message>
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY" desc="Screen reader announcement used for virtual credit card suggestions that do not fill the web form.">
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_CARD_INFORMATION_ENTRY" desc="Screen reader announcement used for filled card information that do not fill the web form.">
     Dialog with credit card details was shown
   </message>
 

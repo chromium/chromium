@@ -504,7 +504,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(void,
               OnVirtualCardDataAvailable,
-              (const VirtualCardManualFallbackBubbleOptions&),
+              (const FilledCardInformationBubbleOptions&),
               (override));
 };
 
@@ -3594,7 +3594,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_VirtualCreditCard) {
   const CreditCard virtual_card = test::WithCvc(test::GetVirtualCard());
-  using Options = VirtualCardManualFallbackBubbleOptions;
+  using Options = FilledCardInformationBubbleOptions;
   EXPECT_CALL(
       payments_client(),
       OnVirtualCardDataAvailable(

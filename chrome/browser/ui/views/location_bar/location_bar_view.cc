@@ -375,8 +375,7 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kSaveCard);
   params.types_enabled.push_back(PageActionIconType::kSaveIban);
   params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
-  params.types_enabled.push_back(
-      PageActionIconType::kVirtualCardManualFallback);
+  params.types_enabled.push_back(PageActionIconType::kFilledCardInformation);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 

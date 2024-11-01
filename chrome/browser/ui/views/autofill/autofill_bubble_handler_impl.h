@@ -26,6 +26,7 @@ class View;
 
 namespace autofill {
 class AutofillBubbleBase;
+class FilledCardInformationBubbleController;
 class LocalCardMigrationBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
@@ -75,9 +76,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       content::WebContents* web_contents,
       std::unique_ptr<AddNewAddressBubbleController> controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
+  AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,
-      VirtualCardManualFallbackBubbleController* controller,
+      FilledCardInformationBubbleController* controller,
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowVirtualCardEnrollBubble(
       content::WebContents* web_contents,

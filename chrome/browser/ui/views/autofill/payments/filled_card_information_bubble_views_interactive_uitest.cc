@@ -11,11 +11,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -55,16 +55,18 @@ class ViewVisibilityWaiter : public views::ViewObserver {
   // Wait for changes to occur, or return immediately if view already has
   // expected visibility.
   void Wait() {
-    if (expected_visible_ != view_->GetVisible())
+    if (expected_visible_ != view_->GetVisible()) {
       run_loop_.Run();
+    }
   }
 
  private:
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override {
-    if (expected_visible_ == observed_view->GetVisible())
+    if (expected_visible_ == observed_view->GetVisible()) {
       run_loop_.Quit();
+    }
   }
 
   raw_ptr<views::View> view_;
@@ -73,33 +75,34 @@ class ViewVisibilityWaiter : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
-class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
+class FilledCardInformationBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,
-      public VirtualCardManualFallbackBubbleControllerImpl::ObserverForTest {
+      public FilledCardInformationBubbleControllerImpl::ObserverForTest {
  public:
   // Various events that can be waited on by the DialogEventWaiter.
   enum class BubbleEvent : int {
     BUBBLE_SHOWN,
   };
 
-  VirtualCardManualFallbackBubbleViewsInteractiveUiTest() = default;
-  ~VirtualCardManualFallbackBubbleViewsInteractiveUiTest() override = default;
-  VirtualCardManualFallbackBubbleViewsInteractiveUiTest(
-      const VirtualCardManualFallbackBubbleViewsInteractiveUiTest&) = delete;
-  VirtualCardManualFallbackBubbleViewsInteractiveUiTest& operator=(
-      const VirtualCardManualFallbackBubbleViewsInteractiveUiTest&) = delete;
+  FilledCardInformationBubbleViewsInteractiveUiTest() = default;
+  ~FilledCardInformationBubbleViewsInteractiveUiTest() override = default;
+  FilledCardInformationBubbleViewsInteractiveUiTest(
+      const FilledCardInformationBubbleViewsInteractiveUiTest&) = delete;
+  FilledCardInformationBubbleViewsInteractiveUiTest& operator=(
+      const FilledCardInformationBubbleViewsInteractiveUiTest&) = delete;
 
-  // VirtualCardManualFallbackBubbleControllerImpl::ObserverForTest:
+  // FilledCardInformationBubbleControllerImpl::ObserverForTest:
   void OnBubbleShown() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(BubbleEvent::BUBBLE_SHOWN);
+    }
   }
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    VirtualCardManualFallbackBubbleControllerImpl* controller =
-        static_cast<VirtualCardManualFallbackBubbleControllerImpl*>(
-            VirtualCardManualFallbackBubbleControllerImpl::GetOrCreate(
+    FilledCardInformationBubbleControllerImpl* controller =
+        static_cast<FilledCardInformationBubbleControllerImpl*>(
+            FilledCardInformationBubbleControllerImpl::GetOrCreate(
                 browser()->tab_strip_model()->GetActiveWebContents()));
     DCHECK(controller);
     controller->SetEventObserverForTesting(this);
@@ -113,7 +116,7 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
   void ShowBubble(const CreditCard* virtual_card,
                   const std::u16string& virtual_card_cvc) {
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
-    VirtualCardManualFallbackBubbleOptions options;
+    FilledCardInformationBubbleOptions options;
     options.masked_card_name =
         CreditCard::NetworkForDisplay(virtual_card->network());
     options.masked_card_number_last_four =
@@ -133,41 +136,42 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
 
   bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
 
-  std::u16string GetValueForField(VirtualCardManualFallbackBubbleField field) {
+  std::u16string GetValueForField(FilledCardInformationBubbleField field) {
     return GetController()->GetValueForField(field);
   }
 
-  void ClickOnField(VirtualCardManualFallbackBubbleField field) {
+  void ClickOnField(FilledCardInformationBubbleField field) {
     GetController()->OnFieldClicked(field);
   }
 
-  VirtualCardManualFallbackBubbleControllerImpl* GetController() {
+  FilledCardInformationBubbleControllerImpl* GetController() {
     if (!browser() || !browser()->tab_strip_model() ||
         !browser()->tab_strip_model()->GetActiveWebContents()) {
       return nullptr;
     }
 
-    return VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
+    return FilledCardInformationBubbleControllerImpl::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  VirtualCardManualFallbackBubbleViews* GetBubbleViews() {
-    VirtualCardManualFallbackBubbleControllerImpl* controller = GetController();
-    if (!controller)
+  FilledCardInformationBubbleViews* GetBubbleViews() {
+    FilledCardInformationBubbleControllerImpl* controller = GetController();
+    if (!controller) {
       return nullptr;
+    }
 
-    return static_cast<VirtualCardManualFallbackBubbleViews*>(
+    return static_cast<FilledCardInformationBubbleViews*>(
         controller->GetBubble());
   }
 
-  VirtualCardManualFallbackIconView* GetIconView() {
+  FilledCardInformationIconView* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     PageActionIconView* icon =
         browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kVirtualCardManualFallback);
+            PageActionIconType::kFilledCardInformation);
     DCHECK(icon);
-    return static_cast<VirtualCardManualFallbackIconView*>(icon);
+    return static_cast<FilledCardInformationIconView*>(icon);
   }
 
   void ResetEventWaiterForSequence(std::list<BubbleEvent> event_sequence) {
@@ -182,7 +186,7 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
 
 // Invokes a bubble showing the complete information for the virtual card
 // selected to fill the form.
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        ShowBubble) {
   ShowBubble();
   EXPECT_TRUE(GetBubbleViews());
@@ -196,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 #else
 #define MAYBE_DismissBubbleUponNavigation DismissBubbleUponNavigation
 #endif
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        MAYBE_DismissBubbleUponNavigation) {
   ShowBubble();
   ASSERT_TRUE(GetBubbleViews());
@@ -211,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(GetIconView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        CopyFieldValue) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
@@ -227,79 +231,75 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   ShowBubble(&card, u"345");
 
   // Verify the displayed text. We change the format of card number in the ui.
-  EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCardNumber),
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardNumber),
             u"5454 5454 5454 5454");
   EXPECT_EQ(
-      GetValueForField(VirtualCardManualFallbackBubbleField::kExpirationMonth),
+      GetValueForField(FilledCardInformationBubbleField::kExpirationMonth),
       base::ASCIIToUTF16(test::NextMonth().c_str()));
-  EXPECT_EQ(
-      GetValueForField(VirtualCardManualFallbackBubbleField::kExpirationYear),
-      base::ASCIIToUTF16(test::NextYear().c_str()));
-  EXPECT_EQ(
-      GetValueForField(VirtualCardManualFallbackBubbleField::kCardholderName),
-      u"John Smith");
-  EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCvc),
-            u"345");
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kExpirationYear),
+            base::ASCIIToUTF16(test::NextYear().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardholderName),
+            u"John Smith");
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCvc), u"345");
 
   // Simulate clicking on each field in the bubble, ensuring that it was
   // copied to the clipboard and the selection was logged in UMA.
   base::HistogramTester histogram_tester;
 
   // Card number (also ensure it doesn't contain spaces):
-  ClickOnField(VirtualCardManualFallbackBubbleField::kCardNumber);
+  ClickOnField(FilledCardInformationBubbleField::kCardNumber);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, u"5454545454545454");
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
-          kCardNumber,
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::kCardNumber,
       1);
 
   // Expiration month:
-  ClickOnField(VirtualCardManualFallbackBubbleField::kExpirationMonth);
+  ClickOnField(FilledCardInformationBubbleField::kExpirationMonth);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::
           kExpirationMonth,
       1);
 
   // Expiration year:
-  ClickOnField(VirtualCardManualFallbackBubbleField::kExpirationYear);
+  ClickOnField(FilledCardInformationBubbleField::kExpirationYear);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::
           kExpirationYear,
       1);
 
   // Cardholder name:
-  ClickOnField(VirtualCardManualFallbackBubbleField::kCardholderName);
+  ClickOnField(FilledCardInformationBubbleField::kCardholderName);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, u"John Smith");
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::
           kCardholderName,
       1);
 
   // CVC:
-  ClickOnField(VirtualCardManualFallbackBubbleField::kCvc);
+  ClickOnField(FilledCardInformationBubbleField::kCvc);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, u"345");
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
-      autofill_metrics::VirtualCardManualFallbackBubbleFieldClicked::kCVC, 1);
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::kCVC, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        Metrics_BubbleShownAndClosedByUser) {
   base::HistogramTester histogram_tester;
 
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_TRUE(IsIconVisible());
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.Shown", false, 1);
+      "Autofill.FilledCardInformationBubble.Shown", false, 1);
 
   // Mock deactivation due to clicking the close button.
   views::test::WidgetDestroyedWaiter destroyed_waiter1(
@@ -319,14 +319,14 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
   // Confirm .FirstShow metrics.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
-      autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed, 1);
+      "Autofill.FilledCardInformationBubble.Result.FirstShow",
+      autofill_metrics::FilledCardInformationBubbleResult::kClosed, 1);
 
   // Bubble is reshown by the user.
   ReshowBubble();
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.Shown", true, 1);
+      "Autofill.FilledCardInformationBubble.Shown", true, 1);
 
   // Mock deactivation due to clicking the close button.
   views::test::WidgetDestroyedWaiter destroyed_waiter2(
@@ -337,8 +337,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
   // Confirm .Reshows metrics.
   histogram_tester.ExpectUniqueSample(
-      "Autofill.VirtualCardManualFallbackBubble.Result.Reshows",
-      autofill_metrics::VirtualCardManualFallbackBubbleResult::kClosed, 1);
+      "Autofill.FilledCardInformationBubble.Result.Reshows",
+      autofill_metrics::FilledCardInformationBubbleResult::kClosed, 1);
 
   // Bubble is reshown by the user. Closing a reshown bubble makes the browser
   // inactive for some reason, so we must reactivate it first.
@@ -346,10 +346,10 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   ReshowBubble();
 
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.Shown", true, 2);
+      "Autofill.FilledCardInformationBubble.Shown", true, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        Metrics_BubbleClosedByNotInteracted) {
   base::HistogramTester histogram_tester;
 
@@ -366,12 +366,11 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
   // Confirm metrics.
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
-      autofill_metrics::VirtualCardManualFallbackBubbleResult::kNotInteracted,
-      1);
+      "Autofill.FilledCardInformationBubble.Result.FirstShow",
+      autofill_metrics::FilledCardInformationBubbleResult::kNotInteracted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        TooltipAndAccessibleName) {
   ShowBubble();
   ASSERT_TRUE(GetBubbleViews());
@@ -379,9 +378,9 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
   EXPECT_EQ(5U, GetBubbleViews()->fields_to_buttons_map_.size());
   std::u16string normal_button_tooltip = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL);
+      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_NORMAL_VIRTUAL_CARD);
   std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED);
+      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_CLICKED_VIRTUAL_CARD);
   for (auto& pair : GetBubbleViews()->fields_to_buttons_map_) {
     EXPECT_EQ(normal_button_tooltip, pair.second->GetTooltipText());
     EXPECT_EQ(pair.second->GetText() + u" " + normal_button_tooltip,
@@ -390,13 +389,13 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
   auto& card_number_button =
       GetBubbleViews()->fields_to_buttons_map_
-          [VirtualCardManualFallbackBubbleField::kCardNumber];
+          [FilledCardInformationBubbleField::kCardNumber];
   auto& cardholder_name_button =
       GetBubbleViews()->fields_to_buttons_map_
-          [VirtualCardManualFallbackBubbleField::kCardholderName];
+          [FilledCardInformationBubbleField::kCardholderName];
 
   GetBubbleViews()->OnFieldClicked(
-      VirtualCardManualFallbackBubbleField::kCardNumber);
+      FilledCardInformationBubbleField::kCardNumber);
   EXPECT_EQ(clicked_button_tooltip, card_number_button->GetTooltipText());
   EXPECT_EQ(u"5555 5555 5555 4444 " + clicked_button_tooltip,
             card_number_button->GetViewAccessibility().GetCachedName());
@@ -405,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
             cardholder_name_button->GetViewAccessibility().GetCachedName());
 
   GetBubbleViews()->OnFieldClicked(
-      VirtualCardManualFallbackBubbleField::kCardholderName);
+      FilledCardInformationBubbleField::kCardholderName);
   EXPECT_EQ(normal_button_tooltip, card_number_button->GetTooltipText());
   EXPECT_EQ(u"5555 5555 5555 4444 " + normal_button_tooltip,
             card_number_button->GetViewAccessibility().GetCachedName());
@@ -414,24 +413,26 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
             cardholder_name_button->GetViewAccessibility().GetCachedName());
 }
 
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        IconViewAccessibleName) {
-  EXPECT_EQ(GetIconView()->GetViewAccessibility().GetCachedName(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
-  EXPECT_EQ(GetIconView()->GetTextForTooltipAndAccessibleName(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
+  EXPECT_EQ(
+      GetIconView()->GetViewAccessibility().GetCachedName(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD));
+  EXPECT_EQ(
+      GetIconView()->GetTextForTooltipAndAccessibleName(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD));
 }
 
-class VirtualCardManualFallbackBubbleViewsPrerenderTest
-    : public VirtualCardManualFallbackBubbleViewsInteractiveUiTest {
+class FilledCardInformationBubbleViewsPrerenderTest
+    : public FilledCardInformationBubbleViewsInteractiveUiTest {
  public:
-  VirtualCardManualFallbackBubbleViewsPrerenderTest()
+  FilledCardInformationBubbleViewsPrerenderTest()
       : prerender_helper_(base::BindRepeating(
-            &VirtualCardManualFallbackBubbleViewsPrerenderTest::web_contents,
+            &FilledCardInformationBubbleViewsPrerenderTest::web_contents,
             base::Unretained(this))) {}
-  ~VirtualCardManualFallbackBubbleViewsPrerenderTest() override = default;
+  ~FilledCardInformationBubbleViewsPrerenderTest() override = default;
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
@@ -447,7 +448,7 @@ class VirtualCardManualFallbackBubbleViewsPrerenderTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsPrerenderTest,
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsPrerenderTest,
                        KeepBubbleOnPrerenderNavigation) {
   base::HistogramTester histogram_tester;
 
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsPrerenderTest,
   EXPECT_TRUE(GetBubbleViews());
   EXPECT_TRUE(IsIconVisible());
   histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardManualFallbackBubble.Shown", false, 1);
+      "Autofill.FilledCardInformationBubble.Shown", false, 1);
 
   // Activate a prerendered page and wait until the icon visibility changes.
   {

@@ -2628,6 +2628,44 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FilledCardInformationBubble.FieldClicked"
+    enum="AutofillFilledCardInformationBubbleFieldClicked"
+    expires_after="2025-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records which field in the filled card information bubble was selected by
+    the user and had its contents copied to the clipboard. Recorded on every
+    click of a field in the bubble.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FilledCardInformationBubble.Result{ShowType}"
+    enum="AutofillFilledCardInformationBubbleResult" expires_after="2025-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the filled card information bubble. Recorded
+    when the bubble is closed.
+  </summary>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
+<histogram name="Autofill.FilledCardInformationBubble.Shown"
+    enum="BooleanPreviouslyShown" expires_after="2025-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This metric is recorded whenever the filled card information bubble is
+    shown, after the user has just unmasked and autofilled a virtual card. It
+    records whether the bubble has just appeared for the first time (false) or
+    if it is being reshown due to user actions (true).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FilledFieldType.Password"
     enum="BooleanFieldClassificationType" expires_after="2025-03-30">
   <owner>theocristea@google.com</owner>
@@ -6861,45 +6899,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
   <token key="EnrollmentSource"
       variants="Autofill.VirtualCardEnrollmentSource"/>
-</histogram>
-
-<histogram name="Autofill.VirtualCardManualFallbackBubble.FieldClicked"
-    enum="AutofillVirtualCardManualFallbackBubbleFieldClicked"
-    expires_after="2025-07-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records which field in the virtual card manual fallback bubble was selected
-    by the user and had its contents copied to the clipboard. Recorded on every
-    click of a field in the bubble.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.VirtualCardManualFallbackBubble.Result{ShowType}"
-    enum="AutofillVirtualCardManualFallbackBubbleResult"
-    expires_after="2025-07-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the reason for closing the virtual card manual fallback bubble.
-    Recorded when the bubble is closed.
-  </summary>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
-</histogram>
-
-<histogram name="Autofill.VirtualCardManualFallbackBubble.Shown"
-    enum="BooleanPreviouslyShown" expires_after="2025-07-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    This metric is recorded whenever the virtual card manual fallback bubble is
-    shown, after the user has just unmasked and autofilled a virtual card. It
-    records whether the bubble has just appeared for the first time (false) or
-    if it is being reshown due to user actions (true).
-  </summary>
 </histogram>
 
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"

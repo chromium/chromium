@@ -1806,6 +1806,21 @@ Called by update_autofill_enums.py.-->
   <int value="165" label="ALTERNATIVE_FAMILY_NAME"/>
 </enum>
 
+<enum name="AutofillFilledCardInformationBubbleFieldClicked">
+  <int value="0" label="Card number"/>
+  <int value="1" label="Expiration month"/>
+  <int value="2" label="Expiration year"/>
+  <int value="3" label="Cardholder name"/>
+  <int value="4" label="CVC"/>
+</enum>
+
+<enum name="AutofillFilledCardInformationBubbleResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User closed bubble via corner X"/>
+  <int value="2" label="User did not interact with the bubble"/>
+  <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
+</enum>
+
 <enum name="AutofillFillingMethodMetric">
   <int value="0" label="Full form"/>
   <int value="1" label="Group filling name fields"/>
@@ -4527,21 +4542,6 @@ Called by update_autofill_enums.py.-->
 <enum name="AutofillVirtualCardEnrollmentStrikeDatabaseEvent">
   <int value="0" label="One strike logged"/>
   <int value="1" label="All strikes cleared"/>
-</enum>
-
-<enum name="AutofillVirtualCardManualFallbackBubbleFieldClicked">
-  <int value="0" label="Card number"/>
-  <int value="1" label="Expiration month"/>
-  <int value="2" label="Expiration year"/>
-  <int value="3" label="Cardholder name"/>
-  <int value="4" label="CVC"/>
-</enum>
-
-<enum name="AutofillVirtualCardManualFallbackBubbleResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="User closed bubble via corner X"/>
-  <int value="2" label="User did not interact with the bubble"/>
-  <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
 <enum name="AutofillWebauthnOptInPromoUserDecision">

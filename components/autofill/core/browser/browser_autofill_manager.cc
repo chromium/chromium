@@ -2926,13 +2926,13 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     client().GetFormDataImporter()->CacheFetchedVirtualCard(
         credit_card.LastFourDigits());
 
-    VirtualCardManualFallbackBubbleOptions options;
+    FilledCardInformationBubbleOptions options;
     options.masked_card_name = credit_card.CardNameForAutofillDisplay();
     options.masked_card_number_last_four =
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
     options.virtual_card = credit_card;
     // TODO(crbug.com/40927041): Remove CVC from
-    // VirtualCardManualFallbackBubbleOptions.
+    // FilledCardInformationBubbleOptions.
     options.virtual_card_cvc = credit_card.cvc();
     options.card_image = GetCardImage(credit_card);
     client().GetPaymentsAutofillClient()->OnVirtualCardDataAvailable(options);

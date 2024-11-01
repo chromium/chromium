@@ -80,7 +80,7 @@
   E(kActionWebauthn, IDC_WEBAUTHN) \
   E(kActionSharingHub, IDC_SHARING_HUB) \
   E(kActionSharingHubMenu, IDC_SHARING_HUB_MENU) \
-  E(kActionVirtualCardManualFallback, IDC_VIRTUAL_CARD_MANUAL_FALLBACK) \
+  E(kActionFilledCardInformation, IDC_FILLED_CARD_INFORMATION) \
   E(kActionSharingHubScreenshot, IDC_SHARING_HUB_SCREENSHOT) \
   E(kActionVirtualCardEnroll, IDC_VIRTUAL_CARD_ENROLL) \
   E(kActionFollow, IDC_FOLLOW) \

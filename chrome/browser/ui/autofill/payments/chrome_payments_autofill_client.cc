@@ -84,10 +84,10 @@
 #include "components/webauthn/android/internal_authenticator_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
+#include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -479,7 +479,7 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 }
 
 void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
-    const VirtualCardManualFallbackBubbleOptions& options) {
+    const FilledCardInformationBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
   client_->GetAutofillSnackbarController()->Show(
       AutofillSnackbarType::kVirtualCard,
@@ -494,10 +494,10 @@ void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
           },
           web_contents()->GetWeakPtr()));
 #else
-  VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
+  FilledCardInformationBubbleControllerImpl::CreateForWebContents(
       web_contents());
-  VirtualCardManualFallbackBubbleControllerImpl* controller =
-      VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
+  FilledCardInformationBubbleControllerImpl* controller =
+      FilledCardInformationBubbleControllerImpl::FromWebContents(
           web_contents());
   controller->ShowBubble(options);
 #endif

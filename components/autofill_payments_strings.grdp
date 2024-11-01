@@ -765,37 +765,37 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card enroll bubble on Desktop. This bubble prompts users if they would like to enroll in a virtual card.">
       Add virtual card
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE" desc="The title shown in the Autofill virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_TITLE_VIRTUAL_CARD" desc="The title shown in the Autofill filled card information bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Virtual card details
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The label shown in body of the Autofill virtual card manual fallback bubble on Desktop. The label serves as a educational message to explain to users how to use the bubble to fill card information to the form. This bubble shows the complete information for the virtual card selected to fill the form.">
-      Virtual card not filled in? Click virtual card details to copy to clipboard. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL">$1<ex>Learn about virtual cards</ex></ph>
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL_VIRTUAL_CARD" desc="The label shown in body of the Autofill filled card information bubble on Desktop. The label serves as a educational message to explain to users how to use the bubble to fill card information to the form. This bubble shows the complete information for the virtual card selected to fill the form.">
+      Virtual card not filled in? Click virtual card details to copy to clipboard. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD">$1<ex>Learn about virtual cards</ex></ph>
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" desc="Link text to learn more about virtual cards. Added to the end of the explanatory message of the virtual card manual fallback bubble in IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" desc="Link text to learn more about virtual cards. Added to the end of the explanatory message of the filled card information bubble in IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL_VIRTUAL_CARD">
       Learn about virtual cards
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL" desc="Text shown next to the virtual card number in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD" desc="Text shown next to the virtual card number in the filled card information bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Virtual card number:
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EXP_DATE_LABEL" desc="Text shown next to the virtual card expiration date in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EXP_DATE_LABEL_VIRTUAL_CARD" desc="Text shown next to the virtual card expiration date in the filled card information bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Expiration date:
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARDHOLDER_NAME_LABEL" desc="Text shown next to the virtual card name on card field in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARDHOLDER_NAME_LABEL_VIRTUAL_CARD" desc="Text shown next to the virtual card name on card field in the filled card information bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Name on card:
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL" desc="Text shown next to the virtual card CVC code in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CVC_LABEL_VIRTUAL_CARD" desc="Text shown next to the virtual card CVC code in the filled card information bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       CVC:
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIRTUAL_CARD_LABEL" desc="The text shown in the virtual card manual fallback bubble to explain the card entity is a virtual card.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_VIRTUAL_CARD_LABEL" desc="The text shown in the filled card information bubble to explain the card entity is a virtual card.">
       Virtual card
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD" desc="The tooltip message for the omnibox icon for the filled card information bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       View your virtual card number
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL" desc="The tooltip message for the button that contains the card information in the virtual card manual fallback bubble on Desktop. This message is shown when the button is hovered over and if the button has not been clicked.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_NORMAL_VIRTUAL_CARD" desc="The tooltip message for the button that contains the card information in the filled card information bubble on Desktop. This message is shown when the button is hovered over and if the button has not been clicked.">
       Click to copy
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for the button that contains the card information in the virtual card manual fallback bubble on Desktop. This message is shown when the button is hovered over and if the button has been recently clicked.">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_CLICKED_VIRTUAL_CARD" desc="The tooltip message for the button that contains the card information in the filled card information bubble on Desktop. This message is shown when the button is hovered over and if the button has been recently clicked.">
       Copied
     </message>
   </if>
@@ -886,16 +886,16 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE" desc="Text to be displayed when displaying an Autofill suggestion to fill a standalone CVC for a virtual card on file.">
       CVC for virtual card
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS" desc="Text shown above the virtual card number in the manual fallback bubble on IOS. This bubble shows the card number for the virtual card available to fill the form. Clicking the bubble will fill the field with the complete information to use the virtual card.">
+  <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD_IOS" desc="Text shown above the virtual card number in the manual fallback bubble on IOS. This bubble shows the card number for the virtual card available to fill the form. Clicking the bubble will fill the field with the complete information to use the virtual card.">
       Virtual card number:
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EXP_DATE_LABEL_IOS" desc="Text shown above the virtual card expiration date in the manual fallback bubble on IOS. The bubble below shows the expiration date for the card being displayed. Clicking the bubble will populate the field with the date.">
+  <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EXP_DATE_LABEL_VIRTUAL_CARD_IOS" desc="Text shown above the virtual card expiration date in the manual fallback bubble on IOS. The bubble below shows the expiration date for the card being displayed. Clicking the bubble will populate the field with the date.">
       Expiration date:
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NAME_ON_CARD_LABEL_IOS" desc="Text shown above the virtual cardholder's name on card field in the manual fallback bubble on IOS. The bubble below shows the cardholder's name for the card available to fill the form. Clicking the bubble will populate the field with the cardholder's name.">
+  <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_NAME_ON_CARD_LABEL_VIRTUAL_CARD_IOS" desc="Text shown above the virtual cardholder's name on card field in the manual fallback bubble on IOS. The bubble below shows the cardholder's name for the card available to fill the form. Clicking the bubble will populate the field with the cardholder's name.">
       Name on card:
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL_IOS" desc="Text shown above the virtual CVC field in the manual fallback bubble on IOS. The bubble below shows the CVC for the card available to fill the form. Clicking the bubble will populate the field with the CVC.">
+  <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CVC_LABEL_VIRTUAL_CARD_IOS" desc="Text shown above the virtual CVC field in the manual fallback bubble on IOS. The bubble below shows the CVC for the card available to fill the form. Clicking the bubble will populate the field with the CVC.">
       CVC:
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option.">

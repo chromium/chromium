@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_CONTROLLER_H_
 
 #include <string>
 
@@ -14,10 +14,10 @@
 namespace autofill {
 
 class AutofillBubbleBase;
-struct VirtualCardManualFallbackBubbleOptions;
+struct FilledCardInformationBubbleOptions;
 
-// The fields inside of the virtual card manual fallback bubble.
-enum class VirtualCardManualFallbackBubbleField {
+// The fields inside of the filled card information bubble.
+enum class FilledCardInformationBubbleField {
   kCardNumber = 0,
   kExpirationMonth = 1,
   kExpirationYear = 2,
@@ -27,29 +27,29 @@ enum class VirtualCardManualFallbackBubbleField {
 };
 
 // Interface that exposes controller functionality to
-// VirtualCardManualFallbackBubbleViews. The bubble is shown when the virtual
+// FilledCardInformationBubbleViews. The bubble is shown when the virtual
 // card option in the Autofill credit card suggestion list is clicked. It
 // contains the card number, expiry and CVC information of the virtual card that
 // users select to use, and serves as a fallback if not all the information is
 // filled in the form by Autofill correctly.
-class VirtualCardManualFallbackBubbleController {
+class FilledCardInformationBubbleController {
  public:
-  VirtualCardManualFallbackBubbleController() = default;
-  virtual ~VirtualCardManualFallbackBubbleController() = default;
-  VirtualCardManualFallbackBubbleController(
-      const VirtualCardManualFallbackBubbleController&) = delete;
-  VirtualCardManualFallbackBubbleController& operator=(
-      const VirtualCardManualFallbackBubbleController&) = delete;
+  FilledCardInformationBubbleController() = default;
+  virtual ~FilledCardInformationBubbleController() = default;
+  FilledCardInformationBubbleController(
+      const FilledCardInformationBubbleController&) = delete;
+  FilledCardInformationBubbleController& operator=(
+      const FilledCardInformationBubbleController&) = delete;
 
-  // Returns a reference to VirtualCardManualFallbackBubbleController given the
+  // Returns a reference to FilledCardInformationBubbleController given the
   // |web_contents|. If the controller does not exist, creates one and returns
   // it.
-  static VirtualCardManualFallbackBubbleController* GetOrCreate(
+  static FilledCardInformationBubbleController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Returns a reference to VirtualCardManualFallbackBubbleController given the
+  // Returns a reference to FilledCardInformationBubbleController given the
   // |web_contents|. If the controller does not exist, returns nullptr.
-  static VirtualCardManualFallbackBubbleController* Get(
+  static FilledCardInformationBubbleController* Get(
       content::WebContents* web_contents);
 
   // Returns a reference to the bubble view.
@@ -59,7 +59,7 @@ class VirtualCardManualFallbackBubbleController {
   virtual std::u16string GetBubbleTitleText() const = 0;
 
   // Returns the bubble popup options.
-  virtual const VirtualCardManualFallbackBubbleOptions& GetBubbleOptions()
+  virtual const FilledCardInformationBubbleOptions& GetBubbleOptions()
       const = 0;
 
   // Returns the text used to show that the card entity in the bubble is a
@@ -86,11 +86,11 @@ class VirtualCardManualFallbackBubbleController {
 
   // Returns the text value of the |field| for display.
   virtual std::u16string GetValueForField(
-      VirtualCardManualFallbackBubbleField field) const = 0;
+      FilledCardInformationBubbleField field) const = 0;
 
   // Returns the tooltip of the button.
   virtual std::u16string GetFieldButtonTooltip(
-      VirtualCardManualFallbackBubbleField field) const = 0;
+      FilledCardInformationBubbleField field) const = 0;
 
   // Returns whether the omnibox icon for the bubble should be visible.
   virtual bool ShouldIconBeVisible() const = 0;
@@ -103,9 +103,9 @@ class VirtualCardManualFallbackBubbleController {
   virtual void OnLinkClicked(const GURL& url) = 0;
 
   // Handles the event of clicking the |field|'s button.
-  virtual void OnFieldClicked(VirtualCardManualFallbackBubbleField field) = 0;
+  virtual void OnFieldClicked(FilledCardInformationBubbleField field) = 0;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_FILLED_CARD_INFORMATION_BUBBLE_CONTROLLER_H_

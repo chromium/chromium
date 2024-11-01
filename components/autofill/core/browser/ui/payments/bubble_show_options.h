@@ -12,15 +12,14 @@
 
 namespace autofill {
 
-// Contains the necessary information to pop up the virtual card manual fallback
+// Contains the necessary information to pop up the filled card information
 // bubble.
-struct VirtualCardManualFallbackBubbleOptions {
-  VirtualCardManualFallbackBubbleOptions();
-  VirtualCardManualFallbackBubbleOptions(
-      const VirtualCardManualFallbackBubbleOptions&);
-  VirtualCardManualFallbackBubbleOptions& operator=(
-      const VirtualCardManualFallbackBubbleOptions&);
-  ~VirtualCardManualFallbackBubbleOptions();
+struct FilledCardInformationBubbleOptions {
+  FilledCardInformationBubbleOptions();
+  FilledCardInformationBubbleOptions(const FilledCardInformationBubbleOptions&);
+  FilledCardInformationBubbleOptions& operator=(
+      const FilledCardInformationBubbleOptions&);
+  ~FilledCardInformationBubbleOptions();
 
   bool IsValid() const;
 
@@ -35,6 +34,7 @@ struct VirtualCardManualFallbackBubbleOptions {
 
   // The credit card object containing information (other than CVC) for the
   // virtual card.
+  // TODO(crbug.com/369472865): Update to filled_card
   CreditCard virtual_card;
 
   // The CVC for the `virtual_card`.

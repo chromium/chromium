@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
@@ -32,8 +34,6 @@
 #include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -219,13 +219,12 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddNewAddressProfileBubble(
       is_user_gesture);
 }
 
-AutofillBubbleBase*
-AutofillBubbleHandlerImpl::ShowVirtualCardManualFallbackBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowFilledCardInformationBubble(
     content::WebContents* web_contents,
-    VirtualCardManualFallbackBubbleController* controller,
+    FilledCardInformationBubbleController* controller,
     bool is_user_gesture) {
-  return ShowBubble<VirtualCardManualFallbackBubbleViews>(
-      toolbar_button_provider_, PageActionIconType::kVirtualCardManualFallback,
+  return ShowBubble<FilledCardInformationBubbleViews>(
+      toolbar_button_provider_, PageActionIconType::kFilledCardInformation,
       web_contents, controller, is_user_gesture);
 }
 

@@ -1882,7 +1882,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(enrolled_card_suggestion.IsAcceptable(), true);
   EXPECT_EQ(enrolled_card_suggestion.acceptance_a11y_announcement,
             l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY));
+                IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_CARD_INFORMATION_ENTRY));
 }
 
 // Verify that the virtual credit card suggestion has the correct labels.

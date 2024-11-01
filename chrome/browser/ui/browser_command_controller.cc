@@ -674,8 +674,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_ADDRESSES:
       ShowAddresses(browser_);
       break;
-    case IDC_VIRTUAL_CARD_MANUAL_FALLBACK:
-      ShowVirtualCardManualFallbackBubble(browser_);
+    case IDC_FILLED_CARD_INFORMATION:
+      ShowFilledCardInformationBubble(browser_);
       break;
     case IDC_VIRTUAL_CARD_ENROLL:
       ShowVirtualCardEnrollBubble(browser_);

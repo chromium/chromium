@@ -176,7 +176,7 @@ void SaveIban(Browser* browser);
 void ShowMandatoryReauthOptInPrompt(Browser* browser);
 void MigrateLocalCards(Browser* browser);
 void SaveAutofillAddress(Browser* browser);
-void ShowVirtualCardManualFallbackBubble(Browser* browser);
+void ShowFilledCardInformationBubble(Browser* browser);
 void ShowVirtualCardEnrollBubble(Browser* browser);
 void StartTabOrganizationRequest(Browser* browser);
 void ShowTranslateBubble(Browser* browser);

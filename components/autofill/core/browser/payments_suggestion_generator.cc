@@ -975,7 +975,7 @@ Suggestion CreateCreditCardSuggestion(
 
   if (virtual_card_option) {
     suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY);
+        IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_CARD_INFORMATION_ENTRY);
   } else if (is_manual_fallback) {
     AddPaymentsGranularFillingChildSuggestions(
         credit_card, suggestion,
