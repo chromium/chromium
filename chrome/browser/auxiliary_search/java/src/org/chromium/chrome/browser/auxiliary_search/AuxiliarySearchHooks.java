@@ -22,5 +22,5 @@ public interface AuxiliarySearchHooks {
     AuxiliarySearchController createAuxiliarySearchController(
             @NonNull Context context,
             @NonNull Profile profile,
-            @NonNull TabModelSelector tabModelSelector);
+            @Nullable TabModelSelector tabModelSelector);
 }

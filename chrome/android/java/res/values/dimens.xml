@@ -374,7 +374,4 @@ found in the LICENSE file.
 
     <!-- tab strip context menu-->
     <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
-
-    <!-- Auxiliary search dimensions. -->
-    <dimen name="auxiliary_search_favicon_size">36dp</dimen>
 </resources>

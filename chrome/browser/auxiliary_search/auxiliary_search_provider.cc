@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 
 #include <algorithm>
 
@@ -14,9 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +27,7 @@
 #include "url/url_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/AuxiliarySearchBridge_jni.h"
+#include "chrome/browser/auxiliary_search/jni_headers/AuxiliarySearchBridge_jni.h"
 
 using base::android::ToJavaByteArray;
 using bookmarks::BookmarkModel;
@@ -112,8 +112,7 @@ base::WeakPtr<TabAndroid> FilterNonSensitiveSearchableTab(
 
 AuxiliarySearchProvider::AuxiliarySearchProvider(
     bookmarks::BookmarkModel* bookmark_model)
-    : bookmark_model_(bookmark_model) {
-}
+    : bookmark_model_(bookmark_model) {}
 
 AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 

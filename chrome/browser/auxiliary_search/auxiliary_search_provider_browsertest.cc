@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"

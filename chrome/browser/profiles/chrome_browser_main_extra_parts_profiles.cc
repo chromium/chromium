@@ -272,7 +272,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/android/omnibox/autocomplete_controller_android.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h"
@@ -280,6 +279,7 @@
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"

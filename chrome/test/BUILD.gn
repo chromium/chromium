@@ -1429,7 +1429,6 @@ if (is_android) {
     sources = [
       "../browser/accessibility/accessibility_prefs/android/accessibility_android_policy_browsertest.cc",
       "../browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller_browsertest.cc",
-      "../browser/android/auxiliary_search/auxiliary_search_provider_browsertest.cc",
       "../browser/android/cookies/cookies_fetcher_restore_util_browsertest.cc",
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
@@ -1444,6 +1443,7 @@ if (is_android) {
       "../browser/android/webapk/webapk_installer_browsertest.cc",
       "../browser/android/webapk/webapk_restore_task_browsertest.cc",
       "../browser/android/webview_renderer_extension_browsertest.cc",
+      "../browser/auxiliary_search/auxiliary_search_provider_browsertest.cc",
       "../browser/banners/android/ambient_badge_manager_browsertest.cc",
       "../browser/banners/app_banner_manager_browsertest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
@@ -7005,7 +7005,6 @@ test("unit_tests") {
 
   if (is_android) {
     sources += [
-      "../browser/android/auxiliary_search/auxiliary_search_provider_unittest.cc",
       "../browser/android/backup/dict_pref_backup_serializer_unittest.cc",
       "../browser/android/bookmarks/partner_bookmarks_shim_unittest.cc",
       "../browser/android/compositor/layer/tab_layer_unittest.cc",
@@ -7035,6 +7034,7 @@ test("unit_tests") {
       "../browser/autofill/android/save_update_address_profile_message_controller_unittest.cc",
       "../browser/autofill/android/save_update_address_profile_prompt_controller_unittest.cc",
       "../browser/autofill/autofill_save_card_infobar_delegate_mobile_unittest.cc",
+      "../browser/auxiliary_search/auxiliary_search_provider_unittest.cc",
       "../browser/bookmarks//android/bookmark_bridge_unittest.cc",
       "../browser/commerce/merchant_viewer/merchant_viewer_data_manager_unittest.cc",
       "../browser/device_reauth/android/device_authenticator_android_unittest.cc",
@@ -7109,10 +7109,10 @@ test("unit_tests") {
       "//chrome/browser:delta_file_proto",
       "//chrome/browser:profile_token",
       "//chrome/browser:usage_stats_proto",
-      "//chrome/browser/android/auxiliary_search/proto",
       "//chrome/browser/android/httpclient:unittests",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/android/webapk/test:webapk_test_support",
+      "//chrome/browser/auxiliary_search/proto",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/facilitated_payments:unit_tests",
       "//chrome/browser/facilitated_payments/ui/android:unit_tests",

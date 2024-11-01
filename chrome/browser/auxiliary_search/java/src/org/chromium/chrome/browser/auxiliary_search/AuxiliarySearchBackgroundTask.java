@@ -20,7 +20,6 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -89,7 +88,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         mAuxiliarySearchController =
                 AuxiliarySearchControllerFactory.createAuxiliarySearchController(
-                        mContext, profile, /* TabModelSelector= */ null);
+                        mContext, profile, /* tabModelSelector= */ null);
 
         long startTimeMs = TimeUtils.uptimeMillis();
         // Record the delay from soonest expected wakeup time.
@@ -104,7 +103,8 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         int faviconSize =
                 USE_LARGE_FAVICON.getValue()
                         ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
-                        : resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
+                        : resources.getDimensionPixelSize(
+                                R.dimen.auxiliary_search_favicon_size_small);
 
         readTabDonateMetadataAsync(
                 (tabs) ->

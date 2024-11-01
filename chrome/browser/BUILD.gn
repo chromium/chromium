@@ -2522,8 +2522,6 @@ static_library("browser") {
       "android/android_theme_resources.h",
       "android/autocomplete/tab_matcher_android.cc",
       "android/autocomplete/tab_matcher_android.h",
-      "android/auxiliary_search/auxiliary_search_provider.cc",
-      "android/auxiliary_search/auxiliary_search_provider.h",
       "android/background_sync_launcher_android.cc",
       "android/background_sync_launcher_android.h",
       "android/background_tab_manager.cc",
@@ -2816,6 +2814,8 @@ static_library("browser") {
       "android/webapk/webapk_update_manager.cc",
       "android/webapps/webapp_registry.cc",
       "android/webapps/webapp_registry.h",
+      "auxiliary_search/auxiliary_search_provider.cc",
+      "auxiliary_search/auxiliary_search_provider.h",
       "banners/android/chrome_app_banner_manager_android.cc",
       "banners/android/chrome_app_banner_manager_android.h",
       "bluetooth/android/bluetooth_bridge.cc",
@@ -3225,6 +3225,7 @@ static_library("browser") {
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/autofill/android:jni_headers",
+      "//chrome/browser/auxiliary_search:jni_headers",
       "//chrome/browser/bluetooth/android:jni_headers",
       "//chrome/browser/bookmarks/android",
       "//chrome/browser/bookmarks/android:impl",
@@ -8662,8 +8663,8 @@ static_library("browser_generated_files") {
   ]
   if (is_android) {
     public_deps += [
-      "//chrome/browser/android/auxiliary_search/proto",
       "//chrome/browser/android/webapk/proto",
+      "//chrome/browser/auxiliary_search/proto",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
     ]
   } else {

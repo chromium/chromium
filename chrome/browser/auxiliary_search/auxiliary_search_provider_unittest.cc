@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
+#include "chrome/browser/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"

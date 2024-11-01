@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
-#define CHROME_BROWSER_ANDROID_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
+#ifndef CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
+#define CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
 
 #include <jni.h>
 
@@ -75,4 +75,4 @@ class AuxiliarySearchProvider : public KeyedService {
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
+#endif  // CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_
