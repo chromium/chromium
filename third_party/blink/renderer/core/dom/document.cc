@@ -7273,27 +7273,6 @@ void Document::MaybeExecuteDelayedAsyncScripts(
       if (milestone == MilestoneForDelayedAsyncScript::kFinishedParsing)
         script_runner_delayer_->Deactivate();
       break;
-    case features::DelayAsyncScriptDelayType::kEachLcpCandidate:
-      // Notify the ScriptRunner if a LCP candidate is reported.
-      if (milestone == MilestoneForDelayedAsyncScript::kLcpCandidate) {
-        // Flush all async scripts that are already prepared but forced to be
-        // delayed.
-        script_runner_delayer_->Deactivate();
-        // Delay async scripts until next LCP candidate occurs or reaches the
-        // time limit.
-        script_runner_delayer_->Activate();
-      }
-      break;
-    case features::DelayAsyncScriptDelayType::kEachPaint:
-      // Notify the ScriptRunner if paint happened.
-      if (milestone == MilestoneForDelayedAsyncScript::kPaint) {
-        // Flush all async scripts that are already prepared but forced to be
-        // delayed.
-        script_runner_delayer_->Deactivate();
-        // Delay async scripts until next paint or reaches the time limit.
-        script_runner_delayer_->Activate();
-      }
-      break;
     case features::DelayAsyncScriptDelayType::kTillFirstLcpCandidate:
       // Notify the ScriptRunner if a LCP candidate is reported.
       if (milestone == MilestoneForDelayedAsyncScript::kLcpCandidate) {
@@ -7307,10 +7286,6 @@ void Document::MaybeExecuteDelayedAsyncScripts(
 
 void Document::MarkFirstPaint() {
   MaybeExecuteDelayedAsyncScripts(MilestoneForDelayedAsyncScript::kFirstPaint);
-}
-
-void Document::OnPaintFinished() {
-  MaybeExecuteDelayedAsyncScripts(MilestoneForDelayedAsyncScript::kPaint);
 }
 
 void Document::OnLargestContentfulPaintUpdated() {

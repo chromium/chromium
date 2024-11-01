@@ -1432,7 +1432,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void ParseDNSPrefetchControlHeader(const String&);
 
   void MarkFirstPaint();
-  void OnPaintFinished();
   void OnLargestContentfulPaintUpdated();
   void OnPrepareToStopParsing();
   void FinishedParsing();
@@ -2311,7 +2310,6 @@ class CORE_EXPORT Document : public ContainerNode,
     kFirstPaint,
     kFinishedParsing,
     kLcpCandidate,
-    kPaint,
   };
   void MaybeExecuteDelayedAsyncScripts(MilestoneForDelayedAsyncScript);
 

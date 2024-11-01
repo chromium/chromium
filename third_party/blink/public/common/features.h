@@ -317,8 +317,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelayAsyncScriptExecution);
 enum class DelayAsyncScriptDelayType {
   kFinishedParsing,
   kFirstPaintOrFinishedParsing,
-  kEachLcpCandidate,
-  kEachPaint,
   kTillFirstLcpCandidate,
 };
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
