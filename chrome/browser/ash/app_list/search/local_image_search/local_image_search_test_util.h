@@ -7,9 +7,12 @@
 
 namespace app_list {
 
+struct AnnotationInfo;
 struct ImageInfo;
 struct ImageStatus;
 struct FileSearchResult;
+
+bool operator==(const AnnotationInfo& i1, const AnnotationInfo& i2);
 
 bool operator==(const ImageInfo& i1, const ImageInfo& i2);
 

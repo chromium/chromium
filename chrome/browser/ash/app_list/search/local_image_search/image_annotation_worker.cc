@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace app_list {
@@ -42,8 +43,8 @@ namespace {
 using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
-constexpr int kMaxFileSizeBytes = 2e+7;   // ~ 20MiB
-constexpr int kConfidenceThreshold = 79;  // 30% of 255 (max of ICA)
+constexpr int kMaxFileSizeBytes = 2e+7;  // ~ 20MiB
+constexpr float kConfidenceThreshold = 0.3f;
 constexpr int kOcrMinWordLength = 3;
 constexpr int kRetryDelay = 2;              // For exponential delays.
 constexpr int kMaxNumRetries = 12;          // Over 2 hrs.
@@ -82,12 +83,6 @@ void LogIndexingUma(IndexingStatus status) {
   base::UmaHistogramEnumeration(
       "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus",
       status);
-}
-
-int GetConfidenceThreshold() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      search_features::kLauncherLocalImageSearchConfidence,
-      "confidence_threshold", kConfidenceThreshold);
 }
 
 // Exclude animated WebPs.
@@ -505,6 +500,8 @@ void ImageAnnotationWorker::OnDecodeImageFile(
     MaybeProcessNextItem(image_info.path);
     return;
   }
+  image_info.width = image_skia.width();
+  image_info.height = image_skia.height();
 
   if (search_features::IsLauncherImageSearchDebugEnabled()) {
     LOG(ERROR) << "Image decoding succeed.";
@@ -601,7 +598,7 @@ void ImageAnnotationWorker::OnPerformIca(
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {
-    if (a->confidence < GetConfidenceThreshold() || !a->name.has_value() ||
+    if (a->score < kConfidenceThreshold || !a->name.has_value() ||
         a->name->empty()) {
       continue;
     }
@@ -609,8 +606,28 @@ void ImageAnnotationWorker::OnPerformIca(
     TokenizedString tokens(base::UTF8ToUTF16(a->name.value()), Mode::kWords);
     for (const auto& word : tokens.tokens()) {
       DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
-               << " Confidence: " << (int)a->confidence << " Name: " << word;
-      image_info.annotations.insert(base::UTF16ToUTF8(word));
+               << " Confidence score: " << static_cast<float>(a->score)
+               << " Name: " << word;
+      std::string annotation = base::UTF16ToUTF8(word);
+      // If duplication occurs, keep the one with higher confidence score.
+      if (image_info.annotation_map.contains(annotation) &&
+          image_info.annotation_map[annotation].score >= a->score) {
+        continue;
+      }
+
+      AnnotationInfo annotation_info;
+      annotation_info.score = a->score;
+      if (a->bounding_box.has_value() && image_info.width > 0 &&
+          image_info.height > 0) {
+        annotation_info.x =
+            static_cast<float>(a->bounding_box->x()) / image_info.width;
+        annotation_info.y =
+            static_cast<float>(a->bounding_box->y()) / image_info.height;
+        annotation_info.area =
+            static_cast<float>(a->bounding_box->width()) / image_info.width *
+            static_cast<float>(a->bounding_box->height()) / image_info.height;
+      }
+      image_info.annotation_map[annotation] = annotation_info;
     }
   }
   // Always insert the `image_info` because even if there is no annotation for

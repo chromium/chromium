@@ -89,17 +89,19 @@ bool InvertedIndexTable::Drop(SqlDatabase* db) {
 }
 
 // static
-// TODO(b:343320265): Columns for score and bounding box is currently unused as
-// they not provided by OCR. Update their usage when integrating with the ICA
-// indexing.
 bool InvertedIndexTable::Insert(SqlDatabase* db,
                                 int64_t term_id,
                                 int64_t document_id,
-                                IndexingSource indexing_source) {
+                                IndexingSource indexing_source,
+                                std::optional<float> score,
+                                std::optional<float> x,
+                                std::optional<float> y,
+                                std::optional<float> area) {
   static constexpr char kQuery[] =
       // clang-format off
-      "INSERT INTO inverted_index(term_id, document_id, source) "
-          "VALUES(?,?,?)";
+      "INSERT INTO inverted_index(term_id, document_id, "
+          "source, score, x, y, area) "
+          "VALUES(?,?,?,?,?,?,?)";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -112,6 +114,27 @@ bool InvertedIndexTable::Insert(SqlDatabase* db,
   statement->BindInt64(0, term_id);
   statement->BindInt64(1, document_id);
   statement->BindInt(2, ConvertIndexingSourceToInt(indexing_source));
+  if (score.has_value()) {
+    statement->BindDouble(3, score.value());
+  } else {
+    statement->BindNull(3);
+  }
+  if (x.has_value()) {
+    statement->BindDouble(4, x.value());
+  } else {
+    statement->BindNull(4);
+  }
+  if (y.has_value()) {
+    statement->BindDouble(5, y.value());
+  } else {
+    statement->BindNull(5);
+  }
+  if (area.has_value()) {
+    statement->BindDouble(6, area.value());
+  } else {
+    statement->BindNull(6);
+  }
+
   if (!statement->Run()) {
     LOG(ERROR) << "Couldn't execute the statement";
     return false;

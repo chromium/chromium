@@ -95,6 +95,62 @@ TEST_F(AnnotationStorageTest, Insert) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AnnotationStorageTest, InsertIca) {
+  storage_->Initialize();
+  auto time = base::Time::Now();
+
+  // Inserts ICA annotation with full info.
+  ImageInfo bar_image({}, test_directory_.AppendASCII("bar.jpg"), time,
+                      /*file_size=*/1);
+  AnnotationInfo info_1;
+  info_1.score = 0.1f;
+  info_1.x = 0.2f;
+  info_1.y = 0.3f;
+  info_1.area = 0.4f;
+  bar_image.annotation_map["test1"] = info_1;
+
+  storage_->Insert(bar_image, IndexingSource::kIca);
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
+              testing::ElementsAreArray({bar_image}));
+
+  // Inserts ICA annotation with score only.
+  ImageInfo bar_image1({}, test_directory_.AppendASCII("bar.png"),
+                       std::move(time), 1);
+  AnnotationInfo info_2;
+  info_2.score = 0.5f;
+  bar_image1.annotation_map["test1"] = info_2;
+
+  storage_->Insert(bar_image1, IndexingSource::kIca);
+  EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
+              testing::ElementsAreArray({bar_image, bar_image1}));
+
+  // Inserts ICA result with multiple annotations.
+  ImageInfo foo_image({}, test_directory_.AppendASCII("foo.png"),
+                      base::Time::Now(), 2);
+
+  ImageInfo foo_image_insert = foo_image;
+  AnnotationInfo info_3;
+  info_3.score = 0.6f;
+  info_3.x = 0.7f;
+  info_3.y = 0.8f;
+  info_3.area = 0.1f;
+  foo_image_insert.annotation_map["test3"] = info_3;
+  AnnotationInfo info_4;
+  info_4.score = 0.9f;
+  foo_image_insert.annotation_map["test4"] = info_4;
+  storage_->Insert(foo_image_insert, IndexingSource::kIca);
+
+  // The expected results for multi-annotation insert.
+  ImageInfo foo_image_expected1 = foo_image;
+  foo_image_expected1.annotation_map["test3"] = info_3;
+  ImageInfo foo_image_expected2 = foo_image;
+  foo_image_expected2.annotation_map["test4"] = info_4;
+  EXPECT_THAT(
+      storage_->GetAllAnnotationsForTest(),
+      testing::UnorderedElementsAreArray(
+          {bar_image, bar_image1, foo_image_expected1, foo_image_expected2}));
+}
+
 TEST_F(AnnotationStorageTest, Remove) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
@@ -448,29 +504,34 @@ TEST_F(AnnotationStorageTest, MultiSource) {
             ImageStatus());
 
   auto time = base::Time::Now();
-  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"), time,
+  ImageInfo bar_image({}, test_directory_.AppendASCII("bar.jpg"), time,
                       /*file_size=*/1);
 
-  storage_->Insert(bar_image);
+  ImageInfo bar_image_ocr = bar_image;
+  bar_image_ocr.annotations.insert("test");
+  storage_->Insert(bar_image_ocr);
 
   EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
-              testing::ElementsAreArray({bar_image}));
+              testing::ElementsAreArray({bar_image_ocr}));
   // When receiving the ocr results, we should expect the `ocr_indexed` to be
   // updated.
   EXPECT_EQ(storage_->GetImageStatus(test_directory_.AppendASCII("bar.jpg")),
             ImageStatus(time, 1, 0));
 
-  // Simulates a new result with same annotation from a different indexing
-  // source.
-  ImageInfo bar_image_updated({"test"}, test_directory_.AppendASCII("bar.jpg"),
-                              time,
-                              /*file_size=*/1);
+  // Simulates a new result with same annotation from ICA.
+  ImageInfo bar_image_ica = bar_image;
+  AnnotationInfo test_annotation_info;
+  test_annotation_info.score = 0.1f;
+  test_annotation_info.x = 0.2f;
+  test_annotation_info.y = 0.3f;
+  test_annotation_info.area = 0.4f;
+  bar_image_ica.annotation_map["test"] = test_annotation_info;
 
-  storage_->Insert(bar_image_updated, IndexingSource::kIca);
+  storage_->Insert(bar_image_ica, IndexingSource::kIca);
 
   // Both results are kept in db.
   EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
-              testing::ElementsAreArray({bar_image, bar_image_updated}));
+              testing::ElementsAreArray({bar_image_ocr, bar_image_ica}));
   // When receiving the ica results, we should expect the `ica_indexed` to be
   // updated.
   EXPECT_EQ(storage_->GetImageStatus(test_directory_.AppendASCII("bar.jpg")),

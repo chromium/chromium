@@ -22,16 +22,33 @@ namespace app_list {
 class ImageAnnotationWorker;
 class SqlDatabase;
 
+// The annotation information, used by ICA.
+struct AnnotationInfo {
+  // The confidence score of the annotation, in range [0,1].
+  float score;
+  // The x-axis and y-axis of the annotation location.
+  std::optional<float> x;
+  std::optional<float> y;
+  // The area of the annotation within the image.
+  std::optional<float> area;
+};
+
 // Image metadata retrieved from the database.
 struct ImageInfo {
-  // All the annotations attributed to the image.
+  // Set of annotations attributed to the image. Used by OCR.
   std::set<std::string> annotations;
+  // Map of annotation attributed to the image, with confidence score and
+  // bounding box info. Used by ICA.
+  std::map<std::string, AnnotationInfo> annotation_map;
   // The full path to the image.
   base::FilePath path;
   // The image's last modified time.
   base::Time last_modified;
   // File size.
   int64_t file_size;
+  // Width and height of image.
+  int width;
+  int height;
 
   ImageInfo(const std::set<std::string>& annotations,
             const base::FilePath& path,
@@ -53,7 +70,7 @@ struct ImageStatus {
   // ICA indexing version. 0 if not indexed.
   int ica_version = 0;
 
-  ImageStatus() {}
+  ImageStatus() = default;
   ImageStatus(base::Time last_modified, int ocr_version, int ica_version)
       : last_modified(last_modified),
         ocr_version(ocr_version),
@@ -81,7 +98,8 @@ class AnnotationStorage {
   // Removes an image from the storage. It does nothing if the file does not
   void Remove(const base::FilePath& image_path);
 
-  // Returns all the stored annotations.
+  // Returns all the stored annotations. Each annotation is stored in a separate
+  // ImageInfo instance for testing purpose.
   std::vector<ImageInfo> GetAllAnnotationsForTest();
 
   // Returns all the stored file paths.

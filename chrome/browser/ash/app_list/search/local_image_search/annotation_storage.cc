@@ -191,18 +191,19 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
           DocumentsTable::UpdateOCRStatus(sql_database_.get(), document_id);
       break;
     case IndexingSource::kIca:
-      // TODO(b:343320265): Update the insert to include the actual score and
-      // bounding box info when the mojom is updated.
-      for (const auto& annotation : image_info.annotations) {
+      for (const auto& [annotation, annotation_info] :
+           image_info.annotation_map) {
         DVLOG(1) << annotation;
         int64_t annotation_id;
         if (!AnnotationsTable::InsertOrIgnore(sql_database_.get(),
                                               annotation) ||
             !AnnotationsTable::GetTermId(sql_database_.get(), annotation,
                                          annotation_id) ||
-            !InvertedIndexTable::Insert(sql_database_.get(), annotation_id,
-                                        document_id, indexing_source)) {
-          LOG(ERROR) << "Failed to insert into the db from OCR.";
+            !InvertedIndexTable::Insert(
+                sql_database_.get(), annotation_id, document_id,
+                indexing_source, annotation_info.score, annotation_info.x,
+                annotation_info.y, annotation_info.area)) {
+          LOG(ERROR) << "Failed to insert into the db from ICA.";
           LogErrorUma(ErrorStatus::kFailedToInsertInDb);
           return;
         }
@@ -237,7 +238,8 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT a.term, d.directory_path, d.file_name,"
-      "d.last_modified_time, d.file_size "
+          "d.last_modified_time, d.file_size, "
+          "ii.source, ii.score, ii.x, ii.y, ii.area "
           "FROM annotations AS a "
           "JOIN inverted_index AS ii ON a.term_id = ii.term_id "
           "JOIN documents AS d ON ii.document_id = d.document_id "
@@ -260,10 +262,27 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
     const int64_t file_size = statement->ColumnInt64(4);
     DVLOG(1) << "Select find: " << annotation << ", " << file_path << ", "
              << time << ", " << file_size;
-    matched_paths.push_back({{std::move(annotation)},
-                             std::move(file_path),
-                             std::move(time),
-                             file_size});
+    ImageInfo image_info(
+        {{}, std::move(file_path), std::move(time), file_size});
+
+    const int source = statement->ColumnInt(5);
+    if (source == 0) {  // OCR annotation.
+      image_info.annotations.insert(annotation);
+    } else if (source == 1) {  // ICA annotation.
+      AnnotationInfo annotation_info;
+      annotation_info.score = statement->ColumnDouble(6);
+      if (statement->GetColumnType(7) != sql::ColumnType::kNull) {
+        annotation_info.x = statement->ColumnDouble(7);
+      }
+      if (statement->GetColumnType(8) != sql::ColumnType::kNull) {
+        annotation_info.y = statement->ColumnDouble(8);
+      }
+      if (statement->GetColumnType(9) != sql::ColumnType::kNull) {
+        annotation_info.area = statement->ColumnDouble(9);
+      }
+      image_info.annotation_map[annotation] = annotation_info;
+    }
+    matched_paths.push_back(image_info);
   }
 
   return matched_paths;
