@@ -34,8 +34,6 @@
 // - src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-c32.c
 // - src/f16-f32acc-rsum/gen/f16-f32acc-rsum-avx512skx-u64-acc4.c
 // - src/f16-f32acc-rsum/gen/f16-f32acc-rsum-f16c-u32-acc4.c
-// - src/f16-gavgpool/gen/f16-gavgpool-7p7x-minmax-f16c-c8.c
-// - src/f16-gavgpool/gen/f16-gavgpool-7x-minmax-f16c-c8.c
 // - src/f16-gemm/gen/f16-gemm-1x64-minmax-avx512fp16-broadcast.c
 // - src/f16-gemm/gen/f16-gemm-7x64-minmax-avx512fp16-broadcast.c
 // - src/f16-ibilinear/gen/f16-ibilinear-fma3-c8.c
@@ -169,10 +167,6 @@
 // - src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c
 // - src/f32-f16-vcvt/gen/f32-f16-vcvt-sse2-u16.c
 // - src/f32-f16-vcvt/gen/f32-f16-vcvt-sse41-u8.c
-// - src/f32-gavgpool/f32-gavgpool-7p7x-minmax-scalar-c1.c
-// - src/f32-gavgpool/f32-gavgpool-7p7x-minmax-sse-c4.c
-// - src/f32-gavgpool/f32-gavgpool-7x-minmax-scalar-c1.c
-// - src/f32-gavgpool/f32-gavgpool-7x-minmax-sse-c4.c
 // - src/f32-gemm/gen/f32-gemm-1x16-minmax-avx-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x16-minmax-avx512f-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c
@@ -613,14 +607,6 @@
 // - src/qs8-f32-vcvt/gen/qs8-f32-vcvt-scalar-u4.c
 // - src/qs8-f32-vcvt/gen/qs8-f32-vcvt-sse2-u32.c
 // - src/qs8-f32-vcvt/gen/qs8-f32-vcvt-sse41-u16.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7p7x-minmax-fp32-scalar-imagic-c1.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7p7x-minmax-fp32-scalar-imagic-c4.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7p7x-minmax-fp32-sse2-c8.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7p7x-minmax-fp32-sse41-c8.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7x-minmax-fp32-scalar-imagic-c1.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7x-minmax-fp32-scalar-imagic-c4.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7x-minmax-fp32-sse2-c8.c
-// - src/qs8-gavgpool/gen/qs8-gavgpool-7x-minmax-fp32-sse41-c8.c
 // - src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-scalar.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx-mul16-add16.c
@@ -771,14 +757,6 @@
 // - src/qu8-f32-vcvt/gen/qu8-f32-vcvt-scalar-u4.c
 // - src/qu8-f32-vcvt/gen/qu8-f32-vcvt-sse2-u32.c
 // - src/qu8-f32-vcvt/gen/qu8-f32-vcvt-sse41-u16.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7p7x-minmax-fp32-scalar-imagic-c1.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7p7x-minmax-fp32-scalar-imagic-c4.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7p7x-minmax-fp32-sse2-c8.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7p7x-minmax-fp32-sse41-c8.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7x-minmax-fp32-scalar-imagic-c1.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7x-minmax-fp32-scalar-imagic-c4.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7x-minmax-fp32-sse2-c8.c
-// - src/qu8-gavgpool/gen/qu8-gavgpool-7x-minmax-fp32-sse41-c8.c
 // - src/qu8-gemm/gen/qu8-gemm-1x16c8-minmax-fp32-avx512skx-prfm.c
 // - src/qu8-gemm/gen/qu8-gemm-1x2-minmax-fp32-scalar-imagic.c
 // - src/qu8-gemm/gen/qu8-gemm-1x4-minmax-fp32-scalar-lrintf.c
@@ -958,10 +936,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  158,  37, 110, 254,   0, 238, 115, 150,
-   84, 151, 173,  86, 237, 233, 164, 253,
-   12, 110, 139,  41, 122, 109, 214,  90,
-  127, 160, 121, 184, 127, 234,  84, 105
+  144, 140, 126, 120,  54,  78, 197, 240,
+  152, 236, 115, 198, 173, 236, 223,  64,
+  209, 136, 114, 185,  85, 184,  11, 233,
+  105, 156, 239, 133, 239, 202, 200, 249
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
