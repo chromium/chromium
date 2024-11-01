@@ -7914,6 +7914,12 @@ const char kSimplifiedTabDragUIDescription[] =
     "Enable simplified tab dragging UI mode as a fallback if the graphical "
     "environment does not support the classic UI.";
 
+const char kWaylandLinuxDrmSyncobjName[] =
+    "Wayland linux-drm-syncobj explicit sync";
+const char kWaylandLinuxDrmSyncobjDescription[] =
+    "Enable Wayland's explicit sync support using linux-drm-syncobj."
+    "Requires minimum kernel version v6.11.";
+
 const char kWaylandPerWindowScalingName[] = "Wayland per-window scaling";
 const char kWaylandPerWindowScalingDescription[] =
     "Enable Wayland's per-window scaling experimental support.";

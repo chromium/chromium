@@ -9242,6 +9242,17 @@
     "expiry_milestone": 140
   },
   {
+    "name": "wayland-linux-drm-syncobj",
+    "owners": [
+      "orko@igalia.com",
+      "msisov@igalia.com",
+      "nickdiego@igalia.com",
+      "fangzhoug@chromium.org",
+      "thomasanderson@chromium.org"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "wayland-per-window-scaling",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
     "expiry_milestone": 138

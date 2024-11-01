@@ -4574,6 +4574,9 @@ extern const char kPulseaudioLoopbackForScreenShareDescription[];
 extern const char kSimplifiedTabDragUIName[];
 extern const char kSimplifiedTabDragUIDescription[];
 
+extern const char kWaylandLinuxDrmSyncobjName[];
+extern const char kWaylandLinuxDrmSyncobjDescription[];
+
 extern const char kWaylandPerWindowScalingName[];
 extern const char kWaylandPerWindowScalingDescription[];
 
