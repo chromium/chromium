@@ -128,6 +128,23 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     VLOG(1) << "Failed to create " << path->DirName();
     return false;
   }
+
+  // Attempt to add u+rwx to the plist dir permissions in case the LaunchAgents
+  // dir was created with incorrect permsissions.
+  if (scope == UpdaterScope::kUser) {
+    int plist_permissions_mask = 0;
+    bool got_plist_perms =
+        base::GetPosixFilePermissions(path->DirName(), &plist_permissions_mask);
+    VLOG_IF(1, !got_plist_perms)
+        << "Failed to get permissions for: " << path->DirName();
+    if (got_plist_perms &&
+        !base::SetPosixFilePermissions(
+            path->DirName(),
+            plist_permissions_mask | base::FILE_PERMISSION_USER_MASK)) {
+      VLOG(1) << "Couldn't set file permissions for: " << path->DirName();
+    }
+  }
+
   @autoreleasepool {
     NSURL* const url = base::apple::FilePathToNSURL(*path);
 
