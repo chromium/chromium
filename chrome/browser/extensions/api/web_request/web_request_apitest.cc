@@ -36,7 +36,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
-#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -48,6 +47,7 @@
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -1709,8 +1709,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // The extension should no longer receive webRequest events since they are
   // withheld. The extension icon should get updated to show the wants-to-run
   // badge UI.
-  TestExtensionActionAPIObserver action_updated_waiter(profile(),
-                                                       extension->id());
+  TestExtensionActionDispatcherObserver action_updated_waiter(profile(),
+                                                              extension->id());
   PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
   action_updated_waiter.Wait();
   EXPECT_EQ(web_contents, action_updated_waiter.last_web_contents());

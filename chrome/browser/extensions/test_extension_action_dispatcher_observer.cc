@@ -2,35 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
+#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/browser/extension_action.h"
 
 namespace extensions {
 
-TestExtensionActionAPIObserver::TestExtensionActionAPIObserver(
+TestExtensionActionDispatcherObserver::TestExtensionActionDispatcherObserver(
     content::BrowserContext* context,
     const ExtensionId& extension_id)
     : extension_id_(extension_id) {
-  scoped_observation_.Observe(ExtensionActionAPI::Get(context));
+  scoped_observation_.Observe(ExtensionActionDispatcher::Get(context));
 }
 
-TestExtensionActionAPIObserver::TestExtensionActionAPIObserver(
+TestExtensionActionDispatcherObserver::TestExtensionActionDispatcherObserver(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const std::set<raw_ptr<content::WebContents, SetExperimental>>&
         contents_to_observe)
-    : TestExtensionActionAPIObserver(context, extension_id) {
+    : TestExtensionActionDispatcherObserver(context, extension_id) {
   contents_to_observe_ = contents_to_observe;
 }
 
-TestExtensionActionAPIObserver::~TestExtensionActionAPIObserver() = default;
+TestExtensionActionDispatcherObserver::
+    ~TestExtensionActionDispatcherObserver() = default;
 
-void TestExtensionActionAPIObserver::Wait() {
+void TestExtensionActionDispatcherObserver::Wait() {
   run_loop_.Run();
 }
 
-void TestExtensionActionAPIObserver::OnExtensionActionUpdated(
+void TestExtensionActionDispatcherObserver::OnExtensionActionUpdated(
     ExtensionAction* extension_action,
     content::WebContents* web_contents,
     content::BrowserContext* browser_context) {

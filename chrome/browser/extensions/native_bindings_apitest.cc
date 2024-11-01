@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {
 
   // And the extension should be notified of the click.
   ExtensionTestMessageListener clicked_listener("clicked and removed");
-  ExtensionActionAPI::Get(profile())->DispatchExtensionActionClicked(
+  ExtensionActionDispatcher::Get(profile())->DispatchExtensionActionClicked(
       *action, web_contents, extension);
   ASSERT_TRUE(clicked_listener.WaitUntilSatisfied());
 }

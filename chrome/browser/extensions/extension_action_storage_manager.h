@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -24,8 +24,9 @@ namespace extensions {
 class StateStore;
 
 // This class manages reading and writing browser action values from storage.
-class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
-                                      public ExtensionRegistryObserver {
+class ExtensionActionStorageManager
+    : public ExtensionActionDispatcher::Observer,
+      public ExtensionRegistryObserver {
  public:
   explicit ExtensionActionStorageManager(content::BrowserContext* context);
 
@@ -36,12 +37,12 @@ class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
   ~ExtensionActionStorageManager() override;
 
  private:
-  // ExtensionActionAPI::Observer:
+  // ExtensionActionDispatcher::Observer:
   void OnExtensionActionUpdated(
       ExtensionAction* extension_action,
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
-  void OnExtensionActionAPIShuttingDown() override;
+  void OnShuttingDown() override;
 
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -58,8 +59,9 @@ class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
 
   raw_ptr<content::BrowserContext> browser_context_;
 
-  base::ScopedObservation<ExtensionActionAPI, ExtensionActionAPI::Observer>
-      extension_action_observation_{this};
+  base::ScopedObservation<ExtensionActionDispatcher,
+                          ExtensionActionDispatcher::Observer>
+      extension_action_dispatcher_observation_{this};
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

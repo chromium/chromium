@@ -46,7 +46,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -56,6 +55,7 @@
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -3984,17 +3984,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Set up an observer to listen for ExtensionAction updates for the active web
   // contents of both browser windows.
-  TestExtensionActionAPIObserver test_api_observer(
+  TestExtensionActionDispatcherObserver test_dispatcher_observer(
       profile(), extension_id, {web_contents(), second_browser_contents});
 
   EXPECT_EQ(SetExtensionActionOptions(extension_id,
                                       "{displayActionCountAsBadgeText: true}"),
             "success");
 
-  // Wait until ExtensionActionAPI::NotifyChange is called, then perform a
-  // sanity check that one action was matched, and this is reflected in the
+  // Wait until ExtensionActionDispatcher::NotifyChange is called, then perform
+  // a sanity check that one action was matched, and this is reflected in the
   // badge text.
-  test_api_observer.Wait();
+  test_dispatcher_observer.Wait();
 
   EXPECT_EQ("1", extension_action->GetDisplayBadgeText(first_browser_tab_id));
 

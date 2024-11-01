@@ -16,8 +16,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -150,7 +150,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     return ExtensionAction::ShowAction::kShowPopup;
   }
 
-  ExtensionActionAPI::Get(browser_context_)
+  ExtensionActionDispatcher::Get(browser_context_)
       ->DispatchExtensionActionClicked(*extension_action, web_contents(),
                                        extension);
   return ExtensionAction::ShowAction::kNone;
@@ -380,8 +380,8 @@ void ExtensionActionRunner::OnRequestScriptInjectionPermission(
 }
 
 void ExtensionActionRunner::NotifyChange(const Extension* extension) {
-  ExtensionActionAPI* extension_action_api =
-      ExtensionActionAPI::Get(browser_context_);
+  ExtensionActionDispatcher* extension_action_api =
+      ExtensionActionDispatcher::Get(browser_context_);
   ExtensionAction* extension_action =
       ExtensionActionManager::Get(browser_context_)
           ->GetExtensionAction(*extension);
@@ -487,7 +487,7 @@ void ExtensionActionRunner::DidFinishNavigation(
   // Note: This needs to be called *after* the maps have been updated, so that
   // when the UI updates, this object returns the proper result for "wants to
   // run".
-  ExtensionActionAPI::Get(browser_context_)
+  ExtensionActionDispatcher::Get(browser_context_)
       ->ClearAllValuesForTab(web_contents());
   // |rules_monitor_service| can be null for some unit tests.
   if (rules_monitor_service) {
@@ -500,7 +500,7 @@ void ExtensionActionRunner::DidFinishNavigation(
 }
 
 void ExtensionActionRunner::WebContentsDestroyed() {
-  ExtensionActionAPI::Get(browser_context_)
+  ExtensionActionDispatcher::Get(browser_context_)
       ->ClearAllValuesForTab(web_contents());
 
   declarative_net_request::RulesMonitorService* rules_monitor_service =

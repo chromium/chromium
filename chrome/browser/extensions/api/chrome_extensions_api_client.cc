@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
@@ -252,8 +253,8 @@ void ChromeExtensionsAPIClient::UpdateActionCount(
   if (ExtensionTabUtil::GetTabById(
           tab_id, context, true /* include_incognito */, &tab_contents) &&
       tab_contents) {
-    ExtensionActionAPI::Get(context)->NotifyChange(action, tab_contents,
-                                                   context);
+    ExtensionActionDispatcher::Get(context)->NotifyChange(action, tab_contents,
+                                                          context);
   }
 }
 
@@ -271,8 +272,8 @@ void ChromeExtensionsAPIClient::ClearActionCount(
           context, true /* include_incognito */);
 
   for (auto* active_contents : contents_to_notify) {
-    ExtensionActionAPI::Get(context)->NotifyChange(action, active_contents,
-                                                   context);
+    ExtensionActionDispatcher::Get(context)->NotifyChange(
+        action, active_contents, context);
   }
 }
 

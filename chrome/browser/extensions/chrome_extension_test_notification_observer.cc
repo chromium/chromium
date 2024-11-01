@@ -61,9 +61,10 @@ ChromeExtensionTestNotificationObserver::GetBrowserContext() {
 bool ChromeExtensionTestNotificationObserver::
     WaitForPageActionVisibilityChangeTo(int count) {
   DCHECK(browser_);
-  base::ScopedObservation<ExtensionActionAPI, ExtensionActionAPI::Observer>
+  base::ScopedObservation<ExtensionActionDispatcher,
+                          ExtensionActionDispatcher::Observer>
       observer(this);
-  observer.Observe(ExtensionActionAPI::Get(GetBrowserContext()));
+  observer.Observe(ExtensionActionDispatcher::Get(GetBrowserContext()));
   WaitForCondition(base::BindRepeating(&HasPageActionVisibilityReachedTarget,
                                        browser_, count),
                    nullptr);

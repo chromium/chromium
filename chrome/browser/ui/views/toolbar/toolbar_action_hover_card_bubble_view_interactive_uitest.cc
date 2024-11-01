@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -355,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   ASSERT_TRUE(action);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   action->SetTitle(tab_id, "Action title");
-  extensions::ExtensionActionAPI::Get(profile())->NotifyChange(
+  extensions::ExtensionActionDispatcher::Get(profile())->NotifyChange(
       action, web_contents, profile());
 
   // Verify hover card is still visible.

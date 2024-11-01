@@ -19,9 +19,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -105,7 +105,7 @@ class ExtensionActionViewControllerBrowserTest : public InProcessBrowserTest {
                                 bool wants_to_run) {
     action->SetIsVisible(
         sessions::SessionTabHelper::IdForTab(web_contents).id(), wants_to_run);
-    extensions::ExtensionActionAPI::Get(browser()->profile())
+    extensions::ExtensionActionDispatcher::Get(browser()->profile())
         ->NotifyChange(action, web_contents, browser()->profile());
   }
 

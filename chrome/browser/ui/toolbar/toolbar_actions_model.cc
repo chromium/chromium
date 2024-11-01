@@ -50,7 +50,8 @@ ToolbarActionsModel::ToolbarActionsModel(
     : profile_(profile),
       extension_prefs_(extension_prefs),
       prefs_(profile_->GetPrefs()),
-      extension_action_api_(extensions::ExtensionActionAPI::Get(profile_)),
+      extension_action_dispatcher_(
+          extensions::ExtensionActionDispatcher::Get(profile_)),
       extension_registry_(extensions::ExtensionRegistry::Get(profile_)),
       extension_action_manager_(
           extensions::ExtensionActionManager::Get(profile_)),
@@ -159,7 +160,7 @@ void ToolbarActionsModel::OnReady() {
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
   extension_registry_observation_.Observe(extension_registry_.get());
-  extension_action_observation_.Observe(extension_action_api_.get());
+  extension_action_observation_.Observe(extension_action_dispatcher_.get());
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(profile_));
 
@@ -488,7 +489,8 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
   // preference.
   DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
 
-  extension_action_api_->OnActionPinnedStateChanged(action_id, is_now_visible);
+  extension_action_dispatcher_->OnActionPinnedStateChanged(action_id,
+                                                           is_now_visible);
 }
 
 const extensions::Extension* ToolbarActionsModel::GetExtensionById(

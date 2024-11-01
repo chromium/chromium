@@ -31,7 +31,6 @@ namespace extensions {
 class CommandService;
 class ErrorConsole;
 class Extension;
-class ExtensionActionAPI;
 class ExtensionPrefs;
 class ExtensionSystem;
 class ImageLoader;
@@ -100,7 +99,6 @@ class ExtensionInfoGenerator {
   raw_ptr<CommandService> command_service_;
   raw_ptr<ExtensionSystem> extension_system_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
-  raw_ptr<ExtensionActionAPI> extension_action_api_;
   raw_ptr<WarningService> warning_service_;
   raw_ptr<ErrorConsole> error_console_;
   raw_ptr<ImageLoader> image_loader_;

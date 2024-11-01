@@ -14,12 +14,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
-#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -983,7 +983,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   gfx::Image first_icon = gfx::Image(action_view->GetIconForTest());
   ASSERT_FALSE(first_icon.IsEmpty());
 
-  TestExtensionActionAPIObserver observer(profile(), extension->id());
+  TestExtensionActionDispatcherObserver observer(profile(), extension->id());
   ResultCatcher catcher;
   ready_listener.Reply(std::string());
   EXPECT_TRUE(catcher.GetNextResult());
