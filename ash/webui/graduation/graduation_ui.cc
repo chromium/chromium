@@ -42,12 +42,22 @@ namespace {
 const std::string GetTransferUrl() {
   const std::string language_code = GraduationManager::Get()->GetLanguageCode();
 
-  const GURL transfer_url_base(kTransferURLBase);
+  std::string url_base;
+  // TODO(crbug.com/376690096): Clean up feature flag when the new
+  // endpoint is launched.
+  if (features::IsGraduationUseEmbeddedTransferEndpointEnabled()) {
+    url_base = kEmbeddedTransferURLBase;
+  } else {
+    url_base = kTransferURLBase;
+  }
+  const GURL transfer_url_base(url_base);
+
   GURL::Replacements replacements;
   const std::string query_string =
       base::StringPrintf("hl=%s", language_code.c_str());
   replacements.SetQueryStr(query_string);
   const GURL transfer_url = transfer_url_base.ReplaceComponents(replacements);
+
   CHECK(transfer_url.is_valid())
       << "Invalid URL for Takeout Transfer tool: \"" << transfer_url << "\"";
   return transfer_url.spec();
@@ -73,6 +83,10 @@ void AddResources(content::WebUIDataSource* source) {
        IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  source->AddBoolean(
+      "isEmbeddedEndpointEnabled",
+      features::IsGraduationUseEmbeddedTransferEndpointEnabled());
 
   source->AddString("startTransferUrl", GetTransferUrl());
 

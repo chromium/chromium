@@ -16,10 +16,13 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-class GraduationMochaTest : public WebUIMochaBrowserTest {
+class GraduationMochaTest : public WebUIMochaBrowserTest,
+                            public testing::WithParamInterface<bool> {
  protected:
   GraduationMochaTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kGraduation);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{ash::features::kGraduation, true},
+         {ash::features::kGraduationUseEmbeddedTransferEndpoint, GetParam()}});
     set_test_loader_host(ash::graduation::kChromeUIGraduationAppHost);
   }
 
@@ -40,14 +43,16 @@ class GraduationMochaTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GraduationMochaTest, App) {
+INSTANTIATE_TEST_SUITE_P(All, GraduationMochaTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(GraduationMochaTest, App) {
   RunGraduationTest("graduation_app_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(GraduationMochaTest, TakeoutUi) {
+IN_PROC_BROWSER_TEST_P(GraduationMochaTest, TakeoutUi) {
   RunGraduationTest("graduation_takeout_ui_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(GraduationMochaTest, WelcomeScreen) {
+IN_PROC_BROWSER_TEST_P(GraduationMochaTest, WelcomeScreen) {
   RunGraduationTest("graduation_welcome_test.js");
 }

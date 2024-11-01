@@ -15,6 +15,46 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+suite('GraduationTakeoutUiTest.WebviewUrl', function() {
+  const isEmbeddedEndpointEnabled =
+      loadTimeData.getBoolean('isEmbeddedEndpointEnabled');
+  let graduationUi: GraduationTakeoutUi;
+
+  function getWebview(): chrome.webviewTag.WebView {
+    const webview =
+        graduationUi.shadowRoot!.querySelector<chrome.webviewTag.WebView>(
+            'webview');
+    assertTrue(!!webview);
+    return webview;
+  }
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    graduationUi = new GraduationTakeoutUi();
+    document.body.appendChild(graduationUi);
+    flush();
+  });
+
+  teardown(() => {
+    graduationUi.remove();
+  });
+
+  // The webview source needs to be tested in a separate suite before
+  // GraduationTakeoutUiTest runs because that suite replaces the webview source
+  // with an empty string in the load-time data.
+  test('The initial webview source has the expected base URL', function() {
+    // Simulate that authentication has succeeded.
+    graduationUi.onAuthComplete(AuthResult.kSuccess);
+
+    if (isEmbeddedEndpointEnabled) {
+      assertTrue(getWebview().src.startsWith(
+          'https://takeout.google.com/embedded/transfer'));
+    } else {
+      assertTrue(
+          getWebview().src.startsWith('https://takeout.google.com/transfer'));
+    }
+  });
+});
 
 suite('GraduationTakeoutUiTest', function() {
   let graduationUi: GraduationTakeoutUi;
