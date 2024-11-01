@@ -69,9 +69,9 @@ FakeScannerProfileScopedDelegate::GetGoogleApisRequestSender() {
 std::unique_ptr<net::test_server::HttpResponse>
 FakeScannerProfileScopedDelegate::HandleRequest(
     const net::test_server::HttpRequest& request) {
-  CHECK(!request_callback.is_null());
+  CHECK(!request_callback_.is_null());
 
-  return request_callback.Run(request);
+  return request_callback_.Run(request);
 }
 
 }  // namespace ash

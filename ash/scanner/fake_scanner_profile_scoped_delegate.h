@@ -5,6 +5,8 @@
 #ifndef ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 #define ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 
+#include <utility>
+
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -35,6 +37,14 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
   FakeScannerProfileScopedDelegate& operator=(
       const FakeScannerProfileScopedDelegate&) = delete;
   ~FakeScannerProfileScopedDelegate() override;
+
+  // Sets the callback called when the HTTP server for the Google APIs request
+  // sender is called.
+  void SetRequestCallback(
+      net::test_server::EmbeddedTestServer::HandleRequestCallback
+          request_callback) {
+    request_callback_ = std::move(request_callback);
+  }
 
   // ScannerProfileScopedDelegate:
   ScannerSystemState GetSystemState() const override;
@@ -71,13 +81,13 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
 
   // Initialising these members will *start an HTTP server*, which is not needed
   // for most tests. These members are only initialised upon the first
-  // `GetGoogleDriveService` call. These members should either be all null, or
-  // all non-null.
+  // `GetGoogleApisRequestSender` call. These members should either be all null,
+  // or all non-null.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
 
-  net::test_server::EmbeddedTestServer::HandleRequestCallback request_callback;
+  net::test_server::EmbeddedTestServer::HandleRequestCallback request_callback_;
 };
 
 }  // namespace ash
