@@ -52,7 +52,8 @@ const char kRequestCancelledError[] = "Request cancelled";
 // duplicating a lot of code.
 struct BiddingParams {
   url::Origin main_frame_origin;
-  url::Origin bidder;
+  // The bidder / interest group owner.
+  url::Origin script_origin;
 
   // Actual requests may only have a single interest group, so only one name.
   // This is a set because this struct is also used to validate fetch
@@ -72,7 +73,8 @@ struct BiddingParams {
 // Struct with input parameters for RequestTrustedScoringSignals().
 struct ScoringParams {
   url::Origin main_frame_origin;
-  url::Origin seller;
+  // The seller.
+  url::Origin script_origin;
   GURL trusted_signals_url;
   url::Origin coordinator;
   url::Origin interest_group_owner;
@@ -122,6 +124,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
       std::string hostname;
+      url::Origin script_origin;
       std::map<int, std::vector<FetcherBiddingPartitionArgs>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -135,6 +138,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
       std::string hostname;
+      url::Origin script_origin;
       std::map<int, std::vector<FetcherScoringPartitionArgs>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
@@ -153,6 +157,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         std::string_view hostname,
+        const url::Origin& script_origin,
         const GURL& trusted_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
@@ -178,13 +183,14 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
           trusted_signals_url, bidding_and_auction_key, std::string(hostname),
-          std::move(compression_groups_copy), std::move(callback),
-          weak_ptr_factory_.GetWeakPtr()));
+          script_origin, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         std::string_view hostname,
+        const url::Origin& script_origin,
         const GURL& trusted_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<ScoringPartition>>& compression_groups,
@@ -210,8 +216,8 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
           trusted_signals_url, bidding_and_auction_key, std::string(hostname),
-          std::move(compression_groups_copy), std::move(callback),
-          weak_ptr_factory_.GetWeakPtr()));
+          script_origin, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     const raw_ptr<TestTrustedSignalsCache> cache_;
@@ -455,6 +461,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          int expected_partition_id) {
   EXPECT_EQ(fetch.hostname, params.main_frame_origin.host());
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
+  EXPECT_EQ(fetch.script_origin, params.script_origin);
   EXPECT_EQ(fetch.bidding_and_auction_key.key, params.coordinator.Serialize());
   ASSERT_EQ(fetch.compression_groups.size(), 1u);
   EXPECT_EQ(fetch.compression_groups.begin()->first,
@@ -695,8 +702,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     cache_mojo_pipe_.reset();
     other_cache_mojo_pipe_.reset();
     // This is a little awkward, but works for both bidders and sellers.
-    cache_mojo_pipe_.Bind(CreateMojoPendingRemoteForOrigin(
-        GetOriginFromParams(CreateDefaultParams())));
+    cache_mojo_pipe_.Bind(
+        CreateMojoPendingRemoteForOrigin(CreateDefaultParams().script_origin));
   }
 
   // Creates a pending scoring or bidding TrustedSignalsCache pipe for the given
@@ -712,15 +719,6 @@ class TrustedSignalsCacheTest : public testing::Test {
     }
   }
 
-  // Utility functions to return the bidder/seller origin from the provided
-  // params.
-  const url::Origin& GetOriginFromParams(const BiddingParams& bidding_params) {
-    return bidding_params.bidder;
-  }
-  const url::Origin& GetOriginFromParams(const ScoringParams& scoring_params) {
-    return scoring_params.seller;
-  }
-
   // If `script_origin` matches the default origin, returns `cache_mojo_pipe_`.
   // Otherwise, creates a new pipe for `script_origin`. Unconditionally destroys
   // any previous pipe created by this method. Primarily used in the case of a
@@ -729,8 +727,8 @@ class TrustedSignalsCacheTest : public testing::Test {
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache>&
   CreateOrGetMojoPipeGivenParams(const ParamsType& params) {
     other_cache_mojo_pipe_.reset();
-    const url::Origin& origin = GetOriginFromParams(params);
-    if (origin == GetOriginFromParams(CreateDefaultParams())) {
+    const url::Origin& origin = params.script_origin;
+    if (origin == CreateDefaultParams().script_origin) {
       return cache_mojo_pipe_;
     }
     other_cache_mojo_pipe_.Bind(CreateMojoPendingRemoteForOrigin(origin));
@@ -766,7 +764,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
       BiddingParams out;
       out.main_frame_origin = kMainFrameOrigin;
-      out.bidder = kBidder;
+      out.script_origin = kBidder;
       out.interest_group_names = {kInterestGroupName};
       out.execution_mode =
           blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
@@ -779,7 +777,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
       ScoringParams out;
       out.main_frame_origin = kMainFrameOrigin;
-      out.seller = kSeller;
+      out.script_origin = kSeller;
       out.trusted_signals_url = kTrustedScoringSignalsUrl;
       out.coordinator = kCoordinator;
       out.interest_group_owner = kBidder;
@@ -811,7 +809,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different bidders";
       out.back().request_relation = RequestRelation::kDifferentFetches;
-      out.back().params2.bidder =
+      out.back().params2.script_origin =
           url::Origin::Create(GURL("https://other.bidder.test/"));
 
       out.emplace_back(CreateDefaultTestCase());
@@ -975,7 +973,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different sellers";
       out.back().request_relation = RequestRelation::kDifferentFetches;
-      out.back().params2.seller =
+      out.back().params2.script_origin =
           url::Origin::Create(GURL("https://other.seller.test/"));
 
       out.emplace_back(CreateDefaultTestCase());
@@ -1056,7 +1054,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     // `trusted_bidding_signals_keys` may be different.
     EXPECT_EQ(bidding_params1.main_frame_origin,
               bidding_params2.main_frame_origin);
-    EXPECT_EQ(bidding_params1.bidder, bidding_params2.bidder);
+    EXPECT_EQ(bidding_params1.script_origin, bidding_params2.script_origin);
     EXPECT_EQ(bidding_params1.execution_mode, bidding_params2.execution_mode);
     EXPECT_EQ(bidding_params1.joining_origin, bidding_params2.joining_origin);
     EXPECT_EQ(bidding_params1.trusted_signals_url,
@@ -1067,7 +1065,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
     BiddingParams merged_bidding_params{
         bidding_params1.main_frame_origin,
-        bidding_params1.bidder,
+        bidding_params1.script_origin,
         bidding_params1.interest_group_names,
         bidding_params1.execution_mode,
         bidding_params1.joining_origin,
@@ -1112,7 +1110,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     // solely for the ValidateFetchParams family of methods.
     CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
-        bidding_params.main_frame_origin, bidding_params.bidder,
+        bidding_params.main_frame_origin, bidding_params.script_origin,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_signals_url, bidding_params.coordinator,
@@ -1132,7 +1130,7 @@ class TrustedSignalsCacheTest : public testing::Test {
   RequestTrustedSignals(const ScoringParams& scoring_params) {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
-        scoring_params.main_frame_origin, scoring_params.seller,
+        scoring_params.main_frame_origin, scoring_params.script_origin,
         scoring_params.trusted_signals_url, scoring_params.coordinator,
         scoring_params.interest_group_owner, scoring_params.joining_origin,
         scoring_params.render_url, scoring_params.component_render_urls,
@@ -2984,8 +2982,8 @@ TYPED_TEST(TrustedSignalsCacheTest, RequestWithWrongSignalsType) {
 
   // Create a remote associated with the right origin, but wrong signals type.
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> remote(
-      this->trusted_signals_cache_->CreateRemote(
-          wrong_signals_type, this->GetOriginFromParams(params)));
+      this->trusted_signals_cache_->CreateRemote(wrong_signals_type,
+                                                 params.script_origin));
 
   // Trying to use the remote to get data using the wrong type should result in
   // a bad message and the TrustedSignalsCache pipe being closed.

@@ -171,6 +171,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
                             base::Unretained(this)));
     EXPECT_TRUE(embedded_test_server_.Start());
     SetResponseBodyAndAddHeader(DefaultResponseBody());
+    base::AutoLock auto_lock(lock_);
+    script_origin_ = embedded_test_server_.GetOrigin(kTrustedSignalsHost);
   }
 
   ~TrustedSignalsFetcherTest() override {
@@ -185,14 +187,27 @@ class TrustedSignalsFetcherTest : public testing::Test {
   static std::string DefaultResponseBody() {
     return auction_worklet::test::ToKVv2ResponseCborString(
         R"({
-             "compressionGroups": [
-               {
-                 "compressionGroupId": 0,
-                 "ttlMs" : 100,
-                 "content" : "compression group content"
-               }
-             ]
-           })");
+          "compressionGroups": [
+            {
+              "compressionGroupId": 0,
+              "ttlMs" : 100,
+              "content" : "compression group content"
+            }
+          ]
+        })");
+  }
+
+  void SetCrossOrigin() {
+    base::AutoLock auto_lock(lock_);
+    // No requests are made to this origin, so doesn't need to come from the
+    // EmbeddedTestServer.
+    script_origin_ = url::Origin::Create(GURL("https://other-origin.test/"));
+    script_origin_is_same_origin_ = false;
+  }
+
+  url::Origin GetScriptOrigin() {
+    base::AutoLock auto_lock(lock_);
+    return script_origin_;
   }
 
   GURL TrustedBiddingSignalsUrl() const {
@@ -245,7 +260,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), kDefaultHostname, url,
+        url_loader_factory_.get(), kDefaultHostname, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -274,7 +289,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), kDefaultHostname, url,
+        url_loader_factory_.get(), kDefaultHostname, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -389,11 +404,57 @@ class TrustedSignalsFetcherTest : public testing::Test {
       const net::test_server::HttpRequest& request) {
     base::AutoLock auto_lock(lock_);
     EXPECT_FALSE(request_path_);
-    request_path_ = request.relative_url;
+    // Don't record path for preflights - it should be recorded for the final
+    // request instead.
+    if (request.method_string != net::HttpRequestHeaders::kOptionsMethod) {
+      request_path_ = request.relative_url;
+    }
 
     if (request.relative_url == kTrustedBiddingSignalsPath ||
         request.relative_url == kTrustedScoringSignalsPath) {
       EXPECT_FALSE(request_body_.has_value());
+
+      EXPECT_EQ(request.headers.find("Cookie"), request.headers.end());
+
+      EXPECT_THAT(request.headers,
+                  testing::Contains(std::pair("Sec-Fetch-Mode", "cors")));
+      EXPECT_THAT(request.headers, testing::Contains(std::pair(
+                                       "Origin", script_origin_.Serialize())));
+
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      if (script_origin_is_same_origin_) {
+        EXPECT_THAT(request.headers, testing::Contains(std::pair(
+                                         "Sec-Fetch-Site", "same-origin")));
+      } else {
+        EXPECT_THAT(request.headers, testing::Contains(std::pair(
+                                         "Sec-Fetch-Site", "cross-site")));
+
+        // This needs to be sent both for the preflight and the actual request
+        // in the cross-origin case.
+        response->AddCustomHeader("Access-Control-Allow-Origin",
+                                  script_origin_.Serialize());
+
+        // If haven't see the options request yet, expect to see it before the
+        // actual request.
+        if (!seen_options_request_) {
+          if (request.method_string !=
+              net::HttpRequestHeaders::kOptionsMethod) {
+            ADD_FAILURE() << "Options method expected but got "
+                          << request.method_string;
+            return nullptr;
+          }
+          EXPECT_THAT(request.headers,
+                      testing::Contains(std::pair(
+                          "Access-Control-Request-Headers", "content-type")));
+          response->AddCustomHeader("Access-Control-Allow-Headers",
+                                    "Content-Type");
+          seen_options_request_ = true;
+          EXPECT_FALSE(request.has_content);
+          response->set_code(net::HttpStatusCode::HTTP_NO_CONTENT);
+          return response;
+        }
+      }
+
       EXPECT_THAT(
           request.headers,
           testing::Contains(std::pair(
@@ -401,7 +462,6 @@ class TrustedSignalsFetcherTest : public testing::Test {
       EXPECT_THAT(request.headers,
                   testing::Contains(std::pair(
                       "Accept", TrustedSignalsFetcher::kResponseMediaType)));
-      EXPECT_EQ(request.headers.find("Cookie"), request.headers.end());
       EXPECT_TRUE(request.has_content);
       EXPECT_EQ(request.method_string, net::HttpRequestHeaders::kPostMethod);
 
@@ -441,13 +501,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
         response_body = response_body_;
       }
 
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_content_type(response_mime_type_);
       response->set_code(response_status_code_);
       response->set_content(response_body);
       return response;
     }
-
     return nullptr;
   }
 
@@ -487,6 +545,15 @@ class TrustedSignalsFetcherTest : public testing::Test {
   net::HttpStatusCode response_status_code_{net::HTTP_OK};
 
   base::Lock lock_;
+
+  // The origin of the interest group owner or seller, and whether it's
+  // same-origin to the signals URL. Populated when starting test server.
+  url::Origin script_origin_ GUARDED_BY(lock_);
+  bool script_origin_is_same_origin_ GUARDED_BY(lock_) = true;
+
+  // Set to true once an OPTIONS request is observed. Only one options request
+  // is expected.
+  bool seen_options_request_ GUARDED_BY(lock_) = false;
 
   // Path of the last observed request. Don't record URL, because the embedded
   // test server doesn't report the full requested URL.
@@ -622,25 +689,25 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": []
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": []
+              }
+            ]
+          }
+        ]
+      })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -663,25 +730,25 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1", "key2", "key3" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1", "key2", "key3" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -698,25 +765,25 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1", "group2", "group3" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1", "group2", "group3" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -733,26 +800,26 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "metadata": { "foo": "bar" },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "metadata": { "foo": "bar" },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -771,30 +838,30 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "metadata": {
-                 "foo": "bar",
-                 "Foo": "bAr",
-                 "oof": "rab",
-               },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "metadata": {
+              "foo": "bar",
+              "Foo": "bAr",
+              "oof": "rab",
+            },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -974,36 +1041,36 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 3,
-               "id": 7,
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 3,
+            "id": 7,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   // The response similarly only includes information for compression group 3.
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-             "compressionGroups": [
-               {
-                 "compressionGroupId": 3,
-                 "content": "content"
-               }
-             ]
-           })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 3,
+            "content": "content"
+          }
+        ]
+      })"));
 
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
@@ -1420,39 +1487,39 @@ TEST_F(TrustedSignalsFetcherTest,
        CompressionGroupWithBadOrNoCompressionGroupId) {
   const std::string_view kTestCases[] = {
       R"({
-           "compressionGroups": [
-             {
-               "content" : "content"
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "content" : "content"
+          }
+        ]
+      })",
 
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": "Jim",
-               "content" : "content"
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": "Jim",
+            "content" : "content"
+          }
+        ]
+      })",
 
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": -1,
-               "content" : "content"
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": -1,
+            "content" : "content"
+          }
+        ]
+      })",
 
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0.0,
-               "content" : "content"
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0.0,
+            "content" : "content"
+          }
+        ]
+      })",
   };
 
   for (const std::string_view test_string : kTestCases) {
@@ -1480,41 +1547,41 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadOrNoContent) {
   // sent out, anyways.
   const std::vector<std::string_view> kTestCases = {
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0
+          }
+        ]
+      })",
 
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 1,
-               "content" : 5
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 1,
+            "content" : 5
+          }
+        ]
+      })",
 
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 2,
-               "content" : ["content"]
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 2,
+            "content" : ["content"]
+          }
+        ]
+      })",
 
       // This content type is a string instead of a binary string, which should
       // result in an error.
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 3,
-               "content" : "content"
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 3,
+            "content" : "content"
+          }
+        ]
+      })",
   };
 
   for (size_t i = 0; i < kTestCases.size(); ++i) {
@@ -1545,24 +1612,24 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadTtl) {
   // sent out, anyways.
   const std::vector<std::string_view> kTestCases = {
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content",
-               "ttlMs": "grapefruit"
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content",
+            "ttlMs": "grapefruit"
+          }
+        ]
+      })",
 
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 1,
-               "content": "content",
-               "ttlMs": 0.5
-             }
-           ]
-         })",
+        "compressionGroups": [
+          {
+            "compressionGroupId": 1,
+            "content": "content",
+            "ttlMs": 0.5
+          }
+        ]
+      })",
   };
 
   for (size_t i = 0; i < kTestCases.size(); ++i) {
@@ -1586,13 +1653,13 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadTtl) {
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNoTtl) {
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content"
-             }
-           ]
-         })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content"
+          }
+        ]
+      })"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
@@ -1607,14 +1674,14 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNoTtl) {
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithZeroTtl) {
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content",
-               "ttlMs": 0
-             }
-           ]
-         })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content",
+            "ttlMs": 0
+          }
+        ]
+      })"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
@@ -1630,14 +1697,14 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithZeroTtl) {
 TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithNegativeTtl) {
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content",
-               "ttlMs": -1
-             }
-           ]
-         })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content",
+            "ttlMs": -1
+          }
+        ]
+      })"));
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
@@ -1672,55 +1739,55 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             },
-             {
-               "compressionGroupId": 0,
-               "id": 1,
-               "metadata": { "foo": "bar" },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group2" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key2" ]
-                 }
-               ]
-             },
-             {
-               "compressionGroupId": 0,
-               "id": 2,
-               "metadata": { "foo2": "bar2"  },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1", "group2", "group3" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1", "key2", "key3" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          },
+          {
+            "compressionGroupId": 0,
+            "id": 1,
+            "metadata": { "foo": "bar" },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group2" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key2" ]
+              }
+            ]
+          },
+          {
+            "compressionGroupId": 0,
+            "id": 2,
+            "metadata": { "foo2": "bar2"  },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1", "group2", "group3" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1", "key2", "key3" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   ValidateDefaultFetchResult(
       RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
@@ -1812,17 +1879,17 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsDuplicateCompressionGroups) {
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content"
-             },
-             {
-               "compressionGroupId": 0,
-               "content": "content"
-             }
-           ]
-         })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content"
+          },
+          {
+            "compressionGroupId": 0,
+            "content": "content"
+          }
+        ]
+      })"));
 
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
@@ -1861,75 +1928,75 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
   // header and padding added before beign compared to actual body.
   const std::string_view kExpectedRequestBodyJson =
       R"({
-           "acceptCompression": [ "none", "gzip" ],
-           "metadata": { "hostname": "host.test" },
-           "partitions": [
-             {
-               "compressionGroupId": 0,
-               "id": 0,
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1" ]
-                 }
-               ]
-             },
-             {
-               "compressionGroupId": 1,
-               "id": 0,
-               "metadata": { "foo": "bar" },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group2" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key2" ]
-                 }
-               ]
-             },
-             {
-               "compressionGroupId": 2,
-               "id": 0,
-               "metadata": { "foo2": "bar2" },
-               "arguments": [
-                 {
-                   "tags": [ "interestGroupNames" ],
-                   "data": [ "group1", "group2", "group3" ]
-                 },
-                 {
-                   "tags": [ "keys" ],
-                   "data": [ "key1", "key2", "key3" ]
-                 }
-               ]
-             }
-           ]
-         })";
+        "acceptCompression": [ "none", "gzip" ],
+        "metadata": { "hostname": "host.test" },
+        "partitions": [
+          {
+            "compressionGroupId": 0,
+            "id": 0,
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1" ]
+              }
+            ]
+          },
+          {
+            "compressionGroupId": 1,
+            "id": 0,
+            "metadata": { "foo": "bar" },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group2" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key2" ]
+              }
+            ]
+          },
+          {
+            "compressionGroupId": 2,
+            "id": 0,
+            "metadata": { "foo2": "bar2" },
+            "arguments": [
+              {
+                "tags": [ "interestGroupNames" ],
+                "data": [ "group1", "group2", "group3" ]
+              },
+              {
+                "tags": [ "keys" ],
+                "data": [ "key1", "key2", "key3" ]
+              }
+            ]
+          }
+        ]
+      })";
 
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content1",
-               "ttlMs": 10
-             },
-             {
-               "compressionGroupId": 1,
-               "content": "content2"
-             },
-             {
-               "compressionGroupId": 2,
-               "content": "content3",
-               "ttlMs": 150
-             }
-           ]
-         })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content1",
+            "ttlMs": 10
+          },
+          {
+            "compressionGroupId": 1,
+            "content": "content2"
+          },
+          {
+            "compressionGroupId": 2,
+            "content": "content3",
+            "ttlMs": 150
+          }
+        ]
+      })"));
 
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
@@ -2146,22 +2213,22 @@ TEST_F(TrustedSignalsFetcherTest,
 
   SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
       R"({
-           "compressionGroups": [
-             {
-               "compressionGroupId": 0,
-               "content": "content1",
-               "ttlMs": 10
-             },
-             {
-               "compressionGroupId": 1
-             },
-             {
-               "compressionGroupId": 2,
-               "content": "content3",
-               "ttlMs": 150
-             }
-           ]
-         })"));
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content1",
+            "ttlMs": 10
+          },
+          {
+            "compressionGroupId": 1
+          },
+          {
+            "compressionGroupId": 2,
+            "content": "content3",
+            "ttlMs": 150
+          }
+        ]
+      })"));
 
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
@@ -2170,6 +2237,50 @@ TEST_F(TrustedSignalsFetcherTest,
                                "binary string \"content\".",
                                TrustedBiddingSignalsUrl().spec().c_str()));
   ValidateRequestBodyJson(kExpectedRequestBodyJson);
+}
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOrigin) {
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content"
+          }
+        ]
+      })"));
+  SetCrossOrigin();
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+  TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
+  expected_result.try_emplace(
+      0, CreateCompressionGroupResult(
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+             "content", base::Milliseconds(0)));
+  ValidateFetchResult(result, expected_result);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+}
+
+TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOrigin) {
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content"
+          }
+        ]
+      })"));
+  SetCrossOrigin();
+  auto scoring_signals_request = CreateBasicScoringSignalsRequest();
+  auto result = RequestScoringSignalsAndWaitForResult(scoring_signals_request);
+  TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
+  expected_result.try_emplace(
+      0, CreateCompressionGroupResult(
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+             "content", base::Milliseconds(0)));
+  ValidateFetchResult(result, expected_result);
+  ValidateRequestBodyHex(kBasicScoringSignalsRequestBody);
 }
 
 }  // namespace

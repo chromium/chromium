@@ -148,21 +148,29 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   TrustedSignalsFetcher(const TrustedSignalsFetcher&) = delete;
   TrustedSignalsFetcher& operator=(const TrustedSignalsFetcher&) = delete;
 
-  // `partitions` is a map of all partitions in the request, indexed by
+  // `script_origin` is the owner of the interest group the request is for. Used
+  // as the initiator for CORS.
+  //
+  // `compression_groups` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       std::string_view hostname,
+      const url::Origin& script_origin,
       const GURL& trusted_bidding_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
-  // `partitions` is a map of all partitions in the request, indexed by
+  // `script_origin` is the seller for the auction. Used as the initiator for
+  // CORS.
+  //
+  // `compression_groups` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       std::string_view hostname,
+      const url::Origin& script_origin,
       const GURL& trusted_scoring_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<ScoringPartition>>& compression_groups,
@@ -177,6 +185,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // this class.
   void EncryptRequestBodyAndStart(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      const url::Origin& script_origin,
       const GURL& trusted_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       std::string plaintext_request_body,

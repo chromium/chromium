@@ -337,12 +337,14 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     std::string_view hostname,
+    const url::Origin& script_origin,
     const GURL& trusted_bidding_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, trusted_bidding_signals_url, bidding_and_auction_key,
+      url_loader_factory, script_origin, trusted_bidding_signals_url,
+      bidding_and_auction_key,
       BuildSignalsRequestBody(hostname, compression_groups),
       std::move(callback));
 }
@@ -350,18 +352,21 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     std::string_view hostname,
+    const url::Origin& script_origin,
     const GURL& trusted_scoring_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, trusted_scoring_signals_url, bidding_and_auction_key,
+      url_loader_factory, script_origin, trusted_scoring_signals_url,
+      bidding_and_auction_key,
       BuildSignalsRequestBody(hostname, compression_groups),
       std::move(callback));
 }
 
 void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    const url::Origin& script_origin,
     const GURL& trusted_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     std::string plaintext_request_body,
@@ -387,7 +392,8 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->url = trusted_signals_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->mode = network::mojom::RequestMode::kNoCors;
+  resource_request->request_initiator = script_origin;
+  resource_request->mode = network::mojom::RequestMode::kCors;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader("Accept", kResponseMediaType);
 
