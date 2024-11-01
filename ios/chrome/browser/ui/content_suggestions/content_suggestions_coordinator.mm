@@ -10,6 +10,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -139,6 +140,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
@@ -597,8 +599,8 @@ using segmentation_platform::TipIdentifier;
   CHECK(IsTipsMagicStackEnabled());
   CHECK(_tipsMediator);
 
-  // TODO(crbug.com/369457289): Track user interactions with the Tips module
-  // using new metrics.
+  // Log the Tips (Magic Stack) Module that the user tapped on.
+  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
   switch (tip) {
     case TipIdentifier::kUnknown:
       NOTREACHED();
@@ -746,6 +748,10 @@ using segmentation_platform::TipIdentifier;
           OutputLabelForTipIdentifier(_tipsMediator.state.identifier);
       if (name.has_value()) {
         registry->NotifyCardShown(std::string(name.value()).c_str());
+        // Log the Tips (Magic Stack) Module that was displayed to the user.
+        base::UmaHistogramEnumeration(
+            kTipsMagicStackModuleDisplayedTypeHistogram,
+            _tipsMediator.state.identifier);
         break;
       }
       [[fallthrough]];

@@ -7,6 +7,8 @@ source_set("tips") {
     "tips_magic_stack_consumer.h",
     "tips_magic_stack_mediator.h",
     "tips_magic_stack_mediator.mm",
+    "tips_metrics.cc",
+    "tips_metrics.h",
     "tips_module_audience.h",
     "tips_module_consumer_source.h",
     "tips_module_state.h",

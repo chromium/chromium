@@ -4972,6 +4972,26 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.TipsMagicStack.Module.DisplayedType" enum="TipIdentifier"
+    expires_after="2025-04-22">
+  <owner>bmcclure@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <summary>
+    Logged when Tips (Magic Stack) is disaplyed for a user. The enumeration
+    indicates which tip was displayed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TipsMagicStack.Module.TappedType" enum="TipIdentifier"
+    expires_after="2025-04-22">
+  <owner>bmcclure@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <summary>
+    Logged when the user taps on the Tips (Magic Stack) module. The enumeration
+    indicates which tip was interacted with.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Translate.PageLoad.LanguageDetectionMethod"
     enum="LanguageDetectionMethod" expires_after="2023-03-24">
   <owner>olivierrobin@chromium.org</owner>

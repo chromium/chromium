@@ -32849,6 +32849,17 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Request is cancelled."/>
 </enum>
 
+<enum name="TipIdentifier">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="LensSearch"/>
+  <int value="2" label="LensShop"/>
+  <int value="3" label="LensTranslate"/>
+  <int value="4" label="AddressBarPosition"/>
+  <int value="5" label="SavePasswords"/>
+  <int value="6" label="AutofillPasswords"/>
+  <int value="7" label="EnhancedSafeBrowsing"/>
+</enum>
+
 <enum name="TokenStateOnRegistrationRequest">
   <int value="0" label="Token was empty"/>
   <int value="1" label="Token stayed unchanged"/>
