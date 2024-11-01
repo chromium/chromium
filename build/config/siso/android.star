@@ -80,6 +80,20 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "android/compile_kt",
+            "command_prefix": "python3 ../../build/android/gyp/compile_kt.py",
+            "handler": "android_compile_java",
+            # Don't include files under --generated-dir.
+            # This is probably optimization for local incrmental builds.
+            # However, this is harmful for remote build cache hits.
+            "ignore_extra_input_pattern": ".*srcjars.*\\.java",
+            "ignore_extra_output_pattern": ".*srcjars.*\\.java",
+            "remote": remote_run,
+            "platform_ref": "large",
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
             "name": "android/dex",
             "command_prefix": "python3 ../../build/android/gyp/dex.py",
             "handler": "android_dex",

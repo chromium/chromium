@@ -3326,7 +3326,9 @@ if (enable_java_templates) {
         invoker.output_jar_path,
         invoker.output_interface_jar_path,
       ]
-      inputs = invoker.source_files + _java_srcjars + [
+      inputs = kotlinc_paths_for_inputs + java_paths_for_inputs +
+               invoker.source_files + _java_srcjars +
+               [
                  _build_config,
                  invoker.target_sources_file,
                ]
