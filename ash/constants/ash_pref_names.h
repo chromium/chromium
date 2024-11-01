@@ -291,6 +291,10 @@ inline constexpr char kDeviceWiFiFastTransitionEnabled[] =
 // A boolean pref indicating whether hotspot has been used before.
 inline constexpr char kHasHotspotUsedBefore[] = "ash.hotspot.has_used_before";
 
+// A boolean pref that controls whether input voice isolation is enabled.
+inline constexpr char kInputVoiceIsolationEnabled[] =
+    "ash.input_voice_isolation_enabled";
+
 // A boolean pref that controls whether input noise cancellation is enabled.
 inline constexpr char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";

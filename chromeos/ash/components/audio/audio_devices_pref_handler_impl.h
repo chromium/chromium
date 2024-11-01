@@ -68,6 +68,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const std::vector<AudioDevice>& connected_devices,
       size_t keep_devices) override;
 
+  bool GetVoiceIsolationState() const override;
+  void SetVoiceIsolationState(bool voice_isolation_state) override;
+
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 

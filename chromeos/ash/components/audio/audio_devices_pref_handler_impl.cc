@@ -425,6 +425,16 @@ double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
   }
 }
 
+bool AudioDevicesPrefHandlerImpl::GetVoiceIsolationState() const {
+  return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetVoiceIsolationState(
+    bool voice_isolation_state) {
+  local_state_->SetBoolean(prefs::kInputVoiceIsolationEnabled,
+                           voice_isolation_state);
+}
+
 bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
   return local_state_->GetBoolean(prefs::kInputNoiseCancellationEnabled);
 }
@@ -659,6 +669,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesGainPercent);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
+  registry->RegisterBooleanPref(prefs::kInputVoiceIsolationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputStyleTransferEnabled, false);
   registry->RegisterBooleanPref(prefs::kHandsFreeProfileInputSuperResolution,

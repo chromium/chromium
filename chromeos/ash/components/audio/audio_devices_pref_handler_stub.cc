@@ -119,6 +119,15 @@ void AudioDevicesPrefHandlerStub::DropLeastRecentlySeenDevices(
     const std::vector<AudioDevice>& connected_devices,
     size_t keep_devices) {}
 
+bool AudioDevicesPrefHandlerStub::GetVoiceIsolationState() const {
+  return voice_isolation_state_;
+}
+
+void AudioDevicesPrefHandlerStub::SetVoiceIsolationState(
+    bool voice_isolation_state) {
+  voice_isolation_state_ = voice_isolation_state;
+}
+
 bool AudioDevicesPrefHandlerStub::GetNoiseCancellationState() {
   return noise_cancellation_state_;
 }

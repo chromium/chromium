@@ -523,6 +523,14 @@ TEST_P(AudioDevicesPrefHandlerTest, TestSettingV2DeviceStateRemovesV1Entry) {
   ExpectDeviceStateEquals(device_v2, false, false);
 }
 
+TEST_P(AudioDevicesPrefHandlerTest, InputVoiceIsolationPrefRegistered) {
+  EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+  audio_pref_handler_->SetVoiceIsolationState(true);
+  EXPECT_TRUE(audio_pref_handler_->GetVoiceIsolationState());
+  audio_pref_handler_->SetVoiceIsolationState(false);
+  EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+}
+
 TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {
   EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
   audio_pref_handler_->SetNoiseCancellationState(true);

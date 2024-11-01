@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;
 
+  bool GetVoiceIsolationState() const override;
+  void SetVoiceIsolationState(bool voice_isolation_state) override;
+
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
@@ -101,6 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;
 
   bool is_audio_output_allowed_ = true;
+  bool voice_isolation_state_ = false;
   bool noise_cancellation_state_ = true;
   bool style_transfer_state_ = false;
   bool force_respect_ui_gains_ = false;
