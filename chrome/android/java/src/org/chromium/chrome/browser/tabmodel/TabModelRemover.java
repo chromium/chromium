@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -94,6 +96,7 @@ class TabModelRemover {
     private @Nullable ActionConfirmationManager mActionConfirmationManager;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
     private @Nullable DataSharingService mDataSharingService;
+    private @Nullable CollaborationService mCollaborationService;
 
     /**
      * @param context The activity context.
@@ -143,20 +146,22 @@ class TabModelRemover {
             @NonNull TabModelRemoverFlowHandler handler, boolean allowDialog) {
         @NonNull GroupsPendingDestroy destroyedGroups = handler.computeGroupsPendingDestroy();
 
-        boolean collaborationsDestroyed = !destroyedGroups.collaborationGroupsDestroyed.isEmpty();
+        @NonNull
+        List<LocalTabGroupId> collaborationGroupsDestroyed =
+                destroyedGroups.collaborationGroupsDestroyed;
+        boolean collaborationsDestroyed = !collaborationGroupsDestroyed.isEmpty();
         boolean syncedDestroyed = !destroyedGroups.syncedGroupsDestroyed.isEmpty();
 
         if (collaborationsDestroyed) {
             // The collaboration dialog specifically makes reference to a single group and the leave
             // or delete group logic is per-group. If more than one group is being destroyed we need
             // to skip the dialog.
-            boolean showDialog =
-                    allowDialog && destroyedGroups.collaborationGroupsDestroyed.size() == 1;
+            boolean showDialog = allowDialog && collaborationGroupsDestroyed.size() == 1;
             if (showDialog) {
-                fetchCollaborationInfo(
-                        destroyedGroups.collaborationGroupsDestroyed.get(0),
-                        createFetchCollaborationInfoCallback(
-                                handler, destroyedGroups.collaborationGroupsDestroyed));
+                @NonNull
+                CollaborationInfo collaborationInfo =
+                        getCollaborationInfo(collaborationGroupsDestroyed.get(0));
+                doCollaborationDialogFlow(handler, collaborationInfo, collaborationGroupsDestroyed);
                 return;
             } else {
                 doCreatePlaceholderTabsInGroups(
@@ -215,6 +220,8 @@ class TabModelRemover {
 
     private void leaveOrDeleteCollaboration(@NonNull CollaborationInfo collaborationInfo) {
         assert collaborationInfo.isValid();
+        // TODO(crbug.com/376907248): Remove DataSharingService from here once these operations
+        // are supported by CollaborationService.
         @Nullable DataSharingService dataSharingService = getDataSharingService();
         if (dataSharingService == null) {
             showGenericErrorDialog(mContext, mModalDialogManager);
@@ -284,53 +291,41 @@ class TabModelRemover {
         }
     }
 
-    private void fetchCollaborationInfo(
-            @NonNull LocalTabGroupId localTabGroupId, Callback<CollaborationInfo> callback) {
+    private @NonNull CollaborationInfo getCollaborationInfo(
+            @NonNull LocalTabGroupId localTabGroupId) {
         @Nullable TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
         if (tabGroupSyncService == null) {
-            callback.onResult(new CollaborationInfo());
-            return;
+            return new CollaborationInfo();
         }
 
         @Nullable SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
         String collaborationId = savedTabGroup != null ? savedTabGroup.collaborationId : null;
         if (!TabShareUtils.isCollaborationIdValid(collaborationId)) {
-            callback.onResult(new CollaborationInfo());
-            return;
+            return new CollaborationInfo();
         }
 
-        // TODO(crbug.com/375459916): This should be ported to a synchronous method if one is
-        // created.
-        @Nullable DataSharingService dataSharingService = getDataSharingService();
-        dataSharingService.readGroup(
-                collaborationId,
-                (outcome) -> {
-                    IdentityManager identityManager =
-                            IdentityServicesProvider.get().getIdentityManager(getProfile());
-                    @MemberRole
-                    int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
-                    callback.onResult(
-                            new CollaborationInfo(
-                                    memberRole,
-                                    collaborationId,
-                                    TabGroupTitleUtils.getDisplayableTitle(
-                                            mContext, savedTabGroup)));
-                });
+        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, savedTabGroup);
+
+        @MemberRole int memberRole = MemberRole.UNKNOWN;
+        @Nullable CollaborationService collaborationService = getCollaborationService();
+        if (collaborationService != null) {
+            memberRole = collaborationService.getCurrentUserRoleForGroup(collaborationId);
+        }
+        return new CollaborationInfo(memberRole, collaborationId, title);
     }
 
-    private @NonNull Callback<CollaborationInfo> createFetchCollaborationInfoCallback(
+    private void doCollaborationDialogFlow(
             @NonNull TabModelRemoverFlowHandler handler,
+            @NonNull CollaborationInfo collaborationInfo,
             @NonNull List<LocalTabGroupId> collaborationGroupsDestroyed) {
-        return (collaborationInfo) -> {
-            if (collaborationInfo.isValid()) {
-                handler.showCollaborationKeepDialog(
-                        collaborationInfo.memberRole,
-                        collaborationInfo.title,
-                        createCollaborationKeepCallback(collaborationInfo));
-            }
-            doCreatePlaceholderTabsInGroups(handler, collaborationGroupsDestroyed);
-            handler.performAction();
-        };
+        if (collaborationInfo.isValid()) {
+            handler.showCollaborationKeepDialog(
+                    collaborationInfo.memberRole,
+                    collaborationInfo.title,
+                    createCollaborationKeepCallback(collaborationInfo));
+        }
+        doCreatePlaceholderTabsInGroups(handler, collaborationGroupsDestroyed);
+        handler.performAction();
     }
 
     private @NonNull Profile getProfile() {
@@ -351,5 +346,13 @@ class TabModelRemover {
             mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
         }
         return mDataSharingService;
+    }
+
+    private @Nullable CollaborationService getCollaborationService() {
+        if (mCollaborationService == null) {
+            Profile profile = getProfile();
+            mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
+        }
+        return mCollaborationService;
     }
 }

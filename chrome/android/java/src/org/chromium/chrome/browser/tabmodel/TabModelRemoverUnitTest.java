@@ -18,13 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL1;
-import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL2;
-import static org.chromium.components.data_sharing.SharedGroupTestHelper.GAIA_ID1;
-import static org.chromium.components.data_sharing.SharedGroupTestHelper.GAIA_ID2;
-import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
-import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +34,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,10 +47,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowH
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
-import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -71,6 +64,7 @@ import java.util.List;
 /** Unit tests for {@link TabModelRemover}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelRemoverUnitTest {
+    private static final String EMAIL = "test@example.com";
     private static final String COLLABORATION_ID = "collaboration";
     private static final String TAB_GROUP_TITLE = "My Title";
     private static final LocalTabGroupId TAB_GROUP_1 = new LocalTabGroupId(new Token(1L, 2L));
@@ -88,14 +82,13 @@ public class TabModelRemoverUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
     @Captor private ArgumentCaptor<List<Tab>> mNewTabCreationCaptor;
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
 
-    private SharedGroupTestHelper mSharedGroupTestHelper;
     private MockTabModel mTabModel;
     private TabModelRemover mTabModelRemover;
     private InOrder mHandlerInOrder;
@@ -111,13 +104,11 @@ public class TabModelRemoverUnitTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(mCoreAccountInfo);
-        when(mCoreAccountInfo.getGaiaId()).thenReturn(GAIA_ID1);
-        when(mCoreAccountInfo.getEmail()).thenReturn(EMAIL1);
+        when(mCoreAccountInfo.getEmail()).thenReturn(EMAIL);
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mReadGroupCallbackCaptor);
 
         mNextTabId = 0;
         when(mProfile.isOffTheRecord()).thenReturn(false);
@@ -166,6 +157,8 @@ public class TabModelRemoverUnitTest {
         GroupsPendingDestroy groupsPendingDestroy = new GroupsPendingDestroy();
         groupsPendingDestroy.collaborationGroupsDestroyed.add(TAB_GROUP_1);
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
+                .thenReturn(MemberRole.OWNER);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
         tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
@@ -173,8 +166,6 @@ public class TabModelRemoverUnitTest {
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
         mHandlerInOrder.verify(mHandler).computeGroupsPendingDestroy();
-
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID, GROUP_MEMBER1);
 
         mHandlerInOrder
                 .verify(mHandler)
@@ -196,6 +187,8 @@ public class TabModelRemoverUnitTest {
         GroupsPendingDestroy groupsPendingDestroy = new GroupsPendingDestroy();
         groupsPendingDestroy.collaborationGroupsDestroyed.add(TAB_GROUP_1);
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
+                .thenReturn(MemberRole.OWNER);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
         tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
@@ -203,8 +196,6 @@ public class TabModelRemoverUnitTest {
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
         mHandlerInOrder.verify(mHandler).computeGroupsPendingDestroy();
-
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID, GROUP_MEMBER1);
 
         mHandlerInOrder
                 .verify(mHandler)
@@ -233,6 +224,8 @@ public class TabModelRemoverUnitTest {
         GroupsPendingDestroy groupsPendingDestroy = new GroupsPendingDestroy();
         groupsPendingDestroy.collaborationGroupsDestroyed.add(TAB_GROUP_1);
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
+                .thenReturn(MemberRole.MEMBER);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
         tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
@@ -240,10 +233,6 @@ public class TabModelRemoverUnitTest {
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
         mHandlerInOrder.verify(mHandler).computeGroupsPendingDestroy();
-
-        when(mCoreAccountInfo.getGaiaId()).thenReturn(GAIA_ID2);
-        when(mCoreAccountInfo.getEmail()).thenReturn(EMAIL2);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID, GROUP_MEMBER1, GROUP_MEMBER2);
 
         mHandlerInOrder
                 .verify(mHandler)
@@ -260,7 +249,7 @@ public class TabModelRemoverUnitTest {
         verify(mTabModel).commitAllTabClosures();
 
         verify(mDataSharingService)
-                .removeMember(eq(COLLABORATION_ID), eq(EMAIL2), mOnResultCaptor.capture());
+                .removeMember(eq(COLLABORATION_ID), eq(EMAIL), mOnResultCaptor.capture());
 
         mOnResultCaptor.getValue().onResult(PeopleGroupActionOutcome.PERSISTENT_FAILURE);
         verify(mModalDialogManager).showDialog(any(), anyInt());
@@ -273,6 +262,8 @@ public class TabModelRemoverUnitTest {
         GroupsPendingDestroy groupsPendingDestroy = new GroupsPendingDestroy();
         groupsPendingDestroy.collaborationGroupsDestroyed.add(TAB_GROUP_1);
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
+                .thenReturn(MemberRole.UNKNOWN);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
         tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
@@ -280,9 +271,6 @@ public class TabModelRemoverUnitTest {
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
         mHandlerInOrder.verify(mHandler).computeGroupsPendingDestroy();
-
-        when(mCoreAccountInfo.getGaiaId()).thenReturn(GAIA_ID2);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID, GROUP_MEMBER1);
 
         mHandlerInOrder.verify(mHandler).onPlaceholderTabsCreated(mNewTabCreationCaptor.capture());
         assertEquals(
