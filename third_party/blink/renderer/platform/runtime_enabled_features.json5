@@ -637,6 +637,12 @@
       base_feature: "none",
     },
     {
+      // Increase disabled color on calendar picker's month-popup-button to 0.9.
+      // Enabled by default on M132. Remove flag on or after M135.
+      name: "CalendarPickerMonthPopupButtonDisabledColor",
+      status: "stable",
+    },
+    {
       name: "CallExitNodeWithoutLayoutObject",
       status: "stable",
     },
