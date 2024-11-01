@@ -122,19 +122,13 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
 
         uint8_t* data[3] = {};
         data[0] = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
-        for (size_t i = 1; i < strides.size(); ++i) {
-          data[i] = data[i - 1] + sizes[i - 1];
-        }
+        for (size_t i = 1; i < strides.size(); ++i)
+          data[i] = data[i - 1] + sizes[i];
 
-        if (format == PIXEL_FORMAT_I420) {
-          frame = media::VideoFrame::WrapExternalYuvData(
-              format, kCodedSize, kVisibleRect, kNaturalSize, strides[0],
-              strides[1], strides[2], data[0], data[1], data[2], kTimestamp);
-        } else {
-          frame = media::VideoFrame::WrapExternalYuvData(
-              format, kCodedSize, kVisibleRect, kNaturalSize, strides[0],
-              strides[1], data[0], data[1], kTimestamp);
-        }
+        strides.resize(3, 0);
+        frame = media::VideoFrame::WrapExternalYuvData(
+            format, kCodedSize, kVisibleRect, kNaturalSize, strides[0],
+            strides[1], strides[2], data[0], data[1], data[2], kTimestamp);
         if (storage_type == VideoFrame::STORAGE_SHMEM)
           frame->BackWithSharedMemory(&region.region);
       }
