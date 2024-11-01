@@ -9613,6 +9613,9 @@
                     "name": "EnabledRemovePrefDependency",
                     "enable_features": [
                         "ExtendedReportingRemovePrefDependency"
+                    ],
+                    "disable_features": [
+                        "SafeBrowsingHashPrefixRealTimeLookupsSamplePing"
                     ]
                 },
                 {
