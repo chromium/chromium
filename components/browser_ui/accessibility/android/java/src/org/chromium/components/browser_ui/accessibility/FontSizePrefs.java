@@ -61,8 +61,6 @@ public class FontSizePrefs {
     /** Interface for observing changes in font size-related preferences. */
     public interface FontSizePrefsObserver {
         void onFontScaleFactorChanged(float fontScaleFactor, float userFontScaleFactor);
-
-        void onForceEnableZoomChanged(boolean enabled);
     }
 
     private FontSizePrefs(BrowserContextHandle browserContextHandle) {
@@ -167,8 +165,9 @@ public class FontSizePrefs {
      * Sets forceEnableZoom due to a user request (e.g. checking a checkbox). This implicitly sets
      * userSetForceEnableZoom.
      */
-    public void setForceEnableZoomFromUser(boolean enabled) {
-        setForceEnableZoom(enabled, true);
+    public void setForceEnableZoom(boolean enabled) {
+        FontSizePrefsJni.get()
+                .setForceEnableZoom(mFontSizePrefsAndroidPtr, FontSizePrefs.this, enabled);
     }
 
     /** Returns whether forceEnableZoom is enabled. */
@@ -206,40 +205,9 @@ public class FontSizePrefs {
         return ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale;
     }
 
-    private void setForceEnableZoom(boolean enabled, boolean fromUser) {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(AccessibilityConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM, fromUser)
-                .apply();
-        FontSizePrefsJni.get()
-                .setForceEnableZoom(mFontSizePrefsAndroidPtr, FontSizePrefs.this, enabled);
-    }
-
-    private boolean getUserSetForceEnableZoom() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getAppSharedPreferences()
-                    .getBoolean(AccessibilityConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM, false);
-        }
-    }
-
     private void setFontScaleFactor(float fontScaleFactor) {
-        float previousFontScaleFactor = getFontScaleFactor();
         FontSizePrefsJni.get()
                 .setFontScaleFactor(mFontSizePrefsAndroidPtr, FontSizePrefs.this, fontScaleFactor);
-
-        if (previousFontScaleFactor < FORCE_ENABLE_ZOOM_THRESHOLD_MULTIPLIER
-                && fontScaleFactor >= FORCE_ENABLE_ZOOM_THRESHOLD_MULTIPLIER
-                && !getForceEnableZoom()) {
-            // If the font scale factor just crossed above the threshold, set force enable zoom even
-            // if the user has previously unset it.
-            setForceEnableZoom(true, false);
-        } else if (previousFontScaleFactor >= FORCE_ENABLE_ZOOM_THRESHOLD_MULTIPLIER
-                && fontScaleFactor < FORCE_ENABLE_ZOOM_THRESHOLD_MULTIPLIER
-                && !getUserSetForceEnableZoom()) {
-            // If the font scale factor just crossed below the threshold and the user didn't set
-            // force enable zoom manually, then unset force enable zoom.
-            setForceEnableZoom(false, false);
-        }
     }
 
     @CalledByNative
@@ -247,13 +215,6 @@ public class FontSizePrefs {
         float userFontScaleFactor = getUserFontScaleFactor();
         for (FontSizePrefsObserver observer : mObserverList) {
             observer.onFontScaleFactorChanged(fontScaleFactor, userFontScaleFactor);
-        }
-    }
-
-    @CalledByNative
-    private void onForceEnableZoomChanged(boolean enabled) {
-        for (FontSizePrefsObserver observer : mObserverList) {
-            observer.onForceEnableZoomChanged(enabled);
         }
     }
 

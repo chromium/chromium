@@ -40,10 +40,6 @@ FontSizePrefsAndroid::FontSizePrefsAndroid(
       prefs::kWebKitFontScaleFactor,
       base::BindRepeating(&FontSizePrefsAndroid::OnFontScaleFactorChanged,
                           base::Unretained(this)));
-  pref_change_registrar_->Add(
-      prefs::kWebKitForceEnableZoom,
-      base::BindRepeating(&FontSizePrefsAndroid::OnForceEnableZoomChanged,
-                          base::Unretained(this)));
 }
 
 FontSizePrefsAndroid::~FontSizePrefsAndroid() = default;
@@ -88,12 +84,6 @@ void FontSizePrefsAndroid::OnFontScaleFactorChanged() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   float factor = GetFontScaleFactor(env, java_ref_);
   Java_FontSizePrefs_onFontScaleFactorChanged(env, java_ref_, factor);
-}
-
-void FontSizePrefsAndroid::OnForceEnableZoomChanged() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  bool enabled = GetForceEnableZoom(env, java_ref_);
-  Java_FontSizePrefs_onForceEnableZoomChanged(env, java_ref_, enabled);
 }
 
 }  // namespace browser_ui

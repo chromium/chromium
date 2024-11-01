@@ -53,8 +53,6 @@ class FontSizePrefsAndroid {
  private:
   // Callback for FontScaleFactor changes from pref change registrar.
   void OnFontScaleFactorChanged();
-  // Callback for ForceEnableZoom changes from pref change registrar.
-  void OnForceEnableZoomChanged();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const raw_ptr<PrefService> pref_service_;

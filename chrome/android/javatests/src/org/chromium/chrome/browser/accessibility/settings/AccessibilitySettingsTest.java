@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings.PREF_FORCE_ENABLE_ZOOM;
 import static org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS;
 
 import android.app.Instrumentation;
@@ -88,6 +89,33 @@ public class AccessibilitySettingsTest {
     }
 
     // Generic AccessibilitySettings tests (no feature flag dependency).
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testForceEnableZoom() {
+        ChromeSwitchPreference forceEnableZoomPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(PREF_FORCE_ENABLE_ZOOM);
+        Assert.assertNotNull(forceEnableZoomPref);
+        Assert.assertNotNull(forceEnableZoomPref.getOnPreferenceChangeListener());
+
+        // First scroll to the Force Enable Zoom preference, then click.
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(R.string.force_enable_zoom_title))));
+        onView(withText(R.string.force_enable_zoom_title)).perform(click());
+        Assert.assertTrue(
+                "Force enable zoom option was not toggled", forceEnableZoomPref.isChecked());
+
+        // Assert that UserPref was updated.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        Assert.assertTrue(
+                                "Force enable zoom user pref was not updated on toggle",
+                                mAccessibilitySettings.mFontSizePrefs.getForceEnableZoom()));
+    }
 
     @Test
     @SmallTest

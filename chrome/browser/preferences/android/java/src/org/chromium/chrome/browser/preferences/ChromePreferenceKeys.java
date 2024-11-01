@@ -258,8 +258,6 @@ public final class ChromePreferenceKeys {
 
     public static final String FONT_USER_FONT_SCALE_FACTOR =
             AccessibilityConstants.FONT_USER_FONT_SCALE_FACTOR;
-    public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM =
-            AccessibilityConstants.FONT_USER_SET_FORCE_ENABLE_ZOOM;
 
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 

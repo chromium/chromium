@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -61,7 +62,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private double mPageZoomLatestDefaultZoomPrefValue;
     private PrefService mPrefService;
 
-    private FontSizePrefs mFontSizePrefs;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public FontSizePrefs mFontSizePrefs;
+
     private FontSizePrefsObserver mFontSizePrefsObserver =
             new FontSizePrefsObserver() {
                 @Override
@@ -69,11 +72,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                         float fontScaleFactor, float userFontScaleFactor) {
                     mTextScalePref.updateFontScaleFactors(
                             fontScaleFactor, userFontScaleFactor, true);
-                }
-
-                @Override
-                public void onForceEnableZoomChanged(boolean enabled) {
-                    mForceEnableZoomPref.setChecked(enabled);
                 }
             };
 
@@ -216,7 +214,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mRecordFontSizeChangeOnStop = true;
             mFontSizePrefs.setUserFontScaleFactor((Float) newValue);
         } else if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
-            mFontSizePrefs.setForceEnableZoomFromUser((Boolean) newValue);
+            mFontSizePrefs.setForceEnableZoom((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
             mPrefService.setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {

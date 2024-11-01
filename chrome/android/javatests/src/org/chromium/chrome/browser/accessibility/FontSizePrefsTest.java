@@ -49,7 +49,6 @@ public class FontSizePrefsTest {
 
     private void resetSharedPrefs() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        prefs.removeKey(ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM);
         prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
     }
 
@@ -57,44 +56,9 @@ public class FontSizePrefsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testForceEnableZoom() {
-        Assert.assertEquals(false, getForceEnableZoom());
-
-        TestingObserver observer = createAndAddFontSizePrefsObserver();
-
-        setUserFontScaleFactor(1.5f);
-        Assert.assertEquals(true, getForceEnableZoom());
-        observer.assertConsistent();
-        setUserFontScaleFactor(0.7f);
-        Assert.assertEquals(false, getForceEnableZoom());
-        observer.assertConsistent();
-
-        setForceEnableZoomFromUser(true);
-        Assert.assertEquals(true, getForceEnableZoom());
-        observer.assertConsistent();
-        setUserFontScaleFactor(1.5f);
-        Assert.assertEquals(true, getForceEnableZoom());
-        observer.assertConsistent();
-        setUserFontScaleFactor(0.7f);
-        Assert.assertEquals(true, getForceEnableZoom());
-        observer.assertConsistent();
-
-        setForceEnableZoomFromUser(false);
-        Assert.assertEquals(false, getForceEnableZoom());
-        observer.assertConsistent();
-        setUserFontScaleFactor(1.5f);
-        Assert.assertEquals(true, getForceEnableZoom());
-        observer.assertConsistent();
-        setUserFontScaleFactor(0.7f);
-        Assert.assertEquals(false, getForceEnableZoom());
-        observer.assertConsistent();
-
-        // Force enable zoom should depend on fontScaleFactor, not on userFontScaleFactor.
-        setSystemFontScaleForTest(2.0f);
-        Assert.assertEquals(true, getForceEnableZoom());
-        observer.assertConsistent();
-        setSystemFontScaleForTest(1.0f);
-        Assert.assertEquals(false, getForceEnableZoom());
-        observer.assertConsistent();
+        Assert.assertFalse(getForceEnableZoom());
+        setForceEnableZoom(true);
+        Assert.assertTrue(getForceEnableZoom());
     }
 
     @Test
@@ -117,12 +81,12 @@ public class FontSizePrefsTest {
         observer.assertConsistent();
 
         // Force enable zoom shouldn't affect font scale factor.
-        setForceEnableZoomFromUser(true);
+        setForceEnableZoom(true);
         Assert.assertEquals(0.7f, getUserFontScaleFactor(), EPSILON);
         Assert.assertEquals(0.7f, getFontScaleFactor(), EPSILON);
         observer.assertConsistent();
 
-        setForceEnableZoomFromUser(false);
+        setForceEnableZoom(false);
         Assert.assertEquals(0.7f, getUserFontScaleFactor(), EPSILON);
         Assert.assertEquals(0.7f, getFontScaleFactor(), EPSILON);
         observer.assertConsistent();
@@ -164,17 +128,11 @@ public class FontSizePrefsTest {
     private class TestingObserver implements FontSizePrefsObserver {
         private float mUserFontScaleFactor = getUserFontScaleFactor();
         private float mFontScaleFactor = getFontScaleFactor();
-        private boolean mForceEnableZoom = getForceEnableZoom();
 
         @Override
         public void onFontScaleFactorChanged(float fontScaleFactor, float userFontScaleFactor) {
             mFontScaleFactor = fontScaleFactor;
             mUserFontScaleFactor = userFontScaleFactor;
-        }
-
-        @Override
-        public void onForceEnableZoomChanged(boolean enabled) {
-            mForceEnableZoom = enabled;
         }
 
         private void assertConsistent() {
@@ -183,7 +141,6 @@ public class FontSizePrefsTest {
                         Assert.assertEquals(
                                 getUserFontScaleFactor(), mUserFontScaleFactor, EPSILON);
                         Assert.assertEquals(getFontScaleFactor(), mFontScaleFactor, EPSILON);
-                        Assert.assertEquals(getForceEnableZoom(), mForceEnableZoom);
                     });
         }
     }
@@ -214,8 +171,8 @@ public class FontSizePrefsTest {
         return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getFontScaleFactor());
     }
 
-    private void setForceEnableZoomFromUser(final boolean enabled) {
-        ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.setForceEnableZoomFromUser(enabled));
+    private void setForceEnableZoom(final boolean enabled) {
+        ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.setForceEnableZoom(enabled));
     }
 
     private boolean getForceEnableZoom() {
