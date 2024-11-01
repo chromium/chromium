@@ -4,6 +4,9 @@
 
 #include "components/data_sharing/public/group_data.h"
 
+#include "base/strings/utf_string_conversions.h"
+#include "components/url_formatter/elide_url.h"
+
 namespace data_sharing {
 
 GroupMember::GroupMember() = default;
@@ -51,26 +54,40 @@ GroupData& GroupData::operator=(GroupData&&) = default;
 
 GroupData::~GroupData() = default;
 
-SharedEntity::SharedEntity() = default;
+TabPreview::TabPreview(const GURL& url) : url(url) {}
+TabPreview::TabPreview(const TabPreview&) = default;
+TabPreview& TabPreview::operator=(const TabPreview&) = default;
 
-SharedEntity::SharedEntity(const SharedEntity&) = default;
-SharedEntity& SharedEntity::operator=(const SharedEntity&) = default;
+TabPreview::TabPreview(TabPreview&&) = default;
+TabPreview& TabPreview::operator=(TabPreview&&) = default;
+TabPreview::~TabPreview() = default;
 
-SharedEntity::SharedEntity(SharedEntity&&) = default;
-SharedEntity& SharedEntity::operator=(SharedEntity&&) = default;
-
-SharedEntity::~SharedEntity() = default;
+std::string TabPreview::GetDisplayUrl() const {
+  return base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url));
+}
 
 SharedDataPreview::SharedDataPreview() = default;
-
 SharedDataPreview::SharedDataPreview(const SharedDataPreview&) = default;
 SharedDataPreview& SharedDataPreview::operator=(const SharedDataPreview&) =
     default;
 
 SharedDataPreview::SharedDataPreview(SharedDataPreview&&) = default;
 SharedDataPreview& SharedDataPreview::operator=(SharedDataPreview&&) = default;
-
 SharedDataPreview::~SharedDataPreview() = default;
+
+SharedTabGroupPreview::SharedTabGroupPreview() = default;
+SharedTabGroupPreview::SharedTabGroupPreview(const SharedTabGroupPreview&) =
+    default;
+SharedTabGroupPreview& SharedTabGroupPreview::operator=(
+    const SharedTabGroupPreview&) = default;
+
+SharedTabGroupPreview::SharedTabGroupPreview(SharedTabGroupPreview&&) = default;
+SharedTabGroupPreview& SharedTabGroupPreview::operator=(
+    SharedTabGroupPreview&&) = default;
+
+SharedTabGroupPreview::~SharedTabGroupPreview() = default;
 
 bool operator<(const GroupData& lhs, const GroupData& rhs) {
   return lhs.group_token.group_id < rhs.group_token.group_id;

@@ -2,6 +2,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/sync/model",
   "+components/sync/protocol",
+  "+components/url_formatter/elide_url.h",
   "+net/android",
   "+net/traffic_annotation",
 ]

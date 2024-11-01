@@ -36,13 +36,11 @@ ScopedJavaLocalRef<jobjectArray> CreateGroupedDataArray(
     JNIEnv* env,
     const std::set<GroupData>& data);
 
-// Creates an object of org.chromium.components.data_sharing.SharedEntity.
-ScopedJavaLocalRef<jobject> CreateJavaSharedEntity(JNIEnv* env,
-                                                   const SharedEntity& entity);
-
-ScopedJavaLocalRef<jobjectArray> CreateJavaSharedEntityArray(
+// Creates an object of
+// org.chromium.components.data_sharing.SharedTabGroupPreview.
+ScopedJavaLocalRef<jobject> CreateJavaSharedTabGroupPreview(
     JNIEnv* env,
-    const std::vector<SharedEntity>& entities);
+    const SharedTabGroupPreview& preview);
 
 ScopedJavaLocalRef<jobject> CreateDataSharingNetworkResult(
     JNIEnv* env,

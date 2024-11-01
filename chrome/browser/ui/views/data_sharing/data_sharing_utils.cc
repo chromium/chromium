@@ -108,23 +108,15 @@ void data_sharing::ProcessPreviewOutcome(
   data_sharing::mojom::GroupPreviewPtr group_preview =
       data_sharing::mojom::GroupPreview::New();
   if (outcome.has_value()) {
-    for (auto& entity : outcome.value().shared_entities) {
-      if (entity.specifics.has_shared_tab_group_data()) {
-        auto data = entity.specifics.shared_tab_group_data();
-        if (data.has_tab_group()) {
-          group_preview->title = data.tab_group().title();
-        } else if (data.has_tab()) {
-          // Trim the tab url to display url. E.g.
-          // "https://www.google.com/search?q=wiki" to "google.com".
-          std::string display_url = base::UTF16ToUTF8(
-              url_formatter::
-                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-                      GURL(data.tab().url())));
-
-          group_preview->shared_tabs.push_back(
-              data_sharing::mojom::SharedTab::New(
-                  display_url, GURL(data.tab().favicon_url())));
-        }
+    if (outcome->shared_tab_group_preview) {
+      group_preview->title = outcome->shared_tab_group_preview->title;
+      for (const auto& tab : outcome->shared_tab_group_preview->tabs) {
+        // TODO(crbug.com/376744402): favicon should be retrieved from the tab
+        // url. Changed the favicon URL below to a byte array so the data can be
+        // passed.
+        group_preview->shared_tabs.push_back(
+            data_sharing::mojom::SharedTab::New(tab.GetDisplayUrl(),
+                                                GURL("chrome://favicon2")));
       }
     }
     // If group is unnamed use default name e.g. "1 tab" / "3 tabs".

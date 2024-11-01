@@ -39,8 +39,9 @@ public class DataSharingConversionBridge {
 
     @CalledByNative
     public static DataSharingService.SharedDataPreviewOrFailureOutcome
-            createSharedDataPreviewOrFailureOutcome(SharedEntity[] sharedEntities, int status) {
+            createSharedDataPreviewOrFailureOutcome(
+                    SharedTabGroupPreview sharedTabGroupPreview, int status) {
         return new DataSharingService.SharedDataPreviewOrFailureOutcome(
-                new SharedDataPreview(sharedEntities), status);
+                new SharedDataPreview(sharedTabGroupPreview), status);
     }
 }

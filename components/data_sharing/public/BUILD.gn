@@ -33,6 +33,8 @@ source_set("public") {
     "//net/traffic_annotation",
     "//url",
   ]
+
+  deps = [ "//components/url_formatter:url_formatter" ]
 }
 
 static_library("features") {
@@ -60,7 +62,8 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
       "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
-      "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
+      "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
       "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingAvatarBitmapConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingCreateUiConfig.java",
@@ -102,7 +105,8 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
       "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
-      "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
+      "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
     ]
   }
 

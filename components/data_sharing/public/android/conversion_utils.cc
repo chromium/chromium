@@ -18,7 +18,8 @@
 #include "components/data_sharing/public/jni_headers/GroupMember_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupToken_jni.h"
 #include "components/data_sharing/public/jni_headers/ServiceStatus_jni.h"
-#include "components/data_sharing/public/jni_headers/SharedEntity_jni.h"
+#include "components/data_sharing/public/jni_headers/SharedTabGroupPreview_jni.h"
+#include "components/data_sharing/public/jni_headers/TabPreview_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -89,35 +90,24 @@ ScopedJavaLocalRef<jobjectArray> CreateGroupedDataArray(
   return j_group_array;
 }
 
-ScopedJavaLocalRef<jobject> CreateJavaSharedEntity(JNIEnv* env,
-                                                   const SharedEntity& entity) {
-  int size = entity.specifics.ByteSize();
-  std::vector<uint8_t> data(size);
-  entity.specifics.SerializeToArray(data.data(), size);
-  return Java_SharedEntity_createSharedEntity(
-      env, ConvertUTF8ToJavaString(env, entity.group_id.value()),
-      ConvertUTF8ToJavaString(env, entity.name), entity.version,
-      entity.update_time.InMillisecondsSinceUnixEpoch(),
-      entity.create_time.InMillisecondsSinceUnixEpoch(),
-      ConvertUTF8ToJavaString(env, entity.client_tag_hash),
-      base::android::ToJavaByteArray(env, data));
-}
-
-ScopedJavaLocalRef<jobjectArray> CreateJavaSharedEntityArray(
+ScopedJavaLocalRef<jobject> CreateJavaSharedTabGroupPreview(
     JNIEnv* env,
-    const std::vector<SharedEntity>& entities) {
-  std::vector<ScopedJavaLocalRef<jobject>> j_entities;
-  for (const SharedEntity& entity : entities) {
-    j_entities.push_back(CreateJavaSharedEntity(env, entity));
+    const SharedTabGroupPreview& preview) {
+  std::vector<ScopedJavaLocalRef<jobject>> j_tabs;
+  for (const auto& tab : preview.tabs) {
+    j_tabs.push_back(Java_TabPreview_createTabPreview(
+        env, url::GURLAndroid::FromNativeGURL(env, tab.url),
+        ConvertUTF8ToJavaString(env, tab.GetDisplayUrl())));
   }
 
-  ScopedJavaLocalRef<jobjectArray> j_entities_array;
-  if (!j_entities.empty()) {
-    j_entities_array = ToTypedJavaArrayOfObjects(
-        env, base::make_span(j_entities),
-        org_chromium_components_data_1sharing_SharedEntity_clazz(env));
+  ScopedJavaLocalRef<jobjectArray> j_tabs_array;
+  if (!j_tabs.empty()) {
+    j_tabs_array = ToTypedJavaArrayOfObjects(
+        env, base::make_span(j_tabs),
+        org_chromium_components_data_1sharing_TabPreview_clazz(env));
   }
-  return j_entities_array;
+  return Java_SharedTabGroupPreview_createSharedTabGroupPreview(
+      env, ConvertUTF8ToJavaString(env, preview.title), j_tabs_array);
 }
 
 ScopedJavaLocalRef<jobject> CreateDataSharingNetworkResult(

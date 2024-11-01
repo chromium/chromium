@@ -11,28 +11,13 @@
 namespace {
 const char kTitle[] = "foo_title";
 const char kUrl[] = "https://www.foo.com?foo=1";
-const char kFaviconUrl[] = "https://www.foo.com/favicon.ico";
 
 data_sharing::SharedDataPreview MockPreviewWithTitle(std::string title) {
-  sync_pb::SharedTabGroupDataSpecifics specifics_group;
-  specifics_group.mutable_tab_group()->set_title(title);
-  sync_pb::SharedTabGroupDataSpecifics specifics_tab;
-  specifics_tab.mutable_tab()->set_url(kUrl);
-  specifics_tab.mutable_tab()->set_favicon_url(kFaviconUrl);
-
-  sync_pb::EntitySpecifics spec_group;
-  *spec_group.mutable_shared_tab_group_data() = specifics_group;
-  sync_pb::EntitySpecifics spec_tab;
-  *spec_tab.mutable_shared_tab_group_data() = specifics_tab;
-
-  data_sharing::SharedEntity entity_group;
-  entity_group.specifics = spec_group;
-  data_sharing::SharedEntity entity_tab;
-  entity_tab.specifics = spec_tab;
-
+  data_sharing::SharedTabGroupPreview tab_group_preview;
+  tab_group_preview.title = title;
+  tab_group_preview.tabs.emplace_back(GURL(kUrl));
   data_sharing::SharedDataPreview preview;
-  preview.shared_entities.push_back(entity_group);
-  preview.shared_entities.push_back(entity_tab);
+  preview.shared_tab_group_preview = tab_group_preview;
 
   return preview;
 }
@@ -46,7 +31,8 @@ TEST(DataSharingUtils, ProcessPreviewWithValidTitle) {
             EXPECT_EQ(preview->shared_tabs.size(), size_t(1));
             // Trimmed from `kUrl`.
             EXPECT_EQ(preview->shared_tabs[0]->display_url, "foo.com");
-            EXPECT_EQ(preview->shared_tabs[0]->favicon_url, kFaviconUrl);
+            EXPECT_EQ(preview->shared_tabs[0]->favicon_url,
+                      GURL("chrome://favicon2"));
             EXPECT_EQ(preview->status_code,
                       mojo_base::mojom::AbslStatusCode::kOk);
           });

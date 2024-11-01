@@ -79,43 +79,46 @@ struct GroupData {
   std::vector<GroupMember> members;
 };
 
-// Represents an entity that is shared between users. This
-// is similar to sync_pb::SyncEntity, but it includes group
-// ID and is only for shared data types
-struct SharedEntity {
-  SharedEntity();
+// Represents a tab that is shared in a group.
+struct TabPreview {
+  explicit TabPreview(const GURL& url);
 
-  SharedEntity(const SharedEntity&);
-  SharedEntity& operator=(const SharedEntity&);
+  TabPreview(const TabPreview&);
+  TabPreview& operator=(const TabPreview&);
 
-  SharedEntity(SharedEntity&&);
-  SharedEntity& operator=(SharedEntity&&);
+  TabPreview(TabPreview&&);
+  TabPreview& operator=(TabPreview&&);
 
-  ~SharedEntity();
+  ~TabPreview();
 
-  // Id of the group.
-  GroupId group_id;
+  // Trim the tab url to display url. E.g.
+  // "https://www.google.com/search?q=wiki" to "google.com".
+  std::string GetDisplayUrl() const;
 
-  // Name of the entity.
-  std::string name;
-
-  // Monotonically increasing version number.
-  int64_t version = 0;
-
-  // The time at which the SharedEntity was last modified.
-  base::Time update_time;
-
-  // The time at which the SharedEntity was created.
-  base::Time create_time;
-
-  // The data payload of the SharedEntity.
-  sync_pb::EntitySpecifics specifics;
-
-  // Part of the resource name.
-  std::string client_tag_hash;
+  // URL of the tab.
+  GURL url;
 };
 
-// A preview of shared entities.
+// Represents a tab group that is shared between users.
+struct SharedTabGroupPreview {
+  SharedTabGroupPreview();
+
+  SharedTabGroupPreview(const SharedTabGroupPreview&);
+  SharedTabGroupPreview& operator=(const SharedTabGroupPreview&);
+
+  SharedTabGroupPreview(SharedTabGroupPreview&&);
+  SharedTabGroupPreview& operator=(SharedTabGroupPreview&&);
+
+  ~SharedTabGroupPreview();
+
+  // Title of the group.
+  std::string title;
+
+  // All tabs in the group, ordered by their UniquePosition.
+  std::vector<TabPreview> tabs;
+};
+
+// A preview of shared data.
 struct SharedDataPreview {
   SharedDataPreview();
 
@@ -127,7 +130,8 @@ struct SharedDataPreview {
 
   ~SharedDataPreview();
 
-  std::vector<SharedEntity> shared_entities;
+  // Shared tab group data.
+  std::optional<SharedTabGroupPreview> shared_tab_group_preview;
 };
 
 // Only takes `group_id` into account, used to allow storing GroupData in

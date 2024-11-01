@@ -60,6 +60,28 @@ const std::string kTabGroupResponse = R"(
         "name":"sample",
         "updateTime":{"nanos":313560000,"seconds":"1721982801"},
         "version":"1234"
+      },
+      {
+        "clientTagHash":"abc",
+        "collaboration":{
+          "collaborationId":"resources/1234567/e/111111111111111"
+        },
+        "specifics":{
+          "sharedTabGroupData":{
+            "guid":"22222",
+            "tab":{
+              "sharedTabGroupGuid":"33333",
+              "title":"foo",
+              "url":"https://www.foo.com/"
+            },
+            "updateTimeWindowsEpochMicros":"200"
+          }
+        },
+        "createTime":{"nanos":312000000,"seconds":"1721982740"},
+        "deleted":false,
+        "name":"sample",
+        "updateTime":{"nanos":313560000,"seconds":"1721982801"},
+        "version":"1234"
       }
     ]
   })";
@@ -164,30 +186,17 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabGroup) {
       base::BindOnce([](const DataSharingService::
                             SharedDataPreviewOrFailureOutcome& result) {
         ASSERT_TRUE(result.has_value());
-        ASSERT_EQ(result.value().shared_entities.size(), 1u);
-        SharedEntity entity = result.value().shared_entities[0];
-        ASSERT_EQ(entity.group_id.value(),
-                  "resources/1234567/e/111111111111111");
-        ASSERT_EQ(entity.name, "sample");
-        ASSERT_EQ(entity.version, 1234);
-        ASSERT_EQ(entity.client_tag_hash, "abc");
-        ASSERT_EQ(entity.create_time,
-                  base::Time::FromSecondsSinceUnixEpoch(1721982740.312));
-        ASSERT_EQ(entity.update_time,
-                  base::Time::FromSecondsSinceUnixEpoch(1721982801.31356));
-        ASSERT_TRUE(entity.specifics.has_shared_tab_group_data());
-        sync_pb::SharedTabGroupDataSpecifics specifics;
-        specifics.Swap(entity.specifics.mutable_shared_tab_group_data());
-        ASSERT_EQ(specifics.guid(), "33333");
-        ASSERT_EQ(specifics.update_time_windows_epoch_micros(), 100);
-        ASSERT_TRUE(specifics.has_tab_group());
-        ASSERT_EQ(specifics.tab_group().color(), sync_pb::SharedTabGroup::GREY);
-        ASSERT_EQ(specifics.tab_group().title(), "Test");
+        ASSERT_TRUE(result.value().shared_tab_group_preview);
+        SharedTabGroupPreview preview =
+            result.value().shared_tab_group_preview.value();
+        ASSERT_EQ(preview.title, "Test");
+        ASSERT_EQ(preview.tabs.size(), 1u);
+        ASSERT_EQ(preview.tabs[0].url, GURL("https://www.foo.com/"));
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_Tab) {
+TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_TabWithoutGroup) {
   fetcher_->SetFetchResponse(kTabResponse);
   EXPECT_CALL(*server_proxy_, CreateEndpointFetcher(GURL(kExpectedUrl)))
       .Times(1);
@@ -195,23 +204,12 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_Tab) {
   base::RunLoop run_loop;
   server_proxy_->GetSharedDataPreview(
       GroupToken(GroupId(kCollaborationId), kAccessToken),
-      base::BindOnce(
-          [](const DataSharingService::SharedDataPreviewOrFailureOutcome&
-                 result) {
-            ASSERT_TRUE(result.has_value());
-            ASSERT_EQ(result.value().shared_entities.size(), 1u);
-            SharedEntity entity = result.value().shared_entities[0];
-            ASSERT_TRUE(entity.specifics.has_shared_tab_group_data());
-            sync_pb::SharedTabGroupDataSpecifics specifics;
-            specifics.Swap(entity.specifics.mutable_shared_tab_group_data());
-            ASSERT_EQ(specifics.guid(), "22222");
-            ASSERT_EQ(specifics.update_time_windows_epoch_micros(), 200);
-            ASSERT_TRUE(specifics.has_tab());
-            ASSERT_EQ(specifics.tab().shared_tab_group_guid(), "33333");
-            ASSERT_EQ(specifics.tab().title(), "foo");
-            ASSERT_EQ(specifics.tab().url(), "https://www.foo.com/");
-          })
-          .Then(run_loop.QuitClosure()));
+      base::BindOnce([](const DataSharingService::
+                            SharedDataPreviewOrFailureOutcome& result) {
+        ASSERT_EQ(
+            result.error(),
+            DataSharingService::PeopleGroupActionFailure::kPersistentFailure);
+      }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
