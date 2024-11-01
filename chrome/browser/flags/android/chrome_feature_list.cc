@@ -331,7 +331,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkAllowIconUpdate,
     &kWebApkMinShellVersion,
-    &features::kCookieDeprecationFacilitatedTesting,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
     &language::kCctAutoTranslate,

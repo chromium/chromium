@@ -715,16 +715,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mCustomTabHeightStrategy.handleCloseAnimation(finishRunnable);
     }
 
-    private boolean isAdsNoticeInCctFeatureEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
-                && (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-                                "include-mode-b",
-                                false)
-                        || !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING));
-    }
-
     /** Runs a set of deferred startup tasks. */
     void onDeferredStartup() {
         new OneShotCallback<>(
@@ -748,8 +738,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
                                         shouldShowPrivacySandboxDialog);
                             }
-
-                            if (isAdsNoticeInCctFeatureEnabled()
+                            if (ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
                                     && shouldShowPrivacySandboxDialog
                                     && isCustomTab) {
                                 boolean shouldShowPrivacySandboxDialogAppIdCheck = true;

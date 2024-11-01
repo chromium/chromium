@@ -25,9 +25,6 @@ extern const char kPrivacySandboxAdsNoticeCCTAppIdName[];
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId;
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kPrivacySandboxAdsNoticeCCTIncludeModeB;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Split out name definitions since about_flags otherwise complains about the

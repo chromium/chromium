@@ -17,9 +17,6 @@ const char kPrivacySandboxAdsNoticeCCTAppIdName[] = "app-id";
 
 const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
     &kPrivacySandboxAdsNoticeCCT, kPrivacySandboxAdsNoticeCCTAppIdName, ""};
-
-const base::FeatureParam<bool> kPrivacySandboxAdsNoticeCCTIncludeModeB{
-    &kPrivacySandboxAdsNoticeCCT, "include-mode-b", false};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPrivacySandboxSettings4,
