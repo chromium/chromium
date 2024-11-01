@@ -984,10 +984,12 @@ bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
 
   if (type) {
     // Delete the filesystem type directory.
-    ASSIGN_OR_RETURN(
-        const base::FilePath path_with_type,
-        GetDirectoryForBucketAndType(bucket_locator, type.value(), false),
-        [](auto) { return false; });
+    ASSIGN_OR_RETURN(const base::FilePath path_with_type,
+                     GetDirectoryForBucketAndType(bucket_locator, type.value(),
+                                                  /*create=*/false),
+                     [](base::File::Error error) {
+                       return error == base::File::FILE_ERROR_NOT_FOUND;
+                     });
     if (!path_with_type.empty() && !delegate_->DeleteFileOrDirectory(
                                        path_with_type, true /* recursive */)) {
       return false;

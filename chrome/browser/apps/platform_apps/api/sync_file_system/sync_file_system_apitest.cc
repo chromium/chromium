@@ -23,6 +23,7 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_function.h"
+#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,12 +53,13 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest,
   SyncFileSystemApiTest() = default;
 
   void SetUp() override {
+    std::vector<base::test::FeatureRef> features = {
+        chrome_apps::features::kDeprecateSyncFileSystemApis,
+        storage::features::kDisableSyncableQuota};
     if (sync_file_system_disabled()) {
-      feature_list_.InitAndEnableFeature(
-          chrome_apps::features::kDeprecateSyncFileSystemApis);
+      feature_list_.InitWithFeatures(features, {});
     } else {
-      feature_list_.InitAndDisableFeature(
-          chrome_apps::features::kDeprecateSyncFileSystemApis);
+      feature_list_.InitWithFeatures({}, features);
     }
     extensions::ExtensionApiTest::SetUp();
   }
@@ -65,8 +67,6 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest,
   void SetUpInProcessBrowserTestFixture() override {
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-    // TODO(calvinlo): Update test code after default quota is made const
-    // (http://crbug.com/155488).
     real_default_quota_ =
         storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota;
     storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota = 123456;
@@ -181,7 +181,8 @@ IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
 }
 
 IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, GetUsageAndQuota) {
-  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_usage_and_quota"))
+  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_usage_and_quota",
+                               {.custom_arg = GetCustomArg()}))
       << message_;
 }
 

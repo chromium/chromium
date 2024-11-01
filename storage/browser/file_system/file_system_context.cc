@@ -327,8 +327,9 @@ FileSystemContext::GetCopyOrMoveFileValidatorFactory(
 FileSystemBackend* FileSystemContext::GetFileSystemBackend(
     FileSystemType type) const {
   auto found = backend_map_.find(type);
-  if (found != backend_map_.end())
+  if (found != backend_map_.end()) {
     return found->second;
+  }
   NOTREACHED() << "Unknown filesystem type: " << type;
 }
 

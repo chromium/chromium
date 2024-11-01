@@ -49,6 +49,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
  private:
   base::SequencedTaskRunner* file_task_runner() const;
 
+  // Gets available FileSystemTypes for a FileSystemContext given a StorageType.
+  std::vector<FileSystemType> GetFileSystemTypes(
+      blink::mojom::StorageType) const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Raw pointer usage is safe because `file_system_context_` owns this.

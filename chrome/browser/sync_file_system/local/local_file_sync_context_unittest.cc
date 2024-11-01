@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -72,6 +74,8 @@ class LocalFileSyncContextTest : public testing::Test {
         has_inflight_prepare_for_sync_(false) {}
 
   void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        storage::features::kDisableSyncableQuota);
     RegisterSyncableFileSystem();
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("LocalFileSyncContextTest");
@@ -355,6 +359,7 @@ class LocalFileSyncContextTest : public testing::Test {
 
   base::ScopedTempDir dir_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
+  base::test::ScopedFeatureList feature_list_;
 
   // These need to remain until the very end.
   content::BrowserTaskEnvironment task_environment_;
