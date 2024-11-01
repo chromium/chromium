@@ -3368,7 +3368,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-timing/nav2_test_respon
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/navigation-timing/nav2_test_response_end_and_duration_before_during_and_after_load_event.html [ Skip Timeout ]
 # TODO(crbug.com/1428895): Re-enable this test
 crbug.com/626703 external/wpt/workers/modules/shared-worker-import-csp.html [ Failure Pass Timeout ]
-crbug.com/40805173 external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
 crbug.com/626703 external/wpt/workers/interfaces/WorkerUtils/importScripts/blob-url.worker.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Skip Timeout ]
