@@ -783,8 +783,6 @@ void LocalFrameView::PerformLayout() {
     }
   }
 
-  document->Fetcher()->UpdateAllImageResourcePriorities();
-
   Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
 
   TRACE_EVENT_END0(PERFORM_LAYOUT_TRACE_CATEGORIES,
@@ -1688,6 +1686,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   Document* document = GetFrame().GetDocument();
   DCHECK(document);
 
+  document->Fetcher()->UpdateAllImageResourcePriorities();
   UpdateDocumentDraggableRegions();
   ExecutePendingStickyUpdates();
 
