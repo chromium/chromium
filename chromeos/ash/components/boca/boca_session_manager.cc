@@ -45,10 +45,14 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
     }
   }
   LoadInitialNetworkState();
+  StartSessionPolling(/*in_session=*/false);
 }
 BocaSessionManager::~BocaSessionManager() {
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
+  }
+  if (indefinite_timer_.IsRunning()) {
+    indefinite_timer_.Stop();
   }
 }
 
@@ -100,11 +104,33 @@ void BocaSessionManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BocaSessionManager::StartSessionPolling() {
-  if (!timer_.IsRunning()) {
-    timer_.Start(FROM_HERE, kPollingInterval, this,
-                 &BocaSessionManager::LoadCurrentSession);
+void BocaSessionManager::StartSessionPolling(bool in_session) {
+  if (in_session) {
+    if (indefinite_timer_.IsRunning()) {
+      indefinite_timer_.Stop();
+    }
+    if (!in_session_timer_.IsRunning()) {
+      in_session_timer_.Start(FROM_HERE, kInSessionPollingInterval, this,
+                              &BocaSessionManager::MaybeLoadCurrentSession);
+    }
+  } else {
+    if (in_session_timer_.IsRunning()) {
+      in_session_timer_.Stop();
+    }
+    if (!indefinite_timer_.IsRunning()) {
+      indefinite_timer_.Start(FROM_HERE, kIndefinitePollingInterval, this,
+                              &BocaSessionManager::MaybeLoadCurrentSession);
+    }
   }
+}
+
+void BocaSessionManager::MaybeLoadCurrentSession() {
+  // Only skip session load for scheduled polling if there is any load since
+  // last schedule, we should never skip it for invalidation.
+  if (base::TimeTicks::Now() - last_session_load_ < kInSessionPollingInterval) {
+    return;
+  }
+  LoadCurrentSession();
 }
 
 void BocaSessionManager::LoadCurrentSession() {
@@ -139,6 +165,7 @@ void BocaSessionManager::UpdateCurrentSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   previous_session_ = std::move(current_session_);
   current_session_ = std::move(session);
+  last_session_load_ = base::TimeTicks::Now();
   if (dispatch_event) {
     NotifySessionUpdate();
     NotifyOnTaskUpdate();
@@ -247,10 +274,7 @@ void BocaSessionManager::NotifySessionUpdate() {
   if (IsSessionActive(previous_session_.get()) &&
       !IsSessionActive(current_session_.get())) {
     for (auto& observer : observers_) {
-      // Stop polling when session ends.
-      if (timer_.IsRunning()) {
-        timer_.Stop();
-      }
+      StartSessionPolling(/*in_session=*/false);
       observer.OnSessionEnded(previous_session_->session_id());
     }
   }
@@ -258,11 +282,7 @@ void BocaSessionManager::NotifySessionUpdate() {
   if (!IsSessionActive(previous_session_.get()) &&
       IsSessionActive(current_session_.get())) {
     for (auto& observer : observers_) {
-      // Start polling after session start.
-      if (!timer_.IsRunning()) {
-        timer_.Start(FROM_HERE, kPollingInterval, this,
-                     &BocaSessionManager::LoadCurrentSession);
-      }
+      StartSessionPolling(/*in_session=*/true);
       observer.OnSessionStarted(current_session_->session_id(),
                                 current_session_->teacher());
     }

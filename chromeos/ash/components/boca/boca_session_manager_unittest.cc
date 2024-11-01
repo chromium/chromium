@@ -132,7 +132,7 @@ class BocaSessionManagerTest : public testing::Test {
     observer_ = std::make_unique<StrictMock<MockObserver>>();
 
     boca_app_client_ = std::make_unique<StrictMock<MockBocaAppClient>>();
-    // Start with active session to trigger polling.
+    // Start with active session to trigger in-session polling.
     auto session_1 = std::make_unique<::boca::Session>();
     session_1->set_session_state(::boca::Session::ACTIVE);
     session_1->set_session_id(kInitialSessionId);
@@ -230,8 +230,8 @@ TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(0);
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionEnded) {
@@ -241,10 +241,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionEnded) {
       }));
 
   EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
-
-  // After session ended, polling should stop.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 4 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
@@ -256,8 +254,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
       }));
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval + base::Seconds(1));
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
@@ -266,8 +264,27 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
       }));
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(0);
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
-  // Polling has stopped, manually load session.
+  // In session polling has stopped, start polling with indefinite interval now.
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kIndefinitePollingInterval + base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest, DoNotPollIfActiveSessionLoad) {
+  auto current_session = std::make_unique<::boca::Session>();
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(
+            std::move(current_session));
+      }));
+  EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
+  EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
+
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval - base::Seconds(1));
   boca_session_manager()->LoadCurrentSession();
+  // Should have triggered an interval for session load, but skipped due to
+  // there was an active load.
+  task_environment()->FastForwardBy(base::Seconds(2));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionStateChanged) {
@@ -281,9 +298,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionStateChanged) {
 
   EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
 
-  // After session ended, polling should stop.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 4 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenSessionStateIsTheSame) {
@@ -299,8 +315,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionStateIsTheSame) {
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(0);
 
   // Have updated one sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenLockModeChanged) {
@@ -336,8 +352,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenLockModeChanged) {
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(2);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleContentChanged) {
@@ -372,8 +388,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleContentChanged) {
 
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(2);
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleOrderChanged) {
@@ -410,8 +426,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleOrderChanged) {
 
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(2);
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenBundledContentNoChange) {
@@ -449,8 +465,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBundledContentNoChange) {
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(1);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenCurrentBundleEmpty) {
@@ -466,8 +482,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenCurrentBundleEmpty) {
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(0);
 
   // Have updated one session.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionCaptionUpdated) {
@@ -506,8 +522,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionCaptionUpdated) {
       .Times(2);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenSessionCaptionSame) {
@@ -532,8 +548,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionCaptionSame) {
       .Times(0);
 
   // Have updated one session.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenSessionConfigNameNotMatch) {
@@ -559,8 +575,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionConfigNameNotMatch) {
       .Times(0);
 
   // Have updated one session.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionRosterUpdated) {
@@ -593,8 +609,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionRosterUpdated) {
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(2);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest,
@@ -629,8 +645,8 @@ TEST_F(BocaSessionManagerTest,
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(2);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
@@ -646,16 +662,16 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(0);
 
   // Have updated one sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DISABLED_DoNotPollSessionWhenNoNetwork) {
   ToggleOffline();
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
 
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kIndefinitePollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, DoNotPollSessionWhenUserNotActive) {
@@ -671,8 +687,8 @@ TEST_F(BocaSessionManagerTest, DoNotPollSessionWhenUserNotActive) {
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
 
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifyLocalCaptionConfigWhenLocalChange) {
@@ -795,8 +811,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionActivityUpdated) {
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(2);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenStudentStateUpdated) {
@@ -828,8 +844,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenStudentStateUpdated) {
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(2);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest,
@@ -863,8 +879,8 @@ TEST_F(BocaSessionManagerTest,
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(1);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest,
@@ -914,8 +930,8 @@ TEST_F(BocaSessionManagerTest,
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
 
   // Have updated two sessions.
-  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
-                                    base::Seconds(1));
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 2 + base::Seconds(1));
 }
 
 TEST_F(BocaSessionManagerTest, LoadSessionWhenRefreshTokenReady) {

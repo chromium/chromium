@@ -39,7 +39,11 @@ class BocaSessionManager
     : public chromeos::network_config::CrosNetworkConfigObserver,
       public signin::IdentityManager::Observer {
  public:
-  inline static constexpr base::TimeDelta kPollingInterval = base::Minutes(5);
+  // TODO(crbug.com/376912269): Replace intervals with finch config.
+  inline static constexpr base::TimeDelta kInSessionPollingInterval =
+      base::Minutes(1);
+  inline static constexpr base::TimeDelta kIndefinitePollingInterval =
+      base::Minutes(1);
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
 
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
@@ -131,7 +135,8 @@ class BocaSessionManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void StartSessionPolling();
+  void StartSessionPolling(bool in_session);
+  void MaybeLoadCurrentSession();
   virtual void LoadCurrentSession();
   void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
@@ -172,8 +177,11 @@ class BocaSessionManager
 
   const bool is_producer_;
   base::ObserverList<Observer> observers_;
-  // Timer used for periodic session polling.
-  base::RepeatingTimer timer_;
+  // Timer used for periodic session polling within session.
+  base::RepeatingTimer in_session_timer_;
+  // Timer used for indefinite session polling.
+  base::RepeatingTimer indefinite_timer_;
+  base::TimeTicks last_session_load_;
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;
   bool is_network_connected_ = false;

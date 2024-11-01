@@ -19,7 +19,7 @@ using ::testing::_;
 namespace ash::boca {
 
 constexpr base::TimeDelta fast_forward_timeskip =
-    BocaSessionManager::kPollingInterval + base::Seconds(1);
+    BocaSessionManager::kIndefinitePollingInterval + base::Seconds(1);
 
 class BocaMetricsManagerTest : public testing::Test {
  protected:
