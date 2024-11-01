@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +31,9 @@ import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_M
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -77,8 +80,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -87,8 +88,9 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
@@ -139,7 +141,6 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mTabCreator;
     @Mock private LayoutStateProvider mLayoutManager;
-    @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private TabModel mTabModel;
     @Mock private View mView;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
@@ -148,10 +149,12 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ColorStateList mTintList1;
+    @Mock private ColorStateList mTintList2;
     @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
-    @Captor private ArgumentCaptor<IncognitoStateObserver> mIncognitoStateObserverArgumentCaptor;
 
     @Captor
     private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverArgumentCaptor;
@@ -169,8 +172,6 @@ public class TabGroupUiMediatorUnitTest {
             new ObservableSupplierImpl<>();
 
     private Context mContext;
-    private int mPrimaryBackgroundColor;
-    private int mIncognitoBackgroundColor;
     private Tab mTab1;
     private Tab mTab2;
     private Tab mTab3;
@@ -247,10 +248,10 @@ public class TabGroupUiMediatorUnitTest {
                         mTabContentManager,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
-                        mIncognitoStateProvider,
                         mDialogControllerSupplier,
                         mOmniboxFocusStateSupplier,
-                        mSharedImageTilesCoordinator);
+                        mSharedImageTilesCoordinator,
+                        mThemeColorProvider);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -287,8 +288,6 @@ public class TabGroupUiMediatorUnitTest {
         Resources resources = spy(mContext.getResources());
         when(resources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
         when(mContext.getResources()).thenReturn(resources);
-        mPrimaryBackgroundColor = SemanticColorUtils.getDialogBgColor(mContext);
-        mIncognitoBackgroundColor = mContext.getColor(R.color.dialog_bg_color_dark_baseline);
 
         mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
@@ -370,12 +369,6 @@ public class TabGroupUiMediatorUnitTest {
         // Set up OverviewModeBehavior
         doNothing().when(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
         mLayoutStateProviderSupplier.set(mLayoutManager);
-
-        // Set up IncognitoStateProvider
-        doNothing()
-                .when(mIncognitoStateProvider)
-                .addIncognitoStateObserverAndTrigger(
-                        mIncognitoStateObserverArgumentCaptor.capture());
 
         // Set up ResetHandler
         doNothing().when(mResetHandler).resetStripWithListOfTabs(any());
@@ -968,8 +961,6 @@ public class TabGroupUiMediatorUnitTest {
         verify(mTabGroupModelFilterProvider)
                 .removeTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
         verify(mLayoutManager).removeObserver(mLayoutStateObserverCaptor.capture());
-        verify(mIncognitoStateProvider)
-                .removeObserver(mIncognitoStateObserverArgumentCaptor.capture());
         verify(mTabModelSupplier).removeObserver(mTabModelSupplierObserverCaptor.capture());
         verify(mTabGroupModelFilter, times(2))
                 .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
@@ -1071,32 +1062,6 @@ public class TabGroupUiMediatorUnitTest {
         mTabModelSupplierObserverCaptor.getValue().onResult(mTabModel);
 
         verifyResetStrip(false, null);
-    }
-
-    @Test
-    public void incognitoChange() {
-        initAndAssertProperties(mTab1);
-        mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
-
-        mIncognitoStateObserverArgumentCaptor.getValue().onIncognitoStateChanged(true);
-
-        assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(true));
-        assertThat(
-                mModel.get(TabGroupUiProperties.BACKGROUND_COLOR),
-                equalTo(mIncognitoBackgroundColor));
-        mVisibilityControllerInOrder
-                .verify(mVisibilityController)
-                .setBottomControlsColor(mIncognitoBackgroundColor);
-
-        mIncognitoStateObserverArgumentCaptor.getValue().onIncognitoStateChanged(false);
-
-        assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(false));
-        assertThat(
-                mModel.get(TabGroupUiProperties.BACKGROUND_COLOR),
-                equalTo(mPrimaryBackgroundColor));
-        mVisibilityControllerInOrder
-                .verify(mVisibilityController)
-                .setBottomControlsColor(mPrimaryBackgroundColor);
     }
 
     @Test
@@ -1202,5 +1167,26 @@ public class TabGroupUiMediatorUnitTest {
 
         assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
         assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+    }
+
+    @Test
+    public void testThemeColorChange() {
+        doReturn(Color.RED).when(mThemeColorProvider).getThemeColor();
+        initAndAssertProperties(mTab2);
+        assertEquals(Color.RED, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
+
+        mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, false);
+        assertEquals(Color.BLUE, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
+    }
+
+    @Test
+    public void testTintChange() {
+        doReturn(mTintList1).when(mThemeColorProvider).getTint();
+        initAndAssertProperties(mTab2);
+        assertEquals(mTintList1, mModel.get(TabGroupUiProperties.TINT));
+
+        doReturn(mTintList2).when(mThemeColorProvider).getTint();
+        mTabGroupUiMediator.onTintChanged(mTintList2, mTintList2, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(mTintList2, mModel.get(TabGroupUiProperties.TINT));
     }
 }

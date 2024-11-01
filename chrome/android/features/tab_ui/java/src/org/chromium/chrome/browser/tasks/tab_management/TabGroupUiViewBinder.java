@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.INITIAL_SCROLL_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IS_MAIN_CONTENT_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.TINT;
 
 import android.view.View;
 
@@ -52,8 +52,6 @@ class TabGroupUiViewBinder {
                     model.get(NEW_TAB_BUTTON_ON_CLICK_LISTENER));
         } else if (IS_MAIN_CONTENT_VISIBLE == propertyKey) {
             viewHolder.toolbarView.setMainContentVisibility(model.get(IS_MAIN_CONTENT_VISIBLE));
-        } else if (IS_INCOGNITO == propertyKey) {
-            viewHolder.toolbarView.setIsIncognito(model.get(IS_INCOGNITO));
         } else if (BACKGROUND_COLOR == propertyKey) {
             viewHolder.toolbarView.setContentBackgroundColor(model.get(BACKGROUND_COLOR));
         } else if (SHOW_GROUP_DIALOG_BUTTON_VISIBLE == propertyKey) {
@@ -70,6 +68,8 @@ class TabGroupUiViewBinder {
                     manager.findLastVisibleItemPosition() - manager.findFirstVisibleItemPosition();
             // Try to scroll to a state where the selected tab is in the middle of the strip.
             manager.scrollToPositionWithOffset(index - showingItemsCount / 2, 0);
+        } else if (TINT == propertyKey) {
+            viewHolder.toolbarView.setTint(model.get(TINT));
         }
     }
 }

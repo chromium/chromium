@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.ColorStateList;
@@ -18,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.annotation.UiThreadTest;
@@ -43,6 +43,8 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     private ViewGroup mContainerView;
     private View mMainContent;
     private FrameLayout mImageTilesContainer;
+    ColorStateList mTint1;
+    ColorStateList mTint2;
 
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
@@ -68,6 +70,12 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
                     mMainContent = toolbarView.findViewById(R.id.main_content);
                     mImageTilesContainer =
                             toolbarView.findViewById(R.id.toolbar_image_tiles_container);
+                    mTint1 =
+                            ContextCompat.getColorStateList(
+                                    getActivity(), R.color.default_text_color_link_tint_list);
+                    mTint2 =
+                            ContextCompat.getColorStateList(
+                                    getActivity(), R.color.default_icon_color_white_tint_list);
                     RecyclerView recyclerView =
                             (TabListRecyclerView)
                                     LayoutInflater.from(getActivity())
@@ -166,14 +174,14 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetIncognito() {
-        mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
-        ColorStateList lightNewTabImageTint = mNewTabButton.getImageTintList();
-        ColorStateList lightShowGroupDialogImageTint = mShowGroupDialogButton.getImageTintList();
+    public void testSetTint() {
+        mModel.set(TabGroupUiProperties.TINT, mTint1);
+        assertEquals(mTint1, mShowGroupDialogButton.getImageTintList());
+        assertEquals(mTint1, mNewTabButton.getImageTintList());
 
-        mModel.set(TabGroupUiProperties.IS_INCOGNITO, true);
-        assertNotEquals(lightNewTabImageTint, mShowGroupDialogButton.getImageTintList());
-        assertNotEquals(lightShowGroupDialogImageTint, mNewTabButton.getImageTintList());
+        mModel.set(TabGroupUiProperties.TINT, mTint2);
+        assertEquals(mTint2, mShowGroupDialogButton.getImageTintList());
+        assertEquals(mTint2, mNewTabButton.getImageTintList());
     }
 
     @Test

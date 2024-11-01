@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -19,7 +19,6 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,8 +33,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
@@ -44,9 +41,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -59,7 +59,8 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
-public class TabGroupUiMediator implements BackPressHandler {
+public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver, TintObserver {
+
     /** Defines an interface for a {@link TabGroupUiMediator} reset event handler. */
     interface ResetHandler {
         /**
@@ -89,14 +90,11 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final TabCreatorManager mTabCreatorManager;
     private final BottomControlsCoordinator.BottomControlsVisibilityController
             mVisibilityController;
-    private final IncognitoStateProvider mIncognitoStateProvider;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
-    private final IncognitoStateObserver mIncognitoStateObserver;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
-    private final @ColorInt int mPrimaryBackgroundColor;
-    private final @ColorInt int mIncognitoBackgroundColor;
+    private final ThemeColorProvider mThemeColorProvider;
 
     // These should only be used when regular (non-incognito) tabs are set in the model.
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -122,25 +120,30 @@ public class TabGroupUiMediator implements BackPressHandler {
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            IncognitoStateProvider incognitoStateProvider,
             @Nullable
                     LazyOneshotSupplier<TabGridDialogMediator.DialogController>
                             dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            SharedImageTilesCoordinator sharedImageTilesCoordinator) {
+            SharedImageTilesCoordinator sharedImageTilesCoordinator,
+            ThemeColorProvider themeColorProvider) {
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
         mVisibilityController = visibilityController;
-        mIncognitoStateProvider = incognitoStateProvider;
         mTabGridDialogControllerSupplier = dialogControllerSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
-        mPrimaryBackgroundColor = SemanticColorUtils.getDialogBgColor(context);
-        mIncognitoBackgroundColor = context.getColor(R.color.dialog_bg_color_dark_baseline);
+        mThemeColorProvider = themeColorProvider;
 
+        mThemeColorProvider.addThemeColorObserver(this);
+        mThemeColorProvider.addTintObserver(this);
+        onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
+        onTintChanged(
+                mThemeColorProvider.getTint(),
+                mThemeColorProvider.getTint(),
+                BrandedColorScheme.APP_DEFAULT);
         Profile originalProfile = mTabModelSelector.getModel(/* incongito= */ false).getProfile();
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
@@ -329,12 +332,6 @@ public class TabGroupUiMediator implements BackPressHandler {
                 };
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
 
-        mIncognitoStateObserver =
-                (isIncognito) -> {
-                    mModel.set(TabGroupUiProperties.IS_INCOGNITO, isIncognito);
-                    setBottomControlsBackgroundColor(isIncognito);
-                };
-
         filterProvider.addTabGroupModelFilterObserver(mTabModelObserver);
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
@@ -344,8 +341,6 @@ public class TabGroupUiMediator implements BackPressHandler {
             layoutStateProviderSupplier.onAvailable(
                     mCallbackController.makeCancelable(this::setLayoutStateProvider));
         }
-
-        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
 
         setupToolbarButtons();
         mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE, true);
@@ -371,11 +366,16 @@ public class TabGroupUiMediator implements BackPressHandler {
         layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
-    private void setBottomControlsBackgroundColor(boolean isIncognito) {
-        @ColorInt
-        int backgroundColor = isIncognito ? mIncognitoBackgroundColor : mPrimaryBackgroundColor;
-        mVisibilityController.setBottomControlsColor(backgroundColor);
-        mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, backgroundColor);
+    @Override
+    public void onThemeColorChanged(int color, boolean shouldAnimate) {
+        mVisibilityController.setBottomControlsColor(color);
+        mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, color);
+    }
+
+    @Override
+    public void onTintChanged(
+            ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {
+        mModel.set(TabGroupUiProperties.TINT, mThemeColorProvider.getTint());
     }
 
     private void setupToolbarButtons() {
@@ -562,7 +562,6 @@ public class TabGroupUiMediator implements BackPressHandler {
                     .removeObserver(mOnCollaborationIdChanged);
             mTransitiveSharedGroupObserver.destroy();
         }
-        mIncognitoStateProvider.removeObserver(mIncognitoStateObserver);
     }
 
     boolean getIsShowingOverViewModeForTesting() {
