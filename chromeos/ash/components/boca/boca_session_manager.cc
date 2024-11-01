@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
+#include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -24,6 +25,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash::boca {
 
@@ -215,6 +217,15 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
   for (auto& observer : observers_) {
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
   }
+  is_local_caption_enabled_ = caption_config.captions_enabled();
+  bool is_caption_enabled =
+      is_local_caption_enabled_ || GetSessionConfigSafe(current_session_.get())
+                                       .captions_config()
+                                       .captions_enabled();
+  if (is_producer_) {
+    BocaNotificationHandler::HandleCaptionNotification(
+        message_center::MessageCenter::Get(), is_caption_enabled);
+  }
 }
 
 void BocaSessionManager::NotifyAppReload() {
@@ -276,6 +287,10 @@ void BocaSessionManager::NotifySessionUpdate() {
     for (auto& observer : observers_) {
       StartSessionPolling(/*in_session=*/false);
       observer.OnSessionEnded(previous_session_->session_id());
+      if (is_producer_) {
+        BocaNotificationHandler::HandleSessionEndedNotification(
+            message_center::MessageCenter::Get());
+      }
     }
   }
 
@@ -285,6 +300,10 @@ void BocaSessionManager::NotifySessionUpdate() {
       StartSessionPolling(/*in_session=*/true);
       observer.OnSessionStarted(current_session_->session_id(),
                                 current_session_->teacher());
+      if (is_producer_) {
+        BocaNotificationHandler::HandleSessionStartedNotification(
+            message_center::MessageCenter::Get());
+      }
     }
   }
 }
@@ -324,6 +343,14 @@ void BocaSessionManager::NotifyCaptionConfigUpdate() {
           // ended. Remove the null check after that.
           current_session_ ? current_session_->tachyon_group_id()
                            : std::string());
+    }
+    if (is_producer_) {
+      bool is_caption_enabled = is_local_caption_enabled_ ||
+                                GetSessionConfigSafe(current_session_.get())
+                                    .captions_config()
+                                    .captions_enabled();
+      BocaNotificationHandler::HandleCaptionNotification(
+          message_center::MessageCenter::Get(), is_caption_enabled);
     }
   }
 }

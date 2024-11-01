@@ -21,6 +21,7 @@ static_library("boca") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/ash/boca/babelorca",
     "//chrome/browser/ash/settings",

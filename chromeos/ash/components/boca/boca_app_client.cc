@@ -37,6 +37,8 @@ BocaAppClient::~BocaAppClient() {
   g_instance = nullptr;
 }
 
+void BocaAppClient::LaunchApp() {}
+
 void BocaAppClient::AddSessionManager(BocaSessionManager* session_manager) {
   // Session manager is created as profile service upon signin, so we can always
   // guarantee the active profile identity matches the session manager identity.

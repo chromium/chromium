@@ -27,6 +27,7 @@ static_library("boca") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chromeos/ash/components/boca:notifications",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
@@ -36,10 +37,13 @@ static_library("boca") {
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
+    "//ui/message_center",
   ]
 
-  allow_circular_includes_from =
-      [ "//chromeos/ash/components/boca/session_api" ]
+  allow_circular_includes_from = [
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/boca:notifications",
+  ]
 }
 
 static_library("invalidations") {
@@ -61,6 +65,22 @@ static_library("invalidations") {
   ]
 }
 
+static_library("notifications") {
+  sources = [
+    "notifications/boca_notification_handler.cc",
+    "notifications/boca_notification_handler.h",
+  ]
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//base",
+    "//chromeos/strings:strings_grit",
+    "//ui/base",
+    "//ui/message_center",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -71,11 +91,13 @@ source_set("unit_tests") {
     "boca_session_util_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
     "invalidations/invalidation_service_impl_unittest.cc",
+    "notifications/boca_notification_handler_unittest.cc",
   ]
 
   deps = [
     ":boca",
     ":invalidations",
+    ":notifications",
     "//ash:test_support",
     "//base",
     "//base/test:test_support",
@@ -96,7 +118,11 @@ source_set("unit_tests") {
     "//google_apis/common",
     "//net",
     "//services/network:test_support",
+    "//services/network/public/cpp/",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/message_center",
+    "//ui/message_center:test_support",
   ]
 }

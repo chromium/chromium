@@ -6893,6 +6893,19 @@
         School Tools
       </message>
 
+      <!-- Strings for Class Hub notifications -->
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a school tools session.">
+        School tools is connected to students
+      </message>
+            <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
+        Open app
+      </message>
+      <message name="IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that school tools is currently using their microphone.">
+        School Tools is using your microphone
+      </message>
+       <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the school tools notification">
+        School Tools
+      </message>
     </messages>
   </release>
 </grit>

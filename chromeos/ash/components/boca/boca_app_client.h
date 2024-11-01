@@ -37,6 +37,9 @@ class BocaAppClient : public signin::IdentityManager::Observer {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
+  // Launch Boca App.
+  virtual void LaunchApp();
+
   // Add `BocaSessionManager` instance for the current profile.
   virtual void AddSessionManager(BocaSessionManager* session_manager);
 
