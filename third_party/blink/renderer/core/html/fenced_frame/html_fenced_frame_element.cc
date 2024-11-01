@@ -63,8 +63,7 @@ String DeprecatedFencedFrameModeToString(
       return "opaque-ads";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Helper function that returns whether the mode of the parent tree is different

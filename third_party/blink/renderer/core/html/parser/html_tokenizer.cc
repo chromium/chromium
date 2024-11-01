@@ -334,14 +334,15 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         if (!input_stream_preprocessor_.Advance(source, cc))
           return HaveBufferedCharacterToken();
       }
-      if (cc == '&')
+      if (cc == '&') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kCharacterReferenceInRCDATAState);
-      else if (cc == '<')
+      } else if (cc == '<') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kRCDATALessThanSignState);
-      else if (cc == kEndOfFileMarker)
+      } else if (cc == kEndOfFileMarker) {
         return EmitEndOfFile(source);
-      else
-        NOTREACHED_IN_MIGRATION();
+      } else {
+        NOTREACHED();
+      }
     }
     END_STATE()
 
@@ -1111,14 +1112,15 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       // we were in when we were switched into this state. Rather than
       // keeping track of this explictly, we observe that the previous
       // state can be determined by additional_allowed_character_.
-      if (additional_allowed_character_ == '"')
+      if (additional_allowed_character_ == '"') {
         HTML_SWITCH_TO(kAttributeValueDoubleQuotedState);
-      else if (additional_allowed_character_ == '\'')
+      } else if (additional_allowed_character_ == '\'') {
         HTML_SWITCH_TO(kAttributeValueSingleQuotedState);
-      else if (additional_allowed_character_ == '>')
+      } else if (additional_allowed_character_ == '>') {
         HTML_SWITCH_TO(kAttributeValueUnquotedState);
-      else
-        NOTREACHED_IN_MIGRATION();
+      } else {
+        NOTREACHED();
+      }
     }
     END_STATE()
 
@@ -1690,8 +1692,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool HTMLTokenizer::SkipWhitespaces(SegmentedString& source, UChar& cc) {
@@ -1817,8 +1818,7 @@ bool HTMLTokenizer::EmitData(SegmentedString& source, UChar cc) {
         cc = source.AdvancePastNonNewline();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -1849,8 +1849,7 @@ bool HTMLTokenizer::EmitPLAINTEXT(SegmentedString& source, UChar cc) {
           return EmitEndOfFile(source);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

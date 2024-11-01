@@ -40,8 +40,7 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
 
   switch (host_type_) {
     case HostType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case HostType::kCanvasHost:
       UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.SqrtNumberOfPixels",
                                   std::sqrt(Size().Area64()), 1, 5000, 100);

@@ -1198,8 +1198,7 @@ String HTMLInputElement::Value() const {
     case ValueMode::kValue:
       return non_attribute_value_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 String HTMLInputElement::ValueOrDefaultLabel() const {

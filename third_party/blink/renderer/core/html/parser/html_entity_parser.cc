@@ -84,8 +84,7 @@ static UChar AsHexDigit(UChar cc) {
     return 10 + cc - 'a';
   if (cc >= 'A' && cc <= 'Z')
     return 10 + cc - 'A';
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 typedef Vector<UChar, 64> ConsumedCharacterBuffer;

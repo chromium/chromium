@@ -89,8 +89,7 @@ int GetLazyLoadingFrameMarginPx(const Document& document) {
     case WebEffectiveConnectionType::kType4G:
       return settings->GetLazyLoadingFrameMarginPx4G();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace

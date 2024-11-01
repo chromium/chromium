@@ -710,8 +710,8 @@ void HTMLPermissionElement::AttributeChanged(
         UpdateText();
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected permissions size " << permission_descriptors_.size();
+        NOTREACHED() << "Unexpected permissions size "
+                     << permission_descriptors_.size();
     }
   }
 
@@ -1046,7 +1046,7 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
     case EmbeddedPermissionControlResult::kResolvedNoUserGesture:
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void HTMLPermissionElement::DisableReasonExpireTimerFired(TimerBase* timer) {

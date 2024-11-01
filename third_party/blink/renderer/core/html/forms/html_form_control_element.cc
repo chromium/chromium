@@ -457,9 +457,7 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
           action = CommandEventType::kShowPopover;
           break;
         case PopoverTriggerAction::kNone:
-          action = CommandEventType::kNone;
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       CHECK(popover.popover->IsValidBuiltinCommand(*this, action));

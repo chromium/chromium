@@ -972,8 +972,7 @@ class HTMLFastPathParser {
         return {Span{}, ScanEscapedAttrValue()};
     };
 
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 #endif  // VECTORIZE_SCANNING
 

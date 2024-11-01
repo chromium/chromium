@@ -123,9 +123,6 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
     WebFeature feature;
     if (host->IsOffscreenCanvas()) {
       switch (canvas_rendering_type_) {
-        default:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kOffscreenCanvas_2D;
           break;
@@ -141,12 +138,11 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
         case CanvasRenderingContext::CanvasRenderingAPI::kWebgpu:
           feature = WebFeature::kOffscreenCanvas_WebGPU;
           break;
+        default:
+          NOTREACHED();
       }
     } else {
       switch (canvas_rendering_type_) {
-        default:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kHTMLCanvasElement_2D;
           break;
@@ -162,6 +158,8 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
         case CanvasRenderingContext::CanvasRenderingAPI::kWebgpu:
           feature = WebFeature::kHTMLCanvasElement_WebGPU;
           break;
+        default:
+          NOTREACHED();
       }
     }
     UseCounter::Count(window->document(), feature);

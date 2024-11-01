@@ -105,7 +105,7 @@ static String ValueToDateTimeString(double value, InputType::Type type) {
       components.SetMillisecondsSinceEpochForWeek(value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return components.GetType() == DateComponents::kInvalid
              ? String()

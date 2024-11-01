@@ -468,8 +468,7 @@ double VTTCue::CalculateComputedTextPosition() const {
     case AlignSetting::kCenter:
       return 50;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -531,7 +530,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
                        : (100 - computed_text_position);
     maximum_size = maximum_size * 2;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // 5. If the cue size is less than maximum size, then let size
@@ -560,7 +559,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
                                           display_parameters.size / 2);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     // Cases for writing_direction_ being kVerticalGrowing{Left|Right}
@@ -577,7 +576,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
                                           display_parameters.size / 2);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

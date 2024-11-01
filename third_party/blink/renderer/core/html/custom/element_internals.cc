@@ -84,7 +84,7 @@ const V8ControlValue* RestoreFromFormControlState(
       restored_value = MakeGarbageCollected<V8ControlValue>(form_data);
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return restored_value;
 }

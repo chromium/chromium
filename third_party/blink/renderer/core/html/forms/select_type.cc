@@ -1898,13 +1898,11 @@ void SelectType::UpdateTextStyle() {}
 void SelectType::UpdateTextStyleAndContent() {}
 
 HTMLOptionElement* SelectType::OptionToBeShown() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const ComputedStyle* SelectType::OptionStyle() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void SelectType::MaximumOptionWidthMightBeChanged() const {}
@@ -1914,8 +1912,7 @@ HTMLOptionElement* SelectType::SpatialNavigationFocusedOption() {
 }
 
 HTMLOptionElement* SelectType::ActiveSelectionEnd() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void SelectType::ScrollToSelection() {}
@@ -1923,7 +1920,7 @@ void SelectType::ScrollToSelection() {}
 void SelectType::ScrollToOption(HTMLOptionElement* option) {}
 
 void SelectType::SelectAll() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SelectType::SaveListboxActiveSelection() {}
@@ -1935,24 +1932,21 @@ void SelectType::ListBoxOnChange() {}
 void SelectType::ClearLastOnChangeSelection() {}
 
 Element& SelectType::InnerElement() const {
-  NOTREACHED_IN_MIGRATION();
-  // Returning select_ doesn't make sense, but we need to return an element
-  // to compile this source. This function must not be called.
-  return *select_;
+  NOTREACHED();
 }
 
 void SelectType::ShowPicker() {}
 
 void SelectType::ShowPopup(PopupMenu::ShowEventType) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SelectType::HidePopup() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SelectType::PopupDidHide() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool SelectType::PopupIsVisible() const {
@@ -1960,13 +1954,11 @@ bool SelectType::PopupIsVisible() const {
 }
 
 PopupMenu* SelectType::PopupForTesting() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 AXObject* SelectType::PopupRootAXObject() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // Returns the 1st valid OPTION |skip| items from |list_index| in direction

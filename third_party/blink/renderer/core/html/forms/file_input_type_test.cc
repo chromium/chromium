@@ -41,12 +41,10 @@ class MockEventListener final : public NativeEventListener {
 class WebKitDirectoryChromeClient : public EmptyChromeClient {
  public:
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override {
-    NOTREACHED_IN_MIGRATION()
-        << "RegisterPopupOpeningObserver should not be called.";
+    NOTREACHED() << "RegisterPopupOpeningObserver should not be called.";
   }
   void UnregisterPopupOpeningObserver(PopupOpeningObserver*) override {
-    NOTREACHED_IN_MIGRATION()
-        << "UnregisterPopupOpeningObserver should not be called.";
+    NOTREACHED() << "UnregisterPopupOpeningObserver should not be called.";
   }
 };
 

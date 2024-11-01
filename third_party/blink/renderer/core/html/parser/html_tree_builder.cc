@@ -441,8 +441,7 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
   switch (token->GetType()) {
     case HTMLToken::kUninitialized:
     case HTMLToken::kCharacter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case HTMLToken::DOCTYPE:
       ProcessDoctypeToken(token);
       break;
@@ -1647,8 +1646,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTag(token);
       break;
     case kTextMode:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kTemplateContentsMode:
       switch (tag) {
         case HTMLTag::kTemplate:
@@ -3028,8 +3026,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
 
   switch (token->GetType()) {
     case HTMLToken::kUninitialized:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case HTMLToken::DOCTYPE:
     // TODO(crbug.com/1453291) This needs to be expanded to properly handle
     // foreign content (e.g. <svg>) inside an element with `parseparts`.
@@ -3164,8 +3161,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       break;
     case HTMLToken::kCharacter:
     case HTMLToken::kEndOfFile:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

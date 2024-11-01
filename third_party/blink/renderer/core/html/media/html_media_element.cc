@@ -301,8 +301,7 @@ String PreloadTypeToString(WebMediaPlayer::Preload preload_type) {
       return "auto";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 bool IsValidPlaybackRate(double rate) {
@@ -1215,7 +1214,7 @@ void HTMLMediaElement::SelectMediaResource() {
       DVLOG(3) << "selectMediaResource(" << *this << "), using source element";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -2845,7 +2844,7 @@ ScriptPromise<IDLUndefined> HTMLMediaElement::playForBindings(
         message = "The element has no supported sources.";
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     resolver->Reject(MakeGarbageCollected<DOMException>(code.value(), message));
     return promise;
@@ -4611,7 +4610,7 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
           "media-playback-while-not-visible permission policy";
       break;
     case PlayPromiseError::kNotSupported:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   RejectPlayPromisesInternal(
       DOMExceptionCode::kAbortError,
@@ -4752,7 +4751,7 @@ void HTMLMediaElement::PausePlayback(PauseReason pause_reason) {
     case PauseReason::kFrameHidden:
       return PauseInternal(PlayPromiseError::kPaused_FrameHidden);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {

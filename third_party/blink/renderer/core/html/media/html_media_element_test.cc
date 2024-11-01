@@ -78,9 +78,8 @@ AtomicString SrcSchemeToURL(TestURLScheme scheme) {
       return AtomicString(
           "blob:http://example.com/00000000-0000-0000-0000-000000000000");
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return g_empty_atom;
 }
 
 class MockWebMediaPlayer : public EmptyWebMediaPlayer {

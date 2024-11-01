@@ -517,8 +517,7 @@ HTMLTableElement::CellBorders HTMLTableElement::GetCellBorders() const {
         return kSolidBorders;
       return kInsetBorders;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kNoBorders;
+  NOTREACHED();
 }
 
 CSSPropertyValueSet* HTMLTableElement::CreateSharedCellStyle() {
