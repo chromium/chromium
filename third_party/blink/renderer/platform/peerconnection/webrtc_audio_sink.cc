@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -185,9 +186,19 @@ WebRtcAudioSink::Adapter::~Adapter() {
   SendLogMessage(
       base::StringPrintf("Adapter::~Adapter([label=%s])", label_.c_str()));
   if (audio_processor_) {
-    PostCrossThreadTask(*main_task_runner_.get(), FROM_HERE,
-                        CrossThreadBindOnce(&DereferenceOnMainThread,
-                                            std::move(audio_processor_)));
+    scoped_refptr<webrtc::AudioProcessorInterface> tmp_audio_processor =
+        audio_processor_;
+    if (PostCrossThreadTask(*main_task_runner_.get(), FROM_HERE,
+                            CrossThreadBindOnce(&DereferenceOnMainThread,
+                                                std::move(audio_processor_)))) {
+      tmp_audio_processor.reset();
+    } else {
+      auto* leak = tmp_audio_processor.release();
+      DVLOG(1) << __func__
+               << " Intentionally leaking audio_processor_ due to failed "
+                  "PostCrossThreadTask: "
+               << leak;
+    };
   }
 }
 
