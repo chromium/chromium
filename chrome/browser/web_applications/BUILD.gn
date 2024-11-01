@@ -723,7 +723,6 @@ source_set("web_applications_test_support") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//components/base32",
