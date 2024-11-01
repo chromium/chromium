@@ -403,7 +403,9 @@ TEST_P(ClientCertSourceWritableUnitTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
+
+// TODO(crbug.com/376923227): enable once test certificate has regenerated.
+TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
@@ -451,8 +453,9 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
+// TODO(crbug.com/376923227): enable once test certificate has regenerated.
 TEST_P(ClientCertSourceWritableUnitTest,
-       PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
+       DISABLED_PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
@@ -514,7 +517,9 @@ TEST_P(ClientCertSourceWritableUnitTest,
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
+// TODO(crbug.com/376923227): enable once test certificate has regenerated.
+TEST_P(ClientCertSourceWritableUnitTest,
+       DISABLED_PolicyNoneDoesNotAllowDeletion) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
