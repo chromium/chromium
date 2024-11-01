@@ -285,12 +285,6 @@ BASE_FEATURE(kDesktopPWAsPreventClose,
 #endif
 );
 
-// Runs diagnostics during start up to measure how broken web app icons are to
-// feed into metrics.
-BASE_FEATURE(kDesktopPWAsIconHealthChecks,
-             "DesktopPWAsIconHealthChecks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPwaNavigationCapturingWithScopeExtensions,
              "DesktopPWAsLinkCapturingWithScopeExtensions",
              base::FEATURE_DISABLED_BY_DEFAULT);

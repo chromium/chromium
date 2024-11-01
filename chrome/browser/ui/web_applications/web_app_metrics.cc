@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
@@ -73,8 +71,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
           site_engagement::SiteEngagementService::Get(profile)),
       profile_(profile),
       icon_health_checks_(profile) {
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsIconHealthChecks) &&
-      !g_disable_automatic_icon_health_checks_for_testing) {
+  if (!g_disable_automatic_icon_health_checks_for_testing) {
     AfterStartupTaskUtils::PostTask(
         FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&WebAppIconHealthChecks::Start,
