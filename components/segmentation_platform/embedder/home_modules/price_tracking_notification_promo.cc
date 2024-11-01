@@ -97,11 +97,11 @@ bool PriceTrackingNotificationPromo::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
-  if (impression_count > kMaxPriceTrackingNotificationCardImpressions) {
-    return false;
+  if (impression_count < kMaxPriceTrackingNotificationCardImpressions) {
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 }  // namespace home_modules

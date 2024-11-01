@@ -53,7 +53,7 @@ bool AutofillPasswordsEphemeralModule::IsEnabled(int impression_count) {
   int max_impression_count =
       features::GetTipsEphemeralCardModuleMaxImpressionCount();
 
-  return impression_count <= max_impression_count;
+  return impression_count < max_impression_count;
 }
 
 // Defines the input signals required by this module.
