@@ -509,7 +509,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
                       AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER),
                 Field(&AutocompleteMatch::destination_url, ""),
                 Field(&AutocompleteMatch::history_embeddings_answer_header_text,
-                      u"Generating summary based on your browsing history"),
+                      u"Searching for a summary\x2026"),
                 Field(&AutocompleteMatch::description, u""))));
 
   // 3rd response with status `kSuccess`.
