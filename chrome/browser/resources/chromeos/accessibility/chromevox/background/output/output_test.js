@@ -1328,6 +1328,9 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', async function() {
             <p>hello world</p>
           </div>
         </div>
+        <script>
+          document.querySelector("[tabindex]").focus();
+        </script>
       `);
   const focusableDiv = root.firstChild;
   assertEquals(RoleType.GENERIC_CONTAINER, focusableDiv.role);

@@ -8,7 +8,8 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='deletion'
-++++++++android.view.View focusable name='3'
+++++++++android.view.View focusable
+++++++++++android.widget.TextView name='3' hint='oops'
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='insertion'
 ++++++++android.view.View role_description='link' clickable focusable link name='2'

@@ -3032,6 +3032,17 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     }
   }
 
+  if (RuntimeEnabledFeatures::AccessibilityMinRoleTabbableEnabled()) {
+    // Expose focused generic containers as a group.
+    // Focused generics also get a repaired name from contents.
+    // Therefore, the event generator will also fire role and name change events
+    // as they receive focus.
+    if (role_ == ax::mojom::blink::Role::kGenericContainer && IsFocused() &&
+        !HasAriaAttribute(html_names::kRoleAttr)) {
+      return ax::mojom::blink::Role::kGroup;
+    }
+  }
+
   // TODO(accessibility): Consider moving the image vs. image map role logic
   // here. Currently it is implemented in AXPlatformNode subclasses and thus
   // not available to the InspectorAccessibilityAgent.
@@ -4410,11 +4421,6 @@ bool AXObject::CanSetFocusAttribute() {
   return cached_can_set_focus_attribute_;
 }
 
-// TODO(accessibility) Look at reusing Element::IsFocusable() or
-// AXObject::IsKeyboardFocusable(). As long as we guard against style recalc by
-// returning early if IsHiddenViaStyle() is true, we can call
-// Element::IsKeyboardFocusable(), which would otherwise recalculate style at an
-// awkward time.
 bool AXObject::ComputeCanSetFocusAttribute() {
   DCHECK(!IsDetached());
   DCHECK(GetDocument());
@@ -4505,25 +4511,6 @@ bool AXObject::ComputeCanSetFocusAttribute() {
   // Focusable: element supports focus.
   return elem->SupportsFocus(Element::UpdateBehavior::kNoneForAccessibility) !=
          FocusableState::kNotFocusable;
-}
-
-bool AXObject::IsKeyboardFocusable() const {
-  if (!CanSetFocusAttribute()) {
-    return false;
-  }
-
-  Element& element = *GetElement();
-  CHECK(!element.NeedsStyleRecalc())
-      << "\n* Element: " << element << "\n* Object: " << this
-      << "\n* LayoutObject: " << GetLayoutObject();
-
-  if (element.IsKeyboardFocusable(
-          Element::UpdateBehavior::kNoneForAccessibility)) {
-    DCHECK(element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility));
-    return true;
-  }
-
-  return false;
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -7730,7 +7717,8 @@ ax::mojom::blink::Role AXObject::FirstValidRoleInRoleString(
   return role;
 }
 
-bool AXObject::SupportsNameFromContents(bool recursive) const {
+bool AXObject::SupportsNameFromContents(bool recursive,
+                                        bool consider_focus) const {
   // ARIA 1.1, section 5.2.7.5.
   bool result = false;
 
@@ -8007,16 +7995,11 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         // 2.Containers with aria-activedescendant, where the focus is being
         //   forwarded somewhere else.
         result = false;
-      } else if (!CanSetFocusAttribute()) {
-        // This check is added for performance reasons, as this value is cached.
-        result = false;
       } else {
         // Don't repair name from contents to focusable elements unless
-        // tabbable or focused, because providing a repaired accessible name
+        // focused, because providing a repaired accessible name
         // often leads to redundant verbalizations.
-        result = GetDocument()->FocusedElement() == GetElement() ||
-                 GetElement()->IsKeyboardFocusable(
-                     Element::UpdateBehavior::kNoneForAccessibility);
+        result = consider_focus && IsFocused();
 #if DCHECK_IS_ON()
         // TODO(crbug.com/350528330): Add this check and address focusable
         // UI elements that are missing a role, or using an improper role.
@@ -8423,8 +8406,12 @@ String AXObject::ToString(bool verbose) const {
       String name = ComputedName(&name_from);
       std::ostringstream name_from_str;
       name_from_str << name_from;
-      return string_builder + " nameFrom=" + String(name_from_str.str()) +
-             " name=" + name;
+      if (!name.empty()) {
+        string_builder = string_builder +
+                         " nameFrom=" + String(name_from_str.str()) +
+                         " name=" + name;
+      }
+      return string_builder;
     }
   } else {
     string_builder = string_builder + ": ";

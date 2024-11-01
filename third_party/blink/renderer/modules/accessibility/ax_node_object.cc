@@ -1970,8 +1970,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
       return ax::mojom::blink::Role::kGroup;
     }
     if (RuntimeEnabledFeatures::AccessibilityMinRoleTabbableEnabled()) {
-      if (GetElement()->IsKeyboardFocusable(
-              Element::UpdateBehavior::kNoneForAccessibility)) {
+      if (GetElement()->tabIndex() >= 0) {
         return ax::mojom::blink::Role::kGroup;
       }
     }
@@ -7003,7 +7002,8 @@ bool AXNodeObject::ShouldIncludeContentInTextAlternative(
     bool recursive,
     const AXObject* aria_label_or_description_root,
     AXObjectSet& visited) const {
-  if (!aria_label_or_description_root && !SupportsNameFromContents(recursive)) {
+  if (!aria_label_or_description_root &&
+      !SupportsNameFromContents(recursive, /*consider_focus*/ true)) {
     return false;
   }
 

@@ -468,8 +468,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Is the element focusable?
   bool CanSetFocusAttribute() const { return cached_can_set_focus_attribute_; }
   bool CanSetFocusAttribute();
-  // Is the element in the tab order?
-  bool IsKeyboardFocusable() const;
 
   // Whether objects are included in the tree. Nodes that are included in the
   // tree are serialized, even if they are ignored. This allows browser-side
@@ -613,7 +611,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // This is intended to be faster than calling |GetName| or
   // |TextAlternative|, and without side effects (it won't call
   // AXObjectCache->GetOrCreate).
-  bool SupportsNameFromContents(bool recursive) const;
+  bool SupportsNameFromContents(bool recursive,
+                                bool consider_focus = false) const;
 
   //
   // Properties of static elements.

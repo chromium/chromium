@@ -5,7 +5,7 @@ Document
 ++++++++Text Name='1.'
 ++++++Group Name='2.'
 ++++++++Text Name='2.'
-++Group Name='3. 4.'
+++Group
 ++++Group IsControlElement=false
 ++++++Group IsControlElement=false
 ++++++++Group Name='3.'
