@@ -4360,6 +4360,13 @@
        null,
        {}
       ]
+     ],
+     "shadow-reassign-dynamic-005-crash.html": [
+      "9e4f002cfec32cab44a4fe3b879a072f64a025bf",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-scroll-anchoring": {
@@ -178929,6 +178936,19 @@
        {}
       ]
      ],
+     "shadow-reassign-dynamic-006.html": [
+      "ace701eea93f5b098505266c23420e6644aa9fb2",
+      [
+       null,
+       [
+        [
+         "/css/css-scoping/shadow-reassign-dynamic-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "shadow-root-insert-into-document.html": [
       "a3b89be389a780dd53a1b53224810ecb4866c287",
       [
@@ -290383,27 +290403,14 @@
    },
    "infrastructure": {
     "assumptions": {
-     "ahem-ref.html": [
-      "9116232620fb1b65edd8b89ab86a2269158860e5",
+     "ahem.html": [
+      "0607f9afb64f6f7638fab95abcf49208175c7036",
       [
        null,
        [
         [
          "/infrastructure/assumptions/ahem-notref.html",
          "!="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "ahem.html": [
-      "068c1d4dee605a7a9f3ed4a0fd282779449712bb",
-      [
-       null,
-       [
-        [
-         "/infrastructure/assumptions/ahem-ref.html",
-         "=="
         ]
        ],
        {}
@@ -345695,6 +345702,10 @@
       "9f407eb690e0fb3d033afba0817082f84e30b783",
       []
      ],
+     "shadow-reassign-dynamic-006-ref.html": [
+      "60a6282457f17663be1317392b579f5369277048",
+      []
+     ],
      "slotted-parsing-expected.txt": [
       "180f9b3b9cf1207b5a7b42c0fe03a035b49c7337",
       []
@@ -364977,8 +364988,16 @@
      []
     ],
     "abort": {
+     "AbortSignal.any.shadowrealm-expected.txt": [
+      "f1c2a17f287945caa185475f439de706f11d56b7",
+      []
+     ],
      "WEB_FEATURES.yml": [
       "d2fdc1555e28305b7eb0e6eec3f8726fdd7d3e13",
+      []
+     ],
+     "event.any.shadowrealm-expected.txt": [
+      "f1c2a17f287945caa185475f439de706f11d56b7",
       []
      ],
      "resources": {
@@ -364986,7 +365005,11 @@
        "8f897c934e87eab427004268299c1c547a957727",
        []
       ]
-     }
+     },
+     "timeout-shadowrealm.any.shadowrealm-expected.txt": [
+      "f1c2a17f287945caa185475f439de706f11d56b7",
+      []
+     ]
     },
     "collections": {
      "HTMLCollection-as-prototype-expected.txt": [
@@ -393495,7 +393518,7 @@
      },
      "tools": {
       "ahem-generate-table.py": [
-       "314279f67105958badfa56b37a4bcc2625797f5d",
+       "0898ab78c1891afe037b6e23ba70a7ad440fb8ac",
        []
       ]
      }
@@ -416401,6 +416424,14 @@
      ]
     },
     "multi-globals": {
+     "broadcastchannel-current.sub-expected.txt": [
+      "32ce54dc18b3aec3415f1d9d51356c374549eb84",
+      []
+     ],
+     "broadcastchannel-incumbent.sub-expected.txt": [
+      "955c3f33e1fec7fa1c08c4f324a0020d9decd072",
+      []
+     ],
      "support": {
       "current-document-domain.sub.html": [
        "1b15f72ca481e640f87f368daa2f8813cd0fb88c",
@@ -504555,14 +504586,39 @@
    "dom": {
     "abort": {
      "AbortSignal.any.js": [
-      "3bbdc11a92f90d4e2d4dc8a57ca5774b43dac556",
+      "c2fc88d3b4f103a995e0e6450ba4a0a4cabcad8e",
       [
        "dom/abort/AbortSignal.any.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker,shadowrealm"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/abort/AbortSignal.any.shadowrealm.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker,shadowrealm"
+         ]
+        ]
+       }
       ],
       [
        "dom/abort/AbortSignal.any.worker.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker,shadowrealm"
+         ]
+        ]
+       }
       ]
      ],
      "abort-signal-any.any.js": [
@@ -504598,14 +504654,39 @@
       ]
      ],
      "event.any.js": [
-      "34af8ee5c560ae23aea4bb61ecf7420049fa411e",
+      "afc003b94e6c19acd443f9c850e0b06d84fb74ea",
       [
        "dom/abort/event.any.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker,shadowrealm"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/abort/event.any.shadowrealm.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker,shadowrealm"
+         ]
+        ]
+       }
       ],
       [
        "dom/abort/event.any.worker.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker,shadowrealm"
+         ]
+        ]
+       }
       ]
      ],
      "reason-constructor.html": [
@@ -504613,6 +504694,45 @@
       [
        null,
        {}
+      ]
+     ],
+     "timeout-shadowrealm.any.js": [
+      "c87b047c2212eda35d0c79063093b7d3501538cc",
+      [
+       "dom/abort/timeout-shadowrealm.any.shadowrealm.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "shadowrealm"
+         ]
+        ]
+       }
+      ]
+     ],
+     "timeout.any.js": [
+      "61b595e717c844259b6f75d9bd8b1cbd9b66d8d2",
+      [
+       "dom/abort/timeout.any.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/abort/timeout.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "global",
+          "window,dedicatedworker"
+         ]
+        ]
+       }
       ]
      ]
     },
@@ -711025,7 +711145,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "8a04d0e6b8a36f1f4b5e3a0a9b04feec1acf7ab3",
+      "73dd916b9763160a6626c0781a4099c924aff183",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
