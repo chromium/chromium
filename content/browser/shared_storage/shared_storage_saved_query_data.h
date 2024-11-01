@@ -9,7 +9,7 @@
 
 #include <queue>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 
 namespace content {
