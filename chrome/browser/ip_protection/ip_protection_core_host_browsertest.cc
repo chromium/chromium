@@ -46,9 +46,9 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #endif
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/common/chrome_features.h"
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 using ::ip_protection::BlindSignedAuthToken;
 using ::ip_protection::GeoHint;
@@ -59,7 +59,7 @@ class ScopedIpProtectionFeatureList {
   ScopedIpProtectionFeatureList() {
     feature_list_.InitWithFeatures(
         {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
             // Use of IpProtectionCoreHostFactory::GetInstance() in the test
             // constructor means that the KeyedService Factory instances get
             // created before feature overrides in
@@ -70,7 +70,7 @@ class ScopedIpProtectionFeatureList {
             //
             // See http://g/chrome-secure-web-and-net/Qre0HqS0hgA for more info.
             ::features::kEnableCertManagementUIV2Write,
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
             net::features::kEnableIpProtectionProxy,
             network::features::kMaskedDomainList},

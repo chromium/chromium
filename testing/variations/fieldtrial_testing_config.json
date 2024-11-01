@@ -8835,9 +8835,25 @@
             ]
         }
     ],
+    "EnableCertManagementUIV2": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableCertManagementUIV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCertManagementUIV2Write": [
         {
             "platforms": [
+                "linux",
                 "mac",
                 "windows"
             ],
