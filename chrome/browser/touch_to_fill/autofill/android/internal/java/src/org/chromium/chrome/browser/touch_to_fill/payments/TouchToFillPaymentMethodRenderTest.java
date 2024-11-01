@@ -149,6 +149,18 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* iconId= */ R.drawable.mc_metadata_card,
                     /* cardNameForAutofillDisplay= */ "MasterCard-GPay",
                     /* obfuscatedLastFourDigits= */ "• • • • 5454");
+    private static final CreditCard LONG_CARD_NAME_CARD =
+            createCreditCard(
+                    /* name= */ "MJ",
+                    /* number= */ "4111111111111111",
+                    /* month= */ "5",
+                    /* year= */ "2050",
+                    /* isLocal= */ false,
+                    /* nameForAutofillDisplay= */ "How much wood would a woodchuck chuck if a"
+                            + " woodchuck could chuck wood",
+                    /* obfuscatedLastFourDigits= */ "• • • • 1111",
+                    /* iconId= */ 0,
+                    /* network= */ "visa");
     private static final Iban LOCAL_IBAN =
             Iban.createLocal(
                     /* guid= */ "000000111111",
@@ -236,6 +248,15 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* secondarySubLabel= */ "Virtual card",
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ true);
+    private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
+            createCreditCardSuggestion(
+                    LONG_CARD_NAME_CARD.getCardNameForAutofillDisplay(),
+                    LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits(),
+                    LONG_CARD_NAME_CARD.getFormattedExpirationDate(
+                            ContextUtils.getApplicationContext()),
+                    /* secondarySubLabel= */ "",
+                    /* applyDeactivatedStyle= */ false,
+                    /* shouldDisplayTermsAvailable= */ false);
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
@@ -500,6 +521,24 @@ public class TouchToFillPaymentMethodRenderTest {
         mRenderTestRule.render(
                 bottomSheetView,
                 "touch_to_fill_credit_card_sheet_shows_real_and_virtual_cards_with_card_benefits");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsServerCardWithLongName() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showSheet(
+                            List.of(LONG_CARD_NAME_CARD),
+                            List.of(LONG_CARD_NAME_CARD_SUGGESTION),
+                            /* shouldShowScanCreditCard= */ true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(
+                bottomSheetView, "touch_to_fill_credit_card_sheet_server_card_with_long_name");
     }
 
     @Test
