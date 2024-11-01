@@ -1012,7 +1012,8 @@ public class RootUiCoordinator
                 toolbarHeightDp,
                 mToolbarManager,
                 canContextualSearchPromoteToNewTab(),
-                mIntentRequestTracker);
+                mIntentRequestTracker,
+                getDesktopWindowStateProvider());
     }
 
     public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {

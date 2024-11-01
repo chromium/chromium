@@ -158,7 +158,8 @@ public class OverlayPanelEventFilterTest {
                     profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
-                    () -> tab);
+                    () -> tab,
+                    /* desktopWindowStateProvider= */ null);
         }
 
         @Override

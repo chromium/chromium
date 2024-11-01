@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -25,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -35,6 +40,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -66,6 +73,7 @@ public class OverlayPanelBaseTest {
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
@@ -82,7 +90,8 @@ public class OverlayPanelBaseTest {
                 WindowAndroid windowAndroid,
                 Profile profile,
                 ViewGroup compositorViewHolder,
-                Tab tab) {
+                Tab tab,
+                DesktopWindowStateProvider desktopWindowStateProvider) {
             super(
                     context,
                     layoutManager,
@@ -92,7 +101,8 @@ public class OverlayPanelBaseTest {
                     profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
-                    () -> tab);
+                    () -> tab,
+                    desktopWindowStateProvider);
         }
 
         /** Expose protected super method as public. */
@@ -137,7 +147,8 @@ public class OverlayPanelBaseTest {
                     windowAndroid,
                     profile,
                     compositorViewHolder,
-                    tab);
+                    tab,
+                    /* desktopWindowStateProvider= */ null);
         }
 
         @Override
@@ -172,7 +183,8 @@ public class OverlayPanelBaseTest {
                                     mWindowAndroid,
                                     mProfile,
                                     mCompositorViewHolder,
-                                    mTab);
+                                    mTab,
+                                    mDesktopWindowStateProvider);
                     mNoExpandPanel =
                             new NoExpandMockOverlayPanel(
                                     mActivity,
@@ -261,6 +273,92 @@ public class OverlayPanelBaseTest {
         nextState =
                 mExpandPanel.findNearestPanelStateFromHeight(maxToExpBound + 1, DOWNWARD_VELOCITY);
         Assert.assertTrue(nextState == PanelState.MAXIMIZED);
+    }
+
+    /** Tests that panel's maximum size accounts for app header height. */
+    @Test
+    @SmallTest
+    @Feature("DesktopWindow")
+    @UiThreadTest
+    public void testUpdatePanelSizeAndBasePageOffsetWithAppHeaderHeight() {
+        int appHeaderHeight = 80;
+        AppHeaderState state =
+                new AppHeaderState(
+                        new Rect(0, 0, 10, appHeaderHeight),
+                        new Rect(0, 0, 5, appHeaderHeight),
+                        true);
+        float pxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
+
+        // Set layout params.
+        int layoutHeight = 400;
+        mExpandPanel.onLayoutChanged(400, layoutHeight, 100);
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(state);
+
+        // With app header.
+        mExpandPanel.onAppHeaderStateChanged(state);
+        // Update base page targetY to account for DW state.
+        mExpandPanel.updateBasePageTargetY();
+
+        // Set panel height - expanded. Verify base page did not offset.
+        mExpandPanel.setPanelHeight(mExpandPanel.getExpandedHeight() - 10);
+        float expectedExpandedHeight =
+                (mExpandPanel.getTabHeight() - (appHeaderHeight * pxToDp)) * .7f;
+        Assert.assertEquals(
+                "Expanded panel is not at expected height with app header",
+                expectedExpandedHeight,
+                mExpandPanel.getExpandedHeight(),
+                MathUtils.EPSILON);
+        Assert.assertEquals(
+                "BasePageY should not be set with app header",
+                0,
+                mExpandPanel.getBasePageY(),
+                MathUtils.EPSILON);
+
+        // Set panel height - maximized. Verify base page did not offset.
+        mExpandPanel.setPanelHeight(layoutHeight + 10);
+        float expectedMaxHeight = mExpandPanel.getTabHeight() - (appHeaderHeight * pxToDp);
+        Assert.assertEquals(
+                "Maximized panel is not at expected height with app header",
+                expectedMaxHeight,
+                mExpandPanel.getMaximizedHeight(),
+                MathUtils.EPSILON);
+        Assert.assertEquals(
+                "BasePageY should not be set with app header",
+                0,
+                mExpandPanel.getBasePageY(),
+                MathUtils.EPSILON);
+
+        // Test without app header
+        mExpandPanel.onAppHeaderStateChanged(new AppHeaderState());
+        // Update base page targetY to account for DW state.
+        mExpandPanel.updateBasePageTargetY();
+
+        // Set panel height - expanded. Verify base page did offset.
+        mExpandPanel.setPanelHeight(mExpandPanel.getExpandedHeight() - 10);
+        Assert.assertEquals(
+                "Expanded panel is not at expected height without app header",
+                (mExpandPanel.getTabHeight() * .7f),
+                mExpandPanel.getExpandedHeight(),
+                MathUtils.EPSILON);
+        Assert.assertNotEquals(
+                "BasePageY should be set with app header",
+                0,
+                mExpandPanel.getBasePageY(),
+                MathUtils.EPSILON);
+
+        // Set panel height - maximized. Verify base page did offset.
+        mExpandPanel.setPanelHeight(layoutHeight + 10);
+        Assert.assertEquals(
+                "Maximized panel is not at expected height without app header",
+                mExpandPanel.getTabHeight(),
+                mExpandPanel.getMaximizedHeight(),
+                MathUtils.EPSILON);
+        Assert.assertNotEquals(
+                "BasePageY should be set with app header",
+                0,
+                mExpandPanel.getBasePageY(),
+                MathUtils.EPSILON);
     }
 
     /** Tests that a panel will be closed if the desired height is negative. */

@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -339,6 +340,7 @@ public class ContextualSearchManager
      * @param toolbarManager The manager of the toolbar, used to query toolbar state.
      * @param canPromoteToNewTab Whether the Conextual search panel can be promoted to a new tab.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     public void initialize(
             @NonNull ViewGroup parentView,
@@ -348,7 +350,8 @@ public class ContextualSearchManager
             float toolbarHeightDp,
             @NonNull ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
-            @NonNull IntentRequestTracker intentRequestTracker) {
+            @NonNull IntentRequestTracker intentRequestTracker,
+            DesktopWindowStateProvider desktopWindowStateProvider) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, mProfile);
 
         mParentView = parentView;
@@ -369,7 +372,8 @@ public class ContextualSearchManager
                         toolbarManager,
                         canPromoteToNewTab,
                         mTabSupplier,
-                        mEdgeToEdgeControllerSupplier);
+                        mEdgeToEdgeControllerSupplier,
+                        desktopWindowStateProvider);
         panel.setManagementDelegate(this);
 
         setContextualSearchPanel(panel);

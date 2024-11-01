@@ -1585,6 +1585,7 @@ if (current_toolchain == default_toolchain) {
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/background_task_scheduler:public_java",
       "//components/bookmarks/common/android:bookmarks_java",
+      "//components/browser_ui/desktop_windowing/android:java",
       "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/settings/android:java",

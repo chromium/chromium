@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -142,6 +143,7 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param canPromoteToNewTab Whether the panel can be promoted to a new tab.
      * @param currentTabSupplier Supplies the current activity tab.
      * @param edgeToEdgeControllerSupplier Controller for edge-to-edge drawing.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -155,7 +157,8 @@ public class ContextualSearchPanel extends OverlayPanel {
             @NonNull ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
             @NonNull Supplier<Tab> currentTabSupplier,
-            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         super(
                 context,
                 layoutManager,
@@ -165,7 +168,8 @@ public class ContextualSearchPanel extends OverlayPanel {
                 profile,
                 compositorViewHolder,
                 toolbarHeightDp,
-                currentTabSupplier);
+                currentTabSupplier,
+                desktopWindowStateProvider);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;
@@ -453,7 +457,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     @Override
     protected float getMaximizedHeight() {
         // Max height does not cover the entire content screen.
-        return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
+        return super.getMaximizedHeight() * MAXIMIZED_HEIGHT_FRACTION;
     }
 
     @Override

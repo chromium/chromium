@@ -102,7 +102,8 @@ public class ContextualSearchInstrumentationBase {
                     null,
                     true,
                     null,
-                    sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting());
+                    sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting(),
+                    /* desktopWindowStateProvider= */ null);
         }
 
         @Override
