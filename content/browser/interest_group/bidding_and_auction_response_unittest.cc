@@ -389,6 +389,10 @@ MATCHER_P(EqualsGhostWinnerForTopLevelAuction,
                          &BiddingAndAuctionResponse::
                              GhostWinnerForTopLevelAuction::bid_currency,
                          testing::Eq(other.get().bid_currency)),
+          testing::Field("ad_metadata",
+                         &BiddingAndAuctionResponse::
+                             GhostWinnerForTopLevelAuction::ad_metadata,
+                         testing::Eq(other.get().ad_metadata)),
           testing::Field("buyer_reporting_id",
                          &BiddingAndAuctionResponse::
                              GhostWinnerForTopLevelAuction::buyer_reporting_id,
@@ -1850,6 +1854,41 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           }(),
       },
       {
+          // Wrong adMetadata type
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("adMetadata", 1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Valid adMetadata
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerForTopLevelAuction",
+                      base::Value::Dict()
+                          .Set("adRenderURL", kAdURL)
+                          .Set("modifiedBid", 1.0)
+                          .Set("adMetadata", "meta")))))),
+          [&]() {
+            auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+            response.k_anon_ghost_winner->ghost_winner.emplace();
+            response.k_anon_ghost_winner->ghost_winner->ad_render_url =
+                GURL(kAdURL);
+            response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
+            response.k_anon_ghost_winner->ghost_winner->ad_metadata = "meta";
+            return response;
+          }(),
+      },
+
+      {
           // Invalid buyerReportingId type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
@@ -1889,6 +1928,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                               base::Value::List().Append(kAdURL).Append(kAdURL))
                           .Set("modifiedBid", 1.0)
                           .Set("bidCurrency", "USD")
+                          .Set("adMetadata", "meta")
                           .Set("buyerReportingId", "bId")
                           .Set("buyerAndSellerReportingId", "basId")))))),
           [&]() {
@@ -1903,6 +1943,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
             response.k_anon_ghost_winner->ghost_winner->modified_bid = 1.0;
             response.k_anon_ghost_winner->ghost_winner->bid_currency =
                 blink::AdCurrency::From("USD");
+            response.k_anon_ghost_winner->ghost_winner->ad_metadata = "meta";
             response.k_anon_ghost_winner->ghost_winner->buyer_reporting_id =
                 "bId";
             response.k_anon_ghost_winner->ghost_winner

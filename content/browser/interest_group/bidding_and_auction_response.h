@@ -56,6 +56,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
     std::vector<GURL> ad_components;
     double modified_bid;
     std::optional<blink::AdCurrency> bid_currency;
+    std::optional<std::string> ad_metadata;
     std::optional<std::string> buyer_reporting_id;
     std::optional<std::string> buyer_and_seller_reporting_id;
   };

@@ -511,6 +511,16 @@ BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
     result.bid_currency = blink::AdCurrency::From(*bid_currency);
   }
 
+  base::Value* ad_metadata_value =
+      ghost_winner_for_top_level_auction.Find("adMetadata");
+  if (ad_metadata_value) {
+    std::string* ad_metadata = ad_metadata_value->GetIfString();
+    if (!ad_metadata) {
+      return std::nullopt;
+    }
+    result.ad_metadata = *ad_metadata;
+  }
+
   base::Value* buyer_reporting_id_value =
       ghost_winner_for_top_level_auction.Find("buyerReportingId");
   if (buyer_reporting_id_value) {
