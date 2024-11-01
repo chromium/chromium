@@ -69,6 +69,9 @@ extern const base::FeatureParam<bool> kEnableIntentClassifier;
 // used).
 extern const base::FeatureParam<bool> kUseMlIntentClassifier;
 
+// Specifies whether to output scores (Decoding output is skipped when enabled).
+extern const base::FeatureParam<bool> kEnableMlIntentClassifierScore;
+
 // Specifies the delay in milliseconds to use for the mock intent classifier for
 // local development.
 extern const base::FeatureParam<int> kMockIntentClassifierDelayMS;

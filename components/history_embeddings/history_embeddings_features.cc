@@ -84,6 +84,11 @@ const base::FeatureParam<bool> kUseMlIntentClassifier(&kHistoryEmbeddings,
                                                       "UseMlIntentClassifier",
                                                       false);
 
+const base::FeatureParam<bool> kEnableMlIntentClassifierScore(
+    &kHistoryEmbeddings,
+    "EnableMlIntentClassifierScore",
+    false);
+
 const base::FeatureParam<int> kMockIntentClassifierDelayMS(
     &kHistoryEmbeddings,
     "MockIntentClassifierDelayMS",

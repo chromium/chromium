@@ -10,11 +10,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
+#include "components/optimization_guide/proto/history_query_intent_model_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 
 namespace history_embeddings {
@@ -26,6 +28,7 @@ using ::optimization_guide::SessionConfigParams;
 using Session = ::optimization_guide::OptimizationGuideModelExecutor::Session;
 
 using ::optimization_guide::ParsedAnyMetadata;
+using ::optimization_guide::proto::HistoryQueryIntentModelMetadata;
 using ::optimization_guide::proto::HistoryQueryIntentRequest;
 using ::optimization_guide::proto::HistoryQueryIntentResponse;
 
@@ -51,12 +54,23 @@ class MlIntentClassifier::Execution final {
                          ComputeIntentStatus::MODEL_UNAVAILABLE, false));
       return;
     }
+    const auto any = session_->GetOnDeviceFeatureMetadata();
+    model_metadata_ = ParsedAnyMetadata<HistoryQueryIntentModelMetadata>(any);
+
     callback_ = std::move(callback);
     HistoryQueryIntentRequest request;
     request.set_text(std::move(query));
-    session_->ExecuteModel(request,
-                           base::BindRepeating(&Execution::OnExecutionResult,
-                                               weak_ptr_factory_.GetWeakPtr()));
+
+    if (EnableMlIntentClassifierScore()) {
+      session_->AddContext(request);
+      session_->Score(GetTokenToScore(),
+                      base::BindOnce(&Execution::OnScoreResult,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      session_->ExecuteModel(
+          request, base::BindRepeating(&Execution::OnExecutionResult,
+                                       weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
  private:
@@ -78,6 +92,16 @@ class MlIntentClassifier::Execution final {
     }
     Finish(ComputeIntentStatus::SUCCESS, response->is_answer_seeking());
   }
+
+  void OnScoreResult(std::optional<float> score) {
+    if (!score.has_value()) {
+      Finish(ComputeIntentStatus::EXECUTION_FAILURE, false);
+      return;
+    }
+    bool is_answer_seeking = *score > GetIntentScoreThreshold();
+    Finish(ComputeIntentStatus::SUCCESS, is_answer_seeking);
+  }
+
   void Finish(ComputeIntentStatus status, bool is_query_intent) {
     weak_ptr_factory_.InvalidateWeakPtrs();
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
@@ -85,8 +109,24 @@ class MlIntentClassifier::Execution final {
     std::move(callback_).Run(status, is_query_intent);
   }
 
+  bool EnableMlIntentClassifierScore() {
+    return kEnableMlIntentClassifierScore.Get() && model_metadata_ &&
+           !model_metadata_->score_token().empty();
+  }
+
+  std::string GetTokenToScore() {
+    CHECK(model_metadata_);
+    return model_metadata_->score_token();
+  }
+
+  float GetIntentScoreThreshold() {
+    CHECK(model_metadata_);
+    return model_metadata_->score_threshold();
+  }
+
   ComputeQueryIntentCallback callback_;
   std::unique_ptr<Session> session_;
+  std::optional<HistoryQueryIntentModelMetadata> model_metadata_;
   base::WeakPtrFactory<Execution> weak_ptr_factory_{this};
 };
 
