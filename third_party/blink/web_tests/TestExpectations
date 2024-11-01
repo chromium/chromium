@@ -7425,6 +7425,7 @@ crbug.com/356930166 [ Mac15 ] external/wpt/webrtc-svc/RTCRtpParameters-scalabili
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-h264.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-vp8.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-vp9.html [ Skip Timeout ]
+crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/legacy/simplecall_callbacks.https.html [ Timeout ]
