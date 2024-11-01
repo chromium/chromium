@@ -21,6 +21,10 @@ void RunScheduledLayout(Widget* widget);
 // root parent view.
 void RunScheduledLayout(View* view);
 
+// Certain tests will fail when this experiment is running.
+// TODO(crbug.com/329235190): Re-enable these tests and remove this function.
+bool IsOzoneBubblesUsingPlatformWidgets();
+
 }  // namespace test
 }  // namespace views
 

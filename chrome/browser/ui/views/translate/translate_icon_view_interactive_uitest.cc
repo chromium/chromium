@@ -51,6 +51,15 @@ class TranslateIconViewTest : public InProcessBrowserTest {
     views::Widget::InitParams params(ownership,
                                      views::Widget::InitParams::TYPE_WINDOW);
     widget->Init(std::move(params));
+    // TODO(https://crbug.com/329235190): The bubble child of a widget that is
+    // invisible will not be mapped through wayland and hence never shown so
+    // widget must be shown. However, showing widget causes
+    // RunAccessibilityPaintChecks() to fail when this feature is disabled due
+    // to node_data.GetNameFrom() == kContents.
+    if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
+      widget->Show();
+    }
+
     return widget;
   }
 };
