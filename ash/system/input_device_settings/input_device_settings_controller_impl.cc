@@ -32,7 +32,6 @@
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
-#include "ash/system/input_device_settings/modifier_split_bypass_checker.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
@@ -673,12 +672,6 @@ void InputDeviceSettingsControllerImpl::Init() {
   Shell::Get()->session_controller()->AddObserver(this);
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);
-
-  if (features::IsModifierSplitEnabled() &&
-      base::FeatureList::IsEnabled(features::kModifierSplitDeviceEnabled)) {
-    modifier_split_bypass_checker_ =
-        std::make_unique<ModifierSplitBypassChecker>();
-  }
 
   if (features::IsWelcomeExperienceEnabled()) {
     message_center::MessageCenter::Get()->AddObserver(this);

@@ -1913,12 +1913,6 @@ BASE_FEATURE(kMojoDBusRelay,
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kModifierSplit, "ModifierSplit", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the ability to potentially override the secret key based on some
-// factors.
-BASE_FEATURE(kModifierSplitDeviceEnabled,
-             "ModifierSplitDeviceEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables to split left and right modifiers in settings for dogfood.
 BASE_FEATURE(kModifierSplitDogfood,
              "ModifierSplitDogfood",
