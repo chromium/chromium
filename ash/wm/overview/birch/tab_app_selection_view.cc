@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -171,7 +172,12 @@ class TabAppSelectionView::TabAppSelectionItemView
           base::BindOnce(&TabAppSelectionItemView::OnCloseButtonPressed,
                          base::Unretained(this)),
           CloseButton::Type::kMediumFloating));
-      close_button_->SetVisible(false);
+      // Use enabled state and opacity to hide and show the button instead of
+      // `SetVisible()` as the latter will invalidate the layout.
+      close_button_->SetPaintToLayer();
+      close_button_->layer()->SetFillsBoundsOpaquely(false);
+      close_button_->layer()->SetOpacity(0.f);
+      close_button_->SetEnabled(false);
       close_button_->SetID(TabAppSelectionView::kCloseButtonID);
     }
 
@@ -223,7 +229,8 @@ class TabAppSelectionView::TabAppSelectionItemView
 
     selected_ = selected;
     if (close_button_) {
-      close_button_->SetVisible(selected);
+      close_button_->layer()->SetOpacity(selected ? 1.f : 0.f);
+      close_button_->SetEnabled(selected);
     }
     SetBackground(selected_ ? views::CreateThemedSolidBackground(
                                   cros_tokens::kCrosSysHoverOnSubtle)
