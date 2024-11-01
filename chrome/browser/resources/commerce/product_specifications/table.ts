@@ -16,8 +16,8 @@ import './shared_vars.css.js';
 import {assert} from '//resources/js/assert.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
-import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -61,7 +61,8 @@ export class TableElement extends PolymerElement {
   private hoveredColumnIndex_: number|null = null;
 
   private dragAndDropManager_: DragAndDropManager = new DragAndDropManager();
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -8,7 +8,7 @@ import 'chrome://compare/disclosure/app.js';
 import type {DisclosureAppElement} from 'chrome://compare/disclosure/app.js';
 import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
 import {ProductSpecificationsDisclosureVersion} from 'chrome://compare/shopping_service.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -26,13 +26,14 @@ declare const chrome: {
 suite('DisclosureAppTest', () => {
   let app: DisclosureAppElement;
   let metrics: MetricsTracker;
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
   const fakeUserEmail = 'test@gmail.com';
 
   setup(async () => {
     metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('product-specifications-disclosure-app');

@@ -15,11 +15,11 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_vars.css.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
 import {UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {PageCallbackRouter, ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -233,7 +233,8 @@ export class ProductSpecificationsElement extends PolymerElement {
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
   private showEmptyState_: boolean;
 
   constructor() {

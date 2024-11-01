@@ -12,8 +12,8 @@ import {Router} from 'chrome://compare/router.js';
 import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -113,7 +113,8 @@ suite('AppTest', () => {
   let loadingStartPromise: Promise<void>;
   let loadingEndPromise: Promise<void>;
 
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
   const callbackRouter = new PageCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   const router = TestMock.fromClass(Router);
@@ -207,7 +208,7 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'maybeShowProductSpecificationDisclosure',
         Promise.resolve({show: false}));
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     router.reset();
     Router.setInstance(router);
     windowProxy = installMock(WindowProxy);

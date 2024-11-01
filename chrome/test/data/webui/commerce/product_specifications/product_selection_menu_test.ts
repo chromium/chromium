@@ -5,7 +5,7 @@
 import 'chrome://compare/product_selection_menu.js';
 
 import type {ProductSelectionMenuElement} from 'chrome://compare/product_selection_menu.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -16,7 +16,8 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
 suite('ProductSelectionMenuTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   async function createMenu(): Promise<ProductSelectionMenuElement> {
     const menu = document.createElement('product-selection-menu');
@@ -52,7 +53,7 @@ suite('ProductSelectionMenuTest', () => {
   setup(async () => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     loadTimeData.overrideValues({
       suggestedTabs: 'suggestions',
       recentlyViewedTabs: 'recently viewed tabs',

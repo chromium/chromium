@@ -8,8 +8,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
-import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.ts';
 import type {PageCallbackRouter, ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
@@ -90,7 +90,8 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   searchTerm: string = '';
   private pendingDelete_: boolean = false;
   private lastSelectedIndex_: number|undefined = undefined;
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
   private allItems_: ProductSpecificationsSet[] = [];
   private displayedItems_: ProductSpecificationsSet[] = [];
 

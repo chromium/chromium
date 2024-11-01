@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {ProductSpecificationsItemElement} from 'chrome://history/history.js';
-import {ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://history/history.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,7 +16,8 @@ import {shiftPointerClick} from './test_util.js';
 
 
 suite('ProductSpecificationsItemTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
   let productSpecificationsItem: ProductSpecificationsItemElement;
 
   function createProductSpecsItem() {
@@ -98,7 +99,7 @@ suite('ProductSpecificationsItemTest', () => {
   suite('Tests using ShoppingServiceApi', () => {
     suiteSetup(() => {
       shoppingServiceApi.reset();
-      ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
+      ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     });
 
     test('link click shows product specs table', async () => {

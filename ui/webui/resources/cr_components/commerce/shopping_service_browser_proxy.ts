@@ -10,9 +10,9 @@ import type {ProductSpecificationsSet} from './shared.mojom-webui.js';
 import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsDisclosureVersion, ProductSpecificationsFeatureState, UrlInfo, UserFeedback} from './shopping_service.mojom-webui.js';
 import {PageCallbackRouter, ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
-let instance: BrowserProxy|null = null;
+let instance: ShoppingServiceBrowserProxy|null = null;
 
-export interface BrowserProxy {
+export interface ShoppingServiceBrowserProxy {
   getAllPriceTrackedBookmarkProductInfo():
       Promise<{productInfos: BookmarkProductInfo[]}>;
   getAllShoppingBookmarkProductInfo():
@@ -65,7 +65,8 @@ export interface BrowserProxy {
   getPageTitleFromHistory(url: Url): Promise<{title: string}>;
 }
 
-export class BrowserProxyImpl implements BrowserProxy {
+export class ShoppingServiceBrowserProxyImpl implements
+    ShoppingServiceBrowserProxy {
   handler: ShoppingServiceHandlerRemote;
   callbackRouter: PageCallbackRouter;
 
@@ -227,11 +228,11 @@ export class BrowserProxyImpl implements BrowserProxy {
     return this.callbackRouter;
   }
 
-  static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxyImpl());
+  static getInstance(): ShoppingServiceBrowserProxy {
+    return instance || (instance = new ShoppingServiceBrowserProxyImpl());
   }
 
-  static setInstance(obj: BrowserProxy) {
+  static setInstance(obj: ShoppingServiceBrowserProxy) {
     instance = obj;
   }
 }

@@ -9,9 +9,9 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_icons.html.js';
 import './searched_label.js';
 
-import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
+import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -66,7 +66,8 @@ export class ProductSpecificationsItemElement extends PolymerElement {
   checked: boolean;
   index: number;
   private isShiftKeyDown_: boolean = false;
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
 
   private onLinkClick_() {
     this.shoppingApi_.showProductSpecificationsSetForUuid(

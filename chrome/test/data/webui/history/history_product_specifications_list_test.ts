@@ -4,7 +4,7 @@
 
 import 'chrome://history/history.js';
 
-import {ensureLazyLoaded, ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
+import {ensureLazyLoaded, ShoppingServiceBrowserProxyImpl} from 'chrome://history/history.js';
 import type {CrButtonElement, CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
 import {ShoppingPageCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -15,7 +15,8 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 
 suite('ProductSpecificationsListTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
   let productSpecificationsList: ProductSpecificationsListsElement;
 
   const callbackRouter = new ShoppingPageCallbackRouter();
@@ -72,7 +73,7 @@ suite('ProductSpecificationsListTest', () => {
   setup(function() {
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
-    ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initProductSets();
     initProductSpecsState();
