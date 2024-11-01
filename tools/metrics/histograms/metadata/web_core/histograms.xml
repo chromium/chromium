@@ -466,6 +466,26 @@ chromium-metrics-reviews@google.com.
   <token key="RequestType" variants="IdbRequestType"/>
 </histogram>
 
+<histogram name="WebCore.IndexedDB.RequestDuration2.{RequestType}.Foreground"
+    units="ms" expires_after="2025-01-29">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
+    request started (not when it is completed, i.e. when the metric is
+    recorded):
+
+    Records end to end duration of an IndexedDB operation. Unlike
+    RequestDuration before it, this only records when an event is successfully
+    dispatched to the page (whether the result is a success or error).
+
+    Note this is only recorded for the first result dispatch for a given
+    request, e.g. &quot;upgradedneeded&quot; but not &quot;success&quot; for an
+    open request.
+  </summary>
+  <token key="RequestType" variants="IdbRequestType"/>
+</histogram>
+
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive"
     units="ms" expires_after="2024-12-08">
   <owner>estade@chromium.org</owner>
@@ -492,11 +512,46 @@ chromium-metrics-reviews@google.com.
   <token key="TransactionType" variants="IdbTransactionTypes"/>
 </histogram>
 
+<histogram
+    name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2.Foreground"
+    units="ms" expires_after="2025-01-29">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
+    transaction became active (not when it stops being active, i.e. when the
+    metric is recorded):
+
+    The time it takes for an IndexedDB transaction to commit, starting from when
+    it starts executing tasks (when it reaches the front of the scheduling
+    queue). Recorded after transaction commit fully completes.
+  </summary>
+  <token key="TransactionType" variants="IdbTransactionTypes"/>
+</histogram>
+
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued"
     units="ms" expires_after="2025-04-27">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
+    The time it takes for an IndexedDB transaction to start after it's created.
+    This is measured from the browser process. It represents the amount of time
+    spent queued behind other tranactions (i.e. waiting for locks) and any other
+    delays before the transaction can begin operations.
+  </summary>
+  <token key="TransactionType" variants="IdbTransactionTypes"/>
+</histogram>
+
+<histogram
+    name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued.Foreground"
+    units="ms" expires_after="2025-01-29">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Only recorded for foreground tabs, i.e. priority 0 clients, as of when the
+    transaction was queued (not when it starts being processed, i.e. when the
+    metric is recorded):
+
     The time it takes for an IndexedDB transaction to start after it's created.
     This is measured from the browser process. It represents the amount of time
     spent queued behind other tranactions (i.e. waiting for locks) and any other

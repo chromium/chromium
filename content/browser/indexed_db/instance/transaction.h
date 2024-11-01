@@ -232,6 +232,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
   bool used_ = false;
   State state_ = CREATED;
+  std::optional<int> scheduling_priority_at_last_state_change_;
   base::flat_set<PartitionedLockId> lock_ids_;
   // Holds the locks from when they're acquired until they're handed off to the
   // backing store transaction.

@@ -252,6 +252,8 @@ class MODULES_EXPORT IDBDatabase final
 
   bool IsConnectionOpen() const;
 
+  int scheduling_priority() const { return scheduling_priority_; }
+
   // Converts a lifecycle state to a priority integer. Lower values represent
   // higher priority.
   //

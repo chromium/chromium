@@ -182,6 +182,8 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     // the dispatch result is not an error.
     void WillDispatchResult(bool success);
 
+    void set_is_fg_client(bool is_fg_client) { is_fg_client_ = is_fg_client; }
+
    protected:  // For testing
     std::optional<TypeForMetrics> type() const { return type_; }
     const base::TimeTicks& start_time() const { return start_time_; }
@@ -192,6 +194,11 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
     std::optional<TypeForMetrics> type_;
     base::TimeTicks start_time_;
+
+    // This tracks whether the request is associated with a highest-priority
+    // ExecutionContext (i.e. foreground tab), **as of when the request was
+    // issued**.
+    bool is_fg_client_ = false;
 
     // Uniquely generated ID that ties an async trace's begin and end events.
     size_t id_ = 0;
@@ -333,10 +340,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   inline IDBRequestQueueItem* QueueItem() const { return queue_item_; }
 #endif  // DCHECK_IS_ON()
 
-  void AssignNewMetrics(AsyncTraceState metrics) {
-    DCHECK(metrics_.IsEmpty());
-    metrics_ = std::move(metrics);
-  }
+  void AssignNewMetrics(AsyncTraceState metrics);
 
  protected:
   virtual bool CanStillSendResult() const;
