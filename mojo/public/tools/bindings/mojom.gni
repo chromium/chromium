@@ -736,12 +736,14 @@ template("mojom") {
   }
 
   config("${parser_target_name}_inputs") {
-    inputs = sources_list
+    inputs = sources_list + [ build_metadata_filename ]
   }
   group("${parser_target_name}_deps") {
     public_configs = [ ":${parser_target_name}_inputs" ]
     public_deps = parser_deps
   }
+
+  parser_deps += [ ":${parser_target_name}_deps" ]
 
   if (sources_list == []) {
     # Even without sources we generate a parser target to at least forward
