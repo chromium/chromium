@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -151,25 +152,30 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
   internals_updated_closure_.Run();
 }
 
-void NetworkLocationProvider::OnLocationResponse(
-    mojom::GeopositionResultPtr result,
-    bool server_error,
-    const WifiData& wifi_data,
-    mojom::NetworkLocationResponsePtr response_data) {
+void NetworkLocationProvider::OnLocationResponse(LocationResponseResult result,
+                                                 const WifiData& wifi_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
   GEOLOCATION_LOG(DEBUG) << "Got new position";
+
+  if (result.result_code != NetworkLocationRequestResult::kSuccess &&
+      !first_session_error_.has_value()) {
+    first_session_error_ = result.result_code;
+  }
+
   // Record the position and update our cache.
-  position_cache_->SetLastUsedNetworkPosition(*result);
-  if (result->is_position() && ValidateGeoposition(*result->get_position())) {
-    position_cache_->CachePosition(wifi_data, *result->get_position());
+  position_cache_->SetLastUsedNetworkPosition(*result.position);
+  if (result.position->is_position() &&
+      ValidateGeoposition(*result.position->get_position())) {
+    position_cache_->CachePosition(wifi_data, *result.position->get_position());
+    position_received_ = true;
   }
 
   // Let listeners know that we now have a position available.
   if (!location_provider_update_callback_.is_null()) {
-    location_provider_update_callback_.Run(this, std::move(result));
+    location_provider_update_callback_.Run(this, std::move(result.position));
   }
   internals_updated_closure_.Run();
-  network_response_callback_.Run(std::move(response_data));
+  network_response_callback_.Run(std::move(result.raw_response));
 }
 
 void NetworkLocationProvider::StartProvider(bool high_accuracy) {
@@ -201,6 +207,18 @@ void NetworkLocationProvider::StopProvider() {
   GEOLOCATION_LOG(DEBUG) << "Stop provider";
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(is_started_);
+  // Record the session result if either:
+  // 1. An error occurred (first_session_error_ is set).
+  // 2. At least one valid position update was received (position_received_ is
+  // true). This excludes short-lived sessions that start and stop immediately
+  // without obtaining any position updates.
+  if (first_session_error_ || position_received_) {
+    base::UmaHistogramEnumeration(
+        "Geolocation.NetworkLocationProvider.SessionResult",
+        first_session_error_.value_or(NetworkLocationRequestResult::kSuccess));
+  }
+  position_received_ = false;
+  first_session_error_.reset();
   wifi_data_provider_handle_ = nullptr;
   is_started_ = false;
   weak_factory_.InvalidateWeakPtrs();
