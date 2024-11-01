@@ -280,6 +280,16 @@ void ChromeHelpAppUIDelegate::OpenSettings(
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
       return;
+    case ash::help_app::mojom::SettingsComponent::TOUCHPAD_REVERSE_SCROLLING:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
+          chromeos::settings::mojom::Setting::kTouchpadReverseScrolling);
+      return;
+    case ash::help_app::mojom::SettingsComponent::TOUCHPAD_SIMULATE_RIGHT_CLICK:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath,
+          chromeos::settings::mojom::Setting::kTouchpadSimulateRightClick);
+      return;
   }
 
   CHECK(false) << "Invalid settings component value provided";

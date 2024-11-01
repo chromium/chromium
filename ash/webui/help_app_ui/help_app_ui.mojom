@@ -62,7 +62,8 @@ enum SettingsComponent {
   PERSONALIZATION = 9,
   PRINTING = 10,
   SECURITY_AND_SIGN_IN = 11,
-  // TODO(b/365595552): add remaining required components.
+  TOUCHPAD_REVERSE_SCROLLING = 12,
+  TOUCHPAD_SIMULATE_RIGHT_CLICK = 13,
 };
 
 // Browser interface for chrome://help-app to bootstrap a connection.

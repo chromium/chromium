@@ -120,7 +120,12 @@ const std::vector<OpenSettingsScenario> kOpenSettingsScenario{
      .expected_url = "chrome://os-settings/cupsPrinters"},
     {.component = ash::help_app::mojom::SettingsComponent::SECURITY_AND_SIGN_IN,
      .expected_url = "chrome://os-settings/osPrivacy/lockScreen"},
-};
+    {.component =
+         ash::help_app::mojom::SettingsComponent::TOUCHPAD_REVERSE_SCROLLING,
+     .expected_url = "chrome://os-settings/per-device-touchpad?settingId=402"},
+    {.component =
+         ash::help_app::mojom::SettingsComponent::TOUCHPAD_SIMULATE_RIGHT_CLICK,
+     .expected_url = "chrome://os-settings/per-device-touchpad?settingId=446"}};
 
 TEST_P(HelpAppUiDelegateOpenSettingsTest, ShouldShowPageForSettingsComponent) {
   MockSetingsWindowManager mock_settings_window_manager;
