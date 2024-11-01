@@ -19,7 +19,8 @@ LobsterService::LobsterService(
     : profile_(profile),
       image_provider_(std::move(snapper_provider)),
       image_fetcher_(image_provider_.get(), &candidate_id_generator_),
-      resizer_(&image_fetcher_) {}
+      resizer_(&image_fetcher_),
+      system_state_provider_(profile) {}
 
 LobsterService::~LobsterService() = default;
 
