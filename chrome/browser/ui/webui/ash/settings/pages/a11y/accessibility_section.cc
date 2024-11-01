@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_section.h"
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,9 +17,9 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
@@ -71,11 +72,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetA11ySearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11ySearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_ALWAYS_SHOW_OPTIONS,
        mojom::kAccessibilitySectionPath,
        mojom::SearchResultIcon::kA11y,
@@ -86,8 +84,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE,
        mojom::kTextToSpeechPagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kTextToSpeechPage},
@@ -98,8 +95,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT5}},
       {IDS_OS_SETTINGS_TAG_A11Y_DISPLAY_AND_MAGNIFICATION_PAGE,
        mojom::kDisplayAndMagnificationSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kZoomIn
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kZoomIn,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kDisplayAndMagnification},
@@ -113,8 +109,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.subpage = mojom::Subpage::kKeyboardAndTextInput}},
       {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE,
        mojom::kCursorAndTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kCursorClick
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kCursorClick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kCursorAndTouchpad},
@@ -123,8 +118,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE,
        mojom::kAudioAndCaptionsSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kHearing
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kHearing,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAudioAndCaptions},
@@ -140,8 +134,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.setting = mojom::Setting::kStickyKeys}},
       {IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR,
        mojom::kCursorAndTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kCursorClick
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kCursorClick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kLargeCursor},
@@ -167,8 +160,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX,
        mojom::kTextToSpeechPagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChromeVox},
@@ -176,16 +168,14 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT2, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO,
        mojom::kAudioAndCaptionsSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kHearing
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kHearing,
        mojom::SearchResultDefaultRank::kLow,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMonoAudio},
        {IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH,
        mojom::kTextToSpeechSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kTextToSpeech},
@@ -195,15 +185,13 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT4}},
       {IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS,
        mojom::kAudioAndCaptionsSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kHearing
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kHearing,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAudioAndCaptions}},
       {IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR,
        mojom::kCursorAndTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kCursorClick
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kCursorClick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kHighlightCursorWhileMoving},
@@ -268,8 +256,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND,
        mojom::kAudioAndCaptionsSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kHearing
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kHearing,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kStartupSound},
@@ -291,23 +278,20 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.setting = mojom::Setting::kSelectToSpeak}},
       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_PITCH,
        mojom::kTextToSpeechSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTextToSpeechPitch}},
       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_RATE,
        mojom::kTextToSpeechSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTextToSpeechRate},
        {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_RATE_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_VOLUME,
        mojom::kTextToSpeechSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTextToSpeechVolume}},
@@ -328,8 +312,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.setting = mojom::Setting::kEnableSwitchAccess}},
       {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR,
        mojom::kCursorAndTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kCursorClick
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kCursorClick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kEnableCursorColor},
@@ -345,44 +328,37 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_REDUCED_ANIMATIONS_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTextToSpeechVoiceSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetTextToSpeechVoiceSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_VOICE_PREVIEW,
        mojom::kTextToSpeechSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTextToSpeechVoice}},
   });
-  return *tags;
+
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTextToSpeechEnginesSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetTextToSpeechEnginesSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_ENGINES,
        mojom::kTextToSpeechSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kTextToSpeech,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTextToSpeechEngines}},
   });
-  return *tags;
+
+  return tags;
 }
 
-const std::vector<SearchConcept>&
-GetA11yTabletNavigationButtonSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yTabletNavigationButtonSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_TABLET_NAVIGATION_BUTTONS,
        mojom::kCursorAndTouchpadSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -390,11 +366,11 @@ GetA11yTabletNavigationButtonSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTabletNavigationButtons}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11ySwitchAccessOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11ySwitchAccessOnSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_ASSIGNMENT,
        mojom::kSwitchAccessOptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -414,11 +390,11 @@ const std::vector<SearchConcept>& GetA11ySwitchAccessOnSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSwitchActionAutoScan}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11yOverscrollSettingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yOverscrollSettingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED,
        mojom::kCursorAndTouchpadSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -428,11 +404,11 @@ const std::vector<SearchConcept>& GetA11yOverscrollSettingSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11yFlashNotificationsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yFlashNotificationsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS,
        mojom::kAudioAndCaptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -442,11 +418,11 @@ const std::vector<SearchConcept>& GetA11yFlashNotificationsSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11ySwitchAccessKeyboardSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11ySwitchAccessKeyboardSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD,
        mojom::kSwitchAccessOptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -454,11 +430,11 @@ const std::vector<SearchConcept>& GetA11ySwitchAccessKeyboardSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSwitchActionAutoScanKeyboard}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11yLabelsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yLabelsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_LABELS_FROM_GOOGLE,
        mojom::kAccessibilitySectionPath,
        mojom::SearchResultIcon::kA11y,
@@ -466,29 +442,26 @@ const std::vector<SearchConcept>& GetA11yLabelsSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kGetImageDescriptionsFromGoogle}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yLiveCaptionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION,
        mojom::kAudioAndCaptionsSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kHearing
-                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kHearing,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kLiveCaption},
        {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING,
        mojom::kDisplayAndMagnificationSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -496,12 +469,12 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFullscreenMagnifierFocusFollowing}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_MAGNIFIER_SELECT_TO_SPEAK_FOLLOWING,
        mojom::kDisplayAndMagnificationSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -509,12 +482,12 @@ GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAccessibilityMagnifierFollowsSts}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetA11yMagnifierChromeVoxFocusFollowingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_MAGNIFIER_CHROMEVOX_FOLLOWING,
        mojom::kDisplayAndMagnificationSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -522,11 +495,11 @@ GetA11yMagnifierChromeVoxFocusFollowingSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMagnifierFollowsChromeVox}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11yColorCorrectionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yColorCorrectionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION,
        mojom::kDisplayAndMagnificationSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -539,11 +512,11 @@ const std::vector<SearchConcept>& GetA11yColorCorrectionSearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT4,
         IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetA11yFaceGazeSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetA11yFaceGazeSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE,
        mojom::kFaceGazeSettingsSubpagePath,
        mojom::SearchResultIcon::kFaceGaze,
@@ -555,7 +528,7 @@ const std::vector<SearchConcept>& GetA11yFaceGazeSearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT3,
         IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT4}},
   });
-  return *tags;
+  return tags;
 }
 
 bool IsLiveCaptionEnabled() {
