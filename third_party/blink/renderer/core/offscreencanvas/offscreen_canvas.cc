@@ -478,6 +478,9 @@ bool OffscreenCanvas::EnableAcceleration() {
   // will be an accelerated canvas once it has been created.
   CanvasResourceProvider* provider =
       GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  if (!provider) {
+    return false;
+  }
   return provider->IsAccelerated();
 }
 
