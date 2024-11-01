@@ -30,6 +30,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/allow_check_is_test_for_testing.h"
+#include "base/test/fuzztest_init_helper.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/scoped_block_tests_writing_to_special_dirs.h"
 #include "base/test/test_switches.h"
@@ -37,7 +38,6 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/libfuzzer/fuzztest_init_helper.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
