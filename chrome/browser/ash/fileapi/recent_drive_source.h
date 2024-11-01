@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_RECENT_DRIVE_SOURCE_H_
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_DRIVE_SOURCE_H_
 
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -73,11 +72,6 @@ class RecentDriveSource : public RecentSource {
     // The list of files built up by the request.
     std::vector<RecentFile> files;
 
-    // The total number of times that a non-empty set of results have been
-    // returned from `search_query->GetNextPage` so far.
-    // Will never exceed `ceil(max_files / page_size)`.
-    size_t pages_returned;
-
     // The mojo remote that performs Drive search.
     mojo::Remote<drivefs::mojom::SearchQuery> search_query;
   };
@@ -85,7 +79,7 @@ class RecentDriveSource : public RecentSource {
   void OnComplete(const int32_t call_id);
 
   void GotSearchResults(
-      Params params,
+      const Params& params,
       drive::FileError error,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 

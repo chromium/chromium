@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_RECENT_SOURCE_H_
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_SOURCE_H_
 
-#include <cstddef>
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -55,7 +53,6 @@ class RecentSource {
            const GURL& origin,
            const std::string& query,
            const size_t max_files,
-           const std::optional<size_t> page_size,
            const base::Time& cutoff_time,
            const base::TimeTicks& end_time,
            FileType file_type);
@@ -79,14 +76,7 @@ class RecentSource {
     const std::string& query() const { return query_; }
 
     // The maximum number of files to be returned by this source.
-    // Any additional files will be discarded based on recency.
     size_t max_files() const { return max_files_; }
-
-    // For sources that support pagination, the number of results to request at
-    // once. Defaults to `max_files()` and cannot exceed it. Can be ignored if
-    // this source does not support pagination.
-    // TODO: b/361670078 - Add unit tests for Drive pagination.
-    size_t page_size() const { return page_size_; }
 
     // Cut-off last modified time. RecentSource is expected to return files
     // modified at this time or later. It is fine to return older files than
@@ -112,7 +102,6 @@ class RecentSource {
     const GURL origin_;
     const std::string query_;
     const size_t max_files_;
-    const size_t page_size_;
     const base::Time cutoff_time_;
     const FileType file_type_;
     const base::TimeTicks end_time_;

@@ -233,8 +233,8 @@ void RecentModel::GetRecentFiles(
           : base::TimeTicks::Now() + options.scan_timeout;
 
   const RecentSource::Params params(file_system_context, this_call_id, origin,
-                                    query, options.max_files, options.page_size,
-                                    cutoff_time, end_time, options.file_type);
+                                    query, options.max_files, cutoff_time,
+                                    end_time, options.file_type);
   for (const auto& source : filtered_sources) {
     source->GetRecentFiles(
         params, base::BindOnce(&RecentModel::OnGotRecentFiles,

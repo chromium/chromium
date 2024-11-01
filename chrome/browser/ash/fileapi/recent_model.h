@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_RECENT_MODEL_H_
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_MODEL_H_
 
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -64,12 +63,6 @@ struct RecentModelOptions {
 
   // The maximum number of files to be returned.
   size_t max_files = 1000u;
-
-  // The maximum number of files to request at once from each source, for
-  // sources that support pagination.
-  // Defaults to `max_files`. If this is more than `max_files`, it will be
-  // treated as if it were `max_files`.
-  std::optional<size_t> page_size = std::nullopt;
 
   // Whether or not to invalidate the cache; if this flag is true, even if
   // there are cached results, they are not returned. Instead a full scan

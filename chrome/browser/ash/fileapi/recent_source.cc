@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/fileapi/recent_source.h"
 
-#include <algorithm>
-#include <cstddef>
-#include <optional>
-
 namespace ash {
 
 RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
@@ -15,7 +11,6 @@ RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
                              const GURL& origin,
                              const std::string& query,
                              size_t max_files,
-                             const std::optional<size_t> page_size,
                              const base::Time& cutoff_time,
                              const base::TimeTicks& end_time,
                              FileType file_type)
@@ -24,13 +19,19 @@ RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
       origin_(origin),
       query_(query),
       max_files_(max_files),
-      page_size_(page_size.has_value() ? std::min(*page_size, max_files_)
-                                       : max_files),
       cutoff_time_(cutoff_time),
       file_type_(file_type),
       end_time_(end_time) {}
 
-RecentSource::Params::Params(const Params& params) = default;
+RecentSource::Params::Params(const Params& params)
+    : file_system_context_(params.file_system_context_),
+      call_id_(params.call_id_),
+      origin_(params.origin_),
+      query_(params.query_),
+      max_files_(params.max_files_),
+      cutoff_time_(params.cutoff_time_),
+      file_type_(params.file_type_),
+      end_time_(params.end_time_) {}
 
 bool RecentSource::Params::IsLate() const {
   return base::TimeTicks::Now() > end_time_;

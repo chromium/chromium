@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/fileapi/recent_source.h"
-
-#include <optional>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
+#include "chrome/browser/ash/fileapi/recent_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -26,17 +24,16 @@ class RecentSourceTest : public testing::Test {
 };
 
 TEST_F(RecentSourceTest, NeverIsLate) {
-  RecentSource::Params params(
-      nullptr, 0, GURL(u""), "", 10, /*page_size=*/std::nullopt,
-      base::Time::Max(), base::TimeTicks::Max(), RecentSource::FileType::kAll);
+  RecentSource::Params params(nullptr, 0, GURL(u""), "", 10, base::Time::Max(),
+                              base::TimeTicks::Max(),
+                              RecentSource::FileType::kAll);
   EXPECT_FALSE(params.IsLate());
   task_environment_.FastForwardBy(base::Hours(99));
   EXPECT_FALSE(params.IsLate());
 }
 
 TEST_F(RecentSourceTest, IsLate) {
-  RecentSource::Params params(nullptr, 0, GURL(u""), "", 20,
-                              /*page_size=*/std::nullopt, base::Time::Max(),
+  RecentSource::Params params(nullptr, 0, GURL(u""), "", 20, base::Time::Max(),
                               base::TimeTicks::Now() + base::Milliseconds(1000),
                               RecentSource::FileType::kAll);
   EXPECT_FALSE(params.IsLate());
