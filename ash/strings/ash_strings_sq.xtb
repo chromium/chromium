@@ -445,6 +445,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 
 <translation id="2530896289327917474">Aktivizo ose çaktivizo shfletimin me kursor teksti</translation>
 <translation id="2531025035050312891">pajisje e ngadaltë</translation>
 <translation id="2531107890083353124">Ndërkohë që zvarrit skedën, shtyp <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Po përpiqesh të përdorësh tastin "Home"? Përdor</translation>
 <translation id="254900897760075745">Kopjo përmbajtjen e zgjedhur te kujtesa e fragmenteve</translation>
 <translation id="2549711466868162843">Përmirësimi i ndriçimit</translation>
 <translation id="2549985041256363841">Nis regjistrimin</translation>
@@ -563,6 +564,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 
 <translation id="2985148236010982088">Shiko të gjitha aplikacionet</translation>
 <translation id="2992272421330787632">Fshih të gjitha sugjerimet për median</translation>
 <translation id="2992327365391326550">Butoni i mikrofonit të pajisjes është i çaktivizuar.</translation>
+<translation id="2993956882370897557">Po përpiqesh të përdorësh tastin "End"? Përdor</translation>
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3001391739687111021">Modifiko madhësinë e ekranit</translation>
 <translation id="3009178788565917040">Dalja</translation>
@@ -615,6 +617,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 
 <translation id="316356270129335934"><ph name="MANAGER" /> po kthen pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
 <translation id="316798519864381606">Diapozitiv i Google</translation>
 <translation id="3171170659304083361">Cilësimet e metodave të hyrjes</translation>
+<translation id="3174897399179348329">Po përpiqesh të përdorësh tastin "Page Up"? Përdor</translation>
 <translation id="3176221688814061633">Pajisja jote Chromebook ose me Bluetooth po përdor një version më të vjetër të Bluetooth-it. Aktivizo "Superrezolucionin e Bluetooth-it" ose përdor mikrofonin e brendshëm për një cilësi më të mirë të audios.</translation>
 <translation id="3181441307743005334">Rindezja mund të zgjasë pak</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Lidhur me një pajisje}other{Lidhur me # pajisje}}</translation>
@@ -1261,6 +1264,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5297704307811127955">Joaktiv</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5302048478445481009">Gjuha</translation>
+<translation id="5302531370473608800">Përditëso <ph name="DEVICE_TYPE" /> për të përdorur YouTube Music</translation>
 <translation id="5303319262469238330">Bateria e mbetur: <ph name="PERCENTAGE" />%.
 Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translation>
 <translation id="5308380583665731573">Lidh</translation>
@@ -1820,6 +1824,7 @@ Instalim i ri</translation>
 <translation id="7144942256906679589">Statusi i baterisë</translation>
 <translation id="7145639536026937076">Bateria është në <ph name="PERCENTAGE" />% dhe po karikohet. "Kursyesi i baterisë" është aktiv.</translation>
 <translation id="7147587499155271409">Nuk ka historik shfletimi</translation>
+<translation id="7147657298465433425">Për t'u qasur te tastet F, shtyp tastin FN + tastet e rreshtit të sipërm</translation>
 <translation id="7149149900052329230">Menaxho skedarët lokalë dhe skedarët e "Diskut të Google", të gjithë në aplikacionin "Skedarët".</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1929,6 +1934,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 
 <translation id="7557816257942363084"><ph name="APP_NAME" /> po përdor aktualisht mikrofonin tënd</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
+<translation id="7568154670718626683">Po përpiqesh të përdorësh tastin "Delete"? Përdor</translation>
 <translation id="7568790562536448087">Po përditësohet</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7569886975397378678">Hiq konfigurimin e shikimit të njoftimeve dhe aplikacioneve të telefonit tënd</translation>
@@ -2131,6 +2137,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 
 <translation id="820256110035940528"><ph name="TITLE" /> Je fokusuar për <ph name="FOCUSED_TIME" />. Hap "Cilësimet e shpejta" për t'u fokusuar përsëri.</translation>
 <translation id="8203224998425013577">Shfaq më shumë emoji dhe imazhe GIF</translation>
 <translation id="8203795194971602413">Klikimi me butonin djathtas</translation>
+<translation id="8205469348819768313">Po përpiqesh të përdorësh tastin "Page Down"? Përdor</translation>
 <translation id="8214996719228530800">Kanali i versionit Canary</translation>
 <translation id="8219451629189078428">Pajisja jote Chromebook ka nevojë të qëndrojë aktive dhe e lidhur me energjinë gjatë kësaj kohe. Sigurohu që karikuesi ose kabllot e përshtatësit të jenë plotësisht të lidhura si me pajisjen tënde Chromebook, ashtu dhe me prizën elektrike. Mos e fik pajisjen tënde Chromebook.</translation>
 <translation id="8220076512072059941">Shto <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2323,6 +2330,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">"Asistenti i Google" nuk e flet këtë gjuhë.</translation>
 <translation id="8926951137623668982">Rafti gjithmonë i fshehur</translation>
+<translation id="8929566928381252430">Po përpiqesh të përdorësh tastin "Caps Lock"? Përdor</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skedar}other{# skedarë}}</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>

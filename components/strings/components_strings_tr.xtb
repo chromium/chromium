@@ -214,7 +214,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1358223345833465883">Chromium'daki arama motorunuz</translation>
 <translation id="1359836962251219822">Mutfak ve Yemek Odası</translation>
 <translation id="1360955481084547712">Gizli olarak göz atmak için yeni bir gizli pencere açın</translation>
-<translation id="1361528602584216624">Pix başına limit: R$ <ph name="TRANSACTION_LIMIT" /></translation>
+<translation id="1361528602584216624">Pix başına limit R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Ödemede kullanılmak üzere seçilebilecek ödeme yöntemleri tam ekranda açıldı.</translation>
 <translation id="1363028406613469049">Takip Et</translation>
 <translation id="1364822246244961190">Bu politika engellendiği için politikanın değeri yoksayılacak.</translation>

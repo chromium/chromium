@@ -214,7 +214,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1358223345833465883">Vaš iskalnik v Chromiumu</translation>
 <translation id="1359836962251219822">Kuhinje in jedilnice</translation>
 <translation id="1360955481084547712">Odpiranje novega anonimnega okna za zasebno brskanje</translation>
-<translation id="1361528602584216624">Omejitev na Pix: <ph name="TRANSACTION_LIMIT" /> BRL</translation>
+<translation id="1361528602584216624">Omejitev na Pix <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Plačilna sredstva, ki so na voljo za izbiro za nadaljevanje plačila, odprta pri polni višini.</translation>
 <translation id="1363028406613469049">Posnetek</translation>
 <translation id="1364822246244961190">Ta pravilnik je blokiran in njegova vrednost bo prezrta.</translation>

@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
 <translation id="1908394185991500139">shigjeta majtas</translation>
+<translation id="1914144885717544695">të premten</translation>
 <translation id="1923388006036088459">Ngjyrat e theksimit</translation>
 <translation id="1945403655450283000">Regjistruesi</translation>
 <translation id="1947737735496445907">Printuar</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">Plusko</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Sot</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
 <translation id="2154460308960858308">Pastro kërkimin</translation>
 <translation id="2157660087437850958">zgjedhësi për emoji</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2715723665057727940">lumë</translation>
 <translation id="2717139507051041123">Aktivizo modalitetin e ngjyrave të errëta</translation>
+<translation id="2726755229438917165">të hënën</translation>
 <translation id="2728460467788544679">Pastro të gjithë historikun e printimeve</translation>
 <translation id="2731700343119398978">Qëndro në pritje...</translation>
 <translation id="2740531572673183784">Në rregull</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">Pika përfundimtare</translation>
 <translation id="3060579846059757016">Përvijimet</translation>
 <translation id="3061850252076394168">aktivizo "Zgjidh që të thuhet"</translation>
+<translation id="3066772729299747758">të martën</translation>
 <translation id="3069085583900247081">Testi dështoi</translation>
 <translation id="3078740164268491126">tabela</translation>
 <translation id="3081652522083185657">e ndriçuar</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Imazhi i sfondit për rrjedhën e tokës</translation>
 <translation id="33736539805963175">Sfondi (<ph name="LETTERS_COLOR" />) me shkronjën <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzive</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">Vazhdo të mbash kursorin mbi të për opsione të tjera të strukturës</translation>
 <translation id="4130750466177569591">Jam dakord</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
+<translation id="4137700675046373159">të shtunën</translation>
 <translation id="4143226836069425823">Trokit te një tast tjetër i tastierës për ta zëvendësuar</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4147897805161313378">Fotografitë e Google</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">të dielën</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="4251839292699800785">Zyra me stil</translation>
 <translation id="4258281355379922695">Vonesa e HTTP-së</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
 <translation id="6535178685492749208">Je offline. Komentet do të dërgohen më vonë.</translation>
 <translation id="6543412779435705598">tako</translation>
+<translation id="6550369542114086980">të enjten</translation>
 <translation id="6551839203326557324">mollë</translation>
 <translation id="65526652485742171">Butoni "Konfirmo" është aktivizuar tani</translation>
 <translation id="6557784757915238407">APN-ja është e llojit <ph name="ATTACH" />.</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7182063559013288142">Zona e qasjes për internet në çast</translation>
 <translation id="7184043045742675738">Kliko te një tast për të personalizuar butonin tënd. Ndrysho pozicionin e tastit me anë të miut ose tasteve të shigjetave.</translation>
+<translation id="7187669805838282391">të mërkurën</translation>
 <translation id="7206979415662233817">Kushtet e shërbimit</translation>
 <translation id="7210635925306941239">të bruztë</translation>
 <translation id="7212547870105584639">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7388959671917308825">Blloku me prekje i integruar</translation>
 <translation id="7397270852490618635">Çaktivizo temën e ndriçuar</translation>
 <translation id="7401543881546089382">Fshi shkurtoren</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> është gati për t'u përditësuar</translation>
 <translation id="741244894080940828">konvertimi</translation>
 <translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="7425037327577270384">Më ndihmo të shkruaj</translation>
@@ -1325,6 +1335,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7500205272584643581">Të lejohet që "Regjistruesi" të zbulojë dhe të etiketojë folësit?</translation>
 <translation id="7501957181231305652">ose</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
+<translation id="7503342217608032738">Pajisja nuk mund të përdoret</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> që rrezaton</translation>
 <translation id="7513770521371759388">në fund</translation>
 <translation id="7514365320538308">Shkarko</translation>
@@ -1337,6 +1348,8 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7544853251252956727">Përziej</translation>
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7551123448725492271">Pajisja është një pajisje audio.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Administratori i <ph name="MANAGER" /> ka caktuar se kur mund të përdoret kjo pajisje <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Do të mund ta përdorësh këtë pajisje përsëri <ph name="DAY" /> në <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Shiko paraprakisht pamjen e ekranit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" u nis automatikisht}other{# aplikacione u nisën automatikisht}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
+<translation id="8010765388850538088">Mëso më shumë rreth IA-së gjeneruese</translation>
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8028993641010258682">Madhësia</translation>
@@ -1434,6 +1448,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8045012663542226664">Heqja e zërit të mikrofonit</translation>
 <translation id="8054112564438735763">bezhë</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> me ngjyrë <ph name="CHARACTERS_COLOR" /> në sfond me ngjyrë <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN-ja është lidhur.</translation>
 <translation id="8067208048261192356">kafe</translation>
 <translation id="8067224607978179455">Fshi <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
+<translation id="8584654835905316966">Kërkohet rinisja për të përfunduar instalimin e firmuerit për <ph name="DEVICE_NAME" /> në versionin <ph name="VERSION" />. Kompjuteri yt mund të rindizet disa herë. Kjo sjellje është e pritshme.</translation>
 <translation id="8593058461203131755">vendose median në pauzë</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
 <translation id="8626489604350149811">Më shumë veprime për <ph name="APN_NAME" /></translation>
@@ -1671,6 +1687,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="917720651393141712">Provë</translation>
 <translation id="9188992814426075118">Tastiera jote mund të përputhet automatikisht me imazhin e sfondit</translation>
 <translation id="9189000703457422362">Nuk mund të lidhesh me këtë rrjet duke përdorur APN-të e zbuluara automatikisht. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">Tastet e zgjedhura të levës së kontrollit janë <ph name="KEYS" />. Trokit te butoni për të modifikuar kontrollin</translation>
 <translation id="9204237731135241582">Portëkalimi nuk mund të kontaktohet nga aplikacionet për Android</translation>

@@ -51,7 +51,7 @@
 <translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> produktuaren ohiko prezioa <ph name="LOW_PRICE" /> eta <ph name="HIGH_PRICE" /> artekoa da, baina oraingo prezioa <ph name="CURRENT_PRICE" /> da sarean.</translation>
 <translation id="1089439967362294234">Aldatu pasahitza</translation>
 <translation id="1089599132348386324">Iritziz aldatzen bazara, joan Chrome-ren ezarpenetara.</translation>
-<translation id="1090629319939036170">Errealitate birtualeko menua</translation>
+<translation id="1090629319939036170">EBko menua</translation>
 <translation id="1091463901118115503">Jarraitu irakurtzen</translation>
 <translation id="1091779689406092804">Pantaila-argazkiak</translation>
 <translation id="1094777233105318927">Arakatzaileari, sistema eragileari, gailuari, instalatutako softwareari eta fitxategiei buruzko informazioa</translation>
@@ -132,7 +132,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1228893227497259893">Entitate-identifikatzaile okerra</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatikoki hauteman da)</translation>
 <translation id="1232569758102978740">Izengabea</translation>
-<translation id="1236081509407217141">Errealitate birtuala erabiltzeko baimena eman nahi duzu?</translation>
+<translation id="1236081509407217141">EB erabiltzeko baimena eman nahi duzu?</translation>
 <translation id="1240347957665416060">Gailuaren izena</translation>
 <translation id="124116460088058876">Hizkuntza gehiago</translation>
 <translation id="1243027604378859286">Egilea:</translation>
@@ -4409,7 +4409,7 @@ Xehetasun gehiago:
 <translation id="9001701119003382280">Informatikako gailu periferikoak</translation>
 <translation id="9001963517402879850">Egin salto!</translation>
 <translation id="9003639428623471314">Kahu gutun-azala</translation>
-<translation id="9004367719664099443">Errealitate birtualeko saioa abian da</translation>
+<translation id="9004367719664099443">EBko saioa abian da</translation>
 <translation id="9005998258318286617">Ezin izan da kargatu PDF dokumentua.</translation>
 <translation id="9008201768610948239">Egin ez ikusi</translation>
 <translation id="9014705027639070815">Bisitatzen dituzun webguneek informazioa eska diezaiokete Chrome-ri, beren iragarkien errendimendua neurtze aldera. Chrome-k datu mota jakin batzuk soilik biltzea ahalbidetzen die webguneei; adibidez, adibidez, webgune bat bisitatu ondoren erosketa bat egin duzun.</translation>

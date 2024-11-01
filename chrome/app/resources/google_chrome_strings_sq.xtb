@@ -30,6 +30,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1330562121671411446">Zbulo gjuhën</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë apo kufizojnë kushtet e Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Mund ta ndërrosh për të parë fjalëkalimet nga një profil tjetër i Chrome</translation>
+<translation id="1356661055722410047">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd</translation>
 <translation id="1363996462118479832">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Ky kompjuter e ka tashmë një version më të ri të Google Chrome. Nëse softueri nuk punon, çinstaloje Google Chrome dhe provo sërish.</translation>
@@ -51,6 +52,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Ndryshe, mund të heqësh interesat që nuk dëshiron që Chrome të marrë parasysh.</translation>
 <translation id="1628000112320670027">Merr ndihmë për Chrome</translation>
 <translation id="1640672724030957280">Po shkarkohet...</translation>
+<translation id="1651617469580841801">Kur përdor "Lenten e Google", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
@@ -197,6 +199,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3261565993776444564">Provo një ngjyrë të re për të personalizuar shfletuesin tënd</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
+<translation id="3289358082435924389">Më vonë, Chrome do të të pyesë nëse dëshiron të përdorësh informacionet e ruajtura për të plotësuar automatikisht formularët</translation>
 <translation id="3292333338048274092">Më pas do të të duhet të rinisësh Chrome.</translation>
 <translation id="3360895254066713204">Ndihmësi i Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome do të hapet përsëri tani}=1{Chrome do të hapet përsëri për 1 sekondë}other{Chrome do të hapet përsëri për # sekonda}}</translation>
@@ -511,6 +514,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7308322188646931570">Chrome ka nevojë për qasje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7352881504289275361">"Shfletimi i sigurt i përmirësuar" ofron mbrojtjen më të fortë online të Chrome për të të mbajtur të sigurt ndërsa shfleton</translation>
+<translation id="7386878009611068389">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, kalo te profili yt i Chrome ku je identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7394745511930161845">Krijo temën tënde me IA për t'i dhënë shfletuesit tënd një pamje unike</translation>
 <translation id="7398801000654795464">Ishe i identifikuar në Chrome si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7412494426921990001">Kliko te menyja e Chrome</translation>
@@ -524,6 +528,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7477130805345743099">Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="749228101751499733">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chrome. <ph name="SHORTCUT" /> mund të ndryshojë cilësimet e shërbimeve të tua të Google.</translation>
+<translation id="7512187482580860950">Chrome mund të kuptojë më shumë lloje informacionesh dhe t'i plotësojë automatikisht më shpejt formularët e tu. Mëso më shumë rreth <ph name="BEGIN_LINK" />"Plotësimit automatik" të Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Mund të gozhdosh "Lenten e Google" për qasje të lehtë</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -566,6 +571,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7886087451482920026">Zgjidh tekstin me "Lenten e Google"</translation>
 <translation id="7890208801193284374">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="7896673875602241923">Dikush është identifikuar më parë në Chrome në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chrome për t'i mbajtur të ndara informacionet e tua.</translation>
+<translation id="7917470403848199310">Chrome do të pyesë nëse dëshiron të ruash informacionet e formularit, si p.sh. ditëlindjen, moshën dhe numrin e pasaportës</translation>
 <translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="7947083960301164556">Shiko çfarë ka të re</translation>
@@ -622,6 +628,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Me profilet e Chrome mund t'i mbash veçmas të gjitha gjërat e tua të Chrome. Kjo e bën më të lehtë ta ndash punën nga argëtimi.</translation>
+<translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
