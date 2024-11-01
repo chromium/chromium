@@ -61,12 +61,14 @@ void UmaHistogramTimesWithSuffix(const char* histogram_name,
                                  std::string_view histogram_suffix,
                                  base::TimeDelta sample) {
   DCHECK(histogram_name);
-  std::string histogram_full_name(histogram_name);
-  if (!histogram_suffix.empty()) {
-    histogram_full_name.append(".");
-    histogram_full_name.append(histogram_suffix);
+  // Log with the given suffix and the aggregated ".All" suffix.
+  if (histogram_suffix.empty()) {
+    UmaHistogramTimes(histogram_name, sample);
+  } else {
+    UmaHistogramTimes(base::JoinString({histogram_name, histogram_suffix}, "."),
+                      sample);
   }
-  UmaHistogramTimes(histogram_full_name, sample);
+  UmaHistogramTimes(base::JoinString({histogram_name, "All"}, "."), sample);
 }
 
 // Deletes the file named |tmp_file_path| (which may be open as |tmp_file|),

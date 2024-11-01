@@ -132,6 +132,7 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="Unknown file"/>
   <variant name=".AccountManager" summary="ChromeOS serialized accounts file"/>
   <variant name=".AccountPreferences" summary="Account Preferences file"/>
+  <variant name=".All" summary="Aggregate of all files"/>
   <variant name=".BookmarkStorage" summary="Bookmarks file"/>
   <variant name=".FeedbackReport" summary="Feedback Report file"/>
   <variant name=".Local_State" summary="Local State file"/>
