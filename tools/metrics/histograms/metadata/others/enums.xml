@@ -80,6 +80,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kInvokeFailed"/>
 </enum>
 
+<enum name="EncryptionPrefixVersion">
+  <int value="0" label="No prefix found"/>
+  <int value="1" label="Version v10"/>
+  <int value="2" label="Version v11"/>
+</enum>
+
 <enum name="HappinessTrackingSurvey">
   <summary>Possible survey states and answers for each question.</summary>
   <int value="1" label="Survey Triggered"/>

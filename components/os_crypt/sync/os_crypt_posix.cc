@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 
@@ -121,8 +122,9 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   const bool no_prefix_found = !base::StartsWith(ciphertext, kObfuscationPrefix,
                                                  base::CompareCase::SENSITIVE);
 
-  base::UmaHistogramBoolean("OSCrypt.Posix.NoEncryptionPrefixFound",
-                            no_prefix_found);
+  os_crypt::LogEncryptionVersion(
+      no_prefix_found ? os_crypt::EncryptionPrefixVersion::kNoVersion
+                      : os_crypt::EncryptionPrefixVersion::kVersion10);
 
   if (no_prefix_found) {
     *plaintext = ciphertext;

@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "components/os_crypt/sync/keychain_password_mac.h"
+#include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "components/os_crypt/sync/os_crypt_switches.h"
 #include "crypto/apple_keychain.h"
 #include "crypto/encryptor.h"
@@ -190,7 +191,14 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   // old data saved as clear text and we'll return it directly.
   // Credit card numbers are current legacy data, so false match with prefix
   // won't happen.
-  if (ciphertext.find(kEncryptionVersionPrefix) != 0) {
+  const os_crypt::EncryptionPrefixVersion encryption_version =
+      ciphertext.find(kEncryptionVersionPrefix) == 0
+          ? os_crypt::EncryptionPrefixVersion::kVersion10
+          : os_crypt::EncryptionPrefixVersion::kNoVersion;
+
+  os_crypt::LogEncryptionVersion(encryption_version);
+
+  if (encryption_version == os_crypt::EncryptionPrefixVersion::kNoVersion) {
     *plaintext = ciphertext;
     return true;
   }
