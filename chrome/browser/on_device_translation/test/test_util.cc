@@ -50,9 +50,7 @@ void MockComponentManager::ExpectCallRegisterLanguagePackComponentAndInstall(
   for (const auto expected_key : language_pack_keys) {
     expectation.WillOnce(Invoke([&, expected_key](LanguagePackKey key) {
       EXPECT_EQ(key, expected_key);
-      InstallMockLanguagePackLater(
-          key, CreateFakeDictionaryData(GetSourceLanguageCode(key),
-                                        GetTargetLanguageCode(key)));
+      InstallMockLanguagePackLater(key);
     }));
   }
 }
@@ -67,6 +65,22 @@ void MockComponentManager::InstallMockTranslateKitComponent() {
   CHECK(base::CopyFile(mock_library_path, binary_path));
   g_browser_process->local_state()->SetFilePath(prefs::kTranslateKitBinaryPath,
                                                 binary_path);
+}
+
+void MockComponentManager::InstallMockLanguagePack(
+    LanguagePackKey language_pack_key) {
+  InstallMockLanguagePack(
+      language_pack_key,
+      CreateFakeDictionaryData(GetSourceLanguageCode(language_pack_key),
+                               GetTargetLanguageCode(language_pack_key)));
+}
+
+void MockComponentManager::RegisterLanguagePack(
+    LanguagePackKey language_pack_key) {
+  const LanguagePackComponentConfig* config =
+      kLanguagePackComponentConfigMap.at(language_pack_key);
+  g_browser_process->local_state()->SetBoolean(
+      GetRegisteredFlagPrefName(*config), true);
 }
 
 void MockComponentManager::InstallMockLanguagePack(
@@ -97,13 +111,16 @@ void MockComponentManager::InstallMockTranslateKitComponentLater() {
 }
 
 void MockComponentManager::InstallMockLanguagePackLater(
-    LanguagePackKey language_pack_key,
-    const std::string_view fake_dictionary_data) {
+    LanguagePackKey language_pack_key) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockComponentManager::InstallMockLanguagePack,
-                     weak_ptr_factory_.GetWeakPtr(), language_pack_key,
-                     std::string(fake_dictionary_data)));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<MockComponentManager> self,
+                        LanguagePackKey language_pack_key) {
+                       if (self) {
+                         self->InstallMockLanguagePack(language_pack_key);
+                       }
+                     },
+                     weak_ptr_factory_.GetWeakPtr(), language_pack_key));
 }
 
 std::string CreateFakeDictionaryData(const std::string_view sourceLang,

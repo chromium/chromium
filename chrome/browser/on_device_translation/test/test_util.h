@@ -64,7 +64,11 @@ class MockComponentManager : public ComponentManager {
   // See comments in mock_translate_kit_lib.cc for more details.
   void InstallMockTranslateKitComponent();
 
+  // Registers the mock language pack to the PrefService.
+  void RegisterLanguagePack(LanguagePackKey language_pack_key);
+
   // Installs the mock language pack.
+  void InstallMockLanguagePack(LanguagePackKey language_pack_key);
   void InstallMockLanguagePack(LanguagePackKey language_pack_key,
                                const std::string_view fake_dictionary_data);
 
@@ -72,9 +76,7 @@ class MockComponentManager : public ComponentManager {
   void InstallMockTranslateKitComponentLater();
 
   // Post a task to call InstallMockLanguagePack()
-  void InstallMockLanguagePackLater(
-      LanguagePackKey language_pack_key,
-      const std::string_view fake_dictionary_data);
+  void InstallMockLanguagePackLater(LanguagePackKey language_pack_key);
 
  private:
   const base::FilePath package_dir_;
