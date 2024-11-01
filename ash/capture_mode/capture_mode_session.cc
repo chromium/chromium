@@ -1368,7 +1368,7 @@ void CaptureModeSession::AddActionButton(
   // If we are in the midst of selecting a region, or a region has not been
   // selected yet, don't add a button.
   if (controller_->source() != CaptureModeSource::kRegion ||
-      is_selecting_region_ || controller_->user_capture_region().IsEmpty()) {
+      is_drag_in_progress_ || controller_->user_capture_region().IsEmpty()) {
     return;
   }
 
@@ -2439,24 +2439,6 @@ void CaptureModeSession::OnLocatedEventReleased(
     }
   };
 
-  // TODO: crbug.com/375261308 - Prevent image search when the region stays the
-  // same or is within a throttling QPS after a release event.
-  // Notify the behavior that the region was selected or adjusted, in case it
-  // needs to do specific handling. Note `this` may be destroyed by
-  // `OnRegionSelectedOrAdjusted()`.
-  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  active_behavior_->OnRegionSelectedOrAdjusted();
-  if (!weak_ptr) {
-    return;
-  }
-
-  if (!is_selecting_region_) {
-    return;
-  }
-
-  // After first release event, we advance to the next phase.
-  is_selecting_region_ = false;
-
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
     DCHECK(action_container_widget_);
@@ -2474,6 +2456,24 @@ void CaptureModeSession::OnLocatedEventReleased(
       controller_->PerformCapture(PerformCaptureType::kTextDetection);
     }
   }
+
+  // TODO: crbug.com/375261308 - Prevent image search when the region stays the
+  // same or is within a throttling QPS after a release event.
+  // Notify the behavior that the region was selected or adjusted, in case it
+  // needs to do specific handling. Note `this` may be destroyed by
+  // `OnRegionSelectedOrAdjusted()`.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  active_behavior_->OnRegionSelectedOrAdjusted();
+  if (!weak_ptr) {
+    return;
+  }
+
+  if (!is_selecting_region_) {
+    return;
+  }
+
+  // After first release event, we advance to the next phase.
+  is_selecting_region_ = false;
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
 

@@ -48,6 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
@@ -715,6 +716,59 @@ TEST_F(SunfishTest, ActionContainerWidgetOpacity) {
   // Finish adjusting the region. The widget should now be visible.
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+}
+
+// Tests that the search button is re-shown on region selected or adjusted in
+// default mode.
+TEST_F(SunfishTest, ShowSearchButtonOnRegionAdjusted) {
+  // Start default mode and show the search button.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  auto* container_widget = session_test_api.GetActionContainerWidget();
+  ASSERT_TRUE(container_widget);
+
+  // Adjust the region from the northwest corner.
+  gfx::Rect old_region = controller->user_capture_region();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 100));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(50, 50));
+
+  // During the drag, the buttons are hidden.
+  ASSERT_TRUE(session->is_drag_in_progress());
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Release the drag. Test the buttons are re-shown.
+  event_generator->ReleaseLeftButton();
+  EXPECT_NE(controller->user_capture_region(), old_region);
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  EXPECT_TRUE(session_test_api.GetActionButtons()[0]->GetVisible());
+
+  // Reposition the region. During the drag, the buttons are hidden.
+  old_region = controller->user_capture_region();
+  event_generator->MoveMouseTo(gfx::Point(150, 150));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(200, 200));
+  ASSERT_TRUE(session->is_drag_in_progress());
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Release the drag. Test the buttons are re-shown.
+  event_generator->ReleaseLeftButton();
+  EXPECT_NE(controller->user_capture_region(), old_region);
+  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  EXPECT_TRUE(session_test_api.GetActionButtons()[0]->GetVisible());
 }
 
 // Tests that the search action button is shown in default capture mode.
