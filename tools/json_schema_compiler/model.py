@@ -158,7 +158,6 @@ class Namespace(object):
     else:
       self.compiler_options = {}
     self.environment = environment
-    self.documentation_options = json.get('documentation_options', {})
 
 
 class Origin(object):
