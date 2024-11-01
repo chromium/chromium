@@ -251,12 +251,12 @@ void LockedSessionWindowTracker::WillCloseAllTabs(
     TabStripModel* tab_strip_model) {
   CHECK(tab_strip_model);
 
-  // We block tab unload when the browser instance is locked for OnTask. We need
-  // to unset the relevant boolean to unblock tab unload so it can proceed with
-  // the close operation.
+  // Force browser to skip tab unload so we can proceed with the close
+  // operation.
+  // TODO (crbug.com/372362860): Add browser tests to test tab unload.
   Browser* const browser = static_cast<Browser*>(
       tab_strip_model->delegate()->GetBrowserWindowInterface());
-  browser->SetLockedForOnTask(false);
+  browser->set_force_skip_warning_user_on_close(true);
 }
 
 // BrowserListObserver Implementation
