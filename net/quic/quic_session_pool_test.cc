@@ -11033,7 +11033,7 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
   base::RunLoop().RunUntilIdle();
 
   // Verify the ping alarm is set, but not with the default timeout.
-  const quic::QuicAlarm& ping_alarm =
+  const quic::QuicAlarmProxy ping_alarm =
       quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
   ASSERT_TRUE(ping_alarm.IsSet());
   quic::QuicTime::Delta delay =
@@ -11286,7 +11286,7 @@ TEST_P(QuicSessionPoolTest,
   base::RunLoop().RunUntilIdle();
 
   // Verify the ping alarm is set, but not with the default timeout.
-  const quic::QuicAlarm& ping_alarm =
+  const quic::QuicAlarmProxy ping_alarm =
       quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
   ASSERT_TRUE(ping_alarm.IsSet());
   quic::QuicTime::Delta delay =

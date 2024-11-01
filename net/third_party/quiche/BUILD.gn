@@ -660,6 +660,7 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/quic_chaos_protector_test.cc",
     "src/quiche/quic/core/quic_coalesced_packet_test.cc",
     "src/quiche/quic/core/quic_config_test.cc",
+    "src/quiche/quic/core/quic_connection_alarms_test.cc",
     "src/quiche/quic/core/quic_connection_context_test.cc",
     "src/quiche/quic/core/quic_connection_id_manager_test.cc",
     "src/quiche/quic/core/quic_connection_id_test.cc",

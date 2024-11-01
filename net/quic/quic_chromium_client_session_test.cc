@@ -1891,8 +1891,8 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
   EXPECT_TRUE(
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
 
-  quic::QuicAlarm& alarm =
-      quic::test::QuicConnectionPeer::GetPingAlarm(session_->connection());
+  quic::test::QuicTestAlarmProxy alarm(
+      quic::test::QuicConnectionPeer::GetPingAlarm(session_->connection()));
   EXPECT_FALSE(alarm.IsSet());
 
   // Send PING, which will be ACKed by the server. After the ACK, there will be
@@ -1907,7 +1907,7 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
   // Advance clock and simulate the alarm firing. This should cause a PING to be
   // sent.
   clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(200));
-  alarm_factory_.FireAlarm(&alarm);
+  alarm.Fire();
   base::RunLoop().RunUntilIdle();
 
   quic_data.Resume();
