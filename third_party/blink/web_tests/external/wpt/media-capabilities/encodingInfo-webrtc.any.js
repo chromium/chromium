@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-<title>MediaCapabilities.decodingInfo() for webrtc</title>
-<script src=/resources/testharness.js></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: timeout=long
+'use strict';
+
+const isWorkerEnvironment = typeof self.WorkerGlobalScope !== 'undefined';
 
 // Minimal VideoConfiguration that will be allowed per spec. All optional
 // properties are missing.
@@ -21,13 +20,13 @@ const minimalAudioConfiguration = {
 };
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
   }));
-}, "Test that decodingInfo rejects if the configuration doesn't have an audio or video field");
+}, "Test that encodingInfo rejects if the configuration doesn't have an audio or video field");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'video/VP9',
@@ -37,10 +36,10 @@ promise_test(t => {
       framerate: -1,
     },
   }));
-}, "Test that decodingInfo rejects if the video configuration has a negative framerate");
+}, "Test that encodingInfo rejects if the video configuration has a negative framerate");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'video/VP9"',
@@ -50,10 +49,10 @@ promise_test(t => {
       framerate: 0,
     },
   }));
-}, "Test that decodingInfo rejects if the video configuration has a framerate set to 0");
+}, "Test that encodingInfo rejects if the video configuration has a framerate set to 0");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'video/VP9"',
@@ -63,10 +62,10 @@ promise_test(t => {
       framerate: Infinity,
     },
   }));
-}, "Test that decodingInfo rejects if the video configuration has a framerate set to Infinity");
+}, "Test that encodingInfo rejects if the video configuration has a framerate set to Infinity");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'fgeoa',
@@ -76,10 +75,10 @@ promise_test(t => {
       framerate: 24,
     },
   }));
-}, "Test that decodingInfo rejects if the video configuration contentType doesn't parse");
+}, "Test that encodingInfo rejects if the video configuration contentType doesn't parse");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'audio/fgeoa',
@@ -89,24 +88,24 @@ promise_test(t => {
       framerate: 24,
     },
   }));
-}, "Test that decodingInfo rejects if the video configuration contentType isn't of type video");
+}, "Test that encodingInfo rejects if the video configuration contentType isn't of type video");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     audio: { contentType: 'fgeoa' },
   }));
-}, "Test that decodingInfo rejects if the audio configuration contentType doesn't parse");
+}, "Test that encodingInfo rejects if the audio configuration contentType doesn't parse");
 
 promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     audio: { contentType: 'video/fgeoa' },
   }));
-}, "Test that decodingInfo rejects if the audio configuration contentType isn't of type audio");
+}, "Test that encodingInfo rejects if the audio configuration contentType isn't of type audio");
 
 promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: minimalVideoConfiguration,
     audio: minimalAudioConfiguration,
@@ -115,10 +114,10 @@ promise_test(t => {
     assert_equals(typeof ability.smooth, "boolean");
     assert_equals(typeof ability.powerEfficient, "boolean");
   });
-}, "Test that decodingInfo returns a valid MediaCapabilitiesInfo objects");
+}, "Test that encodingInfo returns a valid MediaCapabilitiesInfo objects");
 
 promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: 'video/webm; codecs="vp09.00.10.08"',
@@ -133,10 +132,10 @@ promise_test(t => {
     assert_false(ability.smooth);
     assert_false(ability.powerEfficient);
   });
-}, "Test that decodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc video content type.");
+}, "Test that encodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc video content type.");
 
 promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: minimalVideoConfiguration,
     audio: {
@@ -147,25 +146,32 @@ promise_test(t => {
     assert_false(ability.smooth);
     assert_false(ability.powerEfficient);
   });
-}, "Test that decodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc audio content type.");
+}, "Test that encodingInfo returns supported, smooth, and powerEfficient set to false for non-webrtc audio content type.");
 
 const validAudioCodecs = (() => {
   // Some codecs that are returned by getCapabilities() are not real codecs,
   // exclude these from the test.
   const excludeList = [ 'audio/CN', 'audio/telephone-event', 'audio/red' ];
   const audioCodecs = [];
-  RTCRtpReceiver.getCapabilities("audio")['codecs'].forEach(codec => {
-    if (excludeList.indexOf(codec.mimeType) < 0 &&
-        audioCodecs.indexOf(codec.mimeType) < 0) {
-      audioCodecs.push(codec.mimeType);
-    }
-  });
+
+  if (isWorkerEnvironment) {
+    // Test with one specific codec since RTCRtpSender is not exposed to workers.
+    audioCodecs.push(minimalAudioConfiguration.contentType);
+  }
+  else {
+    RTCRtpSender.getCapabilities("audio")['codecs'].forEach(codec => {
+      if (excludeList.indexOf(codec.mimeType) < 0 &&
+          audioCodecs.indexOf(codec.mimeType) < 0) {
+        audioCodecs.push(codec.mimeType);
+      }
+    });
+  }
   return audioCodecs;
 })();
 
 validAudioCodecs.forEach(codec => {
   promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     audio: {
       contentType: codec
@@ -173,7 +179,7 @@ validAudioCodecs.forEach(codec => {
   }).then(ability => {
     assert_true(ability.supported);
   });
-}, "Test that decodingInfo returns supported true for the codec " + codec + " returned by RTCRtpReceiver.getCapabilities()")}
+}, "Test that encodingInfo returns supported true for the codec " + codec + (isWorkerEnvironment ? "" : " returned by RTCRtpSender.getCapabilities()"))}
 );
 
 const validVideoCodecs = (() => {
@@ -183,23 +189,29 @@ const validVideoCodecs = (() => {
                       'video/flexfec-03' ];
   const videoCodecs = [];
 
-  RTCRtpReceiver.getCapabilities("video")['codecs'].forEach(codec => {
-    if (excludeList.indexOf(codec.mimeType) < 0) {
-      let mimeType = codec.mimeType;
-      if ('sdpFmtpLine' in codec) {
-        mimeType += "; " + codec.sdpFmtpLine;
+  if (isWorkerEnvironment) {
+    // Test with one specific codec since RTCRtpSender is not exposed to workers.
+    videoCodecs.push(minimalVideoConfiguration.contentType);
+  }
+  else {
+    RTCRtpSender.getCapabilities("video")['codecs'].forEach(codec => {
+      if (excludeList.indexOf(codec.mimeType) < 0) {
+        let mimeType = codec.mimeType;
+        if ('sdpFmtpLine' in codec) {
+          mimeType += "; " + codec.sdpFmtpLine;
+        }
+        if (!(mimeType in videoCodecs)) {
+          videoCodecs.push(mimeType);
+        }
       }
-      if (!(mimeType in videoCodecs)) {
-        videoCodecs.push(mimeType);
-      }
-    }
-  });
+    });
+  }
   return videoCodecs;
 })();
 
 validVideoCodecs.forEach(codec => {
   promise_test(t => {
-  return navigator.mediaCapabilities.decodingInfo({
+  return navigator.mediaCapabilities.encodingInfo({
     type: 'webrtc',
     video: {
       contentType: codec,
@@ -211,7 +223,6 @@ validVideoCodecs.forEach(codec => {
   }).then(ability => {
     assert_true(ability.supported);
   });
-}, "Test that decodingInfo returns supported true for the codec " + codec + " returned by RTCRtpReceiver.getCapabilities()")}
+}, "Test that encodingInfo returns supported true for the codec " + codec + (isWorkerEnvironment ? "" : " returned by RTCRtpSender.getCapabilities()"))}
 );
 
-</script>
