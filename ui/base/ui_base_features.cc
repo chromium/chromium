@@ -10,13 +10,12 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/shortcut_mapping_pref_delegate.h"
 #endif
 
@@ -39,19 +38,11 @@ BASE_FEATURE(kScreenPowerListenerForNativeWinOcclusion,
              "ScreenPowerListenerForNativeWinOcclusion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Once enabled, the exact behavior is dictated by the field trial param
 // name `kApplyNativeOcclusionToCompositorType`.
 BASE_FEATURE(kApplyNativeOcclusionToCompositor,
              "ApplyNativeOcclusionToCompositor",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, native window occlusion tracking will always be used, even if
 // CHROME_HEADLESS is set.
@@ -61,13 +52,7 @@ BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
 
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
-    &kApplyNativeOcclusionToCompositor, "type",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    /*default=*/"throttle_and_release"
-#else
-    /*default=*/""
-#endif
-};
+    &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};
 
 // When the WindowTreeHost is occluded or hidden, resources are released and
 // the compositor is hidden. See WindowTreeHost for specifics on what this
@@ -78,9 +63,9 @@ const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
 // Release when hidden, throttle when occluded.
 const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[] =
     "throttle_and_release";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Integrate input method specific settings to Chrome OS settings page.
 // https://crbug.com/895886.
 BASE_FEATURE(kSettingsShowsPerKeyboardSettings,
@@ -132,16 +117,12 @@ bool AreF11AndF12ShortcutsEnabled() {
   }
   return base::FeatureList::IsEnabled(features::kSupportF11AndF12KeyShortcuts);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_OZONE)
 BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
              "OzoneBubblesUsePlatformWidgets",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Controls whether support for Wayland's linux-drm-syncobj is enabled.
@@ -239,8 +220,7 @@ BASE_FEATURE(kSystemKeyboardLock,
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
 BASE_FEATURE(kUiGpuRasterization,
              "UiGpuRasterization",
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH) ||      \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -267,11 +247,7 @@ BASE_FEATURE(kUiCompositorScrollWithLayers,
 // native apps on Windows.
 BASE_FEATURE(kExperimentalFlingAnimation,
              "ExperimentalFlingAnimation",
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) ||                                   \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-     !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -324,7 +300,7 @@ BASE_FEATURE(kImprovedKeyboardShortcuts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsImprovedKeyboardShortcutsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
   // policy is deprecated.
   if (::ui::ShortcutMappingPrefDelegate::IsInitialized()) {
@@ -334,7 +310,7 @@ bool IsImprovedKeyboardShortcutsEnabled() {
       return instance->IsI18nShortcutPrefEnabled();
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }

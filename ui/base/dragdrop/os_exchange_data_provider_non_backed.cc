@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"

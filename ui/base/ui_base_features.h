@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/buildflags.h"
 
 namespace features {
@@ -17,10 +16,10 @@ namespace features {
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kExperimentalFlingAnimation);
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kFocusFollowsCursor);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kSettingsShowsPerKeyboardSettings);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kInputMethodSettingsUiUpdate);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -54,9 +53,7 @@ BASE_DECLARE_FEATURE(kScreenPowerListenerForNativeWinOcclusion);
 
 // Returns true if the system should use WM_POINTER events for touch events.
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingWMPointerForTouch();
-#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kApplyNativeOcclusionToCompositor);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -70,7 +67,7 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kApplyNativeOcclusionToCompositorTypeThrottle[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[];
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -104,7 +101,7 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltip);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsKeyboardAccessibleTooltipEnabled();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kDeprecateAltClick);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -126,7 +123,7 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kSupportF11AndF12KeyShortcuts);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool AreF11AndF12ShortcutsEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_OZONE)
 COMPONENT_EXPORT(UI_BASE_FEATURES)

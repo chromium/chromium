@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace ui {

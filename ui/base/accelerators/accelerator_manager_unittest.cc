@@ -11,7 +11,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/base/ui_base_features.h"

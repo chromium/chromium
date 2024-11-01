@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace switches {
 

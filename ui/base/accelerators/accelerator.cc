@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
