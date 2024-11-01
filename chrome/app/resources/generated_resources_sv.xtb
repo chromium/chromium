@@ -863,7 +863,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1606566847233779212">Vill du ta bort specifika webbplatser som du lagt till?</translation>
 <translation id="1607139524282324606">Rensa post</translation>
 <translation id="1607499585984539560">Användaren saknar koppling till domänen</translation>
-<translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Chatta med Gemini och börja skriva, planera, lära dig saker och mycket annat med Googles AI.<ph name="END_PARAGRAPH1" />
+<translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Chatta med Gemini och börja skriva, planera, lära dig saker och mycket annat med Google AI.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />När du har konfigurerat Gemini kan du börja använda den genom att välja Gemini-appen på hyllan längst ned på skärmen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1608668830839595724">Fler åtgärder för valda objekt</translation>
 <translation id="1610272688494140697">Appinställningar</translation>
@@ -1140,7 +1140,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1795668164971917185">Nästa gång Google Säker webbsökning upptäcker en misstänkt nedladdning genomsöks den automatiskt som en del av <ph name="LINK" /></translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
 <translation id="1797117170091578105">Spela med tangentbordet på Chromebook. Du kan tilldela tangenter specifika funktioner.</translation>
-<translation id="1798335429200675510">Högerklicka i en textruta för att skapa ett utkast eller finjustera befintligt arbete med hjälp av Googles AI. Har för närvarande begränsad tillgänglighet.</translation>
+<translation id="1798335429200675510">Högerklicka i en textruta för att skapa ett utkast eller finjustera befintligt arbete med hjälp av Google AI. Har för närvarande begränsad tillgänglighet.</translation>
 <translation id="180203835522132923">Sök + O, sedan W</translation>
 <translation id="1802624026913571222">Aktivera viloläge när fodralet stängs</translation>
 <translation id="1802687198411089702">Sidan svarar inte. Vänta tills den svarar eller avbryt.</translation>
@@ -8968,7 +8968,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android-app</translation>
 <translation id="7495217365392072364">Organisera liknande flikar</translation>
-<translation id="7497322070873193353">Googles AI</translation>
+<translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">Du har inga nyligen registrerade WebRTC-textloggar.</translation>
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502220299952823578">Lägg till i listan Låt alltid dessa webbplatser vara aktiva</translation>
@@ -9778,7 +9778,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8063535366119089408">Visa fil</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">Grupp <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
-<translation id="8065144531309810062">Använd Googles AI för att bli mer kreativ och produktiv</translation>
+<translation id="8065144531309810062">Använd Google AI för att bli mer kreativ och produktiv</translation>
 <translation id="8066444921260601116">Dialogruta för anslutning</translation>
 <translation id="8070572887926783747">Platsbehörighet för <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Haptisk återkoppling</translation>
@@ -10312,7 +10312,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8452105022015742247">Överföra uppgifter för Google-kontot från din Android-telefon</translation>
 <translation id="8455775311562941553">Ansluten till <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Ange standardwebbläsaren</translation>
-<translation id="8456200178779628126">Använd Googles AI för att få hjälp med att läsa och skriva</translation>
+<translation id="8456200178779628126">Använd Google AI för att få hjälp med att läsa och skriva</translation>
 <translation id="845702320058262034">Det gick inte att ansluta. Kontrollera att Bluetooth har aktiverats på mobilen.</translation>
 <translation id="8457251154056341970">Inga fler <ph name="MODULE_NAME" /> visas på den här sidan</translation>
 <translation id="8457451314607652708">Importera bokmärken</translation>

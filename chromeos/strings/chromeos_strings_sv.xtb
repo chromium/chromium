@@ -80,7 +80,7 @@
 <translation id="1343442362630695901">saltsjö</translation>
 <translation id="1348657754632799065">Inspelningsfält</translation>
 <translation id="1367951781824006909">Välj fil</translation>
-<translation id="1371650399987522809">Feedback om bakgrund som drivs av Googles AI</translation>
+<translation id="1371650399987522809">Feedback om bakgrund som drivs av Google AI</translation>
 <translation id="1374385338586507108">Definiera</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1387854245479784695">Detta är en sammanställning av alla kärnor</translation>
@@ -321,7 +321,7 @@
 <translation id="242825218556404975">Inget tal har identifierats</translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Googles AI)</translation>
+<translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Google AI)</translation>
 <translation id="2480572840229215612">krabbor</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
 <translation id="2486301288428798846">trä</translation>
@@ -379,7 +379,7 @@
 <translation id="2744221223678373668">Delade</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
 <translation id="2754757901767760034">lampa</translation>
-<translation id="2780756493585863768">De senaste bakgrunderna som drivs av Googles AI</translation>
+<translation id="2780756493585863768">De senaste bakgrunderna som drivs av Google AI</translation>
 <translation id="2783010256799387990">SLUTFÖRT</translation>
 <translation id="2786429550992142861">linne</translation>
 <translation id="2787237339470862294">Det här språket stöds för närvarande inte</translation>
@@ -653,7 +653,7 @@
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
 <translation id="430786093962686457">chiffong</translation>
-<translation id="4310735698903592804">De senaste bakgrunderna som drivs av Googles AI</translation>
+<translation id="4310735698903592804">De senaste bakgrunderna som drivs av Google AI</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> har tryckts ned</translation>
 <translation id="4334293042716981313">Du kan även <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />skriva en egen prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
@@ -1379,7 +1379,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7849030488395653706">polarsken</translation>
 <translation id="7849737607196682401">spets</translation>
 <translation id="7850320739366109486">Stör inte</translation>
-<translation id="7850847810298646851">Bakgrunder som drivs av Googles AI</translation>
+<translation id="7850847810298646851">Bakgrunder som drivs av Google AI</translation>
 <translation id="785170686607360576">tulpan</translation>
 <translation id="7856267634822906833">Bluetooth-pekskärm</translation>
 <translation id="7859006200041800233">kaktusblomma</translation>
@@ -1442,11 +1442,11 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magisk</translation>
 <translation id="8162776280680283326">rävar</translation>
-<translation id="8167413449582155132">Bakgrund som drivs av Googles AI</translation>
-<translation id="8171020708598805594">Skapa transkriptioner automatiskt, få sammanfattningar av inspelningar med hjälp av Googles AI och sök efter ljud. Skapa inspelningar även när du inte är ansluten till internet.</translation>
+<translation id="8167413449582155132">Bakgrund som drivs av Google AI</translation>
+<translation id="8171020708598805594">Skapa transkriptioner automatiskt, få sammanfattningar av inspelningar med hjälp av Google AI och sök efter ljud. Skapa inspelningar även när du inte är ansluten till internet.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
-<translation id="819278132617411009">Använd Googles AI för att bli mer produktiv</translation>
+<translation id="819278132617411009">Använd Google AI för att bli mer produktiv</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Förmåner</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
@@ -1499,7 +1499,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8433186206711564395">Nätverksinställningar</translation>
 <translation id="843568408673868420">Internetanslutning</translation>
 <translation id="844521431886043384">DNS har inte konfigurerats</translation>
-<translation id="8456200178779628126">Använd Googles AI för att få hjälp med att läsa och skriva</translation>
+<translation id="8456200178779628126">Använd Google AI för att få hjälp med att läsa och skriva</translation>
 <translation id="8456761643544401578">Automatiskt mörkt läge</translation>
 <translation id="8461329675984532579">Hemleverantörens namn</translation>
 <translation id="8475690821716466388">wifi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
@@ -1518,7 +1518,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8522687886059337719">Nu har du åtkomst till nya <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunder<ph name="END_LINK_WALLPAPER_SUBPAGE" /> och <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skärmsläckare<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
-<translation id="8538236298648811558">Drivs av Googles AI</translation>
+<translation id="8538236298648811558">Drivs av Google AI</translation>
 <translation id="8550364285433943656">Ställ in kontroller i spelåtgärder för att spela med tangenterna</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>
