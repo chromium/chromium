@@ -1916,12 +1916,6 @@ BASE_FEATURE_PARAM(bool,
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, this flag partitions the :visited link hashtable by <link url,
-// top-level site, frame origin>.
-BASE_FEATURE(kPartitionVisitedLinkDatabase,
-             "PartitionVisitedLinkDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, this flag partitions the :visited link hashtable by <link url,
 // top-level site, frame origin> AND adds the "self link" <link url, link as a
 // schemeful site, link as an origin> for each link :visited from a top-level or
 // same-origin subframe to the hashtable as well.
