@@ -647,13 +647,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   // Exploit another helper to wait until the public sets file has been read.
   GetSetsAndWait();
 
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite associated(GURL("https://associatedsite.test"));
-
   base::test::TestFuture<net::FirstPartySetMetadata> future;
-  handler().ComputeFirstPartySetMetadata(example, &associated,
-                                         net::FirstPartySetsContextConfig(),
-                                         future.GetCallback());
+  handler().ComputeFirstPartySetMetadata(
+      net::SchemefulSite(GURL("https://example.test")),
+      net::SchemefulSite(GURL("https://associatedsite.test")),
+      net::FirstPartySetsContextConfig(), future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
 }
@@ -662,11 +660,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ComputeFirstPartySetMetadata_AsynchronousResult) {
   // Send query before the sets are ready.
   base::test::TestFuture<net::FirstPartySetMetadata> future;
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite associated(GURL("https://associatedsite.test"));
-  handler().ComputeFirstPartySetMetadata(example, &associated,
-                                         net::FirstPartySetsContextConfig(),
-                                         future.GetCallback());
+  handler().ComputeFirstPartySetMetadata(
+      net::SchemefulSite(GURL("https://example.test")),
+      net::SchemefulSite(GURL("https://associatedsite.test")),
+      net::FirstPartySetsContextConfig(), future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   handler().Init(scoped_dir_.GetPath(), net::LocalSetDeclaration());

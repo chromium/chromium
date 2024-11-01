@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
-#include "base/types/optional_util.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -127,7 +127,7 @@ void FirstPartySetsPolicyService::Init() {
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_enabled()) {
@@ -138,7 +138,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
   if (!config_.has_value()) {
     on_ready_callbacks_.push_back(base::BindOnce(
         &FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal,
-        weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
+        weak_factory_.GetWeakPtr(), site, top_frame_site.CopyAsOptional(),
         std::move(callback)));
     return;
   }
@@ -149,7 +149,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
-    const std::optional<net::SchemefulSite>& top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_.has_value());
@@ -160,7 +160,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
   }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, base::OptionalToPtr(top_frame_site), *config_, std::move(callback));
+      site, top_frame_site, *config_, std::move(callback));
 }
 
 void FirstPartySetsPolicyService::AddRemoteAccessDelegate(

@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/optional_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -66,7 +67,7 @@ class FirstPartySetsPolicyService
   // This may invoke `callback` synchronously.
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Stores `access_delegate` in a RemoteSet for later IPC calls on it when this
@@ -194,7 +195,7 @@ class FirstPartySetsPolicyService
   // callback. Must not be called before `config_` has been received.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
-      const std::optional<net::SchemefulSite>& top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Clears the content settings associated with `profile` that were

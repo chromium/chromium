@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -65,7 +66,7 @@ class FirstPartySetsAccessDelegate
                 net::FirstPartySetsCacheFilter::MatchInfo>>
   ComputeMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata,
                               net::FirstPartySetsCacheFilter::MatchInfo)>
           callback);
@@ -86,7 +87,7 @@ class FirstPartySetsAccessDelegate
   // only be called once the instance is fully initialized.
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
-      const std::optional<net::SchemefulSite> top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata,
                               net::FirstPartySetsCacheFilter::MatchInfo)>
           callback) const;

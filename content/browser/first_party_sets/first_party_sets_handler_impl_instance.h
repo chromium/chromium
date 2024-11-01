@@ -18,6 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
@@ -86,7 +87,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       override;
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) override;
   bool ForEachEffectiveSetEntry(
@@ -146,7 +147,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // callback. Must not be called before `global_sets_` has been set.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
-      const std::optional<net::SchemefulSite>& top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       const base::ElapsedTimer& timer,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
@@ -155,7 +156,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // needed to apply `policy` to `global_sets_`.
   net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
       const base::Value::Dict& policy,
-      const std::optional<base::ElapsedTimer>& timer) const;
+      base::optional_ref<const base::ElapsedTimer> timer) const;
 
   void OnGetSitesToClear(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,

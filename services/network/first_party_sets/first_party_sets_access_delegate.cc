@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "base/types/optional_util.h"
+#include "base/types/optional_ref.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -69,7 +69,7 @@ std::optional<std::pair<net::FirstPartySetMetadata,
                         net::FirstPartySetsCacheFilter::MatchInfo>>
 FirstPartySetsAccessDelegate::ComputeMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata,
                             net::FirstPartySetsCacheFilter::MatchInfo)>
         callback) {
@@ -87,10 +87,10 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
     // destroyed.
-    EnqueuePendingQuery(base::BindOnce(
-        &FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke,
-        base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
-        std::move(callback)));
+    EnqueuePendingQuery(
+        base::BindOnce(&FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke,
+                       base::Unretained(this), site,
+                       top_frame_site.CopyAsOptional(), std::move(callback)));
     return std::nullopt;
   }
 
@@ -143,7 +143,7 @@ FirstPartySetsAccessDelegate::FindEntries(
 
 void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
-    const std::optional<net::SchemefulSite> top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata,
                             net::FirstPartySetsCacheFilter::MatchInfo)>
         callback) const {
@@ -163,7 +163,7 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
 
   std::optional<net::FirstPartySetMetadata> sync_result =
       manager_->ComputeMetadata(
-          site, base::OptionalToPtr(top_frame_site), *context_config(),
+          site, top_frame_site, *context_config(),
           base::BindOnce(
               [](CallbackType callback,
                  net::FirstPartySetsCacheFilter::MatchInfo match_info,

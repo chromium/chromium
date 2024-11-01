@@ -17,7 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "base/types/optional_util.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
@@ -483,7 +483,7 @@ void FirstPartySetsHandlerImplInstance::DidClearSiteDataOnChangedSetsForContext(
 
 void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -491,7 +491,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
     EnqueuePendingTask(base::BindOnce(
         &FirstPartySetsHandlerImplInstance::
             ComputeFirstPartySetMetadataInternal,
-        base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
+        base::Unretained(this), site, top_frame_site.CopyAsOptional(),
         config.Clone(), base::ElapsedTimer(), std::move(callback)));
     return;
   }
@@ -502,7 +502,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
 
 void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
-    const std::optional<net::SchemefulSite>& top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     const net::FirstPartySetsContextConfig& config,
     const base::ElapsedTimer& timer,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
@@ -513,14 +513,14 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
       "Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata3",
       timer.Elapsed());
 
-  std::move(callback).Run(global_sets_->ComputeMetadata(
-      site, base::OptionalToPtr(top_frame_site), config));
+  std::move(callback).Run(
+      global_sets_->ComputeMetadata(site, top_frame_site, config));
 }
 
 net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
     const base::Value::Dict& policy,
-    const std::optional<base::ElapsedTimer>& timer) const {
+    base::optional_ref<const base::ElapsedTimer> timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());
 
