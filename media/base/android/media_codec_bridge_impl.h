@@ -172,6 +172,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
 
  private:
   MediaCodecBridgeImpl(CodecType codec_type,
+                       std::optional<VideoCodec> video_decoder_codec,
                        base::android::ScopedJavaGlobalRef<jobject> j_bridge,
                        base::RepeatingClosure on_buffers_available_cb =
                            base::RepeatingClosure());
@@ -193,7 +194,12 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
       JNIEnv* /* env */,
       const base::android::JavaParamRef<jobject>& /* obj */) override;
 
+  void ReportAnyErrorToUMA(MediaCodecStatus status);
+
   const CodecType codec_type_;
+
+  // Keep track of the codec used for decoding.
+  const std::optional<VideoCodec> video_decoder_codec_;
 
   base::RepeatingClosure on_buffers_available_cb_;
 

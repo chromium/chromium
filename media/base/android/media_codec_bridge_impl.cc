@@ -23,16 +23,17 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "media/base/android/jni_hdr_metadata.h"
+#include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
-#include "media_codec_bridge.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/MediaCodecBridgeBuilder_jni.h"
@@ -114,8 +115,9 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
             return false;
           }
           header_length[i] += size;
-          if (size < 0xFF)
+          if (size < 0xFF) {
             break;
+          }
         }
         if (total_length >= extra_data_size) {
           LOG(ERROR) << "Invalid vorbis header size in the extra data";
@@ -318,8 +320,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(
       config.codec(), config.target_output_sample_format());
 
-  if (mime.empty())
+  if (mime.empty()) {
     return nullptr;
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
@@ -344,20 +347,22 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
           j_csd0, j_csd1, j_csd2, output_frame_has_adts_header,
           !!on_buffers_available_cb));
 
-  if (j_bridge.is_null())
+  if (j_bridge.is_null()) {
     return nullptr;
+  }
 
-  return base::WrapUnique(
-      new MediaCodecBridgeImpl(CodecType::kAny, std::move(j_bridge),
-                               std::move(on_buffers_available_cb)));
+  return base::WrapUnique(new MediaCodecBridgeImpl(
+      CodecType::kAny, std::nullopt, std::move(j_bridge),
+      std::move(on_buffers_available_cb)));
 }
 
 // static
 std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
     const VideoCodecConfig& config) {
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(config.codec);
-  if (mime.empty())
+  if (mime.empty()) {
     return nullptr;
+  }
 
   JNIEnv* env = AttachCurrentThread();
   auto j_mime = ConvertUTF8ToJavaString(env, mime);
@@ -381,11 +386,13 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
           /*useAsyncApi=*/!!config.on_buffers_available_cb,
           /*useBlockModel=*/config.use_block_model, j_decoder_name,
           config.profile));
-  if (j_bridge.is_null())
+  if (j_bridge.is_null()) {
     return nullptr;
+  }
 
   return base::WrapUnique(new MediaCodecBridgeImpl(
-      config.codec_type, std::move(j_bridge), config.on_buffers_available_cb));
+      config.codec_type, config.codec, std::move(j_bridge),
+      config.on_buffers_available_cb));
 }
 
 // static
@@ -397,8 +404,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
     int i_frame_interval,
     int color_format) {
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
-  if (mime.empty())
+  if (mime.empty()) {
     return nullptr;
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
@@ -407,11 +415,12 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
           env, j_mime, size.width(), size.height(), kBitrateModeCBR, bit_rate,
           frame_rate, i_frame_interval, color_format));
 
-  if (j_bridge.is_null())
+  if (j_bridge.is_null()) {
     return nullptr;
+  }
 
-  return base::WrapUnique(
-      new MediaCodecBridgeImpl(CodecType::kAny, std::move(j_bridge)));
+  return base::WrapUnique(new MediaCodecBridgeImpl(
+      CodecType::kAny, std::nullopt, std::move(j_bridge)));
 }
 
 // static
@@ -422,15 +431,18 @@ void MediaCodecBridgeImpl::SetupCallbackHandlerForTesting() {
 
 MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     CodecType codec_type,
+    std::optional<VideoCodec> video_decoder_codec,
     ScopedJavaGlobalRef<jobject> j_bridge,
     base::RepeatingClosure on_buffers_available_cb)
     : codec_type_(codec_type),
+      video_decoder_codec_(std::move(video_decoder_codec)),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
       j_bridge_(std::move(j_bridge)) {
   DCHECK(!j_bridge_.is_null());
 
-  if (!on_buffers_available_cb_)
+  if (!on_buffers_available_cb_) {
     return;
+  }
 
   // Note this should be done last since setBuffersAvailableListener() may
   // immediately invoke the callback if buffers came in during construction.
@@ -440,8 +452,9 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
 
 MediaCodecBridgeImpl::~MediaCodecBridgeImpl() {
   JNIEnv* env = AttachCurrentThread();
-  if (j_bridge_.obj())
+  if (j_bridge_.obj()) {
     Java_MediaCodecBridge_release(env, j_bridge_);
+  }
 }
 
 void MediaCodecBridgeImpl::Stop() {
@@ -453,6 +466,7 @@ MediaCodecResult MediaCodecBridgeImpl::Flush() {
   JNIEnv* env = AttachCurrentThread();
   MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_flush(env, j_bridge_));
+  ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
@@ -622,6 +636,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueFilledInputBuffer(
       static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
           env, j_bridge_, index, 0, data_size,
           presentation_time.InMicroseconds(), 0));
+  ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
@@ -656,6 +671,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
           presentation_time.InMicroseconds(),
           is_eos ? kBufferFlagEndOfStream : 0));
   Java_ObtainBlockResult_recycle(env, j_result);
+  ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
@@ -719,6 +735,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
           static_cast<int>(
               encryption_pattern ? encryption_pattern->skip_byte_block() : 0),
           presentation_time.InMicroseconds()));
+  ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
@@ -739,6 +756,7 @@ MediaCodecResult MediaCodecBridgeImpl::DequeueInputBuffer(
   MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_DequeueInputResult_status(env, result));
   DVLOG(3) << __func__ << ": status: " << status << ", index: " << *index;
+  ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
@@ -764,15 +782,18 @@ MediaCodecResult MediaCodecBridgeImpl::DequeueOutputBuffer(
         Java_DequeueOutputResult_presentationTimeMicroseconds(env, result));
   }
   int flags = Java_DequeueOutputResult_flags(env, result);
-  if (end_of_stream)
+  if (end_of_stream) {
     *end_of_stream = flags & kBufferFlagEndOfStream;
-  if (key_frame)
+  }
+  if (key_frame) {
     *key_frame = flags & kBufferFlagSyncFrame;
+  }
   MediaCodecStatus status = static_cast<MediaCodecStatus>(
       Java_DequeueOutputResult_status(env, result));
   DVLOG(3) << __func__ << ": status: " << status << ", index: " << *index
            << ", offset: " << *offset << ", size: " << *size
            << ", flags: " << flags;
+  ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
@@ -863,6 +884,26 @@ bool MediaCodecBridgeImpl::FillInputBuffer(int index,
   }
   dst.first(data.size()).copy_from_nonoverlapping(data);
   return true;
+}
+
+void MediaCodecBridgeImpl::ReportAnyErrorToUMA(MediaCodecStatus status) {
+  // Only reporting errors for known video streams. Audio streams and video
+  // encoding are skipped.
+  if (!video_decoder_codec_.has_value()) {
+    return;
+  }
+
+  // Don't bother reporting `status` if it's not a error that stops playback.
+  if (ConvertToMediaCodecEnum(status) != MediaCodecResult::Codes::kError) {
+    return;
+  }
+
+  std::string uma_name =
+      "Media.MediaCodecError." +
+      GetCodecNameForUMA(video_decoder_codec_.value()) +
+      (IsSoftwareCodec() ? ".SoftwareSecure" : ".HardwareSecure");
+  base::UmaHistogramExactLinear(uma_name, status,
+                                MediaCodecStatus::MEDIA_CODEC_MAX + 1);
 }
 
 }  // namespace media

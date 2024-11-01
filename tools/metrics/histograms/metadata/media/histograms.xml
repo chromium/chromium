@@ -3978,6 +3978,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaCodecError.{VideoCodec}.{Secure}"
+    enum="MediaCodecError" expires_after="2025-06-30">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Error reported by MediaCodec video streams using codec {VideoCodec} with
+    {Secure}. Reported at most once per playback if an error occurs.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+  <token key="Secure">
+    <variant name="HardwareSecure" summary="hardware secure decryption"/>
+    <variant name="SoftwareSecure" summary="software secure decryption"/>
+  </token>
+</histogram>
+
 <histogram name="Media.MediaDevices.EnumerateDevices.Latency" units="ms"
     expires_after="2025-03-30">
   <owner>toprice@chromium.org</owner>

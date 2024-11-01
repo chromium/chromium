@@ -1069,6 +1069,30 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Not shown because incognito"/>
 </enum>
 
+<enum name="MediaCodecError">
+  <int value="0" label="MEDIA_CODEC_OK"/>
+  <int value="1" label="MEDIA_CODEC_TRY_AGAIN_LATER"/>
+  <int value="2" label="MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED"/>
+  <int value="3" label="MEDIA_CODEC_OUTPUT_FORMAT_CHANGED"/>
+  <int value="4" label="MEDIA_CODEC_NO_KEY"/>
+  <int value="5" label="MEDIA_CODEC_ERROR"/>
+  <int value="6" label="MEDIA_CODEC_KEY_EXPIRED"/>
+  <int value="7" label="MEDIA_CODEC_RESOURCE_BUSY"/>
+  <int value="8" label="MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION"/>
+  <int value="9" label="MEDIA_CODEC_SESSION_NOT_OPENED"/>
+  <int value="10" label="MEDIA_CODEC_UNSUPPORTED_OPERATION"/>
+  <int value="11" label="MEDIA_CODEC_INSUFFICIENT_SECURITY"/>
+  <int value="12" label="MEDIA_CODEC_FRAME_TOO_LARGE"/>
+  <int value="13" label="MEDIA_CODEC_LOST_STATE"/>
+  <int value="14" label="MEDIA_CODEC_GENERIC_OEM"/>
+  <int value="15" label="MEDIA_CODEC_GENERIC_PLUGIN"/>
+  <int value="16" label="MEDIA_CODEC_LICENSE_PARSE"/>
+  <int value="17" label="MEDIA_CODEC_MEDIA_FRAMEWORK"/>
+  <int value="18" label="MEDIA_CODEC_ZERO_SUBSAMPLES"/>
+  <int value="19" label="MEDIA_CODEC_UNKNOWN_CIPHER_MODE"/>
+  <int value="20" label="MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED"/>
+</enum>
+
 <enum name="MediaContainers">
   <int value="0" label="Unknown"/>
   <int value="1" label="AAC (Advanced Audio Coding)"/>
