@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -98,6 +99,12 @@ UIView* CreateIconView(UIImage* icon) {
         break;
     }
     self.layer.cornerRadius = kCornerRadius;
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits =
+          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateColorOnTraitChange)];
+    }
   }
   return self;
 }
@@ -125,15 +132,19 @@ UIView* CreateIconView(UIImage* icon) {
   return [self initWithList:instructionList style:InstructionViewStyleDefault];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.userInterfaceStyle !=
       previousTraitCollection.userInterfaceStyle) {
-    for (UILabel* stepNumberLabel in self.stepNumberLabels) {
-      [self updateColorForStepNumberLabel:stepNumberLabel];
-    }
+    [self updateColorOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Private
 
@@ -294,6 +305,14 @@ UIView* CreateIconView(UIImage* icon) {
       stepNumberLabel.layer.backgroundColor =
           [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
       break;
+  }
+}
+
+// Updates the background color for each step number label when entering or
+// exiting darkmode.
+- (void)updateColorOnTraitChange {
+  for (UILabel* stepNumberLabel in self.stepNumberLabels) {
+    [self updateColorForStepNumberLabel:stepNumberLabel];
   }
 }
 
