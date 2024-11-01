@@ -13,6 +13,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
 namespace tracing {
 
@@ -28,26 +29,46 @@ class AdaptPerfettoConfigForChromeTest : public ::testing::Test {
 
   perfetto::TraceConfig ParsePerfettoConfigFromText(
       const std::string& proto_text) {
-    std::string serialized_message;
-    config_loader_.ParseFromText(proto_text, serialized_message);
+    std::string serialized_message =
+        config_loader_.ParseFromText("perfetto.protos.TraceConfig", proto_text);
     perfetto::TraceConfig destination;
     destination.ParseFromString(serialized_message);
     return destination;
   }
 
   std::string PrintConfigToText(perfetto::TraceConfig message) {
-    std::string proto_text;
     std::string serialized_message = message.SerializeAsString();
-    config_loader_.PrintToText(serialized_message, proto_text);
+    std::string proto_text = config_loader_.PrintToText(
+        "perfetto.protos.TraceConfig", serialized_message);
     return proto_text;
   }
 
+  std::string PrintConfigToText(
+      std::optional<perfetto::DataSourceConfig> message) {
+    if (!message) {
+      return "";
+    }
+    std::string serialized_message = message->SerializeAsString();
+    std::string proto_text = config_loader_.PrintToText(
+        "perfetto.protos.DataSourceConfig", serialized_message);
+    return proto_text;
+  }
+
+  std::optional<perfetto::DataSourceConfig> GetDataSourceConfig(
+      perfetto::TraceConfig config,
+      std::string_view name) {
+    for (const auto& data_source_config : config.data_sources()) {
+      if (data_source_config.config().name() == name) {
+        return data_source_config.config();
+      }
+    }
+    return std::nullopt;
+  }
+
  protected:
-  base::TestProtoLoader config_loader_{
-      GetTestDataRoot().Append(
-          FILE_PATH_LITERAL("third_party/perfetto/protos/perfetto/"
-                            "config/config.descriptor")),
-      "perfetto.protos.TraceConfig"};
+  base::TestProtoSetLoader config_loader_{GetTestDataRoot().Append(
+      FILE_PATH_LITERAL("third_party/perfetto/protos/perfetto/"
+                        "config/config.descriptor"))};
 };
 
 base::trace_event::TraceConfig ParseTraceConfigFromJson(
@@ -146,13 +167,14 @@ TEST_F(AdaptPerfettoConfigForChromeTest, PrivacyFiltering) {
   EXPECT_TRUE(AdaptPerfettoConfigForChrome(&perfetto_config,
                                            /*privacy_filtering_enabled*/ true));
   auto trace_config =
-      GetPerfettoConfigWithDataSources(ParseTraceConfigFromJson(R"json({
+      GetDefaultPerfettoConfig(ParseTraceConfigFromJson(R"json({
       "record_mode": "record-continuously"
     })json"),
-                                       {"org.chromium.trace_metadata"},
-                                       /*privacy_filtering_enabled*/ true);
-  EXPECT_EQ(PrintConfigToText(trace_config),
-            PrintConfigToText(perfetto_config));
+                               /*privacy_filtering_enabled*/ true);
+  EXPECT_EQ(PrintConfigToText(GetDataSourceConfig(
+                trace_config, "org.chromium.trace_metadata")),
+            PrintConfigToText(GetDataSourceConfig(
+                perfetto_config, "org.chromium.trace_metadata")));
 }
 
 TEST_F(AdaptPerfettoConfigForChromeTest, DiscardBuffer) {
@@ -161,14 +183,6 @@ TEST_F(AdaptPerfettoConfigForChromeTest, DiscardBuffer) {
     data_sources: { config: { name: "org.chromium.trace_metadata" } }
   )pb");
   EXPECT_TRUE(AdaptPerfettoConfigForChrome(&perfetto_config));
-  auto trace_config =
-      GetPerfettoConfigWithDataSources(ParseTraceConfigFromJson(R"json({
-      "record_mode": "record-until-full",
-      "trace_buffer_size_in_kb": 42
-    })json"),
-                                       {"org.chromium.trace_metadata"});
-  EXPECT_EQ(PrintConfigToText(trace_config),
-            PrintConfigToText(perfetto_config));
 }
 
 TEST_F(AdaptPerfettoConfigForChromeTest, MultipleBuffers) {
@@ -209,15 +223,15 @@ TEST_F(AdaptPerfettoConfigForChromeTest, Systrace) {
   auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
     data_sources: { config: { name: "org.chromium.trace_system" } }
   )pb");
-  auto trace_config =
-      GetPerfettoConfigWithDataSources(ParseTraceConfigFromJson(R"json({
+  auto trace_config = GetDefaultPerfettoConfig(ParseTraceConfigFromJson(R"json({
       "record_mode": "record-continuously",
       "enable_systrace": true
-    })json"),
-                                       {"org.chromium.trace_system"});
+    })json"));
   EXPECT_TRUE(AdaptPerfettoConfigForChrome(&perfetto_config));
-  EXPECT_EQ(PrintConfigToText(trace_config),
-            PrintConfigToText(perfetto_config));
+  EXPECT_EQ(PrintConfigToText(
+                GetDataSourceConfig(trace_config, "org.chromium.trace_system")),
+            PrintConfigToText(GetDataSourceConfig(
+                perfetto_config, "org.chromium.trace_system")));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
 
