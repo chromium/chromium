@@ -56,25 +56,27 @@ using ::ip_protection::GeoHint;
 namespace {
 class ScopedIpProtectionFeatureList {
  public:
-  ScopedIpProtectionFeatureList() {
-    feature_list_.InitWithFeatures(
-        {
+  explicit ScopedIpProtectionFeatureList(bool incognito_mode) {
+    std::vector<base::test::FeatureRefAndParams> features_and_params;
+    features_and_params.push_back(
+        {net::features::kEnableIpProtectionProxy,
+         {{net::features::kIpPrivacyOnlyInIncognito.name,
+           incognito_mode ? "true" : "false"}}});
+    features_and_params.push_back({network::features::kMaskedDomainList, {}});
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-            // Use of IpProtectionCoreHostFactory::GetInstance() in the test
-            // constructor means that the KeyedService Factory instances get
-            // created before feature overrides in
-            // testing/variations/fieldtrial_testing_config.json get applied;
-            // this is needed to ensure that the factory in
-            // chrome/browser/net/server_certificate_database_service_factory is
-            // created consistent with the rest of the code.
-            //
-            // See http://g/chrome-secure-web-and-net/Qre0HqS0hgA for more info.
-            ::features::kEnableCertManagementUIV2Write,
+    // Use of IpProtectionCoreHostFactory::GetInstance() in the test
+    // constructor means that the KeyedService Factory instances get
+    // created before feature overrides in
+    // testing/variations/fieldtrial_testing_config.json get applied;
+    // this is needed to ensure that the factory in
+    // chrome/browser/net/server_certificate_database_service_factory is
+    // created consistent with the rest of the code.
+    //
+    // See http://g/chrome-secure-web-and-net/Qre0HqS0hgA for more info.
+    features_and_params.push_back(
+        {::features::kEnableCertManagementUIV2Write, {}});
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-            net::features::kEnableIpProtectionProxy,
-            network::features::kMaskedDomainList},
-        {});
+    feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
   }
 
  private:
@@ -157,8 +159,9 @@ constexpr base::Time kDontRetry = base::Time::Max();
 
 class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
  public:
-  IpProtectionCoreHostBrowserTest()
-      : profile_selections_(
+  explicit IpProtectionCoreHostBrowserTest(bool incognito_mode = false)
+      : scoped_ip_protection_feature_list_(incognito_mode),
+        profile_selections_(
             IpProtectionCoreHostFactory::GetInstance(),
             IpProtectionCoreHostFactory::CreateProfileSelectionsForTesting()) {}
 
@@ -334,6 +337,62 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   getter->receivers_for_testing().FlushForTesting();
 
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
+}
+
+class IpProtectionBrowserTestIncognitoOnlyModeDisabled
+    : public IpProtectionCoreHostBrowserTest {
+ public:
+  IpProtectionBrowserTestIncognitoOnlyModeDisabled()
+      : IpProtectionCoreHostBrowserTest(/*incognito_mode=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IpProtectionBrowserTestIncognitoOnlyModeDisabled,
+    IpProtectionReceiversPresentForRegularAndIncognitoProfiles) {
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(getter);
+
+  // If IPP is active/allowed, the `IpProtectionCoreHost` will have receivers
+  // for a regular profile.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
+
+  // Now create a new incognito mode profile (with a different associated
+  // network context).
+  GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  // A new network context for the incognito profile implies we should have
+  // additional receivers for the new network context.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
+}
+
+class IpProtectionBrowserTestIncognitoOnlyModeEnabled
+    : public IpProtectionCoreHostBrowserTest {
+ public:
+  IpProtectionBrowserTestIncognitoOnlyModeEnabled()
+      : IpProtectionCoreHostBrowserTest(/*incognito_mode=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestIncognitoOnlyModeEnabled,
+                       IpProtectionReceiversAbsentForRegularProfiles) {
+  IpProtectionCoreHost* getter =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(getter);
+
+  // The `IpProtectionCoreHost` will not have receivers for a regular profile
+  // when the incognito mode feature param is enabled.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 0U);
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestIncognitoOnlyModeEnabled,
+                       IpProtectionReceiversPresentForIncognitoProfiles) {
+  IpProtectionCoreHost* getter = IpProtectionCoreHostFactory::GetForProfile(
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  ASSERT_TRUE(getter);
+
+  // The `IpProtectionCoreHost` will have a receiver for an incognito profile
+  // when the incognito mode feature param is enabled.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -618,7 +677,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
 class IpProtectionCoreHostPolicyBrowserTest : public policy::PolicyTest {
  public:
   IpProtectionCoreHostPolicyBrowserTest()
-      : profile_selections_(
+      : scoped_ip_protection_feature_list_(/*incognito_mode=*/false),
+        profile_selections_(
             IpProtectionCoreHostFactory::GetInstance(),
             IpProtectionCoreHostFactory::CreateProfileSelectionsForTesting()) {}
 

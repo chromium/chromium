@@ -366,6 +366,17 @@ bool MaybeAddCertWithConstraints(
 }
 #endif
 
+// Returns true if IP Protection is needed.
+// Returns false if any of the following:
+//   1. ipp_core_host == nullptr. A nullptr implies the profile does not
+//      participate in IPP.
+//   2. kIpPrivacyIncognitoMode is enabled and the profile in not incognito.
+bool NeedsIpProtection(const IpProtectionCoreHost* ipp_core_host,
+                       const Profile& profile) {
+  return ipp_core_host && (profile.IsIncognitoProfile() ||
+                           !net::features::kIpPrivacyOnlyInIncognito.Get());
+}
+
 }  // namespace
 
 ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
@@ -1525,7 +1536,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   IpProtectionCoreHost* ipp_core_host =
       IpProtectionCoreHostFactory::GetForProfile(profile_);
-  if (ipp_core_host) {
+  if (NeedsIpProtection(ipp_core_host, *profile_)) {
     ipp_core_host->AddNetworkService(
         network_context_params->ip_protection_core_host
             .InitWithNewPipeAndPassReceiver(),
