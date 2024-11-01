@@ -1699,7 +1699,7 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
   }
 
-  // Frame 3 should skip overlay as hdr metadata is invalid.
+  // Frame 3 should promote overlay even if hdr metadata is invalid.
   {
     auto pass = CreateRenderPass();
     pass->content_color_usage = gfx::ContentColorUsage::kHDR;
@@ -1722,8 +1722,9 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         &pass_list, render_pass_filters, render_pass_backdrop_filters,
         std::move(surface_damage_rect_list));
 
-    // Should skip overlay.
-    EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
+    // Should promote overlay as we allow HDR 10 overlays with BT.2020 and
+    // transfer function PQ without hdr_metadata.
+    EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
   }
 
   // Frame 4 should promote overlay as hdr metadata contains cta_861_3.

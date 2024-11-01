@@ -445,6 +445,12 @@ bool TryDisableDesktopPlane(IDXGIDecodeSwapChain* decode_swap_chain,
   return true;
 }
 
+bool IsCompatibleHDRMetadata(const gfx::HDRMetadata& hdr_metadata) {
+  return (
+      (hdr_metadata.smpte_st_2086 && hdr_metadata.smpte_st_2086->IsValid()) ||
+      (hdr_metadata.cta_861_3 && hdr_metadata.cta_861_3->IsValid()));
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -1543,19 +1549,29 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   bool content_is_hdr = input_color_space.IsHDR();
 
-  // Enable VideoProcessor-HDR for SDR content if the monitor supports it and
-  // the GPU driver version is not blocked (enable_vp_auto_hdr_). The actual GPU
-  // driver support will be queried right after InitializeVideoProcessor() and
-  // is checked in ToggleVpAutoHDR().
+  // Enable VideoProcessor-HDR for SDR content if the monitor supports it
+  // and the GPU driver version is not blocked (enable_vp_auto_hdr_). The
+  // actual GPU driver support will be queried right after
+  // InitializeVideoProcessor() and is checked in ToggleVpAutoHDR().
   bool use_vp_auto_hdr =
       !content_is_hdr &&
       DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
       enable_vp_auto_hdr_ && !is_on_battery_power_;
 
+  // We allow HDR10 swap chains to be created without metadata if the input
+  // stream is BT.2020 and the transfer function is PQ (Perceptual Quantizer).
+  // For this combination, the corresponding DXGI color space is
+  // DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 (full range RGB),
+  // DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020 (studio range RGB)
+  // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020 (studio range YUV)
+  bool content_is_pq10 =
+      (input_color_space.GetPrimaryID() ==
+       gfx::ColorSpace::PrimaryID::BT2020) &&
+      (input_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ);
+
   bool use_hdr_swap_chain =
       DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
-      ((content_is_hdr && params.video_params.hdr_metadata.IsValid()) ||
-       use_vp_auto_hdr);
+      (content_is_pq10 || use_vp_auto_hdr);
 
   // Try to use P010 swapchain when playing 10-bit content on SDR monitor where
   // P010 pixel format is also detected as displayable surface, due to the
@@ -1634,9 +1650,19 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   std::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
-  if (params.video_params.hdr_metadata.IsValid()) {
-    stream_metadata = HDRMetadataHelperWin::HDRMetadataToDXGI(
-        params.video_params.hdr_metadata);
+  if (content_is_pq10) {
+    gfx::HDRMetadata hdr_metadata = params.video_params.hdr_metadata;
+    // Potential parser bug (https://crbug.com/1362288) if HDR metadata is
+    // incompatible. Missing `smpte_st_2086` or `cta_861_3` can cause Intel
+    // driver crashes in HDR overlay mode. Having at least one of
+    // `smpte_st_2086` or `cta_861_3` can prevent crashes. If HDR metadata is
+    // invalid, set up default metadata (HdrMetadataSmpteSt2086) to avoid
+    // crashes.
+    if (!IsCompatibleHDRMetadata(hdr_metadata)) {
+      hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
+          std::make_optional(params.video_params.hdr_metadata));
+    }
+    stream_metadata = HDRMetadataHelperWin::HDRMetadataToDXGI(hdr_metadata);
   }
 
   if (!VideoProcessorBlt(std::move(input_texture), input_level,

@@ -248,6 +248,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Failed YUV video quad hdr non fullscreen"/>
   <int value="22" label="Failed YUV video quad hdr non p010"/>
   <int value="23" label="Failed YUV video quad unsupported colorspace"/>
+  <int value="24" label="Failed YUV video quad hdr non pq10"/>
 </enum>
 
 <enum name="DelegatedStatus">

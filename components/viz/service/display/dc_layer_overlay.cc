@@ -59,22 +59,15 @@ enum DCLayerResult {
   DC_LAYER_FAILED_NOT_DAMAGED = 15,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_TONE_MAPPING = 17,
-  DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA [[deprecated]] = 18,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT = 20,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN [[deprecated]] = 21,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010 = 22,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE = 23,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_PQ10 = 24,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_PQ10,
 };
-
-bool IsCompatibleHDRMetadata(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
-  return hdr_metadata &&
-         ((hdr_metadata->smpte_st_2086 &&
-           hdr_metadata->smpte_st_2086->IsValid()) ||
-          (hdr_metadata->cta_861_3 && hdr_metadata->cta_861_3->IsValid()));
-}
 
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
@@ -115,13 +108,17 @@ DCLayerResult ValidateYUVOverlay(
   }
 
   if (video_color_space.IsHDR()) {
-    // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-    // hdr metadata is still missing. Missing `smpte_st_2086` or `cta_861_3`
-    // could always causes intel driver crash when in HDR overlay mode, and
-    // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
-    // could solve the crash issue.
-    if (!IsCompatibleHDRMetadata(hdr_metadata)) {
-      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
+    // We allow HDR10 overlays to be created without metadata if the input
+    // stream is BT.2020 and the transfer function is PQ (Perceptual
+    // Quantizer). For this combination, the corresponding DXGI color space is
+    // DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 (full range RGB),
+    // DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020 (studio range RGB)
+    // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020 (studio range YUV)
+    if ((video_color_space.GetPrimaryID() !=
+         gfx::ColorSpace::PrimaryID::BT2020) ||
+        (video_color_space.GetTransferID() !=
+         gfx::ColorSpace::TransferID::PQ)) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_PQ10;
     }
 
     // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
