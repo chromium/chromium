@@ -92,6 +92,8 @@ class RecorderAppUI
 
   mojo::Remote<MachineLearningService>& GetMlService();
 
+  bool CanUseGenerativeAi();
+
   void UpdateSodaState(const speech::LanguageCode& language_code,
                        ModelState state);
 

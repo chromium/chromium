@@ -212,13 +212,20 @@ void RecorderAppUI::EnsureOnDeviceModelService() {
 #endif
 }
 
+bool RecorderAppUI::CanUseGenerativeAi() {
+  return delegate_->CanUseGenerativeAiForCurrentProfile() &&
+         base::FeatureList::IsEnabled(ash::features::kConchGenAi) &&
+         base::FeatureList::IsEnabled(
+             ash::features::kFeatureManagementConchGenAi);
+}
+
 void RecorderAppUI::AddModelMonitor(
     const base::Uuid& model_id,
     ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
     AddModelMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!delegate_->CanUseGenerativeAiForCurrentProfile()) {
+  if (!CanUseGenerativeAi()) {
     // TODO(pihsun): Return a dedicate error when GenAI can't be used.
     std::move(callback).Run(recorder_app::mojom::ModelState{
         recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt}
@@ -272,7 +279,7 @@ void RecorderAppUI::LoadModel(
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!delegate_->CanUseGenerativeAiForCurrentProfile()) {
+  if (!CanUseGenerativeAi()) {
     // TODO(pihsun): Return a dedicate error when GenAI can't be used.
     std::move(callback).Run(
         on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
@@ -310,7 +317,7 @@ void RecorderAppUI::FormatModelInput(
     FormatModelInputCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(delegate_->CanUseGenerativeAiForCurrentProfile());
+  DCHECK(CanUseGenerativeAi());
 
   EnsureOnDeviceModelService();
 
@@ -329,7 +336,7 @@ void RecorderAppUI::ValidateSafetyResult(
     ValidateSafetyResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(delegate_->CanUseGenerativeAiForCurrentProfile());
+  DCHECK(CanUseGenerativeAi());
 
   EnsureOnDeviceModelService();
 
