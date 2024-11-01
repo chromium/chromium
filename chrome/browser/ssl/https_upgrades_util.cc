@@ -127,35 +127,9 @@ bool IsStrictInterstitialEnabled(const HttpInterstitialState& state) {
 }
 
 bool ShouldExemptNonUniqueHostnames(const HttpInterstitialState& state) {
-  // Full HTTPS-First Mode, HFM-for-engaged-sites, and
-  // HFM-for-Typically-Secure-Users apply strict HTTPS enforcement, and warn
-  // the user before any HTTP that goes over the network.
-  if (state.enabled_by_pref) {
-    return false;
-  }
-  // Site engagement heuristic enforces HTTPS in Balanced Mode and should exempt
-  // non-unique hostnames.
-  if (state.enabled_by_engagement_heuristic) {
-    return true;
-  }
-  // TODO(crbug.com/374334530): Typically Secure User heuristic enables
-  // Balanced Mode, thus should also exempt non-unique hostnames.
-  if (state.enabled_by_typically_secure_browsing) {
-    return false;
-  }
-  // HFM-in-Incognito is default-enabled and has looser exemptions to reduce
-  // the amount of warnings shown.
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-      state.enabled_by_incognito) {
-    return true;
-  }
-  // Balanced mode HFM exempts non-unique hostnames to reduce warning volume.
-  if (IsBalancedModeAvailable() && state.enabled_in_balanced_mode) {
-    return true;
-  }
-  // If no interstitial state is set, then the default is HTTPS-Upgrades which
-  // does exempt non-unique hostnames.
-  return true;
+  // If strict mode is enabled by the pref, warn the user before any HTTP that
+  // goes over the network. Any other mode ignores non-unique hostnames.
+  return !state.enabled_by_pref;
 }
 
 bool ShouldExcludeUrlFromInterstitial(const HttpInterstitialState& state,

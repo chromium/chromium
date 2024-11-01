@@ -601,7 +601,7 @@ size_t HttpsFirstModeService::GetFallbackEntryCountForTesting() const {
       profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeFallbacks);
   const base::Value::List* fallback_events =
       base_pref.FindList(kFallbackEventsKey);
-  return fallback_events->size();
+  return fallback_events ? fallback_events->size() : 0;
 }
 
 // static

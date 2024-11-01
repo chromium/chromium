@@ -285,9 +285,9 @@ class HttpsUpgradesBrowserTest
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Set up "bad-https.com", "bad-https2.com" and
-    // "nonunique-hostname-bad-https" as hostnames with an SSL error. HTTPS
-    // upgrades to these hosts will fail.
+    // Set up "bad-https.com", "bad-https2.com", "nonunique-hostname-bad-https"
+    // and "nonunique-hostname-bad-https2" as hostnames with an SSL error.
+    // HTTPS upgrades to these hosts will fail.
     scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());
     net::CertVerifyResult verify_result;
     verify_result.is_issued_by_known_root = false;
@@ -304,6 +304,9 @@ class HttpsUpgradesBrowserTest
         net::ERR_CERT_COMMON_NAME_INVALID);
     mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
         cert, "nonunique-hostname-bad-https", verify_result,
+        net::ERR_CERT_COMMON_NAME_INVALID);
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
+        cert, "nonunique-hostname-bad-https2", verify_result,
         net::ERR_CERT_COMMON_NAME_INVALID);
 
     http_server_.AddDefaultHandlers(GetChromeTestDataDir());
@@ -511,10 +514,71 @@ class HttpsUpgradesBrowserTest
     }
   }
 
+  // Verifies that an HFM interstitial is shown either due to prefs being
+  // enabled or typically secure heuristic.
+  void MaybeExpectTypicallySecureInterstitial(content::WebContents* contents) {
+    if (IsHttpsFirstModePrefEnabled() || InBalancedMode() ||
+        IsTypicallySecureUserFeatureEnabled()) {
+      // Typically secure interstitial should only be shown iff HFM is not
+      // enabled by prefs.
+      if (IsTypicallySecureUserFeatureEnabled() &&
+          !IsHttpsFirstModePrefEnabled() && !InBalancedMode()) {
+        EXPECT_EQ(
+            HFMInterstitialType::kTypicallySecure,
+            chrome_browser_interstitials::GetHFMInterstitialType(contents));
+      } else {
+        // Otherwise, interstitial is enabled by prefs.
+        EXPECT_EQ(
+            HFMInterstitialType::kStandard,
+            chrome_browser_interstitials::GetHFMInterstitialType(contents));
+      }
+      return;
+    }
+    // Interstitial isn't enabled by the prefs or heuristic.
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+
+  // Prepare the profile so that HFM can be automatically enabled.
+  void SatisfyTypicallySecureHeuristicRequirements(
+      base::SimpleTestClock* clock) {
+    // The total engagement score of all sites must be over a certain threshold.
+    SetSiteEngagementScore(GURL("https://google.com:12345"), 90);
+
+    // Profile must be old enough.
+    browser()->profile()->SetCreationTimeForTesting(clock->Now() -
+                                                    base::Days(30));
+    hfm_service()->SetClockForTesting(clock);
+
+    // There must be a lot of recorded navigations.
+    for (size_t i = 0; i < 1500; i++) {
+      hfm_service()->IncrementRecentNavigationCount();
+    }
+    clock->Advance(base::Days(15));
+
+    // Navigate to an HTTP URL that will upgrade and fall back to HTTP.
+    // This will start Typically Secure observation.
+    GURL http_url("http://bad-https2.com/simple.html");
+    content::WebContents* contents =
+        GetBrowser()->tab_strip_model()->GetActiveWebContents();
+    content::NavigateToURLBlockUntilNavigationsComplete(
+        contents, http_url, /*number_of_navigations=*/1);
+    ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
+
+    // Advance the clock and navigate to an HTTP URL again. This will drop the
+    // first fallback event.
+    clock->Advance(base::Days(35));
+  }
+
   net::EmbeddedTestServer* http_server() { return &http_server_; }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
   base::HistogramTester* histograms() { return &histograms_; }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+
+  HttpsFirstModeService* hfm_service() const {
+    return HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
+  }
 
   void EnableCaptivePortalDetection(Browser* browser);
 
@@ -1492,78 +1556,116 @@ IN_PROC_BROWSER_TEST_P(
   CheckInterstitialReasonHistogram(expected_reasons);
 }
 
-// Checks that navigation to a non-unique hostname counts as a fallback event
-// for the Typically Secure User heuristic and does not auto-enable HFM even if
-// all other conditions are satisfied.
+// Checks that navigation to a non-unique hostname doesn't display a typically
+// secure interstitial.
 IN_PROC_BROWSER_TEST_P(
     HttpsUpgradesBrowserTest,
-    UrlWithHttpScheme_NonUniqueHostname_ShouldNotInterstitial_TypicallySecureUser) {
+    TypicallySecure_NonUniqueHostname_ShouldNotShowInterstitial) {
   // HFM-for-Typically-Secure-Users is not enabled in Incognito.
   if (IsIncognito()) {
     return;
   }
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::NowFromSystemTime());
-
   // Disable the testing port configuration, as this test doesn't use the
   // EmbeddedTestServer.
   HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
   HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
   auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
 
-  // Prepare the profile so that HFM can be automatically enabled:
+  base::SimpleTestClock clock;
+  SatisfyTypicallySecureHeuristicRequirements(&clock);
+  // This should auto-enable HFM now:
+  hfm_service()
+      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+
+  // Check that a bad HTTPS URL should show an interstitial due to the
+  // heuristic.
+  GURL http_url("http://bad-https.com/simple.html");
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  SetSiteEngagementScore(GURL("https://google.com:12345"), 90);
-  profile->SetCreationTimeForTesting(clock.Now() - base::Days(30));
-  HttpsFirstModeService* hfm_service =
-      HttpsFirstModeServiceFactory::GetForProfile(profile);
-  hfm_service->SetClockForTesting(&clock);
-  // Also do lots of navigations.
-  for (size_t i = 0; i < 1500; i++) {
-    hfm_service->IncrementRecentNavigationCount();
-  }
-  clock.Advance(base::Days(15));
-
-  // Navigate to an HTTP URL. This will start Typically Secure observation.
-  GURL http_url("http://bad-https.com/simple.html");
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
-  ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
+  MaybeExpectTypicallySecureInterstitial(contents);
 
-  // Advance the clock and navigate to an HTTP URL again. This will drop the
-  // first fallback event.
-  clock.Advance(base::Days(35));
+  // Check that a non-unique hostname shouldn't show an interstitial due to the
+  // heuristic.
+  GURL nonunique_url("http://nonunique-hostname-bad-https/simple.html");
   content::NavigateToURLBlockUntilNavigationsComplete(
-      contents, http_url, /*number_of_navigations=*/1);
-  ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
-
-  // Then, navigate to a non-unique hostname. This will also show an
-  // interstitial iff HFM pref is enabled. It'll also record a fallback entry
-  // which will disable typically secure since we now have two fallbacks in
-  // a short time.
-  GURL url("http://test/simple.html");
-  content::NavigateToURLBlockUntilNavigationsComplete(
-      contents, url, /*number_of_navigations=*/1);
+      contents, nonunique_url, /*number_of_navigations=*/1);
   if (IsHttpsFirstModePrefEnabled()) {
-    ExpectInterstitial(contents);
+    // Non-unique hostnames should only show an interstitial in strict mode.
+    EXPECT_EQ(HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
+}
+
+// Same as TypicallySecure_NonUniqueHostname_ShouldNotShowInterstitial, but
+// also navigates to a non-unique URL before checking the heuristic. The
+// non-unique URL should not count as a fallback navigation and should not
+// disable the Typically Secure heuristic.
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    TypicallySecure_NonUniqueHostnameFallbackShouldNotDisableTypicallySecureHeuristic) {
+  // HFM-for-Typically-Secure-Users is not enabled in Incognito.
+  if (IsIncognito()) {
+    return;
+  }
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
+
+  base::SimpleTestClock clock;
+  SatisfyTypicallySecureHeuristicRequirements(&clock);
+
+  // Before running the heuristic checks, also navigate to a non-unique
+  // hostname. This will result in an interstitial iff strict mode is enabled.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      contents, GURL("http://nonunique-hostname-bad-https2/simple.html"),
+      /*number_of_navigations=*/1);
+  if (IsHttpsFirstModePrefEnabled()) {
+    // Non-unique hostnames should only show an interstitial in strict mode.
+    EXPECT_EQ(HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
   }
 
-  // Advance the clock and try auto-enabling HFM.
-  clock.Advance(base::Days(1));
-  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  // This should still auto-enable HFM despite the interstitial for the
+  // non-unique hostname because Typically Secure heuristic ignores fallbacks
+  // for non-unique hostnames.
+  hfm_service()
+      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
 
-  // The interstitial should only be displayed if HFM is enabled by the pref
-  // and not by the Typically Secure User heuristic.
+  // Check that a bad HTTPS URL should show an interstitial due to the
+  // heuristic.
+  GURL http_url("http://bad-https.com/simple.html");
   content::NavigateToURLBlockUntilNavigationsComplete(
       contents, http_url, /*number_of_navigations=*/1);
-  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  ExpectInterstitialOnlyIfPrefIsSetOrInBalancedMode(contents);
+  MaybeExpectTypicallySecureInterstitial(contents);
+
+  // Check that a non-unique hostname shouldn't show an interstitial due to the
+  // heuristic.
+  GURL nonunique_url("http://nonunique-hostname-bad-https/simple.html");
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      contents, nonunique_url, /*number_of_navigations=*/1);
+  if (IsHttpsFirstModePrefEnabled()) {
+    // Non-unique hostnames should only show an interstitial in strict mode.
+    EXPECT_EQ(HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
+  } else {
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
 }
 
 // Regression test for crbug.com/1441276. Sequence of events:
@@ -3786,7 +3888,7 @@ IN_PROC_BROWSER_TEST_F(TypicallySecureUserBrowserTest,
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(browser()->profile());
   // A single navigation will not be persisted to the pref and won't be
-  // restored on startup.
+  // restored on startup because navigations are persisted in batches of 10.
   EXPECT_EQ(0u, hfm_service->GetRecentNavigationCount());
 }
 

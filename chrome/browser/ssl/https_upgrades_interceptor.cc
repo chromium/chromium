@@ -345,17 +345,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // Chrome shows the HTTP interstitial before navigation to them. Potentially,
   // these could fast-fail instead and skip directly to the interstitial.
   if (net::IsHostnameNonUnique(tentative_resource_request.url.host())) {
-    // Record this as a fallback event so that we don't auto-enable HFM due to
-    // typically secure user heuristic and start showing interstitials on it.
-    // HttpsUpgradesBrowserTest.
-    //   UrlWithHttpScheme_NonUniqueHostname_ShouldNotInterstitial_TypicallySecureUser
-    // should fail when this check is removed.
-    HttpsFirstModeService* hfm_service =
-        HttpsFirstModeServiceFactory::GetForProfile(profile);
-    if (hfm_service) {
-      hfm_service->RecordHttpsUpgradeFallbackEvent();
-    }
-
     if (ShouldExemptNonUniqueHostnames(*interstitial_state_)) {
       RecordNavigationRequestSecurityLevel(
           NavigationRequestSecurityLevel::kNonUniqueHostname);
