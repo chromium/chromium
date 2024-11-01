@@ -655,6 +655,9 @@ public final class ProductionSupportedFlagList {
                         + " experience (i.e. double-click to select word.)"),
         Flag.baseFeature(UiAndroidFeatures.ANDROID_HDR, "Enables HDR support"),
         Flag.baseFeature(
+                UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
+                "Deprecates old external file picker function."),
+        Flag.baseFeature(
                 NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB,
                 "Enable attribution reporting to cross the app/web barrier by letting "
                         + "the WebView use OS-level attribution."),
