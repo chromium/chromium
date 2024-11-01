@@ -195,7 +195,7 @@ public class EventForwarder {
             // Stylus writing system can consume the touch events once writing is started.
             return true;
         } else if (isTrackpadToMouseEventConversionEnabled()
-                && isTrackpadClickOrClickAndDragEvent(event)) {
+                && isTrackpadToMouseConversionEvent(event)) {
             return onMouseEvent(event);
         } else if (isTrackpadToMouseEventConversionEnabled()
                 && isTrackpadScrollEventFromAtLeastU(event)) {
@@ -474,7 +474,7 @@ public class EventForwarder {
         }
         boolean shouldConvertToMouseEvent =
                 isTrackpadToMouseEventConversionEnabled()
-                        && isTrackpadClickOrClickAndDragEvent(event);
+                        && isTrackpadToMouseConversionEvent(event);
         EventForwarderJni.get()
                 .onMouseEvent(
                         mNativeEventForwarder,
@@ -542,15 +542,25 @@ public class EventForwarder {
     }
 
     /**
-     * Returns true if a {@link MotionEvent} is a trackpad click and or click & drag event.
-     * Trackpad hover events and non-click gestures (i.e two-finger scroll) should return
-     * false here as they do have an action button pressed. Also we want to make sure we
-     * return true for button release events as well.
+     * Returns true if a {@link MotionEvent} is a trackpad event that should be converted to mouse
+     * event, including: click, click-and-drag, hover event. Returns true for button release events
+     * as well.
      */
-    public static boolean isTrackpadClickOrClickAndDragEvent(MotionEvent event) {
-        return isTrackpadEvent(event)
-                && (event.getAction() == MotionEvent.ACTION_BUTTON_RELEASE
-                        || event.getButtonState() != 0);
+    public static boolean isTrackpadToMouseConversionEvent(MotionEvent event) {
+        if (isTrackpadEvent(event)) {
+            // Click or click-and-drag.
+            if (event.getAction() == MotionEvent.ACTION_BUTTON_RELEASE
+                    || event.getButtonState() != 0) {
+                return true;
+            }
+
+            // Hover.
+            if (event.getAction() == MotionEvent.ACTION_HOVER_MOVE) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** Only supports API level 34+. */
@@ -727,7 +737,7 @@ public class EventForwarder {
                         && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE;
         boolean shouldConvertToMouseEvent =
                 isTrackpadToMouseEventConversionEnabled()
-                        && isTrackpadClickOrClickAndDragEvent(event);
+                        && isTrackpadToMouseConversionEvent(event);
         if (isMouseEvent || shouldConvertToMouseEvent) {
             updateMouseEventState(event);
         }

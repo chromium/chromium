@@ -100,6 +100,14 @@ public class EventForwarderTest {
     }
 
     @Test
+    public void testSendTrackpadHoverAsMouseEventToNative() {
+        EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
+        MotionEvent hoverEvent = getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
+        eventForwarder.onHoverEvent(hoverEvent);
+        verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, hoverEvent, eventForwarder, 1);
+    }
+
+    @Test
     public void testMotionEventWithHistory() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false);
         final long eventTime = 200;

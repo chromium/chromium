@@ -88,7 +88,7 @@ public class ContentUiEventHandler implements UserData {
 
     private boolean isTrackpadEventThatNeedsConversion(MotionEvent event) {
         return mWebContents.getEventForwarder().isTrackpadToMouseEventConversionEnabled()
-                && EventForwarder.isTrackpadClickOrClickAndDragEvent(event);
+                && EventForwarder.isTrackpadToMouseConversionEvent(event);
     }
 
     private void onMouseWheelEvent(MotionEvent event) {
