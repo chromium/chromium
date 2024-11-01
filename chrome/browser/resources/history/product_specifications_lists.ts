@@ -8,11 +8,14 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import type {ProductSpecificationsBrowserProxy} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
+import type {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.ts';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.ts';
-import type {PageCallbackRouter, ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -101,11 +104,13 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   private listenerIds_: number[] = [];
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState|
       null = null;
+  private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
+      ProductSpecificationsBrowserProxyImpl.getInstance();
   private boundFocusCallback_: () => void;
 
   constructor() {
     super();
-    this.callbackRouter_ = this.shoppingApi_.getCallbackRouter();
+    this.callbackRouter_ = this.productSpecificationsProxy_.getCallbackRouter();
   }
 
   override async connectedCallback() {
@@ -204,7 +209,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
           'chrome://settings/syncSetup/advanced');
       return;
     }
-    this.shoppingApi_.showSyncSetupFlow();
+    this.productSpecificationsProxy_.showSyncSetupFlow();
   }
 
   getSelectedItemCount() {

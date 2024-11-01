@@ -4,9 +4,9 @@
 
 import 'chrome://history/history.js';
 
-import {ensureLazyLoaded, ShoppingServiceBrowserProxyImpl} from 'chrome://history/history.js';
+import {ensureLazyLoaded, ProductSpecificationsBrowserProxyImpl, ShoppingServiceBrowserProxyImpl} from 'chrome://history/history.js';
 import type {CrButtonElement, CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
-import {ShoppingPageCallbackRouter} from 'chrome://history/history.js';
+import {ProductSpecificationsCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -17,9 +17,11 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 suite('ProductSpecificationsListTest', () => {
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const productSpecificationsProxy =
+      TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
   let productSpecificationsList: ProductSpecificationsListsElement;
 
-  const callbackRouter = new ShoppingPageCallbackRouter();
+  const callbackRouter = new ProductSpecificationsCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
   function createProductSpecsList(): ProductSpecificationsListsElement {
@@ -72,8 +74,11 @@ suite('ProductSpecificationsListTest', () => {
 
   setup(function() {
     shoppingServiceApi.reset();
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+    productSpecificationsProxy.setResultFor(
+        'getCallbackRouter', callbackRouter);
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
+    ProductSpecificationsBrowserProxyImpl.setInstance(
+        productSpecificationsProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initProductSets();
     initProductSpecsState();
@@ -298,6 +303,7 @@ suite('ProductSpecificationsListTest', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(4, items.length);
+
     assertDeepEquals(
         {
           name: 'example1',
@@ -410,7 +416,6 @@ suite('ProductSpecificationsListTest', () => {
         }));
     shoppingServiceApi.setResultFor(
         'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
 
     productSpecificationsList =
         document.createElement('product-specifications-lists');
@@ -432,7 +437,7 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!syncButton);
 
     syncButton.click();
-    shoppingServiceApi.whenCalled('showSyncSetupFlow');
+    productSpecificationsProxy.whenCalled('showSyncSetupFlow');
   });
 
   test('error message displays', async function() {
@@ -451,7 +456,6 @@ suite('ProductSpecificationsListTest', () => {
         }));
     shoppingServiceApi.setResultFor(
         'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
 
     productSpecificationsList =
         document.createElement('product-specifications-lists');
@@ -483,7 +487,6 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!displayList);
     assertFalse(displayList.hidden);
 
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     await shoppingServiceApi.setResultFor(
         'getProductSpecificationsFeatureState', Promise.resolve({
           state: {

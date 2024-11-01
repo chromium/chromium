@@ -62,6 +62,7 @@ build_webui("build") {
   mojo_files_deps =
       [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]
   mojo_files = [
+    "$root_gen_dir/components/commerce/core/mojom/product_specifications.mojom-webui.ts",
     "$root_gen_dir/components/commerce/core/mojom/shared.mojom-webui.ts",
     "$root_gen_dir/components/commerce/core/mojom/shopping_service.mojom-webui.ts",
   ]

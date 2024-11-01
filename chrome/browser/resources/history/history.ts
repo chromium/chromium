@@ -4,7 +4,8 @@
 
 import './app.js';
 
-export {PageCallbackRouter as ShoppingPageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+export {PageCallbackRouter as ProductSpecificationsCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.js';
+export {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 export {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 export {ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
