@@ -1,0 +1,75 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/capture_mode/action_button_view.h"
+
+#include <string>
+#include <utility>
+
+#include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
+#include "ash/style/pill_button.h"
+#include "ash/style/system_shadow.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/highlight_border.h"
+#include "ui/views/widget/widget.h"
+
+namespace ash {
+
+namespace {
+
+// The corner radius for an action button.
+constexpr int kActionButtonRadius = 18;
+
+}  // namespace
+
+ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
+                                   std::u16string text,
+                                   const gfx::VectorIcon* icon,
+                                   ActionButtonRank rank)
+    : PillButton(std::move(callback),
+                 text,
+                 Type::kDefaultLargeWithIconLeading,
+                 icon),
+      rank_(rank),
+      // Since this view has fully circular rounded corners, we can't use a
+      // nine patch layer for the shadow. We have to use the
+      // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
+      shadow_(SystemShadow::CreateShadowOnTextureLayer(
+          SystemShadow::Type::kElevation12)) {
+  shadow_->SetRoundedCornerRadius(kActionButtonRadius);
+  capture_mode_util::SetHighlightBorder(
+      this, kActionButtonRadius,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
+}
+
+ActionButtonView::~ActionButtonView() = default;
+
+void ActionButtonView::AddedToWidget() {
+  PillButton::AddedToWidget();
+
+  // Attach the shadow at the bottom of the widget layer.
+  ui::Layer* shadow_layer = shadow_->GetLayer();
+  ui::Layer* widget_layer = GetWidget()->GetLayer();
+  widget_layer->Add(shadow_layer);
+  widget_layer->StackAtBottom(shadow_layer);
+
+  // Make the shadow observe the color provider source change to update the
+  // colors.
+  shadow_->ObserveColorProviderSource(GetWidget());
+}
+
+void ActionButtonView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // The shadow layer is a sibling of this view's layer, and should have the
+  // same bounds.
+  shadow_->SetContentBounds(layer()->bounds());
+}
+
+BEGIN_METADATA(ActionButtonView)
+END_METADATA
+
+}  // namespace ash

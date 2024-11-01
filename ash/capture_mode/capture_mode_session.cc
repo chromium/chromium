@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
+#include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -40,7 +41,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/pill_button.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -191,9 +191,6 @@ constexpr float kRegionDefaultRatio = 0.24f;
 
 // The horizontal distance between action buttons in a row.
 constexpr int kActionButtonSpacing = 10;
-
-// The corner radius for an action button.
-constexpr int kActionButtonRadius = 18;
 
 // The spacing between the feedback button and the work area.
 constexpr int kFeedbackButtonSpacing = 10;
@@ -493,64 +490,6 @@ gfx::Rect CalculateRegionEdgeBounds(const gfx::Size& preferred_size,
 
   return widget_bounds;
 }
-
-class ActionButtonView : public PillButton {
-  METADATA_HEADER(ActionButtonView, PillButton)
-
- public:
-  ActionButtonView(views::Button::PressedCallback callback,
-                   std::u16string text,
-                   const gfx::VectorIcon* icon,
-                   ActionButtonRank rank)
-      : PillButton(std::move(callback),
-                   text,
-                   Type::kDefaultLargeWithIconLeading,
-                   icon),
-        rank_(rank),
-        // Since this view has fully circular rounded corners, we can't use a
-        // nine patch layer for the shadow. We have to use the
-        // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
-        shadow_(SystemShadow::CreateShadowOnTextureLayer(
-            SystemShadow::Type::kElevation12)) {
-    shadow_->SetRoundedCornerRadius(kActionButtonRadius);
-    capture_mode_util::SetHighlightBorder(
-        this, kActionButtonRadius,
-        views::HighlightBorder::Type::kHighlightBorderNoShadow);
-  }
-  ActionButtonView(const ActionButtonView&) = delete;
-  ActionButtonView& operator=(const ActionButtonView&) = delete;
-  ~ActionButtonView() override = default;
-
-  ActionButtonRank rank() const { return rank_; }
-
-  // views::View:
-  void AddedToWidget() override {
-    PillButton::AddedToWidget();
-
-    // Attach the shadow at the bottom of the widget layer.
-    auto* shadow_layer = shadow_->GetLayer();
-    auto* widget_layer = GetWidget()->GetLayer();
-    widget_layer->Add(shadow_layer);
-    widget_layer->StackAtBottom(shadow_layer);
-
-    // Make the shadow observe the color provider source change to update the
-    // colors.
-    shadow_->ObserveColorProviderSource(GetWidget());
-  }
-
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    // The shadow layer is a sibling of this view's layer, and should have the
-    // same bounds.
-    shadow_->SetContentBounds(layer()->bounds());
-  }
-
- private:
-  const ActionButtonRank rank_;
-  std::unique_ptr<SystemShadow> shadow_;
-};
-
-BEGIN_METADATA(ActionButtonView)
-END_METADATA
 
 }  // namespace
 
