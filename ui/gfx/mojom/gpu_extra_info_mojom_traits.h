@@ -28,20 +28,8 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     return input.category;
   }
 
-  static const std::string& description(const gfx::ANGLEFeature& input) {
-    return input.description;
-  }
-
-  static const std::string& bug(const gfx::ANGLEFeature& input) {
-    return input.bug;
-  }
-
   static const std::string& status(const gfx::ANGLEFeature& input) {
     return input.status;
-  }
-
-  static const std::string& condition(const gfx::ANGLEFeature& input) {
-    return input.condition;
   }
 };
 

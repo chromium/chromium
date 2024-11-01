@@ -30,17 +30,8 @@ struct GFX_EXPORT ANGLEFeature {
   // Name of the category that the feature belongs to.
   std::string category;
 
-  // One sentence description of the feature, why it's available.
-  std::string description;
-
-  // Full link to cr/angle bug if applicable.
-  std::string bug;
-
   // Status, can be "enabled" or "disabled".
   std::string status;
-
-  // Condition, contains the condition that set 'status'.
-  std::string condition;
 };
 using ANGLEFeatures = std::vector<ANGLEFeature>;
 

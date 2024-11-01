@@ -670,10 +670,7 @@ base::Value GetANGLEFeatures() {
     base::Value::Dict angle_feature;
     angle_feature.Set("name", feature.name);
     angle_feature.Set("category", feature.category);
-    angle_feature.Set("description", feature.description);
-    angle_feature.Set("bug", feature.bug);
     angle_feature.Set("status", feature.status);
-    angle_feature.Set("condition", feature.condition);
     angle_features_list.Append(std::move(angle_feature));
   }
 

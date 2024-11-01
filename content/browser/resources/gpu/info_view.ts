@@ -37,16 +37,6 @@ function getProblemTextAndUrl(problem: Problem) {
   return {text, url};
 }
 
-function formatANGLEBug(bug: string) {
-  if (bug.includes('crbug.com/')) {
-    return bug.match(/\d+/)!.toString();
-  } else if (bug.includes('anglebug.com/')) {
-    return `anglebug:${bug.match(/\d+/)}`;
-  } else {
-    return bug;
-  }
-}
-
 /**
  * Calls a function to insert an element between every element
  * of an existing array
@@ -832,15 +822,6 @@ export class InfoViewElement extends CustomElement {
               [createElem('span', ` (${angleFeature.category})`),
     ]),
 
-      // If there's a bug link, try to parse the crbug/anglebug number
-      ...addIf(
-          !!angleFeature.bug,
-          () =>
-              [createElem('span', ' '),
-               ...createLinkPair(
-                   formatANGLEBug(angleFeature.bug), angleFeature.bug),
-    ]),
-
       // Follow with a colon, and the status (colored)
       createElem('span', ': '),
       createElem(
@@ -848,23 +829,6 @@ export class InfoViewElement extends CustomElement {
           angleFeature.status === 'enabled' ?
               {className: 'feature-green', textContent: 'Enabled'} :
               {className: 'feature-red', textContent: 'Disabled'}),
-
-      ...addIf(
-          !!angleFeature.condition,
-          () =>
-              [createHidden('\n    condition'),
-               createElem('span', {
-                 className: 'feature-gray',
-                 textContent: `: ${angleFeature.condition}`,
-               }),
-    ]),
-
-      ...addIf(
-          !!angleFeature.description,
-          () =>
-              [createElem('br'),
-               createElem('i', wordWrap(angleFeature.description!)),
-    ]),
 
       // for copy spacing
       createElem('span', '\n\n'),
