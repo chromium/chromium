@@ -65,6 +65,8 @@ source_set("test_support") {
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+    "//components/onc",
     "//dbus",
     "//ui/base:test_support",
   ]

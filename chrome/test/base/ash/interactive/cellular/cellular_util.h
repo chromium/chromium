@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/values.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "ui/base/interaction/state_observer.h"
@@ -70,6 +71,13 @@ class SimInfo {
 void ConfigureEsimProfile(const EuiccInfo& euicc_info,
                           const SimInfo& esim_info,
                           bool connected);
+
+// Helper function to build a policy dictionary for a particualar cellular
+// network. This function implements logic that is normally handled when the
+// policy is ingested by ChromeOS but before it is applied; for example,
+// automatically marking the `CustomAPNList` property as recommended.
+base::Value::Dict GenerateCellularPolicy(const SimInfo& info,
+                                         bool allow_apn_modification = true);
 
 }  // namespace ash
 
