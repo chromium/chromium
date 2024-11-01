@@ -262,11 +262,10 @@ Page::Page(base::PassKey<Page>,
               v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>()),
       browsing_context_group_info_(browsing_context_group_info) {
   if (partitioned_popin_params) {
-    partitioned_popin_opener_top_frame_origin_ =
+    partitioned_popin_opener_properties_ = PartitionedPopinOpenerProperties(
         SecurityOrigin::CreateFromUrlOrigin(
-            partitioned_popin_params->opener_top_frame_origin);
-    partitioned_popin_opener_site_for_cookies_ =
-        partitioned_popin_params->opener_site_for_cookies;
+            partitioned_popin_params->opener_top_frame_origin),
+        partitioned_popin_params->opener_site_for_cookies);
   }
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
@@ -490,34 +489,20 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   // new page's opener should be the most up-to-date opener.
 }
 
-const SecurityOrigin* Page::GetPartitionedPopinOpenerTopFrameOrigin() const {
-  // We should never be in a state where one of these was set and not the other.
-  DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
-         !partitioned_popin_opener_site_for_cookies_);
-
-  // The feature must be enabled if a popin top-frame origin was set.
-  DCHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
-         !partitioned_popin_opener_top_frame_origin_);
-
-  return partitioned_popin_opener_top_frame_origin_.get();
-}
-
-const std::optional<net::SiteForCookies>
-Page::GetPartitionedPopinOpenerSiteForCookies() const {
-  // We should never be in a state where one of these was set and not the other.
-  DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
-         !partitioned_popin_opener_site_for_cookies_);
-
-  // The feature must be enabled if a popin site for cookies was set.
-  DCHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
-         !partitioned_popin_opener_site_for_cookies_);
-
-  return partitioned_popin_opener_site_for_cookies_;
-}
-
 bool Page::IsPartitionedPopin() const {
-  return GetPartitionedPopinOpenerTopFrameOrigin() &&
-         GetPartitionedPopinOpenerSiteForCookies();
+  // The feature must be enabled if a popin site for cookies was set.
+  CHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
+        !partitioned_popin_opener_properties_);
+
+  return !!partitioned_popin_opener_properties_;
+}
+
+const PartitionedPopinOpenerProperties&
+Page::GetPartitionedPopinOpenerProperties() const {
+  // This function is only usable if we are in a popin.
+  CHECK(IsPartitionedPopin());
+
+  return *partitioned_popin_opener_properties_;
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
