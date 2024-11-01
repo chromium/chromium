@@ -355,10 +355,13 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
                                   const webapps::AppId& app_id)
       -> std::optional<std::pair<Browser*, int>> {
     // The active web contents should have preference if it is in scope.
+    content::WebContents* active_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
     if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
-      const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(
-          browser->tab_strip_model()->GetActiveWebContents());
-      if (tab_app_id && *tab_app_id == app_id) {
+      const webapps::AppId* tab_app_id =
+          WebAppTabHelper::GetAppId(active_contents);
+      if (tab_app_id && *tab_app_id == app_id &&
+          !active_contents->HasOpener()) {
         return {{browser, browser->tab_strip_model()->active_index()}};
       }
     }
@@ -367,7 +370,8 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
       content::WebContents* contents =
           browser->tab_strip_model()->GetWebContentsAt(i);
       const webapps::AppId* tab_app_id = WebAppTabHelper::GetAppId(contents);
-      if (tab_app_id && *tab_app_id == app_id) {
+      if (tab_app_id && *tab_app_id == app_id &&
+          !active_contents->HasOpener()) {
         return {{browser, i}};
       }
     }
