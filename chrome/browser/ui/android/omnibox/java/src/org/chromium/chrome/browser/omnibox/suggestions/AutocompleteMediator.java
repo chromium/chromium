@@ -27,6 +27,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
@@ -1437,6 +1438,12 @@ class AutocompleteMediator
 
     @Override
     public void onWindowFocusChanged(boolean focused) {
+        // IMPORTANT:
+        // Test builds often mock AutocompleteController. This mock object may be defunct when we
+        // this code is reached. Do not execute this code as part of integration tests as it will
+        // attempt to interact with dead mocks.
+        if (BuildConfig.IS_FOR_TEST) return;
+
         // Detect the window focus has changed. This may be due to the user entering app switcher,
         // pressing the home screen, or, in windowed/split screen mode, user interacting with a
         // different app. This gives us enough head room to retrieve and cache relevant information.
