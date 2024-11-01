@@ -14,7 +14,7 @@ import './search_and_assistant_settings_card.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isAssistantAllowed, isQuickAnswersSupported} from '../common/load_time_booleans.js';
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {getTemplate} from './os_search_page.html.js';
