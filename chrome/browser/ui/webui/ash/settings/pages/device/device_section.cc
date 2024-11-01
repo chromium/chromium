@@ -11,6 +11,7 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/webui/common/shortcut_input_key_strings.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -1315,6 +1316,10 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kPointers, kPointersSettings,
                             generator);
+  if (ash::features::IsAltClickAndSixPackCustomizationEnabled()) {
+    generator->RegisterNestedSetting(
+        mojom::Setting::kTouchpadSimulateRightClick, mojom::Subpage::kPointers);
+  }
 
   const int kKeyboardTitleStringID =
       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE
@@ -1867,7 +1872,6 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
       {"renameIconLabel", IDS_SETTINGS_CUSTOMIZATION_RENAME_ICON_LABEL},
       {"buttonRemappingRenamingDialogInputDescription",
        IDS_SETTINGS_RENAMING_DIALOG_INPUT_DESCRIPTION},
-
   };
   html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
   ash::common::AddShortcutInputKeyStrings(html_source);

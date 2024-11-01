@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/night_light_controller.h"
+#include "ash/webui/settings/public/constants/setting.mojom-forward.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"

@@ -14,6 +14,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 const TOUCHPAD_SPEED_SETTING_ID = 405;
+const TOUCHPAD_SIMULATE_RIGHT_CLICK_ID = 446;
 
 suite('<settings-per-device-touchpad-subsection>', () => {
   let subsection: SettingsPerDeviceTouchpadSubsectionElement;
@@ -269,6 +270,23 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     await waitAfterNextRender(touchpadSensitivitySlider);
     assertEquals(
         touchpadSensitivitySlider, subsection.shadowRoot!.activeElement);
+  });
+
+  test('Simulate right click dropdown is deep-linkable', async () => {
+    subsection.set('touchpadIndex', 0);
+
+    const params = new URLSearchParams();
+    params.append('settingId', TOUCHPAD_SIMULATE_RIGHT_CLICK_ID.toString());
+    await Router.getInstance().navigateTo(routes.PER_DEVICE_TOUCHPAD, params);
+
+    const simulateRightClickDropdown =
+        subsection.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#simulateRightClickDropdown');
+    assertTrue(!!simulateRightClickDropdown);
+
+    await waitAfterNextRender(simulateRightClickDropdown);
+    assertEquals(
+        simulateRightClickDropdown, subsection.shadowRoot!.activeElement);
   });
 
   /**

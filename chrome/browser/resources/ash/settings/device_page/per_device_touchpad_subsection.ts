@@ -214,6 +214,7 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
           Setting.kTouchpadSpeed,
           Setting.kTouchpadHapticFeedback,
           Setting.kTouchpadHapticClickSensitivity,
+          Setting.kTouchpadSimulateRightClick,
         ]),
       },
 
