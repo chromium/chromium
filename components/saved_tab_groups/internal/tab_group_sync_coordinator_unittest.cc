@@ -27,6 +27,12 @@ MATCHER_P(UuidEq, uuid, "") {
 
 class TabGroupSyncCoordinatorTest : public testing::Test {
  public:
+  TabGroupSyncCoordinatorTest()
+      : local_group_id_1_(test::GenerateRandomTabGroupID()),
+        group_1_(test::CreateTestSavedTabGroup()) {}
+
+  ~TabGroupSyncCoordinatorTest() override = default;
+
   void SetUp() override {
     service_ = std::make_unique<MockTabGroupSyncService>();
     auto delegate = std::make_unique<MockTabGroupSyncDelegate>();
@@ -41,6 +47,8 @@ class TabGroupSyncCoordinatorTest : public testing::Test {
   std::unique_ptr<MockTabGroupSyncService> service_;
   raw_ptr<MockTabGroupSyncDelegate> delegate_;
   std::unique_ptr<TabGroupSyncCoordinatorImpl> coordinator_;
+  LocalTabGroupID local_group_id_1_;
+  SavedTabGroup group_1_;
 };
 
 TEST_F(TabGroupSyncCoordinatorTest, HandleOpenTabGroupRequest) {
@@ -129,6 +137,19 @@ TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupRemovedFromLocal) {
 
   EXPECT_CALL(*delegate_, CloseLocalTabGroup(_)).Times(0);
   coordinator_->OnTabGroupRemoved(local_id, TriggerSource::LOCAL);
+}
+
+TEST_F(TabGroupSyncCoordinatorTest, ReconcileGroupsToSync) {
+  group_1_.SetLocalGroupId(local_group_id_1_);
+  std::vector<SavedTabGroup> groups = {group_1_};
+
+  EXPECT_CALL(*service_, GetAllGroups()).WillRepeatedly(Return(groups));
+  EXPECT_CALL(*service_, GetGroup(group_1_.saved_guid()))
+      .WillRepeatedly(Return(group_1_));
+
+  EXPECT_CALL(*delegate_, UpdateLocalTabGroup(_)).Times(1);
+
+  coordinator_->OnInitialized();
 }
 
 }  // namespace tab_groups

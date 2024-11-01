@@ -56,16 +56,12 @@ class StartupHelperTest : public testing::Test {
   SavedTabGroup group_2_;
 };
 
-TEST_F(StartupHelperTest, HandleOpenTabGroupRequest) {
-  startup_helper_->InitializeTabGroupSync();
-}
-
 TEST_F(StartupHelperTest, CloseDeletedGroups) {
   EXPECT_CALL(*service_, GetDeletedGroupIds())
       .WillOnce(Return(std::vector<LocalTabGroupID>{local_group_id_1_}));
   EXPECT_CALL(*delegate_, CloseLocalTabGroup(Eq(local_group_id_1_)));
 
-  startup_helper_->InitializeTabGroupSync();
+  startup_helper_->CloseDeletedTabGroupsFromTabModel();
 }
 
 TEST_F(StartupHelperTest, CreateRemoteGroupForNewLocalGroup) {
@@ -80,20 +76,7 @@ TEST_F(StartupHelperTest, CreateRemoteGroupForNewLocalGroup) {
           std::vector<LocalTabGroupID>{local_group_id_1_, local_group_id_2_}));
   EXPECT_CALL(*delegate_, CreateRemoteTabGroup(_)).Times(1);
 
-  startup_helper_->InitializeTabGroupSync();
-}
-
-TEST_F(StartupHelperTest, ReconcileGroupsToSync) {
-  group_1_.SetLocalGroupId(local_group_id_1_);
-  std::vector<SavedTabGroup> groups = {group_1_};
-
-  EXPECT_CALL(*service_, GetAllGroups()).WillRepeatedly(Return(groups));
-  EXPECT_CALL(*service_, GetGroup(group_1_.saved_guid()))
-      .WillRepeatedly(Return(group_1_));
-
-  EXPECT_CALL(*delegate_, UpdateLocalTabGroup(_)).Times(1);
-
-  startup_helper_->InitializeTabGroupSync();
+  startup_helper_->CreateRemoteTabGroupForNewGroups();
 }
 
 TEST_F(StartupHelperTest, UpdateTabIdMappings) {
@@ -121,7 +104,7 @@ TEST_F(StartupHelperTest, UpdateTabIdMappings) {
   // Expect calls to map local tab ID for each tab.
   EXPECT_CALL(*service_, UpdateLocalTabId(_, _, _)).Times(2);
 
-  startup_helper_->InitializeTabGroupSync();
+  startup_helper_->MapTabIdsForGroup(local_group_id_1_, group_1_);
 }
 
 }  // namespace tab_groups

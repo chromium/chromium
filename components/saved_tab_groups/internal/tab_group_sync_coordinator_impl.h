@@ -53,6 +53,22 @@ class TabGroupSyncCoordinatorImpl : public TabGroupSyncCoordinator {
                          TriggerSource source) override;
 
  private:
+  // The startup routine that is executed in order:
+  //
+  // 1. Delete any tab groups from tab model that were deleted from sync. It
+  // could happen in multi-window situations where the deletion event was
+  // received when the window wasn't alive.
+  // 2. Add any tab group to sync that doesn't exist yet in sync. This is meant
+  // to handle when tab group sync feature is turned on for the first time or
+  // after a rollback.
+  // 3. For each tab group in sync,
+  //    a. Populate tab ID mapping. We only persist tab group ID mapping in
+  //    storage. Tab IDs are mapped on startup in-memory.
+  //    b. Reconcile local state to be same as sync considering sync to be
+  //    authoritative. We could have lost a update event from sync while the
+  //    window wasn't running.
+  void InitializeTabGroupSync();
+
   // The service which represents remote from the point of view of this class.
   raw_ptr<TabGroupSyncService> service_ = nullptr;
 

@@ -15,10 +15,10 @@ namespace tab_groups {
 class TabGroupSyncDelegate;
 class TabGroupSyncService;
 
-// Handles startup flow. Invoked when both the local tab model and
-// TabGroupSyncService have been initialized. Primarily reconciles remote
-// tab group updates / deletions with the local model and local group
-// additions to remote. Also initializes tab ID mappings for the session.
+// Helper class for handling parts of startup flow. Provides helper methods to
+// 1. Initialize tab ID mappings for a saved tab group with the local group.
+// 2. Cleanup deleted groups from the local tab model.
+// 3. Add unsaved local groups to remote.
 class StartupHelper {
  public:
   StartupHelper(TabGroupSyncDelegate* delegate, TabGroupSyncService* service);
@@ -28,30 +28,18 @@ class StartupHelper {
   StartupHelper(const StartupHelper&) = delete;
   StartupHelper& operator=(const StartupHelper&) = delete;
 
-  // The startup routine that is executed in order:
-  //
-  // 1. Delete any tab groups from tab model that were deleted from sync. It
-  // could happen in multi-window situations where the deletion event was
-  // received when the window wasn't alive.
-  // 2. Add any tab group to sync that doesn't exist yet in sync. This is meant
-  // to handle when tab group sync feature is turned on for the first time or
-  // after a rollback.
-  // 3. For each tab group in sync,
-  //    a. Populate tab ID mapping. We only persist tab group ID mapping in
-  //    storage. Tab IDs are mapped on startup in-memory.
-  //    b. Reconcile local state to be same as sync considering sync to be
-  //    authoritative. We could have lost a update event from sync while the
-  //    window wasn't running.
-  void InitializeTabGroupSync();
-
   // Create tab ID mapping for a group based on left to right order.
   void MapTabIdsForGroup(const LocalTabGroupID& local_tab_group_id,
                          const SavedTabGroup& saved_tab_group);
 
- private:
+  // Cleans up any tab groups from local tab model that have been already
+  // deleted from sync.
   void CloseDeletedTabGroupsFromTabModel();
+
+  // Creates saved tab groups for any unsaved group in the local tab model.
   void CreateRemoteTabGroupForNewGroups();
 
+ private:
   // The service which represents remote from the point of view of this class.
   const raw_ptr<TabGroupSyncService> service_ = nullptr;
 

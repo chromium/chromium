@@ -26,7 +26,29 @@ TabGroupSyncCoordinatorImpl::TabGroupSyncCoordinatorImpl(
 TabGroupSyncCoordinatorImpl::~TabGroupSyncCoordinatorImpl() = default;
 
 void TabGroupSyncCoordinatorImpl::OnInitialized() {
-  startup_helper_->InitializeTabGroupSync();
+  InitializeTabGroupSync();
+}
+
+void TabGroupSyncCoordinatorImpl::InitializeTabGroupSync() {
+  startup_helper_->CloseDeletedTabGroupsFromTabModel();
+  startup_helper_->CreateRemoteTabGroupForNewGroups();
+
+  for (const auto& saved_tab_group : service_->GetAllGroups()) {
+    if (!saved_tab_group.local_group_id()) {
+      continue;
+    }
+
+    base::Uuid sync_group_id = saved_tab_group.saved_guid();
+    LocalTabGroupID local_group_id = saved_tab_group.local_group_id().value();
+    ConnectLocalTabGroup(sync_group_id, local_group_id);
+
+    // Update the local to group to match sync. As the group was modified, query
+    // it again to have the updated one.
+    auto updated_saved_group = service_->GetGroup(sync_group_id);
+    if (updated_saved_group) {
+      platform_delegate_->UpdateLocalTabGroup(updated_saved_group.value());
+    }
+  }
 }
 
 void TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(

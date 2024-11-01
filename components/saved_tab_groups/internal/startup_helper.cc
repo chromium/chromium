@@ -22,28 +22,6 @@ StartupHelper::StartupHelper(TabGroupSyncDelegate* delegate,
 
 StartupHelper::~StartupHelper() = default;
 
-void StartupHelper::InitializeTabGroupSync() {
-  CloseDeletedTabGroupsFromTabModel();
-  CreateRemoteTabGroupForNewGroups();
-
-  for (const auto& saved_tab_group : service_->GetAllGroups()) {
-    auto local_tab_group_id = saved_tab_group.local_group_id();
-    if (!local_tab_group_id) {
-      continue;
-    }
-
-    // First update the tab ID mappings left to right.
-    MapTabIdsForGroup(*local_tab_group_id, saved_tab_group);
-
-    // Update the local to group to match sync. As the group was modified, query
-    // it again to have the updated one.
-    auto updated_saved_group = service_->GetGroup(saved_tab_group.saved_guid());
-    if (updated_saved_group) {
-      platform_delegate_->UpdateLocalTabGroup(updated_saved_group.value());
-    }
-  }
-}
-
 void StartupHelper::CloseDeletedTabGroupsFromTabModel() {
   auto deleted_group_ids = service_->GetDeletedGroupIds();
   // TODO(shaktisahu): Maybe check if the tab group exists in the current
