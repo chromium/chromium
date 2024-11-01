@@ -100,7 +100,7 @@ SocketApiFunction::ScopedWriteQuota::ScopedWriteQuota(SocketApiFunction* owner,
 
 SocketApiFunction::ScopedWriteQuota::~ScopedWriteQuota() {
   WriteQuotaChecker::Get(owner_->browser_context())
-      ->ReturnBytes(owner_->extension_id(), bytes_used_);
+      ->ReturnBytes(owner_->GetOriginId(), bytes_used_);
 }
 
 SocketApiFunction::SocketApiFunction() = default;
@@ -216,7 +216,7 @@ bool SocketApiFunction::CheckRequest(
 
 bool SocketApiFunction::TakeWriteQuota(size_t bytes_to_write) {
   if (!WriteQuotaChecker::Get(browser_context())
-           ->TakeBytes(extension_id(), bytes_to_write)) {
+           ->TakeBytes(GetOriginId(), bytes_to_write)) {
     return false;
   }
 
