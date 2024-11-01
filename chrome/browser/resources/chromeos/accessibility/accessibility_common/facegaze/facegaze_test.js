@@ -1398,11 +1398,9 @@ AX_TEST_F('FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesShort', async function
 AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   const gestureToMacroName =
       new Map()
-          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
           .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_LONG_CLICK_LEFT)
           .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.KEY_PRESS_SPACE);
   const gestureToConfidence = new Map()
-                                  .set(FacialGesture.JAW_OPEN, 0.3)
                                   .set(FacialGesture.BROW_INNER_UP, 0.3)
                                   .set(FacialGesture.EYE_SQUINT_LEFT, 0.3);
   const config = new Config()
@@ -1412,12 +1410,21 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
                      .withRepeatDelayMs(-1);
   await this.configureFaceGaze(config);
 
-  // Trigger a mouse press and a key down.
+  // Trigger a key down.
   let result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // A synthetic key event should have been sent.
+  this.assertNumKeyEvents(1);
+  this.assertKeyDown(this.getKeyEvents()[0]);
+
+  // Trigger a mouse press.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.BROW_INNER_UP, 0.9);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ false);
 
@@ -1425,22 +1432,11 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   this.assertNumMouseEvents(1);
   this.assertMousePress(this.getMouseEvents()[0]);
 
-  // A synthetic key event should have been sent.
-  this.assertNumKeyEvents(1);
-  this.assertKeyDown(this.getKeyEvents()[0]);
+  // Stop FaceGaze in the middle of long actions.
+  this.getFaceGaze().mouseController_.stop();
+  this.getFaceGaze().gestureHandler_.stop();
 
-  // Toggle (pause) FaceGaze in the middle of long actions.
-  result =
-      new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
-          .addGestureWithConfidence(
-              MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9);
-  this.processFaceLandmarkerResult(
-      result, /*triggerMouseControllerInterval=*/ false);
-  assertTrue(this.getFaceGaze().gestureHandler_.paused_);
-
-  // Pausing in the middle of long actions should cause them to be completed.
+  // Stopping in the middle of long actions should cause them to be completed.
   // The purpose of this is to clear state.
   this.assertNumMouseEvents(2);
   this.assertMouseRelease(this.getMouseEvents()[1]);
@@ -1450,7 +1446,6 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   // Release all gestures.
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
           .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0);
   this.processFaceLandmarkerResult(
@@ -1459,12 +1454,10 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   this.assertNumMouseEvents(2);
   this.assertNumKeyEvents(2);
 
-  // Toggle (resume) FaceGaze.
-  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
-      MediapipeFacialGesture.JAW_OPEN, 0.9);
-  this.processFaceLandmarkerResult(
-      result, /*triggerMouseControllerInterval=*/ false);
-  assertFalse(this.getFaceGaze().gestureHandler_.paused_);
+  // Resume FaceGaze.
+  this.getFaceGaze().mouseController_.start();
+  this.getFaceGaze().gestureHandler_.start();
+
   // No extra mouse or key events should come through.
   this.assertNumMouseEvents(2);
   this.assertNumKeyEvents(2);
@@ -1472,10 +1465,17 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   // Confirm that long actions work as expected.
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // A key down should have been sent.
+  this.assertNumKeyEvents(3);
+  this.assertKeyDown(this.getKeyEvents()[2]);
+
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.BROW_INNER_UP, 0.9);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ false);
 
@@ -1483,16 +1483,15 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   this.assertNumMouseEvents(3);
   this.assertMousePress(this.getMouseEvents()[2]);
 
-  // A key down should have been sent.
-  this.assertNumKeyEvents(3);
-  this.assertKeyDown(this.getKeyEvents()[2]);
-
   // Toggle long click gesture again to get the mouse release event.
   // Release key gesture to get the key up events.
-  result =
-      new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
-          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0);
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.0);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ false);
 

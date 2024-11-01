@@ -517,6 +517,7 @@ export class MouseController {
       // stopped to ensure we do not leave the user in a permanent "drag" state.
       EventGenerator.sendMouseRelease(
           this.mouseLocation_.x, this.mouseLocation_.y);
+      this.longClickActive_ = false;
     }
     if (this.mouseInterval_ !== -1) {
       clearInterval(this.mouseInterval_);

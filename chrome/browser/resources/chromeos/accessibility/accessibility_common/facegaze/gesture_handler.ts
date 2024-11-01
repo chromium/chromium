@@ -258,16 +258,6 @@ export class GestureHandler {
       return;
     }
 
-    // If we are in the middle of long click, do not allow additional mouse
-    // clicks or scroll mode.
-    if (this.mouseController_.isLongClickActive() &&
-        (name === MacroName.MOUSE_CLICK_LEFT ||
-         name === MacroName.MOUSE_CLICK_RIGHT ||
-         name === MacroName.MOUSE_CLICK_LEFT_DOUBLE ||
-         name === MacroName.TOGGLE_SCROLL_MODE)) {
-      return;
-    }
-
     switch (name) {
       case MacroName.TOGGLE_DICTATION:
         return new ToggleDictationMacro(
@@ -365,6 +355,11 @@ export class GestureHandler {
     }
 
     if (this.paused_ && name !== MacroName.TOGGLE_FACEGAZE) {
+      return false;
+    }
+
+    if (this.mouseController_.isLongClickActive() &&
+        name !== MacroName.MOUSE_LONG_CLICK_LEFT) {
       return false;
     }
 
