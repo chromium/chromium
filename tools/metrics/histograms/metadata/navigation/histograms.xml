@@ -2368,17 +2368,28 @@ chromium-metrics-reviews@google.com.
 <histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"
     expires_after="2025-04-06">
   <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
-    Tracks events when the currently navigated domain name is a lookalike to one
-    of the top 10K domains or a domain that the user interacted with, resulting
-    in a navigation suggestion interstitial.
+    Tracks events when the currently navigated domain name in a non-incognito
+    tab is a lookalike to one of the top 10K domains or a domain that the user
+    interacted with, resulting in a navigation suggestion interstitial.
 
     Before M88, NavigationSuggestion.Event recorded a separate entry for each
     lookalike URL in a redirect chain. E.g. lookalike1.com -&gt; site.com -&gt;
     lookalike2.com recorded two events. This updated histogram only records an
     entry for the first or last URL in the redirect if any of those is a
     lookalike.
+  </summary>
+</histogram>
+
+<histogram name="NavigationSuggestion.Event2.Incognito"
+    enum="NavigationSuggestionEvent" expires_after="2025-04-06">
+  <owner>meacer@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Tracks events when the currently navigated domain name in an incognito tab
+    is a lookalike to one of the top 10K domains or a domain that the user
+    interacted with, resulting in a navigation suggestion interstitial.
   </summary>
 </histogram>
 

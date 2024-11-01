@@ -68,6 +68,7 @@ using security_interstitials::MetricsHelper;
 using security_interstitials::SecurityInterstitialCommand;
 using UkmEntry = ukm::builders::LookalikeUrl_NavigationSuggestion;
 using lookalikes::GetDomainInfo;
+using lookalikes::kIncognitoInterstitialHistogramName;
 using lookalikes::kInterstitialHistogramName;
 using lookalikes::LookalikeUrlBlockingPageUserAction;
 
@@ -361,8 +362,11 @@ class LookalikeUrlNavigationThrottleBrowserTest
     ui_test_utils::HistoryEnumerator enumerator(browser->profile());
     EXPECT_FALSE(base::Contains(enumerator.urls(), navigated_url));
 
-    histograms.ExpectTotalCount(kInterstitialHistogramName, 1);
-    histograms.ExpectBucketCount(kInterstitialHistogramName, expected_event, 1);
+    bool is_incognito = browser->profile()->IsIncognitoProfile();
+    histograms.ExpectUniqueSample(kInterstitialHistogramName, expected_event,
+                                  is_incognito ? 0 : 1);
+    histograms.ExpectUniqueSample(kIncognitoInterstitialHistogramName,
+                                  expected_event, is_incognito ? 1 : 0);
 
     histograms.ExpectTotalCount(kInterstitialDecisionMetric, 2);
     histograms.ExpectBucketCount(kInterstitialDecisionMetric,
@@ -1227,7 +1231,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
     base::HistogramTester histograms;
     test_clock()->Advance(base::Hours(1));
     TestInterstitialNotShown(incognito, kNavigatedUrl);
-    histograms.ExpectTotalCount(kInterstitialHistogramName, 0);
+    histograms.ExpectTotalCount(kIncognitoInterstitialHistogramName, 0);
   }
 
   // Now reverse the scores: Set low engagement in the main profile and high

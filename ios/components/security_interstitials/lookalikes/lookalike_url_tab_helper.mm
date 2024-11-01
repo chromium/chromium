@@ -13,6 +13,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/web/public/browser_state.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
@@ -112,7 +113,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
             proto, response_url.GetWithEmptyPath(),
             response_url.GetWithEmptyPath())) {
       match_type = lookalikes::LookalikeUrlMatchType::kFailedSpoofChecks;
-      RecordUMAFromMatchType(match_type);
+      RecordUMAFromMatchType(match_type,
+                             web_state()->GetBrowserState()->IsOffTheRecord());
       LookalikeUrlContainer* lookalike_container =
           LookalikeUrlContainer::FromWebState(web_state());
       lookalike_container->SetLookalikeUrlInfo(/*suggested_url=*/GURL(),
@@ -126,7 +128,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   }
   DCHECK(!matched_domain.empty());
 
-  RecordUMAFromMatchType(match_type);
+  RecordUMAFromMatchType(match_type,
+                         web_state()->GetBrowserState()->IsOffTheRecord());
 
   const std::string suggested_domain =
       lookalikes::GetETLDPlusOne(matched_domain);

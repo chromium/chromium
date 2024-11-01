@@ -345,7 +345,8 @@ LookalikeUrlNavigationThrottle::CheckAndMaybeShowInterstitial(
     return content::NavigationThrottle::CANCEL;
   }
 
-  lookalikes::RecordUMAFromMatchType(match_type);
+  lookalikes::RecordUMAFromMatchType(match_type,
+                                     profile_->IsIncognitoProfile());
 
   // Punycode interstitial doesn't have a target site, so safe_domain isn't
   // valid.
@@ -515,7 +516,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   DCHECK_NE(LookalikeUrlMatchType::kNone, match_type);
   DCHECK(action_type == LookalikeActionType::kRecordMetrics ||
          action_type == LookalikeActionType::kShowSafetyTip);
-  lookalikes::RecordUMAFromMatchType(match_type);
+  lookalikes::RecordUMAFromMatchType(match_type,
+                                     profile_->IsIncognitoProfile());
   RecordPerformCheckLatenciesForAllowedNavigation(
       perform_checks_start, is_lookalike_url_duration,
       total_get_domain_info_duration);
