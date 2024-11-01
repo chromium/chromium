@@ -30,7 +30,7 @@ BASE_FEATURE(kEnableBandASampleDebugReports,
 // Enable parsing triggered updates from B&A response.
 BASE_FEATURE(kEnableBandATriggeredUpdates,
              "EnableBandATriggeredUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable parsing ad auction response headers for an iframe navigation request.
 BASE_FEATURE(kEnableIFrameAdAuctionHeaders,

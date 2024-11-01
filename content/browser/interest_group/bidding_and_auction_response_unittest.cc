@@ -393,6 +393,9 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
 }
 
 TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableBandATriggeredUpdates);
   static const struct {
     base::Value input;
     BiddingAndAuctionResponse output;
