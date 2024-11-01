@@ -18,7 +18,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
@@ -148,18 +147,6 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 };
 
 LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
-
-class LinkToTextMenuObserverDataControlsTest
-    : public LinkToTextMenuObserverTest {
- public:
-  LinkToTextMenuObserverDataControlsTest() {
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_features_;
-};
 
 }  // namespace
 
@@ -549,8 +536,7 @@ IN_PROC_BROWSER_TEST_F(
             text);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
-                       BlocksCopyingLinkToText) {
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, BlocksCopyingLinkToText) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
@@ -584,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   EXPECT_TRUE(text.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        WarnsCopyingLinkToTextAndCancel) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
@@ -619,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   EXPECT_TRUE(text.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        WarnsCopyingLinkToTextAndBypass) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
@@ -654,8 +640,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
-                       ReplacesCopyingLinkToText) {
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesCopyingLinkToText) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",

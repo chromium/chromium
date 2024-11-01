@@ -105,7 +105,7 @@ bool IgnoreRestriction(Rule::Restriction restriction) {
   if (restriction == Rule::Restriction::kScreenshot) {
     return !base::FeatureList::IsEnabled(kEnableScreenshotProtection);
   }
-  return !base::FeatureList::IsEnabled(kEnableDesktopDataControls);
+  return false;
 }
 
 }  // namespace

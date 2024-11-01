@@ -28,16 +28,9 @@ std::optional<Rule> MakeRule(const std::string& value) {
 
 class DataControlsRuleTest : public testing::Test {
  public:
-  explicit DataControlsRuleTest(bool desktop_feature_enabled = true,
-                                bool screenshot_feature_enabled = true) {
+  explicit DataControlsRuleTest(bool screenshot_feature_enabled = true) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (desktop_feature_enabled) {
-      enabled_features.push_back(kEnableDesktopDataControls);
-    } else {
-      disabled_features.push_back(kEnableDesktopDataControls);
-    }
 
     if (screenshot_feature_enabled) {
       enabled_features.push_back(kEnableScreenshotProtection);
@@ -52,21 +45,16 @@ class DataControlsRuleTest : public testing::Test {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-class DataControlsFeaturesRuleTest
-    : public DataControlsRuleTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class DataControlsFeaturesRuleTest : public DataControlsRuleTest,
+                                     public testing::WithParamInterface<bool> {
  public:
   DataControlsFeaturesRuleTest()
-      : DataControlsRuleTest(desktop_feature_enabled(),
-                             screenshot_feature_enabled()) {}
+      : DataControlsRuleTest(screenshot_feature_enabled()) {}
 
-  bool desktop_feature_enabled() const { return std::get<0>(GetParam()); }
-  bool screenshot_feature_enabled() const { return std::get<1>(GetParam()); }
+  bool screenshot_feature_enabled() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DataControlsFeaturesRuleTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, DataControlsFeaturesRuleTest, testing::Bool());
 
 struct AndOrNotTestCase {
   const char* conditions;
@@ -629,21 +617,16 @@ TEST_P(DataControlsFeaturesRuleTest, NonScreenshotRules) {
       { "class": "PRIVACY_SCREEN", "level": "REPORT" }
     ]
   })");
-  if (desktop_feature_enabled()) {
-    ASSERT_TRUE(rule);
-    ActionContext context = {
-        .destination = {.url = GURL("https://google.com")}};
-    ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, context),
-              Rule::Level::kBlock);
-    ASSERT_EQ(rule->GetLevel(Rule::Restriction::kPrinting, context),
-              Rule::Level::kAllow);
-    ASSERT_EQ(rule->GetLevel(Rule::Restriction::kPrivacyScreen, context),
-              Rule::Level::kReport);
-    ASSERT_EQ(rule->GetLevel(Rule::Restriction::kScreenshot, context),
-              Rule::Level::kNotSet);
-  } else {
-    ASSERT_FALSE(rule);
-  }
+  ASSERT_TRUE(rule);
+  ActionContext context = {.destination = {.url = GURL("https://google.com")}};
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, context),
+            Rule::Level::kBlock);
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kPrinting, context),
+            Rule::Level::kAllow);
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kPrivacyScreen, context),
+            Rule::Level::kReport);
+  ASSERT_EQ(rule->GetLevel(Rule::Restriction::kScreenshot, context),
+            Rule::Level::kNotSet);
 }
 
 TEST_P(DataControlsRuleNotTest, TriggeringContext) {

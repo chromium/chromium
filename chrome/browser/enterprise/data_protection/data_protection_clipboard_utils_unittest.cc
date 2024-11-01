@@ -8,7 +8,6 @@
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
@@ -73,8 +72,6 @@ class DataProtectionClipboardTest : public testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
   }
 
   void SetUp() override { ui::TestClipboard::CreateForCurrentThread(); }
@@ -122,7 +119,6 @@ class DataProtectionClipboardTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_features_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;

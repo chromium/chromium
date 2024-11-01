@@ -9,14 +9,6 @@
 
 namespace data_controls {
 
-// Controls enabling Data Controls for all desktop browser platforms (Windows,
-// Mac, Linux, CrOS). Policies controlling cross-platform Data Controls will be
-// ignored if this feature is disabled.
-//
-// Use `kEnableScreenshotProtection` to gate the implementation of screenshot
-// protection rules instead of this feature.
-BASE_DECLARE_FEATURE(kEnableDesktopDataControls);
-
 // Controls enabling screenshot blocking Data Controls rules for supported
 // desktop browser platforms (Windows, Mac).
 //

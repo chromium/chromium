@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -48,10 +47,7 @@ class DataControlsClipboardUtilsBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  DataControlsClipboardUtilsBrowserTest() {
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
-  }
+  DataControlsClipboardUtilsBrowserTest() = default;
   ~DataControlsClipboardUtilsBrowserTest() override = default;
 
   bool machine_scope() const { return GetParam(); }
@@ -71,7 +67,6 @@ class DataControlsClipboardUtilsBrowserTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       event_report_validator_helper_;
 };

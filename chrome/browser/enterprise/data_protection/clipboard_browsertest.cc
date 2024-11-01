@@ -43,10 +43,7 @@ namespace {
 // function/class, consider using a browsertest.cc file specific to that code.
 class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
  public:
-  DataProtectionClipboardBrowserTest() {
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
-  }
+  DataProtectionClipboardBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -109,9 +106,6 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
         blink::mojom::PermissionStatus::GRANTED);
     base::RunLoop().RunUntilIdle();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 }  // namespace

@@ -4,32 +4,23 @@
 
 #include "components/enterprise/data_controls/content/browser/rules_service.h"
 
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 
 namespace data_controls {
 
 RulesService::RulesService(PrefService* pref_service) {
-  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls) ||
-      base::FeatureList::IsEnabled(kEnableScreenshotProtection)) {
-    pref_registrar_.Init(pref_service);
-    pref_registrar_.Add(
-        kDataControlsRulesPref,
-        base::BindRepeating(&RulesService::OnDataControlsRulesUpdate,
-                            base::Unretained(this)));
-    OnDataControlsRulesUpdate();
-  }
+  pref_registrar_.Init(pref_service);
+  pref_registrar_.Add(
+      kDataControlsRulesPref,
+      base::BindRepeating(&RulesService::OnDataControlsRulesUpdate,
+                          base::Unretained(this)));
+  OnDataControlsRulesUpdate();
 }
 
 RulesService::~RulesService() = default;
 
 Verdict RulesService::GetVerdict(Rule::Restriction restriction,
                                  const ActionContext& context) const {
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls) &&
-      !base::FeatureList::IsEnabled(kEnableScreenshotProtection)) {
-    return Verdict::NotSet();
-  }
-
   Rule::Level max_level = Rule::Level::kNotSet;
   Verdict::TriggeredRules triggered_rules;
   for (size_t i = 0; i < rules_.size(); ++i) {

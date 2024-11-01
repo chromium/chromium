@@ -51,17 +51,8 @@ class ChromeRulesService : public RulesService {
   ActionSourceOrDestination ExtractPasteActionContext(
       const content::ClipboardEndpoint& endpoint) const;
 
-  // `profile_` and `rules_manager_` are initialized with the browser_context
-  // passed in the constructor.
+  // Initialized with the browser_context passed in the constructor.
   const raw_ptr<Profile> profile_ = nullptr;
-
-  // Watches changes to the "DataControlsRules" policy. Does nothing if the
-  // "EnableDesktopDataControls" experiment is disabled.
-  PrefChangeRegistrar pref_registrar_;
-
-  // List of rules created from the "DataControlsRules" policy. Empty if the
-  // "EnableDesktopDataControls" experiment is disabled.
-  std::vector<Rule> rules_;
 };
 
 class ChromeRulesServiceFactory : public RulesServiceFactory,
