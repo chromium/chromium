@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "media/base/video_facing.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -207,6 +208,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
     // Called when output channel remixing changed.
     virtual void OnOutputChannelRemixingChanged(bool mono_on);
+
+    // Called when voice isolation UI appearance changed.
+    virtual void OnVoiceIsolationUIAppearanceChanged(
+        VoiceIsolationUIAppearance appearance);
 
     // Called when noise cancellation state changed.
     virtual void OnNoiseCancellationStateChanged();
@@ -435,6 +440,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Returns the required DLCs of the supported audio effects.
   std::optional<std::vector<std::string>> GetAudioEffectDlcs() const;
+
+  // Request client for the voice isolation UI appearance parameters.
+  void RequestVoiceIsolationUIAppearance();
+
+  // Get the voice isolation UI appearance parameters.
+  VoiceIsolationUIAppearance GetVoiceIsolationUIAppearance();
+
+  // Gets the pref state of input voice isolation.
+  bool GetVoiceIsolationState() const;
+
+  // Refreshes the input device voice isolation state in CrasAudioClient.
+  void RefreshVoiceIsolationState();
 
   // Returns noise cancellation supported if:
   // - Overall board/device supports noise cancellation
@@ -1014,6 +1031,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Calling dbus to get system AEC supported flag.
   void GetSystemAecSupported();
 
+  // Handle dbus callback for GetVoiceIsolationUIAppearance.
+  void HandleGetVoiceIsolationUIAppearance(
+      std::optional<VoiceIsolationUIAppearance> appearance);
+
   // Handle dbus callback for GetSystemNoiseCancellationSupported.
   void HandleGetNoiseCancellationSupported(
       OnNoiseCancellationSupportedCallback callback,
@@ -1177,6 +1198,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   base::flat_map<ClientType, uint32_t> number_of_input_streams_with_permission_;
 
+  VoiceIsolationUIAppearance voice_isolation_ui_appearance_;
   bool system_aec_supported_ = false;
   std::optional<std::vector<std::string>> audio_effect_dlcs_;
   bool noise_cancellation_supported_ = false;

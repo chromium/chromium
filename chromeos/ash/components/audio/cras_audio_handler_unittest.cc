@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/audio/audio_selection_notification_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "media/base/video_facing.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -222,6 +223,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return output_channel_remixing_changed_count_;
   }
 
+  VoiceIsolationUIAppearance voice_isolation_ui_appearance() const {
+    return ui_appearance_;
+  }
+
   int noise_cancellation_state_change_count() const {
     return noise_cancellation_state_change_count_;
   }
@@ -308,6 +313,11 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++output_channel_remixing_changed_count_;
   }
 
+  void OnVoiceIsolationUIAppearanceChanged(
+      VoiceIsolationUIAppearance appearance) override {
+    ui_appearance_ = appearance;
+  }
+
   void OnNoiseCancellationStateChanged() override {
     ++noise_cancellation_state_change_count_;
   }
@@ -374,6 +384,7 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int survey_triggerd_count_ = 0;
   int input_muted_by_security_curtain_changed_count_ = 0;
   CrasAudioHandler::AudioSurvey survey_triggerd_recv_;
+  VoiceIsolationUIAppearance ui_appearance_;
 };
 
 class SystemMonitorObserver
@@ -541,6 +552,19 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
     fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+    CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
+                                 audio_pref_handler_);
+    cras_audio_handler_ = CrasAudioHandler::Get();
+    test_observer_ = std::make_unique<TestObserver>();
+    cras_audio_handler_->AddAudioObserver(test_observer_.get());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetUpCrasAudioHandlerWithVoiceIsolationState(
+      bool voice_isolation_enabled) {
+    CrasAudioClient::InitializeFake();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+    audio_pref_handler_->SetVoiceIsolationState(voice_isolation_enabled);
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
@@ -1700,6 +1724,41 @@ TEST_P(CrasAudioHandlerTest, OneActiveAudioOutputAfterLoginNewUserSession) {
       EXPECT_FALSE(audio_devices[i].active);
     }
   }
+}
+
+TEST_P(CrasAudioHandlerTest, GetVoiceIsolationUIAppearance) {
+  SetUpCrasAudioHandlerWithVoiceIsolationState(false);
+  VoiceIsolationUIAppearance expected(cras::EFFECT_TYPE_STYLE_TRANSFER,
+                                      cras::EFFECT_TYPE_NONE, true);
+  fake_cras_audio_client()->SetVoiceIsolationUIAppearance(expected);
+
+  cras_audio_handler_->RequestVoiceIsolationUIAppearance();
+
+  // The received UI appearance from the observer method.
+  VoiceIsolationUIAppearance observer_got =
+      test_observer_->voice_isolation_ui_appearance();
+  EXPECT_EQ(observer_got, expected);
+
+  // The UI appearance directly queried from cras_audio_handler.
+  VoiceIsolationUIAppearance getter_got =
+      cras_audio_handler_->GetVoiceIsolationUIAppearance();
+  EXPECT_EQ(getter_got, expected);
+}
+
+TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationState) {
+  SetUpCrasAudioHandlerWithVoiceIsolationState(false);
+  EXPECT_FALSE(fake_cras_audio_client()->GetVoiceIsolationUIEnabled());
+  EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
+
+  audio_pref_handler_->SetVoiceIsolationState(true);
+  cras_audio_handler_->RefreshVoiceIsolationState();
+  EXPECT_TRUE(fake_cras_audio_client()->GetVoiceIsolationUIEnabled());
+  EXPECT_TRUE(audio_pref_handler_->GetVoiceIsolationState());
+
+  audio_pref_handler_->SetVoiceIsolationState(false);
+  cras_audio_handler_->RefreshVoiceIsolationState();
+  EXPECT_FALSE(fake_cras_audio_client()->GetVoiceIsolationUIEnabled());
+  EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
 }
 
 TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefEnabledNoNC) {

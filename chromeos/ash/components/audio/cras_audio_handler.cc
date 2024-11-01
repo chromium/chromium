@@ -121,6 +121,9 @@ void CrasAudioHandler::AudioObserver::OnActiveInputNodeChanged() {}
 void CrasAudioHandler::AudioObserver::OnOutputChannelRemixingChanged(
     bool /* mono_on */) {}
 
+void CrasAudioHandler::AudioObserver::OnVoiceIsolationUIAppearanceChanged(
+    VoiceIsolationUIAppearance appearance) {}
+
 void CrasAudioHandler::AudioObserver::OnNoiseCancellationStateChanged() {}
 
 void CrasAudioHandler::AudioObserver::OnStyleTransferStateChanged() {}
@@ -624,6 +627,41 @@ void CrasAudioHandler::HandleGetAudioEffectDlcs(
 std::optional<std::vector<std::string>> CrasAudioHandler::GetAudioEffectDlcs()
     const {
   return audio_effect_dlcs_;
+}
+
+void CrasAudioHandler::RequestVoiceIsolationUIAppearance() {
+  CrasAudioClient::Get()->GetVoiceIsolationUIAppearance(
+      base::BindOnce(&CrasAudioHandler::HandleGetVoiceIsolationUIAppearance,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetVoiceIsolationUIAppearance(
+    std::optional<VoiceIsolationUIAppearance> appearance) {
+  if (!appearance.has_value()) {
+    LOG(ERROR) << "cras_audio_handler: Failed to retrieve voice isolation UI "
+                  "appearance.";
+  } else {
+    voice_isolation_ui_appearance_ = appearance.value();
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnVoiceIsolationUIAppearanceChanged(
+        voice_isolation_ui_appearance_);
+  }
+}
+
+VoiceIsolationUIAppearance CrasAudioHandler::GetVoiceIsolationUIAppearance() {
+  return voice_isolation_ui_appearance_;
+}
+
+bool CrasAudioHandler::GetVoiceIsolationState() const {
+  return audio_pref_handler_->GetVoiceIsolationState();
+}
+
+void CrasAudioHandler::RefreshVoiceIsolationState() {
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetVoiceIsolationUIEnabled(GetVoiceIsolationState());
 }
 
 bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(
@@ -1538,6 +1576,7 @@ void CrasAudioHandler::AudioClientRestarted() {
 void CrasAudioHandler::NodesChanged() {
   if (cras_service_available_) {
     GetNodes();
+    RequestVoiceIsolationUIAppearance();
   }
 }
 
@@ -1870,6 +1909,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetSystemNsSupported();
   GetSystemAgcSupported();
   RequestGetAudioEffectDlcs();
+  RequestVoiceIsolationUIAppearance();
   RequestNoiseCancellationSupported(base::BindOnce(
       &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
   RequestStyleTransferSupported(base::BindOnce(&CrasAudioHandler::GetNodes,
