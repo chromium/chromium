@@ -113,8 +113,7 @@ void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
   }
 
   // Cancel any backoff on success.
-  no_get_proxy_config_until_ = base::Time();
-  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
+  ClearNoGetProxyConfigUntilTime();
 
   std::vector<net::ProxyChain> proxy_list =
       GetProxyListFromProxyConfigResponse(response.value());
@@ -324,5 +323,10 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::OnGetProxyConfigCompleted(
   }
 
   std::move(callback).Run(std::move(response_proto));
+}
+
+void IpProtectionProxyConfigDirectFetcher::ClearNoGetProxyConfigUntilTime() {
+  no_get_proxy_config_until_ = base::Time();
+  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
 }
 }  // namespace ip_protection

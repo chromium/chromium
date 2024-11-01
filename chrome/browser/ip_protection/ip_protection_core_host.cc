@@ -558,6 +558,9 @@ void IpProtectionCoreHost::ClearOAuthTokenProblemBackoff() {
     last_try_get_auth_tokens_backoff_.reset();
     InvalidateNetworkContextTryAgainAfterTime();
   }
+  if (ip_protection_proxy_config_fetcher_) {
+    ip_protection_proxy_config_fetcher_->ClearNoGetProxyConfigUntilTime();
+  }
 }
 
 void IpProtectionCoreHost::OnPrimaryAccountChanged(

@@ -106,6 +106,12 @@ class IpProtectionProxyConfigDirectFetcher
     return no_get_proxy_config_until_;
   }
 
+  base::TimeDelta GetNextGetProxyConfigBackoffForTesting() {
+    return next_get_proxy_config_backoff_;
+  }
+
+  void ClearNoGetProxyConfigUntilTime();
+
   // Timeout for failures from GetProxyConfig. This is doubled for
   // each subsequent failure.
   static constexpr base::TimeDelta kGetProxyConfigFailureTimeout =

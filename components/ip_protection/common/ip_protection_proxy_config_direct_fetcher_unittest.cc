@@ -234,9 +234,17 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyChains) {
 
   IpProtectionProxyConfigDirectFetcher fetcher(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+  base::Time initial_no_get_proxy_config_until_ =
+      fetcher.GetNoGetProxyConfigUntilTime();
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
+  // This is a successful response. Backoff should be reset.
+  EXPECT_EQ(fetcher.GetNoGetProxyConfigUntilTime(),
+            initial_no_get_proxy_config_until_);
+  EXPECT_EQ(
+      fetcher.GetNextGetProxyConfigBackoffForTesting(),
+      IpProtectionProxyConfigDirectFetcher::kGetProxyConfigFailureTimeout);
 
   std::vector<net::ProxyChain> exp_proxy_list = {
       IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
@@ -426,9 +434,20 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
 
   IpProtectionProxyConfigDirectFetcher fetcher(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
+  // No backoff set yet.
+  EXPECT_LT(fetcher.GetNoGetProxyConfigUntilTime(), base::Time::Now());
 
   fetcher.GetProxyConfig(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
+
+  // This is a response error, hence a future time should be set.
+  // It is impossible to get `Time::Now()` in the runtime. But since
+  // test duration is much less than kGetProxyConfigFailureTimeout
+  // (1min), safe to compare with the `Time::Now()` from the test harness.
+  EXPECT_GT(fetcher.GetNoGetProxyConfigUntilTime(), base::Time::Now());
+  EXPECT_EQ(
+      fetcher.GetNextGetProxyConfigBackoffForTesting(),
+      IpProtectionProxyConfigDirectFetcher::kGetProxyConfigFailureTimeout * 2);
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();

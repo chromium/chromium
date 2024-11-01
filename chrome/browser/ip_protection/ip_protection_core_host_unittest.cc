@@ -945,6 +945,13 @@ TEST_F(IpProtectionCoreHostTest, GetProxyConfigFailure) {
   task_environment_.FastForwardBy(timeout);
   call_get_proxy_list(/*expect_success=*/false);
   EXPECT_EQ(get_proxy_config_calls, 5);
+
+  get_proxy_config_fails = false;
+  // SetupAccount should trigger ClearOAuthTokenProblemBackoff() and reset
+  // fetcher's backoff.
+  SetupAccount();
+  call_get_proxy_list(/*expect_success=*/true);
+  EXPECT_EQ(get_proxy_config_calls, 6);
 }
 
 TEST_F(IpProtectionCoreHostTest, GetProxyConfig_IpProtectionDisabled) {
