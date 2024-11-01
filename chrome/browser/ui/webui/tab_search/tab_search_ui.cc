@@ -205,11 +205,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   // configurable, replace the hardcoded 7 below with the value of that
   // parameter.
   source->AddString("declutterBody",
-                    l10n_util::GetStringFUTF16(IDS_DECLUTTER_BODY, u"7")),
+                    l10n_util::GetStringFUTF16(IDS_DECLUTTER_BODY, u"7"));
 
-      webui::SetupWebUIDataSource(
-          source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
-          IDR_TAB_SEARCH_TAB_SEARCH_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
+      IDR_TAB_SEARCH_TAB_SEARCH_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
