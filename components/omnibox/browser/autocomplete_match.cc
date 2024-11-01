@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -135,8 +135,8 @@ int GetDeduplicationProviderPreferenceScore(
   }
   const AutocompleteProvider::Type type = provider->type();
 
-  using ProviderPrefMap = base::flat_map<AutocompleteProvider::Type, int>;
-  static const base::NoDestructor<ProviderPrefMap> provider_prefs({
+  constexpr auto kProviderPrefMap =
+    base::MakeFixedFlatMap<AutocompleteProvider::Type, int>({
       // Prefer live document suggestions. We check provider type instead
       // of match type in order to distinguish live suggestions from the
       // document provider from stale suggestions from the shortcuts
@@ -154,19 +154,12 @@ int GetDeduplicationProviderPreferenceScore(
       // Prefer non-shorcut matches over shortcuts, the latter of which may
       // have stale or missing URL titles (the latter from what-you-typed
       // matches).
-      //
-      // If the value here becomes a fixed value, then change `provider_prefs`
-      // from a NoDestructor to a FixedFlatMap.
-      {AutocompleteProvider::TYPE_SHORTCUTS,
-       base::FeatureList::IsEnabled(
-           omnibox::kPreferNonShortcutMatchesWhenDeduping)
-           ? -1
-           : 0},
+      {AutocompleteProvider::TYPE_SHORTCUTS, -1},
       // Prefer non-fuzzy matches over fuzzy matches.
       {AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
   });
-  const auto it = provider_prefs->find(type);
-  return it != provider_prefs->end() ? it->second : 0;
+  const auto it = kProviderPrefMap.find(type);
+  return it != kProviderPrefMap.end() ? it->second : 0;
 }
 
 // Implementation of boost::hash_combine

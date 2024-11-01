@@ -49,12 +49,6 @@ BASE_FEATURE(kGroupingFrameworkForNonZPS,
 // This feature's main job is to contain the DemoteByType parameter.
 BASE_FEATURE(kOmniboxDemoteByType, "OmniboxDemoteByType", DISABLED);
 
-// When enabled, deduping prefers non-shortcut provider matches, while still
-// treating fuzzy provider matches as the least preferred.
-BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,
-             "OmniboxPreferNonShortcutMatchesWhenDeduping",
-             ENABLED);
-
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
 // OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,

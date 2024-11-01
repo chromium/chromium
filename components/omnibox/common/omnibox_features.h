@@ -21,7 +21,6 @@ BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
 // deduping or `SortAndCull()`.
 BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
-BASE_DECLARE_FEATURE(kPreferNonShortcutMatchesWhenDeduping);
 
 // Features below this line should be sorted alphabetically by their comments.
 
