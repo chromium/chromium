@@ -13,6 +13,7 @@ python_library("version") {
 
 python_library("gs_util_wrapper") {
   data = [
+    "//build/find_depot_tools.py",
     "//third_party/depot_tools/",
     "gs_util_wrapper.py",
   ]
