@@ -1,7 +1,8 @@
 {
    "tests": {
       "kFocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "disabled": "Rebaseline & enable in CL fixing crbug.com/374808333",
+         "_params": "kFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14,7 +15,8 @@
                   }, {
                      "transition": "typed",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -31,26 +33,14 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
-               } ]
-            }, {
-               "app_scope": "/banners/link_capturing/scope_b/",
-               "browser_type": "TYPE_APP",
-               "tabs": [ {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "disabled": "Rebaseline & enable in CL fixing crbug.com/374808333",
+         "_params": "kFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -62,7 +52,8 @@
                   }, {
                      "transition": "typed",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                }, {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/start.html",
@@ -78,25 +69,13 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ]
                } ]
-            }, {
-               "app_scope": "/banners/link_capturing/scope_b/",
-               "browser_type": "TYPE_APP",
-               "tabs": [ {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
-               } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "kNavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "disabled": "Rebaseline & enable in CL fixing crbug.com/374808333",
+         "_params": "kNavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -109,7 +88,12 @@
                   }, {
                      "transition": "typed",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  }, {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
@@ -127,29 +111,18 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
-            }, {
-               "app_scope": "/banners/link_capturing/scope_b/",
-               "browser_type": "TYPE_APP",
-               "tabs": [ {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
-               } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "disabled": "Rebaseline & enable in CL fixing crbug.com/374808333",
+         "_params": "kNavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
                   "history": [ {
                      "transition": "auto_toplevel",
@@ -157,9 +130,13 @@
                   }, {
                      "transition": "typed",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  }, {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                }, {
-                  "active": true,
                   "current_url": "/banners/link_capturing/scope_a/start.html",
                   "frames": [ {
                      "current_url": "blank",
@@ -172,19 +149,6 @@
                      "transition": "typed",
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ]
-               } ]
-            }, {
-               "app_scope": "/banners/link_capturing/scope_b/",
-               "browser_type": "TYPE_APP",
-               "tabs": [ {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ],
             "launch_metric_buckets": [ "kFromNavigationCapturing" ]

@@ -2249,8 +2249,6 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithExtraBrowserTabB,
                               LinkCapturing::kDisabled});
 }
 
-// TODO(crbug.com/373495871): Fix flaky tests for kNavigateExisting and enable
-// them in navigation_capturing_with_extra_browser_tab_b.json when fixed.
 INSTANTIATE_TEST_SUITE_P(
     LeftClickToBrowserTabFromFocusOrNavigateExisting,
     NavigationCapturingTestWithExtraBrowserTabB,
