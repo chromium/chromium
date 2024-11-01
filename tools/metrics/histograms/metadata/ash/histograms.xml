@@ -8207,6 +8207,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ScannerFeature.UserState" enum="ScannerFeatureUserState"
+    expires_after="2025-03-01">
+  <owner>jhtin@google.com</owner>
+  <summary>
+    This histogram captures user interaction and states as a user uses the
+    Scanner feature.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SeaPen.Api.Thumbnails.Count" units="count"
     expires_after="2025-03-01">
   <owner>cowmoo@google.com</owner>

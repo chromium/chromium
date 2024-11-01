@@ -1980,6 +1980,34 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="Invalid JSON format"/>
 </enum>
 
+<enum name="ScannerFeatureUserState">
+  <int value="0" label="Consent disclaimer accepted"/>
+  <int value="1" label="Consent disclaimer rejected"/>
+  <int value="2" label="Sunfish screen entered via shortcut"/>
+  <int value="3"
+      label="Sunfish screen: initial screen capture sent to scanner server"/>
+  <int value="4" label="Screen capture mode: Scanner button shown"/>
+  <int value="5"
+      label="Screen capture mode: initial screen capture sent to scanner
+             server"/>
+  <int value="6" label="No actions detected"/>
+  <int value="7" label="New calendar event action detected"/>
+  <int value="8" label="New calendar event action finished successfully"/>
+  <int value="9" label="New calendar event action failed"/>
+  <int value="10" label="New contact action detected"/>
+  <int value="11" label="New contact action finished successfully"/>
+  <int value="12" label="New contact action failed"/>
+  <int value="13" label="New Google Sheet action detected"/>
+  <int value="14" label="New Google Sheet action finished successfully"/>
+  <int value="15" label="New Google Sheet action failed"/>
+  <int value="16" label="New Google Doc action detected"/>
+  <int value="17" label="New Google Doc action finished successfully"/>
+  <int value="18" label="New Google Doc action failed"/>
+  <int value="19" label="Copy to clipboard action detected"/>
+  <int value="20" label="Copy to clipboard action finished successfully"/>
+  <int value="21" label="Copy to clipboard action failed"/>
+</enum>
+
 <enum name="ScreenRotationAcceleratorAction">
   <int value="0" label="CancelledDialog"/>
   <int value="1" label="AcceptedDialog"/>
