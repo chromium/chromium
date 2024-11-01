@@ -218,15 +218,6 @@ bool ServiceWorkerSubresourceLoader::MaybeStartAutoPreload() {
   return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
 }
 
-bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
-  if (controller_connector_->fetch_handler_bypass_option() !=
-      blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-          kRaceNetworkRequest) {
-    return false;
-  }
-  return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
-}
-
 bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // If the fetch event is restarted for some reason, stop dispatching
   // RaceNetworkRequest to avoid making the race condition complex.
@@ -506,9 +497,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
       }
       break;
     case kDefault:
-      if (MaybeStartRaceNetworkRequest()) {
-        SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
-      } else if (MaybeStartAutoPreload()) {
+      if (MaybeStartAutoPreload()) {
         SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
         SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       }

@@ -214,10 +214,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void TransitionToStatus(Status new_status);
 
-  // If eligible, dispatch the network request which races the ServiceWorker
-  // fetch handler.
-  bool MaybeStartRaceNetworkRequest();
-
   // Returns false if fails to start race network request.
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
