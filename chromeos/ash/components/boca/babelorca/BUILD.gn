@@ -20,6 +20,8 @@ static_library("babelorca") {
     "babel_orca_producer.h",
     "babel_orca_speech_recognizer.h",
     "babel_orca_translation_dispatcher.h",
+    "caption_controller.cc",
+    "caption_controller.h",
     "live_caption_controller_wrapper.h",
     "live_caption_controller_wrapper_impl.cc",
     "live_caption_controller_wrapper_impl.h",
@@ -68,8 +70,10 @@ static_library("babelorca") {
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/services/boca/babelorca/mojom",
     "//components/live_caption",
+    "//components/live_caption:constants",
     "//components/live_caption:live_translate",
     "//components/live_caption:utils",
+    "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
@@ -78,6 +82,7 @@ static_library("babelorca") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
+    "//ui/native_theme",
   ]
 }
 
@@ -85,6 +90,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fakes/fake_caption_controller_delegate.cc",
+    "fakes/fake_caption_controller_delegate.h",
     "fakes/fake_tachyon_authed_client.cc",
     "fakes/fake_tachyon_authed_client.h",
     "fakes/fake_tachyon_client.cc",
@@ -100,8 +107,12 @@ source_set("test_support") {
   deps = [
     ":babelorca",
     "//base",
+    "//components/live_caption",
+    "//components/prefs",
+    "//media/mojo/mojom:speech_recognition",
     "//net/traffic_annotation",
     "//third_party/protobuf:protobuf_lite",
+    "//ui/native_theme",
   ]
 }
 
@@ -113,6 +124,7 @@ source_set("unit_tests") {
     "babel_orca_consumer_unittest.cc",
     "babel_orca_manager_unittest.cc",
     "babel_orca_producer_unittest.cc",
+    "caption_controller_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
     "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",
@@ -136,6 +148,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/services/boca/babelorca/mojom",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
@@ -147,5 +163,6 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/native_theme",
   ]
 }
