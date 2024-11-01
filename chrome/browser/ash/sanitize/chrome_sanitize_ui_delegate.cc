@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
@@ -30,8 +31,12 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
       ProfileResetter::EXTENSIONS | ProfileResetter::STARTUP_PAGES |
       ProfileResetter::PINNED_TABS | ProfileResetter::SHORTCUTS |
       ProfileResetter::NTP_CUSTOMIZATIONS | ProfileResetter::LANGUAGES |
-      ProfileResetter::DNS_CONFIGURATIONS | ProfileResetter::PROXY_SETTINGS |
-      ProfileResetter::KEYBOARD_SETTINGS;
+      ProfileResetter::DNS_CONFIGURATIONS;
+
+  if (base::FeatureList::IsEnabled(ash::features::kSanitizeV1)) {
+    to_sanitize |=
+        ProfileResetter::PROXY_SETTINGS | ProfileResetter::KEYBOARD_SETTINGS;
+  }
 
   GetResetter()->ResetSettings(
       to_sanitize, nullptr,

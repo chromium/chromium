@@ -1559,6 +1559,12 @@ BASE_FEATURE(kSameAppWindowCycle,
 // settings to default.
 BASE_FEATURE(kSanitize, "CrosSanitize", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Make Sanitize V1 available. This feature provides a "soft reset" option in
+// CrOS settings. In addition to the existing Sanitize features, this will
+// provide a functional reset to user's proxy settings, input methods for
+// keyboard and choice of languages in the spellchecker.
+BASE_FEATURE(kSanitizeV1, "CrosSanitizeV1", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, `SmbService` is created on user session startup task completed.
 BASE_FEATURE(kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted,
              "SmbServiceIsCreatedOnUserSessionStartUpTaskCompleted",

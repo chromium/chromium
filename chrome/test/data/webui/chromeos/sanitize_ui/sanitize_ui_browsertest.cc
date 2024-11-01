@@ -46,7 +46,8 @@ class SanitizeUIBrowserTest : public WebUIMochaBrowserTest {
   SanitizeUIBrowserTest() {
     set_test_loader_host(::ash::kChromeUISanitizeAppHost);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSanitize},
+        /*enabled_features=*/{ash::features::kSanitize,
+                              ash::features::kSanitizeV1},
         /*disabled_featuers=*/{});
   }
 
