@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/languages/languages_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,8 +43,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetLanguagesPageSearchConceptsV2() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES,
        mojom::kLanguagesSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -68,11 +70,11 @@ const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kOfferTranslation}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAppLanguagesPageSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAppLanguagesPageSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_APP_LANGUAGES,
        mojom::kAppLanguagesSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -80,7 +82,7 @@ const std::vector<SearchConcept>& GetAppLanguagesPageSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAppLanguages}},
   });
-  return *tags;
+  return tags;
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
