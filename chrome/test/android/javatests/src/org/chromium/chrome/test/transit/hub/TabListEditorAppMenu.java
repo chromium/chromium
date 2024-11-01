@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit.hub;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
@@ -44,20 +43,11 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
                         itemViewMatcher("Close " + tabOrTabs),
                         itemDataMatcher(R.id.tab_list_editor_close_menu_item),
                         this::doCloseTabs);
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            mGroupWithParityMenuItem =
-                    items.declareItemToFacility(
-                            itemViewMatcher("Group " + tabOrTabs),
-                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
-                            this::doGroupTabsWithParityEnabled);
-        } else {
-            mGroupMenuItem =
-                    items.declareItemToFacility(
-                            itemViewMatcher("Group " + tabOrTabs),
-                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
-                            this::doGroupTabsWithParityDisabled);
-        }
+        mGroupWithParityMenuItem =
+            items.declareItemToFacility(
+                itemViewMatcher("Group " + tabOrTabs),
+                itemDataMatcher(R.id.tab_list_editor_group_menu_item),
+                this::doGroupTabsWithParityEnabled);
 
         items.declareStubItem(
                 itemViewMatcher("Bookmark " + tabOrTabs),
@@ -75,7 +65,6 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
      *     as a Facility.
      */
     public TabSwitcherGroupCardFacility groupTabs() {
-        assert !ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
         return mGroupMenuItem.scrollToAndSelect();
     }
 

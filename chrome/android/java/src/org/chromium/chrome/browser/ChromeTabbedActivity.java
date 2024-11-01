@@ -65,8 +65,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.supplier.UnwrapObservableSupplier;
-import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.UsedByReflection;
@@ -2252,26 +2250,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mUndoBarPopupController =
                 new UndoBarController(this, mTabModelSelector, this, dialogVisibilitySupplier);
 
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            TabModelUtils.runOnTabStateInitialized(
-                    getTabModelSelectorSupplier().get(),
-                    mCallbackController.makeCancelable(
-                            (tabModelSelectorReturn) -> {
-                                TabGroupColorUtils.assignTabGroupColorsIfApplicable(
-                                        tabModelSelectorReturn
-                                                .getTabGroupModelFilterProvider()
-                                                .getCurrentTabGroupModelFilter());
-                            }));
-        } else {
-            new BackgroundOnlyAsyncTask<Void>() {
-                @Override
-                protected final Void doInBackground() {
-                    // Delete the tab group color SharedPreferences file on a background thread.
-                    TabGroupColorUtils.clearTabGroupColorInfo();
-                    return null;
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
+        // TODO(crbug.com/376668040): Remove this once enough time has passed
+        // most clients have upgraded to have colors.
+        TabModelUtils.runOnTabStateInitialized(
+                getTabModelSelectorSupplier().get(),
+                mCallbackController.makeCancelable(
+                        (tabModelSelectorReturn) -> {
+                            TabGroupColorUtils.assignTabGroupColorsIfApplicable(
+                                    tabModelSelectorReturn
+                                            .getTabGroupModelFilterProvider()
+                                            .getCurrentTabGroupModelFilter());
+                        }));
 
         mInactivityTracker =
                 new ChromeInactivityTracker(

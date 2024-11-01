@@ -61,9 +61,7 @@ public class TabGroupVisualDataManager {
                             Runnable deleteTask =
                                     () -> {
                                         filter.deleteTabGroupTitle(rootId);
-                                        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                                            filter.deleteTabGroupColor(rootId);
-                                        }
+                                        filter.deleteTabGroupColor(rootId);
                                         if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
                                             filter.deleteTabGroupCollapsed(rootId);
                                         }
@@ -94,20 +92,18 @@ public class TabGroupVisualDataManager {
                             filter.setTabGroupTitle(newRootId, sourceGroupTitle);
                         }
 
-                        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                            int sourceGroupColor = filter.getTabGroupColor(movedTab.getRootId());
-                            int targetGroupColor = filter.getTabGroupColor(newRootId);
-                            // If the target group has no color but the source group has a color,
-                            // handover the stored color to the group after merge.
-                            if (sourceGroupColor != TabGroupColorUtils.INVALID_COLOR_ID
-                                    && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
-                                filter.setTabGroupColor(newRootId, sourceGroupColor);
-                            } else if (sourceGroupColor == TabGroupColorUtils.INVALID_COLOR_ID
-                                    && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
-                                filter.setTabGroupColor(
-                                        newRootId,
-                                        TabGroupColorUtils.getNextSuggestedColorId(filter));
-                            }
+                        int sourceGroupColor = filter.getTabGroupColor(movedTab.getRootId());
+                        int targetGroupColor = filter.getTabGroupColor(newRootId);
+                        // If the target group has no color but the source group has a color,
+                        // handover the stored color to the group after merge.
+                        if (sourceGroupColor != TabGroupColorUtils.INVALID_COLOR_ID
+                                && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
+                           filter.setTabGroupColor(newRootId, sourceGroupColor);
+                        } else if (sourceGroupColor == TabGroupColorUtils.INVALID_COLOR_ID
+                                && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
+                           filter.setTabGroupColor(
+                                    newRootId,
+                                    TabGroupColorUtils.getNextSuggestedColorId(filter));
                         }
                     }
 
@@ -127,9 +123,8 @@ public class TabGroupVisualDataManager {
                             if (title != null) {
                                 filter.deleteTabGroupTitle(rootId);
                             }
-                            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                                filter.deleteTabGroupColor(rootId);
-                            }
+
+                            filter.deleteTabGroupColor(rootId);
                             if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
                                 filter.deleteTabGroupCollapsed(rootId);
                             }
@@ -168,12 +163,11 @@ public class TabGroupVisualDataManager {
             filter.setTabGroupTitle(newRootId, title);
             filter.deleteTabGroupTitle(oldRootId);
         }
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            int colorId = filter.getTabGroupColor(oldRootId);
-            if (colorId != TabGroupColorUtils.INVALID_COLOR_ID) {
-                filter.setTabGroupColor(newRootId, colorId);
-                filter.deleteTabGroupColor(oldRootId);
-            }
+
+        int colorId = filter.getTabGroupColor(oldRootId);
+        if (colorId != TabGroupColorUtils.INVALID_COLOR_ID) {
+            filter.setTabGroupColor(newRootId, colorId);
+            filter.deleteTabGroupColor(oldRootId);
         }
         if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
             if (filter.getTabGroupCollapsed(oldRootId)) {

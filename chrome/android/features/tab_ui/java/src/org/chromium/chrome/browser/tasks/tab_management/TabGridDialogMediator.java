@@ -501,8 +501,6 @@ public class TabGridDialogMediator
 
                     @Override
                     public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
-                        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) return;
-
                         if (currentTabRootIdMatchesRootId(rootId)) {
                             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, newColor);
                         }
@@ -710,14 +708,11 @@ public class TabGridDialogMediator
                         : R.string.tab_grid_dialog_remove_from_group;
         mModel.set(
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT, res.getString(ungroupBarTextId));
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-            Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
-            final @TabGroupColorId int color =
-                    filter.getTabGroupColorWithFallback(currentTab.getRootId());
-            mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
-        }
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
+        final @TabGroupColorId int color =
+                filter.getTabGroupColorWithFallback(currentTab.getRootId());
+        mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
         updateTitle(tabsCount);
     }
 

@@ -86,10 +86,7 @@ import java.util.Set;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-    ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
-})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
 public class TabGroupModelFilterImplUnitTest {
     private static final int TAB1_ID = 11;
     private static final int TAB2_ID = 12;

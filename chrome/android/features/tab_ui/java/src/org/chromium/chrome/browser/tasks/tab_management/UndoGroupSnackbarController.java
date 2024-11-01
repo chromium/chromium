@@ -243,15 +243,12 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
             filter.deleteTabGroupTitle(firstRootId);
         }
 
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            // If the destination rootID previously did not have a color id associated with it since
-            // it was either created from a new tab group or was originally a single tab before
-            // merge, delete that color id on undo. This check deletes the group color for that
-            // destination rootID, as all tabs still currently share that ID before the undo
-            // operation is performed.
-            if (firstInfo.destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID) {
-                filter.deleteTabGroupColor(firstRootId);
-            }
+        // If the destination rootID previously did not have a color id associated with it since it
+        // was either created from a new tab group or was originally a single tab before merge,
+        // delete that color id on undo. This check deletes the group color for that destination
+        // rootID, as all tabs still currently share that ID before the undo operation is performed.
+        if (firstInfo.destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID) {
+            filter.deleteTabGroupColor(firstRootId);
         }
 
         // The action of merging expands the destination group. If it was originally collapsed, we

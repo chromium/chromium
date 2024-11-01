@@ -1884,8 +1884,7 @@ public class StripLayoutHelper
 
                 startDragOrReorderTab(x, y, clickedTab);
             }
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
-                && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)) {
             showTabGroupContextMenu((StripLayoutGroupTitle) stripView);
         }
     }

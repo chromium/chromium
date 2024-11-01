@@ -8,7 +8,6 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
@@ -107,8 +106,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
                         mTab,
                         /* incognito= */ false);
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                && willMergingCreateNewGroup
+        if (willMergingCreateNewGroup
                 && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ false)) {
             mTabGroupCreationDialogManager.showDialog(mTab.getRootId(), filter);

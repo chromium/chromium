@@ -616,8 +616,6 @@ class TabListMediator implements TabListNotificationHandler {
                 public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
                     assert mShowingTabs;
 
-                    if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) return;
-
                     if (!mActionsOnAllRelatedTabs) return;
 
                     @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
@@ -845,18 +843,16 @@ class TabListMediator implements TabListNotificationHandler {
                 public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                     // On new group creation for the tab group representation in the GTS, update
                     // the tab group color icon.
-                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                        int groupIndex = filter.indexOf(destinationTab);
-                        Tab groupTab = filter.getTabAt(groupIndex);
-                        PropertyModel model = getModelFromId(groupTab.getId());
+                    int groupIndex = filter.indexOf(destinationTab);
+                    Tab groupTab = filter.getTabAt(groupIndex);
+                    PropertyModel model = getModelFromId(groupTab.getId());
 
-                        if (model != null) {
-                            @TabGroupColorId
-                            int colorId =
-                                    filter.getTabGroupColorWithFallback(destinationTab.getRootId());
-                            updateFaviconForTab(model, groupTab, null, null);
-                            updateTabGroupColorViewProvider(model, destinationTab, colorId);
-                        }
+                    if (model != null) {
+                        @TabGroupColorId
+                        int colorId =
+                                filter.getTabGroupColorWithFallback(destinationTab.getRootId());
+                        updateFaviconForTab(model, groupTab, null, null);
+                        updateTabGroupColorViewProvider(model, destinationTab, colorId);
                     }
                 }
             };
@@ -1618,18 +1614,15 @@ class TabListMediator implements TabListNotificationHandler {
 
         boolean isTabSelected = isTabSelected(mTabActionState, tab);
         boolean isInTabGroup = isTabInTabGroup(tab);
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            int tabGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
-            // Only update the color if the tab is a representation of a tab group, otherwise
-            // hide the icon by setting the color to INVALID.
-            if (isInTabGroup) {
-                TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                tabGroupColorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-            }
-
-            updateTabGroupColorViewProvider(model, tab, tabGroupColorId);
+        int tabGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
+        // Only update the color if the tab is a representation of a tab group, otherwise
+        // hide the icon by setting the color to INVALID.
+        if (isInTabGroup) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            tabGroupColorId = filter.getTabGroupColorWithFallback(tab.getRootId());
         }
 
+        updateTabGroupColorViewProvider(model, tab, tabGroupColorId);
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
         model.set(TabProperties.IS_SELECTED, isTabSelected);
         model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
@@ -2059,11 +2052,9 @@ class TabListMediator implements TabListNotificationHandler {
         updateFaviconForTab(tabInfo, tab, null, null);
 
         int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            if (isInTabGroup && mActionsOnAllRelatedTabs) {
-                TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-            }
+        if (isInTabGroup && mActionsOnAllRelatedTabs) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
         }
         updateTabGroupColorViewProvider(tabInfo, tab, colorId);
 
@@ -2102,62 +2093,47 @@ class TabListMediator implements TabListNotificationHandler {
         if (isInTabGroup) {
             String title = getLatestTitleForTab(tab, /* useDefault= */ false);
             Resources res = mContext.getResources();
-            if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
+            final @StringRes int colorDescRes =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                    colorId);
+            String colorDesc = res.getString(colorDescRes);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                && hasCollaboration(tab)) {
                 model.set(
-                        TabProperties.CONTENT_DESCRIPTION_STRING,
-                        title.isEmpty()
-                                ? res.getQuantityString(
-                                        R.plurals.accessibility_expand_tab_group,
-                                        numOfRelatedTabs,
-                                        numOfRelatedTabs)
-                                : res.getQuantityString(
-                                        R.plurals.accessibility_expand_tab_group_with_group_name,
-                                        numOfRelatedTabs,
-                                        title,
-                                        numOfRelatedTabs));
-            } else {
-                TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-                final @StringRes int colorDescRes =
-                        ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                colorId);
-                String colorDesc = res.getString(colorDescRes);
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                        && hasCollaboration(tab)) {
-                    model.set(
-                            TabProperties.CONTENT_DESCRIPTION_STRING,
-                            title.isEmpty()
-                                    ? res.getQuantityString(
-                                            R.plurals
-                                                    .accessibility_expand_shared_tab_group_with_color,
-                                            numOfRelatedTabs,
-                                            numOfRelatedTabs,
-                                            colorDesc)
-                                    : res.getQuantityString(
-                                            R.plurals
-                                                    .accessibility_expand_shared_tab_group_with_group_name_with_color,
-                                            numOfRelatedTabs,
-                                            title,
-                                            numOfRelatedTabs,
-                                            colorDesc));
-                    return;
-                }
-                model.set(
-                        TabProperties.CONTENT_DESCRIPTION_STRING,
-                        title.isEmpty()
-                                ? res.getQuantityString(
-                                        R.plurals.accessibility_expand_tab_group_with_color,
-                                        numOfRelatedTabs,
-                                        numOfRelatedTabs,
-                                        colorDesc)
-                                : res.getQuantityString(
-                                        R.plurals
-                                                .accessibility_expand_tab_group_with_group_name_with_color,
-                                        numOfRelatedTabs,
-                                        title,
-                                        numOfRelatedTabs,
-                                        colorDesc));
+                    TabProperties.CONTENT_DESCRIPTION_STRING,
+                    title.isEmpty()
+                        ? res.getQuantityString(
+                        R.plurals
+                            .accessibility_expand_shared_tab_group_with_color,
+                        numOfRelatedTabs,
+                        numOfRelatedTabs,
+                        colorDesc)
+                        : res.getQuantityString(
+                            R.plurals
+                                .accessibility_expand_shared_tab_group_with_group_name_with_color,
+                            numOfRelatedTabs,
+                            title,
+                            numOfRelatedTabs,
+                            colorDesc));
+                return;
             }
+            model.set(
+                TabProperties.CONTENT_DESCRIPTION_STRING,
+                title.isEmpty()
+                    ? res.getQuantityString(
+                    R.plurals.accessibility_expand_tab_group_with_color,
+                    numOfRelatedTabs,
+                    numOfRelatedTabs,
+                    colorDesc)
+                    : res.getQuantityString(
+                        R.plurals
+                            .accessibility_expand_tab_group_with_group_name_with_color,
+                        numOfRelatedTabs,
+                        title,
+                        numOfRelatedTabs,
+                        colorDesc));
         } else {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         }
@@ -2880,61 +2856,46 @@ class TabListMediator implements TabListNotificationHandler {
 
     private String getActionButtonDescriptionString(int numOfRelatedTabs, String title, Tab tab) {
         Resources res = mContext.getResources();
-        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            if (title.isEmpty()) {
-                return res.getQuantityString(
-                        R.plurals.accessibility_close_tab_group_button,
-                        numOfRelatedTabs,
-                        numOfRelatedTabs);
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
+        final @StringRes int colorDescRes =
+            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+        String colorDesc = res.getString(colorDescRes);
+        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+            String descriptionTitle = title;
+            if (TextUtils.isEmpty(descriptionTitle)) {
+                descriptionTitle =
+                    TabGroupTitleUtils.getDefaultTitle(mContext, numOfRelatedTabs);
+            }
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                || !hasCollaboration(tab)) {
+                return res.getString(
+                    R.string
+                        .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
+                    descriptionTitle,
+                    colorDesc);
             } else {
-                return res.getQuantityString(
-                        R.plurals.accessibility_close_tab_group_button_with_group_name,
-                        numOfRelatedTabs,
-                        title,
-                        numOfRelatedTabs);
+                return res.getString(
+                    R.string
+                        .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
+                    descriptionTitle,
+                    colorDesc);
             }
         } else {
-            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-            @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-            final @StringRes int colorDescRes =
-                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
-            String colorDesc = res.getString(colorDescRes);
-            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-                String descriptionTitle = title;
-                if (descriptionTitle.isEmpty()) {
-                    descriptionTitle =
-                            TabGroupTitleUtils.getDefaultTitle(mContext, numOfRelatedTabs);
-                }
-                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                        || !hasCollaboration(tab)) {
-                    return res.getString(
-                            R.string
-                                    .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
-                            descriptionTitle,
-                            colorDesc);
-                } else {
-                    return res.getString(
-                            R.string
-                                    .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
-                            descriptionTitle,
-                            colorDesc);
-                }
+            if (TextUtils.isEmpty(title)) {
+                return res.getQuantityString(
+                    R.plurals.accessibility_close_tab_group_button_with_color,
+                    numOfRelatedTabs,
+                    numOfRelatedTabs,
+                    colorDesc);
             } else {
-                if (title.isEmpty()) {
-                    return res.getQuantityString(
-                            R.plurals.accessibility_close_tab_group_button_with_color,
-                            numOfRelatedTabs,
-                            numOfRelatedTabs,
-                            colorDesc);
-                } else {
-                    return res.getQuantityString(
-                            R.plurals
-                                    .accessibility_close_tab_group_button_with_group_name_with_color,
-                            numOfRelatedTabs,
-                            title,
-                            numOfRelatedTabs,
-                            colorDesc);
-                }
+                return res.getQuantityString(
+                    R.plurals
+                        .accessibility_close_tab_group_button_with_group_name_with_color,
+                    numOfRelatedTabs,
+                    title,
+                    numOfRelatedTabs,
+                    colorDesc);
             }
         }
     }
@@ -3017,8 +2978,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void updateTabGroupColorViewProvider(
             PropertyModel model, @NonNull Tab tab, @TabGroupColorId int colorId) {
-        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) return;
-
         @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
 
         @Nullable Token tabGroupId = tab.getTabGroupId();

@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -112,10 +111,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             // null title for default title is handled in HistoricalTabSaver.
             String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
             // Give a tab group the first color in the color list as a placeholder.
-            @TabGroupColorId int color = TabGroupColorId.GREY;
-            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                color = mTabGroupModelFilter.getTabGroupColorWithFallback(rootId);
-            }
+            @TabGroupColorId int color = mTabGroupModelFilter.getTabGroupColorWithFallback(rootId);
             List<Tab> groupTabs = new ArrayList<>();
             groupTabs.add(tab);
             HistoricalEntry historicalGroup =

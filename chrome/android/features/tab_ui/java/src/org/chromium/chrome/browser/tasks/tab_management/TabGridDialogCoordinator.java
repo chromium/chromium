@@ -329,14 +329,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     private View.OnClickListener getColorIconClickListener() {
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            return (view) -> {
-                showColorPickerPopup(view);
-                TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
-                        TabGroupColorChangeActionType.VIA_COLOR_ICON);
-            };
-        }
-        return null;
+        return (view) -> {
+            showColorPickerPopup(view);
+            TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
+                    TabGroupColorChangeActionType.VIA_COLOR_ICON);
+        };
     }
 
     private void showColorPickerPopup(View anchorView) {

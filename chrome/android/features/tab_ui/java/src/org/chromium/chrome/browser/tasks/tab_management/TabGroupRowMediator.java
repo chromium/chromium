@@ -114,10 +114,7 @@ class TabGroupRowMediator {
 
         ClusterData clusterData = new ClusterData(faviconResolver, numberOfTabs, urlList);
         builder.with(TabGroupRowProperties.CLUSTER_DATA, clusterData);
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
-        }
+        builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
 
         String userTitle = savedTabGroup.title;
         Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);

@@ -79,7 +79,6 @@ public class TabUiFeatureUtilities {
 
     /** Returns whether the settings button for showing the group creation dialog is enabled. */
     public static boolean isTabGroupCreationDialogShowConfigurable() {
-        return ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                && TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.getValue();
+        return TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.getValue();
     }
 }

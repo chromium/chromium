@@ -13,7 +13,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -85,10 +84,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         TabGroupModelFilter groupFilter = filter;
 
         int rootId = tabIds[0];
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            groupFilter.setTabGroupColor(rootId, color);
-        }
+        groupFilter.setTabGroupColor(rootId, color);
 
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 

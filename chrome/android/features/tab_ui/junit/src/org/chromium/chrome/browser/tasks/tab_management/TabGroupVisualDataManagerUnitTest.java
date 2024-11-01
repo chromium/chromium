@@ -52,10 +52,7 @@ import java.util.Set;
 /** Tests for {@link TabGroupVisualDataManager}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-    ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
-})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
 public class TabGroupVisualDataManagerUnitTest {
 
     private static final String TAB1_TITLE = "Tab1";
