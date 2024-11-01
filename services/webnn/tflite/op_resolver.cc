@@ -173,6 +173,10 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              ::tflite::ops::builtin::Register_POW());
   AddBuiltin(::tflite::BuiltinOperator_PRELU,
              ::tflite::ops::builtin::Register_PRELU());
+  AddBuiltin(::tflite::BuiltinOperator_QUANTIZE,
+             ::tflite::ops::builtin::Register_QUANTIZE(),
+             /* min_version = */ 1,
+             /* max_version = */ 3);
   AddBuiltin(::tflite::BuiltinOperator_REDUCE_PROD,
              ::tflite::ops::builtin::Register_REDUCE_PROD());
   AddBuiltin(::tflite::BuiltinOperator_REDUCE_MAX,

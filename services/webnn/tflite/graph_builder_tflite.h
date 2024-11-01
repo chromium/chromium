@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
+#include "base/types/fixed_array.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
@@ -39,7 +40,8 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t, int64_t>;
+concept IsSupportedTensorType =
+    IsAnyOf<T, float, int32_t, uint32_t, int64_t, int8_t, uint8_t>;
 
 }  // namespace internal
 
@@ -74,6 +76,8 @@ class GraphBuilderTflite final {
   using BufferOffset = flatbuffers::Offset<::tflite::Buffer>;
   using TensorOffset = flatbuffers::Offset<::tflite::Tensor>;
   using StringOffset = flatbuffers::Offset<flatbuffers::String>;
+  using QuantizateParametersOffset =
+      flatbuffers::Offset<::tflite::QuantizationParameters>;
 
   GraphBuilderTflite(
       ContextProperties context_properties,
@@ -107,6 +111,7 @@ class GraphBuilderTflite final {
   // to float32 before serializing an operator which does not support float32.
   base::expected<TensorInfo, std::string> SerializeOperand(
       uint64_t operand_id,
+      QuantizateParametersOffset quantize_params,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
 
   // Call `SerializeOperand` to serialize the input operand if it's not
@@ -116,6 +121,7 @@ class GraphBuilderTflite final {
   // is false).
   base::expected<TensorInfo, std::string> SerializeInputTensorInfo(
       uint64_t operand_id,
+      QuantizateParametersOffset quantize_params = 0,
       bool operation_supports_float16 = false);
 
   // Call `SerializeOperand` to serialize the output operand and insert a TFLite
@@ -127,6 +133,7 @@ class GraphBuilderTflite final {
   // float32 with the argument.
   base::expected<TensorInfo, std::string> SerializeOutputTensorInfo(
       uint64_t operand_id,
+      QuantizateParametersOffset quantize_params = 0,
       bool operation_supports_float16 = false,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
 
@@ -167,8 +174,13 @@ class GraphBuilderTflite final {
   // Will crash if `graph_info_` does not contain `operand_id`.
   const mojom::Operand& GetOperand(uint64_t operand_id) const;
 
-  // Operation serialization helpers for operations not directly declared in the
-  // mojom::Operation union.
+  // Get the value if the operand is constant.
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
+  base::span<const DataType> GetConstantValue(uint64_t operand_id);
+
+  // Operation serialization helpers for operations not directly declared in
+  // the mojom::Operation union.
   //
   // Serialize an operation with a single input and a single output operand.
   // The caller must either provide both `builtin_options_type` and
@@ -531,6 +543,14 @@ class GraphBuilderTflite final {
       const mojom::Pool2d& pool2d);
   base::expected<OperatorOffset, std::string> SerializePrelu(
       const mojom::Prelu& prelu);
+  base::FixedArray<int64_t> GetInt64ZeroPoint(uint64_t zero_point_operand_id);
+  base::expected<QuantizateParametersOffset, std::string>
+  SerializeQuantizeParams(uint64_t zero_point_operand_id,
+                          uint64_t scale_operand_id);
+  base::expected<OperatorOffset, std::string> SerializeQuantizeLinear(
+      const mojom::QuantizeLinear& quantize_linear);
+  base::expected<OperatorOffset, std::string> SerializeDequantizeLinear(
+      const mojom::DequantizeLinear& dequantize_linear);
   base::expected<OperatorOffset, std::string> SerializeReciprocal(
       const TensorInfo& input_tensor_info,
       const TensorInfo& output_tensor_info);
