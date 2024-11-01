@@ -2722,7 +2722,7 @@
       },
       "kFocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "kFocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": "This should not navigate the original A tab.",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2797,7 +2797,7 @@
       },
       "kNavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "kNavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": "This should not navigate the original A tab.",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
