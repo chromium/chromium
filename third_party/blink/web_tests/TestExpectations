@@ -1109,7 +1109,6 @@ crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-list-item.ht
 crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-list-item-start.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-not-list-item.html [ Failure ]
 crbug.com/1270480 external/wpt/css/css-lists/marker-webkit-text-fill-color.html [ Failure ]
-crbug.com/1270483 external/wpt/css/css-lists/li-value-counter-reset-001.html [ Failure ]
 crbug.com/947844 external/wpt/css/css-lists/list-item-definition.html [ Failure ]
 
 crbug.com/1330383 external/wpt/css/css-lists/counter-order-display-contents.html [ Failure ]

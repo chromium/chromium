@@ -15,6 +15,7 @@ namespace blink {
 class HTMLOListElement;
 class LayoutObject;
 class Node;
+class Element;
 
 // Represents an "ordinal value" and its related algorithms:
 // https://html.spec.whatwg.org/C/#ordinal-value
@@ -36,7 +37,7 @@ class CORE_EXPORT ListItemOrdinal {
   // Get/set/clear the explicit value; i.e., the 'value' attribute of an <li>
   // element.
   std::optional<int> ExplicitValue() const;
-  void SetExplicitValue(int, const Node&);
+  void SetExplicitValue(int, const Element&);
   void ClearExplicitValue(const Node&);
   void MarkDirty() { SetType(kNeedsUpdate); }
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -233,12 +234,30 @@ void ListItemOrdinal::InvalidateOrdinalsAfter(bool is_reversed,
   }
 }
 
-void ListItemOrdinal::SetExplicitValue(int value, const Node& item_node) {
+void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
   if (HasExplicitValue() && value_ == value)
     return;
+  // The value attribute on li elements, and the stylesheet is as follows:
+  // - li[value] {
+  // -   counter-set: list-item attr(value integer, 1);
+  // - }
+  // See https://drafts.csswg.org/css-lists-3/#ua-stylesheet for more details.
+  // If the element has the `counter-set` CSS property set, the `value_` is not
+  // explicitly updated.
+  if (RuntimeEnabledFeatures::
+          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
+    if (const auto* style = element.GetComputedStyle()) {
+      const auto directives =
+          style->GetCounterDirectives(AtomicString("list-item"));
+      if (directives.IsSet()) {
+        return;
+      }
+    }
+  }
+
   value_ = value;
-  InvalidateSelf(item_node, kExplicit);
-  InvalidateAfter(EnclosingList(&item_node), &item_node);
+  InvalidateSelf(element, kExplicit);
+  InvalidateAfter(EnclosingList(&element), &element);
 }
 
 void ListItemOrdinal::ClearExplicitValue(const Node& item_node) {

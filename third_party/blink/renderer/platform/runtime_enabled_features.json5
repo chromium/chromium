@@ -2616,6 +2616,10 @@
       status: "stable",
     },
     {
+      name: "ListItemWithCounterSetNotSetExplicitValue",
+      status: "stable",
+    },
+    {
       name: "LockedMode",
       status: "test",
       // Enabled by features::kLockedMode.
