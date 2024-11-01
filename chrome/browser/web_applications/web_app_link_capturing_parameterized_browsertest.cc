@@ -518,7 +518,7 @@ base::Value::Dict RenderFrameHostToJson(content::RenderFrameHost& rfh) {
   if (!rfh.GetFrameName().empty()) {
     dict.Set("frame_name", rfh.GetFrameName());
   }
-  dict.Set("current_url", rfh.GetLastCommittedURL().path());
+  dict.Set("current_url", rfh.GetLastCommittedURL().PathForRequest());
   return dict;
 }
 
@@ -557,9 +557,9 @@ base::Value::Dict WebContentsToJson(const Browser& browser,
   for (int i = 0; i < navigation_controller.GetEntryCount(); ++i) {
     content::NavigationEntry& entry = *navigation_controller.GetEntryAtIndex(i);
     base::Value::Dict json_entry;
-    json_entry.Set("url", entry.GetURL().path());
+    json_entry.Set("url", entry.GetURL().PathForRequest());
     if (!entry.GetReferrer().url.is_empty()) {
-      json_entry.Set("referrer", entry.GetReferrer().url.path());
+      json_entry.Set("referrer", entry.GetReferrer().url.PathForRequest());
     }
     json_entry.Set("transition", PageTransitionGetCoreTransitionString(
                                      entry.GetTransitionType()));
@@ -574,7 +574,8 @@ base::Value::Dict WebContentsToJson(const Browser& browser,
   base::Value::List launchParamsTargetUrls = launchParamsResults.ExtractList();
   if (!launchParamsTargetUrls.empty()) {
     for (const base::Value& url : launchParamsTargetUrls) {
-      dict.EnsureList("launchParams")->Append(GURL(url.GetString()).path());
+      dict.EnsureList("launchParams")
+          ->Append(GURL(url.GetString()).PathForRequest());
     }
   }
 
@@ -598,7 +599,7 @@ base::Value::Dict BrowserToJson(const Browser& browser) {
     WebAppProvider* provider = WebAppProvider::GetForTest(browser.profile());
     const GURL& app_scope = provider->registrar_unsafe().GetAppScope(app_id);
     if (app_scope.is_valid()) {
-      dict.Set("app_scope", app_scope.path());
+      dict.Set("app_scope", app_scope.PathForRequest());
     }
   }
   base::Value::List tabs;
@@ -796,6 +797,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
     if (final_request_url != redirect_from) {
       return nullptr;
     }
+
+    // Repopulate queries and fragments from the request url into the
+    // destination url.
+    GURL::Replacements destination_replacements;
+    GURL request_url = request.GetURL();
+    destination_replacements.SetRefStr(request_url.ref_piece());
+    destination_replacements.SetQueryStr(request_url.query_piece());
+    redirect_to = redirect_to.ReplaceComponents(destination_replacements);
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_TEMPORARY_REDIRECT);
