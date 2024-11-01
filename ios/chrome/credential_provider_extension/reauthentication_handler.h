@@ -25,6 +25,9 @@
             (void (^)(ReauthenticationResult))completionHandler
         presentReminderOnViewController:(UIViewController*)viewController;
 
+// Checks whether biometric authentication is enabled for the device.
+- (BOOL)canAttemptReauthWithBiometrics;
+
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_REAUTHENTICATION_HANDLER_H_

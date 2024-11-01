@@ -12,6 +12,9 @@
 // Delegate for the PasskeyKeychainProviderBridge.
 @protocol PasskeyKeychainProviderBridgeDelegate
 
+// Asks the user to reauthenticate if needed and calls the the completion block.
+- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion;
+
 // Presents the passkey enrollment welcome screen.
 - (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock;
 

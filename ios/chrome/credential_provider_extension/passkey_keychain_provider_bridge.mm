@@ -197,11 +197,20 @@ NSArray<NSData*>* GetSecurityDomainSecret(
               completion:(FetchSecurityDomainSecretCompletionBlock)completion
                  keyList:(const PasskeyKeychainProvider::SharedKeyList&)keyList
        canReauthenticate:(BOOL)canReauthenticate {
+  __weak __typeof(self) weakSelf = self;
   if (!keyList.empty()) {
     const PasskeyKeychainProvider::SharedKeyList keys = std::move(keyList);
     // On success, check degraded recoverability.
     auto degradedRecoverabilityCompletion = ^(NSError* error) {
-      completion(error ? nil : GetSecurityDomainSecret(std::move(keys)));
+      if (error) {
+        completion(nil);
+      } else {
+        [weakSelf
+            performUserVerificationIfNeededAndCallCompletionWithKeys:std::move(
+                                                                         keys)
+                                                          completion:
+                                                              completion];
+      }
     };
     [self checkDegradedRecoverabilityForGaia:gaia
                                   completion:degradedRecoverabilityCompletion];
@@ -209,7 +218,6 @@ NSArray<NSData*>* GetSecurityDomainSecret(
     if (_navigationController && canReauthenticate) {
       // A valid navigation controller is needed to show the reauthentication
       // UI. Otherwise, it won't be possible to perform reauthentication.
-      __weak __typeof(self) weakSelf = self;
       [self.delegate showReauthenticationWelcomeScreen:^{
         [weakSelf reauthenticateForGaia:gaia
                                 purpose:purpose
@@ -275,6 +283,19 @@ NSArray<NSData*>* GetSecurityDomainSecret(
 // Private accessor for the `_navigationController` ivar.
 - (UINavigationController*)navigationController {
   return _navigationController;
+}
+
+// Asks the delegate to perform a user verification if needed and calls the
+// completion block.
+- (void)
+    performUserVerificationIfNeededAndCallCompletionWithKeys:
+        (const PasskeyKeychainProvider::SharedKeyList)keys
+                                                  completion:
+                                                      (FetchSecurityDomainSecretCompletionBlock)
+                                                          completion {
+  [self.delegate performUserVerificationIfNeeded:^{
+    completion(GetSecurityDomainSecret(std::move(keys)));
+  }];
 }
 
 @end

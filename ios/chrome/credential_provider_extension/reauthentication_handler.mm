@@ -85,6 +85,10 @@
                              completion:nil];
 }
 
+- (BOOL)canAttemptReauthWithBiometrics {
+  return [_weakReauthenticationModule canAttemptReauthWithBiometrics];
+}
+
 #pragma mark - Private
 
 // Returns first responder up the chain that can open a URL.

@@ -129,25 +129,31 @@
 }
 
 - (void)userSelectedCredential:(id<Credential>)credential {
+  if (@available(iOS 17.0, *)) {
+    if (credential.isPasskey) {
+      // Skip reauthentication if the credential is a passkey as it will be
+      // performed later on if needed.
+      [self.credentialResponseHandler
+               userSelectedPasskey:credential
+                    clientDataHash:self.requestParameters.clientDataHash
+                allowedCredentials:self.allowedCredentials
+                        allowRetry:YES
+          userVerificationRequired:
+              ShouldPerformUserVerificationForPreference(
+                  self.requestParameters.userVerificationPreference,
+                  [self.reauthenticationHandler
+                          canAttemptReauthWithBiometrics])];
+      return;
+    }
+  }
+
   [self reauthenticateIfNeededWithCompletionHandler:^(
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
-      if (!credential.isPasskey) {
-        ASPasswordCredential* passwordCredential =
-            [ASPasswordCredential credentialWithUser:credential.username
-                                            password:credential.password];
-        [self.credentialResponseHandler
-            userSelectedPassword:passwordCredential];
-      } else if (@available(iOS 17.0, *)) {
-        // TODO(crbug.com/330355124): Handle
-        // self.requestParameters.userVerificationPreference.
-
-        [self.credentialResponseHandler
-            userSelectedPasskey:credential
-                 clientDataHash:self.requestParameters.clientDataHash
-             allowedCredentials:self.allowedCredentials
-                     allowRetry:YES];
-      }
+      ASPasswordCredential* passwordCredential =
+          [ASPasswordCredential credentialWithUser:credential.username
+                                          password:credential.password];
+      [self.credentialResponseHandler userSelectedPassword:passwordCredential];
     }
   }];
 }

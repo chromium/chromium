@@ -25,9 +25,10 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
     API_AVAILABLE(ios(17.0));
 
 - (void)userSelectedPasskey:(id<Credential>)passkey
-             clientDataHash:(NSData*)clientDataHash
-         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                 allowRetry:(BOOL)allowRetry;
+              clientDataHash:(NSData*)clientDataHash
+          allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                  allowRetry:(BOOL)allowRetry
+    userVerificationRequired:(BOOL)userVerificationRequired;
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 
