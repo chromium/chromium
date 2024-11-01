@@ -255,8 +255,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     max_stream_sockets_per_group_ = max_stream_sockets_per_group;
   }
 
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
-                          const url::SchemeHostPort& origin_destination);
+  Group& GetOrCreateGroup(
+      const HttpStreamKey& stream_key,
+      std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
 
   size_t JobControllerCountForTesting() const {
     return job_controllers_.size();

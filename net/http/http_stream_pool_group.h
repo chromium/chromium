@@ -47,7 +47,7 @@ class HttpStreamPool::Group {
 
   Group(HttpStreamPool* pool,
         HttpStreamKey stream_key,
-        const url::SchemeHostPort& origin_destination);
+        std::optional<QuicSessionAliasKey> quic_session_alias_key);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;

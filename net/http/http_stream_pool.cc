@@ -359,18 +359,17 @@ base::Value::Dict HttpStreamPool::GetInfoAsValue() const {
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
-  return GetOrCreateGroup(stream_key, stream_key.destination());
+  return GetOrCreateGroup(stream_key);
 }
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
     const HttpStreamKey& stream_key,
-    const url::SchemeHostPort& origin_destination) {
+    std::optional<QuicSessionAliasKey> quic_session_alias_key) {
   auto it = groups_.find(stream_key);
   if (it == groups_.end()) {
-    SpdySessionKey spdy_session_key = stream_key.CalculateSpdySessionKey();
     it = groups_.try_emplace(
         it, stream_key,
-        std::make_unique<Group>(this, stream_key, origin_destination));
+        std::make_unique<Group>(this, stream_key, quic_session_alias_key));
   }
   return *it->second;
 }

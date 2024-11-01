@@ -63,22 +63,22 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   base::Value::Dict ToValue() const;
 
   // Calculate a SpdySessionKey from `this`. Unlike
-  // CalculateQuicSessionAliasKey(), this method doesn't take an optional origin
-  // destination because we don't use origin destination for SpdySessionKey.
+  // CalculateQuicSessionAliasKey(), this method doesn't take an optional
+  // destination because we don't use a different destination for
+  // SpdySessionKey.
   // TODO(crbug.com/346835898): We may need to create SpdySessionAliasKey and
-  // use the origin to support H2 alternative endpoints that have different
-  // destinations.
-  // Returns a key with an empty host when the scheme is not cryptographic.
+  // use a different destination to support H2 alternative endpoints that have
+  // different destinations. Returns a key with an empty host when the scheme is
+  // not cryptographic.
   SpdySessionKey CalculateSpdySessionKey() const;
 
-  // Calculates a QuicSessionAliasKey from `this`. When `origin_destination` is
-  // provided, use the origin to create a quic::QuicServerId. See the comment of
-  // QuicSessionAliasKey about the difference between the server id and the
-  // destination.
-  // Returns a key with empty server_id/destination when the scheme is not
-  // cryptographic.
+  // Calculates a QuicSessionAliasKey from `this`. When
+  // `optional_alias_name` is provided, use the destination as the destination
+  // of QuicSessionAliasKey. See the comment of QuicSessionAliasKey about the
+  // difference between the server id and the destination. Returns a key with
+  // empty server_id/destination when the scheme is not cryptographic.
   QuicSessionAliasKey CalculateQuicSessionAliasKey(
-      std::optional<url::SchemeHostPort> origin_destination =
+      std::optional<url::SchemeHostPort> optional_alias_name =
           std::nullopt) const;
 
  private:

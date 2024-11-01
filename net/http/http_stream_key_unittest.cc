@@ -161,8 +161,7 @@ TEST(HttpStreamKeyTest, ToSpdySessionKey) {
 TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
   const url::SchemeHostPort kHttpHost("http", "example.com", 80);
   const url::SchemeHostPort kHttpsHost("https", "example.com", 443);
-  const url::SchemeHostPort kDifferentOriginHost("https", "origin.example.com",
-                                                 443);
+  const url::SchemeHostPort kHttpsAliasHost("https", "alt.example.com", 443);
 
   QuicSessionAliasKey http_key =
       HttpStreamKey(kHttpHost, PRIVACY_MODE_DISABLED, SocketTag(),
@@ -189,15 +188,14 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
       HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                     /*disable_cert_network_fetches=*/true)
-          .CalculateQuicSessionAliasKey(kDifferentOriginHost);
-  ASSERT_EQ(
-      different_origin_key.session_key(),
-      QuicSessionKey(HostPortPair::FromSchemeHostPort(kDifferentOriginHost),
-                     PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                     SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
-  ASSERT_EQ(different_origin_key.destination(), kHttpsHost);
+          .CalculateQuicSessionAliasKey(kHttpsAliasHost);
+  ASSERT_EQ(different_origin_key.session_key(),
+            QuicSessionKey(HostPortPair::FromSchemeHostPort(kHttpsHost),
+                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                           SessionUsage::kDestination, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*require_dns_https_alpn=*/false));
+  ASSERT_EQ(different_origin_key.destination(), kHttpsAliasHost);
 }
 
 }  // namespace net

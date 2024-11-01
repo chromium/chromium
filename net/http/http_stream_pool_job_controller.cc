@@ -32,6 +32,7 @@
 #include "net/ssl/ssl_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -63,7 +64,6 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   request_ = request.get();
 
   const HttpStreamKey& stream_key = switching_info.stream_key;
-  const url::SchemeHostPort& origin_destination = stream_key.destination();
 
   network_anonymization_key_ = stream_key.network_anonymization_key();
   proxy_info_ = switching_info.proxy_info;
@@ -125,7 +125,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     alternative_service_info_ = switching_info.alternative_service_info;
 
     alternative_job_ =
-        pool_->GetOrCreateGroup(alt_stream_key, origin_destination)
+        pool_->GetOrCreateGroup(alt_stream_key)
             .CreateJob(this, alternative_service_info_.protocol(),
                        switching_info.is_http1_allowed,
                        switching_info.proxy_info);
@@ -139,10 +139,11 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
 
   quic::ParsedQuicVersion quic_version =
       pool_->SelectQuicVersion(switching_info.alternative_service_info);
-  origin_job_ = pool_->GetOrCreateGroup(stream_key, origin_destination)
-                    .CreateJob(this, NextProto::kProtoUnknown,
-                               switching_info.is_http1_allowed,
-                               switching_info.proxy_info);
+  origin_job_ =
+      pool_->GetOrCreateGroup(stream_key, std::move(quic_session_alias_key))
+          .CreateJob(this, NextProto::kProtoUnknown,
+                     switching_info.is_http1_allowed,
+                     switching_info.proxy_info);
   origin_job_->Start(priority, allowed_bad_certs, respect_limits,
                      enable_ip_based_pooling, enable_alternative_services,
                      quic_version, net_log);
@@ -162,9 +163,9 @@ int HttpStreamPool::JobController::Preconnect(
     return ERR_UNSAFE_PORT;
   }
 
-  QuicSessionAliasKey quic_session_key =
+  QuicSessionAliasKey quic_session_alias_key =
       stream_key.CalculateQuicSessionAliasKey();
-  if (pool_->CanUseExistingQuicSession(quic_session_key,
+  if (pool_->CanUseExistingQuicSession(quic_session_alias_key,
                                        /*enable_ip_based_pooling=*/true,
                                        /*enable_alternative_services=*/true)) {
     return OK;
@@ -195,7 +196,7 @@ int HttpStreamPool::JobController::Preconnect(
 
   quic::ParsedQuicVersion quic_version =
       pool_->SelectQuicVersion(switching_info.alternative_service_info);
-  return pool_->GetOrCreateGroup(stream_key, stream_key.destination())
+  return pool_->GetOrCreateGroup(stream_key, std::move(quic_session_alias_key))
       .Preconnect(num_streams, quic_version, std::move(callback));
 }
 
