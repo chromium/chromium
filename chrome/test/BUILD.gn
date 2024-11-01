@@ -5508,6 +5508,14 @@ template("performance_test_suite_template_base") {
     } else {
       args = [ "../../tools/perf/run_benchmark" ]
     }
+    args += [ "--chromium-output-directory=@WrappedPath(.)" ]
+    if (!is_android) {
+      if (is_debug) {
+        args += [ "--browser=debug" ]
+      } else {
+        args += [ "--browser=release" ]
+      }
+    }
 
     data_deps += [
       "//components:components_perftests",
