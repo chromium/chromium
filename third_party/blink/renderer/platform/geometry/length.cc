@@ -23,12 +23,9 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/geometry/length.h"
+
+#include <array>
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
@@ -292,10 +289,10 @@ bool Length::IsCalculatedEqual(const Length& o) const {
 String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");
-  static const char* const kTypeNames[] = {
-      "Auto",         "Percent",     "Fixed",        "MinContent", "MaxContent",
-      "MinIntrinsic", "Stretch",     "FitContent",   "Calculated", "Flex",
-      "ExtendToZoom", "DeviceWidth", "DeviceHeight", "None",       "Content"};
+  static const auto kTypeNames = std::to_array<const char* const>(
+      {"Auto", "Percent", "Fixed", "MinContent", "MaxContent", "MinIntrinsic",
+       "Stretch", "FitContent", "Calculated", "Flex", "ExtendToZoom",
+       "DeviceWidth", "DeviceHeight", "None", "Content"});
   if (type_ < std::size(kTypeNames))
     builder.Append(kTypeNames[type_]);
   else
