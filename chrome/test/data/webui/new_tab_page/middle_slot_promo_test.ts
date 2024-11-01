@@ -37,6 +37,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     promoBrowserCommandHandler = installMock(
         CommandHandlerRemote,
         mock => BrowserCommandProxy.setInstance({handler: mock}));
+    newTabPageHandler.setResultFor(
+        'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
   });
 
   function createPromo() {

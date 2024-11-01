@@ -7794,6 +7794,25 @@
             ]
         }
     ],
+    "DesktopNtpMobilePromo": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20241101",
+                    "enable_features": [
+                        "NtpMobilePromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpModules": [
         {
             "platforms": [
