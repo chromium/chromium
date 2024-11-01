@@ -33763,6 +33763,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="153" label="WebMidi"/>
   <int value="154" label="RequestVideoFrameCallback"/>
   <int value="155" label="SvgContextFillOrStroke"/>
+  <int value="156" label="ObjectViewBox"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
