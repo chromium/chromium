@@ -11,6 +11,15 @@ export enum FeatureOptInState {
   DISABLED = 2,
 }
 
+// LINT.IfChange(ModelExecutionEnterprisePolicyValue)
+export enum ModelExecutionEnterprisePolicyValue {
+  ALLOW = 0,
+  ALLOW_WITHOUT_LOGGING = 1,
+  DISABLE = 2,
+}
+// LINT.ThenChange(/components/optimization_guide/core/model_execution/model_execution_prefs.h:ModelExecutionEnterprisePolicyValue)
+
+
 // Exporting pref names so that they can be referenced by tests.
 export enum SettingsAiPageFeaturePrefName {
   MAIN = 'optimization_guide.model_execution_main_toggle_setting_state',

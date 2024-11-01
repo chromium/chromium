@@ -200,6 +200,11 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, CompareSubpage) {
   RunTest("settings/ai_subpage_test.js", "runMochaSuite('CompareSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, LoggingInfoBullet) {
+  RunTest("settings/ai_logging_info_bullet_test.js",
+          "runMochaSuite('LoggingInfoBullet')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
 }

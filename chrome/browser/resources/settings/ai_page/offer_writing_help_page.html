@@ -56,10 +56,9 @@
           <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
           <div class="secondary">$i18n{aiComposeComposeConsiderData}</div>
         </li>
-        <li>
-          <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{aiSubpageSublabelReviewers}</div>
-        </li>
+        <settings-ai-logging-info-bullet
+            pref="[[prefs.optimization_guide.model_execution.compose_enterprise_policy_allowed]]">
+        </settings-ai-logging-info-bullet>
       </ul>
     </div>
   </div>

@@ -377,6 +377,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"aiSubpageSublabelAi", IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI},
       {"aiSubpageSublabelReviewers",
        IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS},
+      {"aiSubpageSublabelLoggingManagedDisabled",
+       IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED},
 
       // History search strings.
       {"historySearchSettingLabel", IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL},

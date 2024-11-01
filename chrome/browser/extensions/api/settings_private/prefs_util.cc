@@ -44,6 +44,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
@@ -1222,6 +1223,22 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
       optimization_guide::UserVisibleFeatureKey::kHistorySearch)] =
+      settings_api::PrefType::kNumber;
+
+  // AI enterprise prefs
+  (*s_allowlist)
+      [optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed] =
+          settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::kComposeEnterprisePolicyAllowed] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)
+      [optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed] =
+          settings_api::PrefType::kNumber;
+  (*s_allowlist)
+      [optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed] =
+          settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::
+                     kProductSpecificationsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
 
   return *s_allowlist;
