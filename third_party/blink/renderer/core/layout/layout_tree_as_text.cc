@@ -753,15 +753,20 @@ String CounterValueForElement(Element* element) {
   if (LayoutObject* marker =
           element->PseudoElementLayoutObject(kPseudoIdMarker))
     WriteCounterValuesFromChildren(stream, marker, is_first_counter);
-  if (LayoutObject* before =
-          element->PseudoElementLayoutObject(kPseudoIdBefore))
-    WriteCounterValuesFromChildren(stream, before, is_first_counter);
   if (LayoutObject* check =
           element->PseudoElementLayoutObject(kPseudoIdCheck)) {
     WriteCounterValuesFromChildren(stream, check, is_first_counter);
   }
+  if (LayoutObject* before =
+          element->PseudoElementLayoutObject(kPseudoIdBefore)) {
+    WriteCounterValuesFromChildren(stream, before, is_first_counter);
+  }
   if (LayoutObject* after = element->PseudoElementLayoutObject(kPseudoIdAfter))
     WriteCounterValuesFromChildren(stream, after, is_first_counter);
+  if (LayoutObject* select_arrow =
+          element->PseudoElementLayoutObject(kPseudoIdSelectArrow)) {
+    WriteCounterValuesFromChildren(stream, select_arrow, is_first_counter);
+  }
   return stream.ReleaseString();
 }
 

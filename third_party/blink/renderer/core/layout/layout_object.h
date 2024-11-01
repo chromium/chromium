@@ -1069,12 +1069,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsTableCell() || IsLayoutTableCol() || IsTableCaption() ||
            IsTableRow() || IsTableSection();
   }
+  inline bool IsCheckContent() const;
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;
+  inline bool IsSelectArrowContent() const;
   inline bool IsMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
+  }
+  static inline bool IsSelectArrowContent(const LayoutObject* obj) {
+    return obj && obj->IsSelectArrowContent();
   }
 
   // Returns true if the text is generated (from, e.g., list marker,
@@ -4153,6 +4158,17 @@ inline bool LayoutObject::DocumentBeingDestroyed() const {
   return GetDocument().Lifecycle().GetState() >= DocumentLifecycle::kStopping;
 }
 
+inline bool LayoutObject::IsCheckContent() const {
+  if (StyleRef().StyleType() != kPseudoIdCheck) {
+    return false;
+  }
+  // Text nodes don't have their own styles, so ignore the style on a text node.
+  if (IsText() && !IsBR()) {
+    return false;
+  }
+  return true;
+}
+
 inline bool LayoutObject::IsBeforeContent() const {
   if (StyleRef().StyleType() != kPseudoIdBefore)
     return false;
@@ -4168,6 +4184,17 @@ inline bool LayoutObject::IsAfterContent() const {
   // Text nodes don't have their own styles, so ignore the style on a text node.
   if (IsText() && !IsBR())
     return false;
+  return true;
+}
+
+inline bool LayoutObject::IsSelectArrowContent() const {
+  if (StyleRef().StyleType() != kPseudoIdSelectArrow) {
+    return false;
+  }
+  // Text nodes don't have their own styles, so ignore the style on a text node.
+  if (IsText() && !IsBR()) {
+    return false;
+  }
   return true;
 }
 

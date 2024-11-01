@@ -4230,6 +4230,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   if (element && (element->GetPseudoElement(kPseudoIdCheck) ||
                   element->GetPseudoElement(kPseudoIdBefore) ||
                   element->GetPseudoElement(kPseudoIdAfter) ||
+                  element->GetPseudoElement(kPseudoIdSelectArrow) ||
                   element->GetPseudoElement(kPseudoIdMarker) ||
                   element->GetPseudoElement(kPseudoIdScrollNextButton) ||
                   element->GetPseudoElement(kPseudoIdScrollPrevButton) ||

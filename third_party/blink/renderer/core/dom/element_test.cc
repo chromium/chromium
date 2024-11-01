@@ -1255,7 +1255,7 @@ TEST_F(ElementTest, TheCheckPseudoElement) {
 
     <select id="target">
       <option id="target-option" value="the only option"></option>
-    </select
+    </select>
     )HTML");
 
   // GetPseudoElement() relies on style recalc.
@@ -1270,6 +1270,40 @@ TEST_F(ElementTest, TheCheckPseudoElement) {
   // The `::check` pseudo element should only be created for option elements.
   Element* target_option = GetElementById("target-option");
   EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheck));
+}
+
+TEST_F(ElementTest, TheSelectArrowPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #a-div::select-arrow {
+        content: "*";
+      }
+
+      #target::select-arrow {
+        content: "*";
+      }
+    </style>
+
+    <div id="a-div"></div>
+
+    <select id="target">
+      <option id="target-option" value="the only option"></option>
+    </select>
+    )HTML");
+
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Element* div = GetElementById("a-div");
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdSelectArrow));
+
+  // The `::select-arrow` pseudo element should only be created for select
+  // elements.
+  Element* target = GetElementById("target");
+  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdSelectArrow));
+
+  Element* target_option = GetElementById("target-option");
+  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdSelectArrow));
 }
 
 }  // namespace blink

@@ -3897,6 +3897,14 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (child_change.TraversePseudoElements(*this)) {
     UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
+
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      if (IsA<HTMLSelectElement>(this)) {
+        UpdatePseudoElement(kPseudoIdSelectArrow, child_change,
+                            child_recalc_context);
+      }
+    }
+
     UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
                         child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollNextButton, child_change,
@@ -4405,6 +4413,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     }
     RebuildPseudoElementLayoutTree(kPseudoIdScrollNextButton, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdSelectArrow, *child_attacher);
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);
     } else {
@@ -8487,9 +8496,9 @@ const ComputedStyle* Element::StyleForPseudoElement(
                            ? GetPseudoIdForStyling()
                            : request.pseudo_id;
 
-  const bool is_before_or_after_like = pseudo_id == kPseudoIdCheck ||
-                                       pseudo_id == kPseudoIdBefore ||
-                                       pseudo_id == kPseudoIdAfter;
+  const bool is_before_or_after_like =
+      pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdBefore ||
+      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -10627,6 +10636,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdCheck:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
+      case kPseudoIdSelectArrow:
       case kPseudoIdBackdrop:
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:

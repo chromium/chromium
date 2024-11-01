@@ -347,14 +347,17 @@ class CORE_EXPORT Node : public EventTarget {
     return GetElementNamespaceType() == ElementNamespaceType::kSVG;
   }
 
-  DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
-    return GetPseudoId() == kPseudoIdBefore;
-  }
   DISABLE_CFI_PERF bool IsCheckPseudoElement() const {
     return GetPseudoId() == kPseudoIdCheck;
   }
+  DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
+    return GetPseudoId() == kPseudoIdBefore;
+  }
   DISABLE_CFI_PERF bool IsAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdAfter;
+  }
+  DISABLE_CFI_PERF bool IsSelectArrowPseudoElement() const {
+    return GetPseudoId() == kPseudoIdSelectArrow;
   }
   DISABLE_CFI_PERF bool IsScrollMarkerGroupBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupBefore;

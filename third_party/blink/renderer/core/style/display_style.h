@@ -44,6 +44,7 @@ class DisplayStyle {
       case kPseudoIdCheck:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
+      case kPseudoIdSelectArrow:
       case kPseudoIdScrollNextButton:
       case kPseudoIdScrollPrevButton:
         return ContentBehavesAsNormal();

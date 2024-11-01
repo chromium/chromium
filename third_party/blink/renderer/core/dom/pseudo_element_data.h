@@ -55,6 +55,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_check_);
     visitor->Trace(generated_before_);
     visitor->Trace(generated_after_);
+    visitor->Trace(generated_select_arrow_);
     visitor->Trace(generated_marker_);
     visitor->Trace(generated_first_letter_);
     visitor->Trace(generated_scroll_marker_group_before_);
@@ -72,6 +73,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_check_;
   Member<PseudoElement> generated_before_;
   Member<PseudoElement> generated_after_;
+  Member<PseudoElement> generated_select_arrow_;
   Member<PseudoElement> generated_marker_;
   Member<PseudoElement> generated_first_letter_;
   Member<PseudoElement> generated_scroll_marker_group_before_;
@@ -92,8 +94,9 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
 inline bool PseudoElementData::HasPseudoElements() const {
   return generated_check_ || generated_before_ || generated_after_ ||
-         generated_marker_ || backdrop_ || generated_first_letter_ ||
-         transition_data_ || generated_scroll_marker_group_before_ ||
+         generated_select_arrow_ || generated_marker_ || backdrop_ ||
+         generated_first_letter_ || transition_data_ ||
+         generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_next_button_ || generated_scroll_prev_button_ ||
          (column_pseudo_elements_ && !column_pseudo_elements_->empty());
@@ -103,6 +106,7 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdCheck, nullptr);
   SetPseudoElement(kPseudoIdBefore, nullptr);
   SetPseudoElement(kPseudoIdAfter, nullptr);
+  SetPseudoElement(kPseudoIdSelectArrow, nullptr);
   SetPseudoElement(kPseudoIdMarker, nullptr);
   SetPseudoElement(kPseudoIdBackdrop, nullptr);
   SetPseudoElement(kPseudoIdFirstLetter, nullptr);
@@ -137,6 +141,10 @@ inline void PseudoElementData::SetPseudoElement(
     case kPseudoIdAfter:
       previous_element = generated_after_;
       generated_after_ = element;
+      break;
+    case kPseudoIdSelectArrow:
+      previous_element = generated_select_arrow_;
+      generated_select_arrow_ = element;
       break;
     case kPseudoIdMarker:
       previous_element = generated_marker_;
@@ -202,6 +210,9 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     return generated_before_.Get();
   if (kPseudoIdAfter == pseudo_id)
     return generated_after_.Get();
+  if (kPseudoIdSelectArrow == pseudo_id) {
+    return generated_select_arrow_.Get();
+  }
   if (kPseudoIdMarker == pseudo_id)
     return generated_marker_.Get();
   if (kPseudoIdScrollMarkerGroupBefore == pseudo_id) {
@@ -246,6 +257,9 @@ PseudoElementData::GetPseudoElements() const {
     result.push_back(generated_before_);
   if (generated_after_)
     result.push_back(generated_after_);
+  if (generated_select_arrow_) {
+    result.push_back(generated_select_arrow_);
+  }
   if (generated_marker_)
     result.push_back(generated_marker_);
   if (generated_first_letter_)

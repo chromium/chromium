@@ -1232,7 +1232,8 @@ void ElementRuleCollector::DidMatchRule(
     }
     if ((dynamic_pseudo == kPseudoIdCheck ||
          dynamic_pseudo == kPseudoIdBefore ||
-         dynamic_pseudo == kPseudoIdAfter) &&
+         dynamic_pseudo == kPseudoIdAfter ||
+         dynamic_pseudo == kPseudoIdSelectArrow) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent)) {
       return;
     }
