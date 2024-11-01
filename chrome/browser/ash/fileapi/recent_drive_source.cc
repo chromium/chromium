@@ -101,7 +101,7 @@ void RecentDriveSource::GetRecentFiles(const Params& params,
   }
 
   auto query_params = drivefs::mojom::QueryParameters::New();
-  query_params->page_size = params.max_files();
+  query_params->page_size = params.page_size();
   query_params->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   query_params->sort_field =
@@ -153,7 +153,7 @@ void RecentDriveSource::OnComplete(const int32_t call_id) {
 }
 
 void RecentDriveSource::GotSearchResults(
-    const Params& params,
+    Params params,
     drive::FileError error,
     std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
   CallContext* context = context_map_.Lookup(params.call_id());
@@ -168,7 +168,6 @@ void RecentDriveSource::GotSearchResults(
     return;
   }
 
-  context->files.reserve(results->size());
   for (auto& result : *results) {
     if (!drivefs::IsAFile(result->metadata->type)) {
       continue;
@@ -187,7 +186,16 @@ void RecentDriveSource::GotSearchResults(
         // treated as recent files.
         result->metadata->last_viewed_by_me_time);
   }
-  OnComplete(params.call_id());
+
+  ++context->pages_returned;
+
+  if (context->pages_returned * params.page_size() >= params.max_files()) {
+    OnComplete(params.call_id());
+  } else {
+    context->search_query->GetNextPage(
+        base::BindOnce(&RecentDriveSource::GotSearchResults,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(params)));
+  }
 }
 
 }  // namespace ash

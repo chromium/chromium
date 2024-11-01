@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/fileapi/recent_disk_source.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +17,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/fileapi/recent_disk_source.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
 #include "chrome/test/base/testing_profile.h"
@@ -69,8 +71,8 @@ struct TestParams {
                                   const int32_t call_id,
                                   const GURL& origin) {
     return RecentSource::Params(context, call_id, origin, query_, max_files_,
-                                cutoff_time_, base::TimeTicks::Max(),
-                                file_type_);
+                                /*page_size=*/std::nullopt, cutoff_time_,
+                                base::TimeTicks::Max(), file_type_);
   }
 
   std::unique_ptr<RecentDiskSource> MakeSource(
