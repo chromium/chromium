@@ -410,6 +410,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kSpeculationRulesHeader,
           WebFeature::kGeolocationGetCurrentPosition,
           WebFeature::kGeolocationWatchPosition,
+          WebFeature::
+              kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement,
       }));
   return *opt_in_features;
 }

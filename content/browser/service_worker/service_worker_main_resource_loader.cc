@@ -396,6 +396,13 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   if (race_network_request_mode == RaceNetworkRequestMode::kForced) {
     CHECK_EQ(race_source->target, blink::ServiceWorkerRouterRaceSource::
                                       TargetEnum::kNetworkAndFetchHandler);
+    if (base::FeatureList::IsEnabled(
+            features::
+                kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement)) {
+      active_worker->CountFeature(
+          blink::mojom::WebFeature::
+              kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement);
+    }
   }
   // Record worker start time here as |fetch_dispatcher_| will start a service
   // worker if there is no running service worker.

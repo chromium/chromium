@@ -4530,6 +4530,7 @@ enum WebFeature {
   kSvgContextFillOrStroke = 5156,
   kARIAActionsAttribute = 5157,
   kResolveToConfigValueCoercedToTrue = 5158,
+  kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement = 5159,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

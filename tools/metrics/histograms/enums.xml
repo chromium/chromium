@@ -10841,6 +10841,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5156" label="SvgContextFillOrStroke"/>
   <int value="5157" label="ARIAActionsAttribute"/>
   <int value="5158" label="ResolveToConfigValueCoercedToTrue"/>
+  <int value="5159"
+      label="ServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
