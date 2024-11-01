@@ -37,7 +37,6 @@ external/wpt/css/reference/*
 external/wpt/digital-credentials/*
 external/wpt/ecmascript/*
 external/wpt/fullscreen/*
-external/wpt/html/semantics/scripting-1/*
 external/wpt/js*
 external/wpt/longtask-timing/*
 external/wpt/media*
@@ -61,13 +60,10 @@ virtual/keepalive-in-browser-migration/external/wpt/xhr/*
 virtual/longtask-from-loaf/external/wpt/*
 virtual/media-foundation-for-clear-frameserver/*
 virtual/media-gpu-accelerated/*
-virtual/mutation-events-enabled/external/wpt/html/semantics/scripting-1/*
 virtual/oopr-canvas2d/external/wpt/mediacapture-record/*
-virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/threaded/external/wpt/scheduler/*
-virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/*
 virtual/webauthn-remote-desktop-client-override/*
 
 # These tests use the virtual authenticator API, which is only supported through webdriver.
