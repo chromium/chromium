@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/common/content_export.h"
@@ -73,6 +74,15 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // PrivateAggregationHost mojo pipe will be ignored.
   virtual bool IsDebugModeAllowed(const url::Origin& top_frame_origin,
                                   const url::Origin& reporting_origin) = 0;
+
+  // Returns true iff an isolated context with the given parameters requires
+  // deterministic report counts, i.e. sending a null report when a real report
+  // has no approved contributions. Such contexts also qualify for "reduced
+  // delay", meaning they may be sent after a fixed duration of time relative to
+  // an event outside of the isolated context.
+  [[nodiscard]] static bool ShouldSendReportDeterministically(
+      const std::optional<std::string>& context_id,
+      base::StrictNumeric<size_t> filtering_id_max_bytes);
 };
 
 }  // namespace content
