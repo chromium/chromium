@@ -60,10 +60,19 @@
   }
 
   [slot='title'] {
-    --cr-dialog-title-slot-padding-bottom: 16px;
+    --cr-dialog-title-slot-padding-bottom: 4px;
     --cr-dialog-title-slot-padding-end: 24px;
     --cr-dialog-title-slot-padding-start: 24px;
     --cr-dialog-title-slot-padding-top: 24px;
+    --cr-primary-text-color: var(--cros-sys-on_surface);
+    font: var(--cros-display-7-font);
+  }
+
+  [slot='header'] {
+    flex: 1;
+    padding-bottom: 16px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
     --cr-primary-text-color: var(--cros-sys-on_surface);
     font: var(--cros-display-7-font);
   }
@@ -79,13 +88,14 @@
   }
 </style>
 
-<cr-dialog id="dialog" show-on-attach>
-  <div slot="title" id="title">
-    <div id="icon">
-      <iron-icon class="managed-icon" icon="skyvault:enterprise"></iron-icon>
-    </div>
-    <div id="title-text"></div>
+<cr-dialog id="dialog">
+  <div slot="title">
+    <iron-icon class="managed-icon" icon="skyvault:enterprise"></iron-icon>
   </div>
+  <!-- Put title in the header; otherwise it's not detected properly
+  by screen readers -->
+  <div slot="header" id="header" role="heading"></div>
+
   <div slot="body">
     <p class="message" id="start-message"></p>
     <p class="message" id="done-message"></p>
