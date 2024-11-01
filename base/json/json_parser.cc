@@ -818,8 +818,9 @@ bool JSONParser::ReadInt(bool allow_leading_zeros) {
   char first = 0;
 
   while (std::optional<char> c = PeekChar()) {
-    if (!IsAsciiDigit(c))
+    if (!IsAsciiDigit(*c)) {
       break;
+    }
 
     if (len == 0)
       first = *c;

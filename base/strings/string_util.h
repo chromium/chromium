@@ -167,7 +167,9 @@ BASE_EXPORT std::u16string ToUpperASCII(std::u16string_view str);
 // context (combining accents), and require handling UTF-16. If you need
 // proper Unicode support, use base::i18n::ToLower/FoldCase and then just
 // use a normal operator== on the result.
-template<typename Char> struct CaseInsensitiveCompareASCII {
+template <typename Char>
+  requires(std::integral<Char>)
+struct CaseInsensitiveCompareASCII {
  public:
   bool operator()(Char x, Char y) const {
     return ToLowerASCII(x) == ToLowerASCII(y);
@@ -408,6 +410,7 @@ BASE_EXPORT bool EndsWith(
 // Determines the type of ASCII character, independent of locale (the C
 // library versions will change based on locale).
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiWhitespace(Char c) {
   // kWhitespaceASCII is a null-terminated string.
   for (const char* cur = kWhitespaceASCII; *cur; ++cur) {
@@ -417,31 +420,38 @@ constexpr bool IsAsciiWhitespace(Char c) {
   return false;
 }
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiAlpha(Char c) {
   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiUpper(Char c) {
   return c >= 'A' && c <= 'Z';
 }
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiLower(Char c) {
   return c >= 'a' && c <= 'z';
 }
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiDigit(Char c) {
   return c >= '0' && c <= '9';
 }
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiAlphaNumeric(Char c) {
   return IsAsciiAlpha(c) || IsAsciiDigit(c);
 }
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiPrintable(Char c) {
   return c >= ' ' && c <= '~';
 }
 
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiControl(Char c) {
   if constexpr (std::is_signed_v<Char>) {
     if (c < 0) {
@@ -452,6 +462,7 @@ constexpr bool IsAsciiControl(Char c) {
 }
 
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsUnicodeControl(Char c) {
   return IsAsciiControl(c) ||
          // C1 control characters: http://unicode.org/charts/PDF/U0080.pdf
@@ -459,11 +470,13 @@ constexpr bool IsUnicodeControl(Char c) {
 }
 
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsAsciiPunctuation(Char c) {
   return c > 0x20 && c < 0x7f && !IsAsciiAlphaNumeric(c);
 }
 
 template <typename Char>
+  requires(std::integral<Char>)
 constexpr bool IsHexDigit(Char c) {
   return (c >= '0' && c <= '9') ||
          (c >= 'A' && c <= 'F') ||
