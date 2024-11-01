@@ -133,6 +133,7 @@ export class PrivacySandboxDialogConsentStepElement extends
         this.shadowRoot!.querySelector<HTMLElement>('#privacyPolicy');
     iframeContent!.classList.add('hidden');
     iframeContent!.classList.remove('visible');
+    iframeContent!.tabIndex = -1;
     this.hideConsentNoticePage_ = false;
 
     // Send focus back to privacy policy link for a11y screen reader.
@@ -147,6 +148,8 @@ export class PrivacySandboxDialogConsentStepElement extends
         this.shadowRoot!.querySelector<HTMLElement>('#privacyPolicy');
     iframeContent!.classList.add('visible');
     iframeContent!.classList.remove('hidden');
+    // Make iframe tab-able for a11y.
+    iframeContent!.tabIndex = 0;
 
     this.hideConsentNoticePage_ = true;
     this.privacyPolicyPageClickStartTime_ = performance.now();
