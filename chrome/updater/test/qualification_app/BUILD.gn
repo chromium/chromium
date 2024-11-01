@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/process_version_rc_template.gni")
+import("//chrome/updater/updater_process_version_rc_template.gni")
 
 executable("qualification_app") {
   sources = [ "main.cc" ]
@@ -18,7 +18,8 @@ executable("qualification_app") {
 }
 
 if (is_win) {
-  process_version_rc_template("version") {
-    output = "$root_out_dir/qualification_app_version.rc"
+  updater_process_version_rc_template("version") {
+    original_filename = "qualification_app.exe"
+    rc = "qualification_app_version.rc"
   }
 }

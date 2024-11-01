@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/util/process_version.gni")
-import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/updater_process_version_rc_template.gni")
 import("//chrome/updater/zip.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -123,40 +123,13 @@ process_version("uninstall.cmd") {
   ]
 }
 
-template("updater_process_version_rc_template") {
-  # `process_version_rc_template` invokes `process_version` with the default
-  # template rc file which is at //chrome/app/chrome_version.rc.version.
-  process_version_rc_template(target_name) {
-    _internal_name = "$updater_product_full_display_name"
-    if (invoker.suffix != "") {
-      _internal_name += invoker.suffix
-    }
-    _internal_name += " ($current_cpu)"
-    if (is_debug) {
-      _internal_name += " (debug)"
-    }
-    extra_args = [
-      "-e",
-      "PRODUCT_FULLNAME=\"$updater_product_full_display_name\"",
-      "-e",
-      "INTERNAL_NAME=\"$_internal_name\"",
-      "-e",
-      "ORIGINAL_FILENAME=\"${invoker.original_filename}\"",
-      "-e",
-      "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
-    ]
-    output = "$target_gen_dir/${invoker.rc}"
-  }
-}
-
 updater_process_version_rc_template("version_resources") {
-  suffix = ""
   original_filename = "updater.exe"
   rc = "updater_exe.rc"
 }
 
 updater_process_version_rc_template("version_resources_test") {
-  suffix = " (test)"
   original_filename = "updater_test.exe"
   rc = "updater_test_exe.rc"
+  suffix = "(test)"
 }
