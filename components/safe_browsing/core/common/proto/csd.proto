@@ -140,6 +140,21 @@ message ImageFeatureEmbedding {
   repeated float embedding_value = 2;
 }
 
+// The metadata for the Llama-CSD trigger rules which are propagated to
+// CSD-Phishing server through Chrome.
+message LlamaTriggerRuleInfo {
+  // Unique id for the llama-csd forced trigger rule
+  optional int32 llama_trigger_rule_id = 1;
+  // Whether to request additional intelligence from Chrome.
+  optional bool intelligent_scan = 2;
+}
+
+message LlamaForcedTriggerInfo {
+  repeated LlamaTriggerRuleInfo llama_trigger_rule_infos = 1;
+  // True if requested by any of the trigger rules.
+  optional bool intelligent_scan = 2;
+}
+
 message ClientPhishingRequest {
   // URL that the client visited.  The CGI parameters are stripped by the
   // client.
@@ -265,7 +280,11 @@ message ClientPhishingRequest {
 
   optional ReportType report_type = 30;
 
-  // next available tag number: 31.
+  // The information of Llama trigger rules that triggered a CSD ping. Set only
+  // if client_side_detection_type = FORCE_REQUEST.
+  optional LlamaForcedTriggerInfo llama_forced_trigger_info = 31;
+
+  // next available tag number: 32.
 }
 
 message ClientPhishingResponse {
