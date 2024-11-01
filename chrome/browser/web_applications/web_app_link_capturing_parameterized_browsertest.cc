@@ -2219,29 +2219,8 @@ class NavigationCapturingTestWithExtraBrowserTabB
 
   void MaybeCustomSetup(const webapps::AppId& app_a,
                         const webapps::AppId& app_b) override {
-    DLOG(INFO) << "Navigating to browser tab b.";
-    content::DOMMessageQueue message_queue;
-    // Ensure that if a fixture ended up loading a different page in the
-    // starting tab, create a new tab for the navigation.
-    GURL last_committed_url = browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetLastCommittedURL();
-    bool is_at_new_tab_page =
-        IsNewTabOrAboutBlankUrl(browser(), last_committed_url);
-    if (!is_at_new_tab_page) {
-      LOG(ERROR) << "opening new tab due to "
-                 << last_committed_url.possibly_invalid_spec();
-      chrome::NewTab(browser());
-    }
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(kDestinationPageScopeB)));
-    content::WebContents* contents_b =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::WaitForLoadStop(contents_b);
-
-    // Launching a web app should listen to a single navigation message.
-    WaitForNavigationFinishedMessage(message_queue);
+    EnsureValidNewTabPage();
+    LaunchPageInTab(embedded_test_server()->GetURL(kDestinationPageScopeB));
   }
 
   std::string GetTestClassName() const override {
