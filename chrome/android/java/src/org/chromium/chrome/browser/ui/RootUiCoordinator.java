@@ -961,9 +961,10 @@ public class RootUiCoordinator
             mAutomotiveBackButtonToolbarCoordinator =
                     new AutomotiveBackButtonToolbarCoordinator(
                             mActivity,
-                            mActivity.findViewById(R.id.back_button_toolbar),
+                            mActivity.findViewById(R.id.automotive_base_frame_layout),
                             mFullscreenManager,
-                            mCompositorViewHolderSupplier.get());
+                            mCompositorViewHolderSupplier.get(),
+                            mBackPressManager);
         }
     }
 

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -24,6 +25,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     private View mAutomotiveToolbar;
+    private View mOnSwipeAutomotiveToolbar;
     private FullscreenManager.Observer mFullscreenObserver;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -45,6 +48,7 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private FullscreenManager mFullscreenManager;
+    @Mock private BackPressManager mBackPressManager;
     @Mock private TouchEventProvider mTouchEventProvider;
     @Mock private EdgeSwipeGestureDetector mEdgeSwipeGestureDetector;
 
@@ -54,17 +58,26 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
     }
 
     private void onActivity(TestActivity activity) {
-        View parent =
-                LayoutInflater.from(activity)
-                        .inflate(
-                                R.layout.automotive_layout_with_horizontal_back_button_toolbar,
-                                null);
+        FrameLayout parent =
+                (FrameLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(
+                                        R.layout
+                                                .automotive_layout_with_vertical_back_button_toolbar,
+                                        null);
         mAutomotiveToolbar = parent.findViewById(R.id.back_button_toolbar);
         mAutomotiveBackButtonToolbarCoordinator =
                 new AutomotiveBackButtonToolbarCoordinator(
-                        activity, mAutomotiveToolbar, mFullscreenManager, mTouchEventProvider);
+                        activity,
+                        parent,
+                        mFullscreenManager,
+                        mTouchEventProvider,
+                        mBackPressManager);
         mEdgeSwipeGestureDetector =
                 mAutomotiveBackButtonToolbarCoordinator.getEdgeSwipeGestureDetectorForTesting();
+        mOnSwipeAutomotiveToolbar =
+                parent.findViewById(R.id.automotive_on_swipe_back_button_toolbar);
+        mAutomotiveToolbar = parent.findViewById(R.id.back_button_toolbar);
     }
 
     @Test
@@ -72,9 +85,9 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
         Assert.assertEquals(mAutomotiveToolbar.getVisibility(), View.VISIBLE);
         mFullscreenObserver =
                 mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();
+
         verify(mFullscreenManager).addObserver(mFullscreenObserver);
         mFullscreenObserver.onEnterFullscreen(null, null);
-        verify(mTouchEventProvider).addTouchEventObserver(mEdgeSwipeGestureDetector);
         Assert.assertEquals(
                 "Toolbar should be gone when entering fullscreen",
                 mAutomotiveToolbar.getVisibility(),
@@ -83,12 +96,19 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     public void testFullscreen_onExitFullscreen() {
-        mAutomotiveToolbar.setVisibility(View.GONE);
-        Assert.assertEquals(mAutomotiveToolbar.getVisibility(), View.GONE);
         mFullscreenObserver =
                 mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();
+        mFullscreenObserver.onEnterFullscreen(null, null);
+        Assert.assertEquals(mAutomotiveToolbar.getVisibility(), View.GONE);
+        mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
+        Assert.assertEquals(mOnSwipeAutomotiveToolbar.getVisibility(), View.VISIBLE);
         mFullscreenObserver.onExitFullscreen(null);
+
         verify(mTouchEventProvider).removeTouchEventObserver(mEdgeSwipeGestureDetector);
+        Assert.assertEquals(
+                "On swipe toolbar should not be gone when not in fullscreen",
+                mOnSwipeAutomotiveToolbar.getVisibility(),
+                View.GONE);
         Assert.assertEquals(
                 "Toolbar should appear when not in fullscreen",
                 mAutomotiveToolbar.getVisibility(),
@@ -105,13 +125,13 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
         mAutomotiveBackButtonToolbarCoordinator.handleSwipe();
 
         Assert.assertEquals(
-                "Toolbar should be visible on valid swipe",
-                mAutomotiveToolbar.getVisibility(),
+                "On swipe toolbar should be visible on valid swipe",
+                mOnSwipeAutomotiveToolbar.getVisibility(),
                 View.VISIBLE);
         ShadowLooper.idleMainLooper(10000, TimeUnit.MILLISECONDS);
         Assert.assertEquals(
-                "Toolbar should disappear after 10s",
-                mAutomotiveToolbar.getVisibility(),
+                "On swipe toolbar should disappear after 10s",
+                mOnSwipeAutomotiveToolbar.getVisibility(),
                 View.GONE);
     }
 }

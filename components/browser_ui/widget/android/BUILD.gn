@@ -243,6 +243,7 @@ android_resources("java_resources") {
     "java/res/layout/app_menu_layout.xml",
     "java/res/layout/automotive_layout_with_horizontal_back_button_toolbar.xml",
     "java/res/layout/automotive_layout_with_vertical_back_button_toolbar.xml",
+    "java/res/layout/automotive_on_swipe_back_button_toolbar.xml",
     "java/res/layout/checkbox_with_description.xml",
     "java/res/layout/date_divided_adapter_header_view_holder.xml",
     "java/res/layout/dialog_control_description.xml",
