@@ -23,9 +23,11 @@ import {isRevampWayfindingEnabled, shouldShowMultitaskingInPersonalization} from
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
+import type {PersonalizationHubBrowserProxy} from './personalization_hub_browser_proxy.js';
+import {PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
 import {getTemplate} from './personalization_page.html.js';
 
 const SettingsPersonalizationPageElementBase =
