@@ -646,7 +646,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "integrity": "high",
-            "os": "Windows-11-22000",
+            "os": "Windows-11-22000|Windows-11-22631",
             "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -663,7 +663,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "integrity": "high",
-            "os": "Windows-11-22000",
+            "os": "Windows-11-22000|Windows-11-22631",
             "pool": "chromium.tests"
           },
           "hard_timeout": 7200,

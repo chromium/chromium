@@ -2182,7 +2182,7 @@ targets.mixin(
     generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
-            "os": "Windows-11-22000",
+            "os": "Windows-11-22000|Windows-11-22631",
         },
     ),
 )
