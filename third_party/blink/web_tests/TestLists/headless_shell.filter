@@ -51,6 +51,7 @@ external/wpt/signed-exchange/*
 external/wpt/wasm/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
+external/wpt/webmessaging/*
 external/wpt/xhr/*
 
 virtual/cookie-deprecation-label/*
