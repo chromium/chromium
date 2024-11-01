@@ -597,16 +597,42 @@ void RenderFrameProxyHost::RouteMessageEvent(
     }
   }
 
-  // Only deliver the message if the request came from a RenderFrameHost in the
-  // same CoopRelatedGroup or if this WebContents is dedicated to a browser
-  // plugin guest.
-  //
-  // TODO(alexmos, lazyboy):  The check for browser plugin guest currently
-  // requires going through the delegate.  It should be refactored and
-  // performed here once OOPIF support in <webview> is further along.
   SiteInstanceGroup* target_group = target_rfh->GetSiteInstance()->group();
+
+  bool is_embedder_to_guest_communication = false;
+  if (!target_rfh->GetParentOrOuterDocument()) {
+    RenderFrameHostImpl* target_embedder_rfh =
+        target_rfh->GetParentOrOuterDocumentOrEmbedder();
+    if (target_embedder_rfh &&
+        site_instance_group()->IsCoopRelatedSiteInstanceGroup(
+            target_embedder_rfh->GetSiteInstance()->group())) {
+      is_embedder_to_guest_communication = true;
+    }
+  }
+
+  bool is_guest_to_embedder_communication = false;
+  if (source_frame_token) {
+    RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetID(), source_frame_token.value());
+    if (source_rfh) {
+      RenderFrameHostImpl* source_outermost_rfh =
+          source_rfh->GetOutermostMainFrame();
+      RenderFrameHostImpl* source_embedder_rfh =
+          source_outermost_rfh->GetParentOrOuterDocumentOrEmbedder();
+      if (source_embedder_rfh &&
+          target_group->IsCoopRelatedSiteInstanceGroup(
+              source_embedder_rfh->GetSiteInstance()->group())) {
+        is_guest_to_embedder_communication = true;
+      }
+    }
+  }
+
+  // Only deliver the message if the request came from a RenderFrameHost in the
+  // same CoopRelatedGroup or if this is a message between a guest and its
+  // embedder.
   if (!target_group->IsCoopRelatedSiteInstanceGroup(site_instance_group()) &&
-      !target_rfh->delegate()->ShouldRouteMessageEvent(target_rfh)) {
+      !is_embedder_to_guest_communication &&
+      !is_guest_to_embedder_communication) {
     return;
   }
 
@@ -649,15 +675,38 @@ void RenderFrameProxyHost::RouteMessageEvent(
             ->render_manager()
             ->CreateRenderFrameProxyAndAncestorChainIfNeeded(
                 target_rfh->GetSiteInstance()->group());
+      } else if (is_embedder_to_guest_communication) {
+        // We create a RenderFrameProxyHost for the embedder in the guest's
+        // render process but we intentionally do not expose the embedder's
+        // opener chain to it.
+        CHECK(target_rfh->is_main_frame());
+        source_rfh->GetMainFrame()
+            ->frame_tree_node()
+            ->render_manager()
+            ->CreateRenderFrameProxy(
+                target_rfh->GetSiteInstance()->group(),
+                source_rfh->GetMainFrame()->browsing_context_state());
+      } else if (is_guest_to_embedder_communication) {
+        // A RenderFrameProxyHost was already created when the guest was
+        // attached.
       } else {
         // Ensure that we have a swapped-out RVH and proxy for the source frame
         // in the target SiteInstance. If it doesn't exist, create it on demand
         // and also create its opener chain, since that will also be accessible
         // to the target page.
-        // TODO(crbug.com/40261772): Using WebContents here disregards
+        // TODO(crbug.com/40261772): Using the main frame here disregards
         // the possibility of postMessaging an iframe. This is broken, and
         // sometimes leads to null event.source.
-        target_rfh->delegate()->EnsureOpenerProxiesExist(source_rfh);
+        // This also looks wrong if the source posted a message as it entered
+        // bfcache, such as in a pagehide handler. Could this be related to
+        // https://crbug.com/354382462 ?
+        source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
+            target_rfh->GetOutermostMainFrame()
+                ->frame_tree_node()
+                ->current_frame_host()
+                ->GetSiteInstance()
+                ->group(),
+            nullptr, source_rfh->browsing_context_state());
       }
 
       // If the message source is a cross-process subframe, its proxy will only

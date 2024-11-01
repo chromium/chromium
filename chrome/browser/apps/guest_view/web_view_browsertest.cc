@@ -5093,8 +5093,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AllowTransparencyAndAllowScalingPropagate) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, BasicPostMessage) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/post_message/basic",
                                {.launch_as_platform_app = true}))

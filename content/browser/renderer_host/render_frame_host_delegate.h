@@ -360,24 +360,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void UpdateUserGestureCarryoverInfo() {}
 #endif
 
-  // Let the delegate decide whether postMessage should be delivered to
-  // |target_rfh| from a source frame in the given SiteInstance.  This defaults
-  // to false and overrides the RenderFrameHost's decision if true.
-  virtual bool ShouldRouteMessageEvent(RenderFrameHostImpl* target_rfh) const;
-
-  // Ensure that |source_rfh| has swapped-out RenderViews and
-  // RenderFrameProxies for itself and for all frames on its opener chain in
-  // the current frame's SiteInstance.
-  //
-  // TODO(alexmos): This method currently supports cross-process postMessage,
-  // where we may need to create any missing proxies for the message's source
-  // frame and its opener chain. It currently exists in WebContents due to a
-  // special case for <webview> guests, but this logic should eventually be
-  // moved down into RenderFrameProxyHost::RouteMessageEvent when <webview>
-  // refactoring for --site-per-process mode is further along.  See
-  // https://crbug.com/330264.
-  virtual void EnsureOpenerProxiesExist(RenderFrameHostImpl* source_rfh) {}
-
   // The frame called |window.focus()|.
   virtual void DidCallFocus() {}
 

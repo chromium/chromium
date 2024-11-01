@@ -89,11 +89,6 @@ bool RenderFrameHostDelegate::CanUseWindowingControls(RenderFrameHostImpl*) {
   return false;
 }
 
-bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
-    RenderFrameHostImpl* target_rfh) const {
-  return false;
-}
-
 bool RenderFrameHostDelegate::IsInnerWebContentsForGuest() {
   return false;
 }
