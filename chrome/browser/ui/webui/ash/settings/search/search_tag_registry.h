@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -39,15 +40,15 @@ class SearchTagRegistry {
     ScopedTagUpdater& operator=(const ScopedTagUpdater&) = delete;
     ~ScopedTagUpdater();
 
-    void AddSearchTags(const std::vector<SearchConcept>& search_tags);
-    void RemoveSearchTags(const std::vector<SearchConcept>& search_tags);
+    void AddSearchTags(base::span<const SearchConcept> search_tags);
+    void RemoveSearchTags(base::span<const SearchConcept> search_tags);
 
    private:
     friend class SearchTagRegistry;
 
     explicit ScopedTagUpdater(SearchTagRegistry* registry);
 
-    void ProcessPendingSearchTags(const std::vector<SearchConcept>& search_tags,
+    void ProcessPendingSearchTags(base::span<const SearchConcept> search_tags,
                                   bool is_pending_add);
 
     raw_ptr<SearchTagRegistry> registry_;

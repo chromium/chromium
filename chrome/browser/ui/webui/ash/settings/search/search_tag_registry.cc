@@ -82,28 +82,21 @@ SearchTagRegistry::ScopedTagUpdater::~ScopedTagUpdater() {
 }
 
 void SearchTagRegistry::ScopedTagUpdater::AddSearchTags(
-    const std::vector<SearchConcept>& search_tags) {
+    base::span<const SearchConcept> search_tags) {
   ProcessPendingSearchTags(search_tags, /*is_pending_add=*/true);
 }
 
 void SearchTagRegistry::ScopedTagUpdater::RemoveSearchTags(
-    const std::vector<SearchConcept>& search_tags) {
+    base::span<const SearchConcept> search_tags) {
   ProcessPendingSearchTags(search_tags, /*is_pending_add=*/false);
 }
 
 void SearchTagRegistry::ScopedTagUpdater::ProcessPendingSearchTags(
-    const std::vector<SearchConcept>& search_tags,
+    base::span<const SearchConcept> search_tags,
     bool is_pending_add) {
   for (const auto& search_concept : search_tags) {
-    std::string result_id = ToResultId(search_concept);
-    auto it = pending_updates_.find(result_id);
-    if (it == pending_updates_.end()) {
-      pending_updates_.emplace(
-          std::piecewise_construct, std::forward_as_tuple(result_id),
-          std::forward_as_tuple(&search_concept, is_pending_add));
-    } else {
-      it->second.second = is_pending_add;
-    }
+    pending_updates_[ToResultId(search_concept)] = {&search_concept,
+                                                    is_pending_add};
   }
 }
 
@@ -171,6 +164,12 @@ const SearchConcept* SearchTagRegistry::GetTagMetadata(
 
 // static
 std::string SearchTagRegistry::ToResultId(const SearchConcept& search_concept) {
+  // TODO(dcheng): Investigate switching this to a lightweight struct with:
+  // - a variant of section+subpage+setting
+  // - a canonical message ID
+  // There is no need to synthesize a string here just for internal bookkeeping
+  // purposes, and it is arguably far less type safe... especially since this is
+  // sent across Mojo too.
   std::stringstream ss;
   switch (search_concept.type) {
     case mojom::SearchResultType::kSection:
