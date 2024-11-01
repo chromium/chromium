@@ -1296,6 +1296,39 @@ LensOverlayQueryController::GetEncodedVisualSearchInteractionLogData(
   interaction_data.mutable_log_data()->set_is_parent_query(!parent_query_sent_);
   interaction_data.mutable_log_data()->set_client_platform(
       lens::CLIENT_PLATFORM_LENS_OVERLAY);
+
+  // If there was an interaction request made, then the selection type, region
+  // and object id should be set if they exist. The interaction request may not
+  // exist if the user made a text-selection query.
+  if (latest_interaction_request_data_->request_ &&
+      latest_interaction_request_data_->request_->has_interaction_request()) {
+    auto sent_interaction_request =
+        latest_interaction_request_data_->request_->interaction_request();
+    interaction_data.set_interaction_type(
+        sent_interaction_request.interaction_request_metadata().type());
+    if (sent_interaction_request.has_interaction_request_metadata() &&
+        sent_interaction_request.interaction_request_metadata()
+            .has_selection_metadata() &&
+        sent_interaction_request.interaction_request_metadata()
+            .selection_metadata()
+            .has_object()) {
+      interaction_data.set_object_id(
+          sent_interaction_request.interaction_request_metadata()
+              .selection_metadata()
+              .object()
+              .object_id());
+    } else if (sent_interaction_request.has_image_crop()) {
+      // The zoomed crop field should only be set if the object id is not set.
+      interaction_data.mutable_zoomed_crop()->CopyFrom(
+          sent_interaction_request.image_crop().zoomed_crop());
+    }
+  } else {
+    // If there was no interaction request, then the selection type should be
+    // set to text selection.
+    interaction_data.set_interaction_type(
+        lens::LensOverlayInteractionRequestMetadata::TEXT_SELECTION);
+  }
+
   parent_query_sent_ = true;
 
   std::string serialized_proto;

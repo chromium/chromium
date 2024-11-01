@@ -20,4 +20,4 @@ blaze run //lens/chrome/scripts/proto_export -- \
 
 
 Local Modifications:
-Unchanged from the output of the export script.
+Copied proto changes manually, as they are not yet submitted internally.

@@ -38,6 +38,8 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
+
 namespace lens {
 
 // The fake multimodal query text.
@@ -99,6 +101,13 @@ constexpr char kTimeZone[] = "America/Los_Angeles";
 
 // The parameter key for gen204 request.
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
+
+MATCHER_P(EqualsProto, message, "") {
+  std::string expected_serialized, actual_serialized;
+  message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
+}
 
 // Fake VariationsClient for testing. Without it, tests crash.
 class FakeVariationsClient : public variations::VariationsClient {
@@ -288,7 +297,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
     return std::string(base::as_string_view(data.value()));
   }
 
-  lens::LensOverlaySelectionType GetSelectionTypeFromUrl(
+  lens::LensOverlayVisualSearchInteractionData GetVsintFromUrl(
       std::string url_string) {
     GURL url = GURL(url_string);
     std::string vsint_param;
@@ -300,7 +309,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
         &serialized_proto));
     lens::LensOverlayVisualSearchInteractionData proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
-    return proto.log_data().user_selection_data().selection_type();
+    return proto;
   }
 
   std::string GetAnalyticsIdFromUrl(std::string url_string) {
@@ -328,6 +337,34 @@ class LensOverlayQueryControllerTest : public testing::Test {
     ASSERT_TRUE(client_logs.has_paella_id());
     ASSERT_EQ(base::NumberToString(client_logs.paella_id()).c_str(),
               url_gen204_id);
+  }
+
+  void CheckVsintMatchesInteractionRequest(
+      const lens::LensOverlayVisualSearchInteractionData& vsint,
+      const lens::LensOverlayInteractionRequest& interaction_request) {
+    ASSERT_EQ(vsint.interaction_type(),
+              interaction_request.interaction_request_metadata().type());
+    if (interaction_request.has_interaction_request_metadata() &&
+        interaction_request.interaction_request_metadata()
+            .has_selection_metadata() &&
+        interaction_request.interaction_request_metadata()
+            .selection_metadata()
+            .has_object()) {
+      ASSERT_EQ(vsint.object_id(),
+                interaction_request.interaction_request_metadata()
+                    .selection_metadata()
+                    .object()
+                    .object_id());
+    } else {
+      // Proto3 primitives don't have a has_foo method.
+      ASSERT_EQ(vsint.object_id(), "");
+    }
+    if (interaction_request.has_image_crop()) {
+    EXPECT_THAT(vsint.zoomed_crop(),
+                EqualsProto(interaction_request.image_crop().zoomed_crop()));
+    } else {
+      ASSERT_FALSE(vsint.has_zoomed_crop());
+    }
   }
 
   std::string GetEncodedRequestId(lens::LensOverlayRequestId request_id) {
@@ -691,7 +728,10 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_TRUE(url_response_future.Get().has_url());
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(GetVsintFromUrl(url_response_future.Get().url())
+                .log_data()
+                .user_selection_data()
+                .selection_type(),
             lens::REGION_SEARCH);
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -705,6 +745,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Verify the interaction request.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
+  CheckVsintMatchesInteractionRequest(
+      GetVsintFromUrl(url_response_future.Get().url()),
+      sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
@@ -793,7 +836,10 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 1000);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 1000);
   ASSERT_TRUE(url_response_future.Get().has_url());
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(GetVsintFromUrl(url_response_future.Get().url())
+                .log_data()
+                .user_selection_data()
+                .selection_type(),
             lens::REGION_SEARCH);
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -807,6 +853,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Verify the interaction request.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
+  CheckVsintMatchesInteractionRequest(
+      GetVsintFromUrl(url_response_future.Get().url()),
+      sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
@@ -901,7 +950,10 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_TRUE(url_response_future.Get().has_url());
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(GetVsintFromUrl(url_response_future.Get().url())
+                .log_data()
+                .user_selection_data()
+                .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_EQ(latest_suggest_inputs_.encoded_image_signals(),
             kTestSuggestSignals);
@@ -915,6 +967,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Verify the interaction request.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
+  CheckVsintMatchesInteractionRequest(
+      GetVsintFromUrl(url_response_future.Get().url()),
+      sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
@@ -989,10 +1044,16 @@ TEST_F(LensOverlayQueryControllerTest,
       net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
                                  kStartTimeQueryParam, &unused_start_time);
 
+  auto vsint = GetVsintFromUrl(url_response_future.Get().url());
+  ASSERT_EQ(vsint.object_id(), "");
+  ASSERT_FALSE(vsint.has_zoomed_crop());
+  ASSERT_EQ(vsint.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::TEXT_SELECTION);
+
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_FALSE(latest_suggest_inputs_.has_encoded_image_signals());
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(vsint.log_data().user_selection_data().selection_type(),
             lens::SELECT_TEXT_HIGHLIGHT);
   ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
   ASSERT_TRUE(has_start_time);
@@ -1057,6 +1118,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
+  CheckVsintMatchesInteractionRequest(
+      GetVsintFromUrl(url_response_future.Get().url()),
+      sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
@@ -1089,7 +1153,10 @@ TEST_F(LensOverlayQueryControllerTest,
       GURL(url_response_future.Get().url()),
       kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
   ASSERT_TRUE(has_vsint);
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(GetVsintFromUrl(url_response_future.Get().url())
+                .log_data()
+                .user_selection_data()
+                .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
@@ -1165,6 +1232,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
+  CheckVsintMatchesInteractionRequest(
+      GetVsintFromUrl(url_response_future.Get().url()),
+      sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
@@ -1197,7 +1267,10 @@ TEST_F(LensOverlayQueryControllerTest,
       GURL(url_response_future.Get().url()),
       kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
   ASSERT_TRUE(has_vsint);
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(GetVsintFromUrl(url_response_future.Get().url())
+                .log_data()
+                .user_selection_data()
+                .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
@@ -1273,6 +1346,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
+  CheckVsintMatchesInteractionRequest(
+      GetVsintFromUrl(url_response_future.Get().url()),
+      sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
   ASSERT_EQ(
@@ -1305,7 +1381,10 @@ TEST_F(LensOverlayQueryControllerTest,
       GURL(url_response_future.Get().url()),
       kVisualSearchInteractionDataQueryParameterKey, &encoded_vsint);
   ASSERT_TRUE(has_vsint);
-  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+  ASSERT_EQ(GetVsintFromUrl(url_response_future.Get().url())
+                .log_data()
+                .user_selection_data()
+                .selection_type(),
             lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
