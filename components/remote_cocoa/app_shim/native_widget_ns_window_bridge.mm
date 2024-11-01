@@ -63,6 +63,17 @@
 using remote_cocoa::mojom::VisibilityTransition;
 using remote_cocoa::mojom::WindowVisibilityState;
 
+// Undocumented API used to prevent a window region from being screen captured.
+using CGSConnectionID = uint32_t;
+using CGSWindowID = NSInteger;
+using CGRegionRef = CFTypeRef;
+
+CG_EXTERN CGSConnectionID CGSMainConnectionID(void);
+CG_EXTERN CGError CGSSetWindowCaptureExcludeShape(CGSConnectionID cid,
+                                                  CGSWindowID wid,
+                                                  CGRegionRef region);
+CG_EXTERN CGRegionRef CGRegionCreateWithRect(CGRect rect);
+
 namespace {
 constexpr auto kUIPaintTimeout = base::Seconds(5);
 
@@ -1104,8 +1115,15 @@ void NativeWidgetNSWindowBridge::DisplayContextMenu(
 }
 
 void NativeWidgetNSWindowBridge::SetAllowScreenshots(bool allow) {
-  [ns_window()
-      setSharingType:allow ? NSWindowSharingReadOnly : NSWindowSharingNone];
+  CGSConnectionID connection_id = CGSMainConnectionID();
+  CGSWindowID window_id = ns_window().windowNumber;
+  CGRect frame = ns_window().frame;
+  frame.origin = CGPointZero;
+  base::apple::ScopedCFTypeRef<CGRegionRef> region;
+  if (!allow) {
+    region.reset(CGRegionCreateWithRect(frame));
+  }
+  CGSSetWindowCaptureExcludeShape(connection_id, window_id, region.get());
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
