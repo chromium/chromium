@@ -616,13 +616,6 @@ BASE_FEATURE(kDisplayAlignAssist,
              "DisplayAlignAssist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the docked (a.k.a. picture-in-picture) magnifier.
-// TODO(afakhry): Remove this after the feature is fully launched.
-// https://crbug.com/709824.
-BASE_FEATURE(kDockedMagnifier,
-             "DockedMagnifier",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, DriveFS will be used for Drive sync.
 BASE_FEATURE(kDriveFs, "DriveFS", base::FEATURE_ENABLED_BY_DEFAULT);
 
