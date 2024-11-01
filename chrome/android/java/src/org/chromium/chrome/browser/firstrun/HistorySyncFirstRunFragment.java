@@ -52,6 +52,8 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     private void createViewAndAttachToFragment() {
         maybeCreateCoordinator();
+        if (mHistorySyncCoordinator == null) return;
+
         HistorySyncView view = mHistorySyncCoordinator.maybeRecreateView();
         if (view != null) {
             // View is non-null when HistorySyncView has created a new view. This new view will
@@ -117,6 +119,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         super.onDetach();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
         }
     }
 }
