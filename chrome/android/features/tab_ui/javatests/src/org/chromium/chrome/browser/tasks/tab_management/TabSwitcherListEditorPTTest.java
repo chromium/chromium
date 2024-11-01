@@ -59,6 +59,7 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/376897518")
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
