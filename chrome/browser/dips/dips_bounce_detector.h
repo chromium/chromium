@@ -142,8 +142,8 @@ class DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
-  const DIPSRedirectInfo& AtForTesting(size_t i) const {
-    return *redirects_.at(i);
+  const DIPSRedirectInfo& operator[](size_t index) const {
+    return *redirects_.at(index);
   }
 
   std::optional<std::pair<size_t, DIPSRedirectInfo*>> GetRedirectInfoFromChain(
@@ -372,7 +372,8 @@ class RedirectChainDetector
     // Called when a navigation has committed and the redirect context has been
     // updated. (If you override WebContentsObserver::DidFinishNavigation()
     // directly, you could be called before the context has been updated.)
-    virtual void OnNavigationCommitted() {}
+    virtual void OnNavigationCommitted(
+        content::NavigationHandle* navigation_handle) {}
     // Called when any redirect chain ends, including ones that end with an
     // uncommitted navigation.
     virtual void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>&,

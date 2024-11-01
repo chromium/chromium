@@ -46,7 +46,8 @@ void RedirectHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
   last_commit_timestamp_ = clock_->Now();
 }
 
-void RedirectHeuristicTabHelper::OnNavigationCommitted() {
+void RedirectHeuristicTabHelper::OnNavigationCommitted(
+    content::NavigationHandle* navigation_handle) {
   // Use the redirects just added to the DIPSRedirectContext in order to
   // create new storage access grants when the Redirect heuristic applies.
   CreateAllRedirectHeuristicGrants(web_contents()->GetLastCommittedURL());

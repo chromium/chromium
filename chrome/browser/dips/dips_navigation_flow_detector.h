@@ -11,16 +11,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_bounce_detector.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "url/gurl.h"
-
-class DIPSService;
 
 namespace content {
 struct CookieAccessDetails;
@@ -34,6 +34,8 @@ struct PageVisitInfo {
   PageVisitInfo();
   PageVisitInfo(PageVisitInfo&& other);
 
+  PageVisitInfo& operator=(PageVisitInfo&& other);
+
   GURL url;
   std::string site;
   ukm::SourceId source_id;
@@ -43,6 +45,21 @@ struct PageVisitInfo {
   bool did_page_have_successful_waa;
   std::optional<bool> was_navigation_to_page_renderer_initiated;
   std::optional<bool> was_navigation_to_page_user_initiated;
+
+  bool WasNavigationToPageClientRedirect() const;
+};
+
+struct EntrypointInfo {
+  // Used when the entrypoint has a server redirect exit.
+  explicit EntrypointInfo(const DIPSRedirectInfo& server_redirect_info,
+                          const dips::PageVisitInfo& exit_page_info);
+  // Used when the entrypoint has a client redirect exit.
+  explicit EntrypointInfo(const dips::PageVisitInfo& client_redirector_info);
+
+  const std::string site;
+  ukm::SourceId source_id;
+  bool had_triggering_storage_access;
+  bool was_referral_client_redirect;
 };
 
 }  // namespace dips
@@ -52,7 +69,8 @@ struct PageVisitInfo {
 // Currently only reports UKM to inform how we might identify possible
 // navigational tracking by sites that also perform user-interest activity.
 class DipsNavigationFlowDetector
-    : public content::WebContentsObserver,
+    : public RedirectChainDetector::Observer,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<DipsNavigationFlowDetector> {
  public:
   ~DipsNavigationFlowDetector() override;
@@ -65,39 +83,25 @@ class DipsNavigationFlowDetector
  protected:
   explicit DipsNavigationFlowDetector(content::WebContents* web_contents);
 
-  void MaybeEmitUkmForPreviousPage();
-  bool CanEmitUkmForPreviousPage() {
-    bool page_is_in_series_of_three = two_pages_ago_visit_info_.has_value() &&
-                                      previous_page_visit_info_.has_value() &&
-                                      current_page_visit_info_.has_value();
-    if (!page_is_in_series_of_three) {
-      return false;
-    }
+  void MaybeEmitNavFlowNodeUkmForPreviousPage();
+  bool CanEmitNavFlowNodeUkmForPreviousPage() const;
 
-    bool page_has_valid_source_id =
-        previous_page_visit_info_->source_id != ukm::kInvalidSourceId;
-    bool site_had_triggering_storage_access =
-        previous_page_visit_info_->did_page_access_cookies ||
-        previous_page_visit_info_->did_page_access_storage;
-    bool is_site_different_from_prior_page =
-        previous_page_visit_info_->site != two_pages_ago_visit_info_->site;
-    bool is_site_different_from_next_page =
-        previous_page_visit_info_->site != current_page_visit_info_->site;
-
-    return page_has_valid_source_id && site_had_triggering_storage_access &&
-           is_site_different_from_prior_page &&
-           is_site_different_from_next_page;
-  }
+  void MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
+      const DIPSRedirectInfo* exit_info);
+  bool CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
+      const DIPSRedirectInfo* exit_info) const;
+  void MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit();
+  bool CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const;
+  bool CanEmitSuspectedTrackerFlowUkm(
+      const dips::PageVisitInfo& referrer_page_info,
+      const dips::EntrypointInfo& entrypoint_info,
+      const dips::PageVisitInfo& exit_page_info) const;
 
  private:
-  // So the controller can call the constructor.
-  friend class DipsNavigationFlowController;
   // So WebContentsUserData::CreateForWebContents can call the constructor.
   friend class content::WebContentsUserData<DipsNavigationFlowDetector>;
 
   // start WebContentsObserver overrides
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
   // For client-initiated cookie accesses, and late-reported cookie accesses in
   // navigations.
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
@@ -112,7 +116,13 @@ class DipsNavigationFlowDetector
       content::RenderFrameHost* render_frame_host) override;
   void WebAuthnAssertionRequestSucceeded(
       content::RenderFrameHost* render_frame_host) override;
+  void WebContentsDestroyed() override;
   // end WebContentsObserver overrides
+
+  // start RedirectChainDetector::Observer overrides
+  void OnNavigationCommitted(
+      content::NavigationHandle* navigation_handle) override;
+  // end RedirectChainDetector::Observer overrides
 
   std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
   std::optional<dips::PageVisitInfo> previous_page_visit_info_;
@@ -125,10 +135,9 @@ class DipsNavigationFlowDetector
   base::Time last_page_change_time_;
   long bucketized_previous_page_visit_duration_;
 
-  // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
-  // with the BrowserContext/Profile, which will outlive the WebContents that
-  // DipsNavigationFlowDetector is observing.
-  raw_ptr<DIPSService> dips_service_;
+  base::ScopedObservation<RedirectChainDetector,
+                          RedirectChainDetector::Observer>
+      redirect_chain_observation_{this};
 
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
 

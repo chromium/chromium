@@ -7497,6 +7497,54 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.SuspectedTrackerFlowEntrypoint">
+  <owner>svend@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    When: - a tab's primary main frame is navigated to three consecutive URLs
+    A-&gt;B-&gt;C, - B accesses cookies or storage, - the eTLD+1 for B is
+    different from the eTLD+1s of A and C, - at least A and C commit (become the
+    primary main page), - the navigation A-&gt;B is content-initiated but not
+    user-initiated, and - either: - both B did not commit and the navigation
+    B-&gt;C was a server redirect; or - both B did commit (become the primary
+    main page) and the navigation B-&gt;C was content-initiated but not
+    user-initiated, then this event is recorded for URL B.
+  </summary>
+  <metric name="ExitRedirectType" enum="DIPSRedirectType">
+    <summary>
+      The type of the navigation away from this URL: client redirect (a
+      content-initiated but not user-initiated navigation) or server redirect.
+    </summary>
+  </metric>
+  <metric name="FlowId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with its matching
+      DIPS.SuspectedTrackerFlowReferrer event.
+    </summary>
+  </metric>
+</event>
+
+<event name="DIPS.SuspectedTrackerFlowReferrer">
+  <owner>svend@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    When: - a tab's primary main frame is navigated to three consecutive URLs
+    A-&gt;B-&gt;C, - B accesses cookies or storage, - the eTLD+1 for B is
+    different from the eTLD+1s of A and C, - at least A and C commit (become the
+    primary main page), - the navigation A-&gt;B is content-initiated but not
+    user-initiated, and - either: - both B did not commit and the navigation
+    B-&gt;C was a server redirect; or - both B did commit (become the primary
+    main page) and the navigation B-&gt;C was content-initiated but not
+    user-initiated, then this event is recorded for URL A.
+  </summary>
+  <metric name="FlowId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with its matching
+      DIPS.SuspectedTrackerFlowEntrypoint event.
+    </summary>
+  </metric>
+</event>
+
 <event name="DIPS.TriggeringAction">
   <owner>kaklilu@google.com</owner>
   <owner>dc-komics@google.com</owner>

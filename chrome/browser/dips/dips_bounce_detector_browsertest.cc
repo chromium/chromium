@@ -2072,11 +2072,11 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   ASSERT_EQ(context.size(), 4u);
 
-  EXPECT_EQ(context.AtForTesting(0).response_code, 301);
-  EXPECT_EQ(context.AtForTesting(1).response_code, 302);
+  EXPECT_EQ(context[0].response_code, 301);
+  EXPECT_EQ(context[1].response_code, 302);
   // The client redirect does not have an explicit HTTP response status.
-  EXPECT_EQ(context.AtForTesting(2).response_code, 0);
-  EXPECT_EQ(context.AtForTesting(3).response_code, 303);
+  EXPECT_EQ(context[2].response_code, 0);
+  EXPECT_EQ(context[3].response_code, 303);
 }
 
 const RedirectHeuristicFlags kRedirectHeuristicTestCases[] = {
@@ -4082,7 +4082,7 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateCookieAccessTest) {
 
   const DIPSRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const DIPSRedirectInfo& redirect = context.AtForTesting(0);
+  const DIPSRedirectInfo& redirect = context[0];
   EXPECT_EQ(redirect.url.url, bounce_url);
   // A request to /favicon.ico may cause a cookie read in addition to the write
   // we explicitly performed.
@@ -4193,7 +4193,7 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateInteractionTest) {
 
   const DIPSRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const DIPSRedirectInfo& redirect = context.AtForTesting(0);
+  const DIPSRedirectInfo& redirect = context[0];
   EXPECT_EQ(redirect.url.url, bounce_url);
   EXPECT_THAT(redirect.has_sticky_activation, true);
 }

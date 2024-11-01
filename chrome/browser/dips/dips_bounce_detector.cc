@@ -999,7 +999,7 @@ void RedirectChainDetector::DidFinishNavigation(
 
   if (navigation_handle->HasCommitted()) {
     for (auto& observer : observers_) {
-      observer.OnNavigationCommitted();
+      observer.OnNavigationCommitted(navigation_handle);
     }
   }
 }

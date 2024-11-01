@@ -76,7 +76,8 @@ class RedirectHeuristicTabHelper
   void WebContentsDestroyed() override;
 
   // Start RedirectChainDetector::Observer overrides:
-  void OnNavigationCommitted() override;
+  void OnNavigationCommitted(
+      content::NavigationHandle* navigation_handle) override;
 
   raw_ptr<RedirectChainDetector> detector_;
   raw_ptr<DIPSServiceImpl> dips_service_;
