@@ -216,12 +216,7 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
   size_t num_windows = (*it).second.event_report_windows().end_times().size();
 
   base::CheckedNumeric<uint32_t> num_states =
-      specs.SingleSharedSpec()
-          ? internal::GetNumberOfStarsAndBarsSequences(  // Optimized fast path
-                /*num_stars=*/static_cast<uint32_t>(max_reports),
-                /*num_bars=*/static_cast<uint32_t>(specs.size() * num_windows))
-          : GetNumStatesRecursive(it, max_reports, num_windows, max_reports,
-                                  map);
+      GetNumStatesRecursive(it, max_reports, num_windows, max_reports, map);
 
   if (!num_states.IsValid() ||
       num_states.ValueOrDie() > g_max_trigger_state_cardinality) {
@@ -329,151 +324,6 @@ bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
 
 namespace internal {
 
-base::CheckedNumeric<uint32_t> BinomialCoefficient(
-    base::StrictNumeric<uint32_t> strict_n,
-    base::StrictNumeric<uint32_t> strict_k) {
-  uint32_t n = strict_n;
-  uint32_t k = strict_k;
-  if (k > n) {
-    return 0;
-  }
-
-  // Speed up some trivial cases.
-  if (k == n || n == 0) {
-    return 1;
-  }
-
-  // BinomialCoefficient(n, k) == BinomialCoefficient(n, n - k),
-  // So simplify if possible. Underflow not possible as we know k < n at this
-  // point.
-  if (k > n - k) {
-    k = n - k;
-  }
-
-  // (n choose k) = n (n -1) ... (n - (k - 1)) / k!
-  // = mul((n + 1 - i) / i), i from 1 -> k.
-  //
-  // You might be surprised that this algorithm works just fine with integer
-  // division (i.e. division occurs cleanly with no remainder). However, this is
-  // true for a very simple reason. Imagine a value of `i` causes division with
-  // remainder in the below algorithm. This immediately implies that
-  // (n choose i) is fractional, which we know is not the case.
-  base::CheckedNumeric<uint64_t> result = 1;
-  for (uint32_t i = 1; i <= k; i++) {
-    uint32_t term = n - i + 1;
-    base::CheckedNumeric<uint64_t> temp_result = result * term;
-    DCHECK(!temp_result.IsValid() || (temp_result % i).ValueOrDie() == 0);
-    result = temp_result / i;
-  }
-  return result.Cast<uint32_t>();
-}
-
-// Computes the `combination_index`-th lexicographically smallest k-combination.
-// https://en.wikipedia.org/wiki/Combinatorial_number_system
-
-// A k-combination is a sequence of k non-negative integers in decreasing order.
-// a_k > a_{k-1} > ... > a_2 > a_1 >= 0.
-// k-combinations can be ordered lexicographically, with the smallest
-// k-combination being a_k=k-1, a_{k-1}=k-2, .., a_1=0. Given an index
-// `combination_index`>=0, and an order k, this method returns the
-// `combination_index`-th smallest k-combination.
-//
-// Given an index `combination_index`, the `combination_index`-th k-combination
-// is the unique set of k non-negative integers
-// a_k > a_{k-1} > ... > a_2 > a_1 >= 0
-// such that `combination_index` = \sum_{i=1}^k {a_i}\choose{i}
-//
-// For k >= 2, we find this set via a simple greedy algorithm.
-// http://math0.wvstateu.edu/~baker/cs405/code/Combinadics.html
-//
-// The k = 0 case is trivially the empty set, and the k = 1 case is
-// trivially just `combination_index`.
-std::vector<uint32_t> GetKCombinationAtIndex(
-    base::StrictNumeric<uint32_t> combination_index,
-    base::StrictNumeric<uint32_t> strict_k) {
-  uint32_t k = strict_k;
-  DCHECK_LE(k, kMaxSettableEventLevelAttributionsPerSource);
-
-  std::vector<uint32_t> output_k_combination;
-  output_k_combination.reserve(k);
-
-  if (k == 0u) {
-    return output_k_combination;
-  }
-
-  if (k == 1u) {
-    output_k_combination.push_back(combination_index);
-    return output_k_combination;
-  }
-
-  // To find a_k, iterate candidates upwards from 0 until we've found the
-  // maximum a such that (a choose k) <= `combination_index`. Let a_k = a. Use
-  // the previous binomial coefficient to compute the next one. Note: possible
-  // to speed this up via something other than incremental search.
-  uint32_t target = combination_index;
-
-  uint32_t candidate = k - 1;
-
-  // BinomialCoefficient(candidate, k)
-  uint64_t binomial_coefficient = 0;
-  // BinomialCoefficient(candidate+1, k)
-  uint64_t next_binomial_coefficient = 1;
-  while (next_binomial_coefficient <= target) {
-    DCHECK_LT(candidate, std::numeric_limits<uint32_t>::max());
-    candidate++;
-    binomial_coefficient = next_binomial_coefficient;
-
-    // If the returned value from `BinomialCoefficient` is invalid, the DCHECK
-    // would fail anyways, so it is safe to not validate.
-    DCHECK(binomial_coefficient ==
-           BinomialCoefficient(candidate, k).ValueOrDie());
-
-    // (n + 1 choose k) = (n choose k) * (n + 1) / (n + 1 - k)
-    // Safe because candidate <= binomial_coefficient <= UINT32_MAX.
-    // Therefore binomial_coefficient * (candidate + 1) <= UINT32_MAX *
-    // (UINT32_MAX + 1) <= UINT64_MAX.
-    next_binomial_coefficient = binomial_coefficient * (candidate + 1);
-    next_binomial_coefficient /= candidate + 1 - k;
-  }
-  // We know from the k-combination definition, all subsequent values will be
-  // strictly decreasing. Find them all by decrementing `candidate`.
-  // Use the previous binomial coefficient to compute the next one.
-  uint32_t current_k = k;
-  while (true) {
-    // The optimized code below maintains this loop invariant.
-    DCHECK(binomial_coefficient ==
-           BinomialCoefficient(candidate, current_k).ValueOrDie());
-
-    if (binomial_coefficient <= target) {
-      output_k_combination.push_back(candidate);
-      bool valid =
-          base::CheckSub(target, binomial_coefficient).AssignIfValid(&target);
-      DCHECK(valid);
-
-      if (output_k_combination.size() == static_cast<size_t>(k)) {
-        DCHECK_EQ(target, 0u);
-        return output_k_combination;
-      }
-      // (n - 1 choose k - 1) = (n choose k) * k / n
-      // Safe because binomial_coefficient * current_k <= combination_index * k
-      // <= UINT32_MAX * UINT32_MAX < UINT64_MAX.
-      binomial_coefficient = binomial_coefficient * current_k / candidate;
-
-      current_k--;
-      candidate--;
-    } else {
-      // (n - 1 choose k) = (n choose k) * (n - k) / n
-      // Safe because binomial_coefficient * (candidate - current_k) <=
-      // combination_index * k <= UINT32_MAX * UINT32_MAX < UINT64_MAX.
-      binomial_coefficient =
-          binomial_coefficient * (candidate - current_k) / candidate;
-
-      candidate--;
-    }
-    DCHECK(base::IsValueInRangeForNumericType<uint32_t>(binomial_coefficient));
-  }
-}
-
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
                                base::StrictNumeric<uint32_t> index,
@@ -490,41 +340,6 @@ GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
       it, max_reports, (*it).second.event_report_windows().end_times().size(),
       max_reports, index, reports, map));
   return reports;
-}
-
-base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(
-    base::StrictNumeric<uint32_t> num_stars,
-    base::StrictNumeric<uint32_t> num_bars) {
-  return BinomialCoefficient(
-      static_cast<uint32_t>(num_stars) + static_cast<uint32_t>(num_bars),
-      num_stars);
-}
-
-base::expected<std::vector<uint32_t>, absl::monostate> GetStarIndices(
-    base::StrictNumeric<uint32_t> num_stars,
-    base::StrictNumeric<uint32_t> num_bars,
-    base::StrictNumeric<uint32_t> sequence_index) {
-  const base::CheckedNumeric<uint32_t> num_sequences =
-      GetNumberOfStarsAndBarsSequences(num_stars, num_bars);
-  if (!num_sequences.IsValid()) {
-    return base::unexpected(absl::monostate());
-  }
-
-  DCHECK(sequence_index < num_sequences.ValueOrDie());
-  return GetKCombinationAtIndex(sequence_index, num_stars);
-}
-
-std::vector<uint32_t> GetBarsPrecedingEachStar(std::vector<uint32_t> out) {
-  DCHECK(base::ranges::is_sorted(out, std::greater{}));
-
-  for (size_t i = 0u; i < out.size(); i++) {
-    uint32_t star_index = out[i];
-
-    // There are `star_index` prior positions in the sequence, and `i` prior
-    // stars, so there are `star_index` - `i` prior bars.
-    out[i] = star_index - (out.size() - 1 - i);
-  }
-  return out;
 }
 
 double BinaryEntropy(double p) {
@@ -573,60 +388,6 @@ double ComputeChannelCapacityScopes(
   return log2(total_states);
 }
 
-base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
-GetFakeReportsForSequenceIndex(
-    const TriggerSpecs& specs,
-    base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index) {
-  const TriggerSpec* single_spec = specs.SingleSharedSpec();
-  CHECK(single_spec);
-
-  const int trigger_data_cardinality = specs.size();
-  const int max_reports = specs.max_event_level_reports();
-
-  ASSIGN_OR_RETURN(
-      std::vector<uint32_t> stars,
-      GetStarIndices(
-          /*num_stars=*/static_cast<uint32_t>(max_reports),
-          /*num_bars=*/
-          static_cast<uint32_t>(
-              trigger_data_cardinality *
-              single_spec->event_report_windows().end_times().size()),
-          /*sequence_index=*/random_stars_and_bars_sequence_index),
-      [](absl::monostate) {
-        return RandomizedResponseError::kExceedsTriggerStateCardinalityLimit;
-      });
-
-  const std::vector<uint32_t> bars_preceding_each_star =
-      GetBarsPrecedingEachStar(std::move(stars));
-
-  std::vector<FakeEventLevelReport> fake_reports;
-
-  // an output state is uniquely determined by an ordering of c stars and w*d
-  // bars, where:
-  // w = the number of reporting windows
-  // c = the maximum number of reports for a source
-  // d = the trigger data cardinality for a source
-  for (uint32_t num_bars : bars_preceding_each_star) {
-    if (num_bars == 0) {
-      continue;
-    }
-
-    auto result = std::div(num_bars - 1, trigger_data_cardinality);
-
-    const int trigger_data_index = result.rem;
-    DCHECK_LT(trigger_data_index, trigger_data_cardinality);
-
-    fake_reports.push_back({
-        .trigger_data =
-            std::next(specs.trigger_data_indices().begin(), trigger_data_index)
-                ->first,
-        .window_index = result.quot,
-    });
-  }
-  DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_reports));
-  return fake_reports;
-}
-
 base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponseWithCache(
     const TriggerSpecs& specs,
@@ -663,21 +424,9 @@ DoRandomizedResponseWithCache(
 
   std::optional<std::vector<FakeEventLevelReport>> fake_reports;
   if (GenerateWithRate(rate)) {
-    // TODO(csharrison): Justify the fast path with `single_spec` with
-    // profiling.
-    //
-    // Note: we can implement the fast path in more cases than a single shared
-    // spec if all of the specs have the same # of windows and reports. We can
-    // consider further optimizing if it's useful. The existing code will cover
-    // the default specs for navigation / event sources.
     uint32_t sequence_index = base::RandGenerator(num_states);
-    if (specs.SingleSharedSpec()) {
-      ASSIGN_OR_RETURN(fake_reports, internal::GetFakeReportsForSequenceIndex(
-                                         specs, sequence_index));
-    } else {
-      ASSIGN_OR_RETURN(fake_reports, internal::GetFakeReportsForSequenceIndex(
-                                         specs, sequence_index, map));
-    }
+    ASSIGN_OR_RETURN(fake_reports, internal::GetFakeReportsForSequenceIndex(
+                                       specs, sequence_index, map));
   }
   return RandomizedResponseData(rate, std::move(fake_reports));
 }

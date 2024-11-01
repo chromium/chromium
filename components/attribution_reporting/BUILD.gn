@@ -547,22 +547,6 @@ mojom("data_host_mojom") {
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 }
 
-test("privacy_math_fuzztest") {
-  sources = [ "privacy_math_fuzztest.cc" ]
-
-  fuzztests = [
-    "PrivacyMathTest.GetKCombinationAtIndex",
-    "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive",
-  ]
-
-  deps = [
-    ":attribution_reporting",
-    ":fuzzer_support",
-    ":test_support",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
-}
-
 test("filters_fuzztest") {
   sources = [ "filters_fuzztest.cc" ]
 
