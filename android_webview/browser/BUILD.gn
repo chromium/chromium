@@ -182,6 +182,8 @@ source_set("browser") {
     "network_service/aw_web_resource_request.h",
     "network_service/net_helpers.cc",
     "network_service/net_helpers.h",
+    "page_load_metrics/aw_gws_page_load_metrics_observer.cc",
+    "page_load_metrics/aw_gws_page_load_metrics_observer.h",
     "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.cc",
     "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h",
     "page_load_metrics/aw_page_load_metrics_provider.cc",
