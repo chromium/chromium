@@ -184,6 +184,10 @@ class IntegrationTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
+    logging::SetLogItems(/*enable_process_id=*/true,
+                         /*enable_thread_id=*/true,
+                         /*enable_timestamp=*/true,
+                         /*enable_tickcount=*/false);
     VLOG(2) << __func__ << " entered.";
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
     if (IsSystemInstall(GetUpdaterScopeForTesting())) {
