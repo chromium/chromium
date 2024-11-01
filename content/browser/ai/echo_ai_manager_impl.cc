@@ -33,10 +33,10 @@ EchoAIManagerImpl::~EchoAIManagerImpl() = default;
 
 // static
 void EchoAIManagerImpl::Create(
-    ReceiverContext context,
+    std::variant<RenderFrameHost*, base::SupportsUserData*> context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   static base::NoDestructor<EchoAIManagerImpl> ai;
-  ai->receivers_.Add(ai.get(), std::move(receiver), context);
+  ai->receivers_.Add(ai.get(), std::move(receiver));
 }
 
 void EchoAIManagerImpl::CanCreateAssistant(

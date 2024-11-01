@@ -25,16 +25,14 @@ namespace content {
 // will be set using the default value.
 class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
-  using ReceiverContext =
-      std::variant<RenderFrameHost*, base::SupportsUserData*>;
-
   EchoAIManagerImpl(const EchoAIManagerImpl&) = delete;
   EchoAIManagerImpl& operator=(const EchoAIManagerImpl&) = delete;
 
   ~EchoAIManagerImpl() override;
 
-  static void Create(ReceiverContext context,
-                     mojo::PendingReceiver<blink::mojom::AIManager> receiver);
+  static void Create(
+      std::variant<RenderFrameHost*, base::SupportsUserData*> context,
+      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend base::NoDestructor<EchoAIManagerImpl>;
@@ -73,7 +71,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;
 
-  mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
+  mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
   base::WeakPtrFactory<EchoAIManagerImpl> weak_ptr_factory_{this};
 };
