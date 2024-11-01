@@ -59,6 +59,10 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
 
+  FilePathWatcher::UsageChangeCallback on_usage_change_callback =
+      base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnUsageChange,
+                          weak_factory_.GetWeakPtr());
+
   FilePathWatcher::WatchOptions watch_options{
       .type = scope().IsRecursive() ? FilePathWatcher::Type::kRecursive
                                     : FilePathWatcher::Type::kNonRecursive,
@@ -79,7 +83,8 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       .WithArgs(
           scope().root_url().path(), std::move(watch_options),
           base::BindPostTaskToCurrentDefault(std::move(on_change_callback)),
-          base::DoNothingAs<void(size_t, size_t)>())
+          base::BindPostTaskToCurrentDefault(
+              std::move(on_usage_change_callback)))
       .Then(base::BindOnce(
           [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                  callback,
@@ -112,6 +117,11 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
   }
 
   NotifyOfChange(relative_path, error, change_info);
+}
+
+void FileSystemAccessLocalPathWatcher::OnUsageChange(size_t old_usage,
+                                                     size_t new_usage) {
+  NotifyOfUsageChange(old_usage, new_usage);
 }
 
 }  // namespace content

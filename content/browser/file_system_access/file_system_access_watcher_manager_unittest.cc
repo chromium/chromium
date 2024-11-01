@@ -92,6 +92,8 @@ class ChangeAccumulator {
       : observation_(std::move(observation)) {
     observation_->SetCallback(base::BindRepeating(&ChangeAccumulator::OnChanges,
                                                   weak_factory_.GetWeakPtr()));
+    observation_->SetUsageCallback(base::BindRepeating(
+        &ChangeAccumulator::OnUsageChanges, weak_factory_.GetWeakPtr()));
   }
   ChangeAccumulator(const ChangeAccumulator&) = delete;
   ChangeAccumulator& operator=(const ChangeAccumulator&) = delete;
@@ -115,6 +117,16 @@ class ChangeAccumulator {
     }
   }
 
+  void OnUsageChanges(size_t old_usage, size_t new_usage) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (has_error_) {
+      return;
+    }
+
+    received_usage_changes_.emplace_back(old_usage, new_usage);
+  }
+
   Observation* observation() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return observation_.get();
@@ -130,6 +142,11 @@ class ChangeAccumulator {
     return received_changes_;
   }
 
+  const std::list<std::pair<size_t, size_t>>& usage_changes() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return received_usage_changes_;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -137,6 +154,9 @@ class ChangeAccumulator {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::list<Change> received_changes_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::list<std::pair<size_t, size_t>> received_usage_changes_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
@@ -177,6 +197,11 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
               ChangeInfo change_info = ChangeInfo()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     NotifyOfChange(changed_url, error, change_info);
+  }
+
+  void SignalUsageChange(size_t old_usage, size_t new_usage) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    NotifyOfUsageChange(old_usage, new_usage);
   }
 
   void set_initialization_result(
@@ -1246,6 +1271,39 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
 
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+}
+
+TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
+
+  FakeChangeSource source(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
+  watcher_manager().RegisterSource(&source);
+  EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
+
+  // Attempting to observe a scope covered by `source` will use `source`.
+  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
+                                        blink::mojom::FileSystemAccessErrorPtr>>
+      get_observation_future;
+  watcher_manager().GetFileObservation(file_url,
+                                       get_observation_future.GetCallback());
+  ASSERT_TRUE(get_observation_future.Get().has_value());
+
+  ChangeAccumulator accumulator(get_observation_future.Take().value());
+  EXPECT_TRUE(
+      watcher_manager().HasObservationForTesting(accumulator.observation()));
+
+  source.SignalUsageChange(50, 100);
+  source.SignalUsageChange(100, 80);
+
+  std::list<std::pair<size_t, size_t>> expected_changes = {{50, 100},
+                                                           {100, 80}};
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(testing::ContainerEq(expected_changes))(
+        accumulator.usage_changes());
+  }));
 }
 
 }  // namespace content

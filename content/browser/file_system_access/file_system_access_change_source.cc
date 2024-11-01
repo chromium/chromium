@@ -118,4 +118,13 @@ void FileSystemAccessChangeSource::NotifyOfChange(
   }
 }
 
+void FileSystemAccessChangeSource::NotifyOfUsageChange(size_t old_usage,
+                                                       size_t new_usage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (RawChangeObserver& observer : observers_) {
+    observer.OnUsageChange(old_usage, new_usage, scope());
+  }
+}
+
 }  // namespace content
