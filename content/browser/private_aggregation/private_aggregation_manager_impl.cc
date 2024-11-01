@@ -142,7 +142,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
     PrivateAggregationBudgetKey budget_key,
-    PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior) {
+    PrivateAggregationHost::NullReportBehavior null_report_behavior) {
   base::CheckedNumeric<int> budget_needed = std::accumulate(
       contributions.begin(), contributions.end(),
       /*init=*/base::CheckedNumeric<int>(0), /*op=*/
@@ -155,7 +155,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
   if (!budget_needed.IsValid()) {
     OnConsumeBudgetReturned(std::move(report_request_generator),
                             std::move(contributions), api_for_budgeting,
-                            budget_denied_behavior,
+                            null_report_behavior,
                             PrivateAggregationBudgeter::RequestResult::
                                 kRequestedMoreThanTotalBudget);
     return;
@@ -183,7 +183,7 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
       base::BindOnce(
           &PrivateAggregationManagerImpl::OnConsumeBudgetReturned,
           base::Unretained(this), std::move(report_request_generator),
-          std::move(contributions), api_for_budgeting, budget_denied_behavior));
+          std::move(contributions), api_for_budgeting, null_report_behavior));
 }
 
 AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
@@ -196,7 +196,7 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
     PrivateAggregationCallerApi api_for_budgeting,
-    PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior,
+    PrivateAggregationHost::NullReportBehavior null_report_behavior,
     PrivateAggregationBudgeter::RequestResult request_result) {
   RecordBudgeterResultHistogram(request_result);
 
@@ -206,11 +206,11 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     CHECK(!contributions.empty());
     RecordManagerResultHistogram(RequestResult::kSentWithContributions);
   } else {
-    switch (budget_denied_behavior) {
-      case PrivateAggregationBudgeter::BudgetDeniedBehavior::kDontSendReport:
+    switch (null_report_behavior) {
+      case PrivateAggregationHost::NullReportBehavior::kDontSendReport:
         RecordManagerResultHistogram(RequestResult::kNotSent);
         return;
-      case PrivateAggregationBudgeter::BudgetDeniedBehavior::kSendNullReport:
+      case PrivateAggregationHost::NullReportBehavior::kSendNullReport:
         RecordManagerResultHistogram(
             RequestResult::kSentButContributionsClearedDueToBudgetDenial);
         contributions.clear();

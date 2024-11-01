@@ -78,15 +78,6 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kMaxValue = kContainsNonPositiveValue,
   };
 
-  // Indicates the desired behavior when budget is denied for a report request.
-  enum class BudgetDeniedBehavior {
-    // Still send a report, but remove all requested contributions.
-    kSendNullReport,
-
-    // Drop the report.
-    kDontSendReport,
-  };
-
   // Represents the two different types of budgets, which differ on the duration
   // of time that they apply to and what the allowable budget for that time is.
   enum class BudgetScope {

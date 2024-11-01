@@ -107,7 +107,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       PrivateAggregationBudgetKey budget_key,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior);
+      PrivateAggregationHost::NullReportBehavior null_report_behavior);
 
  private:
   // Called when the `budgeter_` has responded to a `ConsumeBudget()` call.
@@ -117,7 +117,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       PrivateAggregationCallerApi api_for_budgeting,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior,
+      PrivateAggregationHost::NullReportBehavior null_report_behavior,
       PrivateAggregationBudgeter::RequestResult request_result);
 
   virtual void OnContributionsFinalized(

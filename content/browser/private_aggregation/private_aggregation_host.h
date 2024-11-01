@@ -80,6 +80,16 @@ class CONTENT_EXPORT PrivateAggregationHost
     kMaxValue = kFilteringIdProvidedWithCustomMaxBytes,
   };
 
+  // Indicates the desired behavior when a report has no contributions, such as
+  // when budget is denied or `contributeToHistogram()` was not called.
+  enum class NullReportBehavior {
+    // Still send a report, but without any contributions.
+    kSendNullReport,
+
+    // Drop the report.
+    kDontSendReport,
+  };
+
   using ReportRequestGenerator = base::OnceCallback<AggregatableReportRequest(
       std::vector<blink::mojom::AggregatableReportHistogramContribution>)>;
 
@@ -115,8 +125,7 @@ class CONTENT_EXPORT PrivateAggregationHost
           ReportRequestGenerator,
           std::vector<blink::mojom::AggregatableReportHistogramContribution>,
           PrivateAggregationBudgetKey,
-          PrivateAggregationBudgeter::BudgetDeniedBehavior)>
-          on_report_request_details_received,
+          NullReportBehavior)> on_report_request_details_received,
       BrowserContext* browser_context);
   PrivateAggregationHost(const PrivateAggregationHost&) = delete;
   PrivateAggregationHost& operator=(const PrivateAggregationHost&) = delete;
@@ -193,7 +202,7 @@ class CONTENT_EXPORT PrivateAggregationHost
       ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
       PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      NullReportBehavior)>
       on_report_request_details_received_;
 
   mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>

@@ -785,7 +785,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
           ReportRequestGenerator,
           std::vector<blink::mojom::AggregatableReportHistogramContribution>,
           PrivateAggregationBudgetKey,
-          PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+          PrivateAggregationHost::NullReportBehavior)>
           on_report_request_details_received,
       content::BrowserContext* browser_context)
       : PrivateAggregationHost(std::move(on_report_request_details_received),
@@ -1247,7 +1247,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
       PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationHost::NullReportBehavior)>
       mock_private_aggregation_cb_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().
@@ -9895,8 +9895,7 @@ function scoreAd(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -9912,9 +9911,9 @@ function scoreAd(
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), kOriginA);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
           }));
 
@@ -10660,8 +10659,7 @@ function reportResult() {}
              std::vector<blink::mojom::AggregatableReportHistogramContribution>
                  contributions,
              PrivateAggregationBudgetKey budget_key,
-             PrivateAggregationBudgeter::BudgetDeniedBehavior
-                 budget_denied_behavior) {
+             PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
           }),
@@ -13791,8 +13789,7 @@ function reportResult(auctionConfig, browserSignals) {
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -13926,8 +13923,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -13995,15 +13991,13 @@ function reportResult(auctionConfig, browserSignals) {
   base::RepeatingCallback<void(
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-      PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationBudgetKey, PrivateAggregationHost::NullReportBehavior)>
       mock_callback = base::BindLambdaForTesting(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(

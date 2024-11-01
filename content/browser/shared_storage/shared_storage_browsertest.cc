@@ -7639,7 +7639,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
       void(PrivateAggregationHost::ReportRequestGenerator,
            std::vector<blink::mojom::AggregatableReportHistogramContribution>,
            PrivateAggregationBudgetKey,
-           PrivateAggregationBudgeter::BudgetDeniedBehavior)>&
+           PrivateAggregationHost::NullReportBehavior)>&
   mock_callback() {
     return mock_callback_;
   }
@@ -7662,7 +7662,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
       PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationHost::NullReportBehavior)>
       mock_callback_;
 };
 
@@ -7678,8 +7678,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -7690,9 +7689,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_TRUE(request.additional_fields().empty());
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
           }));
 
@@ -7766,8 +7765,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 2u);
@@ -7779,9 +7777,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kSharedStorage);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
           }));
 
@@ -7819,8 +7817,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -7830,9 +7827,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kSharedStorage);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kSendNullReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
@@ -7895,8 +7892,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -7909,9 +7905,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kSendNullReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             run_loop.Quit();
           }));
 
@@ -7954,8 +7950,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -7967,9 +7962,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                       PrivateAggregationCallerApi::kSharedStorage);
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(testing::Pair("context_id", "")));
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kSendNullReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             run_loop.Quit();
           }));
 
@@ -8013,8 +8008,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8029,9 +8023,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                             testing::Pair("context_id",
                                           "an_example_of_a_context_id_with_the_"
                                           "exact_maximum_allowed_length")));
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kSendNullReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             run_loop.Quit();
           }));
 
@@ -8127,8 +8121,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8186,8 +8179,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8263,8 +8255,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8330,8 +8321,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8398,8 +8388,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8581,8 +8570,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8658,8 +8646,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8726,8 +8713,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -9004,8 +8990,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -9072,8 +9057,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -9140,8 +9124,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -9209,8 +9192,7 @@ IN_PROC_BROWSER_TEST_F(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -9340,8 +9322,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             if (request.payload_contents().contributions.size() == 1u) {
@@ -9359,9 +9340,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(budget_key.origin(), a_test_origin_);
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kSharedStorage);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             barrier.Run();
           }));
 

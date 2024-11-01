@@ -197,8 +197,7 @@ PrivateAggregationHost::PrivateAggregationHost(
         void(ReportRequestGenerator,
              std::vector<blink::mojom::AggregatableReportHistogramContribution>,
              PrivateAggregationBudgetKey,
-             PrivateAggregationBudgeter::BudgetDeniedBehavior)>
-        on_report_request_details_received,
+             NullReportBehavior)> on_report_request_details_received,
     BrowserContext* browser_context)
     : should_not_delay_reports_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -663,10 +662,10 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
         blink::mojom::DebugModeDetails::New();
   }
 
-  PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior =
+  NullReportBehavior null_report_behavior =
       receiver_context.context_id.has_value()
-          ? PrivateAggregationBudgeter::BudgetDeniedBehavior::kSendNullReport
-          : PrivateAggregationBudgeter::BudgetDeniedBehavior::kDontSendReport;
+          ? NullReportBehavior::kSendNullReport
+          : NullReportBehavior::kDontSendReport;
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
@@ -758,7 +757,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
 
   on_report_request_details_received_.Run(
       std::move(report_request_generator), std::move(contributions),
-      std::move(budget_key.value()), budget_denied_behavior);
+      std::move(budget_key.value()), null_report_behavior);
 }
 
 }  // namespace content

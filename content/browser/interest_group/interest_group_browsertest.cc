@@ -8077,8 +8077,8 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
                           blink::mojom::AggregatableReportHistogramContribution>
                           contributions,
                       PrivateAggregationBudgetKey budget_key,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior
-                          budget_denied_behavior) {
+                      PrivateAggregationHost::NullReportBehavior
+                          null_report_behavior) {
               AggregatableReportRequest request =
                   std::move(generator).Run(contributions);
               ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -8094,9 +8094,9 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
               EXPECT_EQ(budget_key.api(),
                         PrivateAggregationCallerApi::kProtectedAudience);
               EXPECT_EQ(budget_key.origin(), test_origin_);
-              EXPECT_EQ(budget_denied_behavior,
-                        PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                            kDontSendReport);
+              EXPECT_EQ(
+                  null_report_behavior,
+                  PrivateAggregationHost::NullReportBehavior::kDontSendReport);
               run_loop_->Quit();
             }));
   }
@@ -8115,7 +8115,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
       PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationHost::NullReportBehavior)>
       mock_private_aggregation_cb_;
 
  private:
@@ -8393,16 +8393,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             request_returned = std::move(generator).Run(contributions);
 
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin_);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
 
             run_loop.Quit();
           }));
@@ -19810,8 +19809,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   base::MockRepeatingCallback<void(
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-      PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationBudgetKey, PrivateAggregationHost::NullReportBehavior)>
       mock_callback;
 
   auto* storage_partition_impl =
@@ -19837,8 +19835,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
@@ -19848,9 +19845,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), test_origin);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
           }));
 
