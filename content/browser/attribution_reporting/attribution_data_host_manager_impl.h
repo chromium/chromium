@@ -175,11 +175,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       attribution_reporting::TriggerRegistration,
       bool was_fetched_via_service_worker) override;
   void OsSourceDataAvailable(
-      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem>,
       bool was_fetched_via_service_worker) override;
   void OsTriggerDataAvailable(
-      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem>,
       bool was_fetched_via_service_worker) override;
   void ReportRegistrationHeaderError(
@@ -190,7 +188,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();
 
   void OsDataAvailable(
-      const attribution_reporting::SuitableOrigin& reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem>,
       bool was_fetched_via_service_worker,
       const char* data_available_call_metric,
@@ -200,8 +197,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   [[nodiscard]] static bool CheckRegistrarSupport(
       attribution_reporting::Registrar,
       attribution_reporting::mojom::RegistrationType,
-      const RegistrationContext&,
-      const attribution_reporting::SuitableOrigin& reporting_origin);
+      const RegistrationContext&);
 
   void OnReceiverDisconnected();
 

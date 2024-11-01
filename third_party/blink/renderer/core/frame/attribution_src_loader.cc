@@ -1050,8 +1050,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
           attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
       // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallOsSource)
 
-      data_host_->OsSourceDataAvailable(std::move(reporting_origin),
-                                        *std::move(registration_items),
+      data_host_->OsSourceDataAvailable(*std::move(registration_items),
                                         was_fetched_via_service_worker);
       ++num_registrations_;
     }
@@ -1133,8 +1132,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
           "Conversions.DataAvailableCall.OsTrigger",
           attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
       // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallOsTrigger)
-      data_host_->OsTriggerDataAvailable(std::move(reporting_origin),
-                                         *std::move(registration_items),
+      data_host_->OsTriggerDataAvailable(*std::move(registration_items),
                                          was_fetched_via_service_worker);
       ++num_registrations_;
       break;

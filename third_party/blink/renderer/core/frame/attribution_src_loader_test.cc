@@ -166,14 +166,12 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
   }
 
   void OsSourceDataAvailable(
-      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem> registration_items,
       bool was_fetched_via_serivce_worker) override {
     os_sources_.emplace_back(std::move(registration_items));
   }
 
   void OsTriggerDataAvailable(
-      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem> registration_items,
       bool was_fetched_via_serivce_worker) override {
     os_triggers_.emplace_back(std::move(registration_items));

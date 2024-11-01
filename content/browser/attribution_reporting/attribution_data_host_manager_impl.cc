@@ -1744,7 +1744,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   if (!CheckRegistrarSupport(Registrar::kWeb, RegistrationType::kSource,
-                             *context, reporting_origin)) {
+                             *context)) {
     return;
   }
 
@@ -1783,7 +1783,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   }
 
   if (!CheckRegistrarSupport(Registrar::kWeb, RegistrationType::kTrigger,
-                             *context, reporting_origin)) {
+                             *context)) {
     return;
   }
 
@@ -1797,7 +1797,6 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsDataAvailable(
-    const SuitableOrigin& reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items,
     bool was_fetched_via_service_worker,
     const char* data_available_call_metric,
@@ -1811,8 +1810,7 @@ void AttributionDataHostManagerImpl::OsDataAvailable(
     return;
   }
 
-  if (!CheckRegistrarSupport(Registrar::kOs, registration_type, *context,
-                             reporting_origin)) {
+  if (!CheckRegistrarSupport(Registrar::kOs, registration_type, *context)) {
     return;
   }
 
@@ -1829,12 +1827,10 @@ void AttributionDataHostManagerImpl::OsDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
-    SuitableOrigin reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items,
     bool was_fetched_via_service_worker) {
   OsDataAvailable(
-      reporting_origin, std::move(registration_items),
-      was_fetched_via_service_worker,
+      std::move(registration_items), was_fetched_via_service_worker,
       // LINT.IfChange(DataAvailableCallOsSource)
       /*data_available_call_metric=*/
       "Conversions.DataAvailableCall.OsSource",
@@ -1843,12 +1839,10 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
-    SuitableOrigin reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items,
     bool was_fetched_via_service_worker) {
   OsDataAvailable(
-      reporting_origin, std::move(registration_items),
-      was_fetched_via_service_worker,
+      std::move(registration_items), was_fetched_via_service_worker,
       // LINT.IfChange(DataAvailableCallOsTrigger)
       /*data_available_call_metric=*/
       "Conversions.DataAvailableCall.OsTrigger",
@@ -2434,8 +2428,7 @@ void AttributionDataHostManagerImpl::ReportRegistrationHeaderError(
 bool AttributionDataHostManagerImpl::CheckRegistrarSupport(
     Registrar registrar,
     RegistrationType registration_type,
-    const RegistrationContext& context,
-    const SuitableOrigin& reporting_origin) {
+    const RegistrationContext& context) {
   const bool is_source = registration_type == RegistrationType::kSource;
   AttributionReportingOsRegistrar os_registrar =
       is_source ? context.os_registrars().source_registrar
@@ -2446,34 +2439,13 @@ bool AttributionDataHostManagerImpl::CheckRegistrarSupport(
           /*client_os_disabled=*/os_registrar ==
           AttributionReportingOsRegistrar::kDisabled);
 
-  blink::mojom::AttributionReportingIssueType issue_type;
-
   switch (registrar) {
     case Registrar::kWeb:
-      if (network::HasAttributionWebSupport(attribution_support)) {
-        return true;
-      }
-      issue_type =
-          is_source
-              ? blink::mojom::AttributionReportingIssueType::kSourceIgnored
-              : blink::mojom::AttributionReportingIssueType::kTriggerIgnored;
-      break;
+      return network::HasAttributionWebSupport(attribution_support);
     case Registrar::kOs:
-      if (network::HasAttributionOsSupport(attribution_support)) {
-        return true;
-      }
-      issue_type =
-          is_source
-              ? blink::mojom::AttributionReportingIssueType::kOsSourceIgnored
-              : blink::mojom::AttributionReportingIssueType::kOsTriggerIgnored;
-      break;
+      return network::HasAttributionOsSupport(attribution_support);
   }
 
-  MaybeLogAuditIssue(context.render_frame_id(),
-                     /*request_url=*/reporting_origin->GetURL(),
-                     context.devtools_request_id(),
-                     /*invalid_parameter=*/std::nullopt,
-                     /*violation_type=*/issue_type);
   return false;
 }
 

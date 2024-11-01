@@ -1858,7 +1858,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
 
   const auto reporting_url = GURL("https://report.test");
-  const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
   const auto context_origin =
       *SuitableOrigin::Deserialize("https://source.test");
 
@@ -1906,7 +1905,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // A first source is received through the data host.
   data_host_remote->OsSourceDataAvailable(
-      reporting_origin,
       {attribution_reporting::OsRegistrationItem{.url =
                                                      GURL("https://b.test/x")}},
       kViaServiceWorker);
@@ -1915,7 +1913,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // A second source is received through the data host.
   data_host_remote->OsSourceDataAvailable(
-      reporting_origin,
       {attribution_reporting::OsRegistrationItem{.url =
                                                      GURL("https://b.test/x")}},
       kViaServiceWorker);
@@ -3295,15 +3292,10 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-
   // A call with no items should be ignored.
-  data_host_remote->OsSourceDataAvailable(reporting_origin, {},
-                                          kViaServiceWorker);
+  data_host_remote->OsSourceDataAvailable({}, kViaServiceWorker);
 
   data_host_remote->OsSourceDataAvailable(
-      reporting_origin,
       {attribution_reporting::OsRegistrationItem{.url = kRegistrationUrl,
                                                  .debug_reporting = true}},
       kViaServiceWorker);
@@ -3336,15 +3328,10 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-
   // A call with no items should be ignored.
-  data_host_remote->OsTriggerDataAvailable(reporting_origin, {},
-                                           kViaServiceWorker);
+  data_host_remote->OsTriggerDataAvailable({}, kViaServiceWorker);
 
   data_host_remote->OsTriggerDataAvailable(
-      reporting_origin,
       {attribution_reporting::OsRegistrationItem{.url = kRegistrationUrl,
                                                  .debug_reporting = true}},
       kViaServiceWorker);
@@ -5263,12 +5250,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote->TriggerDataAvailable(
         reporting_origin, TriggerRegistration(), kViaServiceWorker);
     data_host_remote->OsSourceDataAvailable(
-        reporting_origin,
         {attribution_reporting::OsRegistrationItem{
             .url = GURL("https://a.test/x")}},
         kViaServiceWorker);
     data_host_remote->OsTriggerDataAvailable(
-        reporting_origin,
         {attribution_reporting::OsRegistrationItem{
             .url = GURL("https://b.test/x")}},
         kViaServiceWorker);
