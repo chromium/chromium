@@ -442,8 +442,8 @@ affect invariants or how features are designed.
     embed. Note that Chrome Apps allow `<webview>` tags to load normal web pages
     and the app's own `data:` or `chrome-extension://` URLs, but not URLs from
     other extensions or apps. The IWA
-    [<controlledframe>](/chrome/common/controlled_frame/README.md) tag is built
-    on top of the `<webview>` tag's implementation and exposed to contexts
+    [&lt;controlledframe&gt;](/chrome/common/controlled_frame/README.md) tag is built
+    on top of the '<webview>' tag's implementation and exposed to contexts
     that meet the proper security and isolation requirements, such as IWAs that
     provide IsolatedContexts. See the
     [Isolated Contexts spec](https://wicg.github.io/isolated-web-apps/isolated-contexts)
