@@ -637,6 +637,7 @@ src/webgpu/shader/execution/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleLevel.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureStore.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/trunc.cache.ts
