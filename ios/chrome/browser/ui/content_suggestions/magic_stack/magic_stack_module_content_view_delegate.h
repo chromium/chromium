@@ -15,6 +15,10 @@
 // Stack Module Container based on `showNotificationsOptIn`.
 - (void)updateNotificationsOptInVisibility:(BOOL)showNotificationsOptIn;
 
+// Updates the visibility of the separator line within the Magic Stack
+// Module Container based on `isHidden`.
+- (void)updateSeparatorVisibility:(BOOL)isHidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_MODULE_CONTENT_VIEW_DELEGATE_H_

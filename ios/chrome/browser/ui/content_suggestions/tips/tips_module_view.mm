@@ -13,6 +13,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/icon_detail_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -58,6 +59,17 @@ NSString* const kAutofillPasswordsAccessibilityID =
 // Accessibility ID for the Enhanced Safe Browsing tip.
 NSString* const kEnhancedSafeBrowsingAccessibilityID =
     @"kEnhancedSafeBrowsingAccessibilityID";
+
+// Constants for the default badge shape configuration (circle).
+const CGFloat kDefaultBadgeSize = 20;
+
+// Constants for the product image badge shape configuration (square).
+const CGFloat kProductImageBadgeSize = 24;
+const CGFloat kProductImageBadgeCornerRadius = 4;  // Single corner radius
+const CGFloat kProductImageBadgeBottomRightRadius = 8;
+
+// Constant for the symbol width.
+const CGFloat kSymbolWidth = 22;
 
 // This struct represents configuration information for a Tips-related symbol.
 struct SymbolConfig {
@@ -138,6 +150,10 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 - (void)tipsStateDidChange:(TipsModuleState*)state {
   _state = state;
 
+  // Determine whether the separator should be hidden.
+  BOOL hideSeparator = state.productImageData.length > 0;
+  [_contentViewDelegate updateSeparatorVisibility:hideSeparator];
+
   [_contentView removeFromSuperview];
 
   [self createSubviews];
@@ -203,9 +219,17 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     NSArray<UIColor*>* badgeColorPalette =
         hasProductImage ? nil : @[ [UIColor whiteColor] ];
 
-    IconDetailViewBadgeShape badgeShape =
-        hasProductImage ? IconDetailViewBadgeShape::kSquare
-                        : IconDetailViewBadgeShape::kCircle;
+    BadgeShapeConfig badgeShapeConfig = {IconDetailViewBadgeShape::kCircle,
+                                         kDefaultBadgeSize};
+
+    if (hasProductImage) {
+      badgeShapeConfig = {IconDetailViewBadgeShape::kSquare,
+                          kProductImageBadgeSize,
+                          kProductImageBadgeCornerRadius,
+                          kProductImageBadgeCornerRadius,
+                          kProductImageBadgeCornerRadius,
+                          kProductImageBadgeBottomRightRadius};
+    }
 
     IconDetailView* view = [[IconDetailView alloc]
                   initWithTitle:[self titleText:tip]
@@ -216,10 +240,11 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
              symbolColorPalette:[self symbolColorPalette:tip]
           symbolBackgroundColor:[self symbolBackgroundColor:tip]
               usesDefaultSymbol:symbol.is_default_symbol
+                    symbolWidth:kSymbolWidth
                   showCheckmark:NO
                 badgeSymbolName:base::SysUTF8ToNSString(badgeConfig.name)
               badgeColorPalette:badgeColorPalette
-                     badgeShape:badgeShape
+               badgeShapeConfig:badgeShapeConfig
            badgeBackgroundColor:[self badgeBackgroundColor:tip
                                            hasProductImage:hasProductImage]
          badgeUsesDefaultSymbol:badgeConfig.is_default_symbol

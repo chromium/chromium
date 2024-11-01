@@ -34,6 +34,11 @@ UIImageView* IconForSymbol(NSString* symbol,
                        ? DefaultSymbolWithConfiguration(symbol, config)
                        : CustomSymbolWithConfiguration(symbol, config);
 
+  // If no color palette is provided, make the symbol multicolor.
+  if (!color_palette) {
+    image = MakeSymbolMulticolor(image);
+  }
+
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
 
   icon.translatesAutoresizingMaskIntoConstraints = NO;

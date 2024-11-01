@@ -36,11 +36,8 @@ constexpr CGFloat kIconSize = 22;
 constexpr CGFloat kBadgeIconSize = 14;
 
 // Constants related to Badge Icon container sizing and positioning.
-constexpr CGFloat kBadgeIconContainerSize = 20;
-constexpr CGFloat kBadgeIconCircleContainerRadius = kBadgeIconContainerSize / 2;
-constexpr CGFloat kBadgeIconSquareContainerRadius = 4.0;
-constexpr CGFloat kBadgeTopOffset = -25;
-constexpr CGFloat kBadgeTrailingOffset = -6;
+constexpr CGFloat kBadgeIconCircleContainerRadius = 10;
+constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
 
 // Constants related to background image.
 
@@ -54,7 +51,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 const CGFloat kBackgroundImageWidthHeight = 72.0;
 
 // Rounded corners of the background image.
-const CGFloat kBackgroundImageCornerRadius = 8.0;
+const CGFloat kBackgroundImageCornerRadius = 12.0;
 
 // Creates and returns a checkmark icon `UIImageView` with a green checkmark
 // symbol. The icon is configured with a specific size and has auto layout
@@ -85,16 +82,22 @@ UIImageView* CheckmarkIcon() {
   return icon;
 }
 
-// Creates and returns a badge icon `UIImageView` with `_badgeSymbolName` using
-// `default_symbol`. The icon is configured with a specific size and has auto
-// layout constraints activated for its width and height.
+// Creates and returns a badge icon `UIImageView` with `badge_symbol_name` using
+// `default_symbol`. The icon is configured with a specific size relative to its
+// container and has auto layout constraints activated for its width and height.
 //
 // The `color_palette` argument allows you to specify an array of colors to use
 // for the badge icon. If `color_palette` is `nil` or empty, the default system
 // colors will be used.
+//
+// The `has_background_image` argument indicates whether the icon is displayed
+// with a background image. This information is used to adjust the size of the
+// badge icon.
 UIImageView* BadgeIcon(NSString* badge_symbol_name,
                        BOOL default_symbol,
-                       NSArray<UIColor*>* color_palette) {
+                       NSArray<UIColor*>* color_palette,
+                       CGFloat container_size,
+                       BOOL has_background_image) {
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightMedium];
 
@@ -115,29 +118,106 @@ UIImageView* BadgeIcon(NSString* badge_symbol_name,
 
   badge_icon.translatesAutoresizingMaskIntoConstraints = NO;
 
+  // Calculate badge size based on container size and background image presence.
+  CGFloat badge_size = container_size / (has_background_image ? 1.15 : 1.5);
+
   [NSLayoutConstraint activateConstraints:@[
-    [badge_icon.widthAnchor constraintEqualToConstant:kBadgeIconSize],
+    [badge_icon.widthAnchor constraintEqualToConstant:badge_size],
     [badge_icon.heightAnchor constraintEqualToAnchor:badge_icon.widthAnchor],
   ]];
 
   return badge_icon;
 }
 
-// Creates and returns a badge icon container `UIView` with `icon` and
-// `containerColor`. The container's shape is determined by `container_shape`.
-// The icon is configured with a specific size and has auto layout constraints
-// activated for its width and height.
+// Helper function to create a rounded corner path.
+void AddRoundedCornerToPath(UIBezierPath* bezier_path,
+                            CGFloat radius,
+                            CGPoint center,
+                            CGFloat start_angle,
+                            CGFloat end_angle) {
+  [bezier_path addArcWithCenter:center
+                         radius:radius
+                     startAngle:start_angle
+                       endAngle:end_angle
+                      clockwise:YES];
+}
+
 UIView* BadgeIconInContainer(UIImageView* icon,
                              UIColor* container_color,
-                             IconDetailViewBadgeShape container_shape) {
+                             BadgeShapeConfig badge_shape_config) {
   UIView* container = [[UIView alloc] init];
 
   container.translatesAutoresizingMaskIntoConstraints = NO;
 
-  container.layer.cornerRadius =
-      container_shape == IconDetailViewBadgeShape::kCircle
-          ? kBadgeIconCircleContainerRadius
-          : kBadgeIconSquareContainerRadius;
+  // Create the Bezier path based on the `badge_shape_config`.
+  UIBezierPath* bezier_path = [UIBezierPath bezierPath];
+
+  switch (badge_shape_config.shape) {
+    case IconDetailViewBadgeShape::kCircle: {
+      // If it's a circle, adjust the path to a circular shape.
+      CGFloat radius = badge_shape_config.size / 2.0;
+      bezier_path = [UIBezierPath
+          bezierPathWithRoundedRect:CGRectMake(0, 0, badge_shape_config.size,
+                                               badge_shape_config.size)
+                       cornerRadius:radius];
+      break;
+    }
+    case IconDetailViewBadgeShape::kSquare: {
+      CGFloat size = badge_shape_config.size;
+
+      // Start at the top-left corner
+      [bezier_path
+          moveToPoint:CGPointMake(badge_shape_config.topLeftRadius, 0)];
+
+      // Top edge
+      [bezier_path
+          addLineToPoint:CGPointMake(size - badge_shape_config.topRightRadius,
+                                     0)];
+      AddRoundedCornerToPath(
+          bezier_path, badge_shape_config.topRightRadius,
+          CGPointMake(size - badge_shape_config.topRightRadius,
+                      badge_shape_config.topRightRadius),
+          M_PI * 1.5, 0);
+
+      // Right edge
+      [bezier_path
+          addLineToPoint:CGPointMake(
+                             size,
+                             size - badge_shape_config.bottomRightRadius)];
+      AddRoundedCornerToPath(
+          bezier_path, badge_shape_config.bottomRightRadius,
+          CGPointMake(size - badge_shape_config.bottomRightRadius,
+                      size - badge_shape_config.bottomRightRadius),
+          0, M_PI_2);
+
+      // Bottom edge
+      [bezier_path
+          addLineToPoint:CGPointMake(badge_shape_config.bottomLeftRadius,
+                                     size)];
+      AddRoundedCornerToPath(
+          bezier_path, badge_shape_config.bottomLeftRadius,
+          CGPointMake(badge_shape_config.bottomLeftRadius,
+                      size - badge_shape_config.bottomLeftRadius),
+          M_PI_2, M_PI);
+
+      // Left edge
+      [bezier_path
+          addLineToPoint:CGPointMake(0, badge_shape_config.topLeftRadius)];
+      AddRoundedCornerToPath(bezier_path, badge_shape_config.topLeftRadius,
+                             CGPointMake(badge_shape_config.topLeftRadius,
+                                         badge_shape_config.topLeftRadius),
+                             M_PI, M_PI * 1.5);
+
+      [bezier_path closePath];
+
+      break;
+    }
+  }
+
+  // Create a shape layer with the Bezier path.
+  CAShapeLayer* mask = [CAShapeLayer layer];
+  mask.path = bezier_path.CGPath;
+  container.layer.mask = mask;
 
   container.backgroundColor = container_color;
 
@@ -147,7 +227,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 
   AddSameCenterConstraints(icon, container);
 
-  AddSquareConstraints(container, kBadgeIconContainerSize);
+  AddSquareConstraints(container, badge_shape_config.size);
 
   return container;
 }
@@ -194,8 +274,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   // The color palette of the badge symbol displayed in the view.
   NSArray<UIColor*>* _badgeColorPalette;
 
-  // The shape of the badge displayed on the icon.
-  IconDetailViewBadgeShape _badgeShape;
+  // The shape configuration of the badge displayed on the icon.
+  BadgeShapeConfig _badgeShapeConfig;
 
   // The background color of the Badge Icon to be displayed in the view.
   UIColor* _badgeBackgroundColor;
@@ -223,7 +303,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                 showCheckmark:(BOOL)showCheckmark
               badgeSymbolName:(NSString*)badgeSymbolName
             badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-                   badgeShape:(IconDetailViewBadgeShape)badgeShape
+             badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
          badgeBackgroundColor:(UIColor*)badgeBackgroundColor
        badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
@@ -240,7 +320,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     _showCheckmark = showCheckmark;
     _badgeSymbolName = badgeSymbolName;
     _badgeColorPalette = badgeColorPalette;
-    _badgeShape = badgeShape;
+    _badgeShapeConfig = badgeShapeConfig;
     _badgeBackgroundColor = badgeBackgroundColor;
     _badgeUsesDefaultSymbol = badgeUsesDefaultSymbol;
     _accessibilityIdentifier = accessibilityIdentifier;
@@ -264,6 +344,14 @@ UIView* BadgeIconInContainer(UIImageView* icon,
          badgeBackgroundColor:(UIColor*)badgeBackgroundColor
        badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  CGFloat cornerRadius = (badgeShape == IconDetailViewBadgeShape::kCircle)
+                             ? kBadgeIconCircleContainerRadius
+                             : kBadgeIconSquareContainerRadius;
+
+  BadgeShapeConfig badgeShapeConfig = {badgeShape,   kBadgeIconSize,
+                                       cornerRadius, cornerRadius,
+                                       cornerRadius, cornerRadius};
+
   return [self initWithTitle:title
                   description:description
                    layoutType:layoutType
@@ -276,7 +364,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                 showCheckmark:showCheckmark
               badgeSymbolName:badgeSymbolName
             badgeColorPalette:badgeColorPalette
-                   badgeShape:badgeShape
+             badgeShapeConfig:badgeShapeConfig
          badgeBackgroundColor:badgeBackgroundColor
        badgeUsesDefaultSymbol:badgeUsesDefaultSymbol
       accessibilityIdentifier:accessibilityIdentifier];
@@ -292,6 +380,11 @@ UIView* BadgeIconInContainer(UIImageView* icon,
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                 showCheckmark:(BOOL)showCheckmark
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  BadgeShapeConfig badgeShapeConfig = {
+      IconDetailViewBadgeShape::kCircle, kBadgeIconSize,
+      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius,
+      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
+
   return [self initWithTitle:title
                   description:description
                    layoutType:layoutType
@@ -304,7 +397,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                 showCheckmark:showCheckmark
               badgeSymbolName:nil
             badgeColorPalette:nil
-                   badgeShape:IconDetailViewBadgeShape::kCircle
+             badgeShapeConfig:badgeShapeConfig
          badgeBackgroundColor:nil
        badgeUsesDefaultSymbol:NO
       accessibilityIdentifier:accessibilityIdentifier];
@@ -318,6 +411,11 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                   symbolWidth:(CGFloat)symbolWidth
                 showCheckmark:(BOOL)showCheckmark
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  BadgeShapeConfig badgeShapeConfig = {
+      IconDetailViewBadgeShape::kCircle, kBadgeIconSize,
+      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius,
+      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
+
   return [self initWithTitle:title
                   description:description
                    layoutType:layoutType
@@ -330,7 +428,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                 showCheckmark:showCheckmark
               badgeSymbolName:nil
             badgeColorPalette:nil
-                   badgeShape:IconDetailViewBadgeShape::kCircle
+             badgeShapeConfig:badgeShapeConfig
          badgeBackgroundColor:nil
        badgeUsesDefaultSymbol:NO
       accessibilityIdentifier:accessibilityIdentifier];
@@ -343,6 +441,11 @@ UIView* BadgeIconInContainer(UIImageView* icon,
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                 showCheckmark:(BOOL)showCheckmark
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  BadgeShapeConfig badgeShapeConfig = {
+      IconDetailViewBadgeShape::kCircle, kBadgeIconSize,
+      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius,
+      kBadgeIconCircleContainerRadius,   kBadgeIconCircleContainerRadius};
+
   return [self initWithTitle:title
                   description:description
                    layoutType:layoutType
@@ -355,7 +458,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                 showCheckmark:showCheckmark
               badgeSymbolName:nil
             badgeColorPalette:nil
-                   badgeShape:IconDetailViewBadgeShape::kCircle
+             badgeShapeConfig:badgeShapeConfig
          badgeBackgroundColor:nil
        badgeUsesDefaultSymbol:NO
       accessibilityIdentifier:accessibilityIdentifier];
@@ -481,20 +584,26 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     // Create the Badge Icon, if applicable.
     if (_badgeSymbolName.length != 0) {
       UIImageView* badge = BadgeIcon(_badgeSymbolName, _badgeUsesDefaultSymbol,
-                                     _badgeColorPalette);
+                                     _badgeColorPalette, _badgeShapeConfig.size,
+                                     _backgroundImage != nil);
 
       UIView* badgeWithContainer =
-          BadgeIconInContainer(badge, _badgeBackgroundColor, _badgeShape);
+          BadgeIconInContainer(badge, _badgeBackgroundColor, _badgeShapeConfig);
 
       [imageContainerView addSubview:badgeWithContainer];
 
+      // Calculate the offset to equally space the badge from the right and
+      // bottom.
+      CGFloat badgeOffset =
+          _badgeShapeConfig.size / (_backgroundImage ? 5.0 : 3.0);
+
       [NSLayoutConstraint activateConstraints:@[
-        [badgeWithContainer.topAnchor
+        [badgeWithContainer.bottomAnchor
             constraintEqualToAnchor:imageContainerView.bottomAnchor
-                           constant:kBadgeTopOffset],
+                           constant:-badgeOffset],
         [badgeWithContainer.trailingAnchor
             constraintEqualToAnchor:imageContainerView.trailingAnchor
-                           constant:kBadgeTrailingOffset],
+                           constant:-badgeOffset],
       ]];
     }
 

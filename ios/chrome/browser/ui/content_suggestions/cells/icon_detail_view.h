@@ -41,6 +41,22 @@ enum class IconDetailViewBadgeShape {
   kMaxValue = kCircle
 };
 
+// Configuration for the shape of the badge displayed on the icon.
+struct BadgeShapeConfig {
+  // Shape of the badge.
+  IconDetailViewBadgeShape shape;
+  // Size of the badge.
+  CGFloat size;
+  // Radius of the top left corner.
+  CGFloat topLeftRadius;
+  // Radius of the top right corner.
+  CGFloat topRightRadius;
+  // Radius of the bottom left corner.
+  CGFloat bottomLeftRadius;
+  // Radius of the bottom right corner.
+  CGFloat bottomRightRadius;
+};
+
 // A view to display an icon, title, description, and (optional) chevron. This
 // view can be configured with different layout types to suit various display
 // needs.
@@ -60,7 +76,7 @@ enum class IconDetailViewBadgeShape {
 // checkmark to indicate a completed state.
 //
 // The icon will display a badge based on `badgeSymbolName`,
-// `badgeColorPalette`, `badgeShape`, `badgeUsesDefaultSymbol`, and
+// `badgeColorPalette`, `badgeShapeConfig`, `badgeUsesDefaultSymbol`, and
 // `badgeBackgroundColor`.
 - (instancetype)initWithTitle:(NSString*)title
                   description:(NSString*)description
@@ -74,7 +90,7 @@ enum class IconDetailViewBadgeShape {
                 showCheckmark:(BOOL)showCheckmark
               badgeSymbolName:(NSString*)badgeSymbolName
             badgeColorPalette:(NSArray<UIColor*>*)badgeColorPalette
-                   badgeShape:(IconDetailViewBadgeShape)badgeShape
+             badgeShapeConfig:(BadgeShapeConfig)badgeShapeConfig
          badgeBackgroundColor:(UIColor*)badgeBackgroundColor
        badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier;
