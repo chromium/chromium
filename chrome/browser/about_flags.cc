@@ -11535,6 +11535,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-latency-optimizations",
+     flag_descriptions::kLensOverlayLatencyOptimizationsName,
+     flag_descriptions::kLensOverlayLatencyOptimizationsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayLatencyOptimizations)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-image-context-menu-actions",
      flag_descriptions::kLensOverlayImageContextMenuActionsName,
      flag_descriptions::kLensOverlayImageContextMenuActionsDescription,

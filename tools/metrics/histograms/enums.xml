@@ -17297,6 +17297,7 @@ from previous Chrome versions.
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
   <int value="-1179245974"
       label="PriceTrackingSubscriptionServiceProductVersion:disabled"/>
+  <int value="-1178974707" label="LensOverlayLatencyOptimizations:disabled"/>
   <int value="-1178536416" label="PasswordManagerRedesign:disabled"/>
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>
   <int value="-1177802205" label="enable-hosted-app-quit-notification"/>
@@ -25136,6 +25137,7 @@ from previous Chrome versions.
   <int value="1988099368" label="DropInputEventsBeforeFirstPaint:disabled"/>
   <int value="1988389259" label="MediaFoundationClearRendering:disabled"/>
   <int value="1988506961" label="EnableManualSaving:enabled"/>
+  <int value="1988522019" label="LensOverlayLatencyOptimizations:enabled"/>
   <int value="1988679118" label="DesktopPWAsSubApps:disabled"/>
   <int value="1988810119" label="AutofillDropdownLayout:enabled"/>
   <int value="1989051182" label="view-passwords:enabled"/>

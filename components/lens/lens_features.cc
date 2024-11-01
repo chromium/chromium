@@ -70,6 +70,10 @@ BASE_FEATURE(kLensOverlayContextualSearchbox,
              "LensOverlayContextualSearchbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayLatencyOptimizations,
+             "LensOverlayLatencyOptimizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlaySurvey,
              "LensOverlaySurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -254,6 +258,9 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<int>
     kLensOverlayImageContextMenuActionsTextReceivedTimeout{
         &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
+
+constexpr base::FeatureParam<bool> kEnableEarlyInteractionOptimization{
+    &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization", true};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlayContextualSearchbox, "use-pdfs-as-context", false};
@@ -752,6 +759,11 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
 
 bool IsLensOverlayContextualSearchboxEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
+}
+
+bool IsLensOverlayEarlyInteractionOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
+         kEnableEarlyInteractionOptimization.Get();
 }
 
 base::TimeDelta GetLensOverlaySurveyResultsTime() {

@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kLensOverlayImageContextMenuActions);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 
+// Enables the Lens overlay optimizations.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayLatencyOptimizations);
+
 // Enables the Lens overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySurvey);
@@ -357,6 +361,8 @@ extern bool UseVideoContextForMultimodalLensOverlayRequests();
 // to get the cluster info prior to uploading any image or page content bytes.
 // This also decouples sending the images and page content bytes in the same
 // request.
+// TODO(crbug.com/373878302): Move this flag to LensOverlayLatencyOptimizations
+// feature.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseOptimizedRequestFlow();
 
@@ -604,6 +610,13 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 // Whether to show the contextual searchbox in the Lens Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayContextualSearchboxEnabled();
+
+// Whether to enable the early interaction optimization for the Lens Overlay.
+// This optimization allows the interaction request to be sent before the full
+// image response is received, if the cluster info is already available. This
+// optimization will do nothing if the cluster info optimization is disabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayEarlyInteractionOptimizationEnabled();
 
 // Time delay for the results trigger of the Lens Overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)

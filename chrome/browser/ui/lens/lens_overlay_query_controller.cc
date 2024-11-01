@@ -175,6 +175,12 @@ std::vector<std::string> CreateVariationsHeaders(
 
 std::map<std::string, std::string> AddStartTimeQueryParam(
     std::map<std::string, std::string> additional_search_query_params) {
+  auto it = additional_search_query_params.find(kStartTimeQueryParameter);
+  if (it != additional_search_query_params.end()) {
+    // If the start time is already set, do not override it.
+    return additional_search_query_params;
+  }
+
   int64_t current_time_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
   additional_search_query_params.insert(
       {kStartTimeQueryParameter, base::NumberToString(current_time_ms)});
@@ -304,7 +310,7 @@ void LensOverlayQueryController::EndQuery() {
       request_id_generator_->GetBase32EncodedAnalyticsId());
   full_image_endpoint_fetcher_.reset();
   interaction_endpoint_fetcher_.reset();
-  full_image_response_received_callback_.Reset();
+  pending_interaction_callback_.Reset();
   cluster_info_access_token_fetcher_.reset();
   full_image_access_token_fetcher_.reset();
   interaction_access_token_fetcher_.reset();
@@ -456,6 +462,16 @@ void LensOverlayQueryController::ResetRequestClusterInfoStateForTesting() {
   ResetRequestClusterInfoState();
 }
 
+void LensOverlayQueryController::
+    SetStateToReceivedFullImageResponseForTesting() {
+  latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
+      request_id_generator_->GetNextRequestId(
+          RequestIdUpdateMode::kFullImageRequest),
+      /*query_start_time=*/base::TimeTicks::Now());
+  query_controller_state_ = QueryControllerState::kReceivedFullImageResponse;
+  cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
+}
+
 std::unique_ptr<EndpointFetcher>
 LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
@@ -601,9 +617,13 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
     return;
   }
 
-  // If the optimized flow is enabled, request the cluster info prior to making
-  // the full image request.
-  if (!cluster_info_ && lens::features::UseOptimizedRequestFlow()) {
+  // If the cluster info optimization is enabled, request the cluster info prior
+  // to making the full image request.
+  // TODO(crbug.com/373878302): Use a new cluster-info flag provided by the
+  // LensOverlayLatencyOptimizations feature instead.
+  if (!cluster_info_ &&
+      (lens::features::UseOptimizedRequestFlow() ||
+       lens::features::IsLensOverlayEarlyInteractionOptimizationEnabled())) {
     FetchClusterInfoRequest();
     return;
   }
@@ -629,6 +649,13 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
           RequestIdUpdateMode::kFullImageRequest),
       /*query_start_time=*/base::TimeTicks::Now());
   int current_sequence_id = latest_full_image_request_data_->sequence_id();
+
+  // If there is a pending interaction, we can create and issue it now that the
+  // cluster info and full-image request id are available.
+  if (cluster_info_.has_value() && pending_interaction_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(pending_interaction_callback_));
+  }
 
   // Preparing for the full image request requires multiple async flows to
   // complete before the request is ready to be send to the server. We start
@@ -830,9 +857,9 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
       latest_full_image_request_data_->request_id_.get());
   RunSuggestInputsCallback();
 
-  if (!full_image_response_received_callback_.is_null()) {
+  if (pending_interaction_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(full_image_response_received_callback_));
+        FROM_HERE, std::move(pending_interaction_callback_));
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -910,8 +937,27 @@ void LensOverlayQueryController::SendInteraction(
   // Cancel any pending encoding from previous SendInteraction requests.
   encoding_task_tracker_->TryCancelAll();
   // Reset any pending interaction requests that will get fired via the full
-  // image response callback.
-  full_image_response_received_callback_.Reset();
+  // image request / response handlers.
+  pending_interaction_callback_.Reset();
+
+  // Add the start time to the query params now, so that any additional
+  // client processing time is included.
+  additional_search_query_params =
+      AddStartTimeQueryParam(additional_search_query_params);
+
+  if (!latest_full_image_request_data_) {
+    // The request id sequence for the interaction request must follow a full
+    // image request. If we have not yet created a full image request id, the
+    // request id generator will not be ready to create the interaction request
+    // id. In that case, save the interaction data to create the request after
+    // the full image request id sequence has been incremented.
+    pending_interaction_callback_ =
+        base::BindOnce(&LensOverlayQueryController::SendInteraction,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(region),
+                       query_text, object_id, selection_type,
+                       additional_search_query_params, region_bytes);
+    return;
+  }
 
   // Create the logs used across the async.
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
@@ -919,11 +965,6 @@ void LensOverlayQueryController::SendInteraction(
   ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
   ref_counted_logs->client_logs().set_paella_id(gen204_id_);
-
-  // Add the start time to the query params now, so that any additional
-  // client processing time is included.
-  additional_search_query_params =
-      AddStartTimeQueryParam(additional_search_query_params);
 
   // Initialize latest_interaction_request_data_ with a new request ID to
   // ensure once the async processes finish, no new interaction request has
@@ -1043,13 +1084,24 @@ void LensOverlayQueryController::TryPerformInteractionRequest(int sequence_id) {
     return;
   }
 
+  // Allow the query controller to perform the interaction request before the
+  // full image response is received if the early interaction optimization is
+  // enabled.
+  if (lens::features::IsLensOverlayEarlyInteractionOptimizationEnabled() &&
+      query_controller_state_ ==
+          QueryControllerState::kAwaitingFullImageResponse &&
+      cluster_info_.has_value()) {
+    PerformInteractionRequest();
+    return;
+  }
+
   //  If a full image request is in flight, wait for the full image response
   //  before sending the request.
   if (query_controller_state_ ==
           QueryControllerState::kAwaitingClusterInfoResponse ||
       query_controller_state_ ==
           QueryControllerState::kAwaitingFullImageResponse) {
-    full_image_response_received_callback_ = base::BindOnce(
+    pending_interaction_callback_ = base::BindOnce(
         &LensOverlayQueryController::TryPerformInteractionRequest,
         weak_ptr_factory_.GetWeakPtr(), sequence_id);
     return;
@@ -1059,7 +1111,7 @@ void LensOverlayQueryController::TryPerformInteractionRequest(int sequence_id) {
   // received, we must restart the query flow by resending the full image
   // request.
   if (!cluster_info_.has_value()) {
-    full_image_response_received_callback_ = base::BindOnce(
+    pending_interaction_callback_ = base::BindOnce(
         &LensOverlayQueryController::TryPerformInteractionRequest,
         weak_ptr_factory_.GetWeakPtr(), sequence_id);
 
@@ -1419,7 +1471,7 @@ lens::Payload LensOverlayQueryController::CreatePageContentPayload() {
 }
 
 void LensOverlayQueryController::ResetRequestClusterInfoState() {
-  full_image_response_received_callback_.Reset();
+  pending_interaction_callback_.Reset();
   interaction_endpoint_fetcher_.reset();
   cluster_info_ = std::nullopt;
   request_id_generator_->ResetRequestId();

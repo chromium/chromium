@@ -133,11 +133,15 @@ class FakeEndpointFetcher : public EndpointFetcher {
 
   void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
                       const char* key) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(endpoint_fetcher_callback),
-                       std::make_unique<EndpointResponse>(response_)));
+    if (!disable_responding_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(endpoint_fetcher_callback),
+                         std::make_unique<EndpointResponse>(response_)));
+    }
   }
+
+  bool disable_responding_ = false;
 
  private:
   EndpointResponse response_;
@@ -196,6 +200,9 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   int num_full_page_objects_gen204_pings_sent_ = 0;
   int num_full_page_translate_gen204_pings_sent_ = 0;
 
+  // If true, the next objects request will be not have a response.
+  bool disable_next_objects_response_ = false;
+
  protected:
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest* request,
@@ -205,6 +212,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       const std::vector<std::string>& cors_exempt_headers) override {
     lens::LensOverlayServerResponse fake_server_response;
     std::string fake_server_response_string;
+    // Whether or not to disable the response.
+    bool disable_response = false;
     if (!request) {
       // Cluster info request.
       num_cluster_info_fetch_requests_sent_++;
@@ -227,6 +236,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       fake_server_response_string = fake_server_response.SerializeAsString();
       sent_request_id_.CopyFrom(
           request->objects_request().request_context().request_id());
+      disable_response = disable_next_objects_response_;
+      disable_next_objects_response_ = false;
     } else if (request->has_interaction_request()) {
       // Interaction request.
       sent_interaction_request_.CopyFrom(request->interaction_request());
@@ -249,7 +260,10 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     fake_endpoint_response.http_status_code =
         google_apis::ApiErrorCode::HTTP_SUCCESS;
 
-    return std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
+    auto response =
+        std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
+    response->disable_responding_ = disable_response;
+    return response;
   }
 
   void SendLatencyGen204IfEnabled(base::TimeDelta latency_ms,
@@ -776,6 +790,65 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchRegionSearchInteraction_ReturnsResponsesOptimizedClusterInfoFlow) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayLatencyOptimizations,
+      {{"enable-early-interaction-optimization", "true"}});
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.disable_next_objects_response_ = true;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(query_controller.num_cluster_info_fetch_requests_sent_, 1);
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  // Despite the full image response not being ready, the search url should
+  // already start loading because the cluster info is available.
+  ASSERT_FALSE(full_image_response_future.IsReady());
+  ASSERT_TRUE(url_response_future.IsReady());
+
+  // Check the search session id is attached to the fetch url.
+  std::string session_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                         kSessionIdQueryParameterKey,
+                                         &session_id_value));
+  ASSERT_EQ(session_id_value, kTestSearchSessionId);
 }
 
 TEST_F(LensOverlayQueryControllerTest,

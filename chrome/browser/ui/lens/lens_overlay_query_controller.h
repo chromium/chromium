@@ -161,6 +161,12 @@ class LensOverlayQueryController {
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
+  // Sets the query controller to a valid post-full image response state,
+  // including setting fake cluster info, for testing.
+  // TODO(crbug.com/376737029): Remove this method after mocking out network
+  // requests in the browser tests.
+  void SetStateToReceivedFullImageResponseForTesting();
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -489,10 +495,11 @@ class LensOverlayQueryController {
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
 
-  // The full image response received callback. Will be used to send a queued
-  // interaction request if an interaction is received before the full image
-  // response has been received.
-  base::OnceClosure full_image_response_received_callback_;
+  // The callback for issuing a pending interaction request. Will be used to
+  // send the interaction request after the cluster info is available and the
+  // full image request id sequence is ready, if the interaction occurred
+  // before the full image response was received.
+  base::OnceClosure pending_interaction_callback_;
 
   // TODO(b/370805019): All our flows are requesting the same headers, so
   // ideally we use one fetcher that returns the same headers wherever they are

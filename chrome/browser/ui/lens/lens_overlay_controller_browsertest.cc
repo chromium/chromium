@@ -394,6 +394,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
         base::BindOnce(full_image_callback_, std::move(test_objects),
                        kTestText->Clone(),
                        /*is_error=*/full_image_request_should_return_error_));
+    SetStateToReceivedFullImageResponseForTesting();
 
     // Send response for interaction data callback /
     // HandleInteractionDataResponse.
@@ -449,6 +450,9 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_text_ = query_text;
     last_lens_selection_type_ = multimodal_selection_type;
     num_interaction_requests_sent_++;
+    LensOverlayQueryController::SendMultimodalRequest(
+        std::move(region), query_text, multimodal_selection_type,
+        additional_search_query_params, region_bitmap);
   }
 
   void SendContextualTextQuery(
@@ -837,9 +841,30 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void VerifySearchQueryParameters(const GURL& url_to_process) {
-    EXPECT_THAT(url_to_process.spec(),
-                testing::MatchesRegex(std::string(kResultsSearchBaseUrl) +
-                                      ".*q=.*&gsc=2&hl=.*&biw=\\d+&bih=\\d+"));
+    std::string gsc_value;
+    bool has_hsc_value =
+        net::GetValueForKeyInQuery(url_to_process, "gsc", &gsc_value);
+    EXPECT_TRUE(has_hsc_value);
+
+    std::string hl_value;
+    bool has_hl_value =
+        net::GetValueForKeyInQuery(url_to_process, "hl", &hl_value);
+    EXPECT_TRUE(has_hl_value);
+
+    std::string q_value;
+    bool has_q_value =
+        net::GetValueForKeyInQuery(url_to_process, "q", &q_value);
+    EXPECT_TRUE(has_q_value);
+
+    std::string biw_value;
+    bool has_biw_value =
+        net::GetValueForKeyInQuery(url_to_process, "biw", &biw_value);
+    EXPECT_TRUE(has_biw_value);
+
+    std::string bih_value;
+    bool has_bih_value =
+        net::GetValueForKeyInQuery(url_to_process, "bih", &bih_value);
+    EXPECT_TRUE(has_bih_value);
   }
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
@@ -1683,9 +1708,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "&lns_mode=un&gsc=2&hl=en-US&cs=0");
   controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
                                                /*is_click=*/false);
-  // The full sequence of events necessary to load Lens search results is not
-  // currently testable, so load the expected URL manually.
-  controller->LoadURLInResultsFrame(first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
@@ -2580,15 +2602,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::INJECTED_IMAGE);
 
-  // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
       "&gsc=2&hl=en-US&cs=0");
-  content::TestNavigationObserver first_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(first_search_url);
-  first_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -2721,9 +2738,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver fifth_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  // The full sequence of events necessary to load Lens search results is not
-  // currently testable, so load the expected URL manually.
-  controller->LoadURLInResultsFrame(first_search_url);
   fifth_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
@@ -2810,9 +2824,6 @@ IN_PROC_BROWSER_TEST_F(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
                                                /*is_click=*/false);
-  // The full sequence of events necessary to load Lens search results is not
-  // currently testable, so load the expected URL manually.
-  controller->LoadURLInResultsFrame(second_search_url);
   second_search_observer.Wait();
 
   // The search query history stack should have 1 entry and the currently loaded
@@ -2859,6 +2870,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url_without_start_time_or_size, third_search_url);
 
   // Popping a query with a region should resend a region search request.
+  content::TestNavigationObserver first_pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
   auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
       controller->get_lens_overlay_query_controller_for_testing());
   fake_query_controller->Reset();
@@ -2872,11 +2885,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::REGION_SEARCH);
 
-  // The full sequence of events necessary to load Lens search results is not
-  // currently testable, so load the expected URL manually.
-  content::TestNavigationObserver first_pop_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(second_search_url);
   first_pop_observer.Wait();
 
   // The search query history stack should have 1 entry and the previously
@@ -2958,10 +2966,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
       "&gsc=2&hl=en-US&cs=0");
-  content::TestNavigationObserver first_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(first_search_url);
-  first_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -2983,7 +2987,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?source=chrome.cr.ctxi&vsint=CAMqDAoCCAcSAggDGAEgAg&q=kiwi&lns_fp="
+      "search?source=chrome.cr.ctxi&vsint=CAMqCgoCCAcSAggDIAI&q=kiwi&lns_fp="
       "1&lns_mode=text&gsc=2&hl=en-US&cs=0");
   content::TestNavigationObserver second_observer(
       controller->GetSidePanelWebContentsForTesting());
@@ -3012,7 +3016,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Popping a query with a region should resend a region search request.
   fake_query_controller->Reset();
+
+  content::TestNavigationObserver third_observer(
+      controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
+  third_observer.WaitForNavigationFinished();
 
   // Verify the new interaction request was sent.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
@@ -3023,13 +3031,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::INJECTED_IMAGE);
-
-  // The full sequence of events necessary to load Lens search results is not
-  // currently testable, so load the expected URL manually.
-  content::TestNavigationObserver third_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(first_search_url);
-  third_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the original query.
@@ -3079,10 +3080,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "https://www.google.com/"
       "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
       "&gsc=2&hl=en-US&cs=0");
-  content::TestNavigationObserver first_load_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(first_search_url);
-  first_load_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set.
@@ -3114,7 +3111,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
-  controller->LoadURLInResultsFrame(second_search_url);
   first_searchbox_query_observer.WaitForNavigationFinished();
 
   // The search query history stack should have 1 entry and the currently loaded
@@ -3144,7 +3140,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   controller->IssueSearchBoxRequestForTesting(
       "red", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
-  controller->LoadURLInResultsFrame(third_search_url);
   second_searchbox_query_observer.WaitForNavigationFinished();
 
   // The search query history stack should have 2 entries and the currently
@@ -3167,6 +3162,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
       controller->get_lens_overlay_query_controller_for_testing());
   fake_query_controller->Reset();
+
+  content::TestNavigationObserver pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
 
   // Verify the new interaction request was sent.
@@ -3184,11 +3182,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::MULTIMODAL_SEARCH);
 
-  // The full sequence of events necessary to load Lens search results is not
-  // currently testable, so load the expected URL manually.
-  content::TestNavigationObserver pop_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->LoadURLInResultsFrame(second_search_url);
   pop_observer.Wait();
 
   // Popping the query stack again should show the initial query.
