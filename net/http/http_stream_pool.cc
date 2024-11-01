@@ -22,6 +22,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
@@ -38,6 +39,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -271,32 +273,37 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
   }
 }
 
-bool HttpStreamPool::RequiresHTTP11(const HttpStreamKey& stream_key) {
+bool HttpStreamPool::RequiresHTTP11(
+    const url::SchemeHostPort& destination,
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return http_network_session()->http_server_properties()->RequiresHTTP11(
-      stream_key.destination(), stream_key.network_anonymization_key());
+      destination, network_anonymization_key);
 }
 
-bool HttpStreamPool::IsQuicBroken(const HttpStreamKey& stream_key) {
+bool HttpStreamPool::IsQuicBroken(
+    const url::SchemeHostPort& destination,
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return http_network_session()
       ->http_server_properties()
       ->IsAlternativeServiceBroken(
-          AlternativeService(
-              NextProto::kProtoQUIC,
-              HostPortPair::FromSchemeHostPort(stream_key.destination())),
-          stream_key.network_anonymization_key());
+          AlternativeService(NextProto::kProtoQUIC,
+                             HostPortPair::FromSchemeHostPort(destination)),
+          network_anonymization_key);
 }
 
-bool HttpStreamPool::CanUseQuic(const HttpStreamKey& stream_key,
-                                bool enable_ip_based_pooling,
-                                bool enable_alternative_services) {
-  if (http_network_session()->ShouldForceQuic(stream_key.destination(),
-                                              ProxyInfo::Direct(),
+bool HttpStreamPool::CanUseQuic(
+    const url::SchemeHostPort& destination,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    bool enable_ip_based_pooling,
+    bool enable_alternative_services) {
+  if (http_network_session()->ShouldForceQuic(destination, ProxyInfo::Direct(),
                                               /*is_websocket=*/false)) {
     return true;
   }
   return enable_ip_based_pooling && enable_alternative_services &&
-         GURL::SchemeIsCryptographic(stream_key.destination().scheme()) &&
-         !RequiresHTTP11(stream_key) && !IsQuicBroken(stream_key);
+         GURL::SchemeIsCryptographic(destination.scheme()) &&
+         !RequiresHTTP11(destination, network_anonymization_key) &&
+         !IsQuicBroken(destination, network_anonymization_key);
 }
 
 quic::ParsedQuicVersion HttpStreamPool::SelectQuicVersion(
@@ -309,15 +316,17 @@ quic::ParsedQuicVersion HttpStreamPool::SelectQuicVersion(
 }
 
 bool HttpStreamPool::CanUseExistingQuicSession(
-    const HttpStreamKey& stream_key,
     const QuicSessionAliasKey& quic_session_alias_key,
     bool enable_ip_based_pooling,
     bool enable_alternative_services) {
-  return CanUseQuic(stream_key, enable_ip_based_pooling,
-                    enable_alternative_services) &&
+  const url::SchemeHostPort& destination = quic_session_alias_key.destination();
+  return destination.IsValid() &&
+         CanUseQuic(
+             destination,
+             quic_session_alias_key.session_key().network_anonymization_key(),
+             enable_ip_based_pooling, enable_alternative_services) &&
          http_network_session()->quic_session_pool()->CanUseExistingSession(
-             quic_session_alias_key.session_key(),
-             quic_session_alias_key.destination());
+             quic_session_alias_key.session_key(), destination);
 }
 
 void HttpStreamPool::SetDelegateForTesting(
@@ -418,7 +427,8 @@ base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
           spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
           net_log);
   if (spdy_session) {
-    if (RequiresHTTP11(stream_key)) {
+    if (RequiresHTTP11(stream_key.destination(),
+                       stream_key.network_anonymization_key())) {
       spdy_session->MakeUnavailable();
       Group* group = GetGroup(stream_key);
       if (group) {

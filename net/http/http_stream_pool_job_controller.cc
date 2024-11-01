@@ -70,7 +70,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
 
   QuicSessionAliasKey quic_session_alias_key =
       stream_key.CalculateQuicSessionAliasKey();
-  if (pool_->CanUseExistingQuicSession(stream_key, quic_session_alias_key,
+  if (pool_->CanUseExistingQuicSession(quic_session_alias_key,
                                        enable_ip_based_pooling,
                                        enable_alternative_services)) {
     QuicChromiumClientSession* quic_session =
@@ -164,7 +164,7 @@ int HttpStreamPool::JobController::Preconnect(
 
   QuicSessionAliasKey quic_session_key =
       stream_key.CalculateQuicSessionAliasKey();
-  if (pool_->CanUseExistingQuicSession(stream_key, quic_session_key,
+  if (pool_->CanUseExistingQuicSession(quic_session_key,
                                        /*enable_ip_based_pooling=*/true,
                                        /*enable_alternative_services=*/true)) {
     return OK;

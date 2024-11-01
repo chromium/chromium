@@ -475,7 +475,8 @@ bool HttpStreamPool::AttemptManager::UsingTls() const {
 }
 
 bool HttpStreamPool::AttemptManager::RequiresHTTP11() {
-  return pool()->RequiresHTTP11(stream_key());
+  return pool()->RequiresHTTP11(stream_key().destination(),
+                                stream_key().network_anonymization_key());
 }
 
 LoadState HttpStreamPool::AttemptManager::GetLoadState() const {
@@ -1539,14 +1540,16 @@ bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() {
 
 bool HttpStreamPool::AttemptManager::CanUseQuic() {
   return allowed_alpns_.HasAny(kQuicBasedProtocols) &&
-         pool()->CanUseQuic(stream_key(), enable_ip_based_pooling_,
+         pool()->CanUseQuic(stream_key().destination(),
+                            stream_key().network_anonymization_key(),
+                            enable_ip_based_pooling_,
                             enable_alternative_services_);
 }
 
 bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() {
-  return pool()->CanUseExistingQuicSession(
-      stream_key(), quic_session_alias_key(), enable_ip_based_pooling_,
-      enable_alternative_services_);
+  return pool()->CanUseExistingQuicSession(quic_session_alias_key(),
+                                           enable_ip_based_pooling_,
+                                           enable_alternative_services_);
 }
 
 bool HttpStreamPool::AttemptManager::IsEchEnabled() const {

@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/http/alternative_service.h"
@@ -193,14 +194,17 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // streams before processing pending requests.
   void ProcessPendingRequestsInGroups();
 
-  // Returns true when HTTP/1.1 is required for `stream_key`.
-  bool RequiresHTTP11(const HttpStreamKey& stream_key);
+  // Returns true when HTTP/1.1 is required for `destination`.
+  bool RequiresHTTP11(const url::SchemeHostPort& destination,
+                      const NetworkAnonymizationKey& network_anonymization_key);
 
-  // Returns true when QUIC is broken for `stream_key`.
-  bool IsQuicBroken(const HttpStreamKey& stream_key);
+  // Returns true when QUIC is broken for `destination`.
+  bool IsQuicBroken(const url::SchemeHostPort& destination,
+                    const NetworkAnonymizationKey& network_anonymization_key);
 
-  // Returns true when QUIC can be used for `stream_key`.
-  bool CanUseQuic(const HttpStreamKey& stream_key,
+  // Returns true when QUIC can be used for `destination`.
+  bool CanUseQuic(const url::SchemeHostPort& destination,
+                  const NetworkAnonymizationKey& network_anonymization_key,
                   bool enable_ip_based_pooling,
                   bool enable_alternative_services);
 
@@ -212,10 +216,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   quic::ParsedQuicVersion SelectQuicVersion(
       const AlternativeServiceInfo& alternative_service_info);
 
-  // Returns true when there is an existing QUIC session for `stream_key` and
-  // `quic_session_key`.
+  // Returns true when there is an existing QUIC session for `quic_session_key`.
   bool CanUseExistingQuicSession(
-      const HttpStreamKey& stream_key,
       const QuicSessionAliasKey& quic_session_alias_key,
       bool enable_ip_based_pooling,
       bool enable_alternative_services);
