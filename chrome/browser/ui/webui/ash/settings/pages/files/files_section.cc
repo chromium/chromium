@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -41,16 +43,14 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts(
-    mojom::Section section,
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_FILES,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kFolder,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = section}},
+       {.section = mojom::Section::kSystemPreferences}},
       {IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES,
        mojom::kNetworkFileSharesSubpagePath,
        mojom::SearchResultIcon::kFolderShared,
@@ -60,11 +60,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts(
        {IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFilesMicrosoft365SearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetFilesMicrosoft365SearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_FILES_MICROSOFT_365,
         mojom::kOfficeFilesSubpagePath,
         mojom::SearchResultIcon::kFolder,
@@ -73,23 +73,23 @@ const std::vector<SearchConcept>& GetFilesMicrosoft365SearchConcepts() {
         {.subpage = mojom::Subpage::kOfficeFiles},
         {IDS_OS_SETTINGS_TAG_FILES_MICROSOFT_365_ALT1,
          SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFilesOneDriveSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
-      {{IDS_OS_SETTINGS_TAG_FILES_ONEDRIVE,
-        mojom::kOneDriveSubpagePath,
-        mojom::SearchResultIcon::kOneDrive,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kOneDrive}}});
-  return *tags;
+base::span<const SearchConcept> GetFilesOneDriveSearchConcepts() {
+  static constexpr auto tags =
+      std::to_array<SearchConcept>({{IDS_OS_SETTINGS_TAG_FILES_ONEDRIVE,
+                                     mojom::kOneDriveSubpagePath,
+                                     mojom::SearchResultIcon::kOneDrive,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::SearchResultType::kSubpage,
+                                     {.subpage = mojom::Subpage::kOneDrive}}});
+  return tags;
 }
 
 // Returns specific search terms to surface the "File sync" feature.
-const std::vector<SearchConcept>& GetFilesGoogleDriveFileSyncSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetFilesGoogleDriveFileSyncSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC,
         mojom::kGoogleDriveSubpagePath,
         mojom::SearchResultIcon::kGoogleDrive,
@@ -98,13 +98,13 @@ const std::vector<SearchConcept>& GetFilesGoogleDriveFileSyncSearchConcepts() {
         {.setting = mojom::Setting::kGoogleDriveFileSync},
         {IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE_FILE_SYNC_ALT1,
          SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
 // Returns search terms to navigate to the Google Drive subpage when the feature
 // is enabled.
-const std::vector<SearchConcept>& GetFilesGoogleDriveSubpageSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetFilesGoogleDriveSubpageSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE,
         mojom::kGoogleDriveSubpagePath,
         mojom::SearchResultIcon::kGoogleDrive,
@@ -117,7 +117,7 @@ const std::vector<SearchConcept>& GetFilesGoogleDriveSubpageSearchConcepts() {
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kGoogleDriveRemoveAccess}}});
-  return *tags;
+  return tags;
 }
 
 }  // namespace
@@ -126,8 +126,7 @@ FilesSection::FilesSection(Profile* profile,
                            SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(
-      GetDefaultSearchConcepts(GetSection(), GetSectionPath()));
+  updater.AddSearchTags(GetDefaultSearchConcepts());
   if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesMicrosoft365SearchConcepts());
     updater.AddSearchTags(GetFilesOneDriveSearchConcepts());
@@ -317,9 +316,7 @@ int FilesSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section FilesSection::GetSection() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kFiles;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon FilesSection::GetSectionIcon() const {
@@ -327,9 +324,7 @@ mojom::SearchResultIcon FilesSection::GetSectionIcon() const {
 }
 
 const char* FilesSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kFilesSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool FilesSection::LogMetric(mojom::Setting setting, base::Value& value) const {
