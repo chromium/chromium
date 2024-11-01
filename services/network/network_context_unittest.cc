@@ -63,6 +63,7 @@
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/testing_pref_service.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -1080,6 +1081,7 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsDefaultParam) {
 }
 
 TEST_F(NetworkContextTest, DeviceBoundSessionsEnableParam) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   mojom::NetworkContextParamsPtr context_params =
       CreateNetworkContextParamsForTesting();
   context_params->device_bound_sessions_enabled = true;
@@ -1102,8 +1104,9 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsDisableParam) {
 }
 
 TEST_F(NetworkContextTest, DeviceBoundSessionsEnableWithStore) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       net::features::kPersistDeviceBoundSessions);
   mojom::NetworkContextParamsPtr context_params =
       CreateNetworkContextParamsForTesting();

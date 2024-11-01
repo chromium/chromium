@@ -554,6 +554,7 @@ source_set("tests") {
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
     "//crypto",
+    "//crypto:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",

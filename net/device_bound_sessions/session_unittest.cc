@@ -146,8 +146,9 @@ TEST_F(SessionTest, DeferredSession) {
   auto params = CreateValidParams();
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   bool is_deferred = session->ShouldDeferRequest(request.get());
@@ -163,8 +164,9 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   params.scope.specifications.push_back(spec);
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   bool is_deferred = session->ShouldDeferRequest(request.get());
@@ -177,8 +179,9 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   auto params = CreateValidParams();
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      url_subdomain, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
 
   bool is_deferred = session->ShouldDeferRequest(request.get());
@@ -199,8 +202,9 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   params.scope.specifications.push_back(spec);
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      url_subdomain, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
   ASSERT_TRUE(session->ShouldDeferRequest(request.get()));
 }
@@ -209,8 +213,9 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   auto params = CreateValidParams();
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   bool is_deferred = session->ShouldDeferRequest(request.get());
   EXPECT_TRUE(is_deferred);
@@ -232,8 +237,9 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   auto params = CreateValidParams();
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
+  net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      test_insecure_url, IDLE, new FakeDelegate(), kDummyAnnotation);
+      test_insecure_url, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   bool is_deferred = session->ShouldDeferRequest(request.get());
@@ -281,8 +287,9 @@ TEST_F(SessionTest, NotDeferredNotSameSite) {
   auto params = CreateValidParams();
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
   bool is_deferred = session->ShouldDeferRequest(request.get());
   EXPECT_FALSE(is_deferred);
@@ -294,8 +301,9 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   auto params = CreateValidParams();
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
   bool is_deferred = session->ShouldDeferRequest(request.get());
   EXPECT_TRUE(is_deferred);
@@ -318,8 +326,9 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   params.credentials = std::move(cookie_credentials);
   auto session = Session::CreateIfValid(params, kTestUrl);
   ASSERT_TRUE(session);
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      url_subdomain, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
   ASSERT_FALSE(session->ShouldDeferRequest(request.get()));
 }

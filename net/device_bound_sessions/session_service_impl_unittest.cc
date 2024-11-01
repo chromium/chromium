@@ -40,10 +40,6 @@ class SessionServiceImplTest : public TestWithTaskEnvironment {
   SessionServiceImpl service_;
 };
 
-class FakeDelegate : public URLRequest::Delegate {
-  void OnReadCompleted(URLRequest* request, int bytes_read) override {}
-};
-
 // Variables to be used by TestFetcher
 // Can be changed by tests
 std::string g_session_id = "SessionId";
@@ -88,8 +84,9 @@ class ScopedNullFetcher {
 TEST_F(SessionServiceImplTest, TestDefer) {
   SessionService::RefreshCompleteCallback cb1 = base::DoNothing();
   SessionService::RefreshCompleteCallback cb2 = base::DoNothing();
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   service().DeferRequestForRefresh(request.get(), Session::Id("test"),
                                    std::move(cb1), std::move(cb2));
 }
@@ -105,8 +102,9 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -128,8 +126,9 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   std::optional<Session::Id> maybe_id =
@@ -147,8 +146,9 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   std::optional<Session::Id> maybe_id =
@@ -210,8 +210,9 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
   ASSERT_TRUE(session);
   session->set_expiry_date(base::Time::Now() + base::Days(1));
 
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      kTestUrl, IDLE, new FakeDelegate(), kDummyAnnotation);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
