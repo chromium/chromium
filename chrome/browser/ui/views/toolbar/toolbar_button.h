@@ -116,6 +116,9 @@ class ToolbarButton : public views::LabelButton,
   std::optional<gfx::Insets> GetLayoutInsets() const;
   void SetLayoutInsets(const std::optional<gfx::Insets>& insets);
 
+  // Sets |layout_inset_delta_|, see comment there.
+  void SetLayoutInsetDelta(const gfx::Insets& insets);
+
   // views::LabelButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
@@ -167,9 +170,6 @@ class ToolbarButton : public views::LabelButton,
 
   // Function to show the dropdown menu.
   virtual void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);
-
-  // Sets |layout_inset_delta_|, see comment there.
-  void SetLayoutInsetDelta(const gfx::Insets& insets);
 
   // Updates the button's background and border.
   virtual void UpdateColorsAndInsets();

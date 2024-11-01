@@ -9,9 +9,11 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
@@ -131,6 +133,17 @@ void CastToolbarButtonController::OnContextMenuHidden() {
   DCHECK(context_menu_shown_);
   context_menu_shown_ = false;
   MaybeToggleIconVisibility();
+}
+
+void CastToolbarButtonController::UpdateIcon() {
+  // Non-ToolbarPinning path updates the icon via observers.
+  if (features::IsToolbarPinningEnabled()) {
+    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      browser->browser_window_features()
+          ->cast_browser_controller()
+          ->UpdateIcon();
+    }
+  }
 }
 
 void CastToolbarButtonController::KeepIconShownOnPressed() {

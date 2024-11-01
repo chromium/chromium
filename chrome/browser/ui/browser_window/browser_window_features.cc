@@ -14,6 +14,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -201,6 +203,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     memory_saver_opt_in_iph_controller_ =
         std::make_unique<MemorySaverOptInIPHController>(
             browser_view->browser());
+
+    if (media_router::MediaRouterEnabled(browser_view->browser()->profile())) {
+      cast_browser_controller_ =
+          std::make_unique<media_router::CastBrowserController>(browser_view->browser());
+    }
   }
 }
 

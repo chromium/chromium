@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
@@ -78,6 +79,24 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
       .SetProperty(actions::kActionItemPinnableKey, true);
 }
 
+actions::StatefulImageActionItem::StatefulImageActionItemBuilder
+StatefulChromeMenuAction(actions::ActionItem::InvokeActionCallback callback,
+                         actions::ActionId action_id,
+                         int title_id,
+                         int tooltip_id,
+                         const gfx::VectorIcon& icon) {
+  ui::ImageModel image = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon);
+  return actions::StatefulImageActionItem::Builder(callback)
+      .SetActionId(action_id)
+      .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+          l10n_util::GetStringUTF16(title_id)))
+      .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+          l10n_util::GetStringUTF16(tooltip_id)))
+      .SetImage(image)
+      .SetStatefulImage(image)
+      .SetProperty(actions::kActionItemPinnableKey, true);
+}
+
 actions::ActionItem::ActionItemBuilder SidePanelAction(
     SidePanelEntryId id,
     int title_id,
@@ -96,8 +115,7 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
 }
 }  // namespace
 
-BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {
-}
+BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {}
 
 BrowserActions::~BrowserActions() {
   // Extract the unique ptr and destruct it after the raw_ptr to avoid a
@@ -113,7 +131,7 @@ std::u16string BrowserActions::GetCleanTitleAndTooltipText(
   const std::u16string ellipsis_unicode = u"\u2026";
   const std::u16string ellipsis_text = u"...";
 
-  auto remove_ellipsis = [&string](const std::u16string& ellipsis) {
+  auto remove_ellipsis = [&string](const std::u16string ellipsis) {
     size_t ellipsis_pos = string.find(ellipsis);
     if (ellipsis_pos != std::u16string::npos) {
       string.erase(ellipsis_pos);
@@ -457,24 +475,15 @@ void BrowserActions::InitializeBrowserActions() {
 
     if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     root_action_item_->AddChild(
-        ChromeMenuAction(
+        StatefulChromeMenuAction(
             base::BindRepeating(
                 [](Browser* browser, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  media_router::MediaRouterDialogController* dialog_controller =
-                      media_router::MediaRouterDialogController::
-                          GetOrCreateForWebContents(
-                              browser->tab_strip_model()
-                                  ->GetActiveWebContents());
-                  if (dialog_controller->IsShowingMediaRouterDialog()) {
-                    dialog_controller->HideMediaRouterDialog();
-                  } else {
-                    // TODO(b/356468503): Figure out how to capture action
-                    // invocation location.
-                    dialog_controller->ShowMediaRouterDialog(
-                        media_router::MediaRouterDialogActivationLocation::
-                            TOOLBAR);
-                  }
+                  // TODO(crbug.com/356468503): Figure out how to capture action
+                  // invocation location.
+                  browser->browser_window_features()
+                      ->cast_browser_controller()
+                      ->ToggleDialog();
                 },
                 base::Unretained(browser)),
             kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,

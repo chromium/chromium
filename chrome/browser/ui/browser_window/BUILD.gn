@@ -29,6 +29,7 @@ source_set("impl") {
   deps = [
     ":browser_window",
     "//chrome/browser/extensions",
+    "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/commerce",

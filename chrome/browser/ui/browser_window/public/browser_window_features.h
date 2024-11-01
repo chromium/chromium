@@ -38,6 +38,10 @@ namespace lens {
 class LensOverlayEntryPointController;
 }  // namespace lens
 
+namespace media_router {
+class CastBrowserController;
+}  // namespace media_router
+
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
 }  // namespace tab_groups
@@ -91,6 +95,10 @@ class BrowserWindowFeatures {
 
   ChromeLabsCoordinator* chrome_labs_coordinator() {
     return chrome_labs_coordinator_.get();
+  }
+
+  media_router::CastBrowserController* cast_browser_controller() {
+    return cast_browser_controller_.get();
   }
 
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
@@ -182,6 +190,9 @@ class BrowserWindowFeatures {
       extension_side_panel_manager_;
 
   std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
+
+  std::unique_ptr<media_router::CastBrowserController>
+      cast_browser_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
