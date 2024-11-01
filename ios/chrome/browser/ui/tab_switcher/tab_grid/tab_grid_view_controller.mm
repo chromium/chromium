@@ -239,6 +239,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Hide the toolbars and the floating button, so they can fade in the first
   // time there's a transition into this view controller.
   [self hideToolbars];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateConstraitsOnTraitChange)];
+  }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -273,23 +279,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return UIStatusBarStyleLightContent;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (IsPinnedTabsEnabled()) {
-    [self updatePinnedTabsViewControllerConstraints];
+  if (@available(iOS 17, *)) {
+    return;
   }
-  if ([self.swipeToIncognitoIPH superview] == self.view) {
-    self.swipeToIncognitoIPHBottomConstraint.active = NO;
-    self.swipeToIncognitoIPHBottomConstraint =
-        [self.swipeToIncognitoIPH.bottomAnchor
-            constraintEqualToAnchor:[self shouldUseCompactLayout]
-                                        ? self.bottomToolbar.topAnchor
-                                        : self.regularTabsViewController.view
-                                              .bottomAnchor];
 
-    self.swipeToIncognitoIPHBottomConstraint.active = YES;
-  }
+  [self updateConstraitsOnTraitChange];
 }
+#endif
 
 #pragma mark - UIScrollViewDelegate
 
@@ -1404,6 +1403,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // Actions on both bars should be disabled during dragging.
   self.topToolbar.pageControl.userInteractionEnabled = NO;
+}
+
+- (void)updateConstraitsOnTraitChange {
+  if (IsPinnedTabsEnabled()) {
+    [self updatePinnedTabsViewControllerConstraints];
+  }
+  if ([self.swipeToIncognitoIPH superview] == self.view) {
+    self.swipeToIncognitoIPHBottomConstraint.active = NO;
+    self.swipeToIncognitoIPHBottomConstraint =
+        [self.swipeToIncognitoIPH.bottomAnchor
+            constraintEqualToAnchor:[self shouldUseCompactLayout]
+                                        ? self.bottomToolbar.topAnchor
+                                        : self.regularTabsViewController.view
+                                              .bottomAnchor];
+
+    self.swipeToIncognitoIPHBottomConstraint.active = YES;
+  }
 }
 
 #pragma mark - UIGestureRecognizerDelegate
