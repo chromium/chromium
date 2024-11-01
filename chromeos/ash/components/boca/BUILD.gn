@@ -10,6 +10,10 @@ static_library("boca") {
   sources = [
     "boca_app_client.cc",
     "boca_app_client.h",
+    "boca_metrics_manager.cc",
+    "boca_metrics_manager.h",
+    "boca_metrics_util.cc",
+    "boca_metrics_util.h",
     "boca_role_util.cc",
     "boca_role_util.h",
     "boca_session_manager.cc",
@@ -61,6 +65,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "boca_metrics_manager_unittest.cc",
     "boca_role_util_unittest.cc",
     "boca_session_manager_unittest.cc",
     "boca_session_util_unittest.cc",

@@ -1193,6 +1193,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.OnTask.{State}SessionDurationPercentage"
+    units="% of session" expires_after="2025-04-04">
+  <owner>zhumatthew@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the percentage of the duration the session was in {State}.
+  </summary>
+  <token key="State">
+    <variant name="Locked" summary="locked mode"/>
+    <variant name="Unlocked" summary="unlocked mode"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
     enum="Boolean" expires_after="2024-11-03">
   <owner>hidehiko@chromium.org</owner>

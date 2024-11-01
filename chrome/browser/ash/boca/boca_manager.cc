@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
+#include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
@@ -82,12 +83,14 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::SessionClientImpl> session_client_impl,
     std::unique_ptr<boca::BocaSessionManager> boca_session_manager,
     std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
-    std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager)
+    std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
+    std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager)
     : on_task_session_manager_(std::move(on_task_session_manager)),
       session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)),
-      babel_orca_manager_(std::move(babel_orca_manager)) {
+      babel_orca_manager_(std::move(babel_orca_manager)),
+      boca_metrics_manager_(std::move(boca_metrics_manager)) {
   AddObservers(nullptr);
 }
 
@@ -105,6 +108,8 @@ BocaManager::BocaManager(Profile* profile)
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
         std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
   }
+  boca_metrics_manager_ =
+      std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ !is_consumer);
 
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
@@ -137,6 +142,7 @@ void BocaManager::AddObservers(const user_manager::User* user) {
   if (ash::boca_util::IsConsumer(user)) {
     boca_session_manager_->AddObserver(on_task_session_manager_.get());
   }
+  boca_session_manager_->AddObserver(boca_metrics_manager_.get());
 }
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
+#include "chromeos/ash/components/boca/boca_metrics_manager.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -157,7 +158,8 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::make_unique<boca::BabelOrcaManager>(
             identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
-            GetBabelOrcaControllerFactory()));
+            GetBabelOrcaControllerFactory()),
+        std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ true));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -178,6 +180,11 @@ TEST_F(BocaManagerProducerTest, VerifyDependenciesTearDownProperly) {
   ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().empty());
 }
 
+TEST_F(BocaManagerProducerTest, VerifyBocaMetricsManagerWasAddedForProducer) {
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetBocaMetricsManagerForTesting()));
+}
+
 class BocaManagerConsumerTest : public BocaManagerTest {
  protected:
   BocaManagerConsumerTest() = default;
@@ -196,7 +203,8 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::make_unique<boca::BabelOrcaManager>(
             identity_test_env_.identity_manager(),
             url_loader_factory_.GetSafeWeakWrapper(),
-            GetBabelOrcaControllerFactory()));
+            GetBabelOrcaControllerFactory()),
+        std::make_unique<boca::BocaMetricsManager>(/*is_producer*/ false));
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
@@ -209,6 +217,11 @@ TEST_F(BocaManagerConsumerTest, VerifyOnTaskObserverHasAddedForConsumer) {
 TEST_F(BocaManagerConsumerTest, VerifyBabelOrcaObserverHasAddedForConsumer) {
   ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
       boca_manager_->GetBabelOrcaManagerForTesting()));
+}
+
+TEST_F(BocaManagerConsumerTest, VerifyBocaMetricsManagerWasAddedForConsumer) {
+  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+      boca_manager_->GetBocaMetricsManagerForTesting()));
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyDependenciesTearDownProperly) {
