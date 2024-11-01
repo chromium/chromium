@@ -125,7 +125,7 @@ TEST_P(BluetoothDetailedViewImplPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("check_view", IsBluetoothWifiQSPodRefreshEnabled()),
-      /*revision_number=*/9, detailed_view));
+      /*revision_number=*/10, detailed_view));
 }
 
 TEST_P(BluetoothDetailedViewImplPixelTest, BluetoothUnavailable) {
@@ -154,7 +154,7 @@ TEST_P(BluetoothDetailedViewImplPixelTest, BluetoothUnavailable) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetScreenshotName("bluetooth_unavailable_view",
                         IsBluetoothWifiQSPodRefreshEnabled()),
-      /*revision_number=*/0, detailed_view));
+      /*revision_number=*/1, detailed_view));
 }
 
 }  // namespace

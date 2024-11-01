@@ -209,16 +209,15 @@ void HoldingSpaceTrayChildBubble::Init() {
           : kColorAshShieldAndBase80));
 
   // Border.
-  const float corner_radius = GetBubbleCornerRadius();
   SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius,
+      kBubbleCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1));
 
   // Corner radius.
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
 
   // Placeholder.
   if (auto placeholder = CreatePlaceholder()) {

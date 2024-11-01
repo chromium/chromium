@@ -979,9 +979,6 @@ extern const char kDropInputEventsBeforeFirstPaintDescription[];
 extern const char kBoundaryEventDispatchTracksNodeRemovalName[];
 extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 
-extern const char kEnableBubbleCornerRadiusUpdateName[];
-extern const char kEnableBubbleCornerRadiusUpdateDescription[];
-
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 

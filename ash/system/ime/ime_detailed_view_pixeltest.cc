@@ -68,7 +68,7 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/11, detailed_view));
+      /*revision_number=*/12, detailed_view));
 }
 
 }  // namespace

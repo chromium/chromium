@@ -69,7 +69,7 @@ TEST_F(QuickSettingsFooterPixelTest, FooterShouldBeRenderedCorrectly) {
   InitPowerStatusAndOpenBubble();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "with_no_extra_button",
-      /*revision_number=*/6, GetFooter()));
+      /*revision_number=*/7, GetFooter()));
   CloseBubble();
 
   // Regression test for b/293484037: The settings button is missing when
@@ -78,7 +78,7 @@ TEST_F(QuickSettingsFooterPixelTest, FooterShouldBeRenderedCorrectly) {
   InitPowerStatusAndOpenBubble();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "with_exit_button",
-      /*revision_number=*/6, GetFooter()));
+      /*revision_number=*/7, GetFooter()));
   CloseBubble();
 }
 

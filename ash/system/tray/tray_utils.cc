@@ -176,9 +176,7 @@ TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
   init_params.translucent = true;
-  if (!features::IsBubbleCornerRadiusUpdateEnabled()) {
-    init_params.corner_radius = kTrayItemCornerRadius;
-  }
+  init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
   init_params.anchor_to_shelf_corner = anchor_to_shelf_corner;
 

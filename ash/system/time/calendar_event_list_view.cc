@@ -51,14 +51,7 @@ constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
 // Border thickness for `CalendarEmptyEventListView`.
 constexpr int kOpenGoogleCalendarBorderThickness = 1;
 
-constexpr auto kDeprecatedEventListViewCornerRadius =
-    gfx::RoundedCornersF(24,
-                         24,
-                         kDeprecatedBubbleCornerRadius,
-                         kDeprecatedBubbleCornerRadius);
-
-constexpr auto kEventListViewCornerRadius =
-    gfx::RoundedCornersF(kUpdatedBubbleCornerRadius);
+constexpr auto kEventListViewCornerRadius = gfx::RoundedCornersF(24);
 
 constexpr int kScrollViewGradientSize = 16;
 
@@ -137,9 +130,7 @@ CalendarEventListView::CalendarEventListView(
   layer()->SetFillsBoundsOpaquely(false);
   // Set the bottom corners to be rounded so that `CalendarEventListView` is
   // contained in `CalendarView`.
-  layer()->SetRoundedCornerRadius(features::IsBubbleCornerRadiusUpdateEnabled()
-                                      ? kEventListViewCornerRadius
-                                      : kDeprecatedEventListViewCornerRadius);
+  layer()->SetRoundedCornerRadius(kEventListViewCornerRadius);
 
   views::BoxLayout* button_layout = close_button_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(

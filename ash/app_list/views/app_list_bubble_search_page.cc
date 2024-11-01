@@ -8,7 +8,6 @@
 
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -29,9 +28,7 @@ constexpr int kHideAnimationVerticalOffset = -40 * 50 / 250;
 constexpr base::TimeDelta kHideAnimationDuration = base::Milliseconds(50);
 
 constexpr auto kSearchViewBorder =
-    gfx::Insets::TLBR(0, 0, kUpdatedBubbleCornerRadius, 0);
-constexpr auto kDeprecatedSearchViewBorder =
-    gfx::Insets::TLBR(0, 0, kDeprecatedBubbleCornerRadius, 0);
+    gfx::Insets::TLBR(0, 0, kBubbleCornerRadius, 0);
 }  // namespace
 
 AppListBubbleSearchPage::AppListBubbleSearchPage(
@@ -41,10 +38,7 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   search_view_ = AddChildView(std::make_unique<AppListSearchView>(
       view_delegate, dialog_controller, search_box_view));
-  search_view_->SetBorder(
-      views::CreateEmptyBorder(features::IsBubbleCornerRadiusUpdateEnabled()
-                                   ? kSearchViewBorder
-                                   : kDeprecatedSearchViewBorder));
+  search_view_->SetBorder(views::CreateEmptyBorder(kSearchViewBorder));
 }
 
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;

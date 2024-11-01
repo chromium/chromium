@@ -9931,13 +9931,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-bubble-corner-radius-update",
-     flag_descriptions::kEnableBubbleCornerRadiusUpdateName,
-     flag_descriptions::kEnableBubbleCornerRadiusUpdateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableBubbleCornerRadiusUpdate)},
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-notification-image-drag",
      flag_descriptions::kEnableNotificationImageDragName,
      flag_descriptions::kEnableNotificationImageDragDescription, kOsCrOS,

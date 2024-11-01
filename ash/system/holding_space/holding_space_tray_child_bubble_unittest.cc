@@ -111,7 +111,7 @@ TEST_F(HoldingSpaceTrayChildBubbleTest, HasExpectedBubbleTreatment) {
   // Corner radius.
   EXPECT_TRUE(layer->is_fast_rounded_corner());
   EXPECT_EQ(layer->rounded_corner_radii(),
-            gfx::RoundedCornersF(GetBubbleCornerRadius()));
+            gfx::RoundedCornersF(kBubbleCornerRadius));
 }
 
 // HoldingSpaceTrayChildBubblePlaceholderTest ----------------------------------

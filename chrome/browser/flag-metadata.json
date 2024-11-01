@@ -2583,11 +2583,6 @@
     "expiry_milestone": 140
   },
   {
-    "name":"enable-bubble-corner-radius-update",
-    "owners": ["amehfooz@google.com"],
-    "expiry_milestone": 134
-  },
-  {
     "name": "enable-builtin-hls",
     "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
     "expiry_milestone": 134

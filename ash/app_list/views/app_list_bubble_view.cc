@@ -28,7 +28,6 @@
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -209,12 +208,10 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
   SetProperty(views::kElementIdentifierKey, kAppListBubbleViewElementId);
-
-  const float corner_radius = GetBubbleCornerRadius();
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   // Layer background is set in OnThemeChanged().
   SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -222,10 +219,11 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
 
   ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         corner_radius));
+                                                         kBubbleCornerRadius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius, views::HighlightBorder::Type::kHighlightBorderOnShadow,
+      kBubbleCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());

@@ -53,6 +53,7 @@ namespace ash {
 
 namespace {
 
+constexpr int kVideoConferenceTrayBubbleCornerRadius = 24;
 constexpr float kTrayButtonsSpacing = 4;
 constexpr float kPrivacyIndicatorRadius = 3;
 
@@ -542,7 +543,7 @@ void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
   std::unique_ptr<TrayBubbleView> bubble_view;
   auto init_params = CreateInitParamsForTrayBubble(/*tray=*/this);
   init_params.preferred_width = kWideTrayMenuWidth;
-  init_params.corner_radius = kUpdatedBubbleCornerRadius;
+  init_params.corner_radius = kVideoConferenceTrayBubbleCornerRadius;
 
   // If all of the apps are Linux apps, we will just use `LinuxAppsBubbleView`
   // specifically for this situation.

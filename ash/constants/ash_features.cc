@@ -704,12 +704,6 @@ BASE_FEATURE(kEnableBrightnessControlInSettings,
              "EnableBrightnessControlInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables an update to 24px rounded corners for all `TrayBubbleView`s and
-// `AppListBubbleView`.
-BASE_FEATURE(kEnableBubbleCornerRadiusUpdate,
-             "EnableBubbleCornerRadiusUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables exporting of the selected Preferences so that they can be accessed
 // early in the sign-in flow, before loading Profile.
 BASE_FEATURE(kEnableEarlyPrefs,
@@ -3546,10 +3540,6 @@ bool IsBocaExtensionConsumerEnabled() {
 
 bool IsBrightnessControlInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kEnableBrightnessControlInSettings);
-}
-
-bool IsBubbleCornerRadiusUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableBubbleCornerRadiusUpdate);
 }
 
 bool IsCaptureModeEducationEnabled() {
