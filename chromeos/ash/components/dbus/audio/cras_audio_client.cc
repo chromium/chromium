@@ -14,10 +14,12 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 
 namespace ash {
 
@@ -366,6 +368,34 @@ class CrasAudioClientImpl : public CrasAudioClient {
                                  cras::kSetInputMute);
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(mute_on);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void GetVoiceIsolationUIAppearance(
+      chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback)
+      override {
+    VLOG(1) << "cras_audio_client: Requesting voice isolation UI appearance.";
+    // TODO(hunghsienchen): Use cras::kGetVoiceIsolationUIAppearance after
+    // dbus-constants.h is updated.
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 "GetVoiceIsolationUIAppearance");
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetVoiceIsolationUIAppearance,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SetVoiceIsolationUIEnabled(bool voice_isolation_on) override {
+    VLOG(1) << "cras_audio_client: Setting voice isolation state: "
+            << voice_isolation_on;
+    // TODO(hunghsienchen): Use cras::kSetVoiceIsolationUIEnabled after
+    // dbus-constants.h is updated.
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 "SetVoiceIsolationUIEnabled");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(voice_isolation_on);
     cras_proxy_->CallMethod(&method_call,
                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                             base::DoNothing());
@@ -1352,6 +1382,35 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(audio_effect_dlcs);
     VLOG(1) << "cras_audio_client: Retrieved audio effect dlcs: "
             << audio_effect_dlcs;
+  }
+
+  void OnGetVoiceIsolationUIAppearance(
+      chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << "GetVoiceIsolationUIAppearance";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    uint32_t toggle_type = 0;
+    uint32_t effect_mode_options = 0;
+    bool show_effect_fallback_message = false;
+    dbus::MessageReader reader(response);
+    if (!reader.PopUint32(&toggle_type) ||
+        !reader.PopUint32(&effect_mode_options) ||
+        !reader.PopBool(&show_effect_fallback_message)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    VoiceIsolationUIAppearance appearance(
+        static_cast<cras::AudioEffectType>(toggle_type), effect_mode_options,
+        show_effect_fallback_message);
+    VLOG(1) << "cras_audio_client: Retrieved voice isolation appearance: "
+            << appearance.ToString();
+    std::move(callback).Run(std::move(appearance));
   }
 
   void OnGetNoiseCancellationSupported(

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 
 namespace ash {
 
@@ -31,6 +32,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
 
   static FakeCrasAudioClient* Get();
 
+  void SetVoiceIsolationUIAppearance(VoiceIsolationUIAppearance appearance);
+  bool GetVoiceIsolationUIEnabled();
   void SetNoiseCancellationSupported(bool noise_cancellation_supported);
   uint32_t GetNoiseCancellationEnabledCount();
   void SetStyleTransferSupported(bool style_transfer_supported);
@@ -70,6 +73,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetInputMute(bool mute_on) override;
   void GetAudioEffectDlcs(
       chromeos::DBusMethodCallback<std::string> callback) override;
+  void GetVoiceIsolationUIAppearance(
+      chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback)
+      override;
+  void SetVoiceIsolationUIEnabled(bool voice_isolation_on) override;
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override;
   void GetNoiseCancellationSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
@@ -208,6 +215,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
 
   VolumeState volume_state_;
   AudioNodeList node_list_;
+  VoiceIsolationUIAppearance voice_isolation_ui_appearance_;
   uint64_t active_input_node_id_ = 0;
   uint64_t active_output_node_id_ = 0;
   bool enable_volume_change_events_ = true;
@@ -219,6 +227,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   uint32_t battery_level_ = 0;
   uint32_t noise_cancellation_enabled_counter_ = 0;
   int32_t number_non_chrome_output_streams_ = 0;
+  bool voice_isolation_ui_enabled_ = false;
   bool noise_cancellation_enabled_ = false;
   bool style_transfer_enabled_ = false;
   bool speak_on_mute_detection_enabled_ = false;

@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/audio:unit_tests",
     "//chromeos/ash/components/dbus/biod:test_support",
     "//chromeos/ash/components/dbus/cec_service:unit_tests",
     "//chromeos/ash/components/dbus/chaps:unit_tests",

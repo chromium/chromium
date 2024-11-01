@@ -1618,6 +1618,24 @@ TEST_F(CrasAudioClientTest, SetInputMute) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CrasAudioClientTest, SetVoiceIsolationUIEnabled) {
+  const bool kVoiceIsolationOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      // TODO(hunghsienchen): Use cras::kSetVoiceIsolationUIEnabled after
+      // dbus-constants.h is updated.
+      "SetVoiceIsolationUIEnabled",
+      base::BindRepeating(&ExpectBoolArgument, kVoiceIsolationOn),
+      response.get());
+  // Call method.
+  client()->SetVoiceIsolationUIEnabled(kVoiceIsolationOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(CrasAudioClientTest, SetNoiseCancellationEnabled) {
   const bool kNoiseCancellationOn = true;
   // Create response.

@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -188,6 +189,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Gets the DLC IDs of the audio effects supported by the device.
   virtual void GetAudioEffectDlcs(
       chromeos::DBusMethodCallback<std::string> callback) = 0;
+
+  // Gets the appearance of the voice isolation UI.
+  virtual void GetVoiceIsolationUIAppearance(
+      chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback) = 0;
+
+  // Sets input voice isolation state to |voice_isolation_on| value.
+  virtual void SetVoiceIsolationUIEnabled(bool voice_isolation_on) = 0;
 
   // Sets input noise cancellation state to |noise_cancellation_on| value.
   virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;

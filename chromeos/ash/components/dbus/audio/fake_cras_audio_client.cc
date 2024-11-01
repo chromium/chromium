@@ -244,6 +244,24 @@ void FakeCrasAudioClient::GetAudioEffectDlcs(
   std::move(callback).Run(audio_effect_dlcs_);
 }
 
+void FakeCrasAudioClient::SetVoiceIsolationUIAppearance(
+    VoiceIsolationUIAppearance appearance) {
+  voice_isolation_ui_appearance_ = appearance;
+}
+
+void FakeCrasAudioClient::GetVoiceIsolationUIAppearance(
+    chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback) {
+  std::move(callback).Run(voice_isolation_ui_appearance_);
+}
+
+void FakeCrasAudioClient::SetVoiceIsolationUIEnabled(bool voice_isolation_on) {
+  voice_isolation_ui_enabled_ = voice_isolation_on;
+}
+
+bool FakeCrasAudioClient::GetVoiceIsolationUIEnabled() {
+  return voice_isolation_ui_enabled_;
+}
+
 void FakeCrasAudioClient::SetNoiseCancellationSupported(
     bool noise_cancellation_supported) {
   noise_cancellation_supported_ = noise_cancellation_supported;
