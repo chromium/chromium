@@ -472,11 +472,7 @@ void AmbientBackendControllerImpl::FetchWeather(
           std::move(callback).Run(std::nullopt);
         }
       };
-  // Tests may not have a user manager.
-  if (!user_manager::UserManager::IsInitialized()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
+
   const auto* user = user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(user->HasGaiaAccount());
   BackdropClientConfig::Request request =

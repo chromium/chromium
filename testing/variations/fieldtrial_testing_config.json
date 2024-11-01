@@ -3255,6 +3255,21 @@
             ]
         }
     ],
+    "BirchWeather": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BirchWeather"
+                    ]
+                }
+            ]
+        }
+    ],
     "BlockAcceptClientHints": [
         {
             "platforms": [
