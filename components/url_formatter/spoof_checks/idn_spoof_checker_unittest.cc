@@ -976,6 +976,7 @@ const IDNTestCase kIdnCases[] = {
     {"xn--l-fda.cat", u"\u00b7l.cat", kUnsafe},
     {"xn--l-gda.cat", u"l\u00b7.cat", kUnsafe},
 
+    // CJK ideographs and Kangxi radicals:
     {"xn--googlecom-gk6n.com", u"google\u4e28com.com", kUnsafe},
     {"xn--googlecom-0y6n.com", u"google\u4e5bcom.com", kUnsafe},
     {"xn--googlecom-v85n.com", u"google\u4e03com.com", kUnsafe},
@@ -996,12 +997,55 @@ const IDNTestCase kIdnCases[] = {
     {"xn--googlecom-lg9q.com", u"google\u5de5com.com", kUnsafe},
     {"xn--googlecom-g040a.com", u"google\u8ba0com.com", kUnsafe},
     {"xn--googlecom-b85n.com", u"google\u4e01com.com", kUnsafe},
+
     // 丶google.com
     {"xn--google-2x7i.com", u"\u4e36google.com", kUnsafe},
     // google丶.com
     {"xn--google-8x7i.com", u"google\u4e36.com", kUnsafe},
     // google丶example.com
     {"xn--googleexample-1m1u.com", u"google\u4e36example.com", kUnsafe},
+
+    // ⼅google.com
+    {"xn--google-ve8i.com", u"\u4e85google.com", kUnsafe},
+    // google⼅.com
+    {"xn--google-1e8i.com", u"google\u4e85.com", kUnsafe},
+    // google⼅example.com
+    {"xn--googleexample-nj2u.com", u"google\u4e85example.com", kUnsafe},
+
+    // ⼆google.com
+    {"xn--google-9f8i.com", u"\u4e8cgoogle.com", kUnsafe},
+    // google⼆.com
+    {"xn--google-gg8i.com", u"google\u4e8c.com", kUnsafe},
+    // google⼆example.com
+    {"xn--googleexample-gm2u.com", u"google\u4e8cexample.com", kUnsafe},
+
+    // ⼇google.com
+    {"xn--google-9j8i.com", u"\u4ea0google.com", kUnsafe},
+    // google⼇.com
+    {"xn--google-gk8i.com", u"google\u4ea0.com", kUnsafe},
+    // google⼇example.com
+    {"xn--googleexample-gu2u.com", u"google\u4ea0example.com", kUnsafe},
+
+    // ⼍google.com
+    {"xn--google-vv2j.com", u"\u5196google.com", kUnsafe},
+    // google⼍.com
+    {"xn--google-1v2j.com", u"google\u5196.com", kUnsafe},
+    // google⼍example.com
+    {"xn--googleexample-ni1v.com", u"google\u5196example.com", kUnsafe},
+
+    // ⼧google.com
+    {"xn--google-he7k.com", u"\u5b80google.com", kUnsafe},
+    // google⼧.com
+    {"xn--google-ne7k.com", u"google\u5b80.com", kUnsafe},
+    // google⼧example.com
+    {"xn--googleexample-ui0y.com", u"google\u5b80example.com", kUnsafe},
+
+    // ⼮google.com
+    {"xn--google-2t0l.com", u"\u5ddbgoogle.com", kUnsafe},
+    // google⼮.com
+    {"xn--google-8t0l.com", u"google\u5ddb.com", kUnsafe},
+    // google⼮example.com
+    {"xn--googleexample-1e7y.com", u"google\u5ddbexample.com", kUnsafe},
 
     // Whole-script-confusables. Cyrillic is sufficiently handled in cases above
     // so it's not included here.
