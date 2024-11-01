@@ -1006,6 +1006,30 @@ TEST_F(LoginShelfViewTest, AccessibleProperties) {
             l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
+TEST_F(LoginShelfViewTest, AccessiblePreviousAndNextFocus) {
+  Shelf* shelf =
+      Shelf::ForWindow(login_shelf_view_->GetWidget()->GetNativeWindow());
+
+  ui::AXNodeData data;
+  login_shelf_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(login_shelf_view_->GetViewAccessibility().GetNextWindowFocus(),
+            shelf->GetStatusAreaWidget());
+  EXPECT_EQ(login_shelf_view_->GetViewAccessibility().GetPreviousWindowFocus(),
+            nullptr);
+
+  // Simulate the lock screen scenario to verify the previous focus is updated.
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
+  CreateUserSessions(1);
+  NotifySessionStateChanged(SessionState::LOCKED);
+
+  data = ui::AXNodeData();
+  login_shelf_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(login_shelf_view_->GetViewAccessibility().GetNextWindowFocus(),
+            shelf->GetStatusAreaWidget());
+  EXPECT_EQ(login_shelf_view_->GetViewAccessibility().GetPreviousWindowFocus(),
+            LockScreen::Get()->widget());
+}
+
 class OsInstallButtonTest : public LoginShelfViewTest {
  public:
   OsInstallButtonTest() = default;

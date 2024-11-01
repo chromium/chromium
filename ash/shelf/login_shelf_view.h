@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/lock_screen_action/lock_screen_action_background_observer.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_types.h"
@@ -138,7 +139,6 @@ class ASH_EXPORT LoginShelfView : public views::View,
   void AddedToWidget() override;
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
@@ -200,6 +200,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // Updates the visibility of buttons based on state changes, e.g. shutdown
   // policy updates, session state changes etc.
   void UpdateUi();
+
+  void UpdateAccessiblePreviousAndNextFocus();
 
   // Updates the colors of all buttons. Uses current theme colors and force
   // light colors during OOBE.

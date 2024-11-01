@@ -392,10 +392,12 @@ LoginShelfView::~LoginShelfView() {
 
 void LoginShelfView::UpdateAfterSessionChange() {
   UpdateUi();
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void LoginShelfView::AddedToWidget() {
   UpdateUi();
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void LoginShelfView::OnFocus() {
@@ -421,16 +423,6 @@ void LoginShelfView::AboutToRequestFocusFromTabTraversal(bool reverse) {
       Shell::Get()->system_tray_notifier()->NotifyFocusOut(reverse);
     }
   }
-}
-
-void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (LockScreen::HasInstance()) {
-    GetViewAccessibility().SetPreviousFocus(LockScreen::Get()->widget());
-  }
-
-  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-
-  GetViewAccessibility().SetNextFocus(shelf->GetStatusAreaWidget());
 }
 
 void LoginShelfView::OnShelfConfigUpdated() {
@@ -741,6 +733,16 @@ void LoginShelfView::UpdateUi() {
   } else {
     DeprecatedLayoutImmediately();
   }
+}
+
+void LoginShelfView::UpdateAccessiblePreviousAndNextFocus() {
+  if (LockScreen::HasInstance()) {
+    GetViewAccessibility().SetPreviousFocus(LockScreen::Get()->widget());
+  }
+
+  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+
+  GetViewAccessibility().SetNextFocus(shelf->GetStatusAreaWidget());
 }
 
 bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
