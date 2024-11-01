@@ -568,4 +568,9 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(ScreenScaleFactor,
                                                 "sanity/screen-scale-factor.js",
                                                 "--screen-scale-factor=3.0")
 
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenSizeOrientation,
+    "sanity/screen-size-orientation.js",
+    "--window-size=600,800")
+
 }  // namespace headless
