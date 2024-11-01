@@ -264,17 +264,18 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
   // since there can be situations where we created a texture _and_ we have a
   // render pass (if we're using BlitRequests).
   auto manager_it = token_to_animation_manager->find(
-      shared_element_quad.resource_id.transition_token());
+      shared_element_quad.element_resource_id.transition_token());
   if (manager_it == token_to_animation_manager->end()) {
     LOG(ERROR) << "No SurfaceAnimationManager for token : "
-               << shared_element_quad.resource_id.transition_token().ToString();
+               << shared_element_quad.element_resource_id.transition_token()
+                      .ToString();
     return true;
   }
 
   auto& saved_textures = manager_it->second->saved_textures_;
   if (saved_textures) {
     auto texture_it = saved_textures->element_id_to_resource.find(
-        shared_element_quad.resource_id);
+        shared_element_quad.element_resource_id);
 
     if (texture_it != saved_textures->element_id_to_resource.end()) {
       const auto& transferable_resource = texture_it->second;
@@ -292,7 +293,8 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
   }
 
   // Look up the shared element in live render passes second.
-  auto pass_it = element_id_to_pass->find(shared_element_quad.resource_id);
+  auto pass_it =
+      element_id_to_pass->find(shared_element_quad.element_resource_id);
   if (pass_it != element_id_to_pass->end()) {
     ReplaceSharedElementWithRenderPass(&copy_pass, shared_element_quad,
                                        pass_it->second);
@@ -300,13 +302,13 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
   }
 
   if (manager_it->second->empty_resource_ids_.count(
-          shared_element_quad.resource_id) > 0) {
+          shared_element_quad.element_resource_id) > 0) {
     return true;
   }
 
 #if DCHECK_IS_ON()
   LOG(ERROR) << "Content not found for shared element: "
-             << shared_element_quad.resource_id.ToString();
+             << shared_element_quad.element_resource_id.ToString();
   LOG(ERROR) << "Known shared element ids:";
   for (const auto& [shared_resource_id, render_pass] : *element_id_to_pass) {
     LOG(ERROR) << " " << shared_resource_id.ToString()

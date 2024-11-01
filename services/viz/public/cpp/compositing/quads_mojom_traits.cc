@@ -214,7 +214,7 @@ bool StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::SharedElementQuadStateDataView data, viz::DrawQuad* out) {
   viz::SharedElementDrawQuad* shared_element_quad =
       static_cast<viz::SharedElementDrawQuad*>(out);
-  return data.ReadResourceId(&shared_element_quad->resource_id);
+  return data.ReadElementResourceId(&shared_element_quad->element_resource_id);
 }
 
 // static

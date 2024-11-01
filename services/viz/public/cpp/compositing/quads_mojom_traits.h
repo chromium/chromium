@@ -221,11 +221,11 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
 
 template <>
 struct StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad> {
-  static const viz::ViewTransitionElementResourceId& resource_id(
+  static const viz::ViewTransitionElementResourceId& element_resource_id(
       const viz::DrawQuad& input) {
     const viz::SharedElementDrawQuad* quad =
         viz::SharedElementDrawQuad::MaterialCast(&input);
-    return quad->resource_id;
+    return quad->element_resource_id;
   }
 
   static bool Read(viz::mojom::SharedElementQuadStateDataView data,

@@ -1707,7 +1707,7 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
     for (auto it = pass->quad_list.begin(); it != pass->quad_list.end();) {
       if (it->material == viz::DrawQuad::Material::kSharedElement) {
         view_transition_quad_references.insert(
-            viz::SharedElementDrawQuad::MaterialCast(*it)->resource_id);
+            viz::SharedElementDrawQuad::MaterialCast(*it)->element_resource_id);
         ++it;
         continue;
       }

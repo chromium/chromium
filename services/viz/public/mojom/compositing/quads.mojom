@@ -116,7 +116,7 @@ struct VideoHoleQuadState {
 };
 
 struct SharedElementQuadState {
-  ViewTransitionElementResourceId resource_id;
+  ViewTransitionElementResourceId element_resource_id;
 };
 
 union DrawQuadState {
