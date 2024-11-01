@@ -31,7 +31,6 @@ source_set("webui") {
     "//components/url_formatter",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
     "//url",
   ]
 }
@@ -53,13 +52,13 @@ source_set("unit_tests") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
     "//components/feature_engagement/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/ukm:test_support",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
     "//url:url",
   ]
 }

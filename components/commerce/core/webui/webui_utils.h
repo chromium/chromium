@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 
 class GURL;
 

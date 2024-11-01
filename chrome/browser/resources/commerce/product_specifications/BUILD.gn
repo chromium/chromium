@@ -35,10 +35,9 @@ build_webui("build") {
     "shared_vars.css",
   ]
 
-  mojo_files_deps = [
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings_ts__generator",
-  ]
-  mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
+  mojo_files_deps =
+      [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/components/commerce/core/mojom/shopping_service.mojom-webui.ts" ]
 
   non_web_component_files = [
     "buying_options_section.html.ts",

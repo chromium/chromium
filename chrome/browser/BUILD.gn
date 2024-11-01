@@ -8557,8 +8557,8 @@ static_library("browser_public_dependencies") {
   } else {
     public_deps += [
       "//components/commerce/core:coupon_db_content_proto",
+      "//components/commerce/core/mojom:mojo_bindings",
       "//extensions/buildflags",
-      "//ui/webui/resources/cr_components/commerce:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]
   }

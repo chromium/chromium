@@ -59,6 +59,7 @@ source_set("impl") {
     "//components/commerce/core:metrics",
     "//components/commerce/core:pref_names",
     "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
     "//components/vector_icons",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -120,5 +121,6 @@ source_set("browser_tests") {
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
   ]
 }

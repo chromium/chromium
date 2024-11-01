@@ -4,7 +4,7 @@
 
 module commerce.mojom;
 
-import "ui/webui/resources/cr_components/commerce/shopping_service.mojom";
+import "components/commerce/core/mojom/shopping_service.mojom";
 import "url/mojom/url.mojom";
 
 // This defines a binary detail (i.e., is syncing bookmarks) for shopping

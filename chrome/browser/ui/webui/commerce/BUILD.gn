@@ -15,12 +15,11 @@ source_set("commerce") {
   public_deps = [
     "//chrome/browser/ui/webui/top_chrome",
     "//components/commerce/core:commerce_constants",
+    "//components/commerce/core/mojom:mojo_bindings",
     "//components/commerce/core/webui",
     "//components/page_image_service/mojom:mojo_bindings",
     "//ui/views",
     "//ui/web_dialogs",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   ]
 }
 
