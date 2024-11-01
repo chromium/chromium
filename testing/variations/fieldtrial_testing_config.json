@@ -9397,7 +9397,7 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "fuchsia",
+                "chromeos_lacros",
                 "ios",
                 "linux",
                 "mac",
