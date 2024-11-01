@@ -95,6 +95,7 @@ found in the LICENSE file.
             android:layout_height="@dimen/default_browser_bottom_sheet_step_number_width"
             android:background="@drawable/default_browser_promo_bottom_sheet_circle_background"
             android:gravity="center"
+            android:includeFontPadding="false"
             tools:ignore="HardcodedText"
             android:text="1"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
@@ -123,6 +124,7 @@ found in the LICENSE file.
             android:layout_height="@dimen/default_browser_bottom_sheet_step_number_width"
             android:background="@drawable/default_browser_promo_bottom_sheet_circle_background"
             android:gravity="center"
+            android:includeFontPadding="false"
             tools:ignore="HardcodedText"
             android:text="2"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
@@ -151,6 +153,7 @@ found in the LICENSE file.
             android:layout_height="@dimen/default_browser_bottom_sheet_step_number_width"
             android:background="@drawable/default_browser_promo_bottom_sheet_circle_background"
             android:gravity="center"
+            android:includeFontPadding="false"
             tools:ignore="HardcodedText"
             android:text="3"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
