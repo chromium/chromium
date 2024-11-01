@@ -526,6 +526,12 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
   throbber_overlay_ = AddChildView(std::make_unique<views::View>());
 
   throbber_overlay_->SetPaintToLayer();
+  // Currently layers don't clip to the bounds of the parent window opaque
+  // layer. Until this is fixed, we have to set rounded corners directly here.
+  //
+  // TODO(crbug.com/358379367): Remove once layers obey the clip by default.
+  throbber_overlay_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetCornerRadius()));
   throbber_overlay_->SetVisible(false);
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
