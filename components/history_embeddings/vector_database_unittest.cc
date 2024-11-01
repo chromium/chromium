@@ -52,6 +52,40 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, Constructs) {
   std::make_unique<VectorDatabaseInMemory>();
 }
 
+TEST(HistoryEmbeddingsVectorDatabaseTest, EraseNonAsciiCharacters) {
+  {
+    std::string s = "passage with non-ASCII∅character";
+    EraseNonAsciiCharacters(s);
+    EXPECT_EQ(s, "passage with non-ASCII character");
+  }
+  {
+    std::string s = "passage with consecutive non-ASCII    spaces";
+    EraseNonAsciiCharacters(s);
+    EXPECT_EQ(s, "passage with consecutive non-ASCII spaces");
+  }
+  {
+    // Only non-ASCII spaces -> blank.
+    std::string s = "    ";
+    EraseNonAsciiCharacters(s);
+    EXPECT_EQ(s, "");
+  }
+  {
+    std::string s = "a    ";
+    EraseNonAsciiCharacters(s);
+    EXPECT_EQ(s, "a ");
+  }
+  {
+    std::string s = "    a";
+    EraseNonAsciiCharacters(s);
+    EXPECT_EQ(s, "a");
+  }
+  {
+    std::string s = "  a  ";
+    EraseNonAsciiCharacters(s);
+    EXPECT_EQ(s, "a ");
+  }
+}
+
 TEST(HistoryEmbeddingsVectorDatabaseTest, EmbeddingOperations) {
   Embedding a({1, 1, 1});
   EXPECT_FLOAT_EQ(a.Magnitude(), std::sqrt(3));

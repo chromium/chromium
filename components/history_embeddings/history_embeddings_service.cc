@@ -389,11 +389,17 @@ SearchResult HistoryEmbeddingsService::Search(
   }
   result.session_id = token.ToString();
 
+  // Note, this is a copy of raw original query, which may or may not include
+  // non-ASCII characters. The `query` may later be modified, but not this one.
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
 
   SearchParams search_params;
+  search_params.erase_non_ascii = kEraseNonAsciiCharacters.Get();
+  if (search_params.erase_non_ascii) {
+    EraseNonAsciiCharacters(query);
+  }
   if (QueryIsFiltered(query, search_params)) {
     result.count = 0;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -649,6 +655,9 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
   base::UmaHistogramCounts10M(
       "History.Embeddings.Search.SkippedNonAsciiPassageCount",
       search_info.skipped_nonascii_passage_count);
+  base::UmaHistogramCounts10M(
+      "History.Embeddings.Search.ModifiedNonAsciiPassageCount",
+      search_info.modified_nonascii_passage_count);
   base::UmaHistogramBoolean("History.Embeddings.Search.Completed",
                             search_info.completed);
   base::UmaHistogramTimes("History.Embeddings.Search.TotalSearchTime",

@@ -175,13 +175,14 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
                                    const Embedding& query_embedding,
                                    const proto::PassagesValue& passages,
                                    size_t min_passage_word_count) const {
+  constexpr float kMaxFloat = std::numeric_limits<float>::max();
   float word_match_required_score =
       search_params.word_match_minimum_embedding_score;
   std::vector<size_t> term_counts;
   if (search_params.query_terms.size() >
       search_params.word_match_max_term_count) {
     // Disable word match boosting for this long query.
-    word_match_required_score = std::numeric_limits<float>::max();
+    word_match_required_score = kMaxFloat;
   } else {
     // Prepare to count terms by initializing all term counts to zero.
     // These will continue to increase for each passage until we have
@@ -190,14 +191,32 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
   }
 
   float best = 0.0f;
+  std::string modified_passage;
+  const std::string* passage = nullptr;
   for (size_t i = 0; i < embeddings.size(); i++) {
     const Embedding& embedding = embeddings[i];
-    const std::string& passage = passages.passages(i);
+    passage = &passages.passages(i);
 
     // Skip non-ASCII strings to avoid scoring problems with the model.
-    if (!base::IsStringASCII(passage)) {
-      search_info.skipped_nonascii_passage_count++;
-      continue;
+    // Note that if `erase_non_ascii` is true then the embeddings have
+    // already be recomputed with non-ASCII characters excluded from
+    // the source passages, and are thus usable for search. In such
+    // cases, we can also modify the passage for term search.
+    if (!base::IsStringASCII(*passage)) {
+      if (search_params.erase_non_ascii) {
+        search_info.modified_nonascii_passage_count++;
+        if (word_match_required_score != kMaxFloat) {
+          // Copy and modify the passage to exclude the non-ASCII characters.
+          // Note that for efficiency this is only done when the modified
+          // passage will actually be used for term counting in logic below.
+          modified_passage = *passage;
+          EraseNonAsciiCharacters(modified_passage);
+          passage = &modified_passage;
+        }
+      } else {
+        search_info.skipped_nonascii_passage_count++;
+        continue;
+      }
     }
 
     float score = embedding.GetPassageWordCount() < min_passage_word_count
@@ -208,7 +227,7 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
       // Since the ASCII check above processed the whole passage string, it is
       // likely ready in CPU cache. Scan text again to count terms in passage.
       base::ElapsedTimer timer;
-      CountTermsInPassage(term_counts, search_params.query_terms, passage,
+      CountTermsInPassage(term_counts, search_params.query_terms, *passage,
                           search_params.word_match_limit);
       search_info.passage_scanning_time += timer.Elapsed();
     }
@@ -470,6 +489,43 @@ std::vector<std::string> SplitQueryToTerms(
   }
 
   return query_terms;
+}
+
+inline bool IsCharNonAscii(char c) {
+  return (c & 0x80) != 0;
+}
+
+void EraseNonAsciiCharacters(std::string& passage) {
+  // Inject spaces to avoid bridging terms. Even if this separates what
+  // might have been a single term with ideal character conversions, it
+  // won't create a blind spot for search because the query will be
+  // converted in exactly the same way; then the separate terms match.
+  // On the other hand, without the spaces, terms could be bridged and
+  // become harder to find.
+  for (size_t i = 1; i < passage.length(); i++) {
+    if (IsCharNonAscii(passage[i]) && !IsCharNonAscii(passage[i - 1])) {
+      // Note this never changes a non-ASCII character at index 0 because it
+      // isn't needed. The character at index 1 is either ASCII, in which case
+      // it will become the new first character; or it's non-ASCII, in which
+      // case it will be removed along with the first.
+      passage[i] = ' ';
+
+      // Skip immediately following non-ASCII bytes; they will be removed
+      // below after the space injection pass.
+      while (i + 1 < passage.length() && IsCharNonAscii(passage[i + 1])) {
+        i++;
+      }
+    }
+  }
+
+  // Erase all non-ASCII characters remaining.
+  std::erase_if(passage, IsCharNonAscii);
+}
+
+void EraseNonAsciiCharacters(std::vector<std::string>& passages) {
+  for (std::string& passage : passages) {
+    EraseNonAsciiCharacters(passage);
+  }
 }
 
 }  // namespace history_embeddings
