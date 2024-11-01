@@ -268,7 +268,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
   base::AutoReset<bool> enable_chrome_apps_;
 };
 
-const char kChromiumURL[] = "http://chromium.org";
+const char kChromiumURL[] = "https://chromium.org";
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kTestFilePath[] = "platform_apps/launch_files/test.txt";
 #endif

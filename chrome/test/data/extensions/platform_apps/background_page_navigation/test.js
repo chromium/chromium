@@ -5,7 +5,7 @@
 chrome.app.runtime.onLaunched.addListener(function() {
   var IN_APP_RELATIVE_URL = 'nav-target.html';
   var IN_APP_ABSOLUTE_URL = chrome.runtime.getURL(IN_APP_RELATIVE_URL);
-  var WEB_URL = 'http://chromium.org';
+  var WEB_URL = 'https://chromium.org';
 
   var testLink = document.createElement('a');
   document.body.appendChild(testLink);
