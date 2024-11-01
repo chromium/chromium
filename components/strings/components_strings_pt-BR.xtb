@@ -214,7 +214,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1358223345833465883">Seu mecanismo de pesquisa no Chromium</translation>
 <translation id="1359836962251219822">Cozinha e jantar</translation>
 <translation id="1360955481084547712">Abra uma nova janela anônima para navegar com privacidade</translation>
-<translation id="1361528602584216624">Limite por Pix: R$ <ph name="TRANSACTION_LIMIT" /></translation>
+<translation id="1361528602584216624">Limite por Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">As formas de pagamento disponíveis para seleção e conclusão do pagamento estão abertas no tamanho máximo.</translation>
 <translation id="1363028406613469049">Rastrear</translation>
 <translation id="1364822246244961190">Esta política está bloqueada. O valor dela será ignorado.</translation>

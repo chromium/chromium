@@ -310,7 +310,7 @@
 <translation id="1532118530259321453">این صفحه می‌گوید</translation>
 <translation id="1533966801397200693">نمایه‌ای که با آن به سیستم وارد شده‌اید تحت‌مدیریت است. سرپرست شما می‌تواند تنظیمات نمایه‌تان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
-<translation id="1538295100801850685">بهبود پیش‌بینی</translation>
+<translation id="1538295100801850685">بهبود پیش‌بینی‌ها</translation>
 <translation id="1539840569003678498">گزارش ارسال شد:</translation>
 <translation id="1542105669288201090">آموزش کسب‌وکار</translation>
 <translation id="1545757265410828525">سابقه قیمت</translation>
@@ -1134,7 +1134,7 @@
 <translation id="3052868890529250114">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">سرویس وصله</translation>
-<translation id="306198082577913404">بهبود پیش‌بینی را روشن کنید</translation>
+<translation id="306198082577913404">«بهبود پیش‌بینی‌ها» را روشن کنید</translation>
 <translation id="3062655045399308513">حذف کردن داده‌های مرور…</translation>
 <translation id="306573536155379004">بازی شروع شد.</translation>
 <translation id="3067505415088964188">قیمت پایین است</translation>
@@ -1541,7 +1541,7 @@
 <translation id="3727309136762649052">فضای نام</translation>
 <translation id="3727850735097852673">‏برای استفاده از «مدیر گذرواژه Google» با macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="3728173127485570463">‏مرورگر Chrome ازاین‌پس برای تکمیل خودکار گذرواژه‌ها نیازی به اثر انگشت شما نخواهد داشت</translation>
-<translation id="3735143108516366187">‏برای مدیریت بهبود پیش‌بینی، کلید Enter را فشار دهید</translation>
+<translation id="3735143108516366187">‏برای مدیریت «بهبود پیش‌بینی‌ها»، کلید Enter را فشار دهید</translation>
 <translation id="3736739313435669994">استفاده از کوکی‌های شخص ثالث را برای سایت‌ها مسدود کردید تا سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="LINK" /> به تنظیمات بروید.</translation>
 <translation id="3738166223076830879">سرپرست شما مرورگرتان را مدیریت می‌کند.</translation>
 <translation id="3738428049780661523">تاریخ ایجاد: <ph name="DATE" /></translation>

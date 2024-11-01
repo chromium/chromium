@@ -214,7 +214,7 @@
 <translation id="1358223345833465883">Вашата търсеща машина в Chromium</translation>
 <translation id="1359836962251219822">Кухня и трапезария</translation>
 <translation id="1360955481084547712">Отворете нов прозорец в режим „инкогнито“, за да сърфирате частно</translation>
-<translation id="1361528602584216624">Лимит за Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
+<translation id="1361528602584216624"><ph name="TRANSACTION_LIMIT" /> R$ лимит за Pix</translation>
 <translation id="1363015776076529485">Списъкът с начини на плащане, които могат да бъдат избрани за продължаване на плащането, е отворен на пълната височина.</translation>
 <translation id="1363028406613469049">Запис</translation>
 <translation id="1364822246244961190">Това правило е блокирано, стойността му ще бъде пренебрегната.</translation>
