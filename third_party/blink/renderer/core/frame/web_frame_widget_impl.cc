@@ -4087,6 +4087,16 @@ void WebFrameWidgetImpl::NotifyAutoscrollForSelectionInMainFrame(
               ->GetWidgetInputHandlerHost()) {
     host->SetAutoscrollSelectionActiveInMainFrame(autoscroll_selection);
   }
+
+  if (!autoscroll_selection) {
+    LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
+    CHECK(local_root_frame);
+    if (LocalDOMWindow* current_window = local_root_frame->DomWindow()) {
+      WindowPerformance* window_performance =
+          DOMWindowPerformance::performance(*current_window);
+      window_performance->ResetAutoscroll();
+    }
+  }
 }
 
 gfx::Range WebFrameWidgetImpl::CompositionRange() {

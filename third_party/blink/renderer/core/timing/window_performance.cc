@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
@@ -555,6 +556,19 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
   }
 
+  bool prevent_counting_as_interaction =
+      pointer_event
+          ? RuntimeEnabledFeaturesBase::
+                    EventTimingTapStopScrollNoInteractionIdEnabled() &&
+                pointer_event->GetPreventCountingAsInteraction()
+          : false;
+  // Set prevent_counting_as_interaction to true for all the event entries when
+  // the selection autoscroll happens at the current event presentation frame
+  // or the previous frame.
+  prevent_counting_as_interaction |=
+      RuntimeEnabledFeaturesBase::
+          EventTimingSelectionAutoScrollNoInteractionIdEnabled() &&
+      IsAutoscrollActive();
   PerformanceEventTiming::EventTimingReportingInfo reporting_info{
       .presentation_index = event_presentation_promise_count_,
       .creation_time = start_time,
@@ -564,9 +578,7 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       .processing_end_time = processing_end,
       .key_code = key_code,
       .pointer_id = pointer_id,
-      .prevent_counting_as_interaction =
-          pointer_event ? pointer_event->GetPreventCountingAsInteraction()
-                        : false};
+      .prevent_counting_as_interaction = prevent_counting_as_interaction};
 
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, reporting_info, event.cancelable(),
@@ -1210,6 +1222,17 @@ void WindowPerformance::OnPaintFinished() {
 
 void WindowPerformance::NotifyPotentialDrag(PointerId pointer_id) {
   responsiveness_metrics_->NotifyPotentialDrag(pointer_id);
+}
+
+void WindowPerformance::OnPageScroll() {
+  if (Page* page = DomWindow()->GetFrame()->GetPage()) {
+    autoscroll_active_ =
+        page->GetAutoscrollController().SelectionAutoscrollInProgress();
+  }
+}
+
+bool WindowPerformance::IsAutoscrollActive() {
+  return autoscroll_active_;
 }
 
 }  // namespace blink

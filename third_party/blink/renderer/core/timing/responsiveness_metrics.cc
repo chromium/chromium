@@ -328,9 +328,6 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       FlushPointerup();
     }
 
-    if (entry->GetEventTimingReportingInfo()->prevent_counting_as_interaction) {
-      entry->SetInteractionId(0);
-    }
     pointer_id_entry_map_.Set(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
 
@@ -365,9 +362,8 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // Generate a new interaction id.
     // Do not generate any interaction id for the events when the scroll is
     // active.
-    if (!RuntimeEnabledFeaturesBase::
-            EventTimingTapStopScrollNoInteractionIdEnabled() ||
-        (pointer_info && !pointer_info->GetEntry()->HasKnownInteractionID())) {
+    if (pointer_info && !pointer_info->GetEntry()->HasKnownInteractionID() &&
+        !entry->HasKnownInteractionID()) {
       UpdateInteractionId();
       entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
                                        GetInteractionCount());

@@ -1702,6 +1702,12 @@
       status: "experimental",
     },
     {
+      // Event Timings should not get interactionId assigned if the next paint
+      // was affected by autoscroll, i.e. from text selection.
+      name: "EventTimingSelectionAutoScrollNoInteractionId",
+      status: "experimental",
+    },
+    {
       // When the fling is active, a tap on the page can stop scroll. When
       // calculating the input latency, we should exclude all the input events
       // caused by this tap.

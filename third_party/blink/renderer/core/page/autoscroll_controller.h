@@ -132,6 +132,7 @@ class CORE_EXPORT AutoscrollController final
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, AutoscrollIsNotPropagated);
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
                            AutoscrollIsPropagatedInYDirection);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, TextSelectionAutoScroll);
 };
 
 }  // namespace blink

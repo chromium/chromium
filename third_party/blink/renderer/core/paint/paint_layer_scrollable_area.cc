@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -113,6 +114,8 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -497,6 +500,12 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   }
 
   GetLayoutBox()->View()->ClearHitTestCache();
+
+  if (LocalDOMWindow* current_window = frame->DomWindow()) {
+    WindowPerformance* window_performance =
+        DOMWindowPerformance::performance(*current_window);
+    window_performance->OnPageScroll();
+  }
 
   // Inform the FrameLoader of the new scroll position, so it can be restored
   // when navigating back.
