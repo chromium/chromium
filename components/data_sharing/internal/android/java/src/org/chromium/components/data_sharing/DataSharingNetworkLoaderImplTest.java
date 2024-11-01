@@ -45,13 +45,6 @@ public class DataSharingNetworkLoaderImplTest {
         shadowOf(Looper.getMainLooper()).idle();
         verify(mDataSharingNetworkLoaderJniMock, times(1))
                 .loadUrl(
-                        1,
-                        GURL.emptyGURL(),
-                        null,
-                        null,
-                        DataSharingNetworkUtils.getNetworkTrafficAnnotationTag(
-                                        DataSharingRequestType.CREATE_GROUP)
-                                .getHashCode(),
-                        null);
+                        1, GURL.emptyGURL(), null, null, DataSharingRequestType.CREATE_GROUP, null);
     }
 }

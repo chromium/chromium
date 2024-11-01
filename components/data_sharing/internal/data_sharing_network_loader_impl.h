@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/data_sharing/public/data_sharing_network_loader.h"
+#include "components/data_sharing/public/data_sharing_network_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,6 +43,12 @@ class DataSharingNetworkLoaderImpl : public DataSharingNetworkLoader {
                const net::NetworkTrafficAnnotationTag& annotation_tag,
                NetworkLoaderCallback callback) override;
 
+  void LoadUrl(const GURL& url,
+               const std::vector<std::string>& scopes,
+               const std::string& post_data,
+               DataSharingRequestType requestType,
+               NetworkLoaderCallback callback) override;
+
  protected:
   // This method could be overridden in tests.
   virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
@@ -55,6 +62,9 @@ class DataSharingNetworkLoaderImpl : public DataSharingNetworkLoader {
   void OnDownloadComplete(NetworkLoaderCallback callback,
                           std::unique_ptr<EndpointFetcher> fetcher,
                           std::unique_ptr<EndpointResponse> response);
+
+  const net::NetworkTrafficAnnotationTag& GetNetworkTrafficAnnotationTag(
+      DataSharingRequestType request_type);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

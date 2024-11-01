@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "components/data_sharing/public/data_sharing_network_loader.h"
 #include "components/data_sharing/test_support/mock_data_sharing_network_loader.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,12 +39,19 @@ TEST_F(DataSharingNetworkLoaderAndroidTest, LoadUrl) {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<std::string> scopes;
 
-  EXPECT_CALL(mock_network_loader_, LoadUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(
+      mock_network_loader_,
+      LoadUrl(_, _, _,
+              DataSharingNetworkLoader::DataSharingRequestType::kTestRequest,
+              _))
+      .Times(1);
   network_loader_android_->LoadUrl(
       env, url::GURLAndroid::EmptyGURL(env),
       base::android::ToJavaArrayOfStrings(env, scopes),
       base::android::ToJavaByteArray(env, "foo"),
-      TRAFFIC_ANNOTATION_FOR_TESTS.unique_id_hash_code, nullptr);
+      static_cast<int>(
+          DataSharingNetworkLoader::DataSharingRequestType::kTestRequest),
+      nullptr);
 }
 
 }  // namespace data_sharing

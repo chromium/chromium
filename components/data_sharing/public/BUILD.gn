@@ -51,8 +51,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
-      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java",
-      "android/java/src/org/chromium/components/data_sharing/DataSharingRequestType.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegate.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateProtoResponseCallback.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",

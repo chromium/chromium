@@ -46,7 +46,7 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
     const JavaRef<jobject>& j_url,
     const JavaRef<jobjectArray>& j_scopes,
     const JavaRef<jbyteArray>& j_post_data,
-    jint j_network_annotation_hash_code,
+    jint j_data_sharing_request_type,
     const JavaRef<jobject>& j_callback) {
   if (!data_sharing_network_loader_) {
     OnResponseAvailable(ScopedJavaGlobalRef<jobject>(j_callback), nullptr);
@@ -62,8 +62,8 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
 
   data_sharing_network_loader_->LoadUrl(
       url, scopes, post_body,
-      net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
-          j_network_annotation_hash_code),
+      static_cast<DataSharingNetworkLoader::DataSharingRequestType>(
+          j_data_sharing_request_type),
       base::BindOnce(&DataSharingNetworkLoaderAndroid::OnResponseAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(j_callback)));
