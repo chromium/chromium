@@ -231,6 +231,7 @@ bool CullRect::ApplyPaintProperties(
   HeapVector<Member<const TransformPaintPropertyNode>, 4> scroll_translations;
   HeapVector<Member<const ClipPaintPropertyNode>, 4> clips;
   bool abnormal_hierarchy = false;
+  bool has_transform_requiring_expansion = false;
 
   for (const auto* t = &destination.Transform(); t != &source.Transform();
        t = t->UnaliasedParent()) {
@@ -244,8 +245,11 @@ bool CullRect::ApplyPaintProperties(
     if (t->IsRoot()) {
       return false;
     }
-    if (t->ScrollNode())
+    if (t->ScrollNode()) {
       scroll_translations.push_back(t);
+    } else if (t->RequiresCullRectExpansion()) {
+      has_transform_requiring_expansion = true;
+    }
   }
 
   if (!abnormal_hierarchy) {
@@ -357,8 +361,7 @@ bool CullRect::ApplyPaintProperties(
     }
   }
 
-  if (expansion_ratio > 0 && last_transform != &destination.Transform() &&
-      destination.Transform().RequiresCullRectExpansion()) {
+  if (expansion_ratio > 0 && has_transform_requiring_expansion) {
     // Direct compositing reasons such as will-change transform can cause the
     // content to move arbitrarily, so there is no exact cull rect. Instead of
     // using an infinite rect, we use a heuristic of expanding by

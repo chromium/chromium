@@ -952,6 +952,27 @@ TEST_F(CullRectUpdaterTest, InputDoesntExpandCullRect) {
   EXPECT_LE(contents_cull_rect.width(), 100);
 }
 
+TEST_F(CullRectUpdaterTest, AnchorPosition) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="width: 200px; height: 200px; overflow: scroll">
+      <div style="anchor-name: --a; height: 50px">anchor</div>
+      <div style="height: 1000px"></div>
+    </div>
+    <div id="anchored1"
+         style="position: fixed; position-anchor: --a; top: anchor(bottom)">
+      Anchored1
+    </div>
+    <div id="anchored2"
+         style="position: fixed; position-anchor: --a; top: anchor(bottom);
+                transform: translateY(100px)">
+      Anchored2
+    </div>
+  )HTML");
+
+  EXPECT_EQ(gfx::Size(8800, 8600), GetCullRect("anchored1").Rect().size());
+  EXPECT_EQ(gfx::Size(8800, 8600), GetCullRect("anchored2").Rect().size());
+}
+
 class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
  protected:
   void Check(const String& old_style,
