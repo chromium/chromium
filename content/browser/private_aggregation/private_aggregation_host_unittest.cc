@@ -1455,7 +1455,63 @@ TEST_F(PrivateAggregationHostTest,
   }
 }
 
-TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
+TEST_F(
+    PrivateAggregationHostTest,
+    FilteringIdMaxBytesSetNoContributions_NullReportSentWithoutDebugModeEnabled) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  std::vector<blink::mojom::DebugModeDetailsPtr> debug_mode_details_args;
+  debug_mode_details_args.push_back(blink::mojom::DebugModeDetails::New());
+  debug_mode_details_args.push_back(blink::mojom::DebugModeDetails::New(
+      /*is_enabled=*/true, /*debug_key=*/nullptr));
+  debug_mode_details_args.push_back(blink::mojom::DebugModeDetails::New(
+      /*is_enabled=*/true,
+      /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/1234u)));
+
+  std::vector<std::optional<AggregatableReportRequest>> validated_requests{
+      /*n=*/3};
+  EXPECT_CALL(mock_callback_, Run)
+      .WillOnce(GenerateAndSaveReportRequest(&validated_requests[0]))
+      .WillOnce(GenerateAndSaveReportRequest(&validated_requests[1]))
+      .WillOnce(GenerateAndSaveReportRequest(&validated_requests[2]));
+  for (auto& debug_mode_details_arg : debug_mode_details_args) {
+    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+    EXPECT_TRUE(host_->BindNewReceiver(
+        kExampleOrigin, kMainFrameOrigin,
+        PrivateAggregationCallerApi::kProtectedAudience,
+        /*context_id=*/std::nullopt,
+        /*timeout=*/std::nullopt,
+        /*aggregation_coordinator_origin=*/std::nullopt,
+        /*filtering_id_max_bytes=*/3u, remote.BindNewPipeAndPassReceiver()));
+
+    if (debug_mode_details_arg->is_enabled) {
+      remote->EnableDebugMode(std::move(debug_mode_details_arg->debug_key));
+    }
+
+    EXPECT_TRUE(remote.is_connected());
+    remote.reset();
+  }
+
+  host_->FlushReceiverSetForTesting();
+
+  for (std::optional<AggregatableReportRequest>& validated_request :
+       validated_requests) {
+    ASSERT_TRUE(validated_request.has_value());
+    EXPECT_THAT(validated_request->additional_fields(), testing::IsEmpty());
+    ASSERT_TRUE(validated_request->payload_contents().contributions.empty());
+
+    // Null reports never have debug mode set according to the current spec.
+    EXPECT_EQ(validated_request->shared_info().debug_mode,
+              AggregatableReportSharedInfo::DebugMode::kDisabled);
+    EXPECT_EQ(validated_request->debug_key(), std::nullopt);
+  }
+}
+
+TEST_F(PrivateAggregationHostTest,
+       NeitherContextIdNorFilteringIdMaxBytesSet_NoNullReportSent) {
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =

@@ -7635,7 +7635,9 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
         std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
   }
 
-  const base::MockRepeatingCallback<
+  // Returns a reference to the `on_report_request_details_received` callback
+  // that is shared with `PrivateAggregationHost` in `SetUpOnMainThread()`.
+  base::MockRepeatingCallback<
       void(PrivateAggregationHost::ReportRequestGenerator,
            std::vector<blink::mojom::AggregatableReportHistogramContribution>,
            PrivateAggregationBudgetKey,
@@ -8772,7 +8774,27 @@ IN_PROC_BROWSER_TEST_F(
     TooBigFilteringIdWithCustomByteSize_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
-  EXPECT_CALL(mock_callback(), Run).Times(0);
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(),
+              Run(/*report_request_generator=*/_,
+                  /*contributions=*/testing::IsEmpty(),
+                  /*budget_key=*/_,
+                  PrivateAggregationHost::NullReportBehavior::kSendNullReport))
+      .WillOnce(testing::Invoke(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              std::vector<blink::mojom::AggregatableReportHistogramContribution>
+                  contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+            AggregatableReportRequest request =
+                std::move(generator).Run(contributions);
+            ASSERT_EQ(request.payload_contents().contributions.size(), 0u);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
+            EXPECT_EQ(request.shared_info().debug_mode,
+                      AggregatableReportSharedInfo::DebugMode::kDisabled);
+            run_loop.Quit();
+          }));
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -8817,6 +8839,8 @@ IN_PROC_BROWSER_TEST_F(
                                  "does not fit in byte size"));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
+
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(

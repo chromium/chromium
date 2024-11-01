@@ -397,3 +397,33 @@ private_aggregation_promise_test(async () => {
 
   verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'run() that calls Private Aggregation with contributions that match buckets but not filtering IDs');
+
+
+private_aggregation_promise_test(async () => {
+  await addModuleOnce('resources/shared-storage-module.js');
+
+  const data = {contributions: [], enableDebugMode: false};
+  await sharedStorage.run('contribute-to-histogram', {
+    data,
+    keepAlive: true,
+    privateAggregationConfig: {filteringIdMaxBytes: 3}
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-shared-storage',
+      /*wait_for=*/ 1, /*timeout=*/ 6000)
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(
+      report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
+      /*debug_key=*/ undefined,
+      /*expected_payload=*/ undefined,
+      /*expected_context_id=*/ undefined);
+
+  // We use a short timeout as the previous poll should've waited long enough.
+  const debug_reports = await pollReports(
+      '/.well-known/private-aggregation/debug/report-shared-storage',
+      /*wait_for=*/ 1, /*timeout=*/ 50)
+  assert_equals(debug_reports, null);
+}, 'run() that calls Private Aggregation with a non-default filtering ID max bytes and no contributions');
