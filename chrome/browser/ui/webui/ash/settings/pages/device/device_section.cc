@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
@@ -13,9 +15,9 @@
 #include "ash/webui/common/shortcut_input_key_strings.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
@@ -72,8 +74,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDeviceSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_SIZE,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -121,11 +123,11 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
         IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3,
         IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetKeyboardSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetKeyboardSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_KEYBOARD,
         mojom::kKeyboardSubpagePath,
         mojom::SearchResultIcon::kKeyboard,
@@ -161,11 +163,11 @@ const std::vector<SearchConcept>& GetKeyboardSearchConcepts() {
         {IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC1,
          IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC2,
          IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC3, SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPerDeviceKeyboardSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPerDeviceKeyboardSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_KEYBOARD,
        mojom::kPerDeviceKeyboardSubpagePath,
        mojom::SearchResultIcon::kKeyboard,
@@ -205,161 +207,133 @@ const std::vector<SearchConcept>& GetPerDeviceKeyboardSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kKeyboardRemapKeys}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTouchpadSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetTouchpadSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadSpeed}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_DRAGGING,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapDragging}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_TO_CLICK,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapToClick}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPointers},
        {IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadReverseScrolling}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_ACCELERATION,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadAcceleration}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPerDeviceTouchpadSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPerDeviceTouchpadSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadSpeed}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_DRAGGING,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapDragging}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_TO_CLICK,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapToClick}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPerDeviceTouchpad},
        {IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadReverseScrolling}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_ACCELERATION,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadAcceleration}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTouchpadHapticSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetTouchpadHapticSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticFeedback}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticClickSensitivity}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPerDeviceTouchpadHapticSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPerDeviceTouchpadHapticSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticFeedback}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
        mojom::kPerDeviceTouchpadSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kTouchpad,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticClickSensitivity}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetMouseScrollAccelerationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetMouseScrollAccelerationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
        mojom::kPointersSubpagePath,
        mojom::SearchResultIcon::kMouse,
@@ -367,12 +341,12 @@ const std::vector<SearchConcept>& GetMouseScrollAccelerationSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMouseScrollAcceleration}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
+base::span<const SearchConcept>
 GetPerDeviceMouseScrollAccelerationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
        mojom::kPerDeviceMouseSubpagePath,
        mojom::SearchResultIcon::kMouse,
@@ -380,11 +354,11 @@ GetPerDeviceMouseScrollAccelerationSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMouseScrollAcceleration}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetMouseSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetMouseSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MOUSE_ACCELERATION,
        mojom::kPointersSubpagePath,
        mojom::SearchResultIcon::kMouse,
@@ -416,11 +390,11 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPointers}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPerDeviceMouseSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPerDeviceMouseSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MOUSE_ACCELERATION,
        mojom::kPerDeviceMouseSubpagePath,
        mojom::SearchResultIcon::kMouse,
@@ -452,71 +426,59 @@ const std::vector<SearchConcept>& GetPerDeviceMouseSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPerDeviceMouse}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPointingStickSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kPointingStick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSwapPrimaryButtons}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kPointingStick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickAcceleration}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
        mojom::kPointersSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kPointingStick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSpeed}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPerDevicePointingStickSearchConcepts() {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPerDevicePointingStickSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
        mojom::kPerDevicePointingStickSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kPointingStick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSwapPrimaryButtons}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
        mojom::kPerDevicePointingStickSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kPointingStick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickAcceleration}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
        mojom::kPerDevicePointingStickSubpagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
-                        : mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultIcon::kPointingStick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSpeed}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetStylusSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetStylusSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_STYLUS_NOTE_APP,
        mojom::kStylusSubpagePath,
        mojom::SearchResultIcon::kStylus,
@@ -553,11 +515,11 @@ const std::vector<SearchConcept>& GetStylusSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kStylus}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAudioPowerSoundsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAudioPowerSoundsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {
           IDS_OS_SETTINGS_TAG_CHARGING_SOUNDS,
           mojom::kAudioSubpagePath,
@@ -575,11 +537,11 @@ const std::vector<SearchConcept>& GetAudioPowerSoundsSearchConcepts() {
           {.setting = mojom::Setting::kLowBatterySound},
       },
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayArrangementSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayArrangementSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -590,11 +552,11 @@ const std::vector<SearchConcept>& GetDisplayArrangementSearchConcepts() {
         IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayMirrorSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayMirrorSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MIRRORING,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -602,11 +564,11 @@ const std::vector<SearchConcept>& GetDisplayMirrorSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDisplayMirroring}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayUnifiedDesktopSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayUnifiedDesktopSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_UNIFIED_DESKTOP,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -614,11 +576,11 @@ const std::vector<SearchConcept>& GetDisplayUnifiedDesktopSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAllowWindowsToSpanDisplays}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayExternalSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayExternalSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_RESOLUTION,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -635,12 +597,11 @@ const std::vector<SearchConcept>& GetDisplayExternalSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDisplayOverscan}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>&
-GetDisplayExternalWithRefreshSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayExternalWithRefreshSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_REFRESH_RATE,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -651,11 +612,11 @@ GetDisplayExternalWithRefreshSearchConcepts() {
         IDS_OS_SETTINGS_TAG_DISPLAY_REFRESH_RATE_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayOrientationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayOrientationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_ORIENTATION,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -665,11 +626,11 @@ const std::vector<SearchConcept>& GetDisplayOrientationSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_DISPLAY_ORIENTATION_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayAmbientSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayAmbientSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_AMBIENT_COLORS,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -677,11 +638,11 @@ const std::vector<SearchConcept>& GetDisplayAmbientSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAmbientColors}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayTouchCalibrationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayTouchCalibrationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DISPLAY_TOUCHSCREEN_CALIBRATION,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -689,11 +650,11 @@ const std::vector<SearchConcept>& GetDisplayTouchCalibrationSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchscreenCalibration}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetDisplayNightLightOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDisplayNightLightOnSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_NIGHT_LIGHT_COLOR_TEMPERATURE,
        mojom::kDisplaySubpagePath,
        mojom::SearchResultIcon::kDisplay,
@@ -701,7 +662,7 @@ const std::vector<SearchConcept>& GetDisplayNightLightOnSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kNightLightColorTemperature}},
   });
-  return *tags;
+  return tags;
 }
 
 bool IsUnifiedDesktopAvailable() {
