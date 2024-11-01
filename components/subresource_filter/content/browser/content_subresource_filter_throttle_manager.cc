@@ -442,7 +442,7 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
     // used. See the AsyncDocumentSubresourceFilter constructor for details.
     filter = std::make_unique<AsyncDocumentSubresourceFilter>(
         EnsureRulesetHandle(), frame_host->GetLastCommittedOrigin(),
-        activation_to_inherit.value());
+        activation_to_inherit.value(), kSafeBrowsingRulesetConfig.uma_tag);
   }
 
   // Make sure `frame_host_filter_map_` is cleaned up if necessary. Otherwise,
@@ -665,7 +665,7 @@ ContentSubresourceFilterThrottleManager::
   // Subresource filter roots: create unconditionally.
   if (IsInSubresourceFilterRoot(navigation_handle)) {
     auto throttle = ActivationStateComputingNavigationThrottle::CreateForRoot(
-        navigation_handle);
+        navigation_handle, kSafeBrowsingRulesetConfig.uma_tag);
     if (base::FeatureList::IsEnabled(kAdTagging)) {
       mojom::ActivationState ad_tagging_state;
       ad_tagging_state.activation_level = mojom::ActivationLevel::kDryRun;
@@ -684,7 +684,7 @@ ContentSubresourceFilterThrottleManager::
   CHECK(ruleset_handle_, base::NotFatalUntil::M129);
   return ActivationStateComputingNavigationThrottle::CreateForChild(
       navigation_handle, ruleset_handle_.get(),
-      parent_filter->activation_state());
+      parent_filter->activation_state(), kSafeBrowsingRulesetConfig.uma_tag);
 }
 
 AsyncDocumentSubresourceFilter*

@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -368,6 +369,11 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
+
+  // TODO(https://crbug.com/376308447): Potentially add histogram assertions for
+  // FP performance measurements from DocumentSubresourceFilter. Currently, the
+  // codepath is not triggered in FP browser tests because requests from
+  // localhost are ignored in RendererUrlLoaderThrottle.
 }
 
 class

@@ -320,6 +320,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration"
+    units="microseconds" expires_after="2025-10-31">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records the thread CPU time spent on calculating whether it should be
+    allowed to load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration"
+    units="microseconds" expires_after="2025-10-31">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records how much time was spent on calculating whether it should be allowed
+    to load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.WebContentsObserver.RefreshCount"
     units="refresh counts" expires_after="2025-08-20">
   <owner>rizvis@google.com</owner>

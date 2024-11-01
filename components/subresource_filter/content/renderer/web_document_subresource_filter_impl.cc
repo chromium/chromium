@@ -14,6 +14,7 @@
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/shared/renderer/filter_utils.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -62,7 +63,10 @@ WebDocumentSubresourceFilterImpl::WebDocumentSubresourceFilterImpl(
     scoped_refptr<const MemoryMappedRuleset> ruleset,
     base::OnceClosure first_disallowed_load_callback)
     : activation_state_(activation_state),
-      filter_(std::move(document_origin), activation_state, std::move(ruleset)),
+      filter_(std::move(document_origin),
+              activation_state,
+              std::move(ruleset),
+              kSafeBrowsingRulesetConfig.uma_tag),
       first_disallowed_load_callback_(
           std::move(first_disallowed_load_callback)) {}
 
@@ -120,6 +124,7 @@ WebDocumentSubresourceFilterImpl::BuilderImpl::BuilderImpl(
       first_disallowed_load_callback_(
           std::move(first_disallowed_load_callback)),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+
 WebDocumentSubresourceFilterImpl::BuilderImpl::~BuilderImpl() = default;
 
 std::unique_ptr<blink::WebDocumentSubresourceFilter>

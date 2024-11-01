@@ -191,10 +191,11 @@ class ActivationStateComputingNavigationThrottleTest
     std::unique_ptr<ActivationStateComputingNavigationThrottle> throttle =
         IsInSubresourceFilterRoot(navigation_handle)
             ? ActivationStateComputingNavigationThrottle::CreateForRoot(
-                  navigation_handle)
+                  navigation_handle, kSafeBrowsingRulesetConfig.uma_tag)
             : ActivationStateComputingNavigationThrottle::CreateForChild(
                   navigation_handle, ruleset_handle_.get(),
-                  parent_activation_state_.value());
+                  parent_activation_state_.value(),
+                  kSafeBrowsingRulesetConfig.uma_tag);
     if (navigation_handle->IsInMainFrame() && dryrun_speculation_) {
       mojom::ActivationState dryrun_state;
       dryrun_state.activation_level = mojom::ActivationLevel::kDryRun;

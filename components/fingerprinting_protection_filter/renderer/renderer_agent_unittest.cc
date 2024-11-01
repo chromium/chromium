@@ -39,6 +39,11 @@ constexpr const char kTestFirstURLPathSuffix[] = "alpha";
 constexpr const char kTestSecondURLPathSuffix[] = "beta";
 constexpr const char kTestBothURLsPathSuffix[] = "a";
 
+constexpr const char kSubresourceLoadEvaluationWallDurationHistogram[] =
+    "FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration";
+constexpr const char kSubresourceLoadEvaluationCPUDurationHistogram[] =
+    "FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration";
+
 }  // namespace
 
 class RendererAgentTest : public ::testing::Test {
@@ -512,6 +517,33 @@ TEST_F(RendererAgentTest,
       MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
   histogram_tester.ExpectUniqueSample(
       DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+}
+
+TEST_F(RendererAgentTest,
+       Enabled_FilteringIsInEffectForOneLoad_PerformanceMeasurementsRecorded) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(
+      SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
+
+  ExpectFilterGetsInjected();
+  EXPECT_CALL(*agent(), RequestActivationState());
+  subresource_filter::mojom::ActivationState activation_state;
+  activation_state.activation_level =
+      subresource_filter::mojom::ActivationLevel::kEnabled;
+  activation_state.measure_performance = true;
+  StartLoadAndSetActivationState(activation_state);
+  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
+
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestFirstURL));
+
+  ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
+  ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
+  FinishLoad();
+
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationWallDurationHistogram, 2);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationCPUDurationHistogram, 2);
 }
 
 }  // namespace fingerprinting_protection_filter

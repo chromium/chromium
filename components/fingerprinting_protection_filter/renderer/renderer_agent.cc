@@ -315,7 +315,8 @@ void RendererAgent::MaybeCreateNewFilter() {
 
   url::Origin origin = url::Origin::Create(current_document_url_);
   SetFilter(std::make_unique<subresource_filter::DocumentSubresourceFilter>(
-      std::move(origin), activation_state_, std::move(ruleset)));
+      std::move(origin), activation_state_, std::move(ruleset),
+      kFingerprintingProtectionRulesetConfig.uma_tag));
 }
 
 void RendererAgent::SendDocumentLoadStatistics(

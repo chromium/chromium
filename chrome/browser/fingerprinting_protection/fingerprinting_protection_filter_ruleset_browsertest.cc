@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
@@ -66,7 +67,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   subresource_filter::testing::TestActivationStateCallbackReceiver receiver;
   subresource_filter::AsyncDocumentSubresourceFilter filter(
-      ruleset_handle.get(), std::move(params), receiver.GetCallback());
+      ruleset_handle.get(), std::move(params), receiver.GetCallback(),
+      kFingerprintingProtectionRulesetConfig.uma_tag);
   receiver.WaitForActivationDecision();
   subresource_filter::mojom::ActivationState expected_state;
   expected_state.activation_level =
