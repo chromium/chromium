@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -31,11 +32,15 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::GetTranscripts(
     mojom::BabelOrcaMessagePtr message) {
   // Discard message if not a valid session, not a valid sender, or it is an old
   // message.
-  if (message->session_id != session_id_ ||
-      !gaia::AreEmailsSame(sender_email_, message->sender_email.value_or("")) ||
+  bool valid_email =
+      gaia::AreEmailsSame(sender_email_, message->sender_email.value_or(""));
+  if (message->session_id != session_id_ || !valid_email ||
       message->init_timestamp_ms < init_timestamp_ms_ ||
       (message->init_timestamp_ms == init_timestamp_ms_ &&
        message->order <= order_)) {
+    VLOG_IF(1, message->session_id != session_id_)
+        << "Unexpected message session id";
+    VLOG_IF(1, !valid_email) << "Unexpected message sender email";
     return {};
   }
 

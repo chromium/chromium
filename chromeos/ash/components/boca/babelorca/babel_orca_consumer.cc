@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
@@ -189,6 +190,7 @@ void BabelOrcaConsumer::StartReceiving() {
 void BabelOrcaConsumer::OnSignedIn(bool success) {
   if (!success) {
     // TODO(crbug.com/373692250): report error.
+    LOG(ERROR) << "Failed to signin to Tachyon";
     return;
   }
   signed_in_ = true;
@@ -198,6 +200,7 @@ void BabelOrcaConsumer::OnSignedIn(bool success) {
 void BabelOrcaConsumer::JoinSessionTachyonGroup() {
   if (!tachyon_request_data_provider_->session_id().has_value()) {
     // TODO(crbug.com/373692250): report error.
+    LOG(ERROR) << "Session id is not set";
     return;
   }
   join_group_authed_client_.reset();
@@ -226,6 +229,7 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
 void BabelOrcaConsumer::OnJoinGroupResponse(TachyonResponse response) {
   if (!response.ok()) {
     // TODO(crbug.com/373692250): report error.
+    LOG(ERROR) << "Failed to join Tachyon group";
     return;
   }
   joined_group_ = true;
@@ -235,11 +239,17 @@ void BabelOrcaConsumer::OnJoinGroupResponse(TachyonResponse response) {
 void BabelOrcaConsumer::OnTrasncriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
-  caption_controller_wrapper_->DispatchTranscription(transcript);
+  bool dispatch_success =
+      caption_controller_wrapper_->DispatchTranscription(transcript);
+  // TODO(crbug.com/373692250): add dispatch attempts error limit and report
+  // failure.
+  VLOG_IF(1, !dispatch_success)
+      << "Caption bubble transcription dispatch failed";
 }
 
 void BabelOrcaConsumer::OnReceivingFailed() {
   // TODO(crbug.com/373692250): report error.
+  LOG(ERROR) << "Transcript receive request failed";
   // Only reset local captions since session caption is not controlled by the
   // consumer.
   local_captions_enabled_ = false;

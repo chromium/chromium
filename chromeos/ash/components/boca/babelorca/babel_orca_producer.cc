@@ -127,6 +127,7 @@ void BabelOrcaProducer::InitSending(bool signed_in) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!signed_in) {
     // TODO(crbug.com//373692250): report error.
+    LOG(ERROR) << "Failed to signin to Tachyon";
     return;
   }
   // Check if session caption was disabled before request is completed or
@@ -156,7 +157,12 @@ void BabelOrcaProducer::OnTranscriptionResult(
     const std::string& source_language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (local_captions_enabled_) {
-    caption_controller_wrapper_->DispatchTranscription(result);
+    bool dispatch_success =
+        caption_controller_wrapper_->DispatchTranscription(result);
+    // TODO(crbug.com/373692250): add dispatch attempts error limit and report
+    // failure.
+    VLOG_IF(1, !dispatch_success)
+        << "Caption bubble transcription dispatch failed";
   }
   // `session_captions_enabled_` can be enabled but `rate_limited_sender_` is
   // not initialized because signin is not complete.
@@ -169,6 +175,7 @@ void BabelOrcaProducer::OnTranscriptionResult(
 void BabelOrcaProducer::OnSendFailed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/373692250): report error.
+  LOG(ERROR) << "Transcript send permanently failed";
   session_captions_enabled_ = false;
   rate_limited_sender_.reset();
   if (!local_captions_enabled_) {

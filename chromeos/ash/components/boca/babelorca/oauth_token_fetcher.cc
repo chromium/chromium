@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -93,6 +94,8 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
         std::move(access_token_info.token), access_token_info.expiration_time));
     return;
   }
+  VLOG(1) << "OAuth token fetch failed for scope: " << scope_
+          << " with error: " << error.state();
   std::move(callback).Run(std::nullopt);
 }
 

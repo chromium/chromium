@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
@@ -106,6 +107,7 @@ void TachyonRegistrar::OnResponse(base::OnceCallback<void(bool)> success_cb,
   }
   SignInGaiaResponse signin_response;
   if (!signin_response.ParseFromString(response.response_body())) {
+    LOG(ERROR) << "Unable to parse Tachyon response";
     std::move(success_cb).Run(false);
     return;
   }

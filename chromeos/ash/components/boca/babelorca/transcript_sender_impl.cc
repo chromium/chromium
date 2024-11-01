@@ -146,6 +146,14 @@ void TranscriptSenderImpl::SendTranscriptionUpdate(
       !request_data_provider_->sender_email().has_value() ||
       !request_data_provider_->tachyon_token().has_value() ||
       !request_data_provider_->group_id().has_value()) {
+    LOG(ERROR) << "Session Id is set: "
+               << request_data_provider_->session_id().has_value()
+               << ", sender email is set: "
+               << request_data_provider_->sender_email().has_value()
+               << ", tachyon token is set: "
+               << request_data_provider_->tachyon_token().has_value()
+               << ", group id is set: "
+               << request_data_provider_->group_id().has_value();
     failed_ = true;
     std::move(failure_cb_).Run();
     return;
@@ -248,6 +256,7 @@ void TranscriptSenderImpl::OnSendResponse(TachyonResponse response) {
     return;
   }
   ++errors_num_;
+  VLOG(1) << "Send request failed";
   if (errors_num_ >= options_.max_errors_num && failure_cb_) {
     failed_ = true;
     std::move(failure_cb_).Run();

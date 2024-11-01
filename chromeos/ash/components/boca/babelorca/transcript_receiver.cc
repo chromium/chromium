@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
@@ -82,6 +83,12 @@ void TranscriptReceiver::StartReceivingInternal() {
   if (!request_data_provider_->session_id().has_value() ||
       !request_data_provider_->sender_email().has_value() ||
       !request_data_provider_->tachyon_token().has_value()) {
+    LOG(ERROR) << "Session Id is set: "
+               << request_data_provider_->session_id().has_value()
+               << ", sender email is set: "
+               << request_data_provider_->sender_email().has_value()
+               << ", tachyon token is set: "
+               << request_data_provider_->tachyon_token().has_value();
     std::move(on_failure_cb_).Run();
     return;
   }
@@ -118,11 +125,13 @@ void TranscriptReceiver::OnMessage(mojom::BabelOrcaMessagePtr message) {
 
 void TranscriptReceiver::OnResponse(TachyonResponse response) {
   if (response.ok()) {
+    VLOG(1) << "Receive stream closed with ok status.";
     retry_count_ = 0;
     StartReceivingInternal();
     return;
   }
 
+  VLOG(1) << "Receive request failed on retry " << retry_count_;
   if (response.status() == TachyonResponse::Status::kAuthError ||
       retry_count_ >= max_retries_) {
     std::move(on_failure_cb_).Run();

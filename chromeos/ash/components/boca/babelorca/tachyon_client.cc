@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -30,6 +31,9 @@ void TachyonClient::HandleResponse(
           : std::nullopt;
   TachyonResponse response(url_loader->NetError(), http_status_code,
                            std::move(response_body));
+  VLOG_IF(1, !response.ok())
+      << "Request failed with net error: " << url_loader->NetError()
+      << ", and http status code: " << http_status_code.value_or(-1);
   if (response.status() == TachyonResponse::Status::kAuthError) {
     std::move(auth_failure_cb).Run(std::move(request_data));
     return;
