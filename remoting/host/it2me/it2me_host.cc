@@ -229,7 +229,7 @@ void It2MeHost::ConnectOnNetworkThread(
   auto connection_context = std::move(create_context).Run(host_context_.get());
   log_to_server_ = std::move(connection_context->log_to_server);
   signal_strategy_ = std::move(connection_context->signal_strategy);
-  oauth_token_getter_ = std::move(connection_context->oauth_token_getter);
+  api_token_getter_ = std::move(connection_context->api_token_getter);
   DCHECK(log_to_server_);
   DCHECK(signal_strategy_);
 
@@ -296,7 +296,7 @@ void It2MeHost::ConnectOnNetworkThread(
                      weak_factory_.GetWeakPtr()));
 
   auto ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
-      host_context_->url_loader_factory(), oauth_token_getter_.get());
+      host_context_->url_loader_factory(), api_token_getter_.get());
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),

@@ -14,6 +14,8 @@ const char kConnectMessage[] = "connect";
 const char kUserName[] = "userName";
 const char kAuthServiceWithToken[] = "authServiceWithToken";
 const char kAccessToken[] = "accessToken";
+const char kSignalingAccessToken[] = "signalingAccessToken";
+const char kApiAccessToken[] = "apiAccessToken";
 const char kLocalJid[] = "localJid";
 const char kDirectoryBotJidValue[] = "remoting@bot.talk.google.com";
 const char kSuppressUserDialogs[] = "suppressUserDialogs";
@@ -64,6 +66,8 @@ const char kNatPolicyChangedMessageNatEnabled[] = "natTraversalEnabled";
 const char kNatPolicyChangedMessageRelayEnabled[] = "relayConnectionsAllowed";
 
 const char kPolicyErrorMessage[] = "policyError";
+
+const char kUpdateAccessTokensMessage[] = "updateAccessTokens";
 
 const char kSessionParamsDict[] = "sessionParamsDict";
 

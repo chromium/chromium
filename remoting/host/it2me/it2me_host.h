@@ -57,7 +57,15 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     std::unique_ptr<LogToServer> log_to_server;
     std::unique_ptr<RegisterSupportHostRequest> register_request;
     std::unique_ptr<SignalStrategy> signal_strategy;
-    std::unique_ptr<OAuthTokenGetter> oauth_token_getter;
+
+    // `signaling_token_getter_` is used for signaling, which may require a
+    // non-CRD token scope, while `api_token_getter_` is used for all other
+    // services, which require a CRD token scope.
+    // `signaling_token_getter` isn't really used by It2MeHost, since
+    // `signal_strategy` already takes an `OAuthTokenGetter`. This is mostly for
+    // testing purposes.
+    std::unique_ptr<OAuthTokenGetter> signaling_token_getter;
+    std::unique_ptr<OAuthTokenGetter> api_token_getter;
 
     // Since the deferred context only provides an interface* for the signal
     // strategy, we use this boolean to indicate whether the host process should
@@ -222,7 +230,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<SignalStrategy> signal_strategy_;
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
   std::unique_ptr<LogToServer> log_to_server_;
-  std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
+  std::unique_ptr<OAuthTokenGetter> api_token_getter_;
 
   It2MeHostState state_ = It2MeHostState::kDisconnected;
 

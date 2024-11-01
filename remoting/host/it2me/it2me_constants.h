@@ -39,6 +39,8 @@ extern const char kConnectMessage[];
 extern const char kUserName[];
 extern const char kAuthServiceWithToken[];
 extern const char kAccessToken[];
+extern const char kSignalingAccessToken[];
+extern const char kApiAccessToken[];
 extern const char kLocalJid[];
 extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];
@@ -110,6 +112,9 @@ extern const char kNatPolicyChangedMessageRelayEnabled[];
 
 // Sent from the host when there is a problem reading the local policy.
 extern const char kPolicyErrorMessage[];
+
+// Sent from the website to notify that the OAuth access tokens have changed.
+extern const char kUpdateAccessTokensMessage[];
 
 // Keys used for storing and retrieving params used for reconnectable sessions.
 extern const char kSessionParamsDict[];

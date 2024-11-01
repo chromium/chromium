@@ -5,6 +5,8 @@
 #ifndef REMOTING_BASE_PASSTHROUGH_OAUTH_TOKEN_GETTER_H_
 #define REMOTING_BASE_PASSTHROUGH_OAUTH_TOKEN_GETTER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "remoting/base/oauth_token_getter.h"
 
 namespace remoting {
@@ -24,15 +26,22 @@ class PassthroughOAuthTokenGetter : public OAuthTokenGetter {
   void InvalidateCache() override;
 
   void set_username(const std::string& username) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     token_info_.set_user_email(username);
   }
 
   void set_access_token(const std::string& access_token) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     token_info_.set_access_token(access_token);
   }
 
+  base::WeakPtr<PassthroughOAuthTokenGetter> GetWeakPtr();
+
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   OAuthTokenInfo token_info_;
+  base::WeakPtrFactory<PassthroughOAuthTokenGetter> weak_factory_{this};
 };
 
 }  // namespace remoting

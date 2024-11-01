@@ -50,7 +50,10 @@ source_set("common") {
     "reconnect_params.h",
   ]
 
-  deps = [ "//remoting/base:session_policies" ]
+  deps = [
+    "//remoting/base:errors",
+    "//remoting/base:session_policies",
+  ]
 
   if (is_linux) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
