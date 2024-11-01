@@ -8,6 +8,7 @@ source_set("commerce") {
   sources = [
     "product_specifications_disclosure_dialog.h",
     "product_specifications_ui.h",
+    "product_specifications_ui_handler_delegate.h",
     "shopping_insights_side_panel_ui.h",
     "shopping_list_context_menu_controller.h",
     "shopping_ui_handler_delegate.h",
@@ -27,6 +28,7 @@ source_set("impl") {
   sources = [
     "product_specifications_disclosure_dialog.cc",
     "product_specifications_ui.cc",
+    "product_specifications_ui_handler_delegate.cc",
     "shopping_insights_side_panel_ui.cc",
     "shopping_list_context_menu_controller.cc",
     "shopping_ui_handler_delegate.cc",

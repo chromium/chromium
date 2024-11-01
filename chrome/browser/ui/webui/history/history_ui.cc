@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
@@ -54,6 +56,7 @@
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/webui/product_specifications_handler.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
@@ -416,4 +419,30 @@ void HistoryUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId});
+}
+
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<commerce::product_specifications::mojom::
+                              ProductSpecificationsHandlerFactory> receiver) {
+  product_specifications_handler_factory_receiver_.reset();
+  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void HistoryUI::CreateProductSpecificationsHandler(
+    mojo::PendingRemote<commerce::product_specifications::mojom::Page> page,
+    mojo::PendingReceiver<
+        commerce::product_specifications::mojom::ProductSpecificationsHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  product_specifications_handler_ =
+      std::make_unique<commerce::ProductSpecificationsHandler>(
+          std::move(page), std::move(receiver),
+          std::make_unique<commerce::ProductSpecificationsUIHandlerDelegate>(
+              web_ui()),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          profile->GetPrefs(),
+          shopping_service->GetProductSpecificationsService());
 }

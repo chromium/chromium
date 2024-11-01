@@ -265,20 +265,6 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
   return specs_ptr;
 }
 
-shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
-    const ProductSpecificationsSet& set) {
-  auto set_ptr = shared::mojom::ProductSpecificationsSet::New();
-
-  set_ptr->name = set.name();
-  set_ptr->uuid = set.uuid();
-
-  for (const auto& url : set.urls()) {
-    set_ptr->urls.push_back(url);
-  }
-
-  return set_ptr;
-}
-
 std::unique_ptr<optimization_guide::ModelQualityLogEntry>
 PrepareQualityLogEntry(optimization_guide::ModelQualityLogsUploaderService*
                            model_quality_logs_uploader_service) {

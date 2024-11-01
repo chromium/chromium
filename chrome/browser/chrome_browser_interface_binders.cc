@@ -203,6 +203,7 @@
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -1157,6 +1158,11 @@ void PopulateChromeWebUIFrameBinders(
       shopping_service::mojom::ShoppingServiceHandlerFactory,
       BookmarksSidePanelUI, commerce::ProductSpecificationsUI,
       ShoppingInsightsSidePanelUI, HistoryUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      commerce::product_specifications::mojom::
+          ProductSpecificationsHandlerFactory,
+      commerce::ProductSpecificationsUI, HistoryUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       side_panel::mojom::CustomizeChromePageHandlerFactory, CustomizeChromeUI>(

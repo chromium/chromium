@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
@@ -69,6 +70,20 @@ shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     product_info->category_labels.push_back(std::move(category_labels));
   }
   return product_info;
+}
+
+shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
+    const ProductSpecificationsSet& set) {
+  auto set_ptr = shared::mojom::ProductSpecificationsSet::New();
+
+  set_ptr->name = set.name();
+  set_ptr->uuid = set.uuid();
+
+  for (const auto& url : set.urls()) {
+    set_ptr->urls.push_back(url);
+  }
+
+  return set_ptr;
 }
 
 }  // namespace commerce

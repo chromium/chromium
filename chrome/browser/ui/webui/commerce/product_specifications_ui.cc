@@ -13,10 +13,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -154,6 +156,14 @@ void ProductSpecificationsUI::BindInterface(
   shopping_service_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ProductSpecificationsUI::BindInterface(
+    mojo::PendingReceiver<
+        product_specifications::mojom::ProductSpecificationsHandlerFactory>
+        receiver) {
+  product_specifications_handler_factory_receiver_.reset();
+  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
 void ProductSpecificationsUI::CreateShoppingServiceHandler(
     mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
@@ -177,6 +187,24 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
               ? optimization_guide_keyed_service
                     ->GetModelQualityLogsUploaderService()
               : nullptr);
+}
+
+void ProductSpecificationsUI::CreateProductSpecificationsHandler(
+    mojo::PendingRemote<product_specifications::mojom::Page> page,
+    mojo::PendingReceiver<
+        product_specifications::mojom::ProductSpecificationsHandler> receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+
+  product_specifications_handler_ =
+      std::make_unique<ProductSpecificationsHandler>(
+          std::move(page), std::move(receiver),
+          std::make_unique<ProductSpecificationsUIHandlerDelegate>(web_ui()),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          profile->GetPrefs(),
+          shopping_service->GetProductSpecificationsService());
 }
 
 // static
