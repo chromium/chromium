@@ -32,6 +32,19 @@ export interface TreeItemDetail {
   children: {[key: string|number]: CrTreeItemElement};
 }
 
+enum CertificateTrust {
+  // LINT.IfChange(CertificateTrustType)
+  CERTIFICATE_TRUST_DISTRUSTED = 0,
+  CERTIFICATE_TRUST_UNSPECIFIED = 1,
+  CERTIFICATE_TRUST_TRUSTED = 2,
+  // LINT.ThenChange(//chrome/browser/ui/webui/certificate_viewer_webui.cc:CertificateTrustType)
+}
+
+interface CertificateMetadata {
+  trust: CertificateTrust;
+  constraints: string[];
+}
+
 /**
  * Initialize the certificate viewer dialog by wiring up the close button,
  * substituting in translated strings and requesting certificate details.
@@ -80,6 +93,30 @@ function initialize() {
   const exportButton = document.querySelector<HTMLElement>('#export');
   assert(exportButton);
   exportButton.onclick = exportCertificate;
+
+  // TODO(crbug.com/40928765): see if we can do this instead with dialog args
+  // versus callbacks.
+  sendWithPromise('hasCertificateMetadata').then(onHasCertificateMetadata);
+}
+
+
+function onHasCertificateMetadata(hasCertificateMetadata: boolean) {
+  if (!hasCertificateMetadata) {
+    return;
+  }
+
+  const modificationsTab =
+      document.querySelector<HTMLElement>('#modifications-tab');
+  assert(modificationsTab);
+  modificationsTab.hidden = false;
+  sendWithPromise('requestCertificateMetadata').then(onGetCertificateMetadata);
+}
+
+function onGetCertificateMetadata(certMetadata: CertificateMetadata) {
+  const trustStateSelect =
+      document.querySelector<HTMLSelectElement>('#trust-state-select');
+  assert(trustStateSelect);
+  trustStateSelect.value = certMetadata.trust.toString();
 }
 
 /**

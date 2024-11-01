@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_
 #define CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "crypto/crypto_buildflags.h"
@@ -46,6 +48,18 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
+  static CertificateViewerDialog* ShowConstrained(
+      bssl::UniquePtr<CRYPTO_BUFFER> cert,
+      content::WebContents* web_contents,
+      gfx::NativeWindow parent);
+
+  static CertificateViewerDialog* ShowConstrainedWithMetadata(
+      bssl::UniquePtr<CRYPTO_BUFFER> cert,
+      chrome_browser_server_certificate_database::CertificateMetadata
+          cert_metadata,
+      content::WebContents* web_contents,
+      gfx::NativeWindow parent);
+
   CertificateViewerDialog(const CertificateViewerDialog&) = delete;
   CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
 
@@ -56,11 +70,25 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
  private:
   friend class CertificateViewerUITest;
 
+  // If |cert_metadata| is present, exactly one cert should be in |certs|.
+  static CertificateViewerDialog* ShowConstrained(
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+      std::vector<std::string> cert_nicknames,
+      std::optional<
+          chrome_browser_server_certificate_database::CertificateMetadata>
+          cert_metadata,
+      content::WebContents* web_contents,
+      gfx::NativeWindow parent);
+
   // Construct a certificate viewer for the passed in certificate. A reference
   // to the certificate pointer is added for the lifetime of the certificate
   // viewer.
-  CertificateViewerDialog(std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
-                          std::vector<std::string> cert_nicknames);
+  CertificateViewerDialog(
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+      std::vector<std::string> cert_nicknames,
+      std::optional<
+          chrome_browser_server_certificate_database::CertificateMetadata>
+          cert_metadata);
 
   raw_ptr<ConstrainedWebDialogDelegate, DanglingUntriaged> delegate_ = nullptr;
 };
@@ -71,7 +99,10 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
  public:
   CertificateViewerDialogHandler(
       CertificateViewerDialog* dialog,
-      std::vector<x509_certificate_model::X509CertificateModel> certs);
+      std::vector<x509_certificate_model::X509CertificateModel> certs,
+      std::optional<
+          chrome_browser_server_certificate_database::CertificateMetadata>
+          cert_metadata);
 
   CertificateViewerDialogHandler(const CertificateViewerDialogHandler&) =
       delete;
@@ -97,6 +128,12 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // The input is an integer index to the certificate in the chain to view.
   void HandleRequestCertificateFields(const base::Value::List& args);
 
+  // Returns whether Certificate metadata was provided to the viewer.
+  void HandleHasCertificateMetadata(const base::Value::List& args);
+
+  // Returns the Certificate metadata that is provided to the viewer.
+  void HandleGetCertificateMetadata(const base::Value::List& args);
+
   // Helper function to get the certificate index. Returns -1 if the index is
   // out of range.
   int GetCertificateIndex(int requested_index) const;
@@ -105,6 +142,8 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   raw_ptr<CertificateViewerDialog> dialog_;
 
   std::vector<x509_certificate_model::X509CertificateModel> certs_;
+  std::optional<chrome_browser_server_certificate_database::CertificateMetadata>
+      cert_metadata_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_

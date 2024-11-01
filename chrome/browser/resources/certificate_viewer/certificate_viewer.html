@@ -16,6 +16,11 @@
       <div slot="tab" id="details-tab" role="tab" aria-controls="details">
         $i18n{details}
       </div>
+      <div slot="tab" id="modifications-tab" role="tab"
+          aria-controls="modifications" hidden>
+        <!-- TODO(crbug.com/40928765): localize -->
+        Modifications
+      </div>
       <!-- General -->
       <div slot="panel" id="general" role="tabpanel"
            aria-labelledby="general-tab">
@@ -111,6 +116,31 @@
           <div>
             <button id="export"
               aria-label="$i18n{exportA11yLabel}">$i18n{export}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modifications -->
+      <!-- TODO(crbug.com/40928765): finish styles, populate constraints,
+           hook up to allow for modifications, add tests. -->
+      <div slot="panel" id="modifications" role="tabpanel">
+        <div class="vertical-box">
+          <h3 role="heading">Modifications</h3>
+          <div class="horizontal-row">
+            <label class="modifications-row-label">Trust State</label>
+            <select id="trust-state-select" class="md-select" disabled>
+              <option value="0">Distrusted</option>
+              <option value="1">Hint</option>
+              <option value="2">Trusted</option>
+            </select>
+
+          </div>
+          <div class="horizontal-row">
+            <label class="modifications-row-label">Constraints</label>
+            <div>
+              *.example.com
+              128.0.0.0/8
+            </div>
           </div>
         </div>
       </div>
