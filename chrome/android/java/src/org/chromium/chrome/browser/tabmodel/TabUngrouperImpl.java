@@ -16,6 +16,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
@@ -140,7 +141,7 @@ public class TabUngrouperImpl implements TabUngrouper {
 
         @Override
         public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
-            var adaptedCallback = adaptOnResultCallback(onResult, takeListener());
+            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, takeListener());
             if (mIsTabGroup) {
                 mActionConfirmationManager.processUngroupAttempt(adaptedCallback);
             } else {
@@ -151,12 +152,14 @@ public class TabUngrouperImpl implements TabUngrouper {
         @Override
         public void showCollaborationKeepDialog(
                 @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+            var adaptedCallback =
+                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, takeListener());
             if (memberRole == MemberRole.OWNER) {
                 mActionConfirmationManager.processCollaborationOwnerRemoveLastTab(
-                        title, adaptOnResultCallback(onResult, takeListener()));
+                        title, adaptedCallback);
             } else if (memberRole == MemberRole.MEMBER) {
                 mActionConfirmationManager.processCollaborationMemberRemoveLastTab(
-                        title, adaptOnResultCallback(onResult, takeListener()));
+                        title, adaptedCallback);
             } else {
                 assert false : "Not reached";
             }
@@ -175,7 +178,8 @@ public class TabUngrouperImpl implements TabUngrouper {
 
             PassthroughTabUngrouper.doUngroupTabs(filter, newTabsToUngroup, mTrailing);
             if (mListener != null) {
-                mListener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+                mListener.onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
             }
         }
 
@@ -187,11 +191,18 @@ public class TabUngrouperImpl implements TabUngrouper {
     }
 
     private static @NonNull Callback<Integer> adaptOnResultCallback(
-            @NonNull Callback<Integer> callback, @Nullable TabModelActionListener listener) {
+            @NonNull Callback<Integer> callback,
+            @DialogType int plannedDialogType,
+            @Nullable TabModelActionListener listener) {
         return (result) -> {
             callback.onResult(result);
             if (listener != null) {
-                listener.onConfirmationDialogResult(result);
+                @DialogType
+                int dialogType =
+                        result == ActionConfirmationResult.IMMEDIATE_CONTINUE
+                                ? DialogType.NONE
+                                : plannedDialogType;
+                listener.onConfirmationDialogResult(dialogType, result);
             }
         };
     }

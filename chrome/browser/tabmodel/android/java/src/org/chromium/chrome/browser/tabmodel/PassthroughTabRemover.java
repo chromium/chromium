@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 /**
@@ -35,7 +36,8 @@ public class PassthroughTabRemover implements TabRemover {
             @Nullable TabModelActionListener listener) {
         forceCloseTabs(tabClosureParams);
         if (listener != null) {
-            listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+            listener.onConfirmationDialogResult(
+                    DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 
@@ -51,7 +53,8 @@ public class PassthroughTabRemover implements TabRemover {
         assert mTabGroupModelFilterSupplier.hasValue();
         doRemoveTab(mTabGroupModelFilterSupplier.get().getTabModel(), tab);
         if (listener != null) {
-            listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+            listener.onConfirmationDialogResult(
+                    DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsP
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -102,12 +103,14 @@ public class TabUngrouperImplUnitTest {
         handler.performAction();
         verify(mTabGroupModelFilter)
                 .moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
-        verify(mListener).onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verifyNoMoreInteractions(mListener);
     }
 
     @Test
-    public void testUngroupTabsHandler_UngroupTabGroup_RootId_DestructionOnly() {
+    public void testUngroupTabsHandler_UngroupTabGroup_RootId_DestructionOnly_ImmediateContinue() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
@@ -138,8 +141,54 @@ public class TabUngrouperImplUnitTest {
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
         verify(mActionConfirmationManager).processUngroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        verify(mListener).onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+
+        handler.performAction();
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
+
+        verifyNoMoreInteractions(mListener);
+    }
+
+    @Test
+    public void
+            testUngroupTabsHandler_UngroupTabGroup_RootId_DestructionOnly_ConfirmationPositive() {
+        int id = 0;
+        Tab tab0 = mTabModel.addTab(id);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setRootId(id);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(id)).thenReturn(List.of(tab0));
+        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+
+        mTabUngrouperImpl.ungroupTabGroup(
+                id, /* trailing= */ true, /* allowDialog= */ true, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = id;
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = TAB_GROUP_ID;
+        savedTabGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
+        when(mTabGroupSyncService.getGroup(SYNC_ID)).thenReturn(savedTabGroup);
+
+        GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
+        assertFalse(groupsPendingDestroy.isEmpty());
+        assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
+        assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
+
+        // No placeholder tabs created.
+
+        handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mActionConfirmationManager).processUngroupAttempt(mOnResultCaptor.capture());
+        mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         handler.performAction();
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
@@ -181,7 +230,9 @@ public class TabUngrouperImplUnitTest {
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
         verify(mActionConfirmationManager).processUngroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        verify(mListener).onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
@@ -220,7 +271,9 @@ public class TabUngrouperImplUnitTest {
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
         verify(mActionConfirmationManager).processUngroupTabAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        verify(mListener).onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
@@ -263,7 +316,8 @@ public class TabUngrouperImplUnitTest {
                 .processCollaborationOwnerRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mListener)
-                .onConfirmationDialogResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+                .onConfirmationDialogResult(
+                        DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         handler.performAction();
@@ -306,7 +360,8 @@ public class TabUngrouperImplUnitTest {
                 .processCollaborationMemberRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
         verify(mListener)
-                .onConfirmationDialogResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+                .onConfirmationDialogResult(
+                        DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         handler.performAction();

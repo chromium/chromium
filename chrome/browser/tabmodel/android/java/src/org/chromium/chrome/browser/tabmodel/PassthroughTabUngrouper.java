@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.util.List;
@@ -77,7 +78,8 @@ public class PassthroughTabUngrouper implements TabUngrouper {
 
         doUngroupTabs(filter, tabs, trailing);
         if (listener != null) {
-            listener.onConfirmationDialogResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+            listener.onConfirmationDialogResult(
+                    DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 
