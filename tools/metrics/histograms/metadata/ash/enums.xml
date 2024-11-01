@@ -2092,6 +2092,15 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1000" label="VcBackgroundFreeform"/>
 </enum>
 
+<!-- LINT.IfChange(SessionLockEvent) -->
+
+<enum name="SessionLockEvent">
+  <int value="0" label="Lock"/>
+  <int value="1" label="Unlock"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/session/session_controller_impl.cc:SessionLockEvent) -->
+
 <enum name="SetWallpaperResult">
   <int value="0" label="Success"/>
   <int value="1" label="Permission Denied"/>
