@@ -925,11 +925,11 @@ static bool FastParseColorInternal(Color& color,
                                    unsigned length,
                                    bool quirks_mode) {
   if (length >= 4 && characters[0] == '#') {
-    return Color::ParseHexColor(characters + 1, length - 1, color);
+    return Color::ParseHexColor(base::span(characters + 1, length - 1), color);
   }
 
   if (quirks_mode && (length == 3 || length == 6)) {
-    if (Color::ParseHexColor(characters, length, color)) {
+    if (Color::ParseHexColor(base::span(characters, length), color)) {
       return true;
     }
   }
