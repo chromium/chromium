@@ -4,8 +4,6 @@
 
 #include "chromeos/ash/components/boca/session_api/session_parser.h"
 
-#include "chromeos/ash/components/boca/boca_role_util.h"
-#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/common/base_requests.h"
 

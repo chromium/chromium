@@ -150,6 +150,7 @@ static_library("apps") {
     "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/constants",
     "//chromeos/crosapi/cpp",
@@ -304,6 +305,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chromeos/ash/components/browser_context_helper:test_support",
     "//testing/gtest",
 
     # Tests from subdirectories:

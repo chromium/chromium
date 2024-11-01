@@ -71,12 +71,6 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
     return browser;
   }
 
-  void SetUp() override {
-    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
-    image_generator_ = mock.get();
-    tab_info_collector_ = std::make_unique<TabInfoCollector>(std::move(mock));
-    InProcessBrowserTest::SetUp();
-  }
 
   void TearDown() override {
     image_generator_ = nullptr;
@@ -88,8 +82,6 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
   raw_ptr<StrictMock<MockImageGenerator>> image_generator_;
   std::unique_ptr<TabInfoCollector> tab_info_collector_;
 };
@@ -99,6 +91,10 @@ class TabInfoCollectorConsumerTest : public TabInfoCollectorTest {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kBoca, ash::features::kBocaConsumer},
         /*disabled_features=*/{});
+    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
+    image_generator_ = mock.get();
+    tab_info_collector_ = std::make_unique<TabInfoCollector>(
+        std::move(mock), /*is_producer=*/false);
     TabInfoCollectorTest::SetUp();
   }
 };
@@ -107,6 +103,10 @@ class TabInfoCollectorProducerTest : public TabInfoCollectorTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
                                           /*disabled_features=*/{});
+    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
+    image_generator_ = mock.get();
+    tab_info_collector_ = std::make_unique<TabInfoCollector>(
+        std::move(mock), /*is_producer=*/true);
     TabInfoCollectorTest::SetUp();
   }
 };

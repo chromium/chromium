@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -47,8 +48,9 @@ BocaManagerFactory::~BocaManagerFactory() = default;
 std::unique_ptr<KeyedService>
 BocaManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  CHECK(boca_util::IsEnabled());
   Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(boca_util::IsEnabled(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
   auto service = std::make_unique<BocaManager>(profile);
   return service;
 }

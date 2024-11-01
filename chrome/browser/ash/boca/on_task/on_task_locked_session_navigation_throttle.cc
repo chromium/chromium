@@ -9,9 +9,14 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -70,6 +75,12 @@ const char* OnTaskLockedSessionNavigationThrottle::GetNameForLogging() {
 std::unique_ptr<content::NavigationThrottle>
 OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
+  if (!ash::boca_util::IsEnabled(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+              handle->GetWebContents()->GetBrowserContext()))) {
+    return nullptr;
+  }
+
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           handle->GetWebContents()->GetBrowserContext());

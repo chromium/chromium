@@ -154,8 +154,10 @@ BocaAppHandler::BocaAppHandler(
     mojo::PendingRemote<boca::mojom::Page> remote,
     content::WebUI* web_ui,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
-    SessionClientImpl* session_client_impl)
-    : tab_info_collector_(web_ui),
+    SessionClientImpl* session_client_impl,
+    bool is_producer)
+    : is_producer_(is_producer),
+      tab_info_collector_(web_ui, is_producer),
       class_room_page_handler_(std::move(classroom_client_impl)),
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
@@ -254,8 +256,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
   auto get_session_request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), boca_util::IsProducer(),
-      user_identity_.gaia_id(),
+      session_client_impl_->sender(), is_producer_, user_identity_.gaia_id(),
       base::BindOnce(
           [](GetSessionCallback callback,
              base::expected<std::unique_ptr<::boca::Session>,

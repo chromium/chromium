@@ -15,6 +15,10 @@
 
 class Profile;
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace ash {
 // Manages boca main business logic.
 class BocaManager : public KeyedService {
@@ -44,9 +48,9 @@ class BocaManager : public KeyedService {
     return babel_orca_manager_.get();
   }
 
-  void AddObservers();
-
  private:
+  void AddObservers(const user_manager::User* user);
+
   std::unique_ptr<boca::OnTaskSessionManager> on_task_session_manager_;
   std::unique_ptr<boca::SessionClientImpl> session_client_impl_;
   std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;

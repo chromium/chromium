@@ -71,7 +71,8 @@ class BocaSessionManager
   };
 
   BocaSessionManager(SessionClientImpl* session_client_impl,
-                     AccountId account_id);
+                     AccountId account_id,
+                     bool is_producer);
   BocaSessionManager(const BocaSessionManager&) = delete;
   BocaSessionManager& operator=(const BocaSessionManager&) = delete;
   ~BocaSessionManager() override;
@@ -169,6 +170,7 @@ class BocaSessionManager
   void NotifyRosterUpdate();
   void NotifyConsumerActivityUpdate();
 
+  const bool is_producer_;
   base::ObserverList<Observer> observers_;
   // Timer used for periodic session polling.
   base::RepeatingTimer timer_;

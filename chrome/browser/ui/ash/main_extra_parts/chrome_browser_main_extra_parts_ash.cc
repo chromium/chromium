@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
@@ -310,9 +309,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   annotator_client_ = std::make_unique<AnnotatorClientImpl>();
 
-  if (ash::boca_util::IsEnabled()) {
-    boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();
-  }
+  boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();
 
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   projector_client_ = std::make_unique<ProjectorClientImpl>();

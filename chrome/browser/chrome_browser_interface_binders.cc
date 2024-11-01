@@ -57,7 +57,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/internals/mojom/commerce_internals.mojom.h"
@@ -1739,11 +1738,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 
   // --- Section 2: chrome-untrusted:// WebUIs:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::boca_util::IsEnabled()) {
-    registry.ForWebUI<ash::boca::BocaUI>()
-        .Add<ash::boca::mojom::BocaPageHandlerFactory>()
-        .Add<color_change_listener::mojom::PageHandler>();
-  }
+  registry.ForWebUI<ash::boca::BocaUI>()
+      .Add<ash::boca::mojom::BocaPageHandlerFactory>()
+      .Add<color_change_listener::mojom::PageHandler>();
 
   if (chromeos::features::IsOrcaEnabled() ||
       ash::features::IsLobsterEnabled()) {

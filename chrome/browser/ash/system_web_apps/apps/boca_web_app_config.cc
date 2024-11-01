@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace ash {
@@ -28,17 +29,18 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
 
   // ash::boca::ChromeBocaUIDelegate:
   void PopulateLoadTimeData(content::WebUIDataSource* source) override {
+    const user_manager::User* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
     version_info::Channel channel = chrome::GetChannel();
     source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
-    source->AddBoolean("isProducer", ash::boca_util::IsProducer());
-    source->AddBoolean("isConsumer", ash::boca_util::IsConsumer());
+    source->AddBoolean("isProducer", ash::boca_util::IsProducer(user));
+    source->AddBoolean("isConsumer", ash::boca_util::IsConsumer(user));
     source->AddString("appLocale", g_browser_process->GetApplicationLocale());
   }
 
  private:
   const raw_ptr<Profile> profile_;
 };
-
 }  // namespace
 
 BocaUIConfig::BocaUIConfig()
@@ -46,7 +48,9 @@ BocaUIConfig::BocaUIConfig()
                   ash::boca::kChromeBocaAppHost) {}
 
 bool BocaUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return ash::boca_util::IsEnabled();
+  return ash::boca_util::IsEnabled(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          browser_context));
 }
 
 std::unique_ptr<content::WebUIController> BocaUIConfig::CreateWebUIController(
@@ -54,6 +58,9 @@ std::unique_ptr<content::WebUIController> BocaUIConfig::CreateWebUIController(
     const GURL& url) {
   auto* profile = Profile::FromWebUI(web_ui);
   auto delegate = std::make_unique<ChromeBocaUIDelegate>(profile);
-  return std::make_unique<ash::boca::BocaUI>(web_ui, std::move(delegate));
+  return std::make_unique<ash::boca::BocaUI>(
+      web_ui, std::move(delegate),
+      ash::boca_util::IsProducer(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
 }
 }  // namespace ash

@@ -7,10 +7,12 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -190,7 +192,8 @@ class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
       : BocaSessionManager(session_client_impl,
-                           AccountId::FromUserEmail(kUserEmail)) {}
+                           AccountId::FromUserEmail(kUserEmail),
+                           /*=is_producer*/ false) {}
   MOCK_METHOD(void,
               NotifyLocalCaptionEvents,
               (::boca::CaptionsConfig config),
@@ -207,6 +210,8 @@ class BocaAppPageHandlerTest : public testing::Test {
  public:
   BocaAppPageHandlerTest() = default;
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
+                                          /*disabled_features=*/{});
     // Sign in test user.
     auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaId);
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
@@ -229,7 +234,7 @@ class BocaAppPageHandlerTest : public testing::Test {
         // TODO(b/359929870):Setting nullptr for other dependencies for now.
         // Adding test case for classroom and tab info.
         pending_receiver_.InitWithNewPipeAndPassRemote(), nullptr, nullptr,
-        &session_client_impl_);
+        &session_client_impl_, /*=is_producer*/ true);
   }
 
   void TearDown() override {
@@ -244,6 +249,7 @@ class BocaAppPageHandlerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   // Among all BocaAppHandler dependencies,BocaAppClient should construct early
   // and destruct last.
   std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;

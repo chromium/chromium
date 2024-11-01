@@ -70,17 +70,19 @@ std::string TabInfoCollector::ImageGenerator::StringifyImage(
                                  web_ui_->GetDeviceScaleFactor());
 }
 
-TabInfoCollector::TabInfoCollector(content::WebUI* web_ui) : web_ui_(web_ui) {
+TabInfoCollector::TabInfoCollector(content::WebUI* web_ui, bool is_producer)
+    : is_producer_(is_producer), web_ui_(web_ui) {
   image_generator_ = std::make_unique<ImageGenerator>(web_ui);
 }
 
 TabInfoCollector::TabInfoCollector(
-    std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator)
-    : image_generator_(std::move(image_generator)) {}
+    std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator,
+    bool is_producer)
+    : is_producer_(is_producer), image_generator_(std::move(image_generator)) {}
 TabInfoCollector::~TabInfoCollector() = default;
 
 void TabInfoCollector::GetWindowTabInfo(GetWindowsTabsListCallback callback) {
-  if (ash::boca_util::IsConsumer()) {
+  if (!is_producer_) {
     GetWindowTabInfoForTarget(
         web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
         std::move(callback));

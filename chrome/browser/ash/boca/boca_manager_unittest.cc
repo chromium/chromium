@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/account_id/account_id.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -105,7 +106,8 @@ class BocaManagerTest : public testing::Test {
     session_client_impl_ =
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
     boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
-        session_client_impl_.get(), AccountId::FromUserEmail(kTestEmail));
+        session_client_impl_.get(), AccountId::FromUserEmail(kTestEmail),
+        /*is_producer*/ false);
     invalidation_service_impl_ =
         std::make_unique<boca::InvalidationServiceImpl>(
             /*=gcm_driver*/ &fake_gcm_driver_,
@@ -124,7 +126,11 @@ class BocaManagerTest : public testing::Test {
 
   // BocaSessionManager require task_env for mojom binding.
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<ash::FakeBrowserContextHelperDelegate>
+      fake_browser_context_helper_delegate_ =
+          std::make_unique<ash::FakeBrowserContextHelperDelegate>();
+  ash::BrowserContextHelper helper{
+      std::move(fake_browser_context_helper_delegate_)};
   std::unique_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
   std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;
   gcm::FakeGCMDriver fake_gcm_driver_;

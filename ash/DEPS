@@ -76,6 +76,7 @@ include_rules = [
   # //ash can use chromeos components that sit below it in the dependency tree.
   "+chromeos/ash/components/audio",
   "+chromeos/ash/components/demo_mode",
+  "+chromeos/ash/components/boca",
   "+chromeos/ash/components/growth",
   "+chromeos/ash/components/auth_panel",
   "+chromeos/ash/components/channel",

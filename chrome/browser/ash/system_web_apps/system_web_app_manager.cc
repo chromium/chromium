@@ -85,7 +85,6 @@
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -145,9 +144,7 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
           profile));
   info_vec.push_back(std::make_unique<PrintPreviewCrosDelegate>(profile));
   info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
-  if (ash::boca_util::IsEnabled()) {
-    info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
-  }
+  info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<MallSystemAppDelegate>(profile));
   if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
     info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));

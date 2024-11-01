@@ -3396,6 +3396,7 @@ component("ash") {
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/auth_panel/impl",
     "//chromeos/ash/components/auth_panel/public",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/cryptohome:cryptohome",
     "//chromeos/ash/components/cryptohome:public",

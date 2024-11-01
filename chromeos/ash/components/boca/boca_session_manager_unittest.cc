@@ -8,8 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -107,6 +109,9 @@ class BocaSessionManagerTest : public testing::Test {
  public:
   BocaSessionManagerTest() = default;
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
+                                          /*disabled_features=*/{});
+
     // Sign in test user.
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
@@ -145,7 +150,7 @@ class BocaSessionManagerTest : public testing::Test {
         signin::GetTestGaiaIdForEmail(kTestUserEmail), kTestUserEmail);
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl_.get(), account_id);
+        session_client_impl_.get(), account_id, /*is_producer=*/false);
     boca_session_manager_->AddObserver(observer_.get());
 
     // Set statistic provider for hardware class tests.
@@ -198,6 +203,7 @@ class BocaSessionManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::string wifi_device_path_;
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
   // BocaAppClient should destruct after identity env.

@@ -88,16 +88,17 @@ BocaManager::BocaManager(
       boca_session_manager_(std::move(boca_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)),
       babel_orca_manager_(std::move(babel_orca_manager)) {
-  AddObservers();
+  AddObservers(nullptr);
 }
 
 BocaManager::BocaManager(Profile* profile)
     : session_client_impl_(std::make_unique<boca::SessionClientImpl>()) {
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  bool is_consumer = ash::boca_util::IsConsumer(user);
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
-      session_client_impl_.get(), ash::BrowserContextHelper::Get()
-                                      ->GetUserByBrowserContext(profile)
-                                      ->GetAccountId());
-  bool is_consumer = ash::boca_util::IsConsumer();
+      session_client_impl_.get(), user->GetAccountId(),
+      /*is_producer=*/!is_consumer);
   babel_orca_manager_ = CreateBabelOrcaManager(profile, is_consumer);
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
@@ -111,15 +112,12 @@ BocaManager::BocaManager(Profile* profile)
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver();
   invalidation_service_impl_ = std::make_unique<boca::InvalidationServiceImpl>(
-      gcm_driver, instance_id_driver,
-      ash::BrowserContextHelper::Get()
-          ->GetUserByBrowserContext(profile)
-          ->GetAccountId(),
+      gcm_driver, instance_id_driver, user->GetAccountId(),
       boca_session_manager_.get(), session_client_impl_.get());
-  AddObservers();
+  AddObservers(user);
 }
 
-BocaManager::~BocaManager() {}
+BocaManager::~BocaManager() = default;
 
 void BocaManager::Shutdown() {
   invalidation_service_impl_->ShutDown();
@@ -132,11 +130,11 @@ void BocaManager::Shutdown() {
   babel_orca_manager_.reset();
 }
 
-void BocaManager::AddObservers() {
+void BocaManager::AddObservers(const user_manager::User* user) {
   if (babel_orca_manager_) {
     boca_session_manager_->AddObserver(babel_orca_manager_.get());
   }
-  if (ash::boca_util::IsConsumer()) {
+  if (ash::boca_util::IsConsumer(user)) {
     boca_session_manager_->AddObserver(on_task_session_manager_.get());
   }
 }

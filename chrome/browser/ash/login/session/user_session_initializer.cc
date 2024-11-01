@@ -53,6 +53,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -318,7 +319,8 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // created one per user in a multiprofile session.
   GlanceablesKeyedServiceFactory::GetInstance()->GetService(profile);
 
-  if (boca_util::IsEnabled()) {
+  if (ash::boca_util::IsEnabled(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile))) {
     // Ensure that the `BocaManager` for `profile` is created. It is created one
     // per user in a multiprofile session.
     BocaManagerFactory::GetInstance()->GetForProfile(profile);

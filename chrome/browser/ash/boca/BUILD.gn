@@ -57,6 +57,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca:invalidations",
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/browser_context_helper:test_support",
     "//components/gcm_driver",
     "//components/gcm_driver:test_support",
     "//content/test:test_support",

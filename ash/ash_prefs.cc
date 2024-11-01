@@ -99,6 +99,7 @@
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -131,6 +132,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   BirchItem::RegisterProfilePrefs(registry);
   BirchModel::RegisterProfilePrefs(registry);
   BirchPrivacyNudgeController::RegisterProfilePrefs(registry);
+  boca_util::RegisterPrefs(registry);
   CalendarController::RegisterProfilePrefs(registry);
   camera_app_prefs::RegisterProfilePrefs(registry);
   CameraEffectsController::RegisterProfilePrefs(registry);

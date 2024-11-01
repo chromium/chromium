@@ -38,9 +38,10 @@ class TabInfoCollector {
     raw_ptr<content::WebUI> web_ui_;
   };
 
-  explicit TabInfoCollector(content::WebUI* web_ui);
-  explicit TabInfoCollector(
-      std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator);
+  TabInfoCollector(content::WebUI* web_ui, bool is_producer);
+  TabInfoCollector(
+      std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator,
+      bool is_producer);
   TabInfoCollector(const TabInfoCollector&) = delete;
   TabInfoCollector& operator=(const TabInfoCollector&) = delete;
   ~TabInfoCollector();
@@ -61,8 +62,8 @@ class TabInfoCollector {
   void SortWindowList(std::vector<std::vector<ash::TabInfo>>& windows_list);
   std::vector<mojom::WindowPtr> AshToPageWindows(
       std::vector<std::vector<ash::TabInfo>> windows);
-
-  raw_ptr<content::WebUI> web_ui_;
+  const bool is_producer_;
+  const raw_ptr<content::WebUI> web_ui_;
   std::unique_ptr<ImageGenerator> image_generator_;
 };
 

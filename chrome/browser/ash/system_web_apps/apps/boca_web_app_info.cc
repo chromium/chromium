@@ -17,10 +17,13 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+namespace {
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   GURL start_url = GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
@@ -42,12 +45,17 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   return info;
 }
 
-// Returns whether the user is able to consume Boca sessions. Primarily used by
-// the delegate to tailor SWA UX.
-// TODO(b/352675698): Identify Boca consumer profile without feature flags.
 bool IsConsumerProfile(Profile* profile) {
-  return ash::boca_util::IsConsumer();
+  return ash::boca_util::IsConsumer(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
 }
+
+bool IsEnabled(Profile* profile) {
+  return ash::boca_util::IsEnabled(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+}
+
+}  // namespace
 
 BocaSystemAppDelegate::BocaSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::BOCA,
@@ -92,11 +100,19 @@ bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
 }
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {
-  return ash::boca_util::IsEnabled();
+  return true;
 }
 
 bool BocaSystemAppDelegate::HasCustomTabMenuModel() const {
   return IsConsumerProfile(profile());
+}
+
+bool BocaSystemAppDelegate::ShouldShowInSearchAndShelf() const {
+  return IsEnabled(profile());
+}
+
+bool BocaSystemAppDelegate::ShouldShowInLauncher() const {
+  return IsEnabled(profile());
 }
 
 gfx::Size BocaSystemAppDelegate::GetMinimumWindowSize() const {

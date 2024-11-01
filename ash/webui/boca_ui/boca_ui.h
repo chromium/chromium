@@ -46,7 +46,9 @@ class BocaUIDelegate {
 class BocaUI : public ui::UntrustedWebUIController,
                public boca::mojom::BocaPageHandlerFactory {
  public:
-  BocaUI(content::WebUI* web_ui, std::unique_ptr<BocaUIDelegate> delegate);
+  BocaUI(content::WebUI* web_ui,
+         std::unique_ptr<BocaUIDelegate> delegate,
+         bool is_producer);
   BocaUI(const BocaUI&) = delete;
   BocaUI& operator=(const BocaUI&) = delete;
   ~BocaUI() override;
@@ -64,7 +66,8 @@ class BocaUI : public ui::UntrustedWebUIController,
               mojo::PendingRemote<boca::mojom::Page> page) override;
 
  private:
-  raw_ptr<content::WebUI> web_ui_;
+  const bool is_producer_;
+  const raw_ptr<content::WebUI> web_ui_;
   mojo::Receiver<boca::mojom::BocaPageHandlerFactory> receiver_{this};
   std::unique_ptr<BocaAppHandler> page_handler_impl_;
 

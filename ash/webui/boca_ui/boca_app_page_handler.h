@@ -41,7 +41,8 @@ class BocaAppHandler : public mojom::PageHandler,
       mojo::PendingRemote<mojom::Page> remote,
       content::WebUI* webui,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
-      SessionClientImpl* session_client_impl);
+      SessionClientImpl* session_client_impl,
+      bool is_producer);
 
   BocaAppHandler(const BocaAppHandler&) = delete;
   BocaAppHandler& operator=(const BocaAppHandler&) = delete;
@@ -121,6 +122,7 @@ class BocaAppHandler : public mojom::PageHandler,
                                             google_apis::ApiErrorCode> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  const bool is_producer_;
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
   // Lastest config is not always the same as the instance maintained in

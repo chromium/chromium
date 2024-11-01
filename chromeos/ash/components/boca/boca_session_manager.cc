@@ -9,8 +9,6 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
@@ -30,8 +28,10 @@
 namespace ash::boca {
 
 BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
-                                       AccountId account_id)
-    : account_id_(std::move(account_id)),
+                                       AccountId account_id,
+                                       bool is_producer)
+    : is_producer_(is_producer),
+      account_id_(std::move(account_id)),
       session_client_impl_(std::move(session_client_impl)) {
   GetNetworkConfigService(cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(
@@ -118,8 +118,7 @@ void BocaSessionManager::LoadCurrentSession() {
     return;
   }
   auto request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), boca_util::IsProducer(),
-      account_id_.GetGaiaId(),
+      session_client_impl_->sender(), is_producer_, account_id_.GetGaiaId(),
       base::BindOnce(&BocaSessionManager::ParseSessionResponse,
                      weak_factory_.GetWeakPtr()));
   session_client_impl_->GetSession(std::move(request));

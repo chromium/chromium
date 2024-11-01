@@ -52,6 +52,7 @@ static_library("on_task") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/sessions",
+    "//components/user_manager",
     "//components/user_prefs",
     "//extensions/browser",
     "//ui/base",

@@ -16,7 +16,6 @@
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +47,12 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
 
 }  // namespace
 
-BocaUI::BocaUI(content::WebUI* web_ui, std::unique_ptr<BocaUIDelegate> delegate)
-    : UntrustedWebUIController(web_ui), web_ui_(web_ui) {
+BocaUI::BocaUI(content::WebUI* web_ui,
+               std::unique_ptr<BocaUIDelegate> delegate,
+               bool is_producer)
+    : UntrustedWebUIController(web_ui),
+      is_producer_(is_producer),
+      web_ui_(web_ui) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
@@ -122,7 +125,8 @@ void BocaUI::Create(
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       this, std::move(page_handler), std::move(page), web_ui_,
       std::make_unique<ClassroomPageHandlerImpl>(),
-      BocaAppClient::Get()->GetSessionManager()->session_client_impl());
+      BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
+      is_producer_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
