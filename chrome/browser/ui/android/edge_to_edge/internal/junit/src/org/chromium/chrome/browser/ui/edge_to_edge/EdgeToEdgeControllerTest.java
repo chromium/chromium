@@ -55,7 +55,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -84,6 +84,11 @@ import org.chromium.ui.base.WindowAndroid;
         sdk = VERSION_CODES.R,
         manifest = Config.NONE,
         shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
+@EnableFeatures({
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+    ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
+})
+@DisableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
 public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;
@@ -158,10 +163,6 @@ public class EdgeToEdgeControllerTest {
 
     @Before
     public void setUp() {
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
-        ChromeFeatureList.sEdgeToEdgeWebOptIn.setForTesting(true);
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
-
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WINDOW_INSETS);
 
@@ -199,13 +200,16 @@ public class EdgeToEdgeControllerTest {
                         mFullscreenManager);
         assertNotNull(mEdgeToEdgeControllerImpl);
         verify(mEdgeToEdgeStateProvider, times(1)).acquireSetDecorFitsSystemWindowToken();
+
         verify(mOsWrapper, times(1))
                 .setPadding(
                         any(),
                         eq(0),
                         intThat(Matchers.greaterThan(0)),
                         eq(0),
-                        intThat(Matchers.greaterThan(0)));
+                        ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()
+                                ? eq(0)
+                                : intThat(Matchers.greaterThan(0)));
         verify(mInsetObserver, times(1)).addInsetsConsumer(any());
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
     }
@@ -272,8 +276,8 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void onObservingDifferentTab_changeToNative() {
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(true);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -282,8 +286,8 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void onObservingDifferentTab_changeToTabSwitcher() {
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         // For the Tab Switcher we need to switch from some non-null Tab to null.
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
@@ -416,9 +420,9 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
+    @EnableFeatures(
+            ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE + ":disable_cct_media_viewer_e2e/true")
     public void onObservingDifferentTab_embeddedMediaExperience_DisableByParam() {
-        EdgeToEdgeUtils.DISABLE_CCT_MEDIA_VIEWER_E2E.setForTesting(true);
         when(mTab.shouldEnableEmbeddedMediaExperience()).thenReturn(true);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -479,8 +483,8 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void onObservingDifferentTab_simple() {
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         // For the Tab Switcher we need to switch from some non-null Tab to null.
         when(mTab.isNativePage()).thenReturn(true);
         mTabProvider.set(mTab);
@@ -490,11 +494,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
     public void testNavigateFromKeyNativePageToNotOptedInWebPage() {
         Mockito.clearInvocations(mTab, mOsWrapper);
 
@@ -513,11 +513,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
     public void testNavigateFromNotOptedInWebPageToKeyNativePage() {
         // Native to a web page that is not opted in, which should draw toNormal.
         when(mTab.isNativePage()).thenReturn(false);
@@ -534,11 +530,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
     public void testNavigateFromKeyNativePageToOptedInWebPage() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         Mockito.clearInvocations(mTab, mOsWrapper);
@@ -557,11 +549,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
     public void testNavigateFromOptedInWebPageToKeyNativePage() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         Mockito.clearInvocations(mTab, mOsWrapper);
@@ -580,7 +568,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testSwitchLayout() {
         mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(false);
         mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
@@ -596,7 +583,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testLayoutManagerChanged() {
         mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(false);
         mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
@@ -641,10 +627,9 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @Config(qualifiers = "xlarge")
+    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void disabledWhenNotPhone() {
         // Even these always-draw flags do not override the device abilities.
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
-
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         // Even the always-draw flags do not override the device abilities.
         assertFalse(
@@ -653,10 +638,9 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void disabledWhenNotGestureEnabled() {
         // Even these always-draw flags do not override the device abilities.
-        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
-
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         // Even the always-draw flags do not override the device abilities.
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(true);
@@ -667,8 +651,8 @@ public class EdgeToEdgeControllerTest {
 
     // Regression test for https://crbug.com/329875254.
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testViewportFitAfterListenerSet_ToNormal_BottomChinDisabled() {
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
         when(mTab.isNativePage()).thenReturn(false);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mTabProvider.set(mTab);

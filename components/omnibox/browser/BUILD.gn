@@ -645,6 +645,7 @@ if (is_android) {
       "//components/browser_ui/styles/android:java_resources",
       "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
+      "//components/omnibox/common:features_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/junit:junit",
       "//third_party/metrics_proto:metrics_proto_java",

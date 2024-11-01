@@ -37,6 +37,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -154,9 +155,8 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testEdgeToEdge_ToEdge_bottomChinDisabled() {
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
-
         ChangeObserver changeObserver = mMediator.getEdgeToEdgeChangeObserverForTesting();
         changeObserver.onToEdgeChange(
                 DEFAULT_INSET, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);

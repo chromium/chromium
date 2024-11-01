@@ -6,8 +6,6 @@ package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
@@ -127,20 +125,6 @@ public class CachedFlag extends Flag {
     @Override
     protected void clearInMemoryCachedValueForTesting() {
         // ValuesReturned is cleared by CachedFlagUtils#resetFlagsForTesting().
-    }
-
-    /**
-     * Forces a feature to be enabled or disabled for testing.
-     *
-     * @deprecated do not call this from tests; use @EnableFeatures/@DisableFeatures instead, since
-     *     batched tests need to be split by feature flag configuration.
-     */
-    @VisibleForTesting
-    @Deprecated
-    public void setForTesting(boolean value) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(mFeatureName, value);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
     }
 
     /**

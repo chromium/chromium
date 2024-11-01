@@ -6,7 +6,6 @@ package org.chromium.components.cached_flags;
 
 import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.util.BaseFlagTestRule.A_OFF_B_OFF;
 import static org.chromium.base.test.util.BaseFlagTestRule.A_OFF_B_ON;
 import static org.chromium.base.test.util.BaseFlagTestRule.A_ON_B_OFF;
 import static org.chromium.base.test.util.BaseFlagTestRule.A_ON_B_ON;
@@ -134,27 +133,5 @@ public class CachedFlagUnitTest {
 
         // Verify that the forced value is returned.
         assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
-    }
-
-    @Test
-    public void testSetForTesting_returnsForcedValue() {
-        CachedFlag featureA = new CachedFlag(mFeatureMap, FEATURE_A, false);
-        CachedFlag featureB = new CachedFlag(mFeatureMap, FEATURE_B, false);
-
-        // Do not cache values from native. There are no values stored in prefs either.
-        // Query the flags to make sure the default values are returned.
-        assertIsEnabledMatches(A_OFF_B_OFF, featureA, featureB);
-
-        // Force a feature flag.
-        featureA.setForTesting(true);
-
-        // Verify that the forced value is returned.
-        assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
-
-        // Remove the forcing.
-        FeatureList.setTestValues(null);
-
-        // Verify that the forced value is not returned anymore.
-        assertIsEnabledMatches(A_OFF_B_OFF, featureA, featureB);
     }
 }
