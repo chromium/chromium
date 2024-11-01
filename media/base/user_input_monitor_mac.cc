@@ -70,7 +70,7 @@ void UserInputMonitorMac::StopKeyboardMonitoring() {
   if (!key_press_count_mapping_)
     return;
 
-  key_press_count_timer_.AbandonAndStop();
+  key_press_count_timer_.Stop();
   key_press_count_mapping_.reset();
 }
 

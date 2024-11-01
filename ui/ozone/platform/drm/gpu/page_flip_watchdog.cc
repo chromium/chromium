@@ -69,7 +69,7 @@ void PageFlipWatchdog::Disarm() {
   page_flip_status_tracker_.Clear();
 
   if (crash_gpu_timer_.IsRunning()) {
-    crash_gpu_timer_.AbandonAndStop();
+    crash_gpu_timer_.Stop();
     SYSLOG(INFO)
         << "Detected a modeset attempt after " << failed_page_flip_counter_
         << " failed page flips. Aborting GPU process self-destruct with "
