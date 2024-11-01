@@ -86,9 +86,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
 
     CreateAccountSelectionModal();
-    for (auto& account : account_list_) {
-      account->identity_provider = idp_data_;
-    }
     dialog_->ShowMultiAccountPicker(account_list_, {idp_data_},
                                     /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
@@ -113,6 +110,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   void CreateAndShowLoadingDialog() {
     CreateAccountSelectionModal();
     dialog_->ShowLoadingDialog();
+  }
+
+  IdentityRequestAccountPtr CreateSingleAccount(
+      const std::string& account_suffix,
+      bool is_filtered_out = false) {
+    IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+        account_suffix, idp_data_,
+        content::IdentityRequestAccount::LoginState::kSignUp);
+    account->is_filtered_out = is_filtered_out;
+    return account;
   }
 
   void PerformHeaderChecks(views::View* header,
@@ -365,10 +372,21 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
-    views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
-    ASSERT_FALSE(scroller->children().empty());
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+    size_t accounts_index = 0;
+    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index,
+                              /*expect_idp=*/false, /*is_modal_dialog=*/true);
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   supports_add_account, /*expect_back_button=*/false);
+  }
+
+  std::vector<raw_ptr<views::View, VectorExperimental>>
+  TestStructureAndGetAccounts(views::View* container) {
+    views::ScrollView* scroller = static_cast<views::ScrollView*>(container);
+    EXPECT_FALSE(scroller->children().empty());
     views::View* wrapper = scroller->children()[0];
-    ASSERT_FALSE(wrapper->children().empty());
+    EXPECT_FALSE(wrapper->children().empty());
     views::View* contents = wrapper->children()[0];
 
     views::BoxLayout* layout_manager =
@@ -376,14 +394,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_TRUE(layout_manager);
     EXPECT_EQ(layout_manager->GetOrientation(),
               views::BoxLayout::Orientation::kVertical);
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
-        contents->children();
-
-    size_t accounts_index = 0;
-    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index,
-                              /*expect_idp=*/false, /*is_modal_dialog=*/true);
-    CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   supports_add_account, /*expect_back_button=*/false);
+    return contents->children();
   }
 
   void TestRequestPermission(
@@ -546,6 +557,77 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                     i == 0 ? IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON
                            : IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
     }
+  }
+
+  void TestDisabledAccounts(const std::vector<std::string>& account_suffixes) {
+    account_list_ =
+        CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
+    for (const auto& account : account_list_) {
+      account->is_filtered_out = true;
+    }
+    CreateAccountSelectionModal();
+    dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
+                                     /*show_back_button=*/false,
+                                     /*is_choose_an_account=*/false);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
+    PerformHeaderChecks(children[0]);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+    ASSERT_GE(accounts.size(), account_suffixes.size());
+
+    size_t accounts_index = 0;
+    for (const auto& account_suffix : account_suffixes) {
+      if (std::string(accounts[accounts_index]->GetClassName()) ==
+          "Separator") {
+        ++accounts_index;
+      }
+      CheckHoverableAccountRow(accounts[accounts_index++], account_suffix,
+                               /*expect_idp=*/false, /*is_modal_dialog=*/true,
+                               /*is_disabled=*/true);
+    }
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/false,
+                   /*expect_back_button=*/false);
+  }
+
+  void TestEnabledAndDisabled() {
+    std::vector<std::string> account_suffixes = {"enabled", "disabled"};
+    account_list_ =
+        CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
+    account_list_[1]->is_filtered_out = true;
+    CreateAccountSelectionModal();
+    dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
+                                     /*show_back_button=*/false,
+                                     /*is_choose_an_account=*/false);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
+    PerformHeaderChecks(children[0]);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+
+    ASSERT_EQ(std::string(accounts[0]->GetClassName()), "Separator");
+    CheckHoverableAccountRow(accounts[1], "enabled",
+                             /*expect_idp=*/false, /*is_modal_dialog=*/true,
+                             /*is_disabled=*/false);
+    ASSERT_EQ(std::string(accounts[2]->GetClassName()), "Separator");
+    CheckHoverableAccountRow(accounts[3], "disabled",
+                             /*expect_idp=*/false, /*is_modal_dialog=*/true,
+                             /*is_disabled=*/true);
+
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/false,
+                   /*expect_back_button=*/false);
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
@@ -866,4 +948,18 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, ErrorDialogTest) {
                   u"Something went wrong",
                   /*error_code=*/"error_we_dont_support",
                   GURL(u"https://idp-example.com/more-details"));
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, OneDisabledAccount) {
+  TestDisabledAccounts(/*account_suffixes=*/{"0"});
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleDisabledAccounts) {
+  TestDisabledAccounts(/*account_suffixes=*/{"0", "1", "2"});
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       OneDisabledAccountAndOneEnabledAccount) {
+  TestEnabledAndDisabled();
 }

@@ -69,6 +69,11 @@ class AccountSelectionViewTestBase {
       size_t& accounts_index,
       bool expect_idp = false,
       bool is_modal_dialog = false);
+  void CheckHoverableAccountRow(views::View* account,
+                                const std::string& account_suffix,
+                                bool expect_idp = false,
+                                bool is_modal_dialog = false,
+                                bool is_disabled = false);
   void CheckDisclosureText(views::View* disclosure_text,
                            bool expect_terms_of_service,
                            bool expect_privacy_policy);

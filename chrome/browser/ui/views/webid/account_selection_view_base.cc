@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -39,6 +40,9 @@ namespace {
 // safe_zone_diameter/icon_size as defined in
 // https://www.w3.org/TR/appmanifest/#icon-masks
 constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
+
+// The opacity of the avatar when the account is filtered out.
+constexpr double kDisabledAvatarOpacity = 0.38;
 
 // The border radius of the background circle containing the IDP icon in an
 // account button.
@@ -246,6 +250,10 @@ class AccountImageView : public views::ImageView {
       avatar =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
               account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
+      if (account.is_filtered_out) {
+        avatar = gfx::ImageSkiaOperations::CreateTransparentImage(
+            avatar, kDisabledAvatarOpacity);
+      }
     }
     SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
@@ -406,6 +414,7 @@ void AccountHoverButton::StateChanged(ButtonState old_state) {
         }
         case ButtonState::STATE_DISABLED:
         default: {
+          color_id = ui::kColorDialogBackground;
           return;
         }
       }
@@ -500,6 +509,10 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   views::style::TextStyle account_email_style =
       is_modal_dialog ? views::style::STYLE_BODY_5
                       : views::style::STYLE_SECONDARY;
+  if (account.is_filtered_out) {
+    account_name_style = views::style::STYLE_DISABLED;
+    account_email_style = views::style::STYLE_DISABLED;
+  }
 
   std::unique_ptr<views::View> avatar_view;
   auto account_image_view = std::make_unique<AccountImageView>();
@@ -574,8 +587,11 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
             base::Unretained(observer_), std::cref(account),
             std::cref(idp_data)),
         std::move(avatar_view),
-        /*title=*/base::UTF8ToUTF16(account.name),
-        /*subtitle=*/base::UTF8ToUTF16(account.email),
+        /*title=*/account.is_filtered_out ? base::UTF8ToUTF16(account.email)
+                                          : base::UTF8ToUTF16(account.name),
+        /*subtitle=*/account.is_filtered_out
+            ? l10n_util::GetStringUTF16(IDS_FILTERED_ACCOUNT_MESSAGE)
+            : base::UTF8ToUTF16(account.email),
         /*secondary_view=*/
         is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
                         : nullptr,
@@ -592,7 +608,6 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       row->SetFooterTextStyle(views::style::CONTEXT_LABEL, account_email_style);
     }
     if (account.is_filtered_out) {
-      // TODO(crbug.com/40945672): improve the UI.
       row->SetEnabled(false);
     }
     return row;
