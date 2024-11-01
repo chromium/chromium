@@ -45,10 +45,9 @@ export class MouseClickMacro extends Macro {
     }
     const mouseButton = this.leftClick_ ? SyntheticMouseEventButton.LEFT :
                                           SyntheticMouseEventButton.RIGHT;
-
-    EventGenerator.sendMousePress(
-        this.location_.x, this.location_.y, mouseButton);
-    EventGenerator.sendMouseRelease(this.location_.x, this.location_.y);
+    EventGenerator.sendMouseClick(this.location_.x, this.location_.y, {
+      mouseButton,
+    });
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 }
@@ -75,11 +74,9 @@ export class MouseClickLeftDoubleMacro extends Macro {
       return this.createRunMacroResult_(/*isSuccess=*/ false);
     }
 
-    const mouseButton = SyntheticMouseEventButton.LEFT;
-    EventGenerator.sendMousePress(
-        this.location_.x, this.location_.y, mouseButton, {isDoubleClick: true});
-    EventGenerator.sendMouseRelease(
-        this.location_.x, this.location_.y, {isDoubleClick: true});
+    EventGenerator.sendMouseClick(this.location_.x, this.location_.y, {
+      clickArgs: {isDoubleClick: true},
+    });
 
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
@@ -107,11 +104,9 @@ export class MouseClickLeftTripleMacro extends Macro {
       return this.createRunMacroResult_(/*isSuccess=*/ false);
     }
 
-    const mouseButton = SyntheticMouseEventButton.LEFT;
-    EventGenerator.sendMousePress(
-        this.location_.x, this.location_.y, mouseButton, {isTripleClick: true});
-    EventGenerator.sendMouseRelease(
-        this.location_.x, this.location_.y, {isTripleClick: true});
+    EventGenerator.sendMouseClick(this.location_.x, this.location_.y, {
+      clickArgs: {isTripleClick: true},
+    });
 
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }

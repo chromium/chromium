@@ -529,6 +529,45 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DoubleClick) {
   ASSERT_EQ(0u, event_handler().mouse_events().size());
 }
 
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, TripleClick) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_FUNNEL,
+                                  MacroName::MOUSE_CLICK_LEFT_TRIPLE}})
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_FUNNEL, 50}}));
+  event_handler().ClearEvents();
+
+  // Mouth funnel to trigger triple click event.
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_FUNNEL, 60));
+  auto press_events =
+      event_handler().mouse_events(ui::EventType::kMousePressed);
+  auto release_events =
+      event_handler().mouse_events(ui::EventType::kMouseReleased);
+
+  ASSERT_EQ(1u, press_events.size());
+  ASSERT_EQ(1u, release_events.size());
+  const auto& press_event = press_events.back();
+  const auto& release_event = release_events.back();
+
+  ASSERT_TRUE(press_event.IsOnlyLeftMouseButton());
+  ASSERT_EQ(kCenter, press_event.root_location());
+  // Assert that the press event is for a triple click.
+  ASSERT_TRUE(ui::EF_IS_TRIPLE_CLICK & press_event.flags());
+
+  ASSERT_TRUE(release_event.IsOnlyLeftMouseButton());
+  ASSERT_EQ(kCenter, release_event.root_location());
+  // Assert that the release event is for a triple click.
+  ASSERT_TRUE(ui::EF_IS_TRIPLE_CLICK & release_event.flags());
+
+  // Release doesn't trigger anything else.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_FUNNEL, 30));
+  ASSERT_EQ(0u, event_handler().mouse_events().size());
+}
+
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, AcceptDialog) {
   auto* controller = ash::Shell::Get()->accessibility_controller();
   auto* prefs = GetPrefs();

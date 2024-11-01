@@ -9,6 +9,7 @@ export interface MouseClickParams {
   // The amount of time to wait between press and release.
   delayMs?: number;
   mouseButton?: chrome.accessibilityPrivate.SyntheticMouseEventButton;
+  clickArgs?: MouseClickArgs;
 }
 
 interface MouseClick {
@@ -90,11 +91,13 @@ export class EventGenerator {
   static sendMouseClick(x: number, y: number, params: MouseClickParams = {
     delayMs: 0,
     mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
+    clickArgs: {},
   }): void {
     const delayMs = params.delayMs ? params.delayMs : 0;
     const mouseButton = params.mouseButton ?
         params.mouseButton :
         chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;
+    const clickArgs = params.clickArgs ? params.clickArgs : {};
 
     if (EventGenerator.midMouseClickButton !== undefined) {
       // Add it to the queue for later.
@@ -102,12 +105,14 @@ export class EventGenerator {
       return;
     }
 
-    EventGenerator.sendMousePress(x, y, mouseButton);
+    EventGenerator.sendMousePress(x, y, mouseButton, clickArgs);
 
     if (delayMs > 0) {
-      setTimeout(() => EventGenerator.sendMouseRelease(x, y), params.delayMs);
+      setTimeout(() => {
+        EventGenerator.sendMouseRelease(x, y, clickArgs);
+      }, params.delayMs);
     } else {
-      EventGenerator.sendMouseRelease(x, y);
+      EventGenerator.sendMouseRelease(x, y, clickArgs);
     }
   }
 
