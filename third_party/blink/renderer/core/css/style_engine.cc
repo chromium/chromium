@@ -3647,7 +3647,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
     tree->UpdateQuotes();
   }
-  UpdateCounters();
   if (container == GetDocument().documentElement()) {
     // If the container is the root element, there may be body styles which have
     // changed as a result of the new container query evaluation, and if
