@@ -3204,6 +3204,10 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
+                # This is necessary due to this builder running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+                "enable_wpr_tests",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -3235,11 +3239,20 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_pie_rel_emulator_gtests",
+            targets.bundle(
+                targets = [
+                    "android_pie_emulator_gtests",
+                    "pie_isolated_scripts",
+                ],
+            ),
             "chromium_android_scripts",
+        ],
+        additional_compile_targets = [
+            "chrome_nocompile_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
+            "isolate_profile_data",
             "pie-x86-emulator",
             "emulator-4-cores",
             "linux-jammy",
@@ -3300,6 +3313,10 @@ ci.builder(
                     shards = 75,
                 ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/1084353",
+            ),
             "content_shell_test_apk": targets.mixin(
                 args = [
                     "--gtest_filter=-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode*",
@@ -3335,6 +3352,13 @@ ci.builder(
                     shards = 3,
                 ),
             ),
+            "telemetry_perf_unittests_android_chrome": targets.mixin(
+                # For whatever reason, automatic browser selection on this bot chooses
+                # webview instead of the full browser, so explicitly specify it here.
+                args = [
+                    "--browser=android-chromium",
+                ],
+            ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
@@ -3360,6 +3384,9 @@ ci.builder(
     ),
     cores = 16,
     ssd = True,
+    # TODO(crbug.com/372926209): Add it back to gardening once the builder is
+    # stable.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "P",
