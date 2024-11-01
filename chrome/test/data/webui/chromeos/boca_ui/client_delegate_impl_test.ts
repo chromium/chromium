@@ -222,8 +222,11 @@ class MockRemoteHandler extends PageHandlerRemote {
   }
   override submitAccessCode(code: string):
       Promise<{error: SubmitAccessCodeError | null}> {
-    code;
-    return Promise.resolve({error: null});
+    if (code === 'valid') {
+      return Promise.resolve({error: null});
+    } else {
+      return Promise.resolve({error: SubmitAccessCodeError.kInvalid});
+    }
   }
 }
 
@@ -547,8 +550,16 @@ suite('ClientDelegateTest', function() {
       'client delegate should translate data for submit access code',
       async () => {
         const result =
-            await clientDelegateImpl.getInstance().submitAccessCode('1');
+            await clientDelegateImpl.getInstance().submitAccessCode('valid');
         assertDeepEquals(1, result);
+      });
+
+  test(
+      'client delegate should return error for invalid access code',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().submitAccessCode('invalid');
+        assertDeepEquals(2, result);
       });
 
   test('client delegate should translate data for network info', async () => {

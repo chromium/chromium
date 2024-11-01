@@ -9,6 +9,10 @@ import {CaptionConfig, ClientApiDelegate, ControlledTab, IdentifiedActivity, Ide
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
 
+function resultHasError(result: any) {
+  return !(result.error === undefined || result.error === null);
+}
+
 export function getStudentActivityMojomToUI(activities: Activity[]):
     IdentifiedActivity[] {
   return activities.map((item: Activity) => {
@@ -181,11 +185,11 @@ export class ClientDelegateFactory {
       },
       endSession: async () => {
         const result = await pageHandler.endSession();
-        return !result.error;
+        return !resultHasError(result);
       },
       removeStudent: async (id: string) => {
         const result = await pageHandler.removeStudent(id);
-        return !result.error;
+        return !resultHasError(result);
       },
       updateOnTaskConfig: async (onTaskConfig: OnTaskConfig) => {
         const result = await pageHandler.updateOnTaskConfig(
@@ -203,20 +207,20 @@ export class ClientDelegateFactory {
               }),
             },
         );
-        return !result.error;
+        return !resultHasError(result);
       },
       updateCaptionConfig: async (captionConfig: CaptionConfig) => {
         const result = await pageHandler.updateCaptionConfig(
             captionConfig,
         );
-        return !result.error;
+        return !resultHasError(result);
       },
       setFloatMode: async (isFloatMode: boolean) => {
         return (await pageHandler.setFloatMode(isFloatMode)).success;
       },
       submitAccessCode: async (code: string) => {
         const result = await pageHandler.submitAccessCode(code);
-        if (!result.error) {
+        if (!resultHasError(result)) {
           return SubmitAccessCodeResult.SUCCESS;
         }
         return SubmitAccessCodeResult.INVALID_CODE;
