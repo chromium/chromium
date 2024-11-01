@@ -438,7 +438,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
       const int32_t handle,
       const WriteType write_type,
       const AuthRequired auth_required,
-      const std::vector<uint8_t> data);
+      base::span<const uint8_t> data);
 
   // Reads the descriptor for a given characteristic |handle|.
   virtual void ReadDescriptor(ResponseCallback<Void> callback,
@@ -451,7 +451,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                const std::string& remote_device,
                                const int32_t handle,
                                const AuthRequired auth_required,
-                               const std::vector<uint8_t> data);
+                               base::span<const uint8_t> data);
 
   // Register for updates on a specific characteristic.
   virtual void RegisterForNotification(ResponseCallback<GattStatus> callback,

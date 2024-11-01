@@ -103,7 +103,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorClient
   // |object_path| with value |value|. Invokes |callback| on success and
   // |error_callback| on failure.
   virtual void WriteValue(const dbus::ObjectPath& object_path,
-                          const std::vector<uint8_t>& value,
+                          base::span<const uint8_t> value,
                           base::OnceClosure callback,
                           ErrorCallback error_callback) = 0;
 

@@ -65,7 +65,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
   // called to signal success and |error_callback| for failures. This method
   // only applies to remote descriptors and will fail for those that are locally
   // hosted.
-  virtual void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
+  virtual void WriteRemoteDescriptor(base::span<const uint8_t> new_value,
                                      base::OnceClosure callback,
                                      ErrorCallback error_callback) = 0;
 

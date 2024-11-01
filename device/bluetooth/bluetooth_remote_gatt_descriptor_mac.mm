@@ -110,7 +110,7 @@ void BluetoothRemoteGattDescriptorMac::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorMac::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {

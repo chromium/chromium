@@ -181,7 +181,8 @@ class FidoBleConnectionTest : public ::testing::Test {
 
     ON_CALL(*fido_service_revision_bitfield_, WriteRemoteCharacteristic_)
         .WillByDefault(Invoke(
-            [=](auto&, BluetoothRemoteGattCharacteristic::WriteType,
+            [=](base::span<const uint8_t> value,
+                BluetoothRemoteGattCharacteristic::WriteType,
                 base::OnceClosure& callback,
                 const BluetoothRemoteGattCharacteristic::ErrorCallback&) {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -317,7 +318,7 @@ class FidoBleConnectionTest : public ::testing::Test {
     EXPECT_CALL(
         *fido_service_revision_bitfield_,
         WriteRemoteCharacteristic_(
-            expected_data,
+            testing::ElementsAreArray(expected_data),
             BluetoothRemoteGattCharacteristic::WriteType::kWithResponse, _, _))
         .WillOnce(
             Invoke([success](const auto& data,

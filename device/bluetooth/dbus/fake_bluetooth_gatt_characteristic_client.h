@@ -63,12 +63,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
                  ValueCallback callback,
                  ErrorCallback error_callback) override;
   void WriteValue(const dbus::ObjectPath& object_path,
-                  const std::vector<uint8_t>& value,
+                  base::span<const uint8_t> value,
                   std::string_view type_option,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override;
   void PrepareWriteValue(const dbus::ObjectPath& object_path,
-                         const std::vector<uint8_t>& value,
+                         base::span<const uint8_t> value,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
 #if BUILDFLAG(IS_CHROMEOS)

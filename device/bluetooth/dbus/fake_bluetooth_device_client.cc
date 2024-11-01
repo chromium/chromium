@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1996,8 +1997,8 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
 
 void FakeBluetoothDeviceClient::AddPrepareWriteRequest(
     const dbus::ObjectPath& object_path,
-    const std::vector<uint8_t>& value) {
-  prepare_write_requests_.emplace_back(object_path, value);
+    base::span<const uint8_t> value) {
+  prepare_write_requests_.emplace_back(object_path, base::ToVector(value));
 }
 
 }  // namespace bluez

@@ -75,34 +75,34 @@ class MockBluetoothGattCharacteristic
     ReadRemoteCharacteristic_(c);
   }
   MOCK_METHOD1(ReadRemoteCharacteristic_, void(ValueCallback&));
-  void WriteRemoteCharacteristic(const std::vector<uint8_t>& v,
+  void WriteRemoteCharacteristic(base::span<const uint8_t> v,
                                  WriteType t,
                                  base::OnceClosure c,
                                  ErrorCallback ec) override {
     WriteRemoteCharacteristic_(v, t, c, ec);
   }
   MOCK_METHOD4(WriteRemoteCharacteristic_,
-               void(const std::vector<uint8_t>&,
+               void(base::span<const uint8_t>,
                     WriteType,
                     base::OnceClosure&,
                     ErrorCallback&));
-  void DeprecatedWriteRemoteCharacteristic(const std::vector<uint8_t>& v,
+  void DeprecatedWriteRemoteCharacteristic(base::span<const uint8_t> v,
                                            base::OnceClosure c,
                                            ErrorCallback ec) override {
     DeprecatedWriteRemoteCharacteristic_(v, c, ec);
   }
   MOCK_METHOD3(DeprecatedWriteRemoteCharacteristic_,
-               void(const std::vector<uint8_t>&,
+               void(base::span<const uint8_t>,
                     base::OnceClosure&,
                     ErrorCallback&));
 #if BUILDFLAG(IS_CHROMEOS)
-  void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& v,
+  void PrepareWriteRemoteCharacteristic(base::span<const uint8_t> v,
                                         base::OnceClosure c,
                                         ErrorCallback ec) override {
     PrepareWriteRemoteCharacteristic_(v, c, ec);
   }
   MOCK_METHOD3(PrepareWriteRemoteCharacteristic_,
-               void(const std::vector<uint8_t>&,
+               void(base::span<const uint8_t>,
                     base::OnceClosure&,
                     ErrorCallback&));
 #endif  // BUILDFLAG(IS_CHROMEOS)

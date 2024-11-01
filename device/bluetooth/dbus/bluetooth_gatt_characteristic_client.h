@@ -116,7 +116,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   // bluetooth_gatt_characteristic::kTypeRequest or kTypeCommand, or "" to omit
   // the option. Invokes |callback| on success and |error_callback| on failure.
   virtual void WriteValue(const dbus::ObjectPath& object_path,
-                          const std::vector<uint8_t>& value,
+                          base::span<const uint8_t> value,
                           std::string_view type_option,
                           base::OnceClosure callback,
                           ErrorCallback error_callback) = 0;
@@ -125,7 +125,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   // object path |object_path| with value |value|.
   // Invokes |callback| on success and |error_callback| on failure.
   virtual void PrepareWriteValue(const dbus::ObjectPath& object_path,
-                                 const std::vector<uint8_t>& value,
+                                 base::span<const uint8_t> value,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) = 0;
 

@@ -59,7 +59,7 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   const std::vector<uint8_t>& GetValue() const override;
   device::BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
   void ReadRemoteDescriptor(ValueCallback callback) override;
-  void WriteRemoteDescriptor(const std::vector<uint8_t>& value,
+  void WriteRemoteDescriptor(base::span<const uint8_t> value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
 
@@ -68,7 +68,7 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
 
   void DispatchWriteResponse(base::OnceClosure callback,
                              ErrorCallback error_callback,
-                             const std::vector<uint8_t>& value);
+                             std::vector<uint8_t> value);
 
   const std::string descriptor_id_;
   const device::BluetoothUUID descriptor_uuid_;
