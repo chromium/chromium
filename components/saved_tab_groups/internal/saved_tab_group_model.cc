@@ -347,7 +347,8 @@ void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
 }
 
 void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
-                                          SavedTabGroupTab tab) {
+                                          SavedTabGroupTab tab,
+                                          bool notify_observers) {
   SavedTabGroup* group = GetMutableGroup(group_id);
   CHECK(group);
 
@@ -359,6 +360,10 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
   // Make a copy before moving the `tab`.
   const base::Uuid tab_guid_copy = tab.saved_tab_guid();
   group->UpdateTab(std::move(tab));
+
+  if (!notify_observers) {
+    return;
+  }
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, tab_guid_copy);

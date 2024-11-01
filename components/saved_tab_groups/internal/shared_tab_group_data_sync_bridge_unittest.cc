@@ -1019,7 +1019,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
           })));
   tab_to_update.SetURL(GURL("http://google.com/updated"));
   tab_to_update.SetTitle(u"updated tab");
-  model()->UpdateTabInGroup(group.saved_guid(), tab_to_update);
+  model()->UpdateTabInGroup(group.saved_guid(), tab_to_update,
+                            /*notify_observers=*/true);
 
   EXPECT_THAT(captured_entity_data,
               HasTabEntityData("updated tab", "http://google.com/updated",

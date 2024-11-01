@@ -119,7 +119,8 @@ void TabGroupSyncServiceProxy::UpdateTab(
 
   service_->UpdateAttributions(group_id);
   service_->model()->UpdateTabInGroup(group->saved_guid(),
-                                      tab_builder.Build(*tab));
+                                      tab_builder.Build(*tab),
+                                      /*notify_observers=*/true);
 
   service_->OnTabNavigatedLocally(group->saved_guid(), tab->saved_tab_guid());
 }
@@ -134,7 +135,8 @@ void TabGroupSyncServiceProxy::SetFaviconForTab(
   CHECK(tab);
 
   tab->SetFavicon(favicon);
-  service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
+  service_->model()->UpdateTabInGroup(group->saved_guid(), *tab,
+                                      /*notify_observers=*/false);
 }
 
 void TabGroupSyncServiceProxy::RemoveTab(const LocalTabGroupID& group_id,

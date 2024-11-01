@@ -663,14 +663,19 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
   VerifyCacheGuids(*group, tab, kTestCacheGuid, kTestCacheGuid, kTestCacheGuid,
                    std::nullopt);
 
-  // Update tab.
+  // Update tab and verify observers.
   std::u16string new_title = u"tab title 2";
   GURL new_url = GURL("www.example.com");
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetTitle(new_title);
   tab_builder.SetURL(new_url);
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
   tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
                                      tab_builder);
+  WaitForPostedTasks();
 
   group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group.has_value());
@@ -685,6 +690,18 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
                    kTestCacheGuid);
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin", 1u);
+
+  // Update redirect chain. This should not notify observers.
+  SavedTabGroupTabBuilder tab_builder2;
+  std::vector<GURL> redirect_url_chain({new_url, GURL("www.example.com")});
+  tab_builder2.SetRedirectURLChain(redirect_url_chain);
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
+                                     tab_builder2);
+  WaitForPostedTasks();
 }
 
 TEST_F(TabGroupSyncServiceTest, MoveTab) {

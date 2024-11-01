@@ -435,7 +435,8 @@ TEST_P(SavedTabGroupModelTest, UpdateTabInGroup) {
   // Update the tab by changing the title.
   SavedTabGroupTab tab1 = group->saved_tabs()[0];
   tab1.SetTitle(u"Updated Title");
-  saved_tab_group_model_->UpdateTabInGroup(id_1_, tab1);
+  saved_tab_group_model_->UpdateTabInGroup(id_1_, tab1,
+                                           /*notify_observers=*/false);
 
   // The group should contain the updated tab.
   test::CompareSavedTabGroupTabs(group->saved_tabs(), {tab1});

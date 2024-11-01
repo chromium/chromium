@@ -2582,8 +2582,10 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   tab_groups::SavedTabGroupKeyedService* original_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser()->profile());
-  original_service->model()->UpdateTabInGroup(saved_group_id, tab_1);
-  original_service->model()->UpdateTabInGroup(saved_group_id, tab_2);
+  original_service->model()->UpdateTabInGroup(saved_group_id, tab_1,
+                                              /*notify_observers=*/false);
+  original_service->model()->UpdateTabInGroup(saved_group_id, tab_2,
+                                              /*notify_observers=*/false);
 
   // Restore the group.
   chrome::RestoreTab(browser());

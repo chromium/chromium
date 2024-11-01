@@ -122,8 +122,11 @@ class SavedTabGroupModel {
   void AddTabToGroupFromSync(const base::Uuid& group_id, SavedTabGroupTab tab);
 
   // Calls the UpdateTab method on a group found by group id in the model.
-  // Calls the observer function SavedTabGroupUpdatedLocally.
-  void UpdateTabInGroup(const base::Uuid& group_id, SavedTabGroupTab tab);
+  // Calls the observer function SavedTabGroupUpdatedLocally, if
+  // `notify_observers` is true.
+  void UpdateTabInGroup(const base::Uuid& group_id,
+                        SavedTabGroupTab tab,
+                        bool notify_observers);
 
   // Updates `tab` with a new `local_id`. Unlike `UpdateTabInGroup`, this method
   // does not notify observers, as this is not a change we want to sync.

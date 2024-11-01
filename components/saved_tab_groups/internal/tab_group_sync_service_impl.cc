@@ -345,6 +345,7 @@ void TabGroupSyncServiceImpl::UpdateTab(
   UpdateAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
+  bool will_update_url = tab_builder.url().SchemeIsHTTPOrHTTPS();
   bool need_update_title = group->is_shared_tab_group() &&
                            !tab_builder.title().empty() &&
                            tab_builder.url().SchemeIsHTTPOrHTTPS();
@@ -355,7 +356,8 @@ void TabGroupSyncServiceImpl::UpdateTab(
   }
   SavedTabGroupTab updated_tab = new_builder.Build(*tab);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
-  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));
+  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
+                           will_update_url);
   LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
   if (need_update_title) {
     GetPageTitle(tab_builder.url(),
@@ -1102,7 +1104,8 @@ void TabGroupSyncServiceImpl::UpdateTabTitle(const LocalTabGroupID& group_id,
 
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetTitle(title);
-  model_->UpdateTabInGroup(group->saved_guid(), tab_builder.Build(*tab));
+  model_->UpdateTabInGroup(group->saved_guid(), tab_builder.Build(*tab),
+                           /*notify_observers=*/true);
 }
 
 }  // namespace tab_groups

@@ -1174,7 +1174,12 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
-  saved_tab_group_model_.UpdateTabInGroup(group_guid, updated_tab_1);
+  saved_tab_group_model_.UpdateTabInGroup(group_guid, updated_tab_1,
+                                          /*notify_observers=*/true);
+
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  saved_tab_group_model_.UpdateTabInGroup(group_guid, updated_tab_1,
+                                          /*notify_observers=*/false);
 }
 
 // Verify that locally reordered tabs updates all tabs in the group.
