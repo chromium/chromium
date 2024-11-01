@@ -554,6 +554,63 @@ class TestDelegate final : public TestDelegateBase {
   base::WeakPtrFactory<TestDelegateBase> weak_ptr_factory_{this};
 };
 
+class TestUsageDelegate {
+ public:
+  void OnUsageChange(size_t old_usage, size_t new_usage) {
+    collected_events_.emplace_back(old_usage, new_usage);
+  }
+
+  std::vector<std::pair<size_t, size_t>> CollectEvents() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    base::test::TestFuture<std::vector<std::pair<size_t, size_t>>> future;
+
+    CollectEventsImpl(future.GetCallback());
+
+    return future.Take();
+  }
+
+  base::WeakPtr<TestUsageDelegate> AsWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  using CollectEventsCallback =
+      base::OnceCallback<void(std::vector<std::pair<size_t, size_t>>)>;
+
+  void CollectEventsImpl(CollectEventsCallback future_callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    auto finish_collecting_events_callback = base::BindOnce(
+        &TestUsageDelegate::FinishCollectingEvents, weak_factory_.GetWeakPtr(),
+        collected_events_.size(), std::move(future_callback));
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(finish_collecting_events_callback),
+        TestTimeouts::tiny_timeout());
+  }
+
+  void FinishCollectingEvents(size_t collected_events_previous_size,
+                              CollectEventsCallback future_callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (collected_events_.size() == collected_events_previous_size) {
+      std::move(future_callback).Run(std::move(collected_events_));
+    } else {
+      CollectEventsImpl(std::move(future_callback));
+    }
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  std::vector<std::pair<size_t, size_t>> collected_events_;
+
+  base::WeakPtrFactory<TestUsageDelegate> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
+};
+
 }  // namespace
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -679,6 +736,7 @@ class FilePathWatcherTest : public testing::Test {
 
   bool SetupWatchWithUsageChanges(const base::FilePath& target,
                                   FilePathWatcher& watcher,
+                                  TestUsageDelegate& delegate,
                                   FilePathWatcher::WatchOptions watch_options);
 
   base::test::TaskEnvironment task_environment_;
@@ -729,6 +787,7 @@ bool FilePathWatcherTest::SetupWatchWithChangeInfo(
 bool FilePathWatcherTest::SetupWatchWithUsageChanges(
     const base::FilePath& target,
     FilePathWatcher& watcher,
+    TestUsageDelegate& delegate,
     FilePathWatcher::WatchOptions watch_options) {
 #if BUILDFLAG(IS_MAC)
   // Flush events before the watch begins.
@@ -738,7 +797,8 @@ bool FilePathWatcherTest::SetupWatchWithUsageChanges(
       target, watch_options,
       base::DoNothingAs<void(const FilePathWatcher::ChangeInfo&,
                              const base::FilePath&, bool)>(),
-      base::DoNothingAs<void(size_t, size_t)>());
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &TestUsageDelegate::OnUsageChange, delegate.AsWeakPtr())));
 }
 
 // Basic test: Create the file and verify that we notice.
@@ -3492,8 +3552,15 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_InitialWatch) {
   ASSERT_TRUE(CreateDirectory(test_file()));
 
   FilePathWatcher watcher;
-  ASSERT_TRUE(
-      SetupWatchWithUsageChanges(test_file(), watcher, GetWatchOptions()));
+  TestUsageDelegate delegate;
+  ASSERT_TRUE(SetupWatchWithUsageChanges(test_file(), watcher, delegate,
+                                         GetWatchOptions()));
+
+  std::vector<std::pair<size_t, size_t>> usage_changes =
+      delegate.CollectEvents();
+
+  // The initial watch shouldn't report any usage changes.
+  EXPECT_EQ(usage_changes.size(), 0u);
 
   // The initial usage should at least be greater than zero since we must be
   // using some resources to watch `test_file()`.
@@ -3507,7 +3574,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_ChildCreation) {
   ASSERT_TRUE(CreateDirectory(dir));
 
   FilePathWatcher watcher;
-  ASSERT_TRUE(SetupWatchWithUsageChanges(dir, watcher, GetWatchOptions()));
+  TestUsageDelegate delegate;
+  ASSERT_TRUE(
+      SetupWatchWithUsageChanges(dir, watcher, delegate, GetWatchOptions()));
 
   // The initial usage should at least be greater than zero since we must be
   // using some resources to watch `dir`.
@@ -3518,6 +3587,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_ChildCreation) {
   SpinEventLoopForABit();
   ASSERT_TRUE(CreateDirectory(subdir2));
 
+  std::vector<std::pair<size_t, size_t>> usage_changes =
+      delegate.CollectEvents();
+
   // The inotify watcher uses a constant amount of inotify watches for
   // non-recursive watches.
   bool expect_usage_to_change =
@@ -3526,10 +3598,30 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_ChildCreation) {
   size_t current_usage = watcher.current_usage();
 
   if (expect_usage_to_change) {
+    // We expect the usage to change, so we should receive an event for it.
+    EXPECT_GT(usage_changes.size(), 0u);
+
     // The current usage should be greater than the `initial_usage` since we've
     // increased the number of file entries watched.
     EXPECT_GT(current_usage, initial_usage);
+
+    // Expect the first usage change's old usage to be equal to the
+    // `initial_usage`.
+    EXPECT_EQ(usage_changes.front().first, initial_usage);
+
+    // Expect the last usage change's new usage to be equal to the
+    // `current_usage`.
+    EXPECT_EQ(usage_changes.back().second, current_usage);
+
+    // Every usage change should be an increase in usage since we've only
+    // increased the number of file entries watched.
+    for (const auto [old_usage, new_usage] : usage_changes) {
+      EXPECT_GT(new_usage, old_usage);
+    }
   } else {
+    // The initial watch shouldn't report any usage changes.
+    EXPECT_EQ(usage_changes.size(), 0u);
+
     // The current usage shouldn't have changed since this FilePathWatcher usage
     // is constant.
     EXPECT_EQ(current_usage, initial_usage);
@@ -3545,7 +3637,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_ChildDeletion) {
   ASSERT_TRUE(CreateDirectory(subdir2));
 
   FilePathWatcher watcher;
-  ASSERT_TRUE(SetupWatchWithUsageChanges(dir, watcher, GetWatchOptions()));
+  TestUsageDelegate delegate;
+  ASSERT_TRUE(
+      SetupWatchWithUsageChanges(dir, watcher, delegate, GetWatchOptions()));
 
   // The initial usage should at least be greater than zero since we must be
   // using some resources to watch `dir`.
@@ -3556,6 +3650,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_ChildDeletion) {
   SpinEventLoopForABit();
   ASSERT_TRUE(DeletePathRecursively(subdir2));
 
+  std::vector<std::pair<size_t, size_t>> usage_changes =
+      delegate.CollectEvents();
+
   // The inotify watcher uses a constant amount of inotify watches for
   // non-recursive watches.
   bool expect_usage_to_change =
@@ -3564,10 +3661,30 @@ TEST_P(FilePathWatcherWithChangeInfoTest, UsageChanges_ChildDeletion) {
   size_t current_usage = watcher.current_usage();
 
   if (expect_usage_to_change) {
+    // We expect the usage to change, so we should receive an event for it.
+    EXPECT_GT(usage_changes.size(), 0u);
+
     // The current usage should be less than the `initial_usage` since we've
     // decreased the number of file entries watched.
     EXPECT_LT(current_usage, initial_usage);
+
+    // Expect the first usage change's old usage to be equal to the
+    // `initial_usage`.
+    EXPECT_EQ(usage_changes.front().first, initial_usage);
+
+    // Expect the last usage change's new usage to be equal to the
+    // `current_usage`.
+    EXPECT_EQ(usage_changes.back().second, current_usage);
+
+    // Every usage change should be a decrease in usage since we've only
+    // decreased the number of file entries watched.
+    for (const auto [old_usage, new_usage] : usage_changes) {
+      EXPECT_LT(new_usage, old_usage);
+    }
   } else {
+    // The initial watch shouldn't report any usage changes.
+    EXPECT_EQ(usage_changes.size(), 0u);
+
     // The initial usage should at least be greater than zero we must be using
     // some resources to watch `test_file()`.
     EXPECT_EQ(current_usage, initial_usage);
