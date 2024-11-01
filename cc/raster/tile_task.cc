@@ -52,7 +52,7 @@ void TileTask::SetExternalDependent(scoped_refptr<TileTask> dependent) {
   if (base::FeatureList::IsEnabled(features::kPreventDuplicateImageDecodes)) {
     CHECK(IsRasterTask() != dependent->IsRasterTask());
     // A task may have at most one external dependent.
-    CHECK(!external_dependent_);
+    CHECK(!external_dependent_ || external_dependent_->state().IsCanceled());
     // A task may have at most one external dependency, and may not mix internal
     // and external dependencies.
     CHECK_EQ(dependent->dependencies_.size(), 0u);
