@@ -1132,7 +1132,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
-<translation id="306198082577913404">Activar mejoras de predicción</translation>
+<translation id="306198082577913404">Activar predicciones mejoradas</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
 <translation id="306573536155379004">Juego iniciado.</translation>
 <translation id="3067505415088964188">Precio bajo</translation>
@@ -1540,7 +1540,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3727309136762649052">Espacio de nombres</translation>
 <translation id="3727850735097852673">Para usar el Gestor de contraseñas de Google con el llavero de macOS, reinicia Chrome y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="3728173127485570463">El navegador Chrome ya no necesitará tu huella digital para autocompletar contraseñas</translation>
-<translation id="3735143108516366187">Pulsa Intro para gestionar las mejoras de predicción</translation>
+<translation id="3735143108516366187">Pulsa Intro para gestionar las predicciones mejoradas</translation>
 <translation id="3736739313435669994">No permites que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas. Accede a la configuración para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
 <translation id="3738428049780661523">Creado: <ph name="DATE" /></translation>

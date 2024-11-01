@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">スクリーン セーバーを無効にする</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
+<translation id="3112413615003385433">教師がスクールツールのコンテンツを削除しました</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">プール</translation>
 <translation id="3122883569442693641">詳細</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">編集を終了</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
 <translation id="3533790840489634638">プール</translation>
+<translation id="3535802910192338629">教師がスクールツールに新しいコンテンツを追加しました</translation>
 <translation id="3547264467365135390">数式</translation>
 <translation id="3557205324756024651">ローカル ID（オプション）</translation>
 <translation id="3565064564551103223">許可する IP</translation>
@@ -1171,6 +1173,7 @@
 <translation id="6673898378497337661">キーボードの明るさを上げる</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6694534975463174713">ロック</translation>
+<translation id="6700703207451721535">このリンクへのアクセスは許可されていません。アクセスが必要な場合は、教師に確認してください。</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6712933881624804031">渓谷</translation>
 <translation id="6716013206176357696">イチゴ</translation>
@@ -1561,6 +1564,7 @@
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> でバージョン <ph name="VERSION" /> へのファームウェアのインストールを完了するには、再起動が必要です。その際、コンピュータに再起動の画面が複数回表示されることがありますが、これは正常な動作です。</translation>
 <translation id="8593058461203131755">メディアを一時停止する</translation>
+<translation id="8619169570378509764">スクールツール</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
 <translation id="86356131183441916">ライトパープル</translation>

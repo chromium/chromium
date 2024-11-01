@@ -169,6 +169,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
 <translation id="1110155001042129815">Warten</translation>
 <translation id="1110965959145884739">Wähle aus, welche Sprachen auf diesem Gerät installiert werden sollen. Sprachendateien werden von Nutzern gemeinsam verwendet, um Speicherplatz zu sparen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Dein Kind kann sich mit dieser PIN auf seinem Gerät anmelden</translation>
 <translation id="1112420131909513020">Tab im Hintergrund verwendet Bluetooth</translation>
 <translation id="1112998165730922436">Streamen pausiert</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="113050636487300043">Lege einen Namen und ein Farbdesign fest, um einfach zwischen Profilen unterscheiden zu können</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Teil der Gruppe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Akkustand des rechten Kopfhörers bei <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Die PIN deines Kindes wurde aktualisiert</translation>
 <translation id="1133418583142946603">Aktuellen Tab hinzufügen</translation>
 <translation id="1134363466745332968">Du kannst deinen Browserverlauf anhand des allgemeinen Seiteninhalts durchsuchen, nicht nur anhand von Seitentitel und URL. So erhältst du bessere Ergebnisse, egal ob du den Browserverlauf in der Adressleiste mit @history oder auf der Seite „Verlauf“ durchsuchst.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> von <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1397594434718759194">Du bist auf diesen Geräten in Chrome angemeldet und kannst sie als Sicherheitsschlüssel verwenden.</translation>
 <translation id="1398853756734560583">Maximieren</translation>
 <translation id="1399261165075500043">Google Play-Nutzungsbedingungen können nicht geladen werden</translation>
+<translation id="1400243387594338234">Du kannst diese PIN verwenden, um dich auf deinem Gerät anzumelden</translation>
 <translation id="1401216725754314428">Weitere Informationen zu ähnlichen Websites in einem neuen Tab</translation>
 <translation id="1402426911829176748">Verbindung zum Gerät wird hergestellt</translation>
 <translation id="1403222014593521787">Verbindung zum Proxy kann nicht hergestellt werden</translation>
@@ -1923,6 +1926,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2326931316514688470">App &amp;neu laden</translation>
 <translation id="2327492829706409234">App aktivieren</translation>
 <translation id="2327920026543055248">Zeichen <ph name="CHARACTER" /> von <ph name="TOTAL" /> eingeben</translation>
+<translation id="2328137272841210255">PIN zurücksetzen</translation>
 <translation id="2328561734797404498">Bitte starte dein Gerät neu, um <ph name="APP_NAME" /> verwenden zu können.</translation>
 <translation id="2328636661627946415">Wenn du im Inkognitomodus bist, können Websites nur Cookies verwenden, um deine Browseraktivitäten auf der eigenen Website einzusehen. Am Ende der Inkognitositzung werden die Cookies gelöscht.</translation>
 <translation id="2329597144923131178">Melde dich an, um deine Lesezeichen, den Verlauf, deine Passwörter und andere Einstellungen auf allen deinen Geräten aufzurufen.</translation>
@@ -3769,6 +3773,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3670480940339182416">Websites können das V8-Optimierungstool verwenden</translation>
 <translation id="3672681487849735243">Ein werkseitiger Fehler wurde festgestellt.</translation>
 <translation id="3673097791729989571">Anmeldung gehostet von <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Deine PIN wurde aktualisiert</translation>
 <translation id="3673622964532248901">Streamen an dieses Gerät nicht zulässig</translation>
 <translation id="3675683621636519363">Absturzberichte, Diagnose- und Nutzungsdaten an ChromeOS Flex senden</translation>
 <translation id="367645871420407123">Leer lassen, wenn du für das Root-Passwort den Standardtestwert festlegen möchtest</translation>
@@ -11301,6 +11306,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9101691533782776290">App starten</translation>
 <translation id="9102610709270966160">Erweiterung aktivieren</translation>
 <translation id="9102864637938129124">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist aktiviert.</translation>
+<translation id="9103341231213089378">Zum Streamen von Inhalten gewähre Chrome über <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; „Lokales Netzwerk“ &gt; „Chrome“ Zugriff</translation>
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
 <translation id="9107096627210171112">Übe&amp;rsetzen…</translation>
 <translation id="9107624673674616016">Buntstift</translation>

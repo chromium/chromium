@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">zvuk</translation>
 <translation id="2737898226590637227">Nema sljedećeg ARIA orijentira</translation>
 <translation id="2749275490991666823">Označen</translation>
+<translation id="2751454300227269244">Pomaknite usta udesno</translation>
 <translation id="27527859628328957">Skok na sljedeću stavku s mogućnošću fokusiranja</translation>
 <translation id="2756452585631602151">Unesite prilagođenu oznakU</translation>
 <translation id="2766299274563946262">S lijeve strane nema ćelije</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tablica <ph name="TABLENAME" />, <ph name="TABLEROWS" /> i <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Bež</translation>
 <translation id="316542773973815724">Navigacija</translation>
+<translation id="3167446923957429259">Pomaknite usta ulijevo</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{razmak}one{# razmak}few{# razmaka}other{# razmaka}}</translation>
 <translation id="3179119189286472195">Nije veza</translation>
 <translation id="3180990259147710757">Pomicanje čeljusti ulijevo</translation>

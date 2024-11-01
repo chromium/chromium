@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
 <translation id="1110155001042129815">等一下</translation>
 <translation id="1110965959145884739">選擇要在這部裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">孩子可以使用這個 PIN 碼登入裝置</translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
 <translation id="1112998165730922436">已暫停投放</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">你可以指定設定檔的名稱和顏色主題，以便和其他設定檔加以區分</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="1130676589211693127">右側耳機電量為 <ph name="PERCENTAGE" />%。</translation>
+<translation id="1131201598497838573">孩子的 PIN 碼已更新</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1134363466745332968">你可以根據一般網頁內容搜尋瀏覽記錄，不限於網頁標題和網址。無論是在網址列中使用 @history 或是透過「歷史記錄」頁面搜尋瀏覽記錄，都能獲得更精確的結果。</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 個，總共 <ph name="EMOJI_COUNT" /> 個。</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">你已在這些裝置上登入 Chrome，因此可以將這些裝置當做安全金鑰使用。</translation>
 <translation id="1398853756734560583">放到最大</translation>
 <translation id="1399261165075500043">無法載入《Google Play 服務條款》</translation>
+<translation id="1400243387594338234">你可以使用這個 PIN 碼登入裝置</translation>
 <translation id="1401216725754314428">在新分頁中進一步瞭解新相關網站</translation>
 <translation id="1402426911829176748">正在連線至裝置</translation>
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
@@ -1926,6 +1929,7 @@
 <translation id="2326931316514688470">重新載入應用程式(&amp;R)</translation>
 <translation id="2327492829706409234">啟用應用程式</translation>
 <translation id="2327920026543055248">輸入第 <ph name="CHARACTER" /> 個字元 (共 <ph name="TOTAL" /> 個)</translation>
+<translation id="2328137272841210255">重設 PIN 碼</translation>
 <translation id="2328561734797404498">請重新啟動裝置以使用「<ph name="APP_NAME" />」。</translation>
 <translation id="2328636661627946415">使用無痕模式時，網站只能使用 Cookie 查看你在該網站上的瀏覽活動。無痕模式工作階段結束時，系統就會刪除 Cookie。</translation>
 <translation id="2329597144923131178">登入後，即可從您使用的任何裝置取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
@@ -3771,6 +3775,7 @@
 <translation id="3670480940339182416">網站可以使用 V8 最佳化工具</translation>
 <translation id="3672681487849735243">系統偵測到原廠錯誤</translation>
 <translation id="3673097791729989571">登入作業由 <ph name="SAML_DOMAIN" /> 代管</translation>
+<translation id="3673287357837016374">PIN 碼已更新</translation>
 <translation id="3673622964532248901">你的權限不足，無法投放到這部裝置。</translation>
 <translation id="3675683621636519363">將當機報告和診斷與使用資料傳送到 ChromeOS Flex</translation>
 <translation id="367645871420407123">如果您要將 Root 密碼設為測試映像檔的預設值，請保留空白</translation>
@@ -11301,6 +11306,7 @@
 <translation id="9101691533782776290">啟動應用程式</translation>
 <translation id="9102610709270966160">啟用擴充功能</translation>
 <translation id="9102864637938129124">網站和廣告主可以瞭解廣告成效。這項設定已開啟。</translation>
+<translation id="9103341231213089378">如要投放，請前往「<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />」&gt;「本機網路」&gt;「Chrome」，將存取權授予 Chrome</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>
 <translation id="9107624673674616016">彩色鉛筆</translation>

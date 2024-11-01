@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
 <translation id="1061864016440983342">Ohne Standortzugriff verwenden</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> von <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Die Taste „Schnelles Einfügen“ kann nicht für benutzerdefinierte Tastenkombinationen verwendet werden.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6526200165918397681">An Hintergrund anpassen</translation>
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
+<translation id="6531528791584205545">Schnelles Einfügen</translation>
 <translation id="6535178685492749208">Du bist offline. Dein Feedback wird später gesendet.</translation>
 <translation id="6543412779435705598">Tacos</translation>
 <translation id="6550369542114086980">am Donnerstag</translation>

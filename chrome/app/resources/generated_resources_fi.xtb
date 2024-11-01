@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">Historian synkronointi</translation>
 <translation id="1110155001042129815">Odota</translation>
 <translation id="1110965959145884739">Valitse, mitkä kielet asennetaan laitteelle. Kielitiedostot jaetaan käyttäjien kesken levytilan säästämiseksi. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Lapsi voi kirjautua laitteelle tällä PIN-koodilla</translation>
 <translation id="1112420131909513020">Taustavälilehti käyttää Bluetoothia.</translation>
 <translation id="1112998165730922436">Striimaus on keskeytetty</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">Valitse nimi ja väriteema erottaaksesi profiilit</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – kuuluu ryhmään: <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Oikeanpuoleisen akun varaustaso <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Lapsen PIN-koodi on lisätty</translation>
 <translation id="1133418583142946603">Lisää tämä välilehti</translation>
 <translation id="1134363466745332968">Selaushistoriasta voi hakea sivun yleisen sisällön perusteella, ei ainoastaan sivun otsikon ja URL-osoitteen perusteella. Näin saat parempia tuloksia siitä huolimatta, haetko selaushistoriaa osoitepalkista @history-komennolla vai Historia-sivulta.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">Olet kirjautunut Chromeen näillä laitteilla, joten voit käyttää niitä suojausavaimina.</translation>
 <translation id="1398853756734560583">Suurenna</translation>
 <translation id="1399261165075500043">Google Playn käyttöehtoja ei voi ladata</translation>
+<translation id="1400243387594338234">Voit kirjautua laitteelle tällä PIN-koodilla</translation>
 <translation id="1401216725754314428">Lue lisää aiheeseen liittyvistä sivustoista uudella välilehdellä</translation>
 <translation id="1402426911829176748">Yhdistetään laitteeseesi</translation>
 <translation id="1403222014593521787">Välityspalvelimeen ei saada yhteyttä</translation>
@@ -1938,6 +1941,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2326931316514688470">&amp;Lataa sovellus uudelleen</translation>
 <translation id="2327492829706409234">Ota sovellus käyttöön</translation>
 <translation id="2327920026543055248">Lisää merkki <ph name="CHARACTER" />/<ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Nollaa PIN-koodi</translation>
 <translation id="2328561734797404498">Käynnistä laite uudelleen käyttääksesi <ph name="APP_NAME" />:ää.</translation>
 <translation id="2328636661627946415">Kun olet incognito-tilassa, sivustot voivat käyttää evästeitä vain selaustoimintasi näkemiseen omalla sivustollaan. Evästeet poistetaan incognito-käyttökerran jälkeen.</translation>
 <translation id="2329597144923131178">Kirjaudu ja käytä kirjanm., historiaa, salasan. ja muita asetuksia kaikissa laitteissasi.</translation>
@@ -3786,6 +3790,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3670480940339182416">Sivustot voivat käyttää V8-optimoijaa</translation>
 <translation id="3672681487849735243">Tehdasvirhe on havaittu</translation>
 <translation id="3673097791729989571">Sisäänkirjautuminen tapahtuu täällä: <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">PIN-koodi on päivitetty</translation>
 <translation id="3673622964532248901">Sinulla ei ole lupaa striimata tälle laitteelle.</translation>
 <translation id="3675683621636519363">Lähetä virheraportteja sekä diagnostiikka- ja käyttödataa ChromeOS Flexiin</translation>
 <translation id="367645871420407123">Jätä tyhjäksi, jos haluat asettaa pääkäyttäjän salasanaksi oletustestikuvan arvon.</translation>
@@ -11320,6 +11325,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9101691533782776290">Käynnistä sovellus</translation>
 <translation id="9102610709270966160">Ota laajennus käyttöön</translation>
 <translation id="9102864637938129124">Sivustot ja mainostajat saavat tietoa mainostuloksista. Tämä asetus on päällä.</translation>
+<translation id="9103341231213089378">Striimaa antamalla Chromelle pääsyoikeus täällä: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Paikallinen verkko &gt; Chrome</translation>
 <translation id="9103868373786083162">Siirry taaksepäin painamalla tai avaa historia kontekstivalikon kautta.</translation>
 <translation id="9107096627210171112">K&amp;äännä…</translation>
 <translation id="9107624673674616016">Värikynä</translation>

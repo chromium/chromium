@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
 <translation id="1110155001042129815">انتظار</translation>
 <translation id="1110965959145884739">يمكنك اختيار اللغات المطلوب تثبيتها على هذا الجهاز. وتتم مشاركة ملفات اللغات مع المستخدمين لتوفير مساحة القرص. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">يمكن لطفلك استخدام رقم التعريف الشخصي هذا لتسجيل الدخول إلى جهازه</translation>
 <translation id="1112420131909513020">هناك علامة تبويب خلفية تستخدم البلوتوث</translation>
 <translation id="1112998165730922436">البث متوقِّف مؤقتًا</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">اختَر اسمًا ومظهرًا ملوّنًا لكل ملف شخصي للتمييز بينها.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - جزء من مجموعة <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">مستوى شحن بطارية السماعة اليمنى %<ph name="PERCENTAGE" />.</translation>
+<translation id="1131201598497838573">تم تعديل رقم التعريف الشخصي لطفلك</translation>
 <translation id="1133418583142946603">إضافة علامة التبويب الحالية</translation>
 <translation id="1134363466745332968">‏يمكنك البحث في سجلّ التصفّح باستخدام محتوى الصفحة العام، وليس عنوان الصفحة وعنوان URL فقط. يوفِّر لك هذا الإعداد إمكانية الحصول على نتائج محسّنة، سواء كنت تبحث في سجلّ التصفّح ضمن شريط العناوين باستخدام ‎@history أو من خلال صفحة "السجلّ".</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> من أصل <ph name="EMOJI_COUNT" /></translation>
@@ -568,6 +570,7 @@
 <translation id="1397594434718759194">‏أنت مسجّل دخولك إلى Chrome على هذه الأجهزة، ما يعني أنّ بإمكانك استخدامها كمفاتيح أمان.</translation>
 <translation id="1398853756734560583">تكبير</translation>
 <translation id="1399261165075500043">‏يتعذَّر تحميل "بنود خدمة Google Play".</translation>
+<translation id="1400243387594338234">يمكنك استخدام رقم التعريف الشخصي هذا لتسجيل الدخول إلى جهازك</translation>
 <translation id="1401216725754314428">مزيد من المعلومات حول المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
 <translation id="1402426911829176748">جارٍ الربط بجهازك</translation>
 <translation id="1403222014593521787">تعذّر الاتصال بالخادم الوكيل.</translation>
@@ -1931,6 +1934,7 @@
 <translation id="2326931316514688470">&amp;إعادة تحميل التطبيق</translation>
 <translation id="2327492829706409234">تفعيل التطبيق</translation>
 <translation id="2327920026543055248">إدخال <ph name="CHARACTER" /> حرف/رقم من إجمالي <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">إعادة ضبط رقم التعريف الشخصي</translation>
 <translation id="2328561734797404498">يُرجى إعادة تشغيل الجهاز للتمكّن من استخدام <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">عند التصفُّح باستخدام "وضع التصفُّح المتخفي"، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط إلا للاطّلاع على نشاط التصفُّح على تلك المواقع الإلكترونية. يتم حذف ملفات تعريف الارتباط في نهاية جلسة التصفُّح المتخفي.</translation>
 <translation id="2329597144923131178">سجّل الدخول للحصول على الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى على كل أجهزتك.</translation>
@@ -3779,6 +3783,7 @@
 <translation id="3670480940339182416">‏يمكن للمواقع الإلكترونية استخدام مُحسِّن V8</translation>
 <translation id="3672681487849735243">تم اكتشاف خطأ من المصنع</translation>
 <translation id="3673097791729989571">يستضيف النطاق <ph name="SAML_DOMAIN" /> عملية تسجيل الدخول.</translation>
+<translation id="3673287357837016374">تم تعديل رقم التعريف الشخصي</translation>
 <translation id="3673622964532248901">ليس مسموحًا لك بالبث على هذا الجهاز.</translation>
 <translation id="3675683621636519363">‏إرسال تقارير الأعطال وبيانات التشخيص والاستخدام إلى ChromeOS Flex</translation>
 <translation id="367645871420407123">اتركه فارغًا إذا كنت ترغب في تعيين كلمة مرور الجذر إلى قيمة صورة الاختبار التلقائية</translation>
@@ -11327,6 +11332,7 @@
 <translation id="9101691533782776290">إطلاق التطبيق</translation>
 <translation id="9102610709270966160">تفعيل الإضافة</translation>
 <translation id="9102864637938129124">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد مفعَّل.</translation>
+<translation id="9103341231213089378">‏لبث المحتوى، يجب منح Chrome إذن الوصول من خلال: "<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" />" &gt; "الشبكة المحلية" &gt; Chrome</translation>
 <translation id="9103868373786083162">اضغط للرجوع، وقائمة السياقات لمشاهدة السجلّ.</translation>
 <translation id="9107096627210171112">ترجمة…</translation>
 <translation id="9107624673674616016">قلم رصاص ملون</translation>

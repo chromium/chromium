@@ -169,6 +169,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1108938384783527433">Pag-sync ng history</translation>
 <translation id="1110155001042129815">Mag-intay</translation>
 <translation id="1110965959145884739">Piliin kung aling mga wika ang ii-install sa device na ito. Ibinabahagi ang mga file ng wika sa mga user para makatipid ng disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Puwedeng gamitin ng iyong anak ang PIN na ito para mag-sign in sa kanyang device</translation>
 <translation id="1112420131909513020">Gumagamit ng bluetooth ang tab sa background</translation>
 <translation id="1112998165730922436">Naka-pause ang pag-cast</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="113050636487300043">Pumili ng pangalan at tema ng kulay para matukoy ang pagkakaiba ng mga profile</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Bahagi ng grupong <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127"><ph name="PERCENTAGE" />% antas ng baterya sa kanan.</translation>
+<translation id="1131201598497838573">Na-update na ang PIN ng iyong anak</translation>
 <translation id="1133418583142946603">Idagdag ang kasalukuyang tab</translation>
 <translation id="1134363466745332968">Puwede kang maghanap sa iyong history ng pag-browse batay sa pangkalahatang content ng page, hindi lang sa pamagat at URL ng page. Bibigyan ka nito ng mas mahuhusay na resulta, naghahanap ka man sa history ng pag-browse sa address bar gamit ang @history o mula sa page ng History.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> sa <ph name="EMOJI_COUNT" />.</translation>
@@ -565,6 +567,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1397594434718759194">Naka-sign in ka sa Chrome sa mga device na ito, kaya magagamit mo ang mga ito bilang mga security key.</translation>
 <translation id="1398853756734560583">I-maximize</translation>
 <translation id="1399261165075500043">Hindi ma-load ang Mga Tuntunin ng Serbisyo ng Google Play</translation>
+<translation id="1400243387594338234">Puwede mong gamitin ang PIN na ito para mag-sign in sa iyong device</translation>
 <translation id="1401216725754314428">Matuto pa tungkol sa mga kaugnay na site sa isang bagong tab</translation>
 <translation id="1402426911829176748">Kumokonekta sa iyong device</translation>
 <translation id="1403222014593521787">Hindi makakonekta sa proxy</translation>
@@ -1940,6 +1943,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2326931316514688470">I-&amp;reload ang app</translation>
 <translation id="2327492829706409234">Paganahin ang app</translation>
 <translation id="2327920026543055248">Maglagay ng <ph name="CHARACTER" /> character sa <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">I-reset ang iyong PIN</translation>
 <translation id="2328561734797404498">Paki-restart ang iyong device para magamit ang <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kapag nasa Incognito mode ka, puwede lang gumamit ng mga cookie ang mga site para tingnan ang iyong aktibidad sa pag-browse sa sarili nilang site. Ide-delete ang mga cookie sa pagtatapos ng Incognito session.</translation>
 <translation id="2329597144923131178">Mag-sign in upang makuha ang iyong mga bookmark, history, password at ibang mga setting sa lahat ng iyong device.</translation>
@@ -3788,6 +3792,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3670480940339182416">Puwedeng gamitin ng mga site ang V8 optimizer</translation>
 <translation id="3672681487849735243">Nakakita ng factory error</translation>
 <translation id="3673097791729989571">Hino-host ng <ph name="SAML_DOMAIN" /> ang pag-sign in</translation>
+<translation id="3673287357837016374">Na-update na ang iyong PIN</translation>
 <translation id="3673622964532248901">Hindi ka pinapayagang mag-cast sa device na ito.</translation>
 <translation id="3675683621636519363">Magpadala ng mga ulat ng pag-crash at data ng diagnostic at paggamit sa ChromeOS Flex</translation>
 <translation id="367645871420407123">iwanang blangko kung gusto mong itakda ang root password sa default na value ng pansubok na larawan</translation>
@@ -11330,6 +11335,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9101691533782776290">Ilunsad ang app</translation>
 <translation id="9102610709270966160">I-enable ang Extension</translation>
 <translation id="9102864637938129124">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-on ang setting na ito.</translation>
+<translation id="9103341231213089378">Para magkapag-cast, bigyan ng access ang Chrome sa: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokal na Network &gt; Chrome</translation>
 <translation id="9103868373786083162">Pindutin upang bumalik, gamitin ang menu ng konteksto upang makita ang history</translation>
 <translation id="9107096627210171112">I&amp;salin...</translation>
 <translation id="9107624673674616016">Colored Pencil</translation>

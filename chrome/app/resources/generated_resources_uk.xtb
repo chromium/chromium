@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">Синхронізація історії</translation>
 <translation id="1110155001042129815">Зачекати</translation>
 <translation id="1110965959145884739">Виберіть, які мови встановити на цьому пристрої. Мовні пакети спільні для користувачів задля економії місця на диску. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Ваша дитина може ввійти в обліковий запис на своєму пристрої за допомогою цього PIN-коду</translation>
 <translation id="1112420131909513020">Фонова вкладка використовує Bluetooth</translation>
 <translation id="1112998165730922436">Трансляцію призупинено</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">Щоб відрізняти профілі, виберіть назву та колірну тему</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – частина групи "<ph name="GROUP_NAME" />"</translation>
 <translation id="1130676589211693127">Рівень заряду акумулятора правого навушника – <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">PIN-код дитини оновлено</translation>
 <translation id="1133418583142946603">Додати поточну вкладку</translation>
 <translation id="1134363466745332968">Здійснюйте пошук в історії вебперегляду не лише за назвами і URL-адресами, а й за вмістом сторінок. Завдяки цьому ви можете отримувати кращі результати, коли шукаєте в історії вебперегляду через адресний рядок за допомогою чипу @history або на сторінці "Історія".</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> з <ph name="EMOJI_COUNT" />.</translation>
@@ -567,6 +569,7 @@
 <translation id="1397594434718759194">Ви ввійшли в Chrome на цих пристроях, тож можете використовувати їх як ключі безпеки.</translation>
 <translation id="1398853756734560583">Збільшити</translation>
 <translation id="1399261165075500043">Не вдалося завантажити Умови використання Google Play</translation>
+<translation id="1400243387594338234">Ви можете ввійти в обліковий запис на своєму пристрої за допомогою цього PIN-коду</translation>
 <translation id="1401216725754314428">Докладніше про пов’язані сайти на новій вкладці</translation>
 <translation id="1402426911829176748">Підключення до пристрою</translation>
 <translation id="1403222014593521787">Не вдається підключитися до проксі</translation>
@@ -1942,6 +1945,7 @@
 <translation id="2326931316514688470">&amp;Перезавантажити додаток</translation>
 <translation id="2327492829706409234">Увімкнути програму</translation>
 <translation id="2327920026543055248">Введіть символ <ph name="CHARACTER" /> з <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Скинути PIN-код</translation>
 <translation id="2328561734797404498">Щоб скористатися додатком <ph name="APP_NAME" />, потрібно перезапустити пристрій.</translation>
 <translation id="2328636661627946415">У режимі анонімного перегляду сайти можуть використовувати файли cookie лише для перегляду ваших дій у веб-переглядачі на самих цих сайтах. Після завершення сеансу файли cookie видаляються.</translation>
 <translation id="2329597144923131178">Увійдіть, щоб мати доступ до закладок, історії, паролів та інших налаштувань на всіх своїх пристроях.</translation>
@@ -3790,6 +3794,7 @@
 <translation id="3670480940339182416">Сайти можуть використовувати оптимізатор V8</translation>
 <translation id="3672681487849735243">Виявлено заводську помилку</translation>
 <translation id="3673097791729989571">Вхід через <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Ваш PIN-код оновлено</translation>
 <translation id="3673622964532248901">Ви не можете транслювати на цей пристрій.</translation>
 <translation id="3675683621636519363">Надсилати звіти про збої, а також дані про діагностику й використання в ChromeOS Flex</translation>
 <translation id="367645871420407123">залиште поле порожнім, якщо потрібно налаштувати кореневий пароль для значення тестового зображення за умовчанням</translation>
@@ -10388,7 +10393,7 @@
 <translation id="8447409163267621480">Натискайте Ctrl або Alt</translation>
 <translation id="8448729345478502352">Зменшуйте або збільшуйте елементи на екрані</translation>
 <translation id="8449008133205184768">Вставити та застосувати стиль</translation>
-<translation id="8449036207308062757">Керувати пам’яттю</translation>
+<translation id="8449036207308062757">Керувати сховищем</translation>
 <translation id="8449347986464073209">Видалити й вийти</translation>
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
@@ -11330,6 +11335,7 @@
 <translation id="9101691533782776290">Запустити програму</translation>
 <translation id="9102610709270966160">Увімкнути розширення</translation>
 <translation id="9102864637938129124">Власники сайтів і рекламодавці можуть оцінювати ефективність своїх оголошень. Це налаштування ввімкнено.</translation>
+<translation id="9103341231213089378">Щоб транслювати, надайте Chrome дозвіл на доступ: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; "Локальна мережа" &gt; Chrome</translation>
 <translation id="9103868373786083162">Натисніть, щоб повернутись, або відкрийте контекстне меню, щоб переглянути історію</translation>
 <translation id="9107096627210171112">П&amp;ерекласти…</translation>
 <translation id="9107624673674616016">Малюнок олівцями</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Tidak dapat memulakan pengimbasan</translation>
 <translation id="1061864016440983342">Gunakan tanpa lokasi</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> daripada <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Sisipan Pantas tidak boleh digunakan untuk pintasan tersuai.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Teroka</translation>
 <translation id="6526200165918397681">Padankan hiasan latar</translation>
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
+<translation id="6531528791584205545">sisipan pantas</translation>
 <translation id="6535178685492749208">Anda di luar talian. Maklum balas akan dihantar kemudian.</translation>
 <translation id="6543412779435705598">taco</translation>
 <translation id="6550369542114086980">pada hari Khamis</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6673898378497337661">meningkatkan kecerahan papan kekunci</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6694534975463174713">kunci</translation>
+<translation id="6700703207451721535">Akses tidak dibenarkan untuk pautan ini. Semak dengan guru anda jika anda memerlukan akses.</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
 <translation id="6712933881624804031">lembah</translation>
 <translation id="6716013206176357696">strawberi</translation>

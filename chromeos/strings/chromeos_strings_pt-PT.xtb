@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Desativar proteção de ecrã</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">O professor removeu conteúdo nas School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscinas</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Edição concluída</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
 <translation id="3533790840489634638">piscina</translation>
+<translation id="3535802910192338629">O professor adicionou novo conteúdo nas School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
@@ -1171,6 +1173,7 @@
 <translation id="6673898378497337661">aumentar o brilho do teclado</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6694534975463174713">fechadura</translation>
+<translation id="6700703207451721535">Não é permitido aceder a este link. Consulte o seu professor para saber se precisa de acesso.</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6712933881624804031">vale</translation>
 <translation id="6716013206176357696">morangos</translation>
@@ -1561,6 +1564,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8576249514688522074">Não iniciada</translation>
 <translation id="8584654835905316966">É necessário reiniciar para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. O computador pode reiniciar várias vezes. Este comportamento é o esperado.</translation>
 <translation id="8593058461203131755">pausar o conteúdo multimédia</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
 <translation id="8626489604350149811">Mais ações para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>

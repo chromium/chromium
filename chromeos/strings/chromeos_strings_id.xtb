@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1061864016440983342">Gunakan tanpa lokasi</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> dari <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Penyisipan Cepat tidak dapat digunakan untuk pintasan kustom.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Jelajahi</translation>
 <translation id="6526200165918397681">Cocokkan wallpaper</translation>
 <translation id="6527081081771465939">Protokol keamanan Wi-Fi tidak dikenal</translation>
+<translation id="6531528791584205545">penyisipan cepat</translation>
 <translation id="6535178685492749208">Anda sedang offline. Masukan akan dikirim nanti.</translation>
 <translation id="6543412779435705598">taco</translation>
 <translation id="6550369542114086980">pada hari Kamis</translation>

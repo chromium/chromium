@@ -167,6 +167,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
 <translation id="1110155001042129815">Gözləyin</translation>
 <translation id="1110965959145884739">Bu cihazda hansı dilləri quraşdıracağınızı seçin. Diskdə yer saxlamaq üçün dil faylları istifadəçilər arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Övladınız cihazına daxil olmaq üçün bu PIN-dən istifadə edə bilər</translation>
 <translation id="1112420131909513020">Arxa fon tabı bluetooth istifadə edir</translation>
 <translation id="1112998165730922436">Yayıma pauza verildi</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -196,6 +197,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="113050636487300043">Profilləri ayırmaq üçün ad və rəng teması seçin</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> qrupunun hissəsi</translation>
 <translation id="1130676589211693127">Sağ qulaqlığın batareya səviyyəsi: <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Övladınızın PIN-i güncəlləndi</translation>
 <translation id="1133418583142946603">Cari tabı əlavə edin</translation>
 <translation id="1134363466745332968">Brauzer tarixçənizi yalnız səhifə başlığı və URL-i əsasında deyil, ümumi səhifə kontenti əsasında da axtara bilərsiniz. İstər @history istifadə edərək, istərsə də Tarixçə səhifəsinin ünvan panelində brauzer tarixçəsini axtarmağınızdan asılı olmayaraq təkmil nəticələr təmin edir.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
@@ -562,6 +564,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1397594434718759194">Bu cihazlarda Chrome'a daxil olmusunuz, ona görə də onlardan təhlükəsizlik açarı kimi istifadə edə bilərsiniz.</translation>
 <translation id="1398853756734560583">Artırın</translation>
 <translation id="1399261165075500043">Google Play Xidmət Şərtlərini yükləmək olmur</translation>
+<translation id="1400243387594338234">Cihazınıza daxil olmaq üçün bu PIN-dən istifadə edə bilərsiniz</translation>
 <translation id="1401216725754314428">Əlaqədar saytlar haqqında ətraflı məlumat yeni tabda</translation>
 <translation id="1402426911829176748">Cihazınıza qoşulur</translation>
 <translation id="1403222014593521787">Proksiyə qoşulmaq olmur</translation>
@@ -1925,6 +1928,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2326931316514688470">Tətbiqi yenidən yükləyin</translation>
 <translation id="2327492829706409234">Tətbiqi aktiv edin</translation>
 <translation id="2327920026543055248"><ph name="CHARACTER" />/<ph name="TOTAL" /> simvol daxil edin</translation>
+<translation id="2328137272841210255">PIN-i sıfırlayın</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> tətbiqindən istifadə etmək üçün cihazı yenidən başladın.</translation>
 <translation id="2328636661627946415">Anonim rejimdə olduğunuz zaman saytlar öz saytlarında baxış fəaliyyətinizi görmək üçün yalnız kukilərdən istifadə edə bilər. Kukilər Anonim sessiyanın sonunda silinir.</translation>
 <translation id="2329597144923131178">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün daxil olun.</translation>
@@ -3773,6 +3777,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3670480940339182416">Saytlar V8 optimallaşdırıcısından istifadə edə bilər</translation>
 <translation id="3672681487849735243">Zavod xətası aşkar edildi</translation>
 <translation id="3673097791729989571">Giriş hostu: <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">PIN güncəlləndi</translation>
 <translation id="3673622964532248901">Bu cihaza yayımlamağa icazəniz yoxdur.</translation>
 <translation id="3675683621636519363">Xəta hesabatı, diaqnostika və istifadə datasını ChromeOS Flex-ə göndərin</translation>
 <translation id="367645871420407123">Əgər əsas parolu defolt test şəkil dəyərinə ayarlamaq istəyirsinizsə, boş saxlayın</translation>
@@ -11302,6 +11307,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9101691533782776290">Tətbiqi işə salın</translation>
 <translation id="9102610709270966160">Artırmanı Aktiv Edin</translation>
 <translation id="9102864637938129124">Saytlar və reklamçılar reklamların necə işlədiyini başa düşə bilər. Bu ayar aktivdir.</translation>
+<translation id="9103341231213089378">Yayımlamaq üçün Chrome-a giriş imkanı verin: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokal şəbəkə &gt; Chrome</translation>
 <translation id="9103868373786083162">Geri qayıtmaq üçün basın və tarixməni görmək üçün kontekst menyuya basın</translation>
 <translation id="9107096627210171112">Tərcümə edin...</translation>
 <translation id="9107624673674616016">Rəngli karandaş</translation>

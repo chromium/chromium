@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">無法開始掃瞄</translation>
 <translation id="1061864016440983342">在不啟用位置功能的情況下使用</translation>
 <translation id="1062823486781306604">名稱：<ph name="NAME" /> (第 <ph name="INDEX" /> 項，總共 <ph name="COUNT" /> 項)。</translation>
+<translation id="1069150558259542054">「快速插入」不能用作自訂快速鍵。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">探索</translation>
 <translation id="6526200165918397681">相符的桌布</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
+<translation id="6531528791584205545">快速插入</translation>
 <translation id="6535178685492749208">您已離線。意見將會在稍後傳送。</translation>
 <translation id="6543412779435705598">墨西哥煎玉米捲</translation>
 <translation id="6550369542114086980">星期四</translation>

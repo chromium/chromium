@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">無法開始掃描</translation>
 <translation id="1061864016440983342">在不啟用定位功能的情況下使用</translation>
 <translation id="1062823486781306604">名稱：<ph name="NAME" /> (第 <ph name="INDEX" /> 項，共 <ph name="COUNT" /> 項)。</translation>
+<translation id="1069150558259542054">快速插入鍵無法用於自訂快速鍵。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">已偵測到防火牆</translation>
 <translation id="1075811647922107217">網頁大小</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">探索</translation>
 <translation id="6526200165918397681">相符的桌布</translation>
 <translation id="6527081081771465939">Wi-Fi 安全通訊協定不明</translation>
+<translation id="6531528791584205545">快速插入</translation>
 <translation id="6535178685492749208">你已經離線，系統稍後才會傳送意見回饋。</translation>
 <translation id="6543412779435705598">墨西哥夾餅</translation>
 <translation id="6550369542114086980">星期四</translation>

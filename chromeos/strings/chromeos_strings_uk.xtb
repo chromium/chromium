@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
 <translation id="1061864016440983342">Використовувати без геоданих</translation>
 <translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> з <ph name="COUNT" />).</translation>
+<translation id="1069150558259542054">Клавішу швидкого вставлення не можна використовувати для власних комбінацій клавіш.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Можливості</translation>
 <translation id="6526200165918397681">Вибрати колір, що гармоніює з фоновим малюнком</translation>
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
+<translation id="6531528791584205545">швидке вставлення</translation>
 <translation id="6535178685492749208">Ви не в мережі. Відгук буде надіслано пізніше.</translation>
 <translation id="6543412779435705598">тако</translation>
 <translation id="6550369542114086980">у четвер</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Impossible de lancer la numérisation</translation>
 <translation id="1061864016440983342">Utiliser sans la localisation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Impossible d'utiliser Insertion Rapide pour les raccourcis personnalisés.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de page</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6526200165918397681">Faire correspondre au fond d'écran</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
+<translation id="6531528791584205545">Insertion Rapide</translation>
 <translation id="6535178685492749208">Vous êtes hors connexion. Les commentaires seront envoyés plus tard.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">jeudi</translation>

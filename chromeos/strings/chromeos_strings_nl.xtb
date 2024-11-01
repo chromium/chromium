@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1061864016440983342">Gebruiken zonder locatie</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> van <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Snel invoegen kan niet worden gebruikt voor aangepaste sneltoetsen.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall waargenomen</translation>
 <translation id="1075811647922107217">Paginagrootte</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Ontdekken</translation>
 <translation id="6526200165918397681">Aanpassen aan achtergrond</translation>
 <translation id="6527081081771465939">Onbekend wifi-beveiligingsprotocol</translation>
+<translation id="6531528791584205545">snel invoegen</translation>
 <translation id="6535178685492749208">Je bent offline. Feedback wordt later verstuurd.</translation>
 <translation id="6543412779435705598">taco's</translation>
 <translation id="6550369542114086980">op donderdag</translation>

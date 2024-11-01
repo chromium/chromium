@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
 <translation id="1061864016440983342">Folosește fără locație</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> din <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Inserarea rapidă nu se poate folosi pentru comenzi rapide personalizate.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S-a detectat un firewall</translation>
 <translation id="1075811647922107217">Dimensiunea paginii</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explorare</translation>
 <translation id="6526200165918397681">Potrivește imaginea de fundal</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
+<translation id="6531528791584205545">inserare rapidă</translation>
 <translation id="6535178685492749208">Ești offline. Feedbackul se va trimite mai târziu.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">joi</translation>

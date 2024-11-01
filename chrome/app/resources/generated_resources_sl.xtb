@@ -169,6 +169,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1108938384783527433">Sinhronizacija zgodovine</translation>
 <translation id="1110155001042129815">Počakaj</translation>
 <translation id="1110965959145884739">Izberite, katere jezike želite namestiti v tej napravi. Jezikovne datoteke so zaradi varčevanja s prostorom na disku skupne za vse uporabnike. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Otrok se lahko s to kodo PIN prijavi v svojo napravo</translation>
 <translation id="1112420131909513020">Zavihek v ozadju uporablja Bluetooth</translation>
 <translation id="1112998165730922436">Predvajanje je začasno zaustavljeno</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="113050636487300043">Zaradi razlikovanja med profili izberite ime in barvno temo.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – del skupine <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Raven napolnjenosti desne baterije: <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Otrokova koda PIN je posodobljena</translation>
 <translation id="1133418583142946603">Dodaj trenutni zavihek</translation>
 <translation id="1134363466745332968">Po zgodovini brskanja lahko iščete na podlagi splošne vsebine strani, ne samo na podlagi naslova strani ali URL-ja. Na voljo so izboljšani rezultati ne glede na to, ali iščete po zgodovini brskanja v naslovni vrstici z @history ali na strani »Zgodovina«.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> od <ph name="EMOJI_COUNT" />.</translation>
@@ -567,6 +569,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1397594434718759194">V teh napravah ste prijavljeni v Chrome, torej jih lahko uporabljate kot varnostne ključe.</translation>
 <translation id="1398853756734560583">Povečaj</translation>
 <translation id="1399261165075500043">Pogojev storitve za Google Play ni mogoče naložiti</translation>
+<translation id="1400243387594338234">To kodo PIN lahko uporabite za prijavo v napravo</translation>
 <translation id="1401216725754314428">Preberite več o sorodnih spletnih mestih na novem zavihku</translation>
 <translation id="1402426911829176748">Povezovanje z napravo</translation>
 <translation id="1403222014593521787">Povezave z omrežjem proxy ni mogoče vzpostaviti</translation>
@@ -1942,6 +1945,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2326931316514688470">&amp;Znova naloži aplikacijo</translation>
 <translation id="2327492829706409234">Omogoči aplikacijo</translation>
 <translation id="2327920026543055248">Vnos znaka <ph name="CHARACTER" /> od <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Ponastavitev kode PIN</translation>
 <translation id="2328561734797404498">Znova zaženite napravo, če želite uporabljati aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">V anonimnem načinu lahko spletna mesta uporabljajo piškotke samo za ogled vaše dejavnosti brskanja na tem spletnem mestu. Po koncu anonimne seje se piškotki izbrišejo.</translation>
 <translation id="2329597144923131178">Prijavite se, da boste lahko dostopali do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
@@ -3790,6 +3794,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3670480940339182416">Spletna mesta lahko uporabljajo orodje za optimiziranje V8</translation>
 <translation id="3672681487849735243">Zaznana je tovarniška napaka</translation>
 <translation id="3673097791729989571">Prijavo gosti <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Koda PIN je posodobljena</translation>
 <translation id="3673622964532248901">Predvajanje v tej napravi ni dovoljeno.</translation>
 <translation id="3675683621636519363">Pošiljanje poročil o zrušitvah ter diagnostičnih podatkov in podatkov o uporabi v ChromeOS Flex</translation>
 <translation id="367645871420407123">pustite prazno, če želite korensko geslo nastaviti na privzeto vrednost preskusne slike</translation>
@@ -11338,6 +11343,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9101691533782776290">Zažene aplikacijo</translation>
 <translation id="9102610709270966160">Omogoči razširitev</translation>
 <translation id="9102864637938129124">Spletna mesta in oglaševalci lahko razumejo, kako delujejo oglasi. Ta nastavitev je vklopljena.</translation>
+<translation id="9103341231213089378">Če želite predvajati, omogočite Chromu dostop v: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokalno omrežje &gt; Chrome.</translation>
 <translation id="9103868373786083162">Pritisnite, če želite nazaj, s kontekstnim menijem pa prikažete zgodovino</translation>
 <translation id="9107096627210171112">P&amp;revedi …</translation>
 <translation id="9107624673674616016">Barvni svinčnik</translation>

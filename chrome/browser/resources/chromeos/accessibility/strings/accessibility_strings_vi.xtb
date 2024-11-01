@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">âm thanh</translation>
 <translation id="2737898226590637227">Không có mốc ARIA nào tiếp theo</translation>
 <translation id="2749275490991666823">Đã chọn</translation>
+<translation id="2751454300227269244">Đưa miệng sang phải</translation>
 <translation id="27527859628328957">Nhảy tới mục có thể đặt tiêu điểm tiếp theo</translation>
 <translation id="2756452585631602151">Nhập một nhãn tùy chỉnh</translation>
 <translation id="2766299274563946262">Không có ô nào ở bên trái</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Bảng <ph name="TABLENAME" />, <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Màu be</translation>
 <translation id="316542773973815724">Điều hướng</translation>
+<translation id="3167446923957429259">Đưa miệng sang trái</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{dấu cách}other{# dấu cách}}</translation>
 <translation id="3179119189286472195">Không phải phần tử liên kết</translation>
 <translation id="3180990259147710757">Di chuyển hàm sang trái</translation>

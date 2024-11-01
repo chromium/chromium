@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Ekki tókst að skanna</translation>
 <translation id="1061864016440983342">Nota án staðsetningar</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> af <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Ekki er hægt að nota flýtiinnslátt fyrir sérsniðna flýtilykla.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Eldveggur greindist</translation>
 <translation id="1075811647922107217">Síðustærð</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6526200165918397681">Samsvara veggfóðri</translation>
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
+<translation id="6531528791584205545">flýtiinnsláttur</translation>
 <translation id="6535178685492749208">Þú ert ekki á netinu. Ábending verður send síðar.</translation>
 <translation id="6543412779435705598">takkó</translation>
 <translation id="6550369542114086980">á fimmtudaginn</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6673898378497337661">auka birtustig lyklaborðs</translation>
 <translation id="6692996468359469499">Fá upplýsingar í tengslum við val þitt</translation>
 <translation id="6694534975463174713">lás</translation>
+<translation id="6700703207451721535">Aðgangur er ekki leyfður fyrir þennan tengil. Spurðu kennarann þinn hvort þú þurfir aðgang.</translation>
 <translation id="6704062477274546131">DNS-upplausn</translation>
 <translation id="6712933881624804031">dal</translation>
 <translation id="6716013206176357696">jarðarber</translation>

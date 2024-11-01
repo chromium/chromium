@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
 <translation id="1061864016440983342">위치 정보 없이 사용</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />개 중 <ph name="INDEX" />번째인 <ph name="NAME" />입니다.</translation>
+<translation id="1069150558259542054">맞춤 단축키에는 빠른 입력을 사용할 수 없습니다.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6526200165918397681">배경화면 일치</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
+<translation id="6531528791584205545">빠른 입력</translation>
 <translation id="6535178685492749208">오프라인 상태입니다. 의견은 나중에 전송됩니다.</translation>
 <translation id="6543412779435705598">타코</translation>
 <translation id="6550369542114086980">목요일</translation>

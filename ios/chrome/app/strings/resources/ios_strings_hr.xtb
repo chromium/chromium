@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Adresa je spremljena samo na ovom uređaju</translation>
 <translation id="1445276840641906250">Sve vaše kartice u jednom pregledniku</translation>
 <translation id="1450170672351507823">Uključena je standardna zaštita. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
+<translation id="1455660774629812862">Nemoj sakriti</translation>
 <translation id="1460751212339734034">Uštedite vrijeme, tipkajte manje</translation>
 <translation id="1466035273550360103">Nema otvorenih kartica</translation>
 <translation id="1469381646033328562">Tvojim računom upravlja roditelj.
@@ -319,6 +320,7 @@
 Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledavanja, primjerice radi prilagođavanja oglasa.</translation>
 <translation id="2377336083033403521">Pretraživanje kartica…</translation>
 <translation id="2381405137052800939">Osnove</translation>
+<translation id="2384692388811649784">Sakrivanje anonimnih kartica</translation>
 <translation id="2386793615875593361">1 odabrana</translation>
 <translation id="2390457533592708044">Sakrij <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Isporuka nemoguća</translation>
@@ -339,6 +341,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2479148705183875116">Otvori Postavke</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2484459871750294497">Kako mogu omogućiti ovu značajku?</translation>
+<translation id="2493269659028026145">Zaključaj odmah pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Povijest pregledavanja</translation>
 <translation id="2497852260688568942">Administrator je onemogućio sinkronizaciju</translation>
 <translation id="2499505845365628575">Cjelokupnu povijest pregledavanja možete pronaći na <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -932,6 +935,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5414763847370083940">Dobit ćete upozorenje ako se cijena snizi na bilo kojoj web-lokaciji.</translation>
 <translation id="5415289094036440596">Pristupni ključevi ne mogu se dijeliti</translation>
 <translation id="5416455648658732408">Premjesti u grupu kartica</translation>
+<translation id="5429624150850059322">Kad se vratite, kartice su zamagljene dok ne dodirnete da biste nastavili</translation>
 <translation id="5431239785743546285">Stranice koje ste pročitali</translation>
 <translation id="5431252637281434233">Odjavit ćete se</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
@@ -1031,6 +1035,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5817176759448082654">Provjera zaporki</translation>
 <translation id="5819208479324046259">Uređajem upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinkronizacija…</translation>
+<translation id="5832166137082209907">Sakrij nakon 10 minuta</translation>
 <translation id="5844284118433003733">Kad ste prijavljeni, ti se podaci povezuju s vašim Google računom kako biste dobili zaštitu na svim Googleovim uslugama, na primjer radi poboljšanja zaštite na Gmailu nakon sigurnosnog incidenta.</translation>
 <translation id="5854790677617711513">Starije od 30 dana</translation>
 <translation id="5857770089550859117">Za pokretanje sinkronizacije potrebna je zaporka.</translation>

@@ -169,6 +169,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1110155001042129815">Wachten</translation>
 <translation id="1110965959145884739">Kies welke talen je wilt installeren op dit apparaat. Taalbestanden worden gedeeld onder gebruikers om schijfruimte te besparen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Je kind kan deze pincode gebruiken om in te loggen op hun apparaat</translation>
 <translation id="1112420131909513020">Achtergrondtabblad gebruikt Bluetooth</translation>
 <translation id="1112998165730922436">Casten is onderbroken</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="113050636487300043">Kies een naam en kleurthema zodat je verschillende profielen van elkaar kunt onderscheiden</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - onderdeel van groep <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Batterijniveau rechts: <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">De pincode van je kind is geüpdatet</translation>
 <translation id="1133418583142946603">Huidig tabblad toevoegen</translation>
 <translation id="1134363466745332968">Je kunt in je browsegeschiedenis zoeken op basis van algemene paginacontent, niet alleen op paginatitel en URL. Zo krijg je betere resultaten, of je nu met @history in de adresbalk in de browsegeschiedenis zoekt of op de pagina Geschiedenis.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> van <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1397594434718759194">Je bent op deze apparaten ingelogd bij Chrome, dus kun je ze als beveiligingssleutels gebruiken.</translation>
 <translation id="1398853756734560583">Maximaliseren</translation>
 <translation id="1399261165075500043">Kan de Servicevoorwaarden voor Google Play niet laden</translation>
+<translation id="1400243387594338234">Je kunt deze pincode gebruiken om in te loggen op je apparaat</translation>
 <translation id="1401216725754314428">Meer informatie over gerelateerde sites in een nieuw tabblad</translation>
 <translation id="1402426911829176748">Verbinding maken met je apparaat</translation>
 <translation id="1403222014593521787">Kan geen verbinding maken met de proxy</translation>
@@ -1926,6 +1929,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2326931316514688470">App opnieuw &amp;laden</translation>
 <translation id="2327492829706409234">App aanzetten</translation>
 <translation id="2327920026543055248">Teken <ph name="CHARACTER" /> van <ph name="TOTAL" /> opgeven</translation>
+<translation id="2328137272841210255">Je pincode resetten</translation>
 <translation id="2328561734797404498">Start je apparaat opnieuw op om <ph name="APP_NAME" /> te gebruiken.</translation>
 <translation id="2328636661627946415">Als je in de incognitomodus zit, kunnen sites alleen cookies gebruiken om je browse-activiteit op hun eigen site te bekijken. De cookies worden aan het einde van de incognitosessie verwijderd.</translation>
 <translation id="2329597144923131178">Als je inlogt, heb je al je instellingen op al je apparaten: bookmarks, geschiedenis, wachtwoorden en meer.</translation>
@@ -3772,6 +3776,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3670480940339182416">Sites kunnen V8-optimalisatie gebruiken</translation>
 <translation id="3672681487849735243">Er is een fabrieksfout gedetecteerd</translation>
 <translation id="3673097791729989571">Inloggen gehost door <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Je pincode is geüpdatet</translation>
 <translation id="3673622964532248901">Je mag niet casten naar dit apparaat.</translation>
 <translation id="3675683621636519363">Crashrapporten en diagnostische en gebruiksgegevens sturen naar ChromeOS Flex</translation>
 <translation id="367645871420407123">laat dit leeg als je het rootwachtwoord wilt instellen op de waarde van de standaard testimage</translation>
@@ -11302,6 +11307,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9101691533782776290">App starten</translation>
 <translation id="9102610709270966160">Extensie aanzetten</translation>
 <translation id="9102864637938129124">Sites en adverteerders krijgen inzicht in de prestaties van advertenties. Deze instelling staat aan.</translation>
+<translation id="9103341231213089378">Als je wilt casten, geef je Chrome toegang via <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Lokaal netwerk &gt; Chrome</translation>
 <translation id="9103868373786083162">Druk op Terug &gt; contextmenu om de geschiedenis te bekijken</translation>
 <translation id="9107096627210171112">Ve&amp;rtalen...</translation>
 <translation id="9107624673674616016">Kleurpotlood</translation>

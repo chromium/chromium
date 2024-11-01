@@ -169,6 +169,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1108938384783527433">Sinkronisasi histori</translation>
 <translation id="1110155001042129815">Tunggu</translation>
 <translation id="1110965959145884739">Pilih bahasa yang akan diinstal di perangkat ini. File bahasa tidak dibagikan antar-pengguna untuk menghemat kapasitas disk. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Anak Anda dapat menggunakan PIN ini untuk login ke perangkatnya</translation>
 <translation id="1112420131909513020">Tab background menggunakan bluetooth</translation>
 <translation id="1112998165730922436">Transmisi dijeda</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="113050636487300043">Pilih nama dan tema warna untuk membedakan profil</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Bagian dari grup <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Tingkat daya baterai kanan <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">PIN anak Anda telah diperbarui</translation>
 <translation id="1133418583142946603">Tambahkan tab saat ini</translation>
 <translation id="1134363466745332968">Anda dapat menelusuri histori penjelajahan berdasarkan konten halaman umum, bukan hanya judul halaman dan URL. Kemampuan ini akan memberikan hasil yang lebih baik saat Anda menelusuri histori penjelajahan di kolom URL menggunakan @histori atau dari halaman Histori.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> dari <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1397594434718759194">Anda login ke Chrome di perangkat berikut, sehingga Anda dapat menggunakannya sebagai kunci keamanan.</translation>
 <translation id="1398853756734560583">Perbesar</translation>
 <translation id="1399261165075500043">Tidak dapat memuat Persyaratan Layanan Google Play</translation>
+<translation id="1400243387594338234">Anda dapat menggunakan PIN ini untuk login ke perangkat</translation>
 <translation id="1401216725754314428">Pelajari lebih lanjut situs terkait di tab baru</translation>
 <translation id="1402426911829176748">Menghubungkan ke perangkat</translation>
 <translation id="1403222014593521787">Tidak dapat terhubung ke proxy</translation>
@@ -1939,6 +1942,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2326931316514688470">&amp;Muat ulang aplikasi</translation>
 <translation id="2327492829706409234">Aktifkan aplikasi</translation>
 <translation id="2327920026543055248">Masukkan karakter <ph name="CHARACTER" /> dari <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Reset PIN</translation>
 <translation id="2328561734797404498">Mulai ulang perangkat Anda untuk menggunakan <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Jika Anda menggunakan mode Samaran, situs hanya dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di situsnya. Cookie akan dihapus pada akhir sesi Samaran.</translation>
 <translation id="2329597144923131178">Login untuk mendapatkan bookmark, histori, sandi, dan setelan Anda lainnya di semua perangkat.</translation>
@@ -3787,6 +3791,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3670480940339182416">Situs dapat menggunakan pengoptimal V8</translation>
 <translation id="3672681487849735243">Kesalahan pabrik terdeteksi</translation>
 <translation id="3673097791729989571">Login dihosting oleh <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">PIN Anda telah diperbarui</translation>
 <translation id="3673622964532248901">Anda tidak diizinkan melakukan transmisi ke perangkat ini.</translation>
 <translation id="3675683621636519363">Kirim laporan error serta data diagnostik dan penggunaan ke ChromeOS Flex</translation>
 <translation id="367645871420407123">biarkan kosong jika Anda ingin menyetel sandi akar ke nilai gambar uji default</translation>
@@ -11323,6 +11328,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9101691533782776290">Luncurkan aplikasi</translation>
 <translation id="9102610709270966160">Aktifkan Ekstensi</translation>
 <translation id="9102864637938129124">Situs dan pengiklan dapat memahami performa iklan. Setelan ini aktif.</translation>
+<translation id="9103341231213089378">Untuk melakukan transmisi, beri Chrome akses di: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Jaringan Lokal &gt; Chrome</translation>
 <translation id="9103868373786083162">Tekan untuk kembali ke menu konteks guna melihat histori</translation>
 <translation id="9107096627210171112">T&amp;erjemahkan...</translation>
 <translation id="9107624673674616016">Pensil warna</translation>

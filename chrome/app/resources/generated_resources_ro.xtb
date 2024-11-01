@@ -169,6 +169,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1110155001042129815">Așteaptă</translation>
 <translation id="1110965959145884739">Alege limbile pe care dorești să le instalezi pe dispozitiv. Fișierele de limbă sunt trimise utilizatorilor pentru a economisi spațiu pe disc. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Copilul tău poate să folosească acest cod PIN pentru a se conecta la dispozitiv</translation>
 <translation id="1112420131909513020">O filă din fundal folosește Bluetooth</translation>
 <translation id="1112998165730922436">Proiectarea este întreruptă</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="113050636487300043">Alege un nume și o temă de culoare pentru a face diferența între profiluri</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – parte a grupului <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivelul bateriei din dreapta: <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Codul PIN al copilului a fost actualizat</translation>
 <translation id="1133418583142946603">Adaugă fila actuală</translation>
 <translation id="1134363466745332968">Poți căuta în istoricul de navigare în funcție de conținutul general al paginii, nu doar de titlul și adresa URL. Astfel, vei obține rezultate îmbunătățite, indiferent dacă faci căutări în istoricul de navigare din bara de adrese folosind @istoric sau din pagina Istoric.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> din <ph name="EMOJI_COUNT" />.</translation>
@@ -565,6 +567,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1397594434718759194">Te-ai conectat la Chrome pe aceste dispozitive, prin urmare le poți folosi drept chei de securitate.</translation>
 <translation id="1398853756734560583">Maximizează</translation>
 <translation id="1399261165075500043">Nu pot să încarc Termenii și condițiile Google Play</translation>
+<translation id="1400243387594338234">Poți să folosești acest cod PIN pentru a te conecta la dispozitiv</translation>
 <translation id="1401216725754314428">Află mai multe despre site-urile conexe într-o filă nouă</translation>
 <translation id="1402426911829176748">Se conectează la dispozitiv</translation>
 <translation id="1403222014593521787">Nu se poate conecta la proxy</translation>
@@ -1927,6 +1930,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2326931316514688470">&amp;Reîncarcă aplicația</translation>
 <translation id="2327492829706409234">Activați aplicația</translation>
 <translation id="2327920026543055248">Introdu caracterul <ph name="CHARACTER" /> din <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Resetează codul PIN</translation>
 <translation id="2328561734797404498">Repornește dispozitivul pentru a folosi <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">În modul incognito, site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv. Cookie-urile sunt șterse la sfârșitul sesiunii incognito.</translation>
 <translation id="2329597144923131178">Conectează-te și accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
@@ -3774,6 +3778,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3670480940339182416">Site-urile pot folosi instrumentul de optimizare pentru V8</translation>
 <translation id="3672681487849735243">A fost detectată o eroare de fabricație</translation>
 <translation id="3673097791729989571">Conectare găzduită de <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Codul PIN a fost actualizat</translation>
 <translation id="3673622964532248901">Nu ai permisiunea de a proiecta pe acest dispozitiv.</translation>
 <translation id="3675683621636519363">Trimite rapoarte de blocare și date de diagnosticare și de utilizare către ChromeOS Flex</translation>
 <translation id="367645871420407123">nu completa dacă dorești să setezi parola directorului rădăcină la valoarea prestabilită a imaginii de test</translation>
@@ -11312,6 +11317,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9101691533782776290">Lansați aplicația</translation>
 <translation id="9102610709270966160">Activează extensia</translation>
 <translation id="9102864637938129124">Site-urile și advertiserii pot să afle despre performanța anunțurilor. Setarea este activată.</translation>
+<translation id="9103341231213089378">Pentru a proiecta, permite accesul browserului Chrome la: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Rețeaua locală &gt; Chrome</translation>
 <translation id="9103868373786083162">Apasă pentru a naviga înapoi sau folosește meniul contextual pentru a vedea istoricul</translation>
 <translation id="9107096627210171112">T&amp;radu...</translation>
 <translation id="9107624673674616016">Creion colorat</translation>

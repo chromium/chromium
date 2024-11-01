@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Onemogućite čuvar ekrana</translation>
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
 <translation id="3102119246920354026">Keš</translation>
+<translation id="3112413615003385433">Nastavnik je uklonio sadržaj u Školskim alatkama</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazenima</translation>
 <translation id="3122883569442693641">Još detalja</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Izmene su gotove</translation>
 <translation id="3532980081107202182">Preostalo je još oko <ph name="MIN_REMAINING" /> minuta</translation>
 <translation id="3533790840489634638">bazenom</translation>
+<translation id="3535802910192338629">Nastavnik je dodao novi sadržaj u Školskim alatkama</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokalni identitet (opcionalno)</translation>
 <translation id="3565064564551103223">Dozvoljene IPa adrese</translation>
@@ -1562,6 +1564,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8576249514688522074">Nije pokrenuto</translation>
 <translation id="8584654835905316966">Restartovanje je obavezno da bi se dovršila instalacija firmvera za <ph name="DEVICE_NAME" /> za verziju <ph name="VERSION" />. Može da izgleda kao da se računar restartuje nekoliko puta. Ovo je očekivano ponašanje.</translation>
 <translation id="8593058461203131755">pauzirajte medije</translation>
+<translation id="8619169570378509764">Školske alatke</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8626489604350149811">Još radnji za <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetloljubičasto</translation>

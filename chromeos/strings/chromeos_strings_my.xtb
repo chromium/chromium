@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
 <translation id="1061864016440983342">တည်နေရာမပါဘဲ သုံးရန်</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> အနက် <ph name="INDEX" />၊ <ph name="NAME" />။</translation>
+<translation id="1069150558259542054">‘အမြန်ထည့်’ ကို စိတ်ကြိုက်ဖြတ်လမ်းများအတွက် အသုံးပြု၍မရပါ။</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall တွေ့ရှိသည်</translation>
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
@@ -430,6 +431,7 @@
 <translation id="3084958266922136097">စခရင်နားချိန်ပုံ ပိတ်ရန်</translation>
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">‘ကျောင်းဆိုင်ရာတူးလ်များ’ တွင် သင့်ဆရာက အကြောင်းအရာကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ရေအိုင်</translation>
 <translation id="3122883569442693641">နောက်ထပ်အသေးစိတ်</translation>
@@ -512,6 +514,7 @@
 <translation id="353214771040290298">တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
 <translation id="3533790840489634638">ရေအိုင်</translation>
+<translation id="3535802910192338629">‘ကျောင်းဆိုင်ရာတူးလ်များ’ တွင် သင့်ဆရာက အကြောင်းအရာအသစ် ထည့်လိုက်သည်</translation>
 <translation id="3547264467365135390">ဖော်မြူလာ</translation>
 <translation id="3557205324756024651">နေရာတွင်း အထောက်အထား (ဆန္ဒရှိလျှင်)</translation>
 <translation id="3565064564551103223">ခွင့်ပြုထားသည့် IP များ</translation>
@@ -1127,6 +1130,7 @@
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6526200165918397681">နောက်ခံတွဲညှိရန်</translation>
 <translation id="6527081081771465939">အမည်မသိ WiFi လုံခြုံရေးပရိုတိုကော</translation>
+<translation id="6531528791584205545">အမြန်ထည့်</translation>
 <translation id="6535178685492749208">သင် အော့ဖ်လိုင်းဖြစ်နေသည်။ အကြံပြုချက်ကို နောက်မှပို့ပါမည်။</translation>
 <translation id="6543412779435705598">တာကိုစ်မုန့်</translation>
 <translation id="6550369542114086980">ကြာသပတေးနေ့တွင်</translation>
@@ -1559,6 +1563,7 @@
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> အတွက် ဖာမ်းဝဲဗားရှင်း <ph name="VERSION" /> ထည့်သွင်းမှုကို အပြီးသတ်ရန်အတွက် ပြန်စရန်လိုအပ်သည်။ သင့်ကွန်ပျူတာကို အကြိမ်များစွာ ပြန်လည်စတင်နိုင်သည်။ ဤလုပ်ဆောင်ချက်သည် ပုံမှန်ဖြစ်သည်။</translation>
 <translation id="8593058461203131755">မီဒီယာကို ခဏရပ်ရန်</translation>
+<translation id="8619169570378509764">ကျောင်းဆိုင်ရာတူးလ်များ</translation>
 <translation id="8620617069779373398">ကွန်ရက်ပြင်ပဒေတာသုံးခြင်း အခြေအနေ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="86356131183441916">ခရမ်းနု</translation>

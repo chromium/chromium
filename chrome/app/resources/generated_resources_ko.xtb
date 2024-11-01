@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">방문 기록 동기화</translation>
 <translation id="1110155001042129815">대기</translation>
 <translation id="1110965959145884739">이 기기에 설치할 언어를 선택하세요. 디스크 공간 절약을 위해 언어 파일은 사용자 간에 공유됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">자녀가 이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
 <translation id="1112420131909513020">배경 탭에서 블루투스를 사용 중입니다.</translation>
 <translation id="1112998165730922436">전송 일시중지됨</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" />(USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">이름과 색상 테마를 선택하여 프로필을 구분하세요.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> 그룹에 속함</translation>
 <translation id="1130676589211693127">오른쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">자녀의 PIN 추가됨</translation>
 <translation id="1133418583142946603">현재 탭 추가</translation>
 <translation id="1134363466745332968">페이지 제목과 URL뿐만 아니라 일반 페이지 콘텐츠를 기준으로 방문 기록을 검색할 수 있습니다. 이렇게 하면 @history를 사용하여 주소 표시줄에서 또는 방문 기록 페이지에서 방문 기록을 검색할 때 더 나은 결과를 얻을 수 있습니다.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />개 중 <ph name="EMOJI_INDEX" />번째.</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">다음 기기에서 Chrome에 로그인되어 있으므로 기기를 보안 키로 사용할 수 있습니다.</translation>
 <translation id="1398853756734560583">최대화</translation>
 <translation id="1399261165075500043">Google Play 서비스 약관을 로드할 수 없습니다</translation>
+<translation id="1400243387594338234">이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
 <translation id="1401216725754314428">새 탭에서 관련 사이트 자세히 알아보기</translation>
 <translation id="1402426911829176748">기기에 연결 중</translation>
 <translation id="1403222014593521787">프록시에 연결할 수 없습니다.</translation>
@@ -1941,6 +1944,7 @@
 <translation id="2326931316514688470">앱 새로고침(&amp;R)</translation>
 <translation id="2327492829706409234">앱 사용</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" />자 중 <ph name="CHARACTER" />번째 문자 입력</translation>
+<translation id="2328137272841210255">PIN 재설정</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 다시 시작해 주세요.</translation>
 <translation id="2328636661627946415">시크릿 모드에서 사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다. 시크릿 세션이 종료되면 쿠키가 삭제됩니다.</translation>
 <translation id="2329597144923131178">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 사용할 수 있습니다.</translation>
@@ -3789,6 +3793,7 @@
 <translation id="3670480940339182416">사이트에서 V8 옵티마이저를 사용할 수 있음</translation>
 <translation id="3672681487849735243">하드웨어에서 문제가 발견되었습니다.</translation>
 <translation id="3673097791729989571">로그인 호스팅 제공: <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">PIN이 업데이트됨</translation>
 <translation id="3673622964532248901">이 기기로 전송할 수 없습니다.</translation>
 <translation id="3675683621636519363">ChromeOS Flex에 비정상 종료 보고서, 진단, 사용 데이터 전송</translation>
 <translation id="367645871420407123">루트 비밀번호를 기본 테스트 이미지 값으로 설정하려면 비워두세요.</translation>
@@ -11325,6 +11330,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9101691533782776290">앱 실행</translation>
 <translation id="9102610709270966160">확장 프로그램 사용</translation>
 <translation id="9102864637938129124">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 이 설정을 사용하고 있습니다.</translation>
+<translation id="9103341231213089378">전송하려면 <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; 로컬 네트워크 &gt; Chrome에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="9107096627210171112">번역…</translation>
 <translation id="9107624673674616016">색연필</translation>

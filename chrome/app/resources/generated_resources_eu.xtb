@@ -953,7 +953,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1650407365859096313">Beste fitxa batean irekiko da, baimena hau da: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1650801028905250434">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatuko dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun. Hori aldatzeko, joan Ezarpenak &gt; Fitxategiak atalera.</translation>
 <translation id="1651008383952180276">Pasaesaldi bera idatzi behar duzu bietan</translation>
-<translation id="1651609627703324721">Fitxa hau errealitate birtuala erakusten ari da ikustaile batean</translation>
+<translation id="1651609627703324721">Fitxa hau EB erakusten ari da ikustaile batean</translation>
 <translation id="1652281434788353738">Pentsakorra</translation>
 <translation id="1652326691684645429">Gaitu Nearby Share</translation>
 <translation id="1652862280638399816">Google-ren Pasahitz-kudeatzailea macOS Keychain-ekin erabiltzeko, exekutatu berriro Chromium eta eman Keychain erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
@@ -3518,7 +3518,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3490695139702884919">Deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="3491171603443463516">PINa edo pasahitza ahazten bazaizu, gailuko datuak lehenera daitezke</translation>
 <translation id="3491669675709357988">Haurraren kontua ez dago konfiguratuta Family Link-en guraso-murriztapenetan. Konfiguratzen amaitzen duzunean gehi ditzakezu guraso-murriztapenak. Arakatu aplikazioan aurkituko duzu guraso-murriztapenei buruzko informazioa.</translation>
-<translation id="3491678231052507920">Webguneek errealitate birtualeko gailuak eta datuak erabili ohi dituzte errealitate birtualeko saioetan sartu ahal zaitezen</translation>
+<translation id="3491678231052507920">Webguneek errealitate birtualeko gailuak eta datuak erabili ohi dituzte EBko saioetan sartu ahal zaitezen</translation>
 <translation id="3493043608231401654">Kendu <ph name="TAB_TITLE" /> fitxa taldetik</translation>
 <translation id="3493486281776271508">Interneteko konexioa behar da</translation>
 <translation id="3493881266323043047">Balio-aldia</translation>
@@ -5487,7 +5487,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="489258173289528622">Gailua kargatzen ari ez denean inaktibo geratuz gero gauzatu beharreko ekintza</translation>
 <translation id="4892811427319351753">Ezin da gaitu <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="4892981359753171125">Aurpegi-keinuen bidez kontrolatzea</translation>
-<translation id="4893073099212494043">Gaitu hurrengo hitzaren iragarpena</translation>
+<translation id="4893073099212494043">Gaitu hurrengo hitzaren aurreikuspena</translation>
 <translation id="4893336867552636863">Hori eginez gero, betiko ezabatuko dira gailuko arakatze-datuak.</translation>
 <translation id="4893454800196085005">Ona: DVDa</translation>
 <translation id="4893522937062257019">Pantaila blokeatuan</translation>
@@ -6726,7 +6726,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5826993284769733527">Erdi-gardena</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827591412833386477">Erakutsi talde bereko webguneak</translation>
-<translation id="5827733057563115968">Hurrengo hitzaren iragarpena</translation>
+<translation id="5827733057563115968">Hurrengo hitzaren aurreikuspena</translation>
 <translation id="5828181959764767444">Ilunabarra</translation>
 <translation id="5828545842856466741">Gehitu profil bat…</translation>
 <translation id="5828633471261496623">Inprimatzen…</translation>
@@ -10549,7 +10549,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8587386584550433409">Doitu automatikoki pantailaren argitasuna</translation>
 <translation id="8587660243683137365">Instalatu orri hau aplikazio gisa</translation>
 <translation id="8588866096426746242">Erakutsi profilaren estatistikak</translation>
-<translation id="8588868914509452556"><ph name="WINDOW_TITLE" />: errealitate birtuala erakusten ikustailean</translation>
+<translation id="8588868914509452556"><ph name="WINDOW_TITLE" />: EB erakusten ikustailean</translation>
 <translation id="8590375307970699841">Konfiguratu eguneratze automatikoak</translation>
 <translation id="8591783563402255548">1 segundo</translation>
 <translation id="8592141010104017453">Ez erakutsi jakinarazpenik</translation>

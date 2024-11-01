@@ -169,6 +169,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Elige los idiomas que quieres instalar en este dispositivo. Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en el disco. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Tu hijo o hija puede usar este PIN para acceder a su dispositivo</translation>
 <translation id="1112420131909513020">La pestaña en segundo plano está usando Bluetooth</translation>
 <translation id="1112998165730922436">Se detuvo la transmisión</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar los perfiles.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: Parte del grupo <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivel de batería del Pixel Bud derecho <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">Se actualizó el PIN de tu hijo o hija</translation>
 <translation id="1133418583142946603">Agregar pestaña actual</translation>
 <translation id="1134363466745332968">Puedes realizar búsquedas en tu historial de navegación en función del contenido general de la página, no solo del título y la URL. Esto te ofrece resultados mejorados, ya sea que busques el historial de navegación en la barra de direcciones con @historial o desde la página Historial.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1397594434718759194">Accediste a Chrome desde estos dispositivos. Puedes usarlos como llaves de seguridad.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="1399261165075500043">No se pueden cargar las Condiciones del Servicio de Google Play</translation>
+<translation id="1400243387594338234">Puedes usar este PIN para acceder a tu dispositivo</translation>
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una pestaña nueva</translation>
 <translation id="1402426911829176748">Estableciendo conexión con el dispositivo</translation>
 <translation id="1403222014593521787">No se pudo establecer conexión con el proxy.</translation>
@@ -1923,6 +1926,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2326931316514688470">&amp;Volver a cargar la aplicación</translation>
 <translation id="2327492829706409234">Habilitar aplicación</translation>
 <translation id="2327920026543055248">Ingresar carácter <ph name="CHARACTER" /> de <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Restablece el PIN</translation>
 <translation id="2328561734797404498">Para usar <ph name="APP_NAME" />, reinicia el dispositivo.</translation>
 <translation id="2328636661627946415">Cuando estés en el modo Incógnito, los sitios pueden usar cookies únicamente para ver tu actividad de navegación en ese mismo sitio. Las cookies se borran al final de la sesión en modo Incógnito.</translation>
 <translation id="2329597144923131178">Accede a tu cuenta para ver los favoritos, el historial, las contraseñas y otras opciones de configuración en todos los dispositivos.</translation>
@@ -3771,6 +3775,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
 <translation id="3672681487849735243">Se detectó un error de fábrica.</translation>
 <translation id="3673097791729989571">El acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Se actualizó tu PIN</translation>
 <translation id="3673622964532248901">No se puede transmitir a este dispositivo.</translation>
 <translation id="3675683621636519363">Enviar informes de fallas y datos de uso y diagnóstico a ChromeOS Flex</translation>
 <translation id="367645871420407123">dejar en blanco si quieres configurar la contraseña de raíz en el valor de la imagen de prueba predeterminada</translation>
@@ -11308,6 +11313,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9101691533782776290">Iniciar aplicación</translation>
 <translation id="9102610709270966160">Habilitar extensión</translation>
 <translation id="9102864637938129124">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Este parámetro de configuración está activado.</translation>
+<translation id="9103341231213089378">Para transmitir contenido, otorga acceso a Chrome en <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Red local &gt; Chrome</translation>
 <translation id="9103868373786083162">Presiona para retroceder; usa el menú contextual para consultar el historial</translation>
 <translation id="9107096627210171112">T&amp;raducir…</translation>
 <translation id="9107624673674616016">Lápiz de color</translation>

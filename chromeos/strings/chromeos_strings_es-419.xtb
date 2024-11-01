@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
 <translation id="1061864016440983342">Usar sin ubicación</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">La tecla Insertar rápido no se puede usar para combinaciones de teclas personalizadas.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6526200165918397681">Coincidir con el fondo de pantalla</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
+<translation id="6531528791584205545">insertar rápido</translation>
 <translation id="6535178685492749208">No tienes conexión. Los comentarios se enviarán más tarde.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">el jueves</translation>

@@ -169,6 +169,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1110155001042129815">Attendre</translation>
 <translation id="1110965959145884739">Choisissez les langues à installer sur cet appareil. Les fichiers de langue sont partagés entre les utilisateurs pour économiser de l'espace disque. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">Votre enfant peut utiliser ce NIP pour se connecter à son appareil.</translation>
 <translation id="1112420131909513020">L'onglet d'arrière-plan utilise le Bluetooth</translation>
 <translation id="1112998165730922436">La diffusion est suspendue</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="113050636487300043">Choisissez un nom et un thème de couleur pour différencier les profils</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> : fait partie du groupe <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Niveau de la pile droite : <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Le NIP de votre enfant a été mis à jour</translation>
 <translation id="1133418583142946603">Ajouter l'onglet actuel</translation>
 <translation id="1134363466745332968">Vous pouvez effectuer des recherches dans votre historique de navigation en fonction du contenu général de la page et pas seulement du titre et de l'URL de la page. Vous obtiendrez ainsi de meilleurs résultats, que vous recherchiez dans l'historique de navigation dans la barre d'adresse à l'aide de @history ou à partir de la page Historique.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> sur <ph name="EMOJI_COUNT" />.</translation>
@@ -565,6 +567,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1397594434718759194">Vous êtes connecté à Chrome sur ces appareils, vous pouvez donc les utiliser comme clés de sécurité.</translation>
 <translation id="1398853756734560583">Agrandir</translation>
 <translation id="1399261165075500043">Impossible de charger les conditions d'utilisation de Google Play</translation>
+<translation id="1400243387594338234">Vous pouvez utiliser ce NIP pour vous connecter à votre appareil</translation>
 <translation id="1401216725754314428">En savoir plus sur les sites connexes dans un nouvel onglet</translation>
 <translation id="1402426911829176748">Connexion à votre appareil en cours…</translation>
 <translation id="1403222014593521787">Échec de connexion au serveur mandataire</translation>
@@ -1927,6 +1930,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2326931316514688470">Actua&amp;liser l'application</translation>
 <translation id="2327492829706409234">Activer l'application</translation>
 <translation id="2327920026543055248">Entrer le caractère <ph name="CHARACTER" /> sur <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Réinitialiser votre NIP</translation>
 <translation id="2328561734797404498">Veuillez redémarrer votre appareil pour utiliser <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quand vous êtes en mode de navigation privée, les sites peuvent uniquement utiliser des témoins pour connaître votre activité de navigation sur leur propre site. Les témoins sont supprimés à la fin de la session de navigation privée.</translation>
 <translation id="2329597144923131178">Connectez-vous pour synchroniser favoris, historique, mots de passe et autres sur vos appareils.</translation>
@@ -3777,6 +3781,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3670480940339182416">Les sites peuvent utiliser l'optimiseur V8</translation>
 <translation id="3672681487849735243">Une erreur a été détectée dans les paramètres par défaut.</translation>
 <translation id="3673097791729989571">Connexion hébergée par <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Votre NIP a été mis à jour</translation>
 <translation id="3673622964532248901">Vous n'êtes pas autorisé à diffuser du contenu sur cet appareil.</translation>
 <translation id="3675683621636519363">Envoyer des rapports de plantages et des données de diagnostics et d'utilisation à ChromeOS Flex</translation>
 <translation id="367645871420407123">ne remplissez pas ce champ si vous souhaitez associer le mot de passe racine à la valeur de l’image test par défaut</translation>
@@ -11312,6 +11317,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9101691533782776290">Lancer l'application</translation>
 <translation id="9102610709270966160">Activer l'extension</translation>
 <translation id="9102864637938129124">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est activé.</translation>
+<translation id="9103341231213089378">Pour diffuser du contenu, accordez l'accès à Chrome dans : <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Réseau local &gt; Chrome.</translation>
 <translation id="9103868373786083162">Appuyez pour revenir en arrière, menu contextuel pour voir l'historique</translation>
 <translation id="9107096627210171112">Traduire…</translation>
 <translation id="9107624673674616016">Crayon de couleur</translation>

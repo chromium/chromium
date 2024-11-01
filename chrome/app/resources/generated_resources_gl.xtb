@@ -169,6 +169,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1108938384783527433">Sincronización do historial</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Escolle que idiomas queres instalar neste dispositivo. Os ficheiros de idioma compártense cos usuarios para aforrar espazo no disco. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">O teu fillo ou filla pode usar este PIN para iniciar sesión no dispositivo</translation>
 <translation id="1112420131909513020">Hai unha pestana en segundo plano que está utilizando o Bluetooth</translation>
 <translation id="1112998165730922436">A emisión está en pausa</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MODEL" /> de <ph name="PRINTER_MANUFACTURER" /> (USB)</translation>
@@ -198,6 +199,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="113050636487300043">Para diferenciar entre os distintos perfís, escolle un nome e un tema de cor</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (forma parte do grupo <ph name="GROUP_NAME" />)</translation>
 <translation id="1130676589211693127">Nivel de batería do dispositivo dereito: <ph name="PERCENTAGE" /> %.</translation>
+<translation id="1131201598497838573">Actualizouse o PIN do teu fillo ou filla</translation>
 <translation id="1133418583142946603">Engadir pestana actual</translation>
 <translation id="1134363466745332968">Podes facer buscas no teu historial de navegación a partir do contido xeral da páxina e non só do seu título e URL. Obterás mellores resultados, tanto se fas buscas no historial de navegación desde a barra de enderezos usando @history como desde a páxina Historial.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
@@ -564,6 +566,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1397594434718759194">Tes a sesión iniciada en Chrome nestes dispositivos, polo que podes usalos como chaves de seguranza.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="1399261165075500043">Non se puideron cargar as Condicións de servizo de Google Play</translation>
+<translation id="1400243387594338234">Podes usar este PIN para iniciar sesión no teu dispositivo</translation>
 <translation id="1401216725754314428">Máis información sobre sitios relacionados nunha pestana nova</translation>
 <translation id="1402426911829176748">Conectando co teu dispositivo</translation>
 <translation id="1403222014593521787">Non se puido establecer conexión co proxy</translation>
@@ -1925,6 +1928,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2326931316514688470">Vo&amp;lver cargar aplicación</translation>
 <translation id="2327492829706409234">Activar aplicación</translation>
 <translation id="2327920026543055248">Meter carácter <ph name="CHARACTER" /> de <ph name="TOTAL" /></translation>
+<translation id="2328137272841210255">Restablece o teu PIN</translation>
 <translation id="2328561734797404498">Reinicia o teu dispositivo para utilizar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Estás no modo de incógnito, os sitios só poden utilizar as cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio. As cookies elimínanse ao final da sesión do modo mencionado.</translation>
 <translation id="2329597144923131178">Inicia sesión para ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos.</translation>
@@ -3776,6 +3780,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3670480940339182416">Os sitios poden usar o optimizador de V8</translation>
 <translation id="3672681487849735243">Detectouse un erro de fábrica</translation>
 <translation id="3673097791729989571">Inicio de sesión aloxado por <ph name="SAML_DOMAIN" /></translation>
+<translation id="3673287357837016374">Actualizouse o teu PIN</translation>
 <translation id="3673622964532248901">Non tes permiso para emitir contido neste dispositivo.</translation>
 <translation id="3675683621636519363">Enviar informes de fallos, así como datos de uso e diagnóstico, a ChromeOS Flex</translation>
 <translation id="367645871420407123">deixa o campo en branco se queres definir o contrasinal raíz no valor de imaxe de proba predeterminado</translation>
@@ -11308,6 +11313,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9101691533782776290">Iniciar aplicación</translation>
 <translation id="9102610709270966160">Activar extensión</translation>
 <translation id="9102864637938129124">Os sitios e os anunciantes poden comprender o rendemento dos anuncios. Esta opción de configuración está activada.</translation>
+<translation id="9103341231213089378">Para emitir contido, concédelle a Chrome acceso en: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; Rede local &gt; Chrome</translation>
 <translation id="9103868373786083162">Preme para retroceder e acceder ao menú contextual para ver o historial</translation>
 <translation id="9107096627210171112">T&amp;raducir...</translation>
 <translation id="9107624673674616016">Lapis de cor</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
 <translation id="1061864016440983342">लोकेसन प्रयोग गर्ने अनुमति नदिइकन प्रयोग गर्नुहोस्</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> मध्ये <ph name="INDEX" />, <ph name="NAME" />।</translation>
+<translation id="1069150558259542054">कस्टम सर्टकटहरूका हकमा क्विक इन्सर्ट प्रयोग गर्न मिल्दैन।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6526200165918397681">वालपेपरको रङसँग मिल्दो बनाउनुहोस्</translation>
 <translation id="6527081081771465939">अज्ञात WiFi सेक्युरिटी प्रोटोकोल</translation>
+<translation id="6531528791584205545">क्विक इन्सर्ट</translation>
 <translation id="6535178685492749208">तपाईं अफलाइन हुनुहुन्छ। प्रतिक्रिया पछि पठाइने छ।</translation>
 <translation id="6543412779435705598">टाकोहरू</translation>
 <translation id="6550369542114086980">बिहीवार</translation>

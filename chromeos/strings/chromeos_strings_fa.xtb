@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">اسکن شروع نشد</translation>
 <translation id="1061864016440983342">استفاده بدون مکان</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> از <ph name="COUNT" />، <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">‏نمی‌توان از Quick Insert (درج سریع) برای میان‌برهای سفارشی استفاده کرد.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">کاوش</translation>
 <translation id="6526200165918397681">مطابقت کاغذدیواری</translation>
 <translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
+<translation id="6531528791584205545">درج سریع</translation>
 <translation id="6535178685492749208">آفلاین هستید. بازخورد بعداً ارسال خواهد شد.</translation>
 <translation id="6543412779435705598">تاکو</translation>
 <translation id="6550369542114086980">در روز پنجشنبه</translation>

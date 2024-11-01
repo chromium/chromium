@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
 <translation id="1061864016440983342">الاستخدام بدون تفعيل الموقع الجغرافي</translation>
 <translation id="1062823486781306604">‫<ph name="INDEX" /> من أصل <ph name="COUNT" />، <ph name="NAME" /></translation>
+<translation id="1069150558259542054">لا تتوافق ميزة "الإدراج السريع" مع الاختصارات المخصَّصة.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">تم العثور على جدار حماية.</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">استكشاف</translation>
 <translation id="6526200165918397681">مطابقة درجات لون الخلفية</translation>
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
+<translation id="6531528791584205545">الإدراج السريع</translation>
 <translation id="6535178685492749208">لا يتوفّر اتصال بالإنترنت. سيتم إرسال التعليقات لاحقًا.</translation>
 <translation id="6543412779435705598">تاكو</translation>
 <translation id="6550369542114086980">يوم الخميس</translation>

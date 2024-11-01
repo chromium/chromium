@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">ਇਤਿਹਾਸ ਸਿੰਕ</translation>
 <translation id="1110155001042129815">ਠਹਿਰੋ</translation>
 <translation id="1110965959145884739">ਚੁਣੋ ਕਿ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕਿਹੜੀਆਂ ਭਾਸ਼ਾਵਾਂ ਸਥਾਪਤ ਕਰਨੀਆਂ ਹਨ। ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਚਾਉਣ ਲਈ ਵਰਤੋਂਕਾਰਾਂ ਵਿਚਕਾਰ ਭਾਸ਼ਾ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">ਤੁਹਾਡਾ ਬੱਚਾ ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਇਸ ਪਿੰਨ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="1112420131909513020">ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਬਲੂਟੁੱਥ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="1112998165730922436">ਕਾਸਟਿੰਗ ਨੂੰ ਰੋਕਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">ਪ੍ਰੋਫਾਈਲਾਂ ਵਿੱਚ ਫਰਕ ਕਰਨ ਲਈ ਕੋਈ ਨਾਮ ਅਤੇ ਰੰਗ ਥੀਮ ਚੁਣੋ</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ</translation>
 <translation id="1130676589211693127">ਸੱਜੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="PERCENTAGE" />%.</translation>
+<translation id="1131201598497838573">ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਪਿੰਨ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1133418583142946603">ਮੋਜੂਦਾ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1134363466745332968">ਤੁਸੀਂ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਪੰਨਾ ਸਿਰਲੇਖ ਅਤੇ URL ਹੀ ਨਹੀਂ, ਬਲਕਿ ਆਮ ਪੰਨੇ ਦੀ ਸਮੱਗਰੀ ਦੇ ਆਧਾਰ 'ਤੇ ਵੀ ਖੋਜ ਸਕਦੇ ਹੋ। ਇਸ ਨਾਲ ਤੁਹਾਨੂੰ ਬਿਹਤਰ ਨਤੀਜੇ ਮਿਲਦੇ ਹਨ, ਭਾਵੇਂ ਤੁਸੀਂ @history ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਪਤਾ ਬਾਰ ਵਿੱਚ ਜਾਂ ਇਤਿਹਾਸ ਪੰਨੇ ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀ ਖੋਜ ਕਰ ਰਹੇ ਹੋਵੋ।</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> ਵਿੱਚੋਂ <ph name="EMOJI_INDEX" />.</translation>
@@ -565,6 +567,7 @@
 <translation id="1397594434718759194">ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ, ਇਸ ਲਈ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਸੁਰੱਖਿਆ ਕੁੰਜੀਆਂ ਵਜੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1398853756734560583">ਅਧਿਕਤਮ ਬਣਾਓ</translation>
 <translation id="1399261165075500043">Google Play ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="1400243387594338234">ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਇਸ ਪਿੰਨ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="1401216725754314428">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="1402426911829176748">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1403222014593521787">ਪ੍ਰੌਕਸੀ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -1940,6 +1943,7 @@
 <translation id="2326931316514688470">&amp;ਐਪ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="2327492829706409234">ਐਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" /> ਵਿੱਚੋਂ <ph name="CHARACTER" /> ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="2328137272841210255">ਆਪਣਾ ਪਿੰਨ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> ਨੂੰ ਵਰਤਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="2328636661627946415">ਜਦੋਂ ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਹੁੰਦੇ ਹੋ, ਤਾਂ ਸਾਈਟਾਂ ਆਪਣੀ ਖੁਦ ਦੀ ਸਾਈਟ 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਸਿਰਫ਼ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਇਨਕੋਗਨਿਟੋ ਸੈਸ਼ਨ ਦੇ ਅੰਤ ਵਿੱਚ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾ ਦਿੰਦਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2329597144923131178">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -3789,6 +3793,7 @@
 <translation id="3670480940339182416">ਸਾਈਟਾਂ V8 ਔਪਟੀਮਾਈਜ਼ਰ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3672681487849735243">ਇੱਕ ਫੈਕਟਰੀ ਗੜਬੜ ਖੋਜੀ ਗਈ ਹੈ</translation>
 <translation id="3673097791729989571">ਸਾਈਨ-ਇਨ <ph name="SAML_DOMAIN" /> ਵੱਲੋਂ ਹੋਸਟ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="3673287357837016374">ਤੁਹਾਡਾ ਪਿੰਨ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3673622964532248901">ਤੁਹਾਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕਾਸਟ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3675683621636519363">ChromeOS Flex ਨੂੰ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਅਤੇ ਤਸ਼ਖੀਸੀ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜੋ</translation>
 <translation id="367645871420407123">ਜੇਕਰ ਤੁਸੀਂ ਰੂਟ ਪਾਸਵਰਡ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਟੈਸਟ ਚਿੱਤਰ ਮੁੱਲ 'ਤੇ ਸੈਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਖਾਲੀ ਛੱਡੋ</translation>
@@ -11326,6 +11331,7 @@
 <translation id="9101691533782776290">ਐਪ ਲਾਂਚ ਕਰੋ</translation>
 <translation id="9102610709270966160">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9102864637938129124">ਸਾਈਟਾਂ ਅਤੇ ਵਿਗਿਆਪਨਦਾਤਾ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਬਾਰੇ ਸਮਝ ਸਕਦੇ ਹਨ। ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।</translation>
+<translation id="9103341231213089378">ਕਾਸਟ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਦਿਓ: <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; ਸਥਾਨਕ ਨੈੱਟਵਰਕ &gt; Chrome</translation>
 <translation id="9103868373786083162">ਇਤਿਹਾਸ ਦੇਖਣ ਲਈ ਪਿੱਛੇ ਜਾਓ, ਸੰਦਰਭੀ ਮੀਨੂ ਦਬਾਓ</translation>
 <translation id="9107096627210171112">ਅ&amp;ਨੁਵਾਦ...</translation>
 <translation id="9107624673674616016">ਰੰਗੀਨ ਪੈੱਨਸਿਲ</translation>

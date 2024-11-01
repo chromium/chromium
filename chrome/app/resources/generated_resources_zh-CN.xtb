@@ -169,6 +169,7 @@
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1110155001042129815">等待</translation>
 <translation id="1110965959145884739">选择要在此设备上安装哪些语言。为节省磁盘可用空间，系统会让用户共用语言包文件。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1111932478203988717">您的孩子可以使用此 PIN 码登录其设备</translation>
 <translation id="1112420131909513020">背景标签页正在使用蓝牙</translation>
 <translation id="1112998165730922436">投放已暂停</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
@@ -198,6 +199,7 @@
 <translation id="113050636487300043">欢迎选择名字和颜色主题，以便区分个人资料</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 属于“<ph name="GROUP_NAME" />”群组</translation>
 <translation id="1130676589211693127">右侧耳机的电池电量为 <ph name="PERCENTAGE" />%。</translation>
+<translation id="1131201598497838573">孩子的 PIN 码已更新</translation>
 <translation id="1133418583142946603">添加当前标签页</translation>
 <translation id="1134363466745332968">您可以根据一般网页内容（而不仅仅是网页标题和网址）搜索您的浏览记录。无论您是使用 @history 在地址栏中搜索浏览记录，还是在“历史记录”页面中搜索，这都能让您获得更优质的搜索结果。</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 个，共 <ph name="EMOJI_COUNT" /> 个。</translation>
@@ -564,6 +566,7 @@
 <translation id="1397594434718759194">您已在这些设备上登录 Chrome，因此您可以将他们用作安全密钥。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="1399261165075500043">无法加载《Google Play 服务条款》</translation>
+<translation id="1400243387594338234">您可以使用此 PIN 码登录设备</translation>
 <translation id="1401216725754314428">在新标签页中详细了解相关网站</translation>
 <translation id="1402426911829176748">正在连接到您的设备</translation>
 <translation id="1403222014593521787">无法连接到代理</translation>
@@ -1919,6 +1922,7 @@
 <translation id="2326931316514688470">重新加载应用(&amp;R)</translation>
 <translation id="2327492829706409234">启用应用</translation>
 <translation id="2327920026543055248">输入第 <ph name="CHARACTER" /> 个字符（共 <ph name="TOTAL" /> 个）</translation>
+<translation id="2328137272841210255">重置 PIN 码</translation>
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
 <translation id="2328636661627946415">当您处于无痕模式时，网站只能使用 Cookie 查看您在相应网站上的浏览活动。无痕式会话结束时，系统会删除 Cookie。</translation>
 <translation id="2329597144923131178">登录后可获取您所有设备上保存的书签、历史记录、密码和其他设置。</translation>
@@ -3764,6 +3768,7 @@
 <translation id="3670480940339182416">网站可以使用 V8 优化工具</translation>
 <translation id="3672681487849735243">检测到出厂错误</translation>
 <translation id="3673097791729989571">由 <ph name="SAML_DOMAIN" /> 托管的登录服务</translation>
+<translation id="3673287357837016374">您的 PIN 码已更新</translation>
 <translation id="3673622964532248901">您不得投放到此设备。</translation>
 <translation id="3675683621636519363">向 ChromeOS Flex 发送崩溃报告以及诊断信息和使用情况数据</translation>
 <translation id="367645871420407123">如果您要将根密码设为默认的测试图片值，则将此字段留空</translation>
@@ -11295,6 +11300,7 @@
 <translation id="9101691533782776290">启动应用</translation>
 <translation id="9102610709270966160">启用扩展程序</translation>
 <translation id="9102864637938129124">网站和广告主可以了解广告效果。此设置已开启。</translation>
+<translation id="9103341231213089378">如需投屏，请在以下位置授予 Chrome 访问权限：<ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; 本地网络 &gt; Chrome</translation>
 <translation id="9103868373786083162">点按该按钮可后退，点按上下文菜单可查看历史记录</translation>
 <translation id="9107096627210171112">翻译(&amp;R)…</translation>
 <translation id="9107624673674616016">彩铅</translation>

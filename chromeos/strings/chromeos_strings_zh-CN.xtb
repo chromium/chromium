@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1061864016440983342">在不开启位置信息服务的情况下使用</translation>
 <translation id="1062823486781306604">第 <ph name="INDEX" /> 个，共 <ph name="COUNT" /> 个，<ph name="NAME" />。</translation>
+<translation id="1069150558259542054">快捷插入键不能用作自定义快捷键。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
@@ -1127,6 +1128,7 @@
 <translation id="6517239166834772319">探索</translation>
 <translation id="6526200165918397681">匹配壁纸</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全协议</translation>
+<translation id="6531528791584205545">快捷插入</translation>
 <translation id="6535178685492749208">您目前处于离线状态。系统会在晚些时候发送您的反馈。</translation>
 <translation id="6543412779435705598">墨西哥卷饼</translation>
 <translation id="6550369542114086980">在周四</translation>
