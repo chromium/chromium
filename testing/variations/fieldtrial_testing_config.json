@@ -16521,7 +16521,8 @@
                         "RunTasksByBatches",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SqlWALModeOnSegmentationDatabase",
+                        "UIPumpImprovementsWin"
                     ]
                 }
             ]
@@ -23443,21 +23444,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UIEnableSharedImageCacheForGpu"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UIPumpImprovementsWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UIPumpImprovementsWin"
                     ]
                 }
             ]
