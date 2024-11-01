@@ -736,11 +736,6 @@ BASE_FEATURE(kEnableKeyboardBacklightControlInSettings,
              "EnableKeyboardBacklightControlInSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables keyboard backlight toggle.
-BASE_FEATURE(kEnableKeyboardBacklightToggle,
-             "EnableKeyboardBacklightToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable keyboard rewriter fix.
 BASE_FEATURE(kEnableKeyboardRewriterFix,
              "EnableKeyboardRewriterFix",
@@ -4126,10 +4121,6 @@ bool IsKerberosRememberPasswordByDefaultEnabled() {
 bool IsKeyboardBacklightControlInSettingsEnabled() {
   return base::FeatureList::IsEnabled(
       kEnableKeyboardBacklightControlInSettings);
-}
-
-bool IsKeyboardBacklightToggleEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKeyboardBacklightToggle);
 }
 
 bool IsKeyboardRewriterFixEnabled() {

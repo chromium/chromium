@@ -3381,11 +3381,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-keyboard-backlight-toggle",
-    "owners": [ "rtinkoff@chromium.org" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "enable-keyboard-rewriter-fix",
     "owners": [ "hidehiko@chromium.org" ],
     "expiry_milestone": 140

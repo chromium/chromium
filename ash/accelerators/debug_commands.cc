@@ -187,10 +187,8 @@ void HandleTogglePowerButtonMenu() {
 }
 
 void HandleToggleKeyboardBacklight() {
-  if (ash::features::IsKeyboardBacklightToggleEnabled()) {
-    base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
-    accelerators::ToggleKeyboardBacklight();
-  }
+  base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+  accelerators::ToggleKeyboardBacklight();
 }
 
 void HandleToggleMicrophoneMute() {

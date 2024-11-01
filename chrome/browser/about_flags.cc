@@ -9010,10 +9010,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kEnableKeyboardBacklightControlInSettings)},
-    {"enable-keyboard-backlight-toggle",
-     flag_descriptions::kEnableKeyboardBacklightToggleName,
-     flag_descriptions::kEnableKeyboardBacklightToggleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableKeyboardBacklightToggle)},
     {"enable-keyboard-rewriter-fix",
      flag_descriptions::kEnableKeyboardRewriterFixName,
      flag_descriptions::kEnableKeyboardRewriterFixDescription, kOsCrOS,

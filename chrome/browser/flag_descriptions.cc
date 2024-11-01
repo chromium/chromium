@@ -6548,12 +6548,6 @@ const char kEnableKeyboardBacklightControlInSettingsName[] =
 const char kEnableKeyboardBacklightControlInSettingsDescription[] =
     "Enable control of keyboard backlight directly from ChromeOS Settings";
 
-const char kEnableKeyboardBacklightToggleName[] =
-    "Enable Keyboard Backlight Toggle.";
-const char kEnableKeyboardBacklightToggleDescription[] =
-    "Enable toggling of the keyboard backlight. By "
-    "default, this flag is enabled.";
-
 const char kEnableKeyboardRewriterFixName[] = "Use new Keyboard Rewriter.";
 const char kEnableKeyboardRewriterFixDescription[] =
     "Enable new Keyboard Rewriter.";

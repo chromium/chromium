@@ -246,8 +246,6 @@ BASE_DECLARE_FEATURE(kEnableFastInkForSoftwareCursor);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableKeyboardBacklightControlInSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEnableKeyboardBacklightToggle);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableKeyboardRewriterFix);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableLazyLoginWebUILoading);
@@ -1262,8 +1260,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKerberosRememberPasswordByDefaultEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightControlInSettingsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKeyboardRewriterFixEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksInOobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLacrosExtensionPrintingEnabled();
