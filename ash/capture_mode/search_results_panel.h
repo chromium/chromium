@@ -10,9 +10,11 @@
 #include "ash/ash_export.h"
 #include "ash/wm/system_panel_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
+class Button;
 class Textfield;
 }  // namespace views
 
@@ -32,10 +34,12 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   SearchResultsPanel& operator=(const SearchResultsPanel&) = delete;
   ~SearchResultsPanel() override;
 
-  static std::unique_ptr<views::Widget> CreateWidget(aura::Window* const root,
-                                                     const gfx::Rect& bounds);
+  static views::UniqueWidgetPtr CreateWidget(aura::Window* const root,
+                                             const gfx::Rect& bounds);
 
   AshWebView* search_results_view() const { return search_results_view_; }
+  views::Button* close_button() const { return close_button_; }
+
   views::Textfield* GetSearchBoxTextfield() const;
 
   // Sets the search box image thumbnail.
@@ -51,6 +55,7 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   // Owned by the views hierarchy.
   raw_ptr<SunfishSearchBoxView> search_box_view_;
   raw_ptr<AshWebView> search_results_view_;
+  raw_ptr<views::Button> close_button_;
 
   base::WeakPtrFactory<SearchResultsPanel> weak_ptr_factory_{this};
 };

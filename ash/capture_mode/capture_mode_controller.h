@@ -719,7 +719,7 @@ class ASH_EXPORT CaptureModeController
   RecordingType recording_type_ = RecordingType::kWebM;
 
   // Contains `SearchResultsPanel` as its contents view.
-  std::unique_ptr<views::Widget> search_results_panel_widget_;
+  views::UniqueWidgetPtr search_results_panel_widget_;
 
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;

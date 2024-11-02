@@ -164,6 +164,7 @@ SearchResultsPanel::SearchResultsPanel() {
                       .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
                       .SetAccessibleName(u"Close Panel")
                       .Build())
+                  .CopyAddressTo(&close_button_)
                   .SetCallback(base::BindRepeating(
                       &SearchResultsPanel::OnCloseButtonPressed,
                       weak_ptr_factory_.GetWeakPtr()))
@@ -197,7 +198,7 @@ SearchResultsPanel::SearchResultsPanel() {
 SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
-std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget(
+views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(
     aura::Window* root,
     const gfx::Rect& bounds) {
   views::Widget::InitParams params(

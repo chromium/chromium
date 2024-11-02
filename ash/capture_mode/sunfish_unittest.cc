@@ -54,6 +54,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -883,6 +884,30 @@ TEST_F(SunfishTest, SwitchSessionsWhilePanelOpen) {
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
   ASSERT_TRUE(search_results_panel);
   EXPECT_EQ(u"cat", search_results_panel->GetSearchBoxTextfield()->GetText());
+}
+
+// Tests no dangling ptr and crash when closing the panel.
+TEST_F(SunfishTest, NoCrashOnUpdateCaptureUisOpacity) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch();
+  auto* panel_widget = controller->search_results_panel_widget();
+  ASSERT_TRUE(panel_widget);
+
+  // Click the close button and wait for it to close.
+  LeftClickOn(controller->GetSearchResultsPanel()->close_button());
+  views::test::WidgetDestroyedWaiter(panel_widget).Wait();
+  EXPECT_FALSE(controller->search_results_panel_widget());
+
+  // Start sunfish again and re-select a region. Test no crash.
+  controller->StartSunfishSession();
+  SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/false);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(controller->search_results_panel_widget());
 }
 
 class ScannerTest : public AshTestBase {
