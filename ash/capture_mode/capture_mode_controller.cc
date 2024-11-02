@@ -658,7 +658,7 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
-  DCHECK(features::IsSunfishFeatureEnabled() && IsActive());
+  DCHECK(features::IsSunfishFeatureEnabled());
   if (!search_results_panel_widget_) {
     const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
         capture_mode_session_->current_root(),
@@ -667,11 +667,13 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
         capture_mode_session_->current_root(), panel_bounds);
     search_results_panel_widget_->Show();
   }
-  // TODO(b/359317857): Determine whether to hide or refresh the panel if a new
-  // region selection and/or session is started.
   auto* search_results_panel = GetSearchResultsPanel();
   search_results_panel->SetSearchBoxImage(image);
   search_results_panel->search_results_view()->Navigate(url);
+  if (IsActive() && capture_mode_session_->active_behavior()
+                        ->ShouldEndSessionOnShowingSearchResults()) {
+    Stop();
+  }
 }
 
 void CaptureModeController::OnModifyingRegionSelection() {
@@ -815,10 +817,6 @@ void CaptureModeController::Stop() {
   capture_mode_session_->ReportSessionHistograms();
   capture_mode_session_->Shutdown();
   capture_mode_session_.reset();
-  // Close the results panel if the session type changes. This ensures a clean
-  // state and avoids potential edge cases.
-  // TODO(crbug.com/376134529): See if we can hide the panel instead.
-  search_results_panel_widget_.reset();
 
   delegate_->OnSessionStateChanged(/*started=*/false);
 }
@@ -1199,8 +1197,8 @@ void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
   delegate_->SendMultimodalSearch(
       *image.bitmap(), user_capture_region_, text,
       base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          capture_mode_session(), user_capture_region_, image));
+                          weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
+                          image));
 }
 
 void CaptureModeController::OnRecordingEnded(
@@ -1826,8 +1824,7 @@ void CaptureModeController::OnImageCapturedForSearch(
         bitmap, user_capture_region_,
         base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
                             weak_ptr_factory_.GetWeakPtr(),
-                            capture_mode_session(), user_capture_region_,
-                            image));
+                            user_capture_region_, image));
   }
 }
 
@@ -1875,15 +1872,10 @@ void CaptureModeController::OnScannerActionsFetched(
   }
 }
 
-void CaptureModeController::OnSearchUrlFetched(BaseCaptureModeSession* session,
-                                               const gfx::Rect& captured_region,
+void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
                                                const gfx::ImageSkia& image,
                                                GURL url) {
-  // TODO(crbug.com/376168016): `session` is dangling if the session at time of
-  // the search request is destroyed before the search request completes. Fix
-  // this (e.g. use a weak ptr instead).
-  if (IsActive() && session == capture_mode_session() &&
-      captured_region == user_capture_region_) {
+  if (captured_region == user_capture_region_) {
     ShowSearchResultsPanel(image, url);
   }
 }

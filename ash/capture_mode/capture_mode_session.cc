@@ -1822,7 +1822,8 @@ void CaptureModeSession::DoPerformCapture() {
   controller_->PerformCapture();  // `this` can be deleted after this.
 }
 
-void CaptureModeSession::DoPerformImageSearch() {
+void CaptureModeSession::OnSearchButtonPressed() {
+  // See if we can move this to `PerformImageSearch()`.
   controller_->PerformCapture(
       PerformCaptureType::kSearch);  // `this` can be deleted after this.
 }
@@ -2445,7 +2446,7 @@ void CaptureModeSession::OnLocatedEventReleased(
     if (features::IsSunfishFeatureEnabled()) {
       // TODO(b/373896226): Update string and icon with UX specs.
       capture_mode_util::AddActionButton(
-          base::BindRepeating(&CaptureModeSession::DoPerformImageSearch,
+          base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()),
           u"Search", &kCaptureModeImageIcon,
           ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));

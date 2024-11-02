@@ -255,7 +255,7 @@ class ASH_EXPORT CaptureModeSession
 
   // Called when the user clicks the Search button while in default capture mode
   // session.
-  void DoPerformImageSearch();
+  void OnSearchButtonPressed();
 
   // Called when the drop-down button in the `capture_label_widget_` is pressed
   // which toggles the recording type menu on and off.

@@ -793,11 +793,43 @@ TEST_F(SunfishTest, SearchActionButton) {
                           /*release_mouse=*/true, /*verify_region=*/true);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
 
+  // Click on the "Search" button. Test we end capture mode.
   LeftClickOn(session_test_api.GetActionButtons()[0]);
   WaitForImageCapturedForSearch();
   EXPECT_TRUE(controller->search_results_panel_widget());
+  EXPECT_FALSE(controller->IsActive());
+}
 
-  // TODO(b/373896226): Determine whether to end capture mode session.
+TEST_F(SunfishTest, SearchBoxInDefaultMode) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_EQ(0, test_delegate->num_multimodal_search_requests());
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+
+  // Open the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  CaptureModeSessionTestApi session_test_api(session);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  WaitForImageCapturedForSearch();
+  auto* search_results_panel = controller->GetSearchResultsPanel();
+  ASSERT_TRUE(search_results_panel);
+
+  // Click on the search box.
+  views::Textfield* textfield = search_results_panel->GetSearchBoxTextfield();
+  LeftClickOn(textfield);
+  EXPECT_TRUE(textfield->HasFocus());
+
+  // Type and press Enter. Test it makes a multimodal search.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_EQ(u"a", textfield->GetText());
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_EQ(1, test_delegate->num_multimodal_search_requests());
 }
 
 // Tests that the search box sends multimodal search requests.
@@ -807,48 +839,50 @@ TEST_F(SunfishTest, SearchBoxTextfield) {
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   EXPECT_EQ(0, test_delegate->num_multimodal_search_requests());
 
-  // Test in both Default and Sunfish behavior.
-  for (const BehaviorType behavior_type :
-       {BehaviorType::kDefault, BehaviorType::kSunfish}) {
-    if (behavior_type == BehaviorType::kDefault) {
-      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-    } else {
-      controller->StartSunfishSession();
-    }
-    VerifyActiveBehavior(behavior_type);
-    auto* session =
-        static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  controller->StartSunfishSession();
+  VerifyActiveBehavior(BehaviorType::kSunfish);
 
-    // Open the search results panel.
-    SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
-                            /*release_mouse=*/true, /*verify_region=*/true);
-    if (behavior_type == BehaviorType::kDefault) {
-      CaptureModeSessionTestApi session_test_api(session);
-      ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
-      LeftClickOn(session_test_api.GetActionButtons()[0]);
-    }
+  // Open the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
 
-    WaitForImageCapturedForSearch();
-    auto* widget = controller->search_results_panel_widget();
-    ASSERT_TRUE(widget);
+  WaitForImageCapturedForSearch();
+  auto* widget = controller->search_results_panel_widget();
+  ASSERT_TRUE(widget);
 
-    // Click on the search box.
-    auto* search_results_panel =
-        views::AsViewClass<SearchResultsPanel>(widget->GetContentsView());
-    ASSERT_TRUE(search_results_panel);
-    views::Textfield* textfield = search_results_panel->GetSearchBoxTextfield();
-    LeftClickOn(textfield);
-    EXPECT_TRUE(textfield->HasFocus());
+  // Click on the search box.
+  auto* search_results_panel =
+      views::AsViewClass<SearchResultsPanel>(widget->GetContentsView());
+  ASSERT_TRUE(search_results_panel);
+  views::Textfield* textfield = search_results_panel->GetSearchBoxTextfield();
+  LeftClickOn(textfield);
+  EXPECT_TRUE(textfield->HasFocus());
 
-    // Type and press Enter. Test it makes a multimodal search.
-    const int num_requests_before_search =
-        test_delegate->num_multimodal_search_requests();
-    PressAndReleaseKey(ui::VKEY_A);
-    EXPECT_EQ(u"a", textfield->GetText());
-    PressAndReleaseKey(ui::VKEY_RETURN);
-    EXPECT_EQ(num_requests_before_search + 1,
-              test_delegate->num_multimodal_search_requests());
-  }
+  // Type and press Enter. Test it makes a multimodal search.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_EQ(u"a", textfield->GetText());
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_EQ(1, test_delegate->num_multimodal_search_requests());
+}
+
+// Tests that the search results panel is preserved between sessions.
+TEST_F(SunfishTest, SwitchSessionsWhilePanelOpen) {
+  // Open the search results panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch();
+  auto* search_results_panel = controller->GetSearchResultsPanel();
+  ASSERT_TRUE(search_results_panel);
+  search_results_panel->SetSearchBoxText(u"cat");
+  EXPECT_EQ(u"cat", search_results_panel->GetSearchBoxTextfield()->GetText());
+
+  // Switch to default mode. Test the panel remains the same.
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  ASSERT_TRUE(search_results_panel);
+  EXPECT_EQ(u"cat", search_results_panel->GetSearchBoxTextfield()->GetText());
 }
 
 class ScannerTest : public AshTestBase {

@@ -104,6 +104,7 @@ class DefaultBehavior : public CaptureModeBehavior {
     return controller->type() == CaptureModeType::kImage &&
            controller->source() == CaptureModeSource::kRegion;
   }
+  bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
 };
 
 // -----------------------------------------------------------------------------
@@ -494,12 +495,14 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
 bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
     PerformCaptureType capture_type) const {
   // We don't need to bring capture mode UIs back if `type_` is
-  // `CaptureModeType::kImage`, except if the capture type is search, since the
-  // session is about to shutdown anyways at these use cases, so it's better to
-  // avoid any wasted effort. In the case of video recording, we need to reshow
-  // the UIs so that we can start the 3-second count down animation.
+  // `CaptureModeType::kImage` or `capture_type` is
+  // `PerformCaptureType::kSearch` since the session is about to shutdown
+  // anyways at these use cases, so it's better to avoid any wasted effort. In
+  // the case of video recording, we need to reshow the UIs so that we can start
+  // the 3-second count down animation.
   return capture_type == PerformCaptureType::kTextDetection ||
-         CaptureModeController::Get()->type() != CaptureModeType::kImage;
+         (capture_type != PerformCaptureType::kSearch &&
+          CaptureModeController::Get()->type() != CaptureModeType::kImage);
 }
 
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
@@ -511,6 +514,10 @@ bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
 
 bool CaptureModeBehavior::ShouldShowCaptureButtonAfterRegionSelected() const {
   return true;
+}
+
+bool CaptureModeBehavior::ShouldEndSessionOnShowingSearchResults() const {
+  return false;
 }
 
 void CaptureModeBehavior::CreateCaptureFolder(

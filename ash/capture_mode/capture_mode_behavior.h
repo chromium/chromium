@@ -100,6 +100,7 @@ class CaptureModeBehavior {
   // search and copy text after region selection.
   virtual bool ShouldShowDefaultActionButtonsAfterRegionSelected() const;
   virtual bool ShouldShowCaptureButtonAfterRegionSelected() const;
+  virtual bool ShouldEndSessionOnShowingSearchResults() const;
   // Returns the full path for the capture file. If the creation of the path
   // failed, the path provided will be empty.
   using OnCaptureFolderCreatedCallback =
