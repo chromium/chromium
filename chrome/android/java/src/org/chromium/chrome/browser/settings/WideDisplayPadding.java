@@ -77,7 +77,7 @@ public class WideDisplayPadding {
                 fragment instanceof CustomDividerFragment ? (CustomDividerFragment) fragment : null;
 
         Supplier<Integer> itemOffsetSupplier =
-                () -> getItemOffset(mUiConfig.getCurrentDisplayStyle());
+                () -> getItemOffset(mUiConfig.getCurrentDisplayStyle(), recyclerView);
         PaddedItemDecorationWithDivider itemDecoration =
                 new PaddedItemDecorationWithDivider(itemOffsetSupplier);
         Drawable dividerDrawable = getDividerDrawable();
@@ -121,10 +121,10 @@ public class WideDisplayPadding {
     }
 
     @NonNull
-    private Integer getItemOffset(DisplayStyle displayStyle) {
+    private Integer getItemOffset(DisplayStyle displayStyle, View view) {
         if (displayStyle.isWide()) {
             return ViewResizerUtil.computePaddingForWideDisplay(
-                    mContext, null, mMinWidePaddingPixels);
+                    mContext, view, mMinWidePaddingPixels);
         }
         return 0;
     }
