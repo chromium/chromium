@@ -221,43 +221,43 @@ class CrosAudioConfigImplTest : public testing::Test {
   }
 
   void SetInputGainPercentFromFrontEnd(int gain_percent) {
-    // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetInputGainPercent(gain_percent);
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateRefreshVoiceIsolationState() {
-    // TODO(hunghsienchen): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->RefreshVoiceIsolationState();
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateSetNoiseCancellationEnabled(bool enabled) {
-    // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetNoiseCancellationEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateSetStyleTransferEnabled(bool enabled) {
-    // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetStyleTransferEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateSetForceRespectUiGainsEnabled(bool enabled) {
-    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetForceRespectUiGainsEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateSetHfpMicSrEnabled(bool enabled) {
-    // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetHfpMicSrEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateSetSpatialAudioEnabled(bool enabled) {
-    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetSpatialAudioEnabled(enabled);
     base::RunLoop().RunUntilIdle();
   }
@@ -415,14 +415,14 @@ class CrosAudioConfigImplTest : public testing::Test {
   }
 
   void SetForceRespectUiGainsStatePref(bool enabled) {
-    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     audio_pref_handler_->SetForceRespectUiGainsState(
         /*force_respect_ui_gains=*/enabled);
     base::RunLoop().RunUntilIdle();
   }
 
   void SetForceRespectUiGainsState(bool force_respect_ui_gains_on) {
-    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     cras_audio_handler_->SetForceRespectUiGainsState(force_respect_ui_gains_on);
     base::RunLoop().RunUntilIdle();
   }
@@ -465,14 +465,14 @@ class CrosAudioConfigImplTest : public testing::Test {
   }
 
   void SetSpatialAudioStatePref(bool enabled) {
-    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     audio_pref_handler_->SetSpatialAudioState(
         /*force_respect_ui_gains=*/enabled);
     base::RunLoop().RunUntilIdle();
   }
 
   void SetSpatialAudioState(bool spatial_audio_on) {
-    // TODO(eddyhsu): Replace RunUntilIdle with Run and QuitClosure.
+    // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
     cras_audio_handler_->SetSpatialAudioState(spatial_audio_on);
     base::RunLoop().RunUntilIdle();
   }
