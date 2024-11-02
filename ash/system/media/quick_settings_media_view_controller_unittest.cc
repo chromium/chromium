@@ -65,4 +65,18 @@ TEST_F(QuickSettingsMediaViewControllerTest, ShowOrHideMediaItem) {
   EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
 }
 
+TEST_F(QuickSettingsMediaViewControllerTest,
+       HideMediaItemAfterDestroyingViewDoesntCrash) {
+  const std::string item_id = "item_id";
+  controller()->ShowMediaItem(item_id, item());
+  // Prevent relayout, since `controller()` gets mad during relayout once the
+  // view is gone.
+  view()->parent()->SetVisible(false);
+  view()->parent()->RemoveChildViewT<QuickSettingsMediaView>(view());
+  // The controller will try to talk to the view to hide the item, but the
+  // view just got destroyed. This should no-op successfully, since the
+  // destruction order isn't guaranteed.
+  controller()->HideMediaItem(item_id);
+}
+
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -66,6 +67,8 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
     return items_;
   }
 
+  base::WeakPtr<QuickSettingsMediaView> AsWeakPtr();
+
  private:
   raw_ptr<QuickSettingsMediaViewController> controller_ = nullptr;
 
@@ -80,6 +83,8 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   std::map<const std::string,
            raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
       items_;
+
+  base::WeakPtrFactory<QuickSettingsMediaView> weak_factory_{this};
 };
 
 }  // namespace ash
