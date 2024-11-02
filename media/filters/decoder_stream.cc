@@ -584,7 +584,9 @@ void DecoderStream<StreamType>::OnDecodeDone(
   if (end_of_stream) {
     DCHECK(!pending_decode_requests_);
     decoding_eos_ = false;
-    if (status.is_ok()) {
+    if (status.is_ok() ||
+        status.code() ==
+            DecoderStatus::Codes::kElidedEndOfStreamForConfigChange) {
       // Even if no frames were decoded, completing a flush counts as
       // successfully selecting a decoder. This allows back-to-back config
       // changes to select from all decoders.
@@ -631,6 +633,16 @@ void DecoderStream<StreamType>::OnDecodeDone(
 
       if (state_ == State::kStateFlushingDecoder && !pending_decode_requests_) {
         ReinitializeDecoder();
+      }
+      return;
+
+    case DecoderStatus::Codes::kElidedEndOfStreamForConfigChange:
+      DCHECK(end_of_stream);
+      DCHECK(!pending_decode_requests_);
+      DCHECK_EQ(state_, State::kStateFlushingDecoder);
+      state_ = State::kStateNormal;
+      if (CanDecodeMore()) {
+        ReadFromDemuxerStream();
       }
       return;
 

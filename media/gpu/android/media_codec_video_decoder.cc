@@ -994,8 +994,15 @@ bool MediaCodecVideoDecoder::QueueInput() {
           << decoder_config_.coded_size().ToString() << " to "
           << new_config.coded_size().ToString();
       std::move(pending_decodes_.front().decode_cb)
-          .Run(DecoderStatus::Codes::kOk);
+          .Run(DecoderStatus::Codes::kElidedEndOfStreamForConfigChange);
       pending_decodes_.pop_front();
+      DCHECK(pending_decodes_.empty());
+      decoder_config_ = new_config;
+
+      // Note: We don't set `last_width_` here since the codec was allocated
+      // with the pre-config change resolution. If `max_input_size_` is
+      // exceeded, the code will detect that `last_width_` doesn't match the
+      // current config and try reallocating at that size.
       return true;
     }
   }

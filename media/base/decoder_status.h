@@ -45,6 +45,9 @@ struct DecoderStatusTraits {
     kFailedToCreateDecoder = 205,
     kTooManyDecoders = 206,
     kMediaFoundationNotAvailable = 207,
+
+    // Success, but requires action by downstream recipient.
+    kElidedEndOfStreamForConfigChange = 300
   };
   static constexpr StatusGroupType Group() { return "DecoderStatus"; }
 };
