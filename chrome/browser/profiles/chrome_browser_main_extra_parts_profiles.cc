@@ -379,6 +379,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/browser_context_keyed_service_factories.h"
+#include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -582,6 +583,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS)
   ash::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The TTS API is an outlier. It lives in chrome/browser/speech and is built
   // into //chrome/browser. It's better for Extensions dependencies if its
@@ -595,13 +597,22 @@ void ChromeBrowserMainExtraPartsProfiles::
   chromeos::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   chromeos_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
-#endif
-
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#elif BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // EnsureBrowserContextKeyedServiceFactoriesBuilt() is invoked before the
+  // ExtensionsBrowserClient is ready on Android. This is due to Android
+  // specific initialization steps in
+  // ChromeMainDelegate::PostEarlyInitialization(). ExtensionsBrowserClient is
+  // expected to be ready when browser context keyed factory service is being
+  // created. Otherwise, it can cause problems.
+  //
+  // To avoid this issue, browser context keyed factory services are created
+  // during a later initialization phase of chrome browser process when
+  // EnsureBrowserContextKeyedServiceFactoriesBuilt() is invoked again,
+  // guaranteeing that the ExtensionsBrowserClient is available.
+  if (extensions::ExtensionsBrowserClient::Get()) {
+    extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
+  }
   extensions::DesktopAndroidExtensionSystem::GetFactory();
 #endif
 
