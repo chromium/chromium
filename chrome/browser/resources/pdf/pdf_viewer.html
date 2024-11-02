@@ -68,7 +68,9 @@
     <if expr="enable_pdf_ink2">
       ${this.shouldShowInkBottomToolbar_() ? html`
         <div id="bottom">
-          <viewer-bottom-toolbar .currentType="${this.currentBrushType_}"
+          <viewer-bottom-toolbar .currentSize="${this.currentBrushSize_}"
+              .currentType="${this.currentBrushType_}"
+              @current-size-changed="${this.onBrushSizeChanged_}"
               @current-type-changed="${this.onBrushTypeChanged_}">
           </viewer-bottom-toolbar>
         </div>` : ''}

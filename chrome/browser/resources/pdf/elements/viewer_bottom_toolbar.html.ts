@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './icons.html.js';
 import './ink_brush_selector.js';
+import './ink_size_selector.js';
+import './viewer_bottom_toolbar_dropdown.js';
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -14,5 +16,10 @@ export function getHtml(this: ViewerBottomToolbarElement) {
     <ink-brush-selector .currentType="${this.currentType}">
     </ink-brush-selector>
     <span id="vertical-separator"></span>
+    <!-- TODO(crbug.com/369653190): Use actual button icons. -->
+    <viewer-bottom-toolbar-dropdown id="size" button-icon="pdf:pen-size-3">
+      <ink-size-selector .currentSize="${this.currentSize}"
+          .currentType="${this.currentType}"></ink-size-selector>
+    </viewer-bottom-toolbar-dropdown>
   `;
 }

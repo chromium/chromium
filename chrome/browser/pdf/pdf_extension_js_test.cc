@@ -533,6 +533,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbar) {
   RunTestsInJsModule("ink2_bottom_toolbar_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbarDropdown) {
+  RunTestsInJsModule("ink2_bottom_toolbar_dropdown_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SidePanel) {
   // The window must be at least 960px to show the side panel.
   GetActiveWebContents()->Resize({0, 0, 960, 100});
