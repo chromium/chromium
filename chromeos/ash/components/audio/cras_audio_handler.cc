@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/floss_media_client.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -736,6 +737,14 @@ void CrasAudioHandler::HandleGetNoiseCancellationSupported(
   }
 
   std::move(callback).Run();
+}
+
+void CrasAudioHandler::SetVoiceIsolationUIAppearanceForTesting(
+    cras::AudioEffectType toggle_type,
+    uint32_t effect_mode_options,
+    bool show_effect_fallback_message) {
+  voice_isolation_ui_appearance_ = VoiceIsolationUIAppearance(
+      toggle_type, effect_mode_options, show_effect_fallback_message);
 }
 
 void CrasAudioHandler::SetNoiseCancellationSupportedForTesting(bool supported) {

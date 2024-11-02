@@ -28,7 +28,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {AudioDevice, AudioSystemProperties} from '../mojom-webui/cros_audio_config.mojom-webui.js';
-import {AudioDeviceType, AudioEffectState, AudioSystemPropertiesObserverReceiver, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
+import {AudioDeviceType, AudioEffectState, AudioEffectType, AudioSystemPropertiesObserverReceiver, MuteState, VoiceIsolationUIAppearance} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {AudioAndCaptionsPageBrowserProxy} from '../os_a11y_page/audio_and_captions_page_browser_proxy.js';
 import {AudioAndCaptionsPageBrowserProxyImpl} from '../os_a11y_page/audio_and_captions_page_browser_proxy.js';
@@ -84,19 +84,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         reflectToAttribute: true,
       },
 
-      isNoiseCancellationEnabled_: {
-        type: Boolean,
-      },
-
-      isNoiseCancellationSupported_: {
-        type: Boolean,
-      },
-
-      isStyleTransferEnabled_: {
-        type: Boolean,
-      },
-
-      isStyleTransferSupported_: {
+      showVoiceIsolationSubsection_: {
         type: Boolean,
       },
 
@@ -144,10 +132,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
       },
 
-      showStyleTransfer: {
-        type: Boolean,
-      },
-
       showSpatialAudio: {
         type: Boolean,
       },
@@ -163,7 +147,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected showAllowAGC: boolean;
   protected isHfpMicSrEnabled: boolean;
   protected showHfpMicSr: boolean;
-  protected showStyleTransfer: boolean;
   protected showSpatialAudio: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
@@ -174,10 +157,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private crosAudioConfig_: CrosAudioConfigInterface;
   private isOutputMuted_: boolean;
   private isInputMuted_: boolean;
-  private isNoiseCancellationEnabled_: boolean;
-  private isNoiseCancellationSupported_: boolean;
-  private isStyleTransferEnabled_: boolean;
-  private isStyleTransferSupported_: boolean;
+  private showVoiceIsolationSubsection_: boolean;
   private isSpatialAudioEnabled_: boolean;
   private isSpatialAudioSupported_: boolean;
   private outputVolume_: number;
@@ -228,16 +208,11 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         this.audioSystemProperties_.inputMuteState !== MuteState.kNotMuted;
     const activeInputDevice = this.audioSystemProperties_.inputDevices.find(
         (device: AudioDevice) => device.isActive);
-    this.isNoiseCancellationEnabled_ =
-        (activeInputDevice?.noiseCancellationState ===
-         AudioEffectState.kEnabled);
-    this.isNoiseCancellationSupported_ =
-        !(activeInputDevice?.noiseCancellationState ===
-          AudioEffectState.kNotSupported);
-    this.isStyleTransferEnabled_ =
-        (activeInputDevice?.styleTransferState === AudioEffectState.kEnabled);
-    this.isStyleTransferSupported_ = activeInputDevice?.styleTransferState !==
-        AudioEffectState.kNotSupported;
+
+    const toggleType =
+        this.audioSystemProperties_.voiceIsolationUiAppearance.toggleType;
+    this.showVoiceIsolationSubsection_ = toggleType !== AudioEffectType.kNone;
+
     this.isAllowAGCEnabled =
         (activeInputDevice?.forceRespectUiGainsState ===
          AudioEffectState.kNotEnabled);
@@ -459,12 +434,38 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         this.i18n('audioOutputMuteButtonAriaLabelNotMuted');
   }
 
-  private toggleNoiseCancellationEnabled_(e: CustomEvent<boolean>): void {
-    this.crosAudioConfig_.setNoiseCancellationEnabled(e.detail);
+  private getVoiceIsolationToggleTitle_(voiceIsolationUIAppearance:
+                                            VoiceIsolationUIAppearance|
+                                        undefined): string {
+    if (voiceIsolationUIAppearance === undefined) {
+      return '';
+    }
+    switch (voiceIsolationUIAppearance.toggleType) {
+      case AudioEffectType.kNoiseCancellation:
+        return this.i18n('audioInputNoiseCancellationTitle');
+      case AudioEffectType.kStyleTransfer:
+        return this.i18n('audioInputStyleTransferTitle');
+      case AudioEffectType.kBeamforming:
+        return this.i18n('audioInputBeamformingTitle');
+      default:
+        return '';
+    }
   }
 
-  private toggleStyleTransferEnabled_(e: CustomEvent<boolean>): void {
-    this.crosAudioConfig_.setStyleTransferEnabled(e.detail);
+  private getVoiceIsolationToggleDescription_(voiceIsolationUIAppearance:
+                                                  VoiceIsolationUIAppearance|
+                                              undefined): string {
+    if (voiceIsolationUIAppearance === undefined) {
+      return '';
+    }
+    switch (voiceIsolationUIAppearance.toggleType) {
+      case AudioEffectType.kStyleTransfer:
+        return this.i18n('audioInputStyleTransferDescription');
+      case AudioEffectType.kBeamforming:
+        return this.i18n('audioInputBeamformingDescription');
+      default:
+        return '';
+    }
   }
 
   private toggleHfpMicSrEnabled_(e: CustomEvent<boolean>): void {
@@ -493,29 +494,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         this.startupSoundEnabled_);
   }
 
-  private onNoiseCancellationRowClicked_(): void {
-    const noiseCancellationToggle = strictQuery(
-        '#audioInputNoiseCancellationToggle', this.shadowRoot, CrToggleElement);
-    this.crosAudioConfig_.setNoiseCancellationEnabled(
-        !noiseCancellationToggle.checked);
-  }
-
-  private onStyleTransferRowClicked_(): void {
-    const styleTransferToggle = strictQuery(
-        '#audioInputStyleTransferToggle', this.shadowRoot, CrToggleElement);
-    this.crosAudioConfig_.setStyleTransferEnabled(!styleTransferToggle.checked);
-  }
-
-  private onStyleTransferLearnMoreLinkClicked_(event: Event): void {
-    const path = event.composedPath();
-    if (!Array.isArray(path) || !path.length) {
-      return;
-    }
-
-    if ((path[0] as HTMLElement).tagName === 'A') {
-      // Do not toggle if the contained link is clicked.
-      event.stopPropagation();
-    }
+  private onVoiceIsolationRowClicked_(): void {
+    this.crosAudioConfig_.refreshVoiceIsolationState();
   }
 
   private onSpatialAudioRowClicked_(): void {

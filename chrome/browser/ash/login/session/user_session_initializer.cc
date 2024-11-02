@@ -362,7 +362,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     TypecdClient::Get()->SetPeripheralDataAccessPermissionState(
         settings::PeripheralDataAccessHandler::GetPrefState());
 
-    CrasAudioHandler::Get()->RefreshNoiseCancellationState();
+    CrasAudioHandler::Get()->RefreshVoiceIsolationState();
 
     MediaNotificationProvider::Get()->OnPrimaryUserSessionStarted();
     if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {
@@ -373,7 +373,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
       CrasAudioHandler::Get()->RefreshHfpMicSrState();
     }
 
-    CrasAudioHandler::Get()->RefreshStyleTransferState();
     if (base::FeatureList::IsEnabled(ash::features::kShowSpatialAudioToggle)) {
       CrasAudioHandler::Get()->RefreshSpatialAudioState();
     }

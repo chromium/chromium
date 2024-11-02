@@ -755,6 +755,12 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
   RunSettingsTest("device_page/device_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
+                       DevicePageSuiteAudio) {
+  RunSettingsTest("device_page/device_page_test.js",
+                  "runMochaSuite('<settings-device-page> audio')");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, DevicePageAudioPage) {
   RunSettingsTest("device_page/audio_page_test.js");
 }

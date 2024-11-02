@@ -981,6 +981,12 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE},
       {"audioInputStyleTransferTitle",
        IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE},
+      {"audioInputStyleTransferDescription",
+       IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION},
+      {"audioInputBeamformingTitle",
+       IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_TITLE},
+      {"audioInputBeamformingDescription",
+       IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_DESCRIPTION},
       {"audioInputTitle", IDS_SETTINGS_AUDIO_INPUT_TITLE},
       {"audioMutedByPolicyTooltip", IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP},
       {"audioMutedExternallyTooltip",
@@ -1008,11 +1014,10 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
+
   html_source->AddString(
-      "audioInputStyleTransferDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION,
-          DeviceSection::GetHelpUrlWithBoard(chrome::kVcLearnMoreURL)));
+      "voiceIsolationLearnMoreLink",
+      DeviceSection::GetHelpUrlWithBoard(chrome::kVcLearnMoreURL));
 }
 
 // Mirrors enum of the same name in enums.xml.

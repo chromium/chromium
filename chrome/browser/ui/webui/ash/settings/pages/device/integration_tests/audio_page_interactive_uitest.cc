@@ -18,6 +18,7 @@
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/state_observer.h"
@@ -53,8 +54,8 @@ constexpr char kOutputSliderSelector[] = "#outputVolumeSlider";
 constexpr char kInputDeviceDropdownSelector[] = "#audioInputDeviceDropdown";
 constexpr char kInputMuteSelector[] = "#audioInputGainMuteButton";
 constexpr char kInputSliderSelector[] = "#audioInputGainVolumeSlider";
-constexpr char kInputNoiseCancellationToggle[] =
-    "#audioInputNoiseCancellationToggle";
+constexpr char kInputVoiceIsolationToggle[] =
+    "#audioInputVoiceIsolationToggleSection";
 
 // Devices' ID configured here:
 // chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
@@ -483,25 +484,26 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeInputVolume) {
   EXPECT_GE(audio_handler()->GetInputGainPercent(), initial_volume);
 }
 
-// Verify toggling input noise cancellation in UI is reflected in cras.
+// Verify toggling input voice isolation in UI is reflected in cras.
 IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
-                       ToggleInputNoiseCancellation) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputNoiseCancellationToggleEvent);
+                       ToggleInputVoiceIsolation) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputVoiceIsolationToggleEvent);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
 
-  // Set noise cancellation as supported.
-  audio_handler()->SetNoiseCancellationSupportedForTesting(true);
+  // Set voice isolation UI appearance.
+  audio_handler()->SetVoiceIsolationUIAppearanceForTesting(
+      cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER, 0, false);
 
-  // Expect noise cancellation is default to off.
-  EXPECT_FALSE(audio_handler()->GetNoiseCancellationState());
+  // Expect voice isolation is default to off.
+  EXPECT_FALSE(audio_handler()->GetVoiceIsolationState());
 
-  StateChange input_noise_cancellation_checked;
-  input_noise_cancellation_checked.type =
+  StateChange input_voice_isolation_checked;
+  input_voice_isolation_checked.type =
       StateChange::Type::kExistsAndConditionTrue;
-  input_noise_cancellation_checked.event = kInputNoiseCancellationToggleEvent;
-  input_noise_cancellation_checked.where =
-      CreateAudioPageDeepQueryForSelector(kInputNoiseCancellationToggle);
-  input_noise_cancellation_checked.test_function = "toggle => toggle.checked";
+  input_voice_isolation_checked.event = kInputVoiceIsolationToggleEvent;
+  input_voice_isolation_checked.where =
+      CreateAudioPageDeepQueryForSelector(kInputVoiceIsolationToggle);
+  input_voice_isolation_checked.test_function = "toggle => toggle.checked";
 
   RunTestSequence(
       // Set fake internal mic as active device.
@@ -511,39 +513,36 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
       Log("Open audio settings page and ensure it exists"),
       LoadAudioSettingsPage(),
 
-      Log("Toggle input noise cancellation in UI"),
+      Log("Toggle input voice isolation in UI"),
       ClickElement(kOsSettingsElementId, CreateAudioPageDeepQueryForSelector(
-                                             kInputNoiseCancellationToggle)),
+                                             kInputVoiceIsolationToggle)),
 
-      // Test input noise cancallation is checked in UI.
-      WaitForStateChange(kOsSettingsElementId,
-                         input_noise_cancellation_checked),
-      Log("Expected input noise cancallation is checked in UI"));
+      // Test input voice isolation is checked in UI.
+      WaitForStateChange(kOsSettingsElementId, input_voice_isolation_checked),
+      Log("Expected input voice isolation is checked in UI"));
 
-  // Expect noise cancellation is on now.
-  EXPECT_TRUE(audio_handler()->GetNoiseCancellationState());
+  // Expect voice isolation is on now.
+  EXPECT_TRUE(audio_handler()->GetVoiceIsolationState());
 
-  StateChange input_noise_cancellation_unchecked;
-  input_noise_cancellation_unchecked.type =
+  StateChange input_voice_isolation_unchecked;
+  input_voice_isolation_unchecked.type =
       StateChange::Type::kExistsAndConditionTrue;
-  input_noise_cancellation_unchecked.event = kInputNoiseCancellationToggleEvent;
-  input_noise_cancellation_unchecked.where =
-      CreateAudioPageDeepQueryForSelector(kInputNoiseCancellationToggle);
-  input_noise_cancellation_unchecked.test_function =
-      "toggle => !toggle.checked";
+  input_voice_isolation_unchecked.event = kInputVoiceIsolationToggleEvent;
+  input_voice_isolation_unchecked.where =
+      CreateAudioPageDeepQueryForSelector(kInputVoiceIsolationToggle);
+  input_voice_isolation_unchecked.test_function = "toggle => !toggle.checked";
 
   RunTestSequence(
-      Log("Toggle input noise cancellation in UI"),
+      Log("Toggle input voice isolation in UI"),
       ClickElement(kOsSettingsElementId, CreateAudioPageDeepQueryForSelector(
-                                             kInputNoiseCancellationToggle)),
+                                             kInputVoiceIsolationToggle)),
 
-      // Test input noise cancallation is unchecked in UI.
-      WaitForStateChange(kOsSettingsElementId,
-                         input_noise_cancellation_unchecked),
-      Log("Expected input noise cancallation is unchecked in UI"));
+      // Test input voice isolation is unchecked in UI.
+      WaitForStateChange(kOsSettingsElementId, input_voice_isolation_unchecked),
+      Log("Expected input voice isolation is unchecked in UI"));
 
-  // Expect noise cancellation is off now.
-  EXPECT_FALSE(audio_handler()->GetNoiseCancellationState());
+  // Expect voice isolation is off now.
+  EXPECT_FALSE(audio_handler()->GetVoiceIsolationState());
 }
 
 // Verify quick settings button to launch audio settings is disabled on lock

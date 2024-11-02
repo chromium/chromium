@@ -126,6 +126,24 @@ export const fakeVoiceIsolationUIAppearance: VoiceIsolationUIAppearance = {
   showEffectFallbackMessage: false,
 };
 
+export const fakeVoiceIsolationUIAppearanceNC: VoiceIsolationUIAppearance = {
+  toggleType: AudioEffectType.kNoiseCancellation,
+  effectModeOptions: 0,
+  showEffectFallbackMessage: false,
+};
+
+export const fakeVoiceIsolationUIAppearanceST: VoiceIsolationUIAppearance = {
+  toggleType: AudioEffectType.kStyleTransfer,
+  effectModeOptions: 0,
+  showEffectFallbackMessage: false,
+};
+
+export const fakeVoiceIsolationUIAppearanceBF: VoiceIsolationUIAppearance = {
+  toggleType: AudioEffectType.kBeamforming,
+  effectModeOptions: 0,
+  showEffectFallbackMessage: false,
+};
+
 export interface FakePropertiesObserverInterface {
   onPropertiesUpdated(properties: AudioSystemProperties): void;
 }

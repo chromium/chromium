@@ -203,39 +203,15 @@
         </cr-slider>
       </div>
     </div>
-    <div id="audioInputStyleTransferSubsection" class="settings-box"
-        hidden="[[!isStyleTransferSupported_]]"
-        on-click="onStyleTransferRowClicked_" actionable-row>
-      <div id="audioInputStyleTransferLabel"
-          class="settings-box-text start" aria-hidden="true">
-        $i18n{audioInputStyleTransferTitle}
-        <div class="secondary">
-          <localized-link
-              on-link-clicked="onStyleTransferLearnMoreLinkClicked_"
-              id="styleTransferSecondary"
-              localized-string="$i18n{audioInputStyleTransferDescription}">
-          </localized-link>
-        </div>
-      </div>
-      <cr-toggle id="audioInputStyleTransferToggle"
-          checked="{{isStyleTransferEnabled_}}"
-          aria-labelledby="audioInputStyleTransferLabel"
-          on-change="toggleStyleTransferEnabled_">
-      </cr-toggle>
-    </div>
-    <div id="audioInputNoiseCancellationSubsection" class="settings-box"
-        hidden="[[!isNoiseCancellationSupported_]]"
-        on-click="onNoiseCancellationRowClicked_" actionable-row>
-      <div id="audioInputNoiseCancellationLabel"
-          class="settings-box-text start" aria-hidden="true">
-        $i18n{audioInputNoiseCancellationTitle}
-      </div>
-      <cr-toggle id="audioInputNoiseCancellationToggle"
-          checked="{{isNoiseCancellationEnabled_}}"
-          aria-labelledby="audioInputNoiseCancellationLabel"
-          on-change="toggleNoiseCancellationEnabled_">
-      </cr-toggle>
-    </div>
+    <settings-toggle-button id="audioInputVoiceIsolationToggleSection"
+        hidden="[[!showVoiceIsolationSubsection_]]"
+        class="settings-box"
+        pref="{{prefs.ash.input_voice_isolation_enabled}}"
+        label="[[getVoiceIsolationToggleTitle_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
+        sub-label="[[getVoiceIsolationToggleDescription_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
+        learn-more-url="$i18n{voiceIsolationLearnMoreLink}"
+        on-change="onVoiceIsolationRowClicked_">
+    </settings-toggle-button>
     <div id="audioInputAllowAGCSubsection" class="settings-box"
         hidden="[[!showAllowAGC]]">
       <div id="audioInputAllowAGCLabel" class="settings-box-text start">

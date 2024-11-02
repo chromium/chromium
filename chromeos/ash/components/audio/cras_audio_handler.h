@@ -447,6 +447,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Get the voice isolation UI appearance parameters.
   VoiceIsolationUIAppearance GetVoiceIsolationUIAppearance();
 
+  // Set the voice isolation UI appearance parameters for testing.
+  void SetVoiceIsolationUIAppearanceForTesting(
+      cras::AudioEffectType toggle_type,
+      uint32_t effect_mode_options,
+      bool show_effect_fallback_message);
+
   // Gets the pref state of input voice isolation.
   bool GetVoiceIsolationState() const;
 
