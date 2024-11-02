@@ -73,7 +73,6 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="4139634748112164403">Flikarna förblir öppna på den här enheten men gruppen raderas permanent</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Lila</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik.}other{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="427987768447457592">Ny flikgrupp</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> flik har ändrats, <ph name="ANY_CLOSED" /> har stängts}other{<ph name="MANY_CHANGED" /> flikar har ändrats, <ph name="ANY_CLOSED" /> har stängts}}</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
@@ -98,7 +97,6 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="5094423602314093681">Vill du ta bort flikarna och radera gruppen?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flik har lagts till}other{<ph name="MANY_ADDED" /> flikar har lagts till}}</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Stäng flikgruppen med <ph name="TABS_COUNT_ONE" /> flik.}other{Stäng flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="5339733443032484186">Din senaste flik</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
@@ -140,7 +138,6 @@ Om du lämnar gruppen förlorar du omedelbart åtkomsten till flikgruppen <ph na
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Utöka den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Dela flik}other{Dela flikar}}</translation>
 <translation id="7129458170538955174">Information om den här butiken har öppnats över halva skärmen</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik.}other{Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="7204204600596740190">Flervalsläge</translation>
 <translation id="7211038039686180558">Dina flikgrupper sparas och uppdateras automatiskt på alla enheter där du är inloggad</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> har valts</translation>
@@ -190,7 +187,6 @@ Om du lämnar gruppen förlorar du omedelbart åtkomsten till flikgruppen <ph na
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>
 <translation id="8887921976452567404">Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper.</translation>
 <translation id="8915916167043355778">Stäng alla</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen med <ph name="TABS_COUNT_ONE" /> flik.}other{Utöka flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="9090098097337832354">Informationen om den här butiken stängdes</translation>
 <translation id="9111228330448174435">Visa dialogruta när en ny flikgrupp skapas</translation>
 <translation id="9114502155681725011">Öppna åtgärdsmenyn för flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /></translation>

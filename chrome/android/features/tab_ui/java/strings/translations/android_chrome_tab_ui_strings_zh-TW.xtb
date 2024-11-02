@@ -73,7 +73,6 @@
 <translation id="4139634748112164403">系統不會在這部裝置上關閉這些分頁，但會永久刪除這個群組</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4159784952369912983">紫色</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{已變更 <ph name="ONE_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已變更 <ph name="MANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="4371591986692297148">未啟用</translation>
@@ -98,7 +97,6 @@
 <translation id="5094423602314093681">要移除分頁並刪除群組嗎？</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5490235265819901748">已展開分頁群組</translation>
@@ -140,7 +138,6 @@
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
 <translation id="7129458170538955174">這間店的資訊已開啟，顯示在畫面下半部</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組。}}</translation>
 <translation id="7204204600596740190">多選模式</translation>
 <translation id="7211038039686180558">分頁群組會自動儲存，並同步至你登入帳戶的所有裝置</translation>
 <translation id="731648547091221002">已選取<ph name="COLOR_NAME" /></translation>
@@ -190,7 +187,6 @@
 <translation id="8820741577754260431">在分頁上查看降價資訊</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="9090098097337832354">這間店的資訊已關閉</translation>
 <translation id="9111228330448174435">建立新分頁群組時顯示對話方塊</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」(<ph name="COLOR_NAME" />) 的動作選單。</translation>

@@ -73,7 +73,6 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="4139634748112164403">Mananatiling nakabukas ang mga tab sa device na ito pero permanenteng made-delete ang grupo</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Lila</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="427987768447457592">Bagong grupo ng tab</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Binago ang <ph name="ONE_CHANGED" /> tab, isinara ang<ph name="ANY_CLOSED" />}one{Binago ang <ph name="MANY_CHANGED" /> tab, isinara ang<ph name="ANY_CLOSED" />}other{Binago ang <ph name="MANY_CHANGED" /> na tab, isinara ang<ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Hindi Aktibo</translation>
@@ -98,7 +97,6 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="5094423602314093681">Alisin ang (mga) tab at i-delete ang grupo?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab}one{Idinagdag ang <ph name="MANY_ADDED" /> tab}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab}}</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
@@ -140,7 +138,6 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{I-share ang tab}one{I-share ang mga tab}other{I-share ang mga tab}}</translation>
 <translation id="7129458170538955174">Binuksan ang impormasyon tungkol sa store na to nang kalahati ang taas</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
 <translation id="7211038039686180558">Awtomatikong nase-save at naa-update ang mga grupo ng tab mo sa lahat ng iyong naka-sign in na device</translation>
 <translation id="731648547091221002">Pinili ang <ph name="COLOR_NAME" /></translation>
@@ -190,7 +187,6 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>
 <translation id="8915916167043355778">Isara lahat</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9111228330448174435">Ipakita ang dialog sa paggawa ng bagong grupo ng tab</translation>
 <translation id="9114502155681725011">Buksan ang menu ng aksyon ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>

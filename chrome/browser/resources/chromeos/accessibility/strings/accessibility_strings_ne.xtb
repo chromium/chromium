@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">अडियो</translation>
 <translation id="2737898226590637227">अर्को कुनै पनि ARIA स्थलचिन्ह छैन</translation>
 <translation id="2749275490991666823">जाँचियो</translation>
+<translation id="2751454300227269244">आफ्नो मुख दायाँतिर लैजानुहोस्</translation>
 <translation id="27527859628328957">अर्को ध्यान दिने सकिने वस्तुमा जम्प गर्नुहोस्</translation>
 <translation id="2756452585631602151">आफूले रोजेको लेबल प्रविष्टि गर्नुहोस्</translation>
 <translation id="2766299274563946262">बायाँतर्फ कुनै पनि कक्ष छैन</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">तालिका <ph name="TABLENAME" />, <ph name="TABLEROWS" /> गुणा <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">बेइज</translation>
 <translation id="316542773973815724">नेभिगेसन</translation>
+<translation id="3167446923957429259">आफ्नो मुख बायाँतिर लैजानुहोस्</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ स्पेस}other{ # स्पेसहरू}}</translation>
 <translation id="3179119189286472195">लिंक छैन</translation>
 <translation id="3180990259147710757">च्यापु बायाँतिर सार्नुहोस्</translation>
@@ -1179,7 +1181,6 @@
 <translation id="8940925288729953902">मोडिफायर कीहरू</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8944511129464116546">आंशिक रूपमा चिन्ह लगाइएको</translation>
-<translation id="8945050808870279132">आफ्नो नाक खुम्च्याउनुहोस्</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">अघिल्लो कुनै पनि रेडियो बटन छैन</translation>
 <translation id="8970172509886453271">अघिल्लो कुनै पनि खण्ड छैन</translation>

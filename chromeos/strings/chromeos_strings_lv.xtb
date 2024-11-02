@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
 <translation id="1061864016440983342">Izmantot bez atrašanās vietas</translation>
 <translation id="1062823486781306604"><ph name="NAME" />: <ph name="INDEX" />. no <ph name="COUNT" />.</translation>
+<translation id="1069150558259542054">Ātro ievietošanu nevar izmantot pielāgotiem īsinājumtaustiņiem.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
@@ -665,6 +666,7 @@
 <translation id="4289849978083912975">Slaidrāde</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> attēls(-i)</translation>
+<translation id="4300272766492248925">Atvērt lietotni</translation>
 <translation id="430786093962686457">šifons</translation>
 <translation id="4310735698903592804">Jaunākās fona tapetes, ko nodrošina Google MI</translation>
 <translation id="4320904097188876154">neona rozā</translation>
@@ -1127,6 +1129,7 @@
 <translation id="6517239166834772319">Izpēte</translation>
 <translation id="6526200165918397681">Saskaņot fona tapeti</translation>
 <translation id="6527081081771465939">Nezināms Wi-Fi drošības protokols</translation>
+<translation id="6531528791584205545">ātrā ievietošana</translation>
 <translation id="6535178685492749208">Jūs esat bezsaistē. Atsauksme tiks nosūtīta vēlāk.</translation>
 <translation id="6543412779435705598">tako</translation>
 <translation id="6550369542114086980">ceturtdien</translation>

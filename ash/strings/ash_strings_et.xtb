@@ -308,7 +308,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2041220428661959602">Aku tase: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Otsetee <ph name="SIX_PACK_KEY_NAME" /> on praegu välja lülitatud</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2065098273523946419">Lisateabe link. Aktiveerimisel suuna brauserisse</translation>
 <translation id="2067220651560163985">Näita temperatuuri Celsiuse järgi</translation>
@@ -976,7 +975,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4322742403972824594">Klaviatuuri otseteed Ctrl + Alt + ülesnool on muudetud. Koduklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + vasaknoolt.</translation>
 <translation id="4324840740119394760">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="4327147325944669226">Salvesta mängu</translation>
-<translation id="4333628967105022692">Lacros ei ole toetatud, kui sisse on logitud mitu kasutajat.</translation>
 <translation id="4338109981321384717">Suurendusklaas</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, vaigistatud</translation>
 <translation id="4351244548802238354">Sule dialoog</translation>
@@ -2353,6 +2351,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8982906748181120328">Nähtavus läheduses</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Kasutusel: <ph name="IME_NAME" /></translation>
+<translation id="8991648557324317894">Tühistamiseks vajutage funktsiooniklahvi ja kiirsisestuse klahvi või tõstuklahvi.</translation>
 <translation id="899350903320462459">Märguandetoimingu tegemiseks avage seade kontoga <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Kas te räägite? Teie mikrofon on välja lülitatud. Mikrofoni sisselülitamiseks valige mikrofon.</translation>
 <translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>
@@ -2435,7 +2434,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Tähtaega pole</translation>
 <translation id="98120814841227350">Dokumendi lõppu liikumine</translation>
-<translation id="98515147261107953">Maastik</translation>
 <translation id="987589956647469042">Mobiilne andmeside on sisse lülitatud</translation>
 <translation id="989374776391122812">Kaamera ja heli juhtnupud</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>

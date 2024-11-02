@@ -308,7 +308,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2041220428661959602">Nivo baterije: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Prečica za radnju <ph name="SIX_PACK_KEY_NAME" /> je trenutno isključena</translation>
 <translation id="2049240716062114887">Naziv radne površine je promijenjen u <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Uspravno</translation>
 <translation id="2064048859448024834">Pregled kamere je uključen</translation>
 <translation id="2065098273523946419">Link za više informacija. Preusmjeravanje u preglednik kada se aktivira</translation>
 <translation id="2067220651560163985">Prikazuj temperaturu u stepenima Celzijusa</translation>
@@ -975,7 +974,6 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4322742403972824594">Prečica na tastaturi Ctrl + Alt + strelica nagore je promijenjena. Da koristite tipku Home, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu ulijevo.</translation>
 <translation id="4324840740119394760">Ovo omogućava pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjem za nju</translation>
 <translation id="4327147325944669226">Snimajte igru</translation>
-<translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, isključen zvuk</translation>
 <translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
@@ -2435,7 +2433,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultata za upit <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Bez roka</translation>
 <translation id="98120814841227350">Prelazak na kraj dokumenta</translation>
-<translation id="98515147261107953">Vodoravno</translation>
 <translation id="987589956647469042">Prijenos podataka na mobilnoj mreži je uključen</translation>
 <translation id="989374776391122812">Kontrole kamere i zvuka</translation>
 <translation id="990277280839877440">Prozor <ph name="WINDOW_TITILE" /> je zatvoren.</translation>

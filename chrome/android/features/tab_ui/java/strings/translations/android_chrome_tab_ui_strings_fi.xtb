@@ -73,7 +73,6 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="4139634748112164403">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan pysyvästi</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Sulje ryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje ryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Violetti</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="427987768447457592">Uusi välilehtiryhmä</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="4371591986692297148">Ei aktiivinen</translation>
@@ -98,7 +97,6 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="5094423602314093681">Poistetaanko välilehdet ja ryhmä?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty}other{<ph name="MANY_ADDED" /> välilehteä lisätty}}</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
@@ -140,7 +138,6 @@ Jos lähdet, menetät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROU
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Jaa välilehti}other{Jaa välilehdet}}</translation>
 <translation id="7129458170538955174">"Tietoja tästä kaupasta" avattu puolen näytön kokoisena</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="7204204600596740190">Monivalintatila</translation>
 <translation id="7211038039686180558">Välilehtiryhmät tallennetaan ja päivittyvät automaattisesti kaikilla sisäänkirjautuneilla laitteilla</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" />, valittu</translation>
@@ -190,7 +187,6 @@ Jos lähdet, menetät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROU
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>
 <translation id="8915916167043355778">Sulje kaikki</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
 <translation id="9111228330448174435">Näytä valintaikkuna uuden välilehtiryhmän luomisen yhteydessä</translation>
 <translation id="9114502155681725011">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>

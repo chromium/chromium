@@ -73,7 +73,6 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="4139634748112164403">The tabs will remain open on this device but the group will be permanently deleted</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Close <ph name="TITLE_OF_GROUP" /> group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Close <ph name="TITLE_OF_GROUP" /> group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Purple</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="427987768447457592">New tab group</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_CHANGED" /> tabs changed, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="4371591986692297148">Inactive</translation>
@@ -98,7 +97,6 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="5094423602314093681">Remove tab(s) and delete group?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added}other{<ph name="MANY_ADDED" /> tabs added}}</translation>
 <translation id="5161254044473106830">Title required</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Close tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="5339733443032484186">Your last tab</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>
@@ -140,7 +138,6 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Share tab}other{Share tabs}}</translation>
 <translation id="7129458170538955174">Information about this shop opened at half height</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Close <ph name="TITLE_OF_GROUP" /> group with <ph name="TABS_COUNT_ONE" /> tab.}other{Close <ph name="TITLE_OF_GROUP" /> group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
 <translation id="7211038039686180558">Your tab groups automatically save and update across all your signed-in devices</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> selected</translation>
@@ -190,7 +187,6 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="8820741577754260431">See price drops on your tabs</translation>
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="8915916167043355778">Close all</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Expand tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Expand tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="9090098097337832354">Information about this shop closed</translation>
 <translation id="9111228330448174435">Show dialogue on new tab group creation</translation>
 <translation id="9114502155681725011">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>

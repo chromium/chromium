@@ -73,7 +73,6 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="4139634748112164403">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado permanentemente</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Feche o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Roxo</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Expandir o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Expandir o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="427987768447457592">Novo grupo separadores</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> separador alterado, <ph name="ANY_CLOSED" /> fechado(s)}other{<ph name="MANY_CHANGED" /> separadores alterados, <ph name="ANY_CLOSED" /> fechado(s)}}</translation>
 <translation id="4371591986692297148">Inativo</translation>
@@ -98,7 +97,6 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="5094423602314093681">Remover o(s) separador(es) e eliminar o grupo?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> separador adicionado}other{<ph name="MANY_ADDED" /> separadores adicionados}}</translation>
 <translation id="5161254044473106830">Título obrigatório</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Fechar o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador.}other{Fechar o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="5339733443032484186">O seu último separador</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
@@ -140,7 +138,6 @@ Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TI
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Expanda o grupo de separadores partilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Expanda o grupo de separadores partilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partilhar separador}other{Partilhar separadores}}</translation>
 <translation id="7129458170538955174">Informações acerca desta loja abertas a meia altura</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
 <translation id="7211038039686180558">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os dispositivos com sessão iniciada</translation>
 <translation id="731648547091221002">Cor <ph name="COLOR_NAME" /> selecionada</translation>
@@ -190,7 +187,6 @@ Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TI
 <translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>
 <translation id="8887921976452567404">É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores.</translation>
 <translation id="8915916167043355778">Fechar tudo</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Expandir o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador.}other{Expandir o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="9090098097337832354">Informações acerca desta loja fechadas</translation>
 <translation id="9111228330448174435">Mostrar caixa de diálogo sobre a criação de um novo grupo de separadores</translation>
 <translation id="9114502155681725011">Abra o menu de ação do grupo de separadores para o grupo de separadores <ph name="TITLE_OF_GROUP" />, com a cor <ph name="COLOR_NAME" />.</translation>

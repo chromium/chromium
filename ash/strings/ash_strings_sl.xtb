@@ -308,7 +308,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2041220428661959602">Raven napolnjenosti baterije: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Bližnjica <ph name="SIX_PACK_KEY_NAME" /> je trenutno izklopljena</translation>
 <translation id="2049240716062114887">Ime namizja je bilo spremenjeno v <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Pokončno</translation>
 <translation id="2064048859448024834">Predogled kamere je vklopljen</translation>
 <translation id="2065098273523946419">Povezava za več informacij. Preusmeritev v brskalnik ob aktivaciji</translation>
 <translation id="2067220651560163985">Prikaz temperature v stopinjah Celzija</translation>
@@ -975,7 +974,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4322742403972824594">Bližnjica na tipkovnici ctrl + alt + puščica gor je spremenjena. Če želite uporabiti tipko Home, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico levo.</translation>
 <translation id="4324840740119394760">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="4327147325944669226">Snemanje igre</translation>
-<translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, utišano</translation>
 <translation id="4351244548802238354">Zapri pogovorno okno</translation>
@@ -2435,7 +2433,6 @@ Nova namestitev</translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultatov za poizvedbo <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brez roka</translation>
 <translation id="98120814841227350">Premik na konec dokumenta</translation>
-<translation id="98515147261107953">Pokrajina</translation>
 <translation id="987589956647469042">Prenos podatkov v mobilnem omrežju je vklopljen</translation>
 <translation id="989374776391122812">Kontrolniki za kamero in zvok</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> je zaprto.</translation>

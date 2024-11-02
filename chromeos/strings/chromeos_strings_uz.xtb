@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
 <translation id="1061864016440983342">Joylashuvsiz foydalanish</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Tezkor joylash maxsus tezkor tugmalar bilan ishlamaydi.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
@@ -430,6 +431,7 @@
 <translation id="3084958266922136097">Ekran lavhasini faolsizlantirish</translation>
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
 <translation id="3102119246920354026">Kesh</translation>
+<translation id="3112413615003385433">Oʻqituvchi School Tools orqali kontentni olib tashladi</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">hovuzlar</translation>
 <translation id="3122883569442693641">Batafsil</translation>
@@ -512,6 +514,7 @@
 <translation id="353214771040290298">Tahrirlashni tugatish</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
 <translation id="3533790840489634638">hovuz</translation>
+<translation id="3535802910192338629">Oʻqituvchi School Tools orqali yangi kontent kiritdi</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Qurilmadagi hisob (ixtiyoriy)</translation>
 <translation id="3565064564551103223">Ruxsat etilgan IP manzillar</translation>
@@ -665,6 +668,7 @@
 <translation id="4289849978083912975">Slayd-shou</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
+<translation id="4300272766492248925">Ilovani ochish</translation>
 <translation id="430786093962686457">shifon</translation>
 <translation id="4310735698903592804">Google AI yaratgan oxirgi fon rasmlari</translation>
 <translation id="4320904097188876154">neonli pushti</translation>
@@ -1127,6 +1131,7 @@
 <translation id="6517239166834772319">Tanishuv</translation>
 <translation id="6526200165918397681">Mos fon rasmi</translation>
 <translation id="6527081081771465939">Notanish WiFi xavfsizlik protokoli</translation>
+<translation id="6531528791584205545">tezkor joylash</translation>
 <translation id="6535178685492749208">Siz internetga ulanmagansiz. Fikr-mulohaza keyinroq yuboriladi.</translation>
 <translation id="6543412779435705598">tako</translation>
 <translation id="6550369542114086980">Payshanba kuni</translation>
@@ -1559,6 +1564,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
 <translation id="8584654835905316966"><ph name="VERSION" /> versiyali <ph name="DEVICE_NAME" /> tizim dasturini oʻrnatish uchun qurilmani oʻchirib yoqish zarur. Kompyuter bir necha marta qayta ishga tushirilishi mumkin. Bu odatiy holat.</translation>
 <translation id="8593058461203131755">ijroni toʻxtatish</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Rouming holati</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> uchun boshqa amallar</translation>
 <translation id="86356131183441916">Och siyohrang</translation>

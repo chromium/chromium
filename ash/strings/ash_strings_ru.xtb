@@ -308,7 +308,6 @@
 <translation id="2041220428661959602">Уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="204259843076055848">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" отключено</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
-<translation id="2050339315714019657">Вертикальная</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
 <translation id="2065098273523946419">Ссылка на дополнительные сведения. При нажатии откроется страница в браузере.</translation>
 <translation id="2067220651560163985">Использовать градусы Цельсия</translation>
@@ -975,7 +974,6 @@
 <translation id="4322742403972824594">Функция сочетания клавиш Ctrl + Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Home, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка влево.</translation>
 <translation id="4324840740119394760">Доступ к камере получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
 <translation id="4327147325944669226">Записать игру</translation>
-<translation id="4333628967105022692">Lacros не поддерживается, если выполнен вход в несколько аккаунтов.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звук отключен</translation>
 <translation id="4351244548802238354">Закрыть</translation>
@@ -2435,7 +2433,6 @@
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Срок сдачи не указан</translation>
 <translation id="98120814841227350">Перейти к концу документа</translation>
-<translation id="98515147261107953">Пейзаж</translation>
 <translation id="987589956647469042">Мобильный интернет включен.</translation>
 <translation id="989374776391122812">Настройки камеры и аудио</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>

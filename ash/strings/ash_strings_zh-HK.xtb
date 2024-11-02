@@ -308,7 +308,6 @@
 <translation id="2041220428661959602">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">「<ph name="SIX_PACK_KEY_NAME" />」快速鍵目前已關閉</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
-<translation id="2050339315714019657">直向</translation>
 <translation id="2064048859448024834">開咗攝錄機預覽</translation>
 <translation id="2065098273523946419">瞭解詳情連結。啟動後會重新導向至瀏覽器</translation>
 <translation id="2067220651560163985">顯示攝氏溫度</translation>
@@ -975,7 +974,6 @@
 <translation id="4322742403972824594">「Ctrl + Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左箭咀。</translation>
 <translation id="4324840740119394760">此操作會允許 <ph name="APP_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="4327147325944669226">錄製遊戲</translation>
-<translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />，靜咗音</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
@@ -2433,7 +2431,6 @@
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="981011780479609956">無截止日期</translation>
 <translation id="98120814841227350">前往文件結尾</translation>
-<translation id="98515147261107953">橫向</translation>
 <translation id="987589956647469042">流動數據已開啟</translation>
 <translation id="989374776391122812">相機和音訊控制項</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 閂咗。</translation>

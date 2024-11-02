@@ -73,7 +73,6 @@
 <translation id="4139634748112164403">এই ডিভাইসে ট্যাব খোলা থাকবে কিন্তু গ্রুপ স্থায়ীভাবে মুছে ফেলা হবে</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> গ্রুপ বন্ধ করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> গ্রুপ বন্ধ করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, <ph name="TITLE_OF_GROUP" /> গ্রুপ বন্ধ করুন।}}</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="427987768447457592">নতুন ট্যাব গ্রুপ</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" />টি ট্যাব পরিবর্তন করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}one{<ph name="MANY_CHANGED" />টি ট্যাব পরিবর্তন করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}other{<ph name="MANY_CHANGED" />টি ট্যাব পরিবর্তন করা হয়েছে, <ph name="ANY_CLOSED" />টি বন্ধ করা হয়েছে}}</translation>
 <translation id="4371591986692297148">চালু নেই</translation>
@@ -98,7 +97,6 @@
 <translation id="5094423602314093681">ট্যাব সরাবেন ও গ্রুপ মুছবেন?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি ট্যাব যোগ করা হয়েছে}one{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে}other{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে}}</translation>
 <translation id="5161254044473106830">শিরোনাম প্রয়োজন</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{সেই ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{সেই ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="5339733443032484186">আপনার শেষ ট্যাব</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
@@ -140,7 +138,6 @@
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ট্যাব শেয়ার করুন}one{ট্যাব শেয়ার করুন}other{ট্যাব শেয়ার করুন}}</translation>
 <translation id="7129458170538955174">অর্ধেক খোলা স্টোরের বিষয়ে তথ্য</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="7204204600596740190">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড</translation>
 <translation id="7211038039686180558">আপনি সাইন-ইন করেছেন এমন সব ডিভাইস থেকে আপনার ট্যাব গ্রুপ অটোমেটিক সেভ ও আপডেট হয়</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> বেছে নেওয়া হয়েছে</translation>
@@ -190,7 +187,6 @@
 <translation id="8820741577754260431">ট্যাবে দাম কমার তথ্য দেখুন</translation>
 <translation id="8887921976452567404">'সাম্প্রতিক ট্যাব' এবং 'ট্যাব গ্রুপ' বিভাগ থেকে, আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ আবার খোলা যেতে পারে।</translation>
 <translation id="8915916167043355778">সবকটি বন্ধ করুন</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{সেই ট্যাব গ্রুপ বড় করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{সেই ট্যাব গ্রুপ বড় করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপ বড় করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="9090098097337832354">বন্ধ হওয়া এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="9111228330448174435">নতুন ট্যাব গ্রুপ তৈরিতে ডায়ালগ দেখুন</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> রঙের ট্যাব গ্রুপ <ph name="TITLE_OF_GROUP" />-এর জন্য ট্যাব গ্রুপের অ্যাকশন মেনু খুলুন।</translation>

@@ -73,7 +73,6 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="4139634748112164403">As guias vão continuar abertas neste dispositivo, mas o grupo será excluído permanentemente</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Fechar o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Roxo</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Abrir o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_ONE" /> guia.}one{Abrir o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_MANY" /> guia.}other{Abrir o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> guia modificada, <ph name="ANY_CLOSED" /> fechada(s)}one{<ph name="MANY_CHANGED" /> guia modificada, <ph name="ANY_CLOSED" /> fechada(s)}other{<ph name="MANY_CHANGED" /> guias modificadas, <ph name="ANY_CLOSED" /> fechada(s)}}</translation>
 <translation id="4371591986692297148">Inativos</translation>
@@ -98,7 +97,6 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="5094423602314093681">Remover guias e excluir grupo?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> guia adicionada}one{<ph name="MANY_ADDED" /> guia adicionada}other{<ph name="MANY_ADDED" /> guias adicionadas}}</translation>
 <translation id="5161254044473106830">O título é obrigatório</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Fechar grupo de guias com <ph name="TABS_COUNT_ONE" /> guia.}one{Fechar grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Fechar grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="5339733443032484186">Sua última guia</translation>
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="5490235265819901748">Grupo de guias expandido</translation>
@@ -140,7 +138,6 @@ Se você sair, vai perder imediatamente o acesso ao grupo de guias <ph name="TIT
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartilhar guia}one{Compartilhar guia}other{Compartilhar guias}}</translation>
 <translation id="7129458170538955174">As informações sobre a loja estão abertas na metade da altura</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Fechar o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_ONE" /> guia.}one{Fechar o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_MANY" /> guia.}other{Fechar o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
 <translation id="7211038039686180558">Seus grupos de guias são salvos e atualizados automaticamente em todos os dispositivos conectados</translation>
 <translation id="731648547091221002">Cor selecionada: <ph name="COLOR_NAME" /></translation>
@@ -190,7 +187,6 @@ Se você sair, vai perder imediatamente o acesso ao grupo de guias <ph name="TIT
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
 <translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>
 <translation id="8915916167043355778">Fechar todas</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Abrir grupo de guias com <ph name="TABS_COUNT_ONE" /> guia.}one{Abrir grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Abrir grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9111228330448174435">Mostrar caixa de diálogo na criação de um novo grupo de guias</translation>
 <translation id="9114502155681725011">Abrir o menu de ações do grupo de guias <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>

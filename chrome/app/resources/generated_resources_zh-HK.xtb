@@ -494,6 +494,7 @@
 <translation id="1339009753652684748">只要說出「Ok Google」，就能存取「Google 助理」。如要節省電力，請選擇「啟用 (建議設定)」。這樣，「Google 助理」只會在裝置連接電源或充電時才會回應。</translation>
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">透過「檔案」應用程式備份裝置中的媒體。</translation>
+<translation id="1340839264183302272">離開群組</translation>
 <translation id="1341701348342335220">做得好！</translation>
 <translation id="1342886103232377846">如要檢查密碼是否被盜用，請前往「Google 密碼管理工具」</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
@@ -704,7 +705,6 @@
 <translation id="1486486872607808064">使用裝置相機掃瞄此 QR 碼，即可在該裝置上建立 <ph name="APP_NAME" /> 的密鑰</translation>
 <translation id="1486616492435615702">建立草稿或修正現有作品。</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
-<translation id="1487905215557235729">機構可查看和管理工作設定檔中的瀏覽資料 (例如書籤、記錄和密碼)。</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />…</translation>
 <translation id="1494349716233667318">網站可以要求使用裝置上安裝的字型</translation>
 <translation id="1494429729245089920">虛擬機器「<ph name="VM_NAME" />」已存在，但似乎不是有效的「<ph name="APP_NAME" />」虛擬機器。請聯絡您的管理員。</translation>
@@ -1728,6 +1728,7 @@
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
 <translation id="2187906491731510095">擴充程式更新咗</translation>
 <translation id="2188881192257509750">開啟 <ph name="APPLICATION" /></translation>
+<translation id="2188919919468240749">要刪除分頁群組嗎？</translation>
 <translation id="2190069059097339078">WiFi 憑證取得工具</translation>
 <translation id="219008588003277019">Native Client 模組：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(空白)</translation>
@@ -1878,7 +1879,6 @@
 <translation id="2297822946037605517">分享此頁面</translation>
 <translation id="229871422646860597">從工具列中取消固定</translation>
 <translation id="2299734369537008228">滑桿：<ph name="MIN_LABEL" />至<ph name="MAX_LABEL" /></translation>
-<translation id="2299917175735489779">正在設定你的工作設定檔…</translation>
 <translation id="2299941608784654630">包括 debugd 收集為獨立封存的所有記錄檔案。</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">無法在網站上找到檔案</translation>
@@ -2438,6 +2438,7 @@
 <translation id="267442004702508783">重新整理</translation>
 <translation id="2674764818721168631">關閉</translation>
 <translation id="2676084251379299915">由於 Chrome 網上應用程式商店已無法取得此擴充程式，因此企業政策已將其停用。</translation>
+<translation id="2677748264148917807">離開</translation>
 <translation id="2678063897982469759">重新啟用</translation>
 <translation id="2678801466438589151">選取「Google 智能鏡頭」按鈕</translation>
 <translation id="268053382412112343">記錄(&amp;S)</translation>
@@ -2848,7 +2849,6 @@
 <translation id="2970982365449313350">使用此 Google 帳戶登入 Chrome</translation>
 <translation id="2972557485845626008">韌體</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
-<translation id="2972831370061805967">此設定檔由<ph name="PROFILE_MANAGER" />管理，機構可查看特定類型的資料，包括</translation>
 <translation id="2973324205039581528">將單一網站靜音</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
 <translation id="2976547701881428815">工具和操作</translation>
@@ -5317,6 +5317,7 @@
 <translation id="4777458362738635055">此裝置的其他使用者可使用此網絡</translation>
 <translation id="4777813841994368231">已開啟 • 開發人員已取消發佈此擴充程式</translation>
 <translation id="4777825441726637019">Play 商店</translation>
+<translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4777943778632837590">設定網絡域名伺服器</translation>
 <translation id="4778630024246633221">憑證管理員</translation>
 <translation id="4778653490315793244">未有可以顯示內容</translation>
@@ -8027,7 +8028,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可在「設定」中關閉此服務。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">已取消 Linux 備份</translation>
 <translation id="6782067259631821405">PIN 無效</translation>
-<translation id="6782364580635609607">此設定檔由你的機構管理，機構可查看特定類型的資料，包括</translation>
 <translation id="6783036716881942511">要忘記此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
@@ -8185,7 +8185,6 @@
 <translation id="686831807558000905">不登入</translation>
 <translation id="686839242150793617">已允許自動進入畫中畫</translation>
 <translation id="6868934826811377550">查看詳情</translation>
-<translation id="6869093950561306644">為確保可安全使用此裝置，機構可能要查看裝置的作業系統、瀏覽器和設定的相關資料，以及裝置上安裝的軟件。</translation>
 <translation id="6871644448911473373">OCSP 回應程式：<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">語言…</translation>
 <translation id="6873571253135628430">變更網站權限</translation>
@@ -8771,6 +8770,7 @@
 <translation id="7317831949569936035">學校註冊程序</translation>
 <translation id="731827437403763009">AI 創新技術</translation>
 <translation id="7319320447721994672">如果你瀏覽使用 Cookie 的網站，可能需要暫時啟用 Cookie，才能讓所有網站功能正常運作。</translation>
+<translation id="7319983568955948908">停止共用</translation>
 <translation id="7320213904474460808">預設網絡</translation>
 <translation id="7321545336522791733">無法連接伺服器</translation>
 <translation id="7322515217754205362">網站權限</translation>
@@ -8925,6 +8925,7 @@
 <translation id="7419142833919893307">未新增使用者名稱</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN 錯誤。還可重試 1 次。}other{PIN 錯誤。還可重試 # 次。}}</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
+<translation id="7421293530411019405">要離開分頁群組嗎？</translation>
 <translation id="742130257665691897">移除咗書籤</translation>
 <translation id="7421925624202799674">檢視網頁原始碼(&amp;V)</translation>
 <translation id="7422192691352527311">偏好設定…</translation>
@@ -10585,6 +10586,7 @@
 <translation id="8607828412110648570">請確保藍牙裝置在附近，且已處於配對模式。請只與你信任的裝置配對。在此 Chromebook 上，所有帳戶都能看到已配對的裝置。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">新增 Kerberos 票證</translation>
 <translation id="8609465669617005112">向上移</translation>
+<translation id="8611922158252451755">任何擁有連結的人均可編輯所有分頁，因此分享時緊記要謹慎。連結將在 48 小時後失效。</translation>
 <translation id="8612252270453580753">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋影片影格</translation>
 <translation id="8613164732773110792">僅限小寫字元、數字、底線或破折號</translation>
 <translation id="8613504115484579584">登入方法</translation>
@@ -10617,6 +10619,7 @@
 <translation id="8633979878370972178">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Linux 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="8634348081024879304">您將無法再透過 Google Pay 使用虛擬卡。<ph name="BEGIN_LINK" />瞭解虛擬卡<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">ChromeOS 虛擬鍵盤</translation>
+<translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="8635628933471165173">正在重新載入…</translation>
 <translation id="8636284842992792762">正在初始化擴充程式…</translation>
 <translation id="8636323803535540285">如要迅速開啟此程式，請將捷徑新增至 <ph name="BRAND" /></translation>
@@ -10871,6 +10874,7 @@
 <translation id="8803953437405899238">按一下即可開啟新分頁</translation>
 <translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集你附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資料識別你的身分，而是用於改善定位精確度和適地性服務，並改善、提供及維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />你可隨時在裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷你裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">選擇開啟工具</translation>
+<translation id="8804742093141782941">保留群組</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{將分頁移至其他視窗}other{將分頁移至其他視窗}}</translation>
 <translation id="8805140816472474147">如要開始同步處理，請確認同步處理設定。</translation>
 <translation id="8805255531353778052">節省極大量記憶體</translation>
@@ -11071,7 +11075,6 @@
 <translation id="8944725102565796255">如果您只想使用此帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
 
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
-<translation id="8945050808870279132">嗡起鼻</translation>
 <translation id="8945274638472141382">圖示大小</translation>
 <translation id="8945508919180478719">錄音室式麥克風</translation>
 <translation id="8946359700442089734">這部 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置未完全啟用偵錯功能。</translation>
@@ -11244,6 +11247,7 @@
 <translation id="9056788090206401048">在其他裝置上使用密鑰時必須開啟藍牙，您可以隨時在設定中管理此選項。</translation>
 <translation id="9056810968620647706">找不到相符的項目。</translation>
 <translation id="9057007989365783744">「<ph name="SUPERVISED_USER_NAME" />」要求存取以下內容：</translation>
+<translation id="9057030985451135243">瞭解共用分頁群組</translation>
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
 <translation id="9058760336383947367">查看打印機 PPD</translation>

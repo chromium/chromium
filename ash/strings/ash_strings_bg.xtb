@@ -308,7 +308,6 @@
 <translation id="2041220428661959602">Ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Понастоящем прекият път с клавиша <ph name="SIX_PACK_KEY_NAME" /> е изключен</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
-<translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064048859448024834">Визуализацията на камерата е включена</translation>
 <translation id="2065098273523946419">Връзка „Научете повече“. Пренасочване към браузъра при активиране</translation>
 <translation id="2067220651560163985">Показване на температурата в градуси по Целзий</translation>
@@ -975,7 +974,6 @@
 <translation id="4322742403972824594">Клавишната комбинация Ctrl + Alt + стрелка нагоре се промени. За да използвате клавиша Home, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката наляво.</translation>
 <translation id="4324840740119394760">Това разрешава достъп до камерата за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="4327147325944669226">Записване на играта</translation>
-<translation id="4333628967105022692">Lacros не се поддържа, когато няколко потребители са влезли в профилите си.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звукът е спрян</translation>
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
@@ -2435,7 +2433,6 @@
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="981011780479609956">Няма крайна дата</translation>
 <translation id="98120814841227350">Преместване в края на документа</translation>
-<translation id="98515147261107953">Хоризонтално</translation>
 <translation id="987589956647469042">Мобилните данни са включени</translation>
 <translation id="989374776391122812">Контроли за камерата и аудиото</translation>
 <translation id="990277280839877440">Прозорецът <ph name="WINDOW_TITILE" /> бе затворен.</translation>

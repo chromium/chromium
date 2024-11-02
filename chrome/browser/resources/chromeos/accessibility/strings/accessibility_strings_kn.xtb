@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">ಆಡಿಯೋ</translation>
 <translation id="2737898226590637227">ಯಾವುದೇ ಮುಂದಿನ ARIA ಲ್ಯಾಂಡ್‌ಮಾರ್ಕ್‌ ಇಲ್ಲ</translation>
 <translation id="2749275490991666823">ಗುರುತಿಸಲಾಗಿದೆ</translation>
+<translation id="2751454300227269244">ನಿಮ್ಮ ಬಾಯಿಯನ್ನು ಬಲಬದಿಗೆ ಮೂವ್ ಮಾಡುವುದು</translation>
 <translation id="27527859628328957">ಮುಂದೆ ಗಮನಹರಿಸಬಹುದಾದ ಐಟಂಗೆ ಹೋಗಿ</translation>
 <translation id="2756452585631602151">ಕಸ್ಟಮ್ ಲೇಬಲ್ ನಮೂದಿಸಿ</translation>
 <translation id="2766299274563946262">ಎಡಕ್ಕೆ ಯಾವುದೇ ಸೆಲ್ ಇಲ್ಲ</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688"><ph name="TABLENAME" /> ಕೋಷ್ಠಕ, <ph name="TABLECOLS" /> ನಿಂದ <ph name="TABLEROWS" /></translation>
 <translation id="3159493096109238499">ಬೈಜೆ</translation>
 <translation id="316542773973815724">ನ್ಯಾವಿಗೇಷನ್</translation>
+<translation id="3167446923957429259">ನಿಮ್ಮ ಬಾಯಿಯನ್ನು ಎಡಬದಿಗೆ ಮೂವ್ ಮಾಡುವುದು</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ಅಂತರ}one{# ಅಂತರಗಳು}other{# ಅಂತರಗಳು}}</translation>
 <translation id="3179119189286472195">ಲಿಂಕ್ ಅಲ್ಲ</translation>
 <translation id="3180990259147710757">ದವಡೆಯನ್ನು ಎಡಕ್ಕೆ ಸರಿಸುವುದು</translation>
@@ -1178,7 +1180,6 @@
 <translation id="8940925288729953902">ಮಾರ್ಪಡಿಸುವ ಕೀಗಳು</translation>
 <translation id="8943282376843390568">ನಿಂಬೆ ಹಳದಿ</translation>
 <translation id="8944511129464116546">ಭಾಗಶಃ ಗುರುತಿಸಲಾಗಿದೆ</translation>
-<translation id="8945050808870279132">ನಿಮ್ಮ ಮೂಗನ್ನು ಸುಕ್ಕುಗೊಳಿಸುವುದು</translation>
 <translation id="8946628535652548639">ಸಾಲು<ph name="TABLECELLROWINDEX" />ಕಾಲಮ್‌<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">ಯಾವುದೇ ಹಿಂದಿನ ರೇಡಿಯೊ ಬಟನ್ ಇಲ್ಲ</translation>
 <translation id="8970172509886453271">ಯಾವುದೇ ಹಿಂದಿನ ವಿಭಾಗವಿಲ್ಲ</translation>

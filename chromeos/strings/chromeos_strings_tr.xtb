@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
 <translation id="1061864016440983342">Konum olmadan kullan</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Hızlı Yapıştır özelliği, özel kısayollarda kullanılamaz.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Güvenlik duvarı algılandı</translation>
 <translation id="1075811647922107217">Sayfa boyutu</translation>
@@ -665,6 +666,7 @@
 <translation id="4289849978083912975">Slayt gösterisi</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
+<translation id="4300272766492248925">Uygulamayı aç</translation>
 <translation id="430786093962686457">şifon</translation>
 <translation id="4310735698903592804">Google Yapay Zeka destekli son duvar kağıtları</translation>
 <translation id="4320904097188876154">neon pembe</translation>
@@ -1127,6 +1129,7 @@
 <translation id="6517239166834772319">Keşfet</translation>
 <translation id="6526200165918397681">Duvar kağıdıyla eşleştir</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
+<translation id="6531528791584205545">Hızlı Yapıştır</translation>
 <translation id="6535178685492749208">Çevrimdışısınız. Geri bildiriminiz daha sonra gönderilecek.</translation>
 <translation id="6543412779435705598">tako</translation>
 <translation id="6550369542114086980">Perşembe günü</translation>

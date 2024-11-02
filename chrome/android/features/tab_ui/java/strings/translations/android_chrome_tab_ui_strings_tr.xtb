@@ -73,7 +73,6 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="4139634748112164403">Sekmeler bu cihazda açık kalır ancak grup kalıcı olarak silinir</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> grubunu kapatın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> grubunu kapatın.}}</translation>
 <translation id="4159784952369912983">Mor</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}}</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> sekme değiştirildi, <ph name="ANY_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_CHANGED" /> sekme değiştirildi, <ph name="ANY_CLOSED" /> sekme kapatıldı}}</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
@@ -98,7 +97,6 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="5094423602314093681">Sekmeler kaldırılıp grup silinsin mi?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi}other{<ph name="MANY_ADDED" /> sekme eklendi}}</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli sekme grubunu kapat.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu kapat.}}</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
@@ -140,7 +138,6 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme paylaşılan <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme paylaşılan <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sekmeyi paylaş}other{Sekmeleri paylaş}}</translation>
 <translation id="7129458170538955174">Bu mağazayla ilgili bilgiler ekranın yarısına kadar açıldı</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat.}}</translation>
 <translation id="7204204600596740190">Çoklu seçim modu</translation>
 <translation id="7211038039686180558">Sekme gruplarınız, oturum açılmış tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> seçili</translation>
@@ -190,7 +187,6 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>
 <translation id="8887921976452567404">Kapattığınız sekmeleri ve grupları, Son sekmeler bölümünden ve Sekme grupları bölümünden yeniden açabilirsiniz.</translation>
 <translation id="8915916167043355778">Tümünü kapat</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu genişlet.}}</translation>
 <translation id="9090098097337832354">Bu mağazayla ilgili bilgiler kapatıldı</translation>
 <translation id="9111228330448174435">Yeni sekme grubu oluşturulurken iletişim kutusunu göster</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> <ph name="TITLE_OF_GROUP" /> sekme grubu için sekme grubu işlem menüsünü aç</translation>

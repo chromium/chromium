@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Скан хийхийг эхлүүлж чадсангүй</translation>
 <translation id="1061864016440983342">Байршилгүйгээр ашиглах</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />-с <ph name="INDEX" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Шуурхай оруулгыг захиалгат товчлолд ашиглах боломжгүй.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
 <translation id="1075811647922107217">Хуудасны хэмжээ</translation>
@@ -665,6 +666,7 @@
 <translation id="4289849978083912975">Слайд харуулалт</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
+<translation id="4300272766492248925">Апп нээх</translation>
 <translation id="430786093962686457">шифон</translation>
 <translation id="4310735698903592804">Google AI-аар дэмжигдсэн саяхны дэлгэцийн зургууд</translation>
 <translation id="4320904097188876154">неон ягаан</translation>
@@ -1127,6 +1129,7 @@
 <translation id="6517239166834772319">Судлах</translation>
 <translation id="6526200165918397681">Дэлгэцийн зураг тааруулах</translation>
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
+<translation id="6531528791584205545">шуурхай оруулга</translation>
 <translation id="6535178685492749208">Та офлайн байна. Санал хүсэлтийг дараа нь илгээнэ.</translation>
 <translation id="6543412779435705598">таконууд</translation>
 <translation id="6550369542114086980">Пүрэв гарагт</translation>

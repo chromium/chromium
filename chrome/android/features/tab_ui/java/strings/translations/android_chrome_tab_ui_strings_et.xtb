@@ -73,7 +73,6 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="4139634748112164403">Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse jäädavalt.</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega grupp <ph name="TITLE_OF_GROUP" />, värv on <ph name="COLOR_NAME" />.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega grupp <ph name="TITLE_OF_GROUP" />, värv on <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Lilla</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="427987768447457592">Uus vahelehegrupp</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> vahelehte muudeti, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_CHANGED" /> vahelehte muudeti, <ph name="ANY_CLOSED" /> suleti}}</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
@@ -98,7 +97,6 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="5094423602314093681">Kas eemaldada vahelehed ja kustutada grupp?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati}other{<ph name="MANY_ADDED" /> vahelehte lisati}}</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="5339733443032484186">Viimane vaheleht</translation>
 <translation id="5400836586163650660">Hall</translation>
 <translation id="5490235265819901748">Vahelehegruppi laiendati</translation>
@@ -140,7 +138,6 @@ Kui lahkute, kaotate kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GR
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Laienda jagatud vahelehegruppi <ph name="TITLE_OF_GROUP" /> vahelehega <ph name="TABS_COUNT_ONE" />, värv on <ph name="COLOR_NAME" />.}other{Laienda jagatud vahelehegruppi <ph name="TITLE_OF_GROUP" /> vahelehega <ph name="TABS_COUNT_MANY" />, värv on <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Jaga vahelehte}other{Jaga vahelehti}}</translation>
 <translation id="7129458170538955174">Selle poe teave on avatud poolel kõrgusel</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega grupp <ph name="TITLE_OF_GROUP" />.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega grupp <ph name="TITLE_OF_GROUP" />}}</translation>
 <translation id="7204204600596740190">Mitmikvalimise režiim</translation>
 <translation id="7211038039686180558">Teie vahelehegrupid salvestuvad automaatselt ja värskendatakse kõikides teie seadmetes</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> on valitud</translation>
@@ -190,7 +187,6 @@ Kui lahkute, kaotate kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GR
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>
 <translation id="8887921976452567404">Teie suletud vahelehti ja gruppe on võimalik avada jaotistest Hiljutised vahelehed ja Vahelehegrupid.</translation>
 <translation id="8915916167043355778">Sule kõik</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="9090098097337832354">Selle poe teave suleti</translation>
 <translation id="9111228330448174435">Kuva uue vahelehegrupi loomisel dialoog</translation>
 <translation id="9114502155681725011">Avage vahelehegrupi <ph name="TITLE_OF_GROUP" /> toimingute menüü, värv <ph name="COLOR_NAME" />.</translation>

@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
 <translation id="1061864016440983342">Používat bez polohy</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" /></translation>
+<translation id="1069150558259542054">Rychlé vložení nejde použít pro vlastní zkratky.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
 <translation id="1075811647922107217">Velikost stránky</translation>
@@ -665,6 +666,7 @@
 <translation id="4289849978083912975">Prezentace</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4300272766492248925">Do aplikace</translation>
 <translation id="430786093962686457">šifón</translation>
 <translation id="4310735698903592804">Tapety vytvořené nedávno pomocí Google AI</translation>
 <translation id="4320904097188876154">neonově růžová</translation>
@@ -1127,6 +1129,7 @@
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">Přizpůsobit tapetě</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
+<translation id="6531528791584205545">rychle vložit</translation>
 <translation id="6535178685492749208">Jste offline. Zpětná vazba se odešle později.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">ve čtvrtek</translation>

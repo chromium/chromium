@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">音频</translation>
 <translation id="2737898226590637227">没有下一个 ARIA 位置标记</translation>
 <translation id="2749275490991666823">已选中</translation>
+<translation id="2751454300227269244">将嘴向右移</translation>
 <translation id="27527859628328957">跳转到下一个可设置为焦点的项</translation>
 <translation id="2756452585631602151">输入自定义标签</translation>
 <translation id="2766299274563946262">左侧没有单元格</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">表格“<ph name="TABLENAME" />”，<ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">米黄色</translation>
 <translation id="316542773973815724">导航</translation>
+<translation id="3167446923957429259">将嘴向左移</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{1个空格}other{#个空格}}</translation>
 <translation id="3179119189286472195">非链接</translation>
 <translation id="3180990259147710757">将下巴向左移动</translation>
@@ -1179,7 +1181,6 @@
 <translation id="8940925288729953902">辅助键</translation>
 <translation id="8943282376843390568">绿黄色</translation>
 <translation id="8944511129464116546">部分选中</translation>
-<translation id="8945050808870279132">皱鼻子</translation>
 <translation id="8946628535652548639">行 <ph name="TABLECELLROWINDEX" />，列 <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">没有上一个单选按钮</translation>
 <translation id="8970172509886453271">没有上一个章节</translation>

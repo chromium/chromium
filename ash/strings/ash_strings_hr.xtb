@@ -308,7 +308,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2041220428661959602">Razina baterije: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Prečac <ph name="SIX_PACK_KEY_NAME" /> trenutačno je isključen</translation>
 <translation id="2049240716062114887">Naziv radne površine promijenjen je u <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Portret</translation>
 <translation id="2064048859448024834">Pregled kamere uključen</translation>
 <translation id="2065098273523946419">Veza Saznajte više. Preusmjerava na preglednik kad se aktivira</translation>
 <translation id="2067220651560163985">Prikaži temperaturu u Celzijima</translation>
@@ -975,7 +974,6 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4322742403972824594">Promijenjen je tipkovni prečac Ctrl + Alt + strelica prema gore. Da biste upotrijebili tipku za povratak na početnu stranicu, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelica lijevo.</translation>
 <translation id="4324840740119394760">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="4327147325944669226">Snimite igru</translation>
-<translation id="4333628967105022692">Lacros nije podržan dok je prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Povećalo</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ton je isključen</translation>
 <translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
@@ -2435,7 +2433,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="974545358917229949">Prikazuju se rezultati za upit <ph name="QUERY" /> (njih <ph name="RESULT_COUNT" />)</translation>
 <translation id="981011780479609956">Bez krajnjeg roka</translation>
 <translation id="98120814841227350">Prelazak na kraj dokumenta</translation>
-<translation id="98515147261107953">Pejzaži</translation>
 <translation id="987589956647469042">Mobilni podaci su uključeni</translation>
 <translation id="989374776391122812">Kontrole kamere i zvuka</translation>
 <translation id="990277280839877440">Zatvoren je prozor <ph name="WINDOW_TITILE" />.</translation>

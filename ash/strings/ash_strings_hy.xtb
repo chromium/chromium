@@ -308,7 +308,6 @@
 <translation id="2041220428661959602">Մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">«<ph name="SIX_PACK_KEY_NAME" />» գործողության դյուրանցումը ներկայումս անջատված է</translation>
 <translation id="2049240716062114887">Աշխատասեղանի անունը փոխվել է հետևյալի՝ <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2064048859448024834">Տեսախցիկի նախադիտումը միացված է</translation>
 <translation id="2065098273523946419">«Իմանալ ավելին» հղում։ Սեղմելիս վերաուղղորդել դեպի դիտարկիչ</translation>
 <translation id="2067220651560163985">Ջերմաստիճանը ցուցադրել Ցելսիուսով</translation>
@@ -975,7 +974,6 @@
 <translation id="4322742403972824594">«Ctrl + Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Home ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ձախ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4324840740119394760">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="4327147325944669226">Տեսագրել խաղը</translation>
-<translation id="4333628967105022692">Lacros-ը չի աջակցվում, երբ մեկից ավելի օգտատերեր են մուտք գործում</translation>
 <translation id="4338109981321384717">Խոշորացույց</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Ձայնն անջատված է</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
@@ -2352,6 +2350,7 @@
 <translation id="8982906748181120328">Մոտակա սարքերի հասանելիություն</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Օգտագործվում է՝ <ph name="IME_NAME" /></translation>
+<translation id="8991648557324317894">Սեղմեք Fn + Արագ զետեղում կամ Shift՝ չեղարկելու համար։</translation>
 <translation id="899350903320462459">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը որպես <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Դուք խոսո՞ւմ եք։ Ձեր խոսափողն անջատված է։ Ընտրեք խոսափողը՝ այն միացնելու համար։</translation>
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
@@ -2434,7 +2433,6 @@
 <translation id="974545358917229949">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="981011780479609956">Առանց վերջնաժամկետի</translation>
 <translation id="98120814841227350">Անցնել փաստաթղթի վերջ</translation>
-<translation id="98515147261107953">Հորիզոնական</translation>
 <translation id="987589956647469042">Բջջային ինտերնետը միացված է</translation>
 <translation id="989374776391122812">Տեսախցիկի և ձայնի կառավարման տարրեր</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> պատուհանը փակվեց։</translation>

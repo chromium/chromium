@@ -308,7 +308,6 @@
 <translation id="2041220428661959602">பேட்டரி நிலை: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ஷார்ட்கட் தற்போது முடக்கப்பட்டுள்ளது</translation>
 <translation id="2049240716062114887">டெஸ்க் பெயர் <ph name="DESK_NAME" /> என மாற்றப்பட்டது</translation>
-<translation id="2050339315714019657">செங்குத்து</translation>
 <translation id="2064048859448024834">கேமரா மாதிரிக்காட்சி இயக்கத்தில் உள்ளது</translation>
 <translation id="2065098273523946419">மேலும் தெரிந்துகொள்வதற்கான இணைப்பு. செயல்படுத்தப்பட்டதும் உலாவிக்குத் திசைதிருப்பும்.</translation>
 <translation id="2067220651560163985">வெப்பநிலையை செல்சியஸில் காட்டு</translation>
@@ -975,7 +974,6 @@
 <translation id="4322742403972824594">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி. Home பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + இடது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="4324840740119394760">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="4327147325944669226">கேமை ரெக்கார்டு செய்</translation>
-<translation id="4333628967105022692">பல பயனர்கள் உள்நுழைந்திருக்கும்போது Lacros உலாவியைப் பயன்படுத்த இயலாது.</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ஒலியடக்கப்பட்டது</translation>
 <translation id="4351244548802238354">அறிவிப்பை மூடு</translation>
@@ -2352,6 +2350,7 @@
 <translation id="8982906748181120328">‘அருகில் பகிர்தல்’ தெரிவுநிலை</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> பயன்படுத்தப்படுகிறது</translation>
+<translation id="8991648557324317894">ரத்துசெய்ய fn பட்டனை அழுத்தி விரைவாகச் சேர்த்தல் அல்லது Shift பட்டனை அழுத்தவும்.</translation>
 <translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆக அன்லாக் செய்யவும்</translation>
 <translation id="8993733019280019776">பேசுகிறீர்களா? உங்கள் மைக் முடக்கப்பட்டுள்ளது. மைக்கை இயக்க அதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="9000771174482730261">சேமிப்பிடத்தை நிர்வகியுங்கள்</translation>
@@ -2434,7 +2433,6 @@
 <translation id="974545358917229949"><ph name="QUERY" />க்கான <ph name="RESULT_COUNT" /> முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="981011780479609956">முடிக்க வேண்டிய தேதி இல்லாதவை</translation>
 <translation id="98120814841227350">ஆவணத்தின் இறுதிக்குச் செல்</translation>
-<translation id="98515147261107953">லேண்ட்ஸ்கேப்</translation>
 <translation id="987589956647469042">மொபைல் டேட்டா இயக்கப்பட்டது</translation>
 <translation id="989374776391122812">கேமரா மற்றும் ஆடியோ கட்டுப்பாடுகள்</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> சாளரம் மூடப்பட்டது.</translation>

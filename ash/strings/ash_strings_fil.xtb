@@ -308,7 +308,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2041220428661959602">Level ng baterya: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Kasalukuyang naka-off ang shortcut para sa <ph name="SIX_PACK_KEY_NAME" /></translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2065098273523946419">Link ng matuto pa. Magre-redirect sa browser kapag na-activate</translation>
 <translation id="2067220651560163985">Ipakita ang temperatura sa Celsius</translation>
@@ -975,7 +974,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4322742403972824594">Nagbago ang keyboard shortcut na Ctrl + Alt + Pataas na Arrow. Para magamit ang Home key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Kaliwang Arrow.</translation>
 <translation id="4324840740119394760">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="4327147325944669226">I-record ang laro</translation>
-<translation id="4333628967105022692">Hindi sinusuportahan ang Lacros kapag maraming user ang naka-sign in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Naka-mute</translation>
 <translation id="4351244548802238354">Isara ang dialog</translation>
@@ -2433,7 +2431,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Walang takdang petsa</translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>
-<translation id="98515147261107953">Landscape</translation>
 <translation id="987589956647469042">Naka-on ang mobile data</translation>
 <translation id="989374776391122812">Mga kontrol ng camera at audio</translation>
 <translation id="990277280839877440">Isinara ang window na <ph name="WINDOW_TITILE" />.</translation>

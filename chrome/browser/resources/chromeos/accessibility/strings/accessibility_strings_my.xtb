@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="2737898226590637227">နောက်ထပ် ARIA အထူးနေရာ မရှိပါ</translation>
 <translation id="2749275490991666823">အမှန်ခြစ်ပြီး</translation>
+<translation id="2751454300227269244">ပါးစပ်ကို ညာဘက်သို့ ရွဲ့ပြပါ</translation>
 <translation id="27527859628328957">ဆုံချက်ညှိရနိုင်သည့် နောက်ထပ် အရာဆီ ခုန်သွားရန်</translation>
 <translation id="2756452585631602151">စိတ်ကြိုက်အညွှန်း ထည့်ရန်</translation>
 <translation id="2766299274563946262">မည်သည့် ဆဲလ်မျှ မရှိတော့ပါ</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688"><ph name="TABLENAME" /> ဇယား၊ <ph name="TABLEROWS" /> လိုင်းနှင့် <ph name="TABLECOLS" /> ကော်လံ</translation>
 <translation id="3159493096109238499">ဝါညိုနု</translation>
 <translation id="316542773973815724">သွားလာမှု</translation>
+<translation id="3167446923957429259">ပါးစပ်ကို ဘယ်ဘက်သို့ ရွဲ့ပြပါ</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ကွက်လပ်}other{# ကွက်လပ်များ}}</translation>
 <translation id="3179119189286472195">လင့်ခ်ချိတ်မထားပါ</translation>
 <translation id="3180990259147710757">မေးရိုးကို ဘယ်ဘက်သို့ ရွဲ့ပါ</translation>
@@ -1179,7 +1181,6 @@
 <translation id="8940925288729953902">မွမ်းမံရေး ကီးများ</translation>
 <translation id="8943282376843390568">သံပုရာ</translation>
 <translation id="8944511129464116546">တချို့တစ်ဝက်ကို အမှန်ခြစ်ထားသည်</translation>
-<translation id="8945050808870279132">နှာခေါင်းရှုံ့ပါ</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">ယခင် ရေဒီယိုခလုတ် မရှိပါ</translation>
 <translation id="8970172509886453271">ယခင် ကဏ္ဍ မရှိပါ</translation>

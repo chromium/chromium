@@ -308,7 +308,6 @@
 <translation id="2041220428661959602">Батарея деңгээли: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ыкчам баскычы учурда өчүк</translation>
 <translation id="2049240716062114887">Иш тактанын аталышы <ph name="DESK_NAME" /> болуп өзгөрдү</translation>
-<translation id="2050339315714019657">Портрет</translation>
 <translation id="2064048859448024834">Камерада алдын ала көрүү күйүк</translation>
 <translation id="2065098273523946419">Кеңири маалымат шилтемеси. Иштетилгенде серепчиге багыттоо</translation>
 <translation id="2067220651560163985">Температураны Цельсий менен көрсөтүү</translation>
@@ -975,7 +974,6 @@
 <translation id="4322742403972824594">Ctrl + Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Башкы бет баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + солго жебени басыңыз.</translation>
 <translation id="4324840740119394760">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна камераны пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="4327147325944669226">Оюнду жаздыруу</translation>
-<translation id="4333628967105022692">Бир нече колдонуучу кирип турганда Lacros иштебей калат.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Үнү басылды</translation>
 <translation id="4351244548802238354">Диалогду жабуу</translation>
@@ -2435,7 +2433,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> сурамы боюнча <ph name="RESULT_COUNT" /> натыйжа көрсөтүлүүдө</translation>
 <translation id="981011780479609956">Бүтүрүү мөөнөтү көрсөтүлбөгөндөр</translation>
 <translation id="98120814841227350">Документтин аягына өтүү</translation>
-<translation id="98515147261107953">Туурасынан</translation>
 <translation id="987589956647469042">Мобилдик трафик күйгүзүлдү</translation>
 <translation id="989374776391122812">Камера менен аудиону башкаруу элементтери</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезеси жабылды.</translation>

@@ -73,7 +73,6 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="4139634748112164403">Tab akan kekal terbuka pada peranti ini tetapi kumpulan tersebut akan dipadamkan secara kekal</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Ungu</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="427987768447457592">Kumpulan tab baharu</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab ditukar, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_CHANGED" /> tab ditukar, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="4371591986692297148">Tidak aktif</translation>
@@ -98,7 +97,6 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="5094423602314093681">Alih keluar tab dan padamkan kumpulan?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan}other{<ph name="MANY_ADDED" /> tab ditambahkan}}</translation>
 <translation id="5161254044473106830">Tajuk diperlukan</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Tutup kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="5339733443032484186">Tab terakhir anda</translation>
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
@@ -140,7 +138,6 @@ Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> yang dikongsi dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> yang dikongsi dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Kongsi tab}other{Kongsi tab}}</translation>
 <translation id="7129458170538955174">Maklumat tentang kedai ini dibuka pada ketinggian separuh</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="7204204600596740190">Mod berbilang pilihan</translation>
 <translation id="7211038039686180558">Kumpulan tab anda disimpan dan dikemaskinikan secara automatik merentas semua peranti log masuk anda</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Dipilih</translation>
@@ -190,7 +187,6 @@ Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
 <translation id="8887921976452567404">Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9111228330448174435">Tunjukkan dialog dalam pembuatan kumpulan tab baharu</translation>
 <translation id="9114502155681725011">Buka menu tindakan kumpulan tab untuk kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
