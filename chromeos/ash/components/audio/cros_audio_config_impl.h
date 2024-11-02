@@ -46,11 +46,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       std::vector<mojom::AudioDevicePtr>* output_devices_out,
       std::vector<mojom::AudioDevicePtr>* input_devices_out) const override;
   mojom::MuteState GetInputMuteState() const override;
+  mojom::VoiceIsolationUIAppearancePtr GetVoiceIsolationUIAppearance()
+      const override;
   void SetOutputMuted(bool muted) override;
   void SetOutputVolumePercent(int8_t volume) override;
   void SetInputGainPercent(uint8_t gain) override;
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
+  void RefreshVoiceIsolationState() override;
   void SetNoiseCancellationEnabled(bool enabled) override;
   void SetForceRespectUiGainsEnabled(bool enabled) override;
   void SetHfpMicSrEnabled(bool enabled) override;
@@ -73,6 +76,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       bool mute_on,
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
+  void OnVoiceIsolationUIAppearanceChanged(
+      VoiceIsolationUIAppearance appearance) override;
   void OnNoiseCancellationStateChanged() override;
   void OnStyleTransferStateChanged() override;
   void OnForceRespectUiGainsStateChanged() override;

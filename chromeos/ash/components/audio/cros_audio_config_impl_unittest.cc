@@ -156,6 +156,8 @@ class CrosAudioConfigImplTest : public testing::Test {
     CrasAudioHandler::InitializeForTesting();
     cras_audio_handler_ = CrasAudioHandler::Get();
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+    audio_pref_handler_->SetVoiceIsolationState(
+        /*voice_isolation_state=*/false);
     audio_pref_handler_->SetNoiseCancellationState(
         /*noise_cancellation_state=*/false);
     audio_pref_handler_->SetStyleTransferState(
@@ -221,6 +223,12 @@ class CrosAudioConfigImplTest : public testing::Test {
   void SetInputGainPercentFromFrontEnd(int gain_percent) {
     // TODO(ashleydp): Replace RunUntilIdle with Run and QuitClosure.
     remote_->SetInputGainPercent(gain_percent);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateRefreshVoiceIsolationState() {
+    // TODO(hunghsienchen): Replace RunUntilIdle with Run and QuitClosure.
+    remote_->RefreshVoiceIsolationState();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -320,6 +328,25 @@ class CrosAudioConfigImplTest : public testing::Test {
   void InsertAudioNode(const AudioNodeInfo* node_info) {
     fake_cras_audio_client_->InsertAudioNodeToList(
         GenerateAudioNode(node_info));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool GetVoiceIsolationStatePref() {
+    return audio_pref_handler_->GetVoiceIsolationState();
+  }
+
+  void SetVoiceIsolationStatePref(bool enabled) {
+    audio_pref_handler_->SetVoiceIsolationState(
+        /*voice_isolation_state=*/enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool GetVoiceIsolationState() {
+    return cras_audio_handler_->GetVoiceIsolationState();
+  }
+
+  void RefreshVoiceIsolationState() {
+    cras_audio_handler_->RefreshVoiceIsolationState();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -727,6 +754,30 @@ TEST_F(CrosAudioConfigImplTest, HandleOutputMuteStateMutedByPolicy) {
       fake_observer->last_audio_system_properties_.value()->output_mute_state);
 }
 
+TEST_F(CrosAudioConfigImplTest, SetVoiceIsolationState) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+
+  // By default voice isolation is disabled and not supported in this test.
+  ASSERT_FALSE(GetVoiceIsolationStatePref());
+  ASSERT_FALSE(GetVoiceIsolationState());
+
+  // Simulate trying to set voice isolation.
+  SetVoiceIsolationStatePref(/*enabled=*/true);
+  SimulateRefreshVoiceIsolationState();
+  ASSERT_TRUE(GetVoiceIsolationStatePref());
+  ASSERT_TRUE(GetVoiceIsolationState());
+
+  // Change active node does not change voice isolation state.
+  SetActiveInputNodes({kUsbMicId});
+  ASSERT_TRUE(GetVoiceIsolationState());
+
+  // Simulate trying to reset voice isolation.
+  SetVoiceIsolationStatePref(/*enabled=*/false);
+  SimulateRefreshVoiceIsolationState();
+  ASSERT_FALSE(GetVoiceIsolationStatePref());
+  ASSERT_FALSE(GetVoiceIsolationState());
+}
+
 TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
 
@@ -961,9 +1012,9 @@ TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
   // Test default audio node list, which includes one input and one output node.
   SetAudioNodes({kInternalSpeaker, kMicJack});
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events volume, gain, active output, active input, and nodes
-  // changed
-  expected_observer_calls += 5u;
+  // AudioObserver events volume, gain, active output, active input, nodes
+  // changed, and UI appearance changed.
+  expected_observer_calls += 6u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -978,8 +1029,9 @@ TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
   // Test removing output device.
   RemoveAudioNode(kInternalSpeakerId);
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events volume, active output, and nodes changed.
-  expected_observer_calls += 2u;
+  // AudioObserver events volume, active output, nodes changed, and UI
+  // appearance changed.
+  expected_observer_calls += 3u;
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
   EXPECT_EQ(0u, fake_observer->last_audio_system_properties_.value()
@@ -988,8 +1040,9 @@ TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
   // Test inserting inactive output device.
   InsertAudioNode(kInternalSpeaker);
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events volume, active output, and nodes changed.
-  expected_observer_calls += 3u;
+  // AudioObserver events volume, active output, nodes changed, and UI
+  // appearance changed.
+  expected_observer_calls += 4u;
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
   EXPECT_EQ(1u, fake_observer->last_audio_system_properties_.value()
@@ -1010,8 +1063,9 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
   SetAudioNodes({kInternalSpeaker});
   // Multiple calls to observer triggered by setting active nodes triggered by
   // AudioObserver events volume, active input(observer is still called if
-  // there's no input device), active output, and nodes changed.
-  expected_observer_calls += 4u;
+  // there's no input device), active output, nodes changed, and UI appearance
+  // changed.
+  expected_observer_calls += 5u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -1021,8 +1075,9 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
 
   InsertAudioNode(kMicJack);
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events gain, active input and nodes changed.
-  expected_observer_calls += 3u;
+  // AudioObserver events gain, active input, nodes changed, and UI appearance
+  // changed.
+  expected_observer_calls += 4u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -1035,8 +1090,9 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
 
   RemoveAudioNode(kMicJackId);
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events active input and nodes changed.
-  expected_observer_calls += 2u;
+  // AudioObserver events active input, nodes changed, and UI appearance
+  // changed.
+  expected_observer_calls += 3u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);

@@ -365,6 +365,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const minVolumePercentFakeAudioSystemProperties:
@@ -378,6 +380,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const mutedByUserFakeAudioSystemProperties:
@@ -393,6 +397,8 @@ suite('<settings-device-page>', () => {
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const mutedByPolicyFakeAudioSystemProperties:
@@ -408,6 +414,8 @@ suite('<settings-device-page>', () => {
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const mutedExternallyFakeAudioSystemProperties:
@@ -423,6 +431,8 @@ suite('<settings-device-page>', () => {
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const emptyOutputDevicesFakeAudioSystemProperties:
@@ -435,6 +445,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const emptyInputDevicesFakeAudioSystemProperties:
@@ -448,6 +460,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const activeSpeakerFakeAudioSystemProperties:
@@ -461,6 +475,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const noiseCancellationNotSupportedAudioSystemProperties:
@@ -473,6 +489,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const styleTransferSupportedAudioSystemProperties:
@@ -485,6 +503,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const styleTransferNotSupportedAudioSystemProperties:
@@ -497,6 +517,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const hfpMicSrNotSupportedAudioSystemProperties:
@@ -509,6 +531,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const hfpMicSrSupportedAudioSystemProperties:
@@ -522,6 +546,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const muteByHardwareAudioSystemProperties:
@@ -534,6 +560,8 @@ suite('<settings-device-page>', () => {
       ],
       inputMuteState: crosAudioConfigMojom.MuteState.kMutedExternally,
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     setup(async () => {
@@ -1436,6 +1464,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const spatialAudioNotSupportedAudioSystemProperties:
@@ -1448,6 +1478,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     setup(async () => {
