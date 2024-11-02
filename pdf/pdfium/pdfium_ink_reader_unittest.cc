@@ -12,6 +12,10 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "third_party/ink/src/ink/geometry/intersects.h"
+#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/point.h"
 
 namespace chrome_pdf {
 
@@ -27,11 +31,28 @@ TEST_P(PDFiumInkReaderTest, Basic) {
   FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
-  // TODO(crbug.com/353942910): Implement this function and update test
-  // expectations.
   std::vector<ink::ModeledShape> shapes =
       ReadV2InkPathsFromPageAsModeledShapes(page);
-  EXPECT_TRUE(shapes.empty());
+  ASSERT_EQ(shapes.size(), 1u);
+
+  // Test `shape` works with ink::Intersects(). All point values are in
+  // canonical coordinates, so no transform is necessary.
+  const auto no_transform = ink::AffineTransform::Identity();
+  const auto& shape = shapes[0];
+
+  // Points at the corners do not intersect with `shape`.
+  EXPECT_FALSE(ink::Intersects(ink::Point{0, 0}, shape, no_transform));
+  EXPECT_FALSE(ink::Intersects(ink::Point{266, 266}, shape, no_transform));
+
+  // Points close to `shape`, that still do not intersect.
+  EXPECT_FALSE(ink::Intersects(ink::Point{132, 212}, shape, no_transform));
+  EXPECT_FALSE(ink::Intersects(ink::Point{194, 204}, shape, no_transform));
+
+  // Points that do intersect.
+  // TODO(crbug.com/353942910): These should return true once a tessellator is
+  // available.
+  EXPECT_FALSE(ink::Intersects(ink::Point{133, 212}, shape, no_transform));
+  EXPECT_FALSE(ink::Intersects(ink::Point{194, 203}, shape, no_transform));
 }
 
 TEST_P(PDFiumInkReaderTest, NoPage) {

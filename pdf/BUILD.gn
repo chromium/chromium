@@ -222,6 +222,7 @@ if (enable_pdf) {
         "draw_utils/page_boundary_intersect.h",
         "pdf_ink_brush.cc",
         "pdf_ink_brush.h",
+        "pdf_ink_constants.h",
         "pdf_ink_conversions.cc",
         "pdf_ink_conversions.h",
         "pdf_ink_cursor.cc",
