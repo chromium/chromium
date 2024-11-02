@@ -228,6 +228,43 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, HandleJavaScriptDialog) {
   ASSERT_EQ(value1, callback_helper.last_input());
 }
 
+IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, JavascriptDialogFollowsModalUI) {
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(tab_web_contents);
+  content::RenderFrameHost* frame = tab_web_contents->GetPrimaryMainFrame();
+  javascript_dialogs::TabModalDialogManager* dialog_manager =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(
+          tab_web_contents);
+
+  // Open a modal dialog.
+  auto scoped_tab_modal_ui = tab_interface->ShowModalUI();
+
+  // Try to open a javascript dialog.
+  bool did_suppress = false;
+  dialog_manager->RunJavaScriptDialog(
+      tab_web_contents, frame, content::JAVASCRIPT_DIALOG_TYPE_ALERT,
+      std::u16string(), std::u16string(), base::NullCallback(), &did_suppress);
+
+  // Verify the dialog is not shown.
+  EXPECT_FALSE(dialog_manager->IsShowingDialogForTesting());
+
+  // Close the modal dialog.
+  scoped_tab_modal_ui.reset();
+
+  // Open a javascript dialog.
+  dialog_manager->RunJavaScriptDialog(
+      tab_web_contents, frame, content::JAVASCRIPT_DIALOG_TYPE_ALERT,
+      std::u16string(), std::u16string(), base::NullCallback(), &did_suppress);
+
+  // Verify the javascript dialog is shown.
+  EXPECT_TRUE(dialog_manager->IsShowingDialogForTesting());
+
+  // Verify a model dialog cannot be shown.
+  EXPECT_FALSE(tab_interface->CanShowModalUI());
+}
+
 class JavaScriptDialogDismissalCauseTester {
  public:
   explicit JavaScriptDialogDismissalCauseTester(JavaScriptDialogTest* test)

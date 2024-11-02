@@ -25,6 +25,7 @@ JavaScriptTabModalDialogViewViews::~JavaScriptTabModalDialogViewViews() =
     default;
 
 void JavaScriptTabModalDialogViewViews::CloseDialogWithoutCallback() {
+  scoped_tab_modal_ui_.reset();
   dialog_callback_.Reset();
   dialog_force_closed_callback_.Reset();
   GetWidget()->Close();
@@ -78,6 +79,11 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
       default_prompt_text_(default_prompt_text),
       dialog_callback_(std::move(dialog_callback)),
       dialog_force_closed_callback_(std::move(dialog_force_closed_callback)) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(parent_web_contents);
+  CHECK(tab && tab->CanShowModalUI());
+  scoped_tab_modal_ui_ = tab->ShowModalUI();
+
   SetModalType(ui::mojom::ModalType::kChild);
   SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   const bool is_alert = dialog_type == content::JAVASCRIPT_DIALOG_TYPE_ALERT;
@@ -109,6 +115,9 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
       base::Unretained(this)));
   RegisterWindowWillCloseCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {
+        // Since the window is closing, reset the ScopedTabModalUI so it removes
+        // its reference to the TabModel prior to the TabModel being destroyed.
+        dialog->scoped_tab_modal_ui_.reset();
         // If the force-close callback still exists at this point we're not
         // closed due to a user action (would've been caught in Accept/Cancel).
         if (dialog->dialog_force_closed_callback_)

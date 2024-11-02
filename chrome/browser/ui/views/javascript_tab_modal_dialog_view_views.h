@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -58,6 +59,9 @@ class JavaScriptTabModalDialogViewViews
   friend class JavaScriptDialog;
   friend class JavaScriptTabModalDialogManagerDelegateDesktop;
 
+  // For a Modal Dialog to be shown, there must not be another Modal Dialog
+  // showing. The caller is responsible for checking this and not constructing
+  // this dialog if another is showing.
   JavaScriptTabModalDialogViewViews(
       content::WebContents* parent_web_contents,
       content::WebContents* alerting_web_contents,
@@ -76,6 +80,10 @@ class JavaScriptTabModalDialogViewViews
 
   // The message box view whose commands we handle.
   raw_ptr<views::MessageBoxView> message_box_view_;
+
+  // Prevents other features from showing tab-modal UI. Connected to the
+  // lifetime of this dialog.
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 
   base::WeakPtrFactory<JavaScriptTabModalDialogViewViews> weak_factory_{this};
 };
