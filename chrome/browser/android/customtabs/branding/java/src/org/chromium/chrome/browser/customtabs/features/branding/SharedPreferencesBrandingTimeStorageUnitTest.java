@@ -18,6 +18,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.InMemorySharedPreferences;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 
 import java.util.function.Function;
 
@@ -80,7 +81,7 @@ public class SharedPreferencesBrandingTimeStorageUnitTest {
         var mimData = new MismatchNotificationData();
         var appData = new MismatchNotificationData.AppUiData();
         appData.showCount = 32;
-        appData.closeType = MismatchNotificationData.UserAction.ACCEPTED;
+        appData.closeType = CloseType.ACCEPTED.getNumber();
         mimData.setAppData(accountId, appId, appData);
         storage.putMimData(mimData);
 
@@ -92,7 +93,14 @@ public class SharedPreferencesBrandingTimeStorageUnitTest {
     public void getSizeLeavesOutMimProperties() {
         var storage = SharedPreferencesBrandingTimeStorage.getInstance();
         storage.setSharedPrefForTesting(new InMemorySharedPreferences());
+
+        final String appId = "org.cities.gotham";
+        final String accountId = "batman@gmail.com";
         var mimData = new MismatchNotificationData();
+        var appData = new MismatchNotificationData.AppUiData();
+        appData.showCount = 32;
+        appData.closeType = CloseType.ACCEPTED.getNumber();
+        mimData.setAppData(accountId, appId, appData);
 
         // These 2 MIM entries should not be counted toward |getSize()|.
         storage.putMimData(mimData);

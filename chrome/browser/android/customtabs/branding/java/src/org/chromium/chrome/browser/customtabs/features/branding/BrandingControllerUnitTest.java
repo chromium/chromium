@@ -53,6 +53,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
 
@@ -393,7 +394,14 @@ public class BrandingControllerUnitTest {
         }
 
         public BrandingCheckTester invokeMimCloseCallback() {
-            mCloseCallbackCaptor.getValue().onResult(new MismatchNotificationData());
+            final String appId = "org.cities.gotham";
+            final String accountId = "batman@gmail.com";
+            var mimData = new MismatchNotificationData();
+            var appData = new MismatchNotificationData.AppUiData();
+            appData.showCount = 32;
+            appData.closeType = CloseType.ACCEPTED.getNumber();
+            mimData.setAppData(accountId, appId, appData);
+            mCloseCallbackCaptor.getValue().onResult(mimData);
             return this;
         }
 

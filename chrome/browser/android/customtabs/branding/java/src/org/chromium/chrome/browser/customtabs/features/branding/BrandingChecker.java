@@ -87,7 +87,8 @@ class BrandingChecker extends AsyncTask<BrandingInfo> {
         MismatchNotificationData getMimData();
 
         /**
-         * Record the account mismatch notification data.
+         * Record the account mismatch notification data. Putting empty or null data is no-op since
+         * no entry is removed.
          *
          * @param {@link MismatchNotificationData} object.
          */

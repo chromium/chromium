@@ -13,8 +13,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import com.google.gson.Gson;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.PostTask;
@@ -124,18 +122,19 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
     @Override
     public MismatchNotificationData getMimData() {
         String str = getSharedPref().getString(KEY_MIM_DATA, null);
-        return new Gson().fromJson(str, MismatchNotificationData.class);
+        return str != null ? MismatchNotificationData.fromBase64(str) : null;
     }
 
     @MainThread
     @Override
     @SuppressLint({"ApplySharedPref"})
     public void putMimData(MismatchNotificationData data) {
+        if (data == null || data.isEmpty()) return;
         PostTask.postTask(
                 TaskTraits.USER_VISIBLE_MAY_BLOCK,
                 () -> {
                     SharedPreferences.Editor pref = getSharedPref().edit();
-                    pref.putString(KEY_MIM_DATA, new Gson().toJson(data));
+                    pref.putString(KEY_MIM_DATA, data.toBase64());
                     pref.commit();
                 });
     }

@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
@@ -45,8 +46,8 @@ public class MismatchNotificationCheckerUnitTest {
         new MismatchNotificationCheckerTester()
                 .newChecker()
                 .callMaybeShowUi(/* shown= */ true, null)
-                .callCloseUi(MismatchNotificationData.UserAction.DISMISSED)
-                .assertCloseCallbackInvoked(1, MismatchNotificationData.UserAction.DISMISSED);
+                .callCloseUi(CloseType.DISMISSED)
+                .assertCloseCallbackInvoked(1, CloseType.DISMISSED);
     }
 
     @Test
@@ -54,9 +55,8 @@ public class MismatchNotificationCheckerUnitTest {
         new MismatchNotificationCheckerTester()
                 .newChecker()
                 .callMaybeShowUi(/* shown= */ true, new MismatchNotificationData())
-                .callCloseUi(MismatchNotificationData.UserAction.TIMED_OUT)
-                .assertCloseCallbackInvoked(
-                        INIT_SHOW_COUNT + 1, MismatchNotificationData.UserAction.TIMED_OUT);
+                .callCloseUi(CloseType.TIMED_OUT)
+                .assertCloseCallbackInvoked(INIT_SHOW_COUNT + 1, CloseType.TIMED_OUT);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class MismatchNotificationCheckerUnitTest {
                 .callMaybeShowUi(/* shown= */ true, new MismatchNotificationData())
                 .assertIphLocked(true)
                 .assertOtherPromptsSuppressed(true)
-                .callCloseUi(MismatchNotificationData.UserAction.DISMISSED)
+                .callCloseUi(CloseType.DISMISSED)
                 // Closing the notification should restore everything.
                 .assertIphLocked(false)
                 .assertOtherPromptsSuppressed(false);
@@ -104,7 +104,7 @@ public class MismatchNotificationCheckerUnitTest {
             when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mCoreAccountInfo);
 
             mAppData.showCount = INIT_SHOW_COUNT;
-            mAppData.closeType = MismatchNotificationData.UserAction.INVALID;
+            mAppData.closeType = CloseType.UNKNOWN.getNumber();
 
             mOnClose = mock(Callback.class);
 
@@ -141,18 +141,18 @@ public class MismatchNotificationCheckerUnitTest {
         }
 
         public MismatchNotificationCheckerTester assertCloseCallbackInvoked(
-                int showCount, int closeType) {
+                int showCount, CloseType closeType) {
             var captor = ArgumentCaptor.forClass(MismatchNotificationData.class);
             verify(mOnClose).onResult(captor.capture());
             MismatchNotificationData data = captor.getValue();
             var appData = data.getAppData(mChecker.getAccountId(), "app-id");
             assertEquals("ShowCount was not updated", showCount, appData.showCount);
-            assertEquals("CloseType was not updated", closeType, appData.closeType);
+            assertEquals("CloseType was not updated", closeType.getNumber(), appData.closeType);
             return this;
         }
 
-        public MismatchNotificationCheckerTester callCloseUi(int closeType) {
-            mCallback.onResult(closeType);
+        public MismatchNotificationCheckerTester callCloseUi(CloseType closeType) {
+            mCallback.onResult(closeType.getNumber());
             return this;
         }
     }

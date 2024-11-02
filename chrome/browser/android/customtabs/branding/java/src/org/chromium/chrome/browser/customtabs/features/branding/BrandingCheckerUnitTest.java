@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingAppIdType;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingChecker.BrandingLaunchTimeStorage;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -228,7 +229,7 @@ public class BrandingCheckerUnitTest {
         var mimData = new MismatchNotificationData();
         var appData = new MismatchNotificationData.AppUiData();
         appData.showCount = 32;
-        appData.closeType = MismatchNotificationData.UserAction.ACCEPTED;
+        appData.closeType = CloseType.ACCEPTED.getNumber();
         mimData.setAppData(accountId, appId, appData);
         mStorage.putMimData(mimData);
 
