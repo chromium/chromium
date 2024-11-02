@@ -560,6 +560,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       base::apple::ObjCCastStrict<TableViewAccountCell>(
           [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
   [cell setStatusView:nil];
+  [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
   _selectedIndexPath = nil;
   self.modalInPresentation = NO;
   _ellipsisButton.enabled = YES;
@@ -609,7 +610,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                           gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
                             gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep {
   CHECK(!_selectedIndexPath, base::NotFatalUntil::M135);
-  [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];
