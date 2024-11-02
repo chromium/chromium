@@ -21,7 +21,6 @@ chromium/try/android-dawn-arm64-s24-rel
 chromium/try/android-desktop-x64-compile-rel
 chromium/try/android-official
 chromium/try/android-oreo-x86-rel
-chromium/try/android-pie-arm64-dbg
 chromium/try/android-webview-10-x86-rel-tests
 chromium/try/android-webview-13-x64-hostside-rel
 chromium/try/android-webview-oreo-arm64-dbg

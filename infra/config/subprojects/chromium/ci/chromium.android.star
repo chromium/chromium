@@ -2975,6 +2975,9 @@ ci.thin_tester(
             "has_native_resultdb_integration",
         ],
     ),
+    # TODO(crbug.com/376769495): Add it back to gardening once the builder is
+    # stable with new suites added.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "P",

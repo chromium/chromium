@@ -582,9 +582,31 @@ targets.bundle(
         "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "chromium_tracing_gtests",
+        "android_pie_standard_gtests",
         # No standard tests due to capacity, no Vega tests since it's currently
         # O only.
     ],
+)
+
+targets.bundle(
+    name = "android_pie_standard_gtests",
+    targets = [
+        "chrome_public_test_apk",
+        "chrome_public_unit_test_apk",
+        "webview_instrumentation_test_apk",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "webview_instrumentation_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+    },
 )
 
 # Keep in sync with android_pie_rel_gtests, except for
