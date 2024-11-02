@@ -147,7 +147,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private static boolean isA11yStateEnabled() {
         // Drag and drop is disabled when gesture related a11y service is enabled.
         // See https://crbug.com/1250067.
-        return AccessibilityState.isAnyAccessibilityServiceEnabled();
+        return AccessibilityState.isTouchExplorationEnabled()
+                || AccessibilityState.isPerformGesturesEnabled();
     }
 
     private boolean startDragAndDropInternal(
