@@ -32,7 +32,8 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   SearchResultsPanel& operator=(const SearchResultsPanel&) = delete;
   ~SearchResultsPanel() override;
 
-  static std::unique_ptr<views::Widget> CreateWidget(aura::Window* const root);
+  static std::unique_ptr<views::Widget> CreateWidget(aura::Window* const root,
+                                                     const gfx::Rect& bounds);
 
   AshWebView* search_results_view() const { return search_results_view_; }
   views::Textfield* GetSearchBoxTextfield() const;

@@ -52,6 +52,7 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
                        std::u16string text,
                        const gfx::VectorIcon* icon,
                        ActionButtonRank rank) override;
+  gfx::Rect GetFeedbackWidgetScreenBounds() const override;
 
  private:
   // CaptureModeSession:

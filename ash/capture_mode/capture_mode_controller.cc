@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_observer.h"
@@ -530,6 +531,31 @@ PerformCaptureType GetCaptureTypeForImageCapture(
   return capture_type;
 }
 
+gfx::Rect CalculateSearchResultPanelBounds(aura::Window* root,
+                                           const gfx::Rect& feedback_bounds) {
+  // TODO: crbug.com/362284723 - Ensure tooltips are visible over overlay
+  // container.
+  const gfx::Rect work_area(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
+
+  gfx::Rect bounds(work_area.right() - capture_mode::kSearchResultsPanelWidth -
+                       capture_mode::kPanelWorkAreaSpacing,
+                   work_area.bottom() -
+                       capture_mode::kSearchResultsPanelHeight -
+                       capture_mode::kPanelWorkAreaSpacing,
+                   capture_mode::kSearchResultsPanelWidth,
+                   capture_mode::kSearchResultsPanelHeight);
+
+  // If the panel would overlap with the feedback button when it is created,
+  // instead place it just above the button.
+  if (bounds.Intersects(feedback_bounds)) {
+    bounds.set_y(feedback_bounds.y() - capture_mode::kSearchResultsPanelHeight -
+                 capture_mode::kPanelButtonSpacing);
+  }
+
+  return bounds;
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -634,8 +660,11 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
   DCHECK(features::IsSunfishFeatureEnabled() && IsActive());
   if (!search_results_panel_widget_) {
-    search_results_panel_widget_ =
-        SearchResultsPanel::CreateWidget(capture_mode_session_->current_root());
+    const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
+        capture_mode_session_->current_root(),
+        capture_mode_session_->GetFeedbackWidgetScreenBounds());
+    search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
+        capture_mode_session_->current_root(), panel_bounds);
     search_results_panel_widget_->Show();
   }
   // TODO(b/359317857): Determine whether to hide or refresh the panel if a new

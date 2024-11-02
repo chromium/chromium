@@ -181,6 +181,7 @@ class ASH_EXPORT CaptureModeSession
                        std::u16string text,
                        const gfx::VectorIcon* icon,
                        ActionButtonRank rank) override;
+  gfx::Rect GetFeedbackWidgetScreenBounds() const override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

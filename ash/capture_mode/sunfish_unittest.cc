@@ -12,6 +12,7 @@
 #include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
@@ -355,7 +356,10 @@ TEST_F(SunfishTest, CaptureBarView) {
 
 // Tests that the search results panel is draggable.
 TEST_F(SunfishTest, DragSearchResultsPanel) {
-  auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow());
+  gfx::Rect bounds(100, 100, capture_mode::kSearchResultsPanelWidth,
+                   capture_mode::kSearchResultsPanelHeight);
+  auto widget =
+      SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow(), bounds);
   widget->Show();
 
   auto* search_results_panel =

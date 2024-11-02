@@ -35,7 +35,6 @@ namespace {
 
 // TODO(sophiewen): Remove hardcoded values when we get UX specs.
 inline constexpr int kPanelCornerRadius = 16;
-inline constexpr int kSearchResultsPanelWidth = 600;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 inline constexpr int kHeaderRowSpacing = 10;
@@ -199,16 +198,13 @@ SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
 std::unique_ptr<views::Widget> SearchResultsPanel::CreateWidget(
-    aura::Window* const root) {
+    aura::Window* root,
+    const gfx::Rect& bounds) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   // TODO(b/362284723): Ensure tooltips are visible over overlay container.
   params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
-  const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
-  gfx::Rect bounds(work_area.right() - kSearchResultsPanelWidth, work_area.y(),
-                   kSearchResultsPanelWidth, work_area.height());
   params.bounds = bounds;
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kYes;

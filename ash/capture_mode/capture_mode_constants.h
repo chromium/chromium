@@ -142,6 +142,17 @@ constexpr int kSettingsMenuMinHeight = 50;
 inline constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
     base::Milliseconds(100);
 
+// Search result panel dimensions.
+constexpr int kSearchResultsPanelWidth = 360;
+constexpr int kSearchResultsPanelHeight = 492;
+
+// The distance between the search result panel and the work area.
+constexpr int kPanelWorkAreaSpacing = 10;
+
+// The distance between the search result panel and the feedback button (if
+// available).
+constexpr int kPanelButtonSpacing = 10;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

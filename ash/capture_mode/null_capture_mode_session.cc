@@ -125,4 +125,8 @@ void NullCaptureModeSession::InitInternal() {
 
 void NullCaptureModeSession::ShutdownInternal() {}
 
+gfx::Rect NullCaptureModeSession::GetFeedbackWidgetScreenBounds() const {
+  return gfx::Rect();
+}
+
 }  // namespace ash

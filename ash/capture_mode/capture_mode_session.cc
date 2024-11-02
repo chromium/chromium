@@ -3144,11 +3144,13 @@ void CaptureModeSession::UpdateFeedbackButtonWidget() {
   // Position the feedback button in the bottom right corner of the work area
   // (not including the shelf).
   auto pref_size = feedback_button_->GetPreferredSize();
-  const gfx::Rect work_area =
-      WorkAreaInsets::ForWindow(current_root_)->ComputeStableWorkArea();
+  const gfx::Rect work_area = display::Screen::GetScreen()
+                                  ->GetDisplayNearestWindow(current_root_)
+                                  .work_area();
+
   feedback_button_widget_->SetBounds(gfx::Rect(
-      work_area.width() - kFeedbackButtonSpacing - pref_size.width(),
-      work_area.height() - kFeedbackButtonSpacing - pref_size.height(),
+      work_area.right() - kFeedbackButtonSpacing - pref_size.width(),
+      work_area.bottom() - kFeedbackButtonSpacing - pref_size.height(),
       pref_size.width(), pref_size.height()));
 }
 
@@ -3314,6 +3316,12 @@ void CaptureModeSession::ShutdownInternal() {
         IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE);
   }
   UpdateFloatingPanelBoundsIfNeeded();
+}
+
+gfx::Rect CaptureModeSession::GetFeedbackWidgetScreenBounds() const {
+  return feedback_button_widget_
+             ? feedback_button_widget_->GetWindowBoundsInScreen()
+             : gfx::Rect();
 }
 
 }  // namespace ash
