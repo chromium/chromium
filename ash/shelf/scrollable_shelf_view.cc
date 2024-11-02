@@ -403,6 +403,12 @@ void ScrollableShelfView::ScrollToNewPage(bool forward) {
     ScrollByYOffset(offset, /*animating=*/true);
 }
 
+void ScrollableShelfView::UpdateAccessiblePreviousAndNextFocus() {
+  GetViewAccessibility().SetNextFocus(GetShelf()->GetStatusAreaWidget());
+  GetViewAccessibility().SetPreviousFocus(
+      GetShelf()->shelf_widget()->navigation_widget());
+}
+
 views::FocusSearch* ScrollableShelfView::GetFocusSearch() {
   return focus_search_.get();
 }
@@ -850,12 +856,6 @@ void ScrollableShelfView::OnGestureEvent(ui::GestureEvent* event) {
     // reset the class members related with scroll status explicitly.
     ResetScrollStatus();
   }
-}
-
-void ScrollableShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  GetViewAccessibility().SetNextFocus(GetShelf()->GetStatusAreaWidget());
-  GetViewAccessibility().SetPreviousFocus(
-      GetShelf()->shelf_widget()->navigation_widget());
 }
 
 void ScrollableShelfView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

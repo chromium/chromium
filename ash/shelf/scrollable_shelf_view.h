@@ -93,6 +93,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // page or previous page is shown.
   void ScrollToNewPage(bool forward);
 
+  // Called after the widget has been fully initialized to ensure all dependent
+  // components are available.
+  void UpdateAccessiblePreviousAndNextFocus();
+
   // AccessiblePaneView:
   views::FocusSearch* GetFocusSearch() override;
   views::FocusTraversable* GetFocusTraversableParent() override;
@@ -241,7 +245,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;

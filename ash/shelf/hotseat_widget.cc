@@ -899,6 +899,10 @@ void HotseatWidget::UpdateTranslucentBackground() {
   delegate_view_->UpdateTranslucentBackground();
 }
 
+void HotseatWidget::InitializeAccessibilityProperties() {
+  scrollable_shelf_view()->UpdateAccessiblePreviousAndNextFocus();
+}
+
 int HotseatWidget::CalculateHotseatYInScreen(
     HotseatState hotseat_target_state) const {
   DCHECK(shelf_->IsHorizontalAlignment());

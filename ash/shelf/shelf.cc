@@ -480,6 +480,11 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
 
   // The Hotseat should be above everything in the shelf.
   hotseat_widget()->StackAtTop();
+
+  // Some accessibility properties of the HotseatWidget depends on other widgets
+  // instantiated later on, thus why we call it towards the end of this
+  // function.
+  hotseat_widget()->InitializeAccessibilityProperties();
 }
 
 void Shelf::ShutdownShelfWidget() {
