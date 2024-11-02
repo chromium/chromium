@@ -187,7 +187,9 @@ void SelectMediaCodec(const VideoDecoderConfig& config,
         || config.codec() == VideoCodec::kDolbyVision
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-        )) {
+        // TODO(b/376720494): Allow this only libvpx doesn't supports HRD.
+        || config.profile() == VP9PROFILE_PROFILE2 ||
+        config.profile() == VP9PROFILE_PROFILE3)) {
     DVLOG(2) << "Can't find proper video decoder from decoder info cache, "
                 "fallback to the default decoder selection path.";
     return;
