@@ -2868,6 +2868,7 @@ Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan in
 <translation id="3034855514833090741">Jika kebijakan disetel ke Aktif, alur Voice Match Asisten Google akan ditampilkan selama penyiapan awal. Jika kebijakan disetel ke Nonaktif, Asisten Google tidak akan menampilkan alur Voice Match selama penyiapan awal.
 
       Tidak menyetel kebijakan berarti kebijakan ini disetel ke Aktif.</translation>
+<translation id="3036271748813538143">Mengontrol apakah perilaku baru parser HTML untuk elemen &lt;select&gt; akan diaktifkan</translation>
 <translation id="3038323923255997294">Terus jalankan aplikasi latar belakang saat <ph name="PRODUCT_NAME" /> ditutup</translation>
 <translation id="3039862327847526651">Mengontrol penggunaan pengoptimal JavaScript</translation>
 <translation id="3041887182529293512">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, saran konten yang dihasilkan otomatis akan ditampilkan di halaman Tab Baru, berdasarkan histori penjelajahan, minat, atau lokasi pengguna.
@@ -3121,6 +3122,7 @@ Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan y
 Jika kebijakan ini disetel ke Nonaktif, scroller tidak akan dapat difokuskan keyboard secara default.
 
 Kebijakan ini adalah solusi sementara, dan akan dihapus di M135.</translation>
+<translation id="3216094710930835317">Perilaku baru parser HTML yang memungkinkan lebih banyak tag akan dinonaktifkan.</translation>
 <translation id="3217774577897351942"><ph name="OFFSET_PARENT" /> API diubah di <ph name="PRODUCT_NAME" /> untuk mematuhi perubahan yang telah dibuat di <ph name="FIREFOX_PRODUCT_NAME" /> dan <ph name="SAFARI_PRODUCT_NAME" />. Kebijakan ini mengembalikan perilaku lama hingga M120.
 
 Perilaku baru dapat menyebabkan error pada beberapa situs khusus <ph name="PRODUCT_NAME" /> yang menggunakan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" />, atau <ph name="OFFSET_LEFT" /> bersama Shadow DOM.
@@ -6156,6 +6158,7 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 
       Jika kebijakan ini tidak ditetapkan, pengguna dapat memilih gambar avatar yang mewakili dirinya di layar login.</translation>
 <translation id="5428716437928918274">Kontrol setelan Privacy Sandbox</translation>
+<translation id="5430760800138878127">Perilaku baru parser HTML yang memungkinkan lebih banyak tag akan diaktifkan.</translation>
 <translation id="5431392643649571773">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan mengizinkan penggunaan back-forward cache. Saat keluar dari halaman, status saat ini (hierarki dokumen, skrip, dll.) mungkin dipertahankan di back-forward cache. Saat browser membuka halaman kembali, halaman mungkin akan dipulihkan dari back-forward cache dan ditampilkan dalam status sebelum di-cache.
 
           Fitur ini dapat menyebabkan masalah untuk beberapa situs yang tidak mendukung proses cache ini. Khususnya, beberapa situs bergantung pada peristiwa "<ph name="UNLOAD_HANDLER_NAME" />" yang dikirimkan saat browser keluar dari halaman. Peristiwa "<ph name="UNLOAD_HANDLER_NAME" />" tidak akan dikirimkan jika halaman masuk ke back-forward cache.
@@ -9472,6 +9475,11 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, <ph name="PRODUC
 Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /> Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Jangan izinkan pengguna mengambil screenshot atau rekaman video</translation>
 <translation id="7792796937016596423">Pengguna tidak akan dapat melakukan rekaman paket jaringan</translation>
+<translation id="7795648856511126914">Parser HTML sedang diubah untuk mengizinkan tag HTML tambahan di dalam elemen &lt;select&gt;. Kebijakan ini memungkinkan perilaku parser HTML lama digunakan hingga M136.
+
+Jika kebijakan ini disetel ke aktif atau tidak disetel, parser HTML akan mengizinkan tag tambahan di dalam elemen &lt;select&gt;.
+
+Jika kebijakan ini disetel ke nonaktif, parser HTML akan membatasi tag yang dapat dimasukkan ke dalam elemen &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Kebijakan ini telah dihapus sejak <ph name="PRODUCT_NAME" /> versi 89 karena <ph name="FLASH_PLUGIN_NAME" /> tidak digunakan lagi.
 
       Menyetel kebijakan ke Benar (True) akan menjalankan semua konten <ph name="FLASH_PLUGIN_NAME" /> yang disematkan di situs yang mengizinkan <ph name="FLASH_PLUGIN_NAME" />, termasuk konten dari asal lain atau konten kecil.

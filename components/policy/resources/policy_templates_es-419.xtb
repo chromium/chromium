@@ -2860,6 +2860,7 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
 <translation id="3034855514833090741">Si habilitas la política, Asistente de Google mostrará el flujo de Voice Match durante su configuración inicial. Si inhabilitas la política, Asistente de Google no mostrará el flujo de Voice Match durante su configuración inicial.
 
       Si no estableces la política, estará habilitada.</translation>
+<translation id="3036271748813538143">Controla si se habilita el nuevo comportamiento del analizador HTML para el elemento &lt;select&gt;</translation>
 <translation id="3038323923255997294">Continuar ejecutando aplicaciones en segundo plano cuando <ph name="PRODUCT_NAME" /> esté cerrado</translation>
 <translation id="3039862327847526651">Controlar el uso de optimizadores de JavaScript</translation>
 <translation id="3041887182529293512">Si estableces la política como verdadera o no la estableces, se mostrarán las sugerencias de contenido autogenerado en la página Nueva pestaña, según el historial de navegación del usuario, sus intereses y su ubicación.
@@ -3113,6 +3114,7 @@ Si habilitas esta política o no la estableces, los desplazadores sin elementos 
 Si la inhabilitas, no se podrán enfocar los desplazadores de forma predeterminada con el teclado.
 
 Esta política es una solución temporal y se quitará en la versión M135.</translation>
+<translation id="3216094710930835317">Se inhabilitará el nuevo comportamiento del analizador HTML, que permite más etiquetas.</translation>
 <translation id="3217774577897351942">La API de <ph name="OFFSET_PARENT" /> se modificará en <ph name="PRODUCT_NAME" /> a fin de cumplir con los cambios realizados en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política recupera el comportamiento anterior hasta la versión M120.
 
 El comportamiento nuevo puede generar fallas en algunos sitios web exclusivos de <ph name="PRODUCT_NAME" /> que usan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
@@ -6144,6 +6146,7 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
 
       Si no se configura esta política, los usuarios podrán elegir la imagen de avatar que los identifique en la pantalla de acceso.</translation>
 <translation id="5428716437928918274">Controles de configuración de Privacy Sandbox</translation>
+<translation id="5430760800138878127">Se habilitará el nuevo comportamiento del analizador HTML, que permite más etiquetas.</translation>
 <translation id="5431392643649571773">Si habilitas la política, la función de <ph name="PRODUCT_NAME" /> permite el uso de la Memoria caché atrás/adelante. Cuando sales de una página durante la navegación, se puede preservar su estado actual (árbol de documentos, secuencia de comandos, etc.) en la Memoria caché atrás/adelante. Si regresas a esa página, es posible restablecerla desde la Memoria caché atrás/adelante y mostrarla en el estado en el que estaba antes de que se almacenara en caché.
 
           Esta función puede causar problemas en algunos sitios web que no esperan este almacenamiento en caché. Específicamente, algunos sitios dependen del envío del evento "<ph name="UNLOAD_HANDLER_NAME" />" cuando el usuario abandona la página en el navegador. Si la página utiliza la función Memoria caché atrás/adelante, no se enviará el evento "<ph name="UNLOAD_HANDLER_NAME" />".
@@ -9459,6 +9462,11 @@ Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME
 Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de Internet Explorer, consulta https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">No permitir que los usuarios tomen capturas de pantalla ni graben videos</translation>
 <translation id="7792796937016596423">El usuario no podrá realizar capturas de paquetes de red</translation>
+<translation id="7795648856511126914">Se está cambiando el analizador de HTML para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador HTML hasta la versión M136.
+
+Si habilitas esta política o no la estableces, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
+
+Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas que se pueden colocar dentro del elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política se quitó desde la versión 89 de <ph name="PRODUCT_NAME" /> porque <ph name="FLASH_PLUGIN_NAME" /> dejó de estar disponible.
 
       Si estableces la política como verdadera, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> incorporado en sitios web que permitan <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes o el contenido pequeño.

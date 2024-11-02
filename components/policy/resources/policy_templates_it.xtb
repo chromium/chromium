@@ -2800,6 +2800,7 @@ L'utente può impostare l'immagine avatar da una di queste opzioni se questo cri
 <translation id="3034855514833090741">Se il criterio viene impostato su Attivato, il flusso Voice Match dell'Assistente Google viene mostrato durante la configurazione iniziale. Se il criterio viene impostato su Disattivato, l'Assistente Google non mostrerà il flusso Voice Match durante la configurazione iniziale.
 
       Se il criterio non viene impostato, significa che è Attivato.</translation>
+<translation id="3036271748813538143">Consente di controllare se il nuovo comportamento del parser HTML per l'elemento &lt;select&gt; è attivato</translation>
 <translation id="3038323923255997294">Continua a eseguire applicazioni in background dopo la chiusura di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3039862327847526651">Controlla l'utilizzo delle ottimizzazioni di JavaScript</translation>
 <translation id="3041887182529293512">Se il criterio viene impostato su True o non viene impostato, nella pagina Nuova scheda vengono visualizzati suggerimenti di contenuti generati automaticamente in base alla cronologia di navigazione, agli interessi o alla posizione dell'utente.
@@ -3052,6 +3053,7 @@ Se viene attivato o se non viene configurato, le barre di scorrimento senza elem
 Se questo criterio viene disattivato, le barre di scorrimento non saranno attivabili con la tastiera per impostazione predefinita.
 
 Questo criterio è una soluzione alternativa temporanea e verrà rimosso nella versione M135.</translation>
+<translation id="3216094710930835317">Il nuovo comportamento del parser HTML che consente l'uso di più tag verrà disattivato.</translation>
 <translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> verrà modificata in <ph name="PRODUCT_NAME" /> per conformarla alle modifiche apportate in <ph name="FIREFOX_PRODUCT_NAME" /> e <ph name="SAFARI_PRODUCT_NAME" />. Questo criterio ripristina il comportamento precedente fino alla versione M120.
 
 Il nuovo comportamento potrebbe rendere inaccessibili alcuni siti web solo di <ph name="PRODUCT_NAME" /> che usano <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> in combinazione con il DOM Shadow.
@@ -5974,6 +5976,7 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 
       Se il criterio non viene impostato, l'utente può scegliere l'immagine avatar che lo rappresenta sulla schermata di accesso.</translation>
 <translation id="5428716437928918274">Controlli delle impostazioni di Privacy Sandbox</translation>
+<translation id="5430760800138878127">Verrà attivato il nuovo comportamento del parser HTML che consente l'uso di più tag.</translation>
 <translation id="5431392643649571773">Se il criterio è attivato, la funzionalità <ph name="PRODUCT_NAME" /> consente di utilizzare la cache back-forward. Quando esci da una pagina, il suo stato corrente (documento con struttura ad albero, script e così via) potrebbe essere mantenuto nella cache back-forward. Se il browser torna alla pagina, questa potrebbe essere ripristinata dalla cache back-forward e mostrata nello stato in cui era prima di essere memorizzata nella cache.
 
           Questa funzionalità potrebbe causare problemi per alcuni siti web che non sono preparati per la memorizzazione nella cache. In particolare, alcuni siti web dipendono dall'invio dell'evento "<ph name="UNLOAD_HANDLER_NAME" />" quando il browser esce dalla pagina. L'evento "<ph name="UNLOAD_HANDLER_NAME" />" non verrà inviato se la pagina viene inserita nella cache back-forward.
@@ -9206,6 +9209,11 @@ Se questo criterio viene impostato su false o se non viene configurato, <ph name
 Per maggiori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Non consentire agli utenti di acquisire screenshot o registrazioni video</translation>
 <translation id="7792796937016596423">L'utente non potrà eseguire acquisizioni di pacchetti di rete</translation>
+<translation id="7795648856511126914">Il parser HTML sta per essere modificato per consentire l'inserimento di tag HTML aggiuntivi all'interno dell'elemento &lt;select&gt;. Questa policy consente di utilizzare il comportamento del parser HTML precedente fino alla versione M136.
+
+Se la policy viene attivata o se non viene configurata, il parser HTML consente l'uso di tag aggiuntivi all'interno dell'elemento &lt;select&gt;.
+
+Se viene disattivata, il parser HTML limita i tag che possono essere inseriti all'interno dell'elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Questo criterio è stato rimosso dalla versione 89 di <ph name="PRODUCT_NAME" /> perché<ph name="FLASH_PLUGIN_NAME" /> è stato ritirato.
 
       Se il criterio viene impostato su Vero, vengono eseguiti tutti i contenuti <ph name="FLASH_PLUGIN_NAME" /> incorporati nei siti web che consentono <ph name="FLASH_PLUGIN_NAME" />, inclusi i contenuti di altre origini o contenuti ridotti.

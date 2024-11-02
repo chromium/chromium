@@ -2741,6 +2741,7 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
 <translation id="3034855514833090741">Si la règle est activée, la procédure Voice Match pour l'Assistant Google s'affiche lors de la configuration initiale. Si la règle est désactivée, la procédure Voice Match pour l'Assistant Google ne s'affiche pas lors de la configuration initiale.
 
       Si cette règle n'est pas configurée, elle est activée.</translation>
+<translation id="3036271748813538143">Détermine si le nouveau comportement de l'analyseur HTML pour l'élément &lt;select&gt; est activé</translation>
 <translation id="3038323923255997294">Poursuivre l'exécution des applications en arrière-plan après la fermeture de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3039862327847526651">Contrôler l'utilisation des optimiseurs JavaScript</translation>
 <translation id="3041887182529293512">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, des recommandations de contenus générées automatiquement sont proposées sur la page "Nouvel onglet", en fonction de l'historique de navigation, des centres d'intérêt ou de la position de l'utilisateur.
@@ -2994,6 +2995,7 @@ Si cette règle est activée ou n'est pas configurée, les barres de défilement
 Lorsque cette règle est désactivée, les barres de défilement ne sont pas sélectionnables au clavier par défaut.
 
 Cette règle est une solution temporaire et sera supprimée dans M135.</translation>
+<translation id="3216094710930835317">Le nouveau comportement de l'analyseur HTML, permettant d'utiliser plus de balises, sera désactivé.</translation>
 <translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> est modifiée dans <ph name="PRODUCT_NAME" /> afin de respecter les modifications apportées dans <ph name="FIREFOX_PRODUCT_NAME" /> et <ph name="SAFARI_PRODUCT_NAME" />. Cette règle rétablit l'ancien comportement jusqu'à M120.
 
 Le nouveau comportement risque de d'endommager certains sites Web propres à <ph name="PRODUCT_NAME" /> qui utilisent <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> ou <ph name="OFFSET_LEFT" /> avec Shadow DOM.
@@ -5897,6 +5899,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 
       Si la règle n'est pas définie, l'utilisateur peut choisir l'image de l'avatar qui le représente dans l'écran de connexion.</translation>
 <translation id="5428716437928918274">Contrôles des paramètres de Privacy Sandbox</translation>
+<translation id="5430760800138878127">Le nouveau comportement de l'analyseur HTML, permettant d'utiliser plus de balises, sera activé.</translation>
 <translation id="5431392643649571773">Lorsque cette règle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> permet d'utiliser le cache amélioré. Si l'utilisateur change de page, celle qui est quittée peut être conservée en l'état (arborescence de documents, script, etc.) dans le cache amélioré. Par exemple, si l'utilisateur retourne sur cette page, celle-ci peut ainsi être restaurée à partir de ce cache et affichée telle qu'elle était avant sa mise en cache.
 
           Toutefois, cette fonctionnalité peut entraîner des dysfonctionnements pour certains sites Web qui ne s'attendent pas à ce que leurs pages soient mises en cache, en particulier ceux qui reposent sur le déclenchement de l'événement "<ph name="UNLOAD_HANDLER_NAME" />" en cas de changement de page. L'événement "<ph name="UNLOAD_HANDLER_NAME" />" ne se déclenche pas si la page concernée est stockée dans le cache amélioré.
@@ -9085,6 +9088,11 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph n
 Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet Explorer, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Ne pas autoriser les captures d'écran et l'enregistrement de vidéos</translation>
 <translation id="7792796937016596423">L'utilisateur ne pourra pas capturer de paquets du réseau</translation>
+<translation id="7795648856511126914">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M136.
+
+Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
+
+Si cette règle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Cette règle a été supprimée depuis la version 89 de <ph name="PRODUCT_NAME" />, car <ph name="FLASH_PLUGIN_NAME" /> est obsolète.
 
       Si cette règle est définie sur "True", tous les contenus <ph name="FLASH_PLUGIN_NAME" /> intégrés aux sites qui autorisent <ph name="FLASH_PLUGIN_NAME" /> sont exécutés (y compris les contenus de provenance différente ou de petite taille).

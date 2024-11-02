@@ -2739,6 +2739,7 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
 <translation id="3034855514833090741">Als je dit beleid aanzet, wordt het Voice Match-proces van de Google Assistent getoond tijdens de eerste installatie. Als je het beleid uitzet, laat de Google Assistent het Voice Match-proces niet zien tijdens de eerste installatie.
 
       Als je het beleid niet instelt, staat het aan.</translation>
+<translation id="3036271748813538143">Bepaalt of het nieuwe gedrag van de HTML-parser voor het &lt;select&gt;-element aanstaat</translation>
 <translation id="3038323923255997294">Doorgaan met uitvoeren van achtergrondapps als <ph name="PRODUCT_NAME" /> is gesloten</translation>
 <translation id="3039862327847526651">Gebruik van JavaScript-optimalisaties beheren</translation>
 <translation id="3041887182529293512">Als je het beleid instelt op 'True' of niet instelt, worden automatisch gegenereerde contentsuggesties getoond op de pagina 'Nieuw tabblad', op basis van de browsegeschiedenis, interesses of locatie van de gebruiker.
@@ -2991,6 +2992,7 @@ Als je dit beleid toepast of niet instelt, kunnen scrollers zonder onderliggende
 Als je dit beleid niet toepast, zijn scrollers niet standaard focusbaar met het toetsenbord.
 
 Dit beleid is een tijdelijke oplossing en wordt verwijderd in M135.</translation>
+<translation id="3216094710930835317">Het nieuwe HTML-parsergedrag dat meer tags toestaat, wordt uitgezet.</translation>
 <translation id="3217774577897351942">De <ph name="OFFSET_PARENT" /> API wordt gewijzigd in <ph name="PRODUCT_NAME" /> om te voldoen aan wijzigingen die zijn aangebracht in <ph name="FIREFOX_PRODUCT_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" />. Met dit beleid wordt het oude gedrag hersteld tot M120.
 
 Het nieuwe gedrag kan tot gevolg hebben dat sommige websites die alleen voor <ph name="PRODUCT_NAME" /> werken en die <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> of <ph name="OFFSET_LEFT" /> gebruiken in combinatie met Shadow DOM, niet meer werken.
@@ -5864,6 +5866,7 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 
       Als het beleid niet wordt ingesteld, kan de gebruiker de avatarafbeelding voor het inlogscherm zelf kiezen.</translation>
 <translation id="5428716437928918274">Beheeropties voor Privacy Sandbox-instellingen</translation>
+<translation id="5430760800138878127">Het nieuwe HTML-parsergedrag dat meer tags toestaat, wordt aangezet.</translation>
 <translation id="5431392643649571773">Als dit beleid is toegepast, staat de <ph name="PRODUCT_NAME" />-functie het gebruik toe van Back-Forward Cache. Als je de website verlaat, kan de huidige staat (documentstructuur, script, enzovoort) worden behouden in de Back-Forward Cache. Als de browser teruggaat naar de pagina, wordt de pagina hersteld vanuit de Back-Forward Cache, waarbij de pagina wordt getoond in dezelfde staat als voordat deze werd gecachet.
 
           Deze functie kan problemen veroorzaken voor websites die niet verwachten dat ze op deze manier worden gecachet. In het bijzonder zijn sommige websites ervan afhankelijk dat de <ph name="UNLOAD_HANDLER_NAME" />-gebeurtenis wordt gestuurd als de browser de pagina verlaat. De <ph name="UNLOAD_HANDLER_NAME" />-gebeurtenis wordt niet gestuurd als de pagina gebruikmaakt van Back-Forward Cache.
@@ -9034,6 +9037,11 @@ Als je dit beleid instelt op False of niet instelt, gebruikt <ph name="PRODUCT_N
 Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode voor meer informatie over het <ph name="IEEM_SITELIST_POLICY" />-beleid van Internet Explorer</translation>
 <translation id="7791215522423893512">Niet toestaan dat gebruikers screenshots en video-opnamen maken</translation>
 <translation id="7792796937016596423">De gebruiker kan geen opnamen van netwerkpakketten uitvoeren</translation>
+<translation id="7795648856511126914">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M136.
+
+Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
+
+Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="7798441698807517880">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> versie 89 omdat <ph name="FLASH_PLUGIN_NAME" /> is beëindigd.
 
       Als je het beleid instelt op True, wordt alle <ph name="FLASH_PLUGIN_NAME" />-content ingesloten op websites waarop <ph name="FLASH_PLUGIN_NAME" /> is toegestaan, waaronder content van een andere herkomst of kleine content.

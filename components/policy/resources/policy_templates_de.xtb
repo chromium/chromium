@@ -2741,6 +2741,7 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
 <translation id="3034855514833090741">Wenn die Richtlinie aktiviert ist, kann der Ablauf "Voice Match mit Google Assistant" während der Ersteinrichtung angezeigt werden. Wenn die Richtlinie deaktiviert ist, kann der Ablauf "Voice Match mit Google Assistant" während der Ersteinrichtung nicht angezeigt werden.
 
       Wenn du die Richtlinie nicht konfigurierst, ist sie aktiviert.</translation>
+<translation id="3036271748813538143">Steuert, ob das neue HTML-Parser-Verhalten für das &lt;select&gt;-Element aktiviert ist</translation>
 <translation id="3038323923255997294">Apps weiter im Hintergrund ausführen, wenn <ph name="PRODUCT_NAME" /> geschlossen ist</translation>
 <translation id="3039862327847526651">Verwendung von JavaScript-Optimierungen steuern</translation>
 <translation id="3041887182529293512">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, werden auf der Seite "Neuer Tab" automatisch generierte Inhaltsvorschläge auf Basis des Browserverlaufs, der Interessen oder des Standorts des Nutzers angezeigt.
@@ -2992,6 +2993,7 @@ Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Scroller oh
 Wenn diese Richtlinie deaktiviert ist, können Scroller standardmäßig nicht mit der Tastatur fokussiert werden.
 
 Diese Richtlinie ist eine vorübergehende Problemumgehung und wird in M135 entfernt.</translation>
+<translation id="3216094710930835317">Das neue HTML-Parser-Verhalten, das mehr Tags zulässt, wird deaktiviert.</translation>
 <translation id="3217774577897351942">Die <ph name="OFFSET_PARENT" /> API wird bei <ph name="PRODUCT_NAME" /> geändert, um den in <ph name="FIREFOX_PRODUCT_NAME" /> und <ph name="SAFARI_PRODUCT_NAME" /> vorgenommenen Änderungen zu entsprechen. Mit dieser Richtlinie wird das alte Verhalten bis zur Einführung von M120 wiederhergestellt.
 
 Durch das neue Verhalten können unter Umständen einige <ph name="PRODUCT_NAME" />-Websites beeinträchtigt werden, bei denen „<ph name="OFFSET_PARENT" />“, „<ph name="OFFSET_TOP" />“ oder „<ph name="OFFSET_LEFT" />“ in Verbindung mit Shadow DOM verwendet wird.
@@ -5897,6 +5899,7 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
 
       Ist die Richtlinie nicht konfiguriert, kann der Nutzer sein Avatarbild für den Anmeldebildschirm selbst auswählen.</translation>
 <translation id="5428716437928918274">Einstellungen für die Privacy Sandbox</translation>
+<translation id="5430760800138878127">Das neue HTML-Parser-Verhalten, das mehr Tags zulässt, wird aktiviert.</translation>
 <translation id="5431392643649571773">Wenn die "<ph name="PRODUCT_NAME" />"-Funktion aktiviert ist, ermöglicht sie die Nutzung des Back-Forward-Cache. Wenn eine Seite verlassen wird, bleibt der aktuelle Status (Dokumentbaum, Script etc.) im Back-Forward-Cache erhalten. Wenn der Browser zur Seite zurückkehrt, wird sie aus dem Back-Forward-Cache wiederhergestellt und in dem Status angezeigt, in dem sie war, bevor sie in den Cache geladen wurde.
 
           Diese Funktion kann manchen Websites Probleme bereiten, da sie dieses Caching nicht erwarten. Insbesondere hängen manche Websites davon ab, dass das "<ph name="UNLOAD_HANDLER_NAME" />"-Ereignis gesendet wird, wenn der Browser die Seite verlässt. Das "<ph name="UNLOAD_HANDLER_NAME" />"-Ereignis wird nicht gesendet, wenn die Seite in den Back-Forward-Cache geladen wird.
@@ -9069,6 +9072,11 @@ Wenn für die Richtlinie „false“ festgelegt oder sie nicht konfiguriert ist,
 Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Nutzer dürfen keine Screenshots und Videoaufzeichnungen machen</translation>
 <translation id="7792796937016596423">Der Nutzer ist nicht zu Netzwerkpaketaufnahmen berechtigt</translation>
+<translation id="7795648856511126914">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M136 verwendet werden.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
+
+Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="7798441698807517880">Diese Richtlinie ist seit Version 89 von <ph name="PRODUCT_NAME" /> nicht mehr enthalten, da <ph name="FLASH_PLUGIN_NAME" /> eingestellt wurde.
 
       Wenn die Richtlinie auf „True“ gesetzt ist, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.

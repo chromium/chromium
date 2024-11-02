@@ -2863,6 +2863,7 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
 <translation id="3034855514833090741">Se a política for ativada, o fluxo do Voice Match do Google Assistente será mostrado durante a configuração inicial. Se a política for desativada, o Google Assistente não mostrará o fluxo do Voice Match durante a configuração inicial.
 
       Se for deixada sem definição, ela será ativada.</translation>
+<translation id="3036271748813538143">Controla se o novo comportamento do analisador HTML para o elemento &lt;select&gt; está ativado</translation>
 <translation id="3038323923255997294">Continua executando os aplicativos em segundo plano quando o <ph name="PRODUCT_NAME" /> é fechado</translation>
 <translation id="3039862327847526651">Controlar o uso de otimizadores do JavaScript</translation>
 <translation id="3041887182529293512">Se a política for definida como verdadeira ou não for definida, sugestões de conteúdo geradas automaticamente serão exibidas na página "Nova guia" com base no histórico de navegação, nos interesses ou na localização do usuário.
@@ -3117,6 +3118,7 @@ Quando ela está ativada ou sem definição, os controles de rolagem que não t�
 Quando esta política está desativada, os controles de rolagem não podem ser focalizados pelo teclado por padrão.
 
 Esta política é uma solução temporária e será removida na versão M135.</translation>
+<translation id="3216094710930835317">O novo comportamento do analisador HTML que permite mais tags vai ser desativado.</translation>
 <translation id="3217774577897351942">A API <ph name="OFFSET_PARENT" /> está sendo modificada no <ph name="PRODUCT_NAME" /> para obedecer às mudanças que foram feitas no <ph name="FIREFOX_PRODUCT_NAME" /> e no <ph name="SAFARI_PRODUCT_NAME" />. Esta política retorna o comportamento antigo até a versão M120.
 
 O novo comportamento pode causar falhas em alguns sites exclusivos do <ph name="PRODUCT_NAME" /> que usam <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> ou <ph name="OFFSET_LEFT" /> com o Shadow DOM.
@@ -6143,6 +6145,7 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 
       Se a política não for definida, o usuário poderá escolher a imagem de avatar para representá-lo na tela de login.</translation>
 <translation id="5428716437928918274">Controles de configurações do Sandbox de privacidade</translation>
+<translation id="5430760800138878127">O novo comportamento do analisador de HTML, que permite mais tags, será ativado.</translation>
 <translation id="5431392643649571773">Quando ativado, o recurso <ph name="PRODUCT_NAME" /> permite o uso de cache de avanço e retorno. Quando você sair de uma página, o cache de avanço e retorno permitirá que ela seja preservada no estado atual (árvore de documentos, script etc.). Se o navegador voltar para a página, ela poderá ser restaurada desse cache, aparecendo no estado em que estava quando foi salva.
 
           Esse recurso pode causar problemas com alguns sites que não esperam esse tipo de armazenamento em cache. Alguns sites específicos precisam que o evento "<ph name="UNLOAD_HANDLER_NAME" />" seja despachado quando o navegador sai da página. O evento "<ph name="UNLOAD_HANDLER_NAME" />" não será despachado se a página entrar no cache de avanço e retorno.
@@ -9447,6 +9450,11 @@ Quando esta política é definida como falsa ou não é definida, o <ph name="PR
 Para mais informações sobre a política <ph name="IEEM_SITELIST_POLICY" /> do Internet Explorer, acesse: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Não permitir que os usuários façam capturas de tela e gravações de vídeo</translation>
 <translation id="7792796937016596423">O usuário não poderá capturar pacotes de rede</translation>
+<translation id="7795648856511126914">O analisador HTML está sendo modificado para permitir mais tags HTML no elemento &lt;select&gt;. Esta política permite que o comportamento antigo do analisador de HTML seja usado até a versão M136.
+
+Se ela for ativada ou deixada sem definição, o analisador de HTML vai permitir mais tags no elemento &lt;select&gt;.
+
+Se for desativada, o analisador HTML vai restringir quais tags podem ser colocadas no elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política foi removida na versão 89 do <ph name="PRODUCT_NAME" /> porque o uso de <ph name="FLASH_PLUGIN_NAME" /> foi suspenso.
 
       Se ela for definida como verdadeira, todo conteúdo em <ph name="FLASH_PLUGIN_NAME" /> incorporado em sites com permissão para <ph name="FLASH_PLUGIN_NAME" /> será executado, incluindo conteúdos pequenos ou de outras origens.

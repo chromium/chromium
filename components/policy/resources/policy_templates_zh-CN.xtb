@@ -2730,6 +2730,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3034855514833090741">如果此政策已启用，在初始设置期间系统会显示 Google 助理 Voice Match 流程。如果此政策已停用，在初始设置期间系统不会显示 Google 助理 Voice Match 流程。
 
       不设置此政策等同于已启用此政策。</translation>
+<translation id="3036271748813538143">控制是否为 &lt;select&gt; 元素启用新的 HTML 解析器行为</translation>
 <translation id="3038323923255997294">在<ph name="PRODUCT_NAME" />关闭后继续运行后台应用</translation>
 <translation id="3039862327847526651">控制对 JavaScript 优化工具的使用</translation>
 <translation id="3041887182529293512">如果此政策设为 True 或未设置，系统将会在“新标签页”页面上显示根据用户的浏览记录、兴趣或位置信息自动生成的内容建议。
@@ -2982,6 +2983,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果已停用此政策，则默认情况下，滚动条无法通过键盘聚焦。
 
 此政策是一种临时的变通方案，将在 M135 中移除。</translation>
+<translation id="3216094710930835317">系统将停用允许使用更多标记的新 HTML 解析器行为。</translation>
 <translation id="3217774577897351942">我们正在 <ph name="PRODUCT_NAME" /> 中更改 <ph name="OFFSET_PARENT" /> API，以使其符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中发生的变更。此政策可用于恢复旧行为，直到 M120。
 
 新行为可能会导致下述类型的某些网站无法正常运作：仅支持 <ph name="PRODUCT_NAME" />，且将 <ph name="OFFSET_PARENT" />、<ph name="OFFSET_TOP" /> 或 <ph name="OFFSET_LEFT" /> 与 Shadow DOM 配合使用。
@@ -5853,6 +5855,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果未设置此政策，则用户可以自行选择在登录屏幕上代表自己的头像图片。</translation>
 <translation id="5428716437928918274">Privacy Sandbox 设置控件</translation>
+<translation id="5430760800138878127">系统将启用允许使用更多标记的新 HTML 解析器行为。</translation>
 <translation id="5431392643649571773">启用后，<ph name="PRODUCT_NAME" /> 功能会允许使用往返缓存。当离开某个网页时，系统可将此网页的现状（文档树、脚本等）保存到往返缓存中。如果浏览器返回到此网页，系统便可从往返缓存中恢复此网页并以缓存之前的网页状态显示它。
 
           该功能可能会导致某些未为这种缓存做好准备的网站出现问题。具体而言，某些网站需要在浏览器离开网页时收到系统传送的“<ph name="UNLOAD_HANDLER_NAME" />”事件。如果相应网页存储在往返缓存中，“<ph name="UNLOAD_HANDLER_NAME" />”事件将不会正常传送。
@@ -9019,6 +9022,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如需详细了解 Internet Explorer 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，请访问 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">不允许用户截图或录屏</translation>
 <translation id="7792796937016596423">用户将无法执行网络数据包捕获流程</translation>
+<translation id="7795648856511126914">HTML 解析器将被更改，以允许在 &lt;select&gt; 元素中添加其他 HTML 标记。此政策允许使用旧的 HTML 解析器行为，直至 M136。
+
+如果此政策已启用或未设置，HTML 解析器将允许在 &lt;select&gt; 元素中添加其他标记。
+
+如果此政策已停用，HTML 解析器将限制可放在 &lt;select&gt; 元素中的标记。</translation>
 <translation id="7798441698807517880">自 <ph name="PRODUCT_NAME" /> 89 版起，此政策已被移除，因为 <ph name="FLASH_PLUGIN_NAME" /> 已被弃用。
 
       如果此政策设为 True，在允许运行 <ph name="FLASH_PLUGIN_NAME" /> 的网站中内嵌的所有 <ph name="FLASH_PLUGIN_NAME" /> 内容（包括其他来源的或不重要的内容）都会正常运行。

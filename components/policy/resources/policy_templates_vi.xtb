@@ -2769,6 +2769,7 @@ Người dùng có thể đặt hình đại diện từ bất kỳ tuỳ chọn
 <translation id="3034855514833090741">Nếu bạn bật chính sách này, thì hệ thống sẽ cho phép hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu. Nếu bạn tắt chính sách này, thì hệ thống sẽ ngăn Trợ lý Google hiển thị quy trình so khớp giọng nói trong quá trình thiết lập ban đầu.
 
       Nếu bạn không đặt thì chính sách sẽ được bật.</translation>
+<translation id="3036271748813538143">Kiểm soát việc có bật hành vi mới của trình phân tích cú pháp HTML cho phần tử &lt;select&gt; hay không</translation>
 <translation id="3038323923255997294">Tiếp tục chạy các ứng dụng dưới nền khi <ph name="PRODUCT_NAME" /> bị đóng</translation>
 <translation id="3039862327847526651">Kiểm soát việc sử dụng trình tối ưu hoá JavaScript</translation>
 <translation id="3041887182529293512">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì các nội dung đề xuất được tạo tự động sẽ hiển thị trên trang Thẻ mới, dựa trên nhật ký duyệt web, mối quan tâm hoặc vị trí của người dùng.
@@ -3021,6 +3022,7 @@ Khi bạn đặt chính sách này thành Bật hoặc không đặt, thì theo 
 Khi bạn đặt chính sách này thành Tắt, thì theo mặc định, thanh cuộn sẽ không thể lấy tiêu điểm bằng bàn phím.
 
 Chính sách này chỉ là giải pháp tạm thời và sẽ bị loại bỏ trong phiên bản M135.</translation>
+<translation id="3216094710930835317">Hành vi mới của trình phân tích cú pháp HTML (cho phép nhiều thẻ hơn) sẽ bị vô hiệu hoá.</translation>
 <translation id="3217774577897351942">API <ph name="OFFSET_PARENT" /> đang được thay đổi trong <ph name="PRODUCT_NAME" /> để tuân theo những thay đổi đã được thực hiện trong <ph name="FIREFOX_PRODUCT_NAME" /> và <ph name="SAFARI_PRODUCT_NAME" />. Chính sách này khôi phục thao tác cũ cho đến M120.
 
 Thao tác mới có thể làm hỏng một số trang web chỉ có trong <ph name="PRODUCT_NAME" /> sử dụng <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> hoặc <ph name="OFFSET_LEFT" /> kết hợp với DOM bóng.
@@ -6015,6 +6017,7 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể chọn hình đại diện cho họ trên màn hình đăng nhập.</translation>
 <translation id="5428716437928918274">Công cụ kiểm soát các chế độ cài đặt hộp cát về quyền riêng tư</translation>
+<translation id="5430760800138878127">Hành vi mới của trình phân tích cú pháp HTML (cho phép nhiều thẻ hơn) sẽ được bật.</translation>
 <translation id="5431392643649571773">Khi được bật, tính năng <ph name="PRODUCT_NAME" /> sẽ cho phép sử dụng bộ nhớ đệm cho thao tác tiến/lùi. Khi chuyển hướng khỏi một trang, trạng thái hiện tại của trang đó (cây tài liệu, tập lệnh, v.v.) có thể được giữ nguyên trong bộ nhớ đệm cho thao tác tiến/lùi. Nếu trình duyệt quay lại trang này, thì trang có thể được khôi phục từ bộ nhớ đệm cho thao tác tiến/lùi và hiển thị ở trạng thái như trước khi lưu vào bộ nhớ đệm.
 
           Tính năng này có thể gây ra vấn đề cho một số trang web không muốn lưu vào bộ nhớ đệm. Đặc biệt là một số trang web phụ thuộc vào sự kiện "<ph name="UNLOAD_HANDLER_NAME" />" được gửi đi khi trình duyệt chuyển hướng khỏi trang. Sự kiện "<ph name="UNLOAD_HANDLER_NAME" />" sẽ không được gửi đi nếu trang được lưu vào bộ nhớ đệm cho thao tác tiến/lùi.
@@ -9267,6 +9270,11 @@ Khi bạn đặt chính sách này thành false hoặc không đặt, <ph name="
 Để biết thêm thông tin về chính sách <ph name="IEEM_SITELIST_POLICY" /> của Internet Explorer, hãy truy cập vào trang web: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Không cho phép người dùng chụp ảnh màn hình hoặc quay video</translation>
 <translation id="7792796937016596423">Người dùng sẽ không thể chặn bắt gói tin qua mạng</translation>
+<translation id="7795648856511126914">Trình phân tích cú pháp HTML sẽ được thay đổi để cho phép các thẻ HTML bổ sung bên trong phần tử &lt;select&gt;. Chính sách này cho phép sử dụng hành vi cũ của trình phân tích cú pháp HTML cho đến M136.
+
+Nếu bạn bật hoặc không đặt chính sách này thì trình phân tích cú pháp HTML sẽ cho phép các thẻ bổ sung bên trong phần tử &lt;select&gt;.
+
+Nếu bạn tắt chính sách này thì trình phân tích cú pháp HTML sẽ hạn chế những thẻ có thể được đặt bên trong phần tử &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Chúng tôi đã xóa chính sách này khỏi <ph name="PRODUCT_NAME" /> phiên bản 89 trở đi <ph name="FLASH_PLUGIN_NAME" /> không còn được dùng nữa.
 
       Nếu bạn đặt chính sách này thành Bật, thì tất cả nội dung <ph name="FLASH_PLUGIN_NAME" /> được nhúng trên những trang web cho phép <ph name="FLASH_PLUGIN_NAME" /> đều sẽ chạy, kể cả nội dung của các nguồn khác hoặc nội dung nhỏ.
