@@ -2618,6 +2618,9 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] virtual/prefetch-new-wait-loop/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=InvalidUrlForSpeculationRulesSet [ Timeout ]
+[ Win11-arm64 ] virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/constructor.tentative.any.shadowrealm.html [ Timeout ]
+[ Win11-arm64 ] virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/unpartitioned-storage-permissions-policy-none.tentative.https.sub.html [ Timeout ]
 crbug.com/376723702 [ Mac12 ] virtual/threaded-synchronous-animation-cancel/external/wpt/web-animations/timing-model/animations/sync-start-times.html [ Failure ]
 crbug.com/376515525 external/wpt/css/css-text/line-breaking/segment-break-transformation-ignorable-1.html [ Failure ]
@@ -3983,10 +3986,16 @@ crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/table/g
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/table/length.any.shadowrealm.html [ Crash ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/table/toString.any.shadowrealm.html [ Crash ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/table/type.tentative.any.shadowrealm.html [ Crash ]
-crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/constructor.tentative.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Linux ] virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/constructor.tentative.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Mac ] virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/constructor.tentative.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Win10.20h2 ] virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/constructor.tentative.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Win11 ] virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/constructor.tentative.any.shadowrealm.html [ Crash ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/toString.tentative.any.shadowrealm.html [ Crash ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/type.tentative.any.shadowrealm.html [ Crash ]
-crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Linux ] virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Mac ] virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Win10.20h2 ] virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Crash ]
+crbug.com/376786819 [ Win11 ] virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Crash ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/webidl/idlharness-shadowrealm.window.html [ Crash ]
 
 # Sheriff failures 2017-03-21
