@@ -10,6 +10,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
+import type {Color} from '../constants.js';
 
 import {ERASER_SIZES, HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
 import type {SizeOption} from './ink_size_selector.js';
@@ -38,11 +39,13 @@ export class ViewerBottomToolbarElement extends CrLitElement {
 
   static override get properties() {
     return {
+      currentColor: {type: Object},
       currentSize: {type: Number},
       currentType: {type: String},
     };
   }
 
+  currentColor?: Color;
   currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
@@ -67,6 +70,10 @@ export class ViewerBottomToolbarElement extends CrLitElement {
     assert(option);
 
     return 'pdf:' + option.icon;
+  }
+
+  protected shouldShowColorOptions_(): boolean {
+    return this.currentType !== AnnotationBrushType.ERASER;
   }
 }
 

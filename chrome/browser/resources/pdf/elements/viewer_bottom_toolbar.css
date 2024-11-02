@@ -37,3 +37,7 @@ ink-brush-selector {
   --ink-brush-button-size: 40px;
   padding: 4px;
 }
+
+ink-color-selector {
+  padding: 20px;
+}

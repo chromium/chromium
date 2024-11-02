@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {InkSizeSelectorElement, ViewerBottomToolbarDropdownElement, ViewerBottomToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {InkColorSelectorElement, InkSizeSelectorElement, ViewerBottomToolbarDropdownElement, ViewerBottomToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertSelectedSize, getBrushSelector, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertSelectedSize, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
@@ -19,6 +19,18 @@ assert(viewer.$.toolbar.annotationMode);
 
 const bottomToolbar = getRequiredElement<ViewerBottomToolbarElement>(
     viewer, 'viewer-bottom-toolbar');
+
+async function clickColorButton(index: number) {
+  const colorDropdown = getRequiredElement<ViewerBottomToolbarDropdownElement>(
+      bottomToolbar, '#color');
+  await clickDropdownButton(colorDropdown);
+
+  const colorSelector = getRequiredElement<InkColorSelectorElement>(
+      bottomToolbar, 'ink-color-selector');
+  const colorButtons = getColorButtons(colorSelector);
+  colorButtons[index].click();
+  await microtasksFinished();
+}
 
 async function clickDropdownButton(
     dropdown: ViewerBottomToolbarDropdownElement) {
@@ -58,6 +70,15 @@ chrome.test.runTests([
       size: 1,
     });
     assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:pen-size-1');
+
+    // Change the pen color to '#fdd663'.
+    await clickColorButton(/*index=*/ 6);
+
+    assertAnnotationBrush(mockPlugin, {
+      type: AnnotationBrushType.PEN,
+      color: {r: 253, g: 214, b: 99},
+      size: 1,
+    });
     chrome.test.succeed();
   },
 
@@ -90,6 +111,10 @@ chrome.test.runTests([
       size: 2,
     });
     assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:eraser-size-2');
+
+    // There shouldn't be color options.
+    chrome.test.assertTrue(
+        !bottomToolbar.shadowRoot!.querySelector<HTMLElement>('#color'));
     chrome.test.succeed();
   },
 
@@ -126,6 +151,15 @@ chrome.test.runTests([
       size: 16,
     });
     assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:highlighter-size-5');
+
+    // Change the highlighter color to '#34a853'.
+    await clickColorButton(/*index=*/ 2);
+
+    assertAnnotationBrush(mockPlugin, {
+      type: AnnotationBrushType.HIGHLIGHTER,
+      color: {r: 52, g: 168, b: 83},
+      size: 16,
+    });
     chrome.test.succeed();
   },
 ]);
