@@ -224,12 +224,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_FALSE(AreWebAppsEnabled(
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
-  Profile* lock_screen_profile = profile_manager().CreateTestingProfile(
-      ash::kLockScreenAppBrowserContextBaseName);
-  EXPECT_TRUE(AreWebAppsEnabled(lock_screen_profile));
-  EXPECT_TRUE(AreWebAppsEnabled(
-      lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-
   const AccountId account_id = AccountId::FromUserEmail("test@test");
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -299,12 +293,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   EXPECT_FALSE(AreWebAppsUserInstallable(signin_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-
-  Profile* lock_screen_profile = profile_manager().CreateTestingProfile(
-      ash::kLockScreenAppBrowserContextBaseName);
-  EXPECT_FALSE(AreWebAppsUserInstallable(lock_screen_profile));
-  EXPECT_FALSE(AreWebAppsUserInstallable(
-      lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 #endif
 }
 

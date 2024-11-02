@@ -34,7 +34,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/tray_action/test_tray_action_client.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -97,9 +96,6 @@ class LoginShelfViewTest : public LoginTestBase {
     // Guest Button is visible while session hasn't started.
     LoginTestBase::SetUp();
     login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
-    Shell::Get()->tray_action()->SetClient(
-        tray_action_client_.CreateRemoteAndBind(),
-        mojom::TrayActionState::kNotAvailable);
     // Set initial states.
     NotifySessionStateChanged(SessionState::OOBE);
     NotifyShutdownPolicyChanged(false);
@@ -202,8 +198,6 @@ class LoginShelfViewTest : public LoginTestBase {
         Shelf::ForWindow(login_shelf_view_->GetWidget()->GetNativeWindow());
     return shelf->login_shelf_widget();
   }
-
-  TestTrayActionClient tray_action_client_;
 
   raw_ptr<LoginShelfView, DanglingUntriaged> login_shelf_view_ =
       nullptr;  // Unowned.
@@ -338,52 +332,6 @@ TEST_F(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps) {
        LoginShelfView::kAddUser, LoginShelfView::kApps}));
   EXPECT_TRUE(
       AreButtonsInOrder(LoginShelfView::kRestart, LoginShelfView::kApps));
-}
-
-// Checks the login shelf updates UI after lock screen note state changes.
-TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterLockScreenNoteState) {
-  EXPECT_TRUE(ShowsShelfButtons({}));
-
-  CreateUserSessions(1);
-  NotifySessionStateChanged(SessionState::LOCKED);
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
-
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kAvailable);
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
-
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kLaunching);
-  // Shelf buttons should not be changed until the lock screen action background
-  // show animation completes.
-  ASSERT_EQ(LockScreenActionBackgroundState::kShowing,
-            action_background_controller()->state());
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
-
-  // Complete lock screen action background animation - this should change the
-  // visible buttons.
-  ASSERT_TRUE(action_background_controller()->FinishShow());
-  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kCloseNote}));
-
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kActive);
-  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kCloseNote}));
-
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kAvailable);
-  // When lock screen action background is animating to hidden state, the close
-  // button should immediately be replaced by kShutdown and kSignout buttons.
-  ASSERT_EQ(LockScreenActionBackgroundState::kHiding,
-            action_background_controller()->state());
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
-
-  ASSERT_TRUE(action_background_controller()->FinishHide());
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
-
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kNotAvailable);
-  EXPECT_TRUE(
-      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
 }
 
 TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
@@ -604,29 +552,6 @@ TEST_F(LoginShelfViewTest, ClickSignOutButton) {
   Click(LoginShelfView::kSignOut);
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             Shell::Get()->session_controller()->GetSessionState());
-}
-
-TEST_F(LoginShelfViewTest, ClickUnlockButton) {
-  // The unlock button is visible only when session state is LOCKED and note
-  // state is kActive or kLaunching.
-  CreateUserSessions(1);
-  NotifySessionStateChanged(SessionState::LOCKED);
-
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kActive);
-  ASSERT_TRUE(action_background_controller()->FinishShow());
-  EXPECT_TRUE(tray_action_client_.close_note_reasons().empty());
-  Click(LoginShelfView::kCloseNote);
-  EXPECT_EQ(std::vector<mojom::CloseLockScreenNoteReason>(
-                {mojom::CloseLockScreenNoteReason::kUnlockButtonPressed}),
-            tray_action_client_.close_note_reasons());
-
-  tray_action_client_.ClearRecordedRequests();
-  NotifyLockScreenNoteStateChanged(mojom::TrayActionState::kLaunching);
-  EXPECT_TRUE(tray_action_client_.close_note_reasons().empty());
-  Click(LoginShelfView::kCloseNote);
-  EXPECT_EQ(std::vector<mojom::CloseLockScreenNoteReason>(
-                {mojom::CloseLockScreenNoteReason::kUnlockButtonPressed}),
-            tray_action_client_.close_note_reasons());
 }
 
 TEST_F(LoginShelfViewTest, ClickCancelButton) {

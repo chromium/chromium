@@ -87,11 +87,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "app_manager_impl_unittest.cc",
-    "lock_screen_profile_creator_impl_unittest.cc",
-    "state_controller_unittest.cc",
-  ]
+  sources = []
 
   deps = [
     ":lock_screen_apps",

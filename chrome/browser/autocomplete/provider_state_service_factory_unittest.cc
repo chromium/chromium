@@ -42,10 +42,5 @@ TEST_F(ProviderStateServiceFactoryTest, PrefEnabledReturnsValidService) {
       profile_testing_helper_.lockscreen_profile()));
   EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
       profile_testing_helper_.lockscreen_profile_otr()));
-
-  EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
-      profile_testing_helper_.lockscreenapp_profile()));
-  EXPECT_FALSE(ProviderStateServiceFactory::GetForProfile(
-      profile_testing_helper_.lockscreenapp_profile_otr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

@@ -49,7 +49,6 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/tray_action/test_tray_action_client.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
@@ -243,29 +242,6 @@ TEST_F(LockContentsViewUnitTest, DisplayMode) {
 TEST_F(LockContentsViewUnitTest, SingleUserCentered) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
-
-  LockContentsViewTestApi test_api(contents);
-  LoginBigUserView* auth_view = test_api.primary_big_view();
-  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
-  int expected_margin =
-      (widget_bounds.width() - auth_view->GetPreferredSize().width()) / 2;
-  gfx::Rect auth_bounds = auth_view->GetBoundsInScreen();
-
-  EXPECT_NE(0, expected_margin);
-  EXPECT_EQ(expected_margin, auth_bounds.x());
-  EXPECT_EQ(expected_margin,
-            widget_bounds.width() - (auth_bounds.x() + auth_bounds.width()));
-}
-
-// Verifies that the single user view is centered when lock screen notes are
-// enabled.
-TEST_F(LockContentsViewUnitTest, SingleUserCenteredNoteActionEnabled) {
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
@@ -660,105 +636,6 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryAuthUser) {
       EXPECT_TRUE(emails.insert(email).second);
     }
   }
-}
-
-// Test goes through different lock screen note state changes and tests that
-// the note action visibility is updated accordingly.
-TEST_F(LockContentsViewUnitTest, NoteActionButtonVisibilityChanges) {
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(contents));
-
-  LockContentsViewTestApi test_api(contents);
-  views::View* note_action_button = test_api.note_action();
-
-  // In kAvailable state, the note action button should be visible.
-  EXPECT_TRUE(note_action_button->GetVisible());
-
-  // In kLaunching state, the note action button should not be visible.
-  DataDispatcher()->SetLockScreenNoteState(mojom::TrayActionState::kLaunching);
-  EXPECT_FALSE(note_action_button->GetVisible());
-
-  // In kActive state, the note action button should not be visible.
-  DataDispatcher()->SetLockScreenNoteState(mojom::TrayActionState::kActive);
-  EXPECT_FALSE(note_action_button->GetVisible());
-
-  // When moved back to kAvailable state, the note action button should become
-  // visible again.
-  DataDispatcher()->SetLockScreenNoteState(mojom::TrayActionState::kAvailable);
-  EXPECT_TRUE(note_action_button->GetVisible());
-
-  // In kNotAvailable state, the note action button should not be visible.
-  DataDispatcher()->SetLockScreenNoteState(
-      mojom::TrayActionState::kNotAvailable);
-  EXPECT_FALSE(note_action_button->GetVisible());
-}
-
-// Verifies note action view bounds.
-TEST_F(LockContentsViewUnitTest, NoteActionButtonBounds) {
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
-
-  LockContentsViewTestApi test_api(contents);
-
-  // The note action button should not be visible if the note action is not
-  // available.
-  EXPECT_FALSE(test_api.note_action()->GetVisible());
-
-  // When the note action becomes available, the note action button should be
-  // shown.
-  DataDispatcher()->SetLockScreenNoteState(mojom::TrayActionState::kAvailable);
-  views::test::RunScheduledLayout(widget.get());
-  EXPECT_TRUE(test_api.note_action()->GetVisible());
-
-  // Verify the bounds of the note action button are as expected.
-  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
-  gfx::Size note_action_size = test_api.note_action()->GetPreferredSize();
-  EXPECT_EQ(gfx::Rect(widget_bounds.top_right() -
-                          gfx::Vector2d(note_action_size.width(), 0),
-                      note_action_size),
-            test_api.note_action()->GetBoundsInScreen());
-
-  // If the note action is disabled again, the note action button should be
-  // hidden.
-  DataDispatcher()->SetLockScreenNoteState(
-      mojom::TrayActionState::kNotAvailable);
-  EXPECT_FALSE(test_api.note_action()->GetVisible());
-}
-
-// Verifies the note action view bounds when note action is available at lock
-// contents view creation.
-TEST_F(LockContentsViewUnitTest, NoteActionButtonBoundsInitiallyAvailable) {
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
-
-  LockContentsViewTestApi test_api(contents);
-
-  // Verify the note action button is visible and positioned in the top right
-  // corner of the screen.
-  EXPECT_TRUE(test_api.note_action()->GetVisible());
-  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
-  gfx::Size note_action_size = test_api.note_action()->GetPreferredSize();
-  EXPECT_EQ(gfx::Rect(widget_bounds.top_right() -
-                          gfx::Vector2d(note_action_size.width(), 0),
-                      note_action_size),
-            test_api.note_action()->GetBoundsInScreen());
-
-  // If the note action is disabled, the note action button should be hidden.
-  DataDispatcher()->SetLockScreenNoteState(
-      mojom::TrayActionState::kNotAvailable);
-  EXPECT_FALSE(test_api.note_action()->GetVisible());
 }
 
 // Verifies the system info view bounds interaction with the note-taking button.
@@ -2170,44 +2047,6 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   EXPECT_FALSE(pin_view->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LOGIN_MANUAL_LOCK_MESSAGE),
             auth_test_api.GetDisabledAuthMessageContent());
-}
-
-TEST_F(LockContentsViewUnitTest,
-       ToggleNoteActionVisibilityOnAuthEnabledChanged) {
-  auto* tray_action = Shell::Get()->tray_action();
-  TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateRemoteAndBind(),
-                         mojom::TrayActionState::kAvailable);
-  auto* contents = new LockContentsView(
-      Shell::Get()->tray_action()->GetLockScreenNoteState(),
-      LockScreen::ScreenType::kLock, DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  SetWidget(CreateWidgetWithContent(contents));
-
-  const AccountId& kFirstUserAccountId = users()[0].basic_user_info.account_id;
-  LockContentsViewTestApi contents_test_api(contents);
-  views::View* note_action_button = contents_test_api.note_action();
-
-  EXPECT_TRUE(note_action_button->GetVisible());
-  // Setting auth disabled hides the note action button.
-  DataDispatcher()->DisableAuthForUser(kFirstUserAccountId,
-                                       GetTestDisabledAuthData());
-  EXPECT_FALSE(note_action_button->GetVisible());
-  // Setting auth enabled shows the note action button.
-  DataDispatcher()->EnableAuthForUser(kFirstUserAccountId);
-  EXPECT_TRUE(note_action_button->GetVisible());
-
-  // Set auth disabled again.
-  DataDispatcher()->DisableAuthForUser(kFirstUserAccountId,
-                                       GetTestDisabledAuthData());
-  EXPECT_FALSE(note_action_button->GetVisible());
-  // Set the lock screen note state to |kNotAvailable| while the note action
-  // button is hidden.
-  tray_action->UpdateLockScreenNoteState(mojom::TrayActionState::kNotAvailable);
-  DataDispatcher()->EnableAuthForUser(kFirstUserAccountId);
-  // The note action button remains hidden after setting auth enabled.
-  EXPECT_FALSE(note_action_button->GetVisible());
 }
 
 TEST_F(LockContentsViewUnitTest, DisabledAuthMessageFocusBehavior) {

@@ -36,7 +36,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/note_taking/note_taking_controller_client.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -94,13 +93,6 @@ using LaunchResult = NoteTakingHelper::LaunchResult;
 
 namespace {
 
-constexpr LockScreenAppSupport kNotSupported =
-    LockScreenAppSupport::kNotSupported;
-constexpr LockScreenAppSupport kNotAllowedByPolicy =
-    LockScreenAppSupport::kNotAllowedByPolicy;
-constexpr LockScreenAppSupport kSupported = LockScreenAppSupport::kSupported;
-constexpr LockScreenAppSupport kEnabled = LockScreenAppSupport::kEnabled;
-
 auto& kDevKeepExtensionId = NoteTakingHelper::kDevKeepExtensionId;
 auto& kProdKeepExtensionId = NoteTakingHelper::kProdKeepExtensionId;
 
@@ -112,23 +104,14 @@ const char kSecondProfileName[] = "second-profile";
 const char kProdKeepAppName[] = "Google Keep [prod]";
 const char kDevKeepAppName[] = "Google Keep [dev]";
 
-// Helper functions returning strings that can be used to compare information
-// about available note-taking apps.
-std::string ToString(LockScreenAppSupport support) {
-  std::ostringstream os;
-  os << support;
-  return os.str();
-}
 std::string GetAppString(const std::string& name,
                          const std::string& id,
-                         bool preferred,
-                         LockScreenAppSupport lock_screen_support) {
-  return base::StringPrintf("{%s, %s, %d, %s}", name.c_str(), id.c_str(),
-                            preferred, ToString(lock_screen_support).c_str());
+                         bool preferred) {
+  return base::StringPrintf("{%s, %s, %d}", name.c_str(), id.c_str(),
+                            preferred);
 }
 std::string GetAppString(const NoteTakingAppInfo& info) {
-  return GetAppString(info.name, info.app_id, info.preferred,
-                      info.lock_screen_support);
+  return GetAppString(info.name, info.app_id, info.preferred);
 }
 
 // Creates an ARC IntentHandlerInfo object.
@@ -232,11 +215,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   };
 
   static NoteTakingHelper* helper() { return NoteTakingHelper::Get(); }
-
-  LockScreenAppSupport GetLockScreenSupport(Profile* profile,
-                                            const std::string& app_id) {
-    return LockScreenApps::GetSupport(profile, app_id);
-  }
 
   NoteTakingControllerClient* note_taking_client() {
     return helper()->GetNoteTakingControllerClientForTesting();
@@ -525,20 +503,19 @@ TEST_F(NoteTakingHelperTest, ListChromeApps) {
       CreateExtension(kProdKeepExtensionId, kProdKeepAppName);
   InstallExtension(prod_extension.get(), profile());
   EXPECT_TRUE(helper()->IsAppAvailable(profile()));
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kProdKeepAppName, kProdKeepExtensionId,
-                                      false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(),
+      {{kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
 
   // If the dev version is also installed, it should be listed before the prod
   // version.
   scoped_refptr<const extensions::Extension> dev_extension =
       CreateExtension(kDevKeepExtensionId, kDevKeepAppName);
   InstallExtension(dev_extension.get(), profile());
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
-                                      false /*preferred*/, kNotSupported},
-                                     {kProdKeepAppName, kProdKeepExtensionId,
-                                      false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(),
+      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/},
+       {kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
 
   // Now install a random web app to check that it's ignored.
@@ -551,23 +528,19 @@ TEST_F(NoteTakingHelperTest, ListChromeApps) {
       CreateExtension(kOtherId, kOtherName);
   InstallExtension(other_extension.get(), profile());
 
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
-                                      false /*preferred*/, kNotSupported},
-                                     {kProdKeepAppName, kProdKeepExtensionId,
-                                      false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(),
+      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/},
+       {kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
 
   // Mark the prod version as preferred.
   helper()->SetPreferredApp(profile(), kProdKeepExtensionId);
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
-                                      false /*preferred*/, kNotSupported},
-                                     {kProdKeepAppName, kProdKeepExtensionId,
-                                      true /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(),
+      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/},
+       {kProdKeepAppName, kProdKeepExtensionId, true /*preferred*/}}));
   EXPECT_EQ(helper()->GetPreferredAppId(profile()), kProdKeepExtensionId);
-  EXPECT_EQ(GetLockScreenSupport(profile(), kProdKeepExtensionId),
-            kNotSupported);
 }
 
 TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
@@ -586,9 +559,9 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
       std::move(lock_disabled_action_handler));
   InstallExtension(prod_extension.get(), profile());
   EXPECT_TRUE(helper()->IsAppAvailable(profile()));
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kProdKeepAppName, kProdKeepExtensionId,
-                                      false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(),
+      {{kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
 
   // Install additional Keep app - one that supports lock screen note taking.
@@ -598,117 +571,9 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
                                     profile());
   EXPECT_TRUE(AvailableAppsMatch(
       profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
-       {kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/,
-        kNotSupported}}));
+      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/},
+       {kProdKeepAppName, kProdKeepExtensionId, false /*preferred*/}}));
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
-}
-
-TEST_F(NoteTakingHelperTest, PreferredAppEnabledOnLockScreen) {
-  Init(ENABLE_PALETTE);
-
-  ASSERT_FALSE(helper()->IsAppAvailable(profile()));
-  ASSERT_TRUE(helper()->GetAvailableApps(profile()).empty());
-
-  // Install lock screen enabled Keep note taking app.
-  scoped_refptr<const extensions::Extension> dev_extension =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-
-  // Verify that the app is reported to support lock screen note taking.
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled}}));
-
-  // When the lock screen note taking pref is set and the Keep app is set as the
-  // preferred note taking app, the app should be reported as selected as lock
-  // screen note taking app.
-  helper()->SetPreferredApp(profile(), kDevKeepExtensionId);
-  helper()->SetPreferredAppEnabledOnLockScreen(profile(), true);
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/, kEnabled}}));
-  EXPECT_EQ(helper()->GetPreferredAppId(profile()), kDevKeepExtensionId);
-  EXPECT_EQ(GetLockScreenSupport(profile(), kDevKeepExtensionId), kEnabled);
-
-  helper()->SetPreferredAppEnabledOnLockScreen(profile(), false);
-
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
-                                      true /*preferred*/, kSupported}}));
-  EXPECT_EQ(helper()->GetPreferredAppId(profile()), kDevKeepExtensionId);
-  EXPECT_EQ(GetLockScreenSupport(profile(), kDevKeepExtensionId), kSupported);
-}
-
-TEST_F(NoteTakingHelperTest, PreferredAppWithNoLockScreenPermission) {
-  Init(ENABLE_PALETTE);
-
-  ASSERT_FALSE(helper()->IsAppAvailable(profile()));
-  ASSERT_TRUE(helper()->GetAvailableApps(profile()).empty());
-
-  // Install lock screen enabled Keep note taking app, but wihtout lock screen
-  // permission listed.
-  scoped_refptr<const extensions::Extension> dev_extension =
-      CreateAndInstallLockScreenAppWithPermissions(
-          kDevKeepExtensionId, kDevKeepAppName, /*permissions=*/std::nullopt,
-          profile());
-  helper()->SetPreferredApp(profile(), kDevKeepExtensionId);
-
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
-                                      true /*preferred*/, kNotSupported}}));
-  EXPECT_EQ(helper()->GetPreferredAppId(profile()), kDevKeepExtensionId);
-  EXPECT_EQ(GetLockScreenSupport(profile(), kDevKeepExtensionId),
-            kNotSupported);
-}
-
-TEST_F(NoteTakingHelperTest,
-       PreferredAppWithoutLockSupportClearsLockScreenPref) {
-  Init(ENABLE_PALETTE);
-
-  ASSERT_FALSE(helper()->IsAppAvailable(profile()));
-  ASSERT_TRUE(helper()->GetAvailableApps(profile()).empty());
-
-  // Install dev Keep app that supports lock screen note taking.
-  scoped_refptr<const extensions::Extension> dev_extension =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-
-  // Install third-party app that doesn't support lock screen note taking.
-  const extensions::ExtensionId kNewNoteId = crx_file::id_util::GenerateId("a");
-  const std::string kName = "Some App";
-  scoped_refptr<const extensions::Extension> has_new_note =
-      CreateAndInstallLockScreenAppWithPermissions(
-          kNewNoteId, kName, /*permissions=*/std::nullopt, profile());
-
-  // Verify that only Keep app is reported to support lock screen note taking.
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
-       {kName, kNewNoteId, false /*preferred*/, kNotSupported}}));
-
-  // When the Keep app is set as preferred app, and note taking on lock screen
-  // is enabled, the keep app should be reported to be selected as the lock
-  // screen note taking app.
-  helper()->SetPreferredApp(profile(), kDevKeepExtensionId);
-  helper()->SetPreferredAppEnabledOnLockScreen(profile(), true);
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/, kEnabled},
-       {kName, kNewNoteId, false /*preferred*/, kNotSupported}}));
-
-  // When a third party app (which does not support lock screen note taking) is
-  // set as the preferred app, Keep app's lock screen support state remain
-  // enabled - even though it will not be launchable from the lock screen.
-  helper()->SetPreferredApp(profile(), kNewNoteId);
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
-       {kName, kNewNoteId, true /*preferred*/, kNotSupported}}));
-  EXPECT_EQ(helper()->GetPreferredAppId(profile()), kNewNoteId);
-  EXPECT_EQ(GetLockScreenSupport(profile(), kNewNoteId), kNotSupported);
 }
 
 // Verify the note helper detects apps with "new_note" "action_handler" manifest
@@ -738,8 +603,8 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
   InstallExtension(none.get(), profile());
 
   // Only the "new_note" extension is returned from GetAvailableApps.
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{kName, kNewNoteId, false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(profile(),
+                                 {{kName, kNewNoteId, false /*preferred*/}}));
 }
 
 // Web apps with a note_taking_new_note_url show as available note-taking apps.
@@ -769,7 +634,7 @@ TEST_F(NoteTakingHelperTest, NoteTakingWebAppsListed) {
 
   // Apps with note_taking_new_note_url are listed.
   EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{"Web App 2", app2_id, false /*preferred*/, kNotSupported}}));
+      profile(), {{"Web App 2", app2_id, false /*preferred*/}}));
 }
 
 // Web apps with a lock_screen_start_url should show as supported on the lock
@@ -807,8 +672,8 @@ TEST_F(NoteTakingHelperTest, LockScreenWebAppsListed) {
 
   // With the flag disabled, web apps are not supported.
   EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{"Web App 1", app1_id, /*preferred=*/false, kNotSupported},
-                  {"Web App 2", app2_id, /*preferred=*/false, kNotSupported}}));
+      profile(), {{"Web App 1", app1_id, /*preferred=*/false},
+                  {"Web App 2", app2_id, /*preferred=*/false}}));
 }
 
 class NoteTakingHelperTest_WebLockScreenApiEnabled
@@ -851,8 +716,8 @@ TEST_F(NoteTakingHelperTest_WebLockScreenApiEnabled, LockScreenWebAppsListed) {
 
   // The web app with a lock screen start URL is supported.
   EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{"Web App 1", app1_id, /*preferred=*/false, kNotSupported},
-                  {"Web App 2", app2_id, /*preferred=*/false, kEnabled}}));
+      profile(), {{"Web App 1", app1_id, /*preferred=*/false},
+                  {"Web App 2", app2_id, /*preferred=*/false}}));
 }
 
 // Verify that non-allowlisted apps cannot be enabled on lock screen.
@@ -865,8 +730,8 @@ TEST_F(NoteTakingHelperTest, CustomLockScreenEnabledApps) {
   scoped_refptr<const extensions::Extension> extension =
       CreateAndInstallLockScreenApp(kNewNoteId, kName, profile());
 
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{kName, kNewNoteId, false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(profile(),
+                                 {{kName, kNewNoteId, false /*preferred*/}}));
 }
 
 TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
@@ -879,8 +744,7 @@ TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
   InstallExtension(extension.get(), profile());
 
   EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{"Keep", kProdKeepExtensionId, false /*preferred*/, kNotSupported}}));
+      profile(), {{"Keep", kProdKeepExtensionId, false /*preferred*/}}));
 }
 
 TEST_F(NoteTakingHelperTest, LaunchChromeApp) {
@@ -1046,18 +910,17 @@ TEST_F(NoteTakingHelperTest, ListAndroidApps) {
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_TRUE(helper()->android_apps_received());
   EXPECT_TRUE(helper()->IsAppAvailable(profile()));
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{kName1, kPackage1, false /*preferred*/, kNotSupported},
-                  {kName2, kPackage2, false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(profile(),
+                                 {{kName1, kPackage1, false /*preferred*/},
+                                  {kName2, kPackage2, false /*preferred*/}}));
 
   helper()->SetPreferredApp(profile(), kPackage1);
 
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{kName1, kPackage1, true /*preferred*/, kNotSupported},
-                  {kName2, kPackage2, false /*preferred*/, kNotSupported}}));
+  EXPECT_TRUE(AvailableAppsMatch(profile(),
+                                 {{kName1, kPackage1, true /*preferred*/},
+                                  {kName2, kPackage2, false /*preferred*/}}));
   // Preferred app is not actually installed, so no app ID should be returned.
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
-  EXPECT_EQ(GetLockScreenSupport(profile(), ""), kNotSupported);
 
   // Disable Play Store and check that the apps are no longer returned.
   profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, false);
@@ -1308,299 +1171,6 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
   observer.clear_preferred_app_updates();
 
   profile_manager()->DeleteTestingProfile(kSecondProfileName);
-}
-
-TEST_F(NoteTakingHelperTest,
-       NotifyObserverAboutPreferredLockScreenAppSupportChanges) {
-  Init(ENABLE_PALETTE);
-  TestObserver observer;
-
-  scoped_refptr<const extensions::Extension> dev_extension =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-
-  scoped_refptr<const extensions::Extension> prod_extension =
-      CreateExtension(kProdKeepExtensionId, "Keep");
-  InstallExtension(prod_extension.get(), profile());
-
-  ASSERT_TRUE(observer.preferred_app_updates().empty());
-
-  // Set the app that supports lock screen note taking as preferred.
-  helper()->SetPreferredApp(profile(), dev_extension->id());
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Disable the preferred app on the lock screen.
-  EXPECT_TRUE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), false));
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Disabling lock screen support for already enabled app should be no-op.
-  EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), false));
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  // Change the state of the preferred app - it should succeed, and a
-  // notification should be fired.
-  EXPECT_TRUE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // No-op, because the preferred app state is not changing.
-  EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  // Set an app that does not support lock screen as primary.
-  helper()->SetPreferredApp(profile(), prod_extension->id());
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Chaning state for an app that does not support lock screen note taking
-  // should be no-op.
-  EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), false));
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-}
-
-TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
-  Init(ENABLE_PALETTE);
-
-  TestObserver observer;
-
-  scoped_refptr<const extensions::Extension> dev_app =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-  scoped_refptr<const extensions::Extension> prod_app =
-      CreateAndInstallLockScreenApp(kProdKeepExtensionId, kProdKeepAppName,
-                                    profile());
-  const std::string kUnsupportedAppName = "App name";
-  const extensions::ExtensionId kUnsupportedAppId =
-      crx_file::id_util::GenerateId("a");
-  scoped_refptr<const extensions::Extension> unsupported_app =
-      CreateAndInstallLockScreenAppWithPermissions(
-          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/std::nullopt,
-          profile());
-
-  // Disabling preferred app on lock screen should fail if there is no preferred
-  // app.
-  EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
-
-  helper()->SetPreferredApp(profile(), prod_app->id());
-
-  // Setting preferred app should fire observers.
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Verify dev and prod apps are enabled for lock screen, with prod preferred.
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
-       {kProdKeepAppName, kProdKeepExtensionId, true /*preferred*/, kEnabled},
-       {kUnsupportedAppName, kUnsupportedAppId, false /*preferred*/,
-        kNotSupported}}));
-
-  // Allowlist prod app by policy.
-  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 base::Value::List().Append(prod_app->id()));
-
-  // The preferred app's status hasn't changed, so the observers can remain
-  // agnostic of the policy change.
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/,
-        kNotAllowedByPolicy},
-       {kProdKeepAppName, kProdKeepExtensionId, true /*preferred*/, kEnabled},
-       {kUnsupportedAppName, kUnsupportedAppId, false /*preferred*/,
-        kNotSupported}}));
-
-  // Change allowlist so only dev app is allowlisted.
-  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 base::Value::List().Append(dev_app->id()));
-
-  // The preferred app status changed, so observers are expected to be notified.
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Preferred app is not enabled on lock screen - chaning the lock screen
-  // pref should fail.
-  EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), false));
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
-       {kProdKeepAppName, kProdKeepExtensionId, true /*preferred*/,
-        kNotAllowedByPolicy},
-       {kUnsupportedAppName, kUnsupportedAppId, false /*preferred*/,
-        kNotSupported}}));
-
-  // Switch preferred note taking app to one that does not support lock screen.
-  helper()->SetPreferredApp(profile(), unsupported_app->id());
-
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Policy with an empty allowlist - this should disallow all apps from the
-  // lock screen.
-  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 base::Value::List());
-
-  // Preferred app changed notification is not expected if the preferred app is
-  // not supported on lock screen.
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  EXPECT_TRUE(
-      AvailableAppsMatch(profile(), {{kDevKeepAppName, kDevKeepExtensionId,
-                                      false /*preferred*/, kNotAllowedByPolicy},
-                                     {kProdKeepAppName, kProdKeepExtensionId,
-                                      false /*preferred*/, kNotAllowedByPolicy},
-                                     {kUnsupportedAppName, kUnsupportedAppId,
-                                      true /*preferred*/, kNotSupported}}));
-
-  UninstallExtension(dev_app.get(), profile());
-  UninstallExtension(prod_app.get(), profile());
-  UninstallExtension(unsupported_app.get(), profile());
-
-  profile_prefs_->RemoveManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist);
-  // No preferred app installed, so no update notification.
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-}
-
-TEST_F(NoteTakingHelperTest,
-       UpdateLockScreenSupportStatusWhenAllowlistPolicyRemoved) {
-  Init(ENABLE_PALETTE);
-  TestObserver observer;
-
-  // Add test app, set it as preferred and enable it on lock screen.
-  scoped_refptr<const extensions::Extension> app =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-  helper()->SetPreferredApp(profile(), app->id());
-  observer.clear_preferred_app_updates();
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/, kEnabled}}));
-
-  // Policy with an empty allowlist - this should disallow test app from running
-  // on lock screen.
-  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 base::Value::List());
-
-  // Preferred app settings changed - observers should be notified.
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Verify the app is reported as not allowed by policy.
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(), {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/,
-                   kNotAllowedByPolicy}}));
-
-  // Remove the allowlist policy - the preferred app should become enabled on
-  // lock screen again.
-  profile_prefs_->RemoveManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist);
-
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/, kEnabled}}));
-}
-
-TEST_F(NoteTakingHelperTest,
-       NoObserverCallsIfPolicyChangesBeforeLockScreenStatusIsFetched) {
-  Init(ENABLE_PALETTE);
-  TestObserver observer;
-
-  scoped_refptr<const extensions::Extension> app =
-      CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
-                                    profile());
-
-  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 base::Value::List());
-  // Verify that observers are not notified of preferred app change if preferred
-  // app is not set when allowlist policy changes.
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  // Set test app as preferred note taking app.
-  helper()->SetPreferredApp(profile(), app->id());
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{profile()},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Changing policy before the app's lock screen availability has been reported
-  // to NoteTakingHelper clients is not expected to fire observers.
-  profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 base::Value::List().Append(app->id()));
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  EXPECT_TRUE(AvailableAppsMatch(
-      profile(),
-      {{kDevKeepAppName, kDevKeepExtensionId, true /*preferred*/, kEnabled}}));
-}
-
-TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
-  Init(ENABLE_PALETTE);
-  TestObserver observer;
-
-  TestingProfile* second_profile = CreateAndInitSecondaryProfile();
-
-  // Add test apps to secondary profile.
-  scoped_refptr<const extensions::Extension> prod_app =
-      CreateAndInstallLockScreenApp(kProdKeepExtensionId, kProdKeepAppName,
-                                    second_profile);
-  const std::string kUnsupportedAppName = "App name";
-  const extensions::ExtensionId kUnsupportedAppId =
-      crx_file::id_util::GenerateId("a");
-  scoped_refptr<const extensions::Extension> unsupported_app =
-      CreateAndInstallLockScreenAppWithPermissions(
-          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/std::nullopt,
-          second_profile);
-
-  // Setting preferred app should fire observers for secondary profile.
-  helper()->SetPreferredApp(second_profile, prod_app->id());
-  EXPECT_EQ(std::vector<raw_ptr<Profile>>{second_profile},
-            observer.preferred_app_updates());
-  observer.clear_preferred_app_updates();
-
-  // Even though prod app supports lock screen it should be reported as not
-  // supported in the secondary profile.
-  EXPECT_TRUE(AvailableAppsMatch(second_profile,
-                                 {{kProdKeepAppName, kProdKeepExtensionId,
-                                   true /*preferred*/, kNotSupported},
-                                  {kUnsupportedAppName, kUnsupportedAppId,
-                                   false /*preferred*/, kNotSupported}}));
-
-  // Enabling an app on lock screen in secondary profile should fail.
-  EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
-
-  auto* profile_prefs =
-      static_cast<sync_preferences::TestingPrefServiceSyncable*>(
-          second_profile->GetPrefs());
-  // Policy with an empty allowlist.
-  profile_prefs->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                base::Value::List());
-
-  // Changing policy should not notify observers in secondary profile.
-  EXPECT_TRUE(observer.preferred_app_updates().empty());
-
-  EXPECT_TRUE(AvailableAppsMatch(second_profile,
-                                 {{kProdKeepAppName, kProdKeepExtensionId,
-                                   true /*preferred*/, kNotSupported},
-                                  {kUnsupportedAppName, kUnsupportedAppId,
-                                   false /*preferred*/, kNotSupported}}));
-  EXPECT_EQ(helper()->GetPreferredAppId(second_profile), kProdKeepExtensionId);
-  EXPECT_EQ(GetLockScreenSupport(second_profile, kProdKeepExtensionId),
-            kNotSupported);
 }
 
 TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {

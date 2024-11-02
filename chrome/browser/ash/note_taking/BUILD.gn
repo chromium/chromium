@@ -74,7 +74,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
