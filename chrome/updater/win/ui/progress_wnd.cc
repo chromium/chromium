@@ -72,9 +72,7 @@ int GetPriority(CompletionCodes code) {
       return i;
     }
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 // Returns true if all apps are cancelled or if the range is empty.
@@ -246,7 +244,7 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
           events_sink_->DoReboot();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       break;
     case IDC_BUTTON2:
@@ -256,7 +254,7 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         case States::STATE_COMPLETE_REBOOT:
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       break;
     case IDC_CLOSE:
@@ -266,11 +264,10 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
           return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
                                               handled);
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
-      break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   handled = true;
@@ -294,8 +291,7 @@ LRESULT ProgressWnd::OnInstallStopped(UINT msg,
       HandleCancelRequest();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   handled = true;

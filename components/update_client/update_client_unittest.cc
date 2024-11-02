@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -384,7 +383,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -1082,7 +1081,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1224,7 +1223,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -1237,7 +1236,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -1471,7 +1470,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1643,7 +1642,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       std::move(callback).Run({crx});
@@ -1773,7 +1772,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1826,7 +1825,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -2322,7 +2321,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       std::move(callback).Run({crx});
@@ -2449,7 +2448,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -2715,7 +2714,7 @@ TEST_F(UpdateClientTest,
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       std::move(callback).Run({crx});
@@ -2840,7 +2839,7 @@ TEST_F(UpdateClientTest,
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -3155,7 +3154,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -3359,7 +3358,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -3515,7 +3514,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -3528,7 +3527,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -3674,7 +3673,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -3771,7 +3770,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
     }
   };
 
@@ -3783,7 +3782,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -3913,7 +3912,7 @@ TEST_F(UpdateClientTest, DiskFull) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -4018,7 +4017,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       std::move(callback).Run({crx});
@@ -4150,7 +4149,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         result.manifest.packages.push_back(package);
         results.list.push_back(result);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -4188,7 +4187,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -4416,7 +4415,7 @@ TEST_P(SendPingTest, TestCases) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -4584,7 +4583,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -4850,7 +4849,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -5264,7 +5263,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -5435,7 +5434,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -5638,7 +5637,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -5791,7 +5790,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -5967,7 +5966,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -6173,7 +6172,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -6317,7 +6316,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -6507,7 +6506,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
         result.error = 0;
         result.response = path;
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -6654,7 +6653,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -6799,7 +6798,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -6925,7 +6924,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -7066,7 +7065,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -7158,7 +7157,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -7334,7 +7333,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
       return base::DoNothing();
     }
   };
@@ -7431,7 +7430,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
       } else if (num_calls_ == 2) {
         installer->set_installer_progress_samples({-1, 50, 100});
       } else {
-        NOTREACHED_IN_MIGRATION();
+        ADD_FAILURE();
       }
       crx.installer = installer;
 

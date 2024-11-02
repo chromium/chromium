@@ -87,10 +87,8 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
                  << "]: " << base::Value::GetTypeName(update_url_value->type());
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
 }
 
 GURL ExternalConstantsOverrider::CrashUploadURL() const {

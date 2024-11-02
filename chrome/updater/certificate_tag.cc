@@ -20,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
-#include "base/notreached.h"
 #include "chrome/updater/certificate_tag_internal.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -271,7 +270,6 @@ std::unique_ptr<PEBinary> PEBinary::Parse(base::span<const uint8_t> binary) {
   if (!CBS_skip(&bin_for_check, ret->certs_size_offset_) ||
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
-    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

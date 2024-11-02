@@ -107,8 +107,7 @@ UpdateService::Result ToResult(update_client::Error error) {
     case update_client::Error::BAD_CRX_DATA_CALLBACK:
       return UpdateService::Result::kInvalidArgument;
     case update_client::Error::MAX_VALUE:
-      NOTREACHED_IN_MIGRATION();
-      return UpdateService::Result::kInvalidArgument;
+      NOTREACHED();
   }
 }
 
@@ -502,8 +501,7 @@ UpdateService::UpdateState::State ToUpdateState(
 
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
-      NOTREACHED_IN_MIGRATION();
-      return UpdateService::UpdateState::State::kUnknown;
+      NOTREACHED();
   }
 }
 

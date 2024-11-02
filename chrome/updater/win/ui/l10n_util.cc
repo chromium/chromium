@@ -9,6 +9,7 @@
 
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -70,7 +71,7 @@ std::wstring GetLocalizedString(unsigned int base_message_id,
   SCOPED_CRASH_KEY_NUMBER("l10_util", "message_id", message_id);
   SCOPED_CRASH_KEY_NUMBER("l10_util", "error_code", error_code);
   SCOPED_CRASH_KEY_STRING32("l10_util", "lang", dbg_lang);
-  NOTREACHED_IN_MIGRATION();
+  base::debug::DumpWithoutCrashing();
   return std::wstring();
 }
 
@@ -128,7 +129,7 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
                                  GetTextForSystemError(windows_error));
     case UPDATER_EXIT_CODE:
     default:
-      NOTREACHED_IN_MIGRATION();
+      VLOG(2) << __func__ << ": exit_code=" << exit_code;
       return {};
   }
 #undef METAINSTALLER_ERROR_SWITCH_ENTRY

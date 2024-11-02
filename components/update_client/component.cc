@@ -934,9 +934,8 @@ void Component::StateRun::ActionRunComplete(bool succeeded,
       TransitionState(std::make_unique<StateUpdated>(&component));
       return;
     default:
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace update_client

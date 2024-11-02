@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -389,15 +390,15 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
   auto update_complete_callback = base::BindOnce(
       &CrxUpdateService::OnUpdateComplete, base::Unretained(this),
       std::move(callback), base::TimeTicks::Now());
-
-  if (priority == Priority::FOREGROUND) {
-    update_client_->Install(id, std::move(crx_data_callback), {},
-                            std::move(update_complete_callback));
-  } else if (priority == Priority::BACKGROUND) {
-    update_client_->Update({id}, std::move(crx_data_callback), {}, false,
-                           std::move(update_complete_callback));
-  } else {
-    NOTREACHED_IN_MIGRATION();
+  switch (priority) {
+    case Priority::FOREGROUND:
+      update_client_->Install(id, std::move(crx_data_callback), {},
+                              std::move(update_complete_callback));
+      break;
+    case Priority::BACKGROUND:
+      update_client_->Update({id}, std::move(crx_data_callback), {}, false,
+                             std::move(update_complete_callback));
+      break;
   }
 }
 

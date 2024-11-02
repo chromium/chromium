@@ -30,6 +30,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -234,7 +235,6 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnWaitingToDownload(const std::string& app_id,
                            const std::u16string& app_name) override {
-    NOTREACHED_IN_MIGRATION();
   }
 
   void OnDownloading(const std::string& app_id,
@@ -251,7 +251,6 @@ class AppInstallProgressIPC : public AppInstallProgress {
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
                               base::Time next_retry_time) override {
-    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWaitingToInstall(const std::string& app_id,
@@ -273,7 +272,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
                                time_remaining, pos));
   }
 
-  void OnPause() override { NOTREACHED_IN_MIGRATION(); }
+  void OnPause() override {}
 
   void OnComplete(const ObserverCompletionInfo& observer_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -988,8 +987,7 @@ std::wstring GetTextForStartupError(int error_code) {
       completion_text = GetTextForStartupError(update_state.error_code);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   ObserverCompletionInfo observer_info;

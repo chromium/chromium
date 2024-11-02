@@ -29,7 +29,6 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -594,7 +593,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                                base::ASCIIToWide(child_window_text_to_find),
                                verify_app_logo_loaded);
 #else
-    NOTREACHED_IN_MIGRATION();
+    ADD_FAILURE();
 #endif
   }
 }
@@ -1625,13 +1624,13 @@ void ExpectCleanProcesses() {
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
-  NOTREACHED_IN_MIGRATION();
+  ADD_FAILURE();
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install) {
-  NOTREACHED_IN_MIGRATION();
+  ADD_FAILURE();
 }
 #endif  // !BUILDFLAG(IS_WIN)
 

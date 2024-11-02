@@ -382,8 +382,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     // /Library is owned by root.
     return base::FilePath(FILE_PATH_LITERAL("/Library"));
 #else
-    NOTREACHED_IN_MIGRATION() << __func__ << ": not implemented.";
-    return base::FilePath();
+    NOTREACHED() << __func__ << ": not implemented.";
 #endif
   }
 

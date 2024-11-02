@@ -254,8 +254,7 @@ scoped_refptr<AppServerWin> GetAppServerWinInstance() {
 
 AppServerWin::AppServerWin() = default;
 AppServerWin::~AppServerWin() {
-  NOTREACHED_IN_MIGRATION();  // The instance of this class is a leaky
-                              // singleton.
+  NOTREACHED();  // The instance of this class is a leaky singleton.
 }
 
 void AppServerWin::PostRpcTask(base::OnceClosure task) {
