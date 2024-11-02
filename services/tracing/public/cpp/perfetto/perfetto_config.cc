@@ -132,13 +132,6 @@ void AddDataSourceConfigs(
   }
 
   if (stripped_config.IsCategoryGroupEnabled(
-          TRACE_DISABLED_BY_DEFAULT("process_metrics"))) {
-    AddDataSourceConfig(
-        perfetto_config, tracing::mojom::kProcessMetricsSourceName,
-        chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
-        client_priority, json_agent_label_filter);
-  }
-  if (stripped_config.IsCategoryGroupEnabled(
           TRACE_DISABLED_BY_DEFAULT("system_metrics"))) {
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kSystemMetricsSourceName,

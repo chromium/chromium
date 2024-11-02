@@ -383,6 +383,8 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   tracing::TriggersDataSource::Register();
   tracing::MetadataDataSource::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
+  // ProcessMetricsSampler and SystemMetricsSampler register the same name.
+  // Both will be started when enabling kSystemMetricsSourceName.
   tracing::ProcessMetricsSampler::Register();
   if (enable_consumer) {
     // SystemMetricsSampler only needs to be installed in the browser process.

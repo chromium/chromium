@@ -24,7 +24,7 @@ constexpr base::TimeDelta kSamplingInterval = base::Seconds(5);
 
 void ProcessMetricsSampler::Register() {
   perfetto::DataSourceDescriptor desc;
-  desc.set_name(tracing::mojom::kProcessMetricsSourceName);
+  desc.set_name(tracing::mojom::kSystemMetricsSourceName);
   perfetto::DataSource<ProcessMetricsSampler>::Register(desc);
 }
 
@@ -56,7 +56,7 @@ void ProcessMetricsSampler::Sampler::SampleProcessMetrics() {
   if (!cpu_usage.has_value()) {
     return;
   }
-  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("process_metrics"), "CpuUsage",
+  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "CpuUsage",
                 *cpu_usage);
 }
 
