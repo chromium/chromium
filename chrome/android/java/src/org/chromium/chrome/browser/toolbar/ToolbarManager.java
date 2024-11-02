@@ -412,9 +412,12 @@ public class ToolbarManager
     private class OnBackPressHandler implements BackPressHandler {
         private TabOnBackGestureHandler mHandler;
         private boolean mIsGestureMode;
+        private @BackGestureEventSwipeEdge int mInitialEdge;
+        private boolean mIsInProgress;
 
         @Override
         public int handleBackPress() {
+            mIsInProgress = false;
             if (mIsGestureMode) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
@@ -422,7 +425,8 @@ public class ToolbarManager
             int res = BackPressResult.SUCCESS;
 
             if (mHandler != null) {
-                mHandler.onBackInvoked();
+                assert mIsGestureMode : "Must be in gesture mode if transition handler is alive";
+                mHandler.onBackInvoked(mIsGestureMode);
             } else {
                 assert (!mBackGestureInProgress || !mIsGestureMode)
                                 || // called handleBackPress without handleBackStarted
@@ -443,30 +447,45 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackCancelled() {
+            mIsInProgress = false;
             if (mIsGestureMode) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
             }
             mBackGestureInProgress = false;
             if (mHandler == null) return;
-            mHandler.onBackCancelled();
+            mHandler.onBackCancelled(mIsGestureMode);
             mHandler = null;
         }
 
         @Override
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
             if (mHandler == null) return;
+            if (!mIsInProgress) {
+                handleOnBackStarted(backEvent);
+                return;
+            }
+
+            if (mInitialEdge != backEvent.getSwipeEdge()) {
+                handleOnBackCancelled();
+                handleOnBackStarted(backEvent);
+                return;
+            }
+
             mHandler.onBackProgressed(
                     backEvent.getProgress(),
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
                             : BackGestureEventSwipeEdge.RIGHT,
-                    isForward());
+                    isForward(),
+                    mIsGestureMode);
         }
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            mIsInProgress = true;
             mIsGestureMode = UiUtils.isGestureNavigationMode(mActivity.getWindow());
+            mInitialEdge = backEvent.getSwipeEdge();
             // For 3-button mode, record metrics only when back is triggered by swiping.
             // See NavigationHandler.java.
             if (mIsGestureMode) {
@@ -503,7 +522,8 @@ public class ToolbarManager
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
                             : BackGestureEventSwipeEdge.RIGHT,
-                    navigatesForward);
+                    navigatesForward,
+                    mIsGestureMode);
         }
     }
 
