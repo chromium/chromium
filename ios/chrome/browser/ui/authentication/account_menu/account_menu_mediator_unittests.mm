@@ -211,11 +211,11 @@ TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 // consumer.
 TEST_F(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
-  {
-    authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
-                                     /*force_clear_browsing_data=*/false, ^() {
-                                     });
-  }
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
+  authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
+                                   /*force_clear_browsing_data=*/false,
+                                   ^(){
+                                   });
 }
 
 #pragma mark - AccountMenuDataSource
@@ -314,6 +314,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -324,6 +325,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                           gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([consumer_ switchingStopped]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   // Simulate a sign-out failure
   onSignoutSuccess(false);
 }
@@ -351,6 +353,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -379,6 +382,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                           gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
   OCMExpect([consumer_ switchingStopped]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   onSigninSuccess(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 
   // Checks the user is signed-back in.
@@ -407,6 +411,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]);
   OCMExpect([consumer_ switchingStarted]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -472,12 +477,14 @@ TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
         completion = value;
         return true;
       }]]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapAddAccount];
   OCMExpect([consumer_ switchingStopped]);
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[]
                           gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   completion(SigninCoordinatorResult::SigninCoordinatorResultInterrupted, nil);
 }
 
@@ -494,6 +501,7 @@ TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
                    return true;
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
   OCMExpect([delegate_ unblockOtherScenes]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
@@ -513,15 +521,19 @@ TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
                    return true;
                  }]]);
   OCMExpect([delegate_ blockOtherScenesIfPossible]).andReturn(YES);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_ signOutFromTargetRect:rect];
   [mediator_ disconnect];
   OCMExpect([delegate_ unblockOtherScenes]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:YES]);
   completion(NO);
 }
+
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
 TEST_F(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
+  OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_
       viewControllerWantsToBeClosed:(AccountMenuViewController*)consumer_];
 }

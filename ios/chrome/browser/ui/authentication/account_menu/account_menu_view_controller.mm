@@ -536,6 +536,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 #pragma mark - AccountMenuConsumer
 
+- (void)setUserInteractionsEnabled:(BOOL)enabled {
+  self.tableView.allowsSelection = enabled;
+  _closeButton.enabled = enabled;
+  _ellipsisButton.enabled = enabled;
+}
+
 - (void)switchingStarted {
   CHECK(_selectedIndexPath, base::NotFatalUntil::M135);
   TableViewAccountCell* cell =

@@ -28,6 +28,9 @@
 // Tells the consumer the switch is no longer in progress.
 - (void)switchingStopped;
 
+// Enable or disable the UI interaction.
+- (void)setUserInteractionsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_CONSUMER_H_

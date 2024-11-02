@@ -31,6 +31,9 @@
                                    IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
 
+// Whether the account menu’s interaction is blocked.
+@property(nonatomic, assign) BOOL userInteractionsBlocked;
+
 @end
 
 @implementation AccountMenuMediator {
@@ -54,9 +57,6 @@
   BOOL _blockUpdates;
   // The authentication flow,
   AuthenticationFlow* _authenticationFlow;
-  // Whether the account menu operations requires the user interacitons to be
-  // ignored.
-  BOOL _blockUserInteractions;
   // This object is set iff an account switch is in progress.
   base::ScopedClosureRunner _accountSwitchInProgress;
 
@@ -89,7 +89,7 @@
     CHECK(authService);
     CHECK(identityManager);
     _blockUpdates = NO;
-    _blockUserInteractions = NO;
+    _userInteractionsBlocked = NO;
     _identities = [NSMutableArray array];
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver =
@@ -222,7 +222,7 @@
       self.signinCoordinatorResult =
           SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
       _blockUpdates = YES;
-      _blockUserInteractions = YES;
+      self.userInteractionsBlocked = YES;
       [self.delegate mediatorWantsToBeDismissed:self];
       break;
   }
@@ -248,14 +248,14 @@
 - (void)viewControllerWantsToBeClosed:
     (AccountMenuViewController*)viewController {
   CHECK_EQ(viewController, _consumer);
-  _blockUserInteractions = YES;
+  self.userInteractionsBlocked = YES;
   self.signinCoordinatorResult =
       SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
   [_delegate mediatorWantsToBeDismissed:self];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   if (![self.delegate blockOtherScenesIfPossible]) {
@@ -263,7 +263,7 @@
     return;
   }
   _blockUpdates = YES;
-  _blockUserInteractions = YES;
+  self.userInteractionsBlocked = YES;
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                              forSwitch:NO
@@ -274,13 +274,13 @@
 
 - (void)accountTappedWithGaiaID:(NSString*)gaiaID
                      targetRect:(CGRect)targetRect {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   [self.consumer switchingStarted];
   [self.delegate blockOtherScenesIfPossible];
   _blockUpdates = YES;
-  _blockUserInteractions = YES;
+  self.userInteractionsBlocked = YES;
   id<SystemIdentity> newIdentity = nil;
   for (id<SystemIdentity> identity : _identities) {
     if (identity.gaiaID == gaiaID) {
@@ -303,7 +303,7 @@
 }
 
 - (void)didTapErrorButton {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   switch (_error.errorType) {
@@ -337,25 +337,25 @@
 }
 
 - (void)didTapManageYourGoogleAccount {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   [self.delegate didTapManageYourGoogleAccount];
 }
 
 - (void)didTapManageAccounts {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   [self.delegate didTapManageAccounts];
 }
 
 - (void)didTapAddAccount {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   __weak __typeof(self) weakSelf = self;
-  _blockUserInteractions = YES;
+  self.userInteractionsBlocked = YES;
   [self.delegate
       didTapAddAccountWithCompletion:^(SigninCoordinatorResult result,
                                        SigninCompletionInfo* info) {
@@ -368,7 +368,7 @@
 // Callback for didTapAddAccount
 - (void)accountAddedIsDone {
   [self restartUpdates];
-  _blockUserInteractions = NO;
+  self.userInteractionsBlocked = NO;
 }
 
 // Callback for signout.
@@ -380,7 +380,7 @@
     [_delegate mediatorWantsToBeDismissed:self];
   } else {
     // User had not signed-out. Allow to interact with the UI.
-    _blockUserInteractions = NO;
+    self.userInteractionsBlocked = NO;
     [self restartUpdates];
   }
 }
@@ -392,7 +392,7 @@
   if (!signoutSuccess) {
     // User had not signed-out. Allow to interact with the UI.
     [self.delegate unblockOtherScenes];
-    _blockUserInteractions = NO;
+    self.userInteractionsBlocked = NO;
     _accountSwitchInProgress.RunAndReset();
     [self restartUpdates];
     return;
@@ -428,7 +428,7 @@
     _authenticationService->SignIn(
         previousIdentity,
         signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
-    _blockUserInteractions = NO;
+    self.userInteractionsBlocked = NO;
     [self restartUpdates];
   } else {
     self.signinCoordinatorResult = result;
@@ -496,6 +496,11 @@
   _blockUpdates = NO;
   [self updateIdentities];
   [self onSyncStateChanged];
+}
+
+- (void)setUserInteractionsBlocked:(BOOL)blocked {
+  _userInteractionsBlocked = blocked;
+  [self.consumer setUserInteractionsEnabled:!blocked];
 }
 
 - (id<SystemIdentity>)identityForGaiaID:(NSString*)gaiaID {
