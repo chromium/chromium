@@ -189,6 +189,16 @@ const char* kSelectWithDefaultOption = R"(
   </select>
 )";
 
+auto HasRendererIdOf(const WebFormElement& e) {
+  return Property("FormData::renderer_id()", &FormData::renderer_id,
+                  GetFormRendererId(e));
+}
+
+auto HasRendererIdOf(const WebFormControlElement& e) {
+  return Property("FormFieldData::renderer_id()", &FormFieldData::renderer_id,
+                  GetFieldRendererId(e));
+}
+
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
                             const ButtonTitlesCache& actual_cache) {
@@ -1022,6 +1032,61 @@ TEST_F(FormAutofillUtilsTest,
   auto form_control = GetElementById(doc, "t").To<WebInputElement>();
   ExecuteJavaScriptForTests(R"(document.getElementById('t').remove();)");
   EXPECT_EQ(FindFormAndFieldForFormControlElement(form_control), std::nullopt);
+}
+
+// Tests that Autofill form ownership follows Blink form's association, which,
+// in compliance with the HTML standard, associates forms with an unclosed
+// <form> element.
+// Regression test for crbug.com/347059988#comment40.
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_DramaticallyBadMarkup) {
+  auto is_ancestor = [](const WebElement& ancestor, WebNode descendant) {
+    do {
+      if (ancestor == descendant) {
+        return true;
+      }
+    } while ((descendant = descendant.ParentNode()));
+    return false;
+  };
+
+  // The following markup is intentionally bad!
+  LoadHTML(R"(
+    <!DOCTYPE html>
+    <div>
+      <form id=f1>
+        <div>
+          </form>
+          <form id=f2>
+        </div>
+    </div>
+    <input id=t>
+  )");
+  // This leads to the same DOM as
+  //   <div>
+  //     <form id=f1>
+  //       <div>
+  //         <form id=f2>
+  //         </form>
+  //       </div>
+  //     </form>
+  //   </div>
+  //   <input id=t>
+  // but it associates `t` with `f2`.
+
+  WebDocument doc = GetDocument();
+  auto f1 = GetElementById(doc, "f1").To<WebFormElement>();
+  auto f2 = GetElementById(doc, "f2").To<WebFormElement>();
+  auto t = GetElementById(doc, "t").To<WebInputElement>();
+
+  ASSERT_TRUE(is_ancestor(f1, f2));
+  ASSERT_FALSE(is_ancestor(f1, t));
+  ASSERT_EQ(t.Form(), f2);  // nocheck
+
+  EXPECT_THAT(FindFormAndFieldForFormControlElement(t),
+              Optional(Pair(AllOf(HasRendererIdOf(f1),
+                                  Property(&FormData::fields,
+                                           ElementsAre(HasRendererIdOf(t)))),
+                            _)));
 }
 
 // Tests the visibility detection of iframes.

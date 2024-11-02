@@ -121,6 +121,15 @@ BASE_FEATURE(kAudioWorkletThreadPool,
              "AudioWorkletThreadPool",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, WebFormElement applies the same special case to nested forms
+// as it does for the outermost form. The fix is relevant only to Autofill.
+// For other callers of HTMLFormElement::ListedElements(), which don't traverse
+// shadow trees and flatten nested forms, are not affected by the feature at
+// all. This is a kill switch.
+BASE_FEATURE(kAutofillFixFieldsAssociatedWithNestedFormsByParser,
+             "AutofillFixFieldsAssociatedWithNestedFormsByParser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If disabled (default for many years), autofilling triggers KeyDown and
 // KeyUp events that do not send any key codes. If enabled, these events
 // contain the "Unidentified" key.

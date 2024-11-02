@@ -780,12 +780,15 @@ void HTMLFormElement::CollectListedElements(
   // If one of the nested forms has an element associated by form attribute,
   // that element may be outside of `root`'s subtree and we need to start at the
   // root node.
-  const bool nested_forms_have_elements_associated_by_form_attribute =
+  const bool nested_forms_have_form_associated_elements =
       base::ranges::any_of(nested_forms, [](const auto& form) {
-        return form->has_elements_associated_by_form_attribute_;
+        return form->has_elements_associated_by_form_attribute_ ||
+               (form->has_elements_associated_by_parser_ &&
+                base::FeatureList::IsEnabled(
+                    features::
+                        kAutofillFixFieldsAssociatedWithNestedFormsByParser));
       });
-  if (nested_forms_have_elements_associated_by_form_attribute &&
-      isConnected()) {
+  if (nested_forms_have_form_associated_elements && isConnected()) {
     root = &GetTreeScope().RootNode();
   }
 
