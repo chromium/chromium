@@ -10,33 +10,33 @@ import {AnnotationBrushType} from '../constants.js';
 import {getCss} from './ink_size_selector.css.js';
 import {getHtml} from './ink_size_selector.html.js';
 
-interface SizeOption {
+export interface SizeOption {
   icon: string;
   name: string;
   size: number;
 }
 
 // TODO(crbug.com/341282609): Choose production size values. Add labels.
-const ERASER_SIZES: SizeOption[] = [
+export const ERASER_SIZES: SizeOption[] = [
   {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
   {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
-  {icon: 'eraser-size-3', name: 'sizeExtraMedium', size: 3},
+  {icon: 'eraser-size-3', name: 'sizeMedium', size: 3},
   {icon: 'eraser-size-4', name: 'sizeThick', size: 6},
   {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
-const HIGHLIGHTER_SIZES: SizeOption[] = [
+export const HIGHLIGHTER_SIZES: SizeOption[] = [
   {icon: 'highlighter-size-1', name: 'sizeExtraThin', size: 4},
   {icon: 'highlighter-size-2', name: 'sizeThin', size: 6},
-  {icon: 'highlighter-size-3', name: 'sizeExtraMedium', size: 8},
+  {icon: 'highlighter-size-3', name: 'sizeMedium', size: 8},
   {icon: 'highlighter-size-4', name: 'sizeThick', size: 12},
   {icon: 'highlighter-size-5', name: 'sizeExtraThick', size: 16},
 ];
 
-const PEN_SIZES: SizeOption[] = [
+export const PEN_SIZES: SizeOption[] = [
   {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
   {icon: 'pen-size-2', name: 'sizeThin', size: 2},
-  {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
+  {icon: 'pen-size-3', name: 'sizeMedium', size: 3},
   {icon: 'pen-size-4', name: 'sizeThick', size: 6},
   {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
 ];

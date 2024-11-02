@@ -27,6 +27,14 @@ async function clickDropdownButton(
   await microtasksFinished();
 }
 
+function assertDropdownButtonIcon(
+    dropdown: ViewerBottomToolbarDropdownElement, expected: string) {
+  const actual =
+      getRequiredElement(dropdown, 'cr-icon-button').getAttribute('iron-icon');
+  chrome.test.assertTrue(!!actual);
+  chrome.test.assertEq(expected, actual);
+}
+
 chrome.test.runTests([
   async function testSelectPen() {
     // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
@@ -39,6 +47,7 @@ chrome.test.runTests([
         bottomToolbar, 'ink-size-selector');
     const sizeButtons = getSizeButtons(sizeSelector);
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
+    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:pen-size-3');
 
     sizeButtons[0].click();
     await microtasksFinished();
@@ -48,6 +57,7 @@ chrome.test.runTests([
       color: {r: 0, g: 0, b: 0},
       size: 1,
     });
+    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:pen-size-1');
     chrome.test.succeed();
   },
 
@@ -63,6 +73,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 3,
     });
+    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:eraser-size-3');
 
     // Change the eraser size.
     await clickDropdownButton(bottomToolbar.$.size);
@@ -78,6 +89,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
+    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:eraser-size-2');
     chrome.test.succeed();
   },
 
@@ -95,6 +107,7 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 8,
     });
+    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:highlighter-size-3');
 
     // Change the highlighter size.
     await clickDropdownButton(bottomToolbar.$.size);
@@ -112,6 +125,7 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 16,
     });
+    assertDropdownButtonIcon(bottomToolbar.$.size, 'pdf:highlighter-size-5');
     chrome.test.succeed();
   },
 ]);

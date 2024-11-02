@@ -16,8 +16,8 @@ export function getHtml(this: ViewerBottomToolbarElement) {
     <ink-brush-selector .currentType="${this.currentType}">
     </ink-brush-selector>
     <span id="vertical-separator"></span>
-    <!-- TODO(crbug.com/369653190): Use actual button icons. -->
-    <viewer-bottom-toolbar-dropdown id="size" button-icon="pdf:pen-size-3">
+    <viewer-bottom-toolbar-dropdown id="size"
+        button-icon="${this.getSizeIcon_()}">
       <ink-size-selector .currentSize="${this.currentSize}"
           .currentType="${this.currentType}"></ink-size-selector>
     </viewer-bottom-toolbar-dropdown>

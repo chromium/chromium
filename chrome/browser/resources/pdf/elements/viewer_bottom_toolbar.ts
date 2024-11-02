@@ -6,10 +6,13 @@ import './ink_brush_selector.js';
 import './ink_size_selector.js';
 import './viewer_bottom_toolbar_dropdown.js';
 
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 
+import {ERASER_SIZES, HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
+import type {SizeOption} from './ink_size_selector.js';
 import {getCss} from './viewer_bottom_toolbar.css.js';
 import {getHtml} from './viewer_bottom_toolbar.html.js';
 import type {ViewerBottomToolbarDropdownElement} from './viewer_bottom_toolbar_dropdown.js';
@@ -42,6 +45,29 @@ export class ViewerBottomToolbarElement extends CrLitElement {
 
   currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
+
+  protected getSizeIcon_(): string {
+    let options: SizeOption[];
+    switch (this.currentType) {
+      case AnnotationBrushType.ERASER:
+        options = ERASER_SIZES;
+        break;
+      case AnnotationBrushType.HIGHLIGHTER:
+        options = HIGHLIGHTER_SIZES;
+        break;
+      case AnnotationBrushType.PEN:
+        options = PEN_SIZES;
+        break;
+      default:
+        assertNotReached();
+    }
+    assert(options);
+
+    const option = options.find(option => option.size === this.currentSize);
+    assert(option);
+
+    return 'pdf:' + option.icon;
+  }
 }
 
 declare global {
