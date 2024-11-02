@@ -538,8 +538,8 @@ export class TextLayerElement extends PolymerElement {
 
     // On selection complete, send the selected text to C++.
     this.browserProxy.handler.issueTextSelectionRequest(
-        highlightedText, this.selectionStartIndex, this.selectionEndIndex,
-        this.shouldRenderTranslateWords);
+        highlightedText.replaceAll('\r\n', ' '), this.selectionStartIndex,
+        this.selectionEndIndex, this.shouldRenderTranslateWords);
     recordLensOverlayInteraction(
         INVOCATION_SOURCE,
         this.shouldRenderTranslateWords ? UserAction.kTranslateTextSelection :
@@ -577,7 +577,7 @@ export class TextLayerElement extends PolymerElement {
         }));
 
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
-        this.getHighlightedText(), this.contentLanguage,
+        this.getHighlightedText().replaceAll('\r\n', ' '), this.contentLanguage,
         this.selectionStartIndex, this.selectionEndIndex);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
   }
@@ -963,10 +963,21 @@ export class TextLayerElement extends PolymerElement {
     const selectedWords = this.shouldRenderTranslateWords ?
         this.renderedTranslateWords.slice(startIndex, endIndex + 1) :
         this.renderedWords.slice(startIndex, endIndex + 1);
+    const selectedParagraphNumbers = this.shouldRenderTranslateWords ?
+        this.translatedParagraphNumbers.slice(startIndex, endIndex + 1) :
+        this.paragraphNumbers.slice(startIndex, endIndex + 1);
     return selectedWords
         .map((word, index) => {
-          return word.plainText +
-              (index < selectedWords.length - 1 ? getTextSeparator(word) : '');
+          let separator = '';
+          if (index < selectedWords.length - 1) {
+            if (selectedParagraphNumbers[index] !==
+                selectedParagraphNumbers[index + 1]) {
+              separator = '\r\n';
+            } else {
+              separator = getTextSeparator(word);
+            }
+          }
+          return word.plainText + separator;
         })
         .join('');
   }

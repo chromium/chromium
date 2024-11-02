@@ -995,7 +995,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private handleTranslate() {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
-        this.highlightedText, this.contentLanguage,
+        this.highlightedText.replaceAll('\r\n', ' '), this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
     this.showSelectedTextContextMenu = false;
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);

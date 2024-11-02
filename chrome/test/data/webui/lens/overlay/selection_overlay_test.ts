@@ -95,6 +95,10 @@ suite('SelectionOverlay', function() {
               'hello', normalizedBox({x: 20, y: 20, width: 30, height: 10})),
           createWord(
               'there', normalizedBox({x: 50, y: 20, width: 50, height: 10})),
+        ]),
+      ]),
+      createParagraph([
+        createLine([
           createWord(
               'test', normalizedBox({x: 80, y: 20, width: 30, height: 10})),
         ]),
@@ -697,7 +701,8 @@ suite('SelectionOverlay', function() {
 
     selectionOverlayElement.handleCopyForTesting();
     const textQuery = await testBrowserProxy.handler.whenCalled('copyText');
-    assertDeepEquals('there test', textQuery);
+    // Copied text should include newlines.
+    assertDeepEquals('there\r\ntest', textQuery);
 
     // Verify context menu hides when an option is selected.
     assertFalse(
@@ -1216,7 +1221,8 @@ suite('SelectionOverlay', function() {
 
         selectionOverlayElement.handleCopyForTesting();
         const textQuery = await testBrowserProxy.handler.whenCalled('copyText');
-        assertDeepEquals('wow a translation no', textQuery);
+        // Copied translated text should include newlines.
+        assertDeepEquals('wow a translation\r\nno', textQuery);
 
         // Verify context menu hides when an option is selected.
         await waitAfterNextRender(selectionOverlayElement);
