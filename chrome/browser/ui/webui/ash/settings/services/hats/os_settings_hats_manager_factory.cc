@@ -38,9 +38,10 @@ OsSettingsHatsManagerFactory::OsSettingsHatsManagerFactory()
 
 OsSettingsHatsManagerFactory::~OsSettingsHatsManagerFactory() = default;
 
-KeyedService* OsSettingsHatsManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OsSettingsHatsManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OsSettingsHatsManager(context);
+  return std::make_unique<OsSettingsHatsManager>(context);
 }
 
 bool OsSettingsHatsManagerFactory::ServiceIsNULLWhileTesting() const {
