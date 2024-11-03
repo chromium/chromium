@@ -361,7 +361,8 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewInput* target,
       const blink::WebGestureEvent& gesture_event,
       const ui::LatencyInfo& latency,
-      const std::optional<gfx::PointF>& target_location);
+      const std::optional<gfx::PointF>& target_location,
+      bool is_emulated);
 
   // TODO(crbug.com/41380487): Remove once this issue no longer occurs.
   void ReportBubblingScrollToSameView(
@@ -489,6 +490,17 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
     PinchState state_;
   };
   TouchscreenPinchState touchscreen_pinch_state_;
+
+  // Logs debug data for https://crbug.com/346629231.
+  struct TouchscreenGestureEventDebugData {
+    blink::mojom::EventType type;
+    blink::mojom::GestureDevice device;
+    bool is_emulated;
+  };
+  std::deque<TouchscreenGestureEventDebugData>
+      touchscreen_gesture_event_debug_queue_;
+  base::debug::CrashKeyString* GetTouchscreenGestureEventHistoryCrashString();
+  void LogTouchscreenEventHistoryForDebug();
 
   // This is expected to outlive RenderWidgetHostInputEventRouter object.
   const raw_ptr<viz::HitTestDataProvider> hit_test_provider_ = nullptr;

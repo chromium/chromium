@@ -1177,6 +1177,58 @@ blink::WebGestureEvent GestureEventInTarget(
 
 }  // namespace
 
+// Define crashkey to capture data.
+base::debug::CrashKeyString* RenderWidgetHostInputEventRouter::
+    GetTouchscreenGestureEventHistoryCrashString() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "touchscreen_gesture_event_history", base::debug::CrashKeySize::Size1024);
+  return crash_key;
+}
+
+// Logs debug data for https://crbug.com/346629231.
+void RenderWidgetHostInputEventRouter::LogTouchscreenEventHistoryForDebug() {
+  // To avoid undue performance impact, only dump this data once for this tab.
+  // Hitting this codepath is expected to be a rare event.
+  static bool has_fired_once = false;
+
+  if (has_fired_once || !touchscreen_gesture_target_ ||
+      touchscreen_gesture_event_debug_queue_.empty()) {
+    return;
+  }
+
+  has_fired_once = true;
+
+  std::string gesture_event_history;
+  // Populate sequence history.
+  for (auto event_data : touchscreen_gesture_event_debug_queue_) {
+    std::string device_name;
+    switch (event_data.device) {
+      case blink::mojom::GestureDevice::kTouchpad:
+        device_name = "TP";
+        break;
+      case blink::mojom::GestureDevice::kTouchscreen:
+        device_name = "TS";
+        break;
+      case blink::mojom::GestureDevice::kSyntheticAutoscroll:
+        device_name = "AS";
+        break;
+      case blink::mojom::GestureDevice::kScrollbar:
+        device_name = "SB";
+        break;
+      default:
+        device_name = "UI";
+    }
+    std::string event_data_str = base::StringPrintf(
+        "{%s,%s,%s}", blink::WebInputEvent::GetName(event_data.type),
+        device_name, (event_data.is_emulated ? "t" : "f"));
+    gesture_event_history += event_data_str;
+  }
+
+  base::debug::SetCrashKeyString(GetTouchscreenGestureEventHistoryCrashString(),
+                                 gesture_event_history);
+  base::debug::DumpWithoutCrashing();
+}
+
 bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     RenderWidgetHostViewInput* target_view,
     RenderWidgetHostViewInput* resending_view,
@@ -1213,6 +1265,7 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
                           "touchpad_gesture_target_",
                           static_cast<void*>(touchpad_gesture_target_),
                           "touch_target_", static_cast<void*>(touch_target_));
+      LogTouchscreenEventHistoryForDebug();
       return false;
     }
 
@@ -1552,7 +1605,8 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
     RenderWidgetHostViewInput* target,
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency,
-    const std::optional<gfx::PointF>& target_location) {
+    const std::optional<gfx::PointF>& target_location,
+    bool is_emulated) {
   TRACE_EVENT2(
       "input",
       "RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent",
@@ -1678,6 +1732,10 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
     SetTouchscreenGestureTarget(target, moved_recently,
                                 moved_recently_for_iov2);
   }
+  if (touchscreen_gesture_target_) {
+    touchscreen_gesture_event_debug_queue_.emplace_back(
+        gesture_event.GetType(), gesture_event.SourceDevice(), is_emulated);
+  }
 
   // If we set a target and it's not in the map, we won't get notified if the
   // target goes away, so drop the target and the resulting events.
@@ -1780,6 +1838,11 @@ void RenderWidgetHostInputEventRouter::DispatchTouchpadGestureEvent(
     const blink::WebGestureEvent& touchpad_gesture_event,
     const ui::LatencyInfo& latency,
     const std::optional<gfx::PointF>& target_location) {
+  // The following check is debug-only on purpose: while we debug
+  // https://crbug.com/346569466 we want to discover if we're ever violating
+  // this condition. It's too risky to make this a check initially, but if tests
+  // or development work bump into this, it will provide helpful feedback.
+  DCHECK(!touchscreen_gesture_target_);
   // Touchpad gesture flings should be treated as mouse wheels for the purpose
   // of routing.
   if (touchpad_gesture_event.GetType() ==
@@ -1953,6 +2016,7 @@ void RenderWidgetHostInputEventRouter::SetTouchscreenGestureTarget(
 
 void RenderWidgetHostInputEventRouter::ClearTouchscreenGestureTarget() {
   SetTouchscreenGestureTarget(nullptr, false, false);
+  touchscreen_gesture_event_debug_queue_.clear();
 }
 
 void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
@@ -2002,7 +2066,7 @@ void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
     auto& gesture_event = *static_cast<blink::WebGestureEvent*>(event);
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
       DispatchTouchscreenGestureEvent(root_view, target, gesture_event, latency,
-                                      target_location);
+                                      target_location, /*is_emulated=*/false);
       return;
     }
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
@@ -2030,7 +2094,8 @@ void RenderWidgetHostInputEventRouter::ForwardEmulatedGestureEvent(
     return;
   DispatchTouchscreenGestureEvent(last_emulated_event_root_view_, nullptr,
                                   event, ui::LatencyInfo(),
-                                  event.PositionInWidget());
+                                  event.PositionInWidget(),
+                                  /*is_emulated=*/true);
 }
 
 void RenderWidgetHostInputEventRouter::ForwardEmulatedTouchEvent(

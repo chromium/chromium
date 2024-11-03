@@ -933,10 +933,50 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotBubbleMultipleSequences) {
   EXPECT_EQ(outer1.view.get(), bubbling_gesture_scroll_target());
 }
 
+// Adapted from base/debug/crash_logging_unittest.cc.
+// TODO(crbug.com/346629231): remove this and associated code when resolved.
+class TestCrashKeyImplementation : public base::debug::CrashKeyImplementation {
+ public:
+  explicit TestCrashKeyImplementation(std::map<std::string, std::string>& data)
+      : data_(data) {}
+
+  TestCrashKeyImplementation(const TestCrashKeyImplementation&) = delete;
+  TestCrashKeyImplementation& operator=(const TestCrashKeyImplementation&) =
+      delete;
+
+  base::debug::CrashKeyString* Allocate(
+      const char* name,
+      base::debug::CrashKeySize size) override {
+    return new base::debug::CrashKeyString(name, size);
+  }
+
+  void Set(base::debug::CrashKeyString* crash_key,
+           std::string_view value) override {
+    ASSERT_TRUE(data_->emplace(crash_key->name, value).second);
+  }
+
+  void Clear(base::debug::CrashKeyString* crash_key) override {
+    ASSERT_EQ(1u, data_->erase(crash_key->name));
+  }
+
+  void OutputCrashKeysToStream(std::ostream& out) override {
+    for (auto const& [key, val] : *data_) {
+      out << key << ":" << val << ";";
+    }
+  }
+
+ private:
+  const raw_ref<std::map<std::string, std::string>> data_;
+};
+
 // If a view tries to bubble scroll and the target view has an unrelated
 // gesture in progress, do not bubble the conflicting sequence.
 TEST_F(RenderWidgetHostInputEventRouterTest,
        DoNotBubbleIfUnrelatedGestureInTarget) {
+  std::map<std::string, std::string> crash_key_data;
+  base::debug::SetCrashKeyImplementation(
+      std::make_unique<TestCrashKeyImplementation>(crash_key_data));
+
   gfx::Vector2dF delta(0.f, 10.f);
   blink::WebGestureEvent scroll_begin =
       blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
@@ -974,6 +1014,15 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
   EXPECT_FALSE(rwhier()->BubbleScrollEvent(view_root_.get(), child.view.get(),
                                            scroll_begin));
+
+  // Verify that the DwoC code set the crash string.
+  // TODO(crbug.com/346629231): remove this iblock and associated code when
+  // resolved.
+  std::ostringstream stream;
+  base::debug::OutputCrashKeysToStream(stream);
+  EXPECT_EQ("touchscreen_gesture_event_history:{GestureTapDown,TS,f};",
+            stream.str());
+
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_origin());
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_target());
 }
