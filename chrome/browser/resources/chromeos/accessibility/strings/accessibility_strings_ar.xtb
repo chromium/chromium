@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">الصوت</translation>
 <translation id="2737898226590637227">‏ليس هناك مَعلم ARIA تالٍ.</translation>
 <translation id="2749275490991666823">محدد</translation>
+<translation id="2751454300227269244">تحريك الفم لليمين</translation>
 <translation id="27527859628328957">الانتقال إلى العنصر التالي القابل للتركيز</translation>
 <translation id="2756452585631602151">أدخِل تصنيفًا مخصّصًا.</translation>
 <translation id="2766299274563946262">ليست هناك خلية في اليسار.</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">جدول <ph name="TABLENAME" />، <ph name="TABLEROWS" /> بالضرب في <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">بيج</translation>
 <translation id="316542773973815724">تنقل</translation>
+<translation id="3167446923957429259">تحريك الفم لليسار</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{مسافة واحدة}zero{# spaces}two{مسافتان (#)}few{# مسافات}many{# مسافة}other{# من المسافات}}</translation>
 <translation id="3179119189286472195">ليس رابطًا</translation>
 <translation id="3180990259147710757">تحريك الفك إلى اليسار</translation>

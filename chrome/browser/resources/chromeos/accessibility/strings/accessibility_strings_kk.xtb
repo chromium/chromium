@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2737898226590637227">Келесі ARIA көрнекті белгісі жоқ.</translation>
 <translation id="2749275490991666823">Белгі қойылған</translation>
+<translation id="2751454300227269244">Аузыңызды оңға қозғалтыңыз</translation>
 <translation id="27527859628328957">Келесі фокусталатын элементке өту</translation>
 <translation id="2756452585631602151">Арнаулы белгіні енгізіңіз.</translation>
 <translation id="2766299274563946262">Сол жақта ұяшық жоқ.</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688"><ph name="TABLENAME" /> кестесі, <ph name="TABLECOLS" /> ұсынған <ph name="TABLEROWS" /></translation>
 <translation id="3159493096109238499">Қоңыр сарғыш</translation>
 <translation id="316542773973815724">Навигация</translation>
+<translation id="3167446923957429259">Аузыңызды солға қозғалтыңыз</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{бос орын}other{# бос орын}}</translation>
 <translation id="3179119189286472195">Сілтеме емес</translation>
 <translation id="3180990259147710757">Иегіңізді солға қисайтыңыз.</translation>

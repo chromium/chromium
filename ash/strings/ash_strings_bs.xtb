@@ -58,7 +58,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1182225749592316782">Ovo dozvoljava pristup kameri i mikrofonu za sve aplikacije i web lokacije s odobrenjima za njih</translation>
 <translation id="1182876754474670069">Home</translation>
 <translation id="1183863904939664422">Ne zanima me ovaj prijedlog</translation>
-<translation id="1184126796192815024">Ova mreža ne podržava prijenos aplikacija s telefona. Pokušajte s korištenjem pristupne tačke telefona. <ph name="LEARN_MORE" /></translation>
+<translation id="1184126796192815024">Ova mreža ne podržava prenos aplikacija s telefona. Pokušajte s korištenjem pristupne tačke telefona. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Unesite lozinku ili PIN radi veće sigurnosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gdje da snimite cijeli ekran</translation>
 <translation id="1190609913194133056">Centar za obavještenja</translation>
@@ -1783,7 +1783,7 @@ Nova instalacija</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Nakon što se ukloni ovaj korisnik, trajno će se izbrisati svi fajlovi i lokalni podaci povezani s njim.</translation>
 <translation id="7000027735917578303">Postavke prozora i radnih površina</translation>
-<translation id="7004910047186208204">Povežite se s prijenosom podataka na mobilnoj mreži</translation>
+<translation id="7004910047186208204">Povežite se s prenosom podataka na mobilnoj mreži</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da započnete</translation>
 <translation id="7007983414944123363">Potvrđivanje PIN-a ili lozinke nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7014684956566476813">Povezano je s uređajem pod nazivom <ph name="DEVICE_NAME" /></translation>

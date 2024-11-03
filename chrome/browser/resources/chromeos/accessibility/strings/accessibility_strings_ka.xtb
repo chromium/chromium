@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">აუდიო</translation>
 <translation id="2737898226590637227">შემდეგი ARIA ორიენტირი არ არის</translation>
 <translation id="2749275490991666823">შემოწმებული</translation>
+<translation id="2751454300227269244">გაამოძრავეთ მაუსი მარჯვნივ</translation>
 <translation id="27527859628328957">შემდეგ ფოკუსირებად ელემენტზე გადასვლა</translation>
 <translation id="2756452585631602151">შეიყვანეთ მორგებული ლეიბლი</translation>
 <translation id="2766299274563946262">მარცხნივ უჯრედი არ არის</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">ცხრილი <ph name="TABLENAME" />, <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">ბეჟისფერი</translation>
 <translation id="316542773973815724">ნავიგაცია</translation>
+<translation id="3167446923957429259">გაამოძრავეთ მაუსი მარცხნივ</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ ინტერვალი}other{# ინტერვალი}}</translation>
 <translation id="3179119189286472195">არ არის ბმული</translation>
 <translation id="3180990259147710757">ყბა მოაქციეთ მარცხნივ</translation>

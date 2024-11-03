@@ -103,6 +103,7 @@
 <translation id="143681031165817424">تم حفظ العنوان على هذا الجهاز فقط.</translation>
 <translation id="1445276840641906250">جميع علامات التبويب في متصفِّح واحد</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
+<translation id="1455660774629812862">عدم الإخفاء</translation>
 <translation id="1460751212339734034">وفِّر وقت الكتابة</translation>
 <translation id="1466035273550360103">ليست هناك أي علامات تبويب مفتوحة</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
@@ -319,6 +320,7 @@
 لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
 <translation id="2377336083033403521">البحث في علامات التبويب…</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
+<translation id="2384692388811649784">إخفاء علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="2386793615875593361">تم اختيار عنصر واحد</translation>
 <translation id="2390457533592708044">إخفاء "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">يتعذَّر تسليم الطرد.</translation>
@@ -339,6 +341,7 @@
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2484459871750294497">كيف يمكنني تفعيل هذه الميزة؟</translation>
+<translation id="2493269659028026145">قفل علامات التبويب على الفور باستخدام "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="2499505845365628575">يمكنك العثور على سجلّ التصفُّح بالكامل من <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -931,6 +934,7 @@
 <translation id="5414763847370083940">ستتلقَّى تنبيهًا في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="5415289094036440596">لا يمكن مشاركة مفاتيح المرور</translation>
 <translation id="5416455648658732408">النقل إلى مجموعة علامات التبويب</translation>
+<translation id="5429624150850059322">عند عودتك، يتم تمويه علامات التبويب إلى أن يتمّ النقر للمتابعة</translation>
 <translation id="5431239785743546285">الصفحات التي قرأتها</translation>
 <translation id="5431252637281434233">سيتم تسجيل خروجك من الحساب</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
@@ -1030,6 +1034,7 @@
 <translation id="5817176759448082654">التحقّق من كلمات المرور</translation>
 <translation id="5819208479324046259">تتم إدارة المتصفِّح من خلال <ph name="MANAGER" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">جارٍ المزامنة…</translation>
+<translation id="5832166137082209907">إخفاء علامات التبويب بعد 10 دقائق</translation>
 <translation id="5844284118433003733">‏عند تسجيل الدخول، يتم ربط هذه البيانات بحسابك على Google لحمايتك على خدمات Google، مثلاً تتم زيادة مستوى الحماية في Gmail بعد وقوع محاولة اختراق أمني.</translation>
 <translation id="5854790677617711513">مرّ عليها أكثر من 30 يومًا</translation>
 <translation id="5857770089550859117">عبارة المرور مطلوبة لبدء المزامنة.</translation>
