@@ -38,7 +38,7 @@ class UnusedSitePermissionsServiceFactory : public ProfileKeyedServiceFactory {
   ~UnusedSitePermissionsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
 #if BUILDFLAG(IS_ANDROID)
