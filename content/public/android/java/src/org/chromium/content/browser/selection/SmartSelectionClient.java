@@ -70,7 +70,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     public static SmartSelectionClient fromWebContents(
             ResultCallback callback, WebContents webContents) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || windowAndroid == null) return null;
+        if (windowAndroid == null) return null;
 
         // Don't do Smart Selection when device is not provisioned or in incognito mode.
         if (!isDeviceProvisioned(windowAndroid.getContext().get()) || webContents.isIncognito()) {
@@ -85,7 +85,6 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     }
 
     private SmartSelectionClient(WebContents webContents) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mSmartSelectionEventProcessor = SmartSelectionEventProcessor.create(webContents);
         }

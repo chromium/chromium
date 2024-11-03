@@ -6,7 +6,6 @@ package org.chromium.content.browser.input;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.os.StrictMode;
@@ -98,9 +97,6 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     @VisibleForTesting
     protected boolean hasCorrectDisplayId(Context context, Activity activity) {
-        // We did not support multi-display before O.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
-
         int contextDisplayId = getDisplayId(context);
         int activityDisplayId = getDisplayId(activity);
         if (activityDisplayId != contextDisplayId) {
