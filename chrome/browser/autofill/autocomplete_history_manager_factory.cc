@@ -44,10 +44,12 @@ AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory()
 AutocompleteHistoryManagerFactory::~AutocompleteHistoryManagerFactory() =
     default;
 
-KeyedService* AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutocompleteHistoryManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  AutocompleteHistoryManager* service = new AutocompleteHistoryManager();
+  std::unique_ptr<AutocompleteHistoryManager> service =
+      std::make_unique<AutocompleteHistoryManager>();
 
   auto local_storage = WebDataServiceFactory::GetAutofillWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
