@@ -70,6 +70,12 @@ SupplementalProfileCache<AudioType>* GetSupplementalDecoderAudioTypeCache() {
   return cache.get();
 }
 
+SupplementalProfileCache<VideoCodecProfile>*
+GetSupplementalEncoderVideoProfileCache() {
+  static base::NoDestructor<SupplementalProfileCache<VideoCodecProfile>> cache;
+  return cache.get();
+}
+
 bool IsDecoderSupportedHdrMetadata(const VideoType& type) {
   switch (type.hdr_metadata_type) {
     case gfx::HdrMetadataType::kNone:
@@ -229,7 +235,7 @@ bool IsDecoderHevcProfileSupported(const VideoType& type) {
   }
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(b/171813538): For Lacros, the supplemental profile cache will be
   // asking lacros-gpu, but we will be doing decoding in ash-gpu. Until the
@@ -249,7 +255,7 @@ bool IsDecoderHevcProfileSupported(const VideoType& type) {
       type.profile);
 #else
   return true;
-#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -317,8 +323,8 @@ bool IsDecoderAACSupported(const AudioType& type) {
 }
 
 bool IsDecoderDolbyVisionProfileSupported(const VideoType& type) {
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&               \
-    BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT) && \
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&                      \
+    BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT) && \
     BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(
       type.profile);
@@ -352,6 +358,97 @@ bool IsDecoderDolbyAc4Supported(const AudioType& type) {
         // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && BUILDFLAG(IS_WIN)
 }
 
+bool IsEncoderH264ProfileSupported(const VideoType& type) {
+#if BUILDFLAG(ENABLE_OPENH264)
+  switch (type.profile) {
+    case H264PROFILE_BASELINE:
+    case H264PROFILE_MAIN:
+    case H264PROFILE_HIGH:
+    case H264PROFILE_EXTENDED:
+      return true;
+    case H264PROFILE_HIGH10PROFILE:
+    case H264PROFILE_HIGH422PROFILE:
+    case H264PROFILE_HIGH444PREDICTIVEPROFILE:
+    case H264PROFILE_SCALABLEBASELINE:
+    case H264PROFILE_SCALABLEHIGH:
+    case H264PROFILE_STEREOHIGH:
+    case H264PROFILE_MULTIVIEWHIGH:
+      // Although some of these profiles are supported by openH264, but we don't
+      // wire them for now.
+      return false;
+    default:
+      NOTREACHED_NORETURN();
+  }
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Android and iOS won't bundle OpenH264, query hardware encoder support
+  // instead.
+  return GetSupplementalEncoderVideoProfileCache()->IsProfileSupported(
+      type.profile);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_OPENH264)
+}
+
+bool IsEncoderVp8ProfileSupported(const VideoType& type) {
+#if BUILDFLAG(ENABLE_LIBVPX)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+}
+
+bool IsEncoderHevcProfileSupported(const VideoType& type) {
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
+  return GetSupplementalEncoderVideoProfileCache()->IsProfileSupported(
+      type.profile);
+#else
+  return false;
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT)
+}
+
+bool IsEncoderVp9ProfileSupported(const VideoType& type) {
+#if BUILDFLAG(ENABLE_LIBVPX)
+  // High bit depth capabilities may be toggled via LibVPX config flags.
+  static const bool vpx_supports_hbd = (vpx_codec_get_caps(vpx_codec_vp9_dx()) &
+                                        VPX_CODEC_CAP_HIGHBITDEPTH) != 0;
+
+  switch (type.profile) {
+    // LibVPX always supports Profiles 0 and 1.
+    case VP9PROFILE_PROFILE0:
+    case VP9PROFILE_PROFILE1:
+      return true;
+    case VP9PROFILE_PROFILE2:
+    case VP9PROFILE_PROFILE3:
+      return vpx_supports_hbd;
+    default:
+      NOTREACHED_NORETURN();
+  }
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+}
+
+bool IsEncoderAv1ProfileSupported(const VideoType& type) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+  switch (type.profile) {
+    case AV1PROFILE_PROFILE_MAIN:
+    case AV1PROFILE_PROFILE_HIGH:
+      return true;
+    case AV1PROFILE_PROFILE_PRO:
+      // We don't build libaom with high bit depth support.
+      return false;
+    default:
+      NOTREACHED_NORETURN();
+  }
+#elif BUILDFLAG(IS_ANDROID)
+  // Android won't bundle libaom, query hardware encoder support instead.
+  return GetSupplementalEncoderVideoProfileCache()->IsProfileSupported(
+      type.profile);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+}
+
 }  // namespace
 
 bool IsDecoderSupportedAudioType(const AudioType& type) {
@@ -364,6 +461,13 @@ bool IsDecoderSupportedVideoType(const VideoType& type) {
   if (auto* media_client = GetMediaClient())
     return media_client->IsDecoderSupportedVideoType(type);
   return IsDefaultDecoderSupportedVideoType(type);
+}
+
+bool IsEncoderSupportedVideoType(const VideoType& type) {
+  if (auto* media_client = GetMediaClient()) {
+    return media_client->IsEncoderSupportedVideoType(type);
+  }
+  return IsDefaultEncoderSupportedVideoType(type);
 }
 
 // TODO(chcunningham): Add platform specific logic for Android (move from
@@ -446,6 +550,34 @@ bool IsDefaultDecoderSupportedAudioType(const AudioType& type) {
   }
 }
 
+bool IsDefaultEncoderSupportedVideoType(const VideoType& type) {
+#if !BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (IsVideoCodecProprietary(type.codec)) {
+    return false;
+  }
+#endif
+
+  switch (type.codec) {
+    case VideoCodec::kH264:
+      return IsEncoderH264ProfileSupported(type);
+    case VideoCodec::kVP8:
+      return IsEncoderVp8ProfileSupported(type);
+    case VideoCodec::kAV1:
+      return IsEncoderAv1ProfileSupported(type);
+    case VideoCodec::kVP9:
+      return IsEncoderVp9ProfileSupported(type);
+    case VideoCodec::kHEVC:
+      return IsEncoderHevcProfileSupported(type);
+    case VideoCodec::kTheora:
+    case VideoCodec::kDolbyVision:
+    case VideoCodec::kUnknown:
+    case VideoCodec::kVC1:
+    case VideoCodec::kMPEG2:
+    case VideoCodec::kMPEG4:
+      return false;
+  }
+}
+
 bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (codec == VideoCodec::kH264 &&
@@ -466,6 +598,25 @@ bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
   return false;
 }
 
+bool IsEncoderBuiltInVideoCodec(VideoCodec codec) {
+#if BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (codec == VideoCodec::kH264) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_LIBVPX)
+  if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(ENABLE_LIBAOM)
+  if (codec == VideoCodec::kAV1) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+  return false;
+}
+
 void UpdateDefaultDecoderSupportedVideoProfiles(
     const base::flat_set<media::VideoCodecProfile>& profiles) {
   GetSupplementalDecoderVideoProfileCache()->UpdateCache(profiles);
@@ -474,6 +625,11 @@ void UpdateDefaultDecoderSupportedVideoProfiles(
 void UpdateDefaultDecoderSupportedAudioTypes(
     const base::flat_set<AudioType>& types) {
   GetSupplementalDecoderAudioTypeCache()->UpdateCache(types);
+}
+
+void UpdateDefaultEncoderSupportedVideoProfiles(
+    const base::flat_set<media::VideoCodecProfile>& profiles) {
+  GetSupplementalEncoderVideoProfileCache()->UpdateCache(profiles);
 }
 
 }  // namespace media

@@ -174,6 +174,7 @@ class TestMediaClient : public MediaClient {
   // MediaClient implementation.
   bool IsDecoderSupportedAudioType(const AudioType& type) final;
   bool IsDecoderSupportedVideoType(const VideoType& type) final;
+  bool IsEncoderSupportedVideoType(const VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(AudioCodec codec) final;
   ExternalMemoryAllocator* GetMediaAllocator() final;
 
@@ -211,6 +212,10 @@ bool TestMediaClient::IsDecoderSupportedAudioType(const AudioType& type) {
 }
 
 bool TestMediaClient::IsDecoderSupportedVideoType(const VideoType& type) {
+  return true;
+}
+
+bool TestMediaClient::IsEncoderSupportedVideoType(const VideoType& type) {
   return true;
 }
 

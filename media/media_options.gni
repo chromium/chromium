@@ -146,9 +146,11 @@ declare_args() {
 }
 
 declare_args() {
-  platform_has_optional_hevc_support =
+  platform_has_optional_hevc_decode_support =
       enable_platform_hevc &&
       (is_win || is_chromeos || is_linux || is_apple || is_android)
+  platform_has_optional_hevc_encode_support =
+      enable_platform_hevc && (is_win || is_apple || is_android)
 }
 
 assert(!enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,

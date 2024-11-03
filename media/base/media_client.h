@@ -54,6 +54,9 @@ class MEDIA_EXPORT MediaClient {
   // Returns true if the given video decoder config is supported.
   virtual bool IsDecoderSupportedVideoType(const VideoType& type) = 0;
 
+  // Returns true if the given video encoder config is supported.
+  virtual bool IsEncoderSupportedVideoType(const VideoType& type) = 0;
+
   // Returns true if the compressed audio |codec| format is supported by the
   // audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(AudioCodec codec) = 0;

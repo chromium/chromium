@@ -2284,12 +2284,12 @@ class RenderProcessHostTestStableVideoDecoderTest
     RenderProcessHostImpl::SetStableVideoDecoderEventCBForTesting(
         stable_video_decoder_event_cb_.Get());
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
     // When Chrome is compiled with
-    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT), renderer processes need a
-    // media::mojom::VideoDecoder during startup in order to query for supported
-    // configurations (see content::RenderMediaClient::Initialize()). With
-    // OOP-VD, this should cause the creation of a
+    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT), renderer processes
+    // need a media::mojom::VideoDecoder during startup in order to query for
+    // supported configurations (see content::RenderMediaClient::Initialize()).
+    // With OOP-VD, this should cause the creation of a
     // media::stable::mojom::StableVideoDecoderFactory in order to create the
     // corresponding media::stable::mojom::StableVideoDecoder. When the
     // supported configurations are obtained, the media::mojom::VideoDecoder and
@@ -2318,17 +2318,17 @@ class RenderProcessHostTestStableVideoDecoderTest
             run_loop.Quit();
           });
     }
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 
     rph_ = RenderProcessHostImpl::CreateRenderProcessHost(
         ShellContentBrowserClient::Get()->browser_context(), nullptr);
     ASSERT_TRUE(rph_->Init());
     rph_initialized_ = true;
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
     run_loop.Run();
     ASSERT_TRUE(VerifyAndClearExpectations());
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
   }
 
   void TearDownOnMainThread() override {

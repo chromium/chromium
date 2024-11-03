@@ -315,6 +315,9 @@ class CONTENT_EXPORT ContentRendererClient {
   // Allows embedder to describe customized video decoder capabilities.
   virtual bool IsDecoderSupportedVideoType(const media::VideoType& type);
 
+  // Allows embedder to describe customized video encoder capabilities.
+  virtual bool IsEncoderSupportedVideoType(const media::VideoType& type);
+
   // Return true if the bitstream format |codec| is supported by the audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec);
 

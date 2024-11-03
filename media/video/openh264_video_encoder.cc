@@ -29,6 +29,8 @@ EProfileIdc ToOpenH264Profile(VideoCodecProfile profile) {
       return PRO_BASELINE;
     case media::H264PROFILE_MAIN:
       return PRO_MAIN;
+    case media::H264PROFILE_EXTENDED:
+      return PRO_EXTENDED;
     case media::H264PROFILE_HIGH:
       return PRO_HIGH;
     default:

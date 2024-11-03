@@ -230,6 +230,12 @@ bool ContentRendererClient::IsDecoderSupportedVideoType(
   return ::media::IsDefaultDecoderSupportedVideoType(type);
 }
 
+bool ContentRendererClient::IsEncoderSupportedVideoType(
+    const media::VideoType& type) {
+  // Defer to media's default support.
+  return ::media::IsDefaultEncoderSupportedVideoType(type);
+}
+
 media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {
   return nullptr;
 }

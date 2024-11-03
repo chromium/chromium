@@ -80,6 +80,7 @@ interface VideoEncodeAcceleratorProvider {
         pending_receiver<VideoEncodeAccelerator> receiver);
 
   // Get a VideoEncodeAccelerator supported profiles.
+  [Sync]
   GetVideoEncodeAcceleratorSupportedProfiles()
       => (array<VideoEncodeAcceleratorSupportedProfile> profiles);
 };

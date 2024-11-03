@@ -62,7 +62,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeBasics) {
                                             kUnspecifiedLevel, kColorSpace}));
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
-    !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+    !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
   EXPECT_TRUE(IsDecoderSupportedVideoType({VideoCodec::kHEVC,
                                            VIDEO_CODEC_PROFILE_UNKNOWN,
                                            kUnspecifiedLevel, kColorSpace}));
@@ -338,6 +338,67 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeWithHdrMetadataBasics) {
        gfx::HdrMetadataType::kSmpteSt2094_40}));
 }
 
+TEST(SupportedTypesTest, IsEncoderSupportedVideoType_H264Profiles) {
+  const bool is_h264_supported =
+      BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS);
+
+  EXPECT_EQ(
+      IsEncoderSupportedVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
+      is_h264_supported);
+  EXPECT_EQ(IsEncoderSupportedVideoType({VideoCodec::kH264, H264PROFILE_MAIN}),
+            is_h264_supported);
+  EXPECT_EQ(IsEncoderSupportedVideoType({VideoCodec::kH264, H264PROFILE_HIGH}),
+            is_h264_supported);
+  EXPECT_EQ(
+      IsEncoderSupportedVideoType({VideoCodec::kH264, H264PROFILE_EXTENDED}),
+      is_h264_supported);
+  EXPECT_FALSE(IsEncoderSupportedVideoType(
+      {VideoCodec::kH264, H264PROFILE_HIGH10PROFILE}));
+  EXPECT_FALSE(IsEncoderSupportedVideoType(
+      {VideoCodec::kH264, H264PROFILE_HIGH422PROFILE}));
+}
+
+TEST(SupportedTypesTest, IsEncoderSupportedVideoType_VP8Profiles) {
+  EXPECT_EQ(IsEncoderSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY}),
+            BUILDFLAG(ENABLE_LIBVPX));
+}
+
+TEST(SupportedTypesTest, IsEncoderSupportedVideoType_HEVCProfiles) {
+  EXPECT_FALSE(
+      IsEncoderSupportedVideoType({VideoCodec::kHEVC, HEVCPROFILE_MAIN}));
+}
+
+TEST(SupportedTypesTest, IsEncoderSupportedVideoType_VP9Profiles) {
+  EXPECT_EQ(
+      IsEncoderSupportedVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE0}),
+      BUILDFLAG(ENABLE_LIBVPX));
+  EXPECT_EQ(
+      IsEncoderSupportedVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE1}),
+      BUILDFLAG(ENABLE_LIBVPX));
+
+// VP9 Profile2 are supported on x86, ChromeOS on ARM and Mac/Win on ARM64.
+// See third_party/libvpx/BUILD.gn.
+#if defined(ARCH_CPU_X86_FAMILY) ||                                 \
+    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)) || \
+    (defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)))
+  EXPECT_TRUE(
+      IsEncoderSupportedVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE2}));
+  EXPECT_TRUE(
+      IsEncoderSupportedVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE3}));
+#endif
+}
+
+TEST(SupportedTypesTest, IsEncoderSupportedVideoType_AV1Profiles) {
+  EXPECT_EQ(
+      IsEncoderSupportedVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
+      BUILDFLAG(ENABLE_LIBAOM));
+  EXPECT_EQ(
+      IsEncoderSupportedVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH}),
+      BUILDFLAG(ENABLE_LIBAOM));
+  EXPECT_FALSE(
+      IsEncoderSupportedVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_PRO}));
+}
+
 TEST(SupportedTypesTest, IsDecoderBuiltInVideoCodec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   EXPECT_EQ(base::FeatureList::IsEnabled(kBuiltInH264Decoder),
@@ -374,4 +435,24 @@ TEST(SupportedTypesTest, IsDecoderBuiltInVideoCodec) {
   EXPECT_FALSE(IsDecoderBuiltInVideoCodec(VideoCodec::kHEVC));
   EXPECT_FALSE(IsDecoderBuiltInVideoCodec(VideoCodec::kDolbyVision));
 }
+
+TEST(SupportedTypesTest, IsEncoderBuiltInVideoCodec) {
+  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kH264),
+            BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_OPENH264));
+  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kVP8),
+            BUILDFLAG(ENABLE_LIBVPX));
+  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kVP9),
+            BUILDFLAG(ENABLE_LIBVPX));
+  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kAV1),
+            BUILDFLAG(ENABLE_LIBAOM));
+
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kTheora));
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kUnknown));
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kMPEG4));
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kVC1));
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kMPEG2));
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kHEVC));
+  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kDolbyVision));
+}
+
 }  // namespace media
