@@ -218,6 +218,15 @@ void ExtensionOptionsGuest::CloseContents(WebContents* source) {
       base::Value::Dict()));
 }
 
+bool ExtensionOptionsGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return extension_options_guest_delegate_ &&
+         extension_options_guest_delegate_->HandleContextMenu(render_frame_host,
+                                                              params);
+}
+
 bool ExtensionOptionsGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {

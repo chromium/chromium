@@ -66,6 +66,12 @@ class StubGuestView : public GuestView<StubGuestView> {
                        GuestPageCreatedCallback callback) override {
     ADD_FAILURE();
   }
+
+  bool GuestHandleContextMenu(
+      content::RenderFrameHost& render_frame_host,
+      const content::ContextMenuParams& params) override {
+    return false;
+  }
 };
 
 const char StubGuestView::Type[] = "stubguestview";

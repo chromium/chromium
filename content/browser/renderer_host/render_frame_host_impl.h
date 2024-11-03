@@ -1869,6 +1869,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void TakeGuestOwnership(std::unique_ptr<GuestPageHolderImpl> guest_page);
   void DestroyGuestPage(const FrameTreeNode* child_frame_tree_node);
+  GuestPageHolderImpl* FindGuestPageHolder(
+      const FrameTreeNode* child_frame_tree_node);
 
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 

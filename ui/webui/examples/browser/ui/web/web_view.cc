@@ -68,6 +68,12 @@ void WebView::MaybeRecreateGuestContents(
   NOTREACHED();
 }
 
+bool WebView::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  return true;
+}
+
 bool WebView::HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                 const content::ContextMenuParams& params) {
   return true;

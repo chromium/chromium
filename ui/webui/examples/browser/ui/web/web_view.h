@@ -39,6 +39,10 @@ class WebView : public guest_view::GuestView<WebView> {
       content::RenderFrameHost* outer_contents_frame) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
+
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
 };
 
 }  // namespace webui_examples

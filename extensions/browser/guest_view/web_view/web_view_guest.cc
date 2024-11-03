@@ -647,6 +647,14 @@ ZoomController::ZoomMode WebViewGuest::GetZoomMode() {
   return ZoomController::FromWebContents(web_contents())->zoom_mode();
 }
 
+bool WebViewGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return web_view_guest_delegate_ &&
+         web_view_guest_delegate_->HandleContextMenu(render_frame_host, params);
+}
+
 bool WebViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {

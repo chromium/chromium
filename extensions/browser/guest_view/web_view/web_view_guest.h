@@ -211,6 +211,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type) const final;
 
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
+
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,

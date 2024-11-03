@@ -66,6 +66,10 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
 
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
+
   // content::WebContentsDelegate implementation.
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;

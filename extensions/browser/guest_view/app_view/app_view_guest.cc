@@ -126,6 +126,14 @@ AppViewGuest::AppViewGuest(content::RenderFrameHost* owner_rfh)
 
 AppViewGuest::~AppViewGuest() = default;
 
+bool AppViewGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return app_view_guest_delegate_ &&
+         app_view_guest_delegate_->HandleContextMenu(render_frame_host, params);
+}
+
 bool AppViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {

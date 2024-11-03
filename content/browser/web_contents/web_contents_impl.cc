@@ -711,6 +711,24 @@ uint32_t NextCompositorFrameSinkGroupingId() {
   return grouping_id++;
 }
 
+GuestPageHolderImpl* FindGuestPageHolder(
+    RenderFrameHostImpl& render_frame_host) {
+  // Escape fenced frames, looking at the outermost main frame (not escaping
+  // guests).
+  FrameTree* frame_tree =
+      render_frame_host.GetOutermostMainFrame()->frame_tree();
+  if (!frame_tree->is_guest()) {
+    return nullptr;
+  }
+  FrameTreeNode* frame_in_embedder =
+      frame_tree->root()->render_manager()->GetOuterDelegateNode();
+  CHECK(frame_in_embedder);
+  GuestPageHolderImpl* holder =
+      frame_in_embedder->parent()->FindGuestPageHolder(frame_in_embedder);
+  CHECK(holder);
+  return holder;
+}
+
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -8080,7 +8098,7 @@ void WebContentsImpl::RenderFrameDeleted(
 }
 
 void WebContentsImpl::ShowContextMenu(
-    RenderFrameHost& render_frame_host,
+    RenderFrameHostImpl& render_frame_host,
     mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
         context_menu_client,
     const ContextMenuParams& params) {
@@ -8098,6 +8116,18 @@ void WebContentsImpl::ShowContextMenu(
   }
 
   ContextMenuParams context_menu_params(params);
+
+  // Give guest a first crack at the context menu.
+  if (GuestPageHolderImpl* guest_holder =
+          FindGuestPageHolder(render_frame_host)) {
+    if (auto* guest_delegate = guest_holder->delegate()) {
+      if (guest_delegate->GuestHandleContextMenu(render_frame_host,
+                                                 context_menu_params)) {
+        return;
+      }
+    }
+  }
+
   // Allow WebContentsDelegates to handle the context menu operation first.
   if (delegate_ &&
       delegate_->HandleContextMenu(render_frame_host, context_menu_params)) {

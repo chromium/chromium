@@ -29,6 +29,9 @@ class GuestPageHolderImpl : public GuestPageHolder,
 
   void set_outer_frame_tree_node_id(FrameTreeNodeId outer_frame_tree_node_id);
 
+  // Returns the delegate, this may be null.
+  GuestPageHolder::Delegate* delegate() { return delegate_.get(); }
+
   // GuestPageHolder implementation.
   NavigationController& GetController() override;
   RenderFrameHost* GetGuestMainFrame() override;

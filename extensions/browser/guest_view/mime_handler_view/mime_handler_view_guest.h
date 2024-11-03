@@ -148,6 +148,10 @@ class MimeHandlerViewGuest
   // BrowserPluginGuestDelegate implementation.
   content::RenderFrameHost* GetProspectiveOuterDocument() final;
 
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
+
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,

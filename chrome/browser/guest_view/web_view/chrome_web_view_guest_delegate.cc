@@ -52,16 +52,16 @@ ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() {
 bool ChromeWebViewGuestDelegate::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  DCHECK_EQ(guest_web_contents(),
+  content::WebContents* web_contents = web_view_guest()->web_contents();
+  DCHECK_EQ(web_contents,
             content::WebContents::FromRenderFrameHost(&render_frame_host));
 
   if ((params.source_type == ui::mojom::MenuSourceType::kLongPress ||
        params.source_type == ui::mojom::MenuSourceType::kLongTap ||
        params.source_type == ui::mojom::MenuSourceType::kTouch) &&
       !params.selection_text.empty() &&
-      (guest_web_contents()->GetRenderWidgetHostView() &&
-       guest_web_contents()
-           ->GetRenderWidgetHostView()
+      (web_contents->GetRenderWidgetHostView() &&
+       web_contents->GetRenderWidgetHostView()
            ->GetTouchSelectionControllerClientManager())) {
     // This context menu request should be handled by the
     // TouchSelectionController. If the user selects the full context menu from
@@ -71,7 +71,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   }
 
   ContextMenuDelegate* menu_delegate =
-      ContextMenuDelegate::FromWebContents(guest_web_contents());
+      ContextMenuDelegate::FromWebContents(web_contents);
   DCHECK(menu_delegate);
   pending_menu_ = menu_delegate->BuildMenu(render_frame_host, params);
   // It's possible for the returned menu to be null, so early out to avoid
@@ -102,7 +102,7 @@ void ChromeWebViewGuestDelegate::OnShowContextMenu(int request_id) {
   // TODO(lazyboy): Implement.
 
   ContextMenuDelegate* menu_delegate =
-      ContextMenuDelegate::FromWebContents(guest_web_contents());
+      ContextMenuDelegate::FromWebContents(web_view_guest()->web_contents());
   menu_delegate->ShowMenu(std::move(pending_menu_));
 }
 

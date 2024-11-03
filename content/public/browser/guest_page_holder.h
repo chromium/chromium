@@ -14,6 +14,7 @@
 
 namespace content {
 
+struct ContextMenuParams;
 class NavigationController;
 class SiteInstance;
 class WebContents;
@@ -31,6 +32,16 @@ class GuestPageHolder : public base::SupportsUserData {
 
     // Analogous to `WebContentsObserver::DidStopLoading`.
     virtual void GuestDidStopLoading() = 0;
+
+    // Asks the delegate to open/show the context menu based on `params`.
+    //
+    // The `render_frame_host` represents the frame that requests the context
+    // menu (typically this frame is focused, but this is not necessarily the
+    // case - see https://crbug.com/1257907#c14).
+    //
+    // Returns true if the context menu operation was handled by the delegate.
+    virtual bool GuestHandleContextMenu(RenderFrameHost& render_frame_host,
+                                        const ContextMenuParams& params) = 0;
 
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific

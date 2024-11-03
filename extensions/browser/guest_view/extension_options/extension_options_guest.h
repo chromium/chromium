@@ -44,6 +44,10 @@ class ExtensionOptionsGuest
   bool IsPreferredSizeModeEnabled() const final;
   void OnPreferredSizeChanged(const gfx::Size& pref_size) final;
 
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
+
   // content::WebContentsDelegate implementation.
   content::WebContents* AddNewContents(
       content::WebContents* source,

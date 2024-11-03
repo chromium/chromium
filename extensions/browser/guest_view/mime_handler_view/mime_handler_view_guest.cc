@@ -298,6 +298,13 @@ void MimeHandlerViewGuest::NavigationStateChanged(
   }
 }
 
+bool MimeHandlerViewGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return delegate_ && delegate_->HandleContextMenu(render_frame_host, params);
+}
+
 bool MimeHandlerViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
