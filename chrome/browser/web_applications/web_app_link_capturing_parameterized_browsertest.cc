@@ -68,7 +68,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -714,10 +716,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingParameterizedBrowserTest() {
-    std::map<std::string, std::string> parameters;
-    parameters["link_capturing_state"] = "reimpl_default_on";
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPwaNavigationCapturing, parameters);
+    // kDropInputEventsBeforeFirstPaint is disabled to de-flake our simulated
+    // clicks.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{base::test::FeatureRefAndParams(
+            features::kPwaNavigationCapturing,
+            {{"link_capturing_state", "reimpl_default_on"}})},
+        /*disabled_features=*/{
+            blink::features::kDropInputEventsBeforeFirstPaint});
   }
 
   // Returns the expectations JSON file name without extension.
@@ -1214,6 +1220,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
         test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebAppBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   // Returns true if re-baseline was signalled, via a command line switch.
