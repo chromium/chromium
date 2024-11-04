@@ -275,8 +275,6 @@ class KeyboardCapabilityTest : public KeyboardCapabilityTestBase,
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
-  base::AutoReset<bool> modifier_split_reset_ =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(All, KeyboardCapabilityTest, testing::Bool());
@@ -729,11 +727,7 @@ class ModifierKeyTest : public KeyboardCapabilityTestBase,
                             std::tuple<DeviceCapabilities,
                                        KeyboardCapability::DeviceType,
                                        KeyboardCapability::KeyboardTopRowLayout,
-                                       std::vector<mojom::ModifierKey>>> {
- protected:
-  base::AutoReset<bool> modifier_split_reset_ =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-};
+                                       std::vector<mojom::ModifierKey>>> {};
 
 // Tests that the given `DeviceCapabilities` and
 // `KeyboardCapability::DeviceType` combo generates the given set of
@@ -911,8 +905,6 @@ class KeyEventTest
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
-  base::AutoReset<bool> modifier_split_reset_ =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 // Tests that given the keyboard connection type and layout type, check if this
@@ -1364,8 +1356,6 @@ class TopRowLayoutCustomTest
  protected:
   std::vector<TopRowActionKey> top_row_action_keys_;
   std::string custom_layout_string_;
-  base::AutoReset<bool> modifier_split_reset_ =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(

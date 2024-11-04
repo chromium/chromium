@@ -30,14 +30,6 @@ constexpr char kCampbellHashKey[] =
     "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
     "\x03\x18\x32";
 
-// The hash value for the secret key of the modifier split feature.
-constexpr char kModifierSplitHashKey[] =
-    "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B\x7E"
-    "\x10\x99";
-
-// Whether checking the modifier split secret key is ignored.
-bool g_ignore_modifier_split_secret_key = true;
-
 // The hash value for the secret key of the sparky feature.
 constexpr char kSparkyHashKey[] =
     "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
@@ -953,9 +945,6 @@ const char kMallUrl[] = "mall-url";
 // Determines the URL to be used when calling the backend.
 const char kMarketingOptInUrl[] = "marketing-opt-in-url";
 
-// Supply secret key for modifier split feature.
-const char kModifierSplitFeatureKey[] = "modifier-split-feature-key";
-
 // Enables natural scroll by default.
 const char kNaturalScrollDefault[] = "enable-natural-scroll-default";
 
@@ -1436,36 +1425,6 @@ bool IsSparkySecretKeyMatched() {
   }
 
   return sparky_key_matched;
-}
-
-bool IsModifierSplitSecretKeyMatched() {
-  if (g_ignore_modifier_split_secret_key) {
-    return true;
-  }
-
-  static const bool modifier_split_key_matched = []() {
-    // Commandline looks like:
-    //  out/Default/chrome --user-data-dir=/tmp/tmp123
-    //  --modifier-split-feature-key="INSERT KEY HERE"
-    //  --enable-features=ModifierSplit
-    const std::string provided_key_hash = base::SHA1HashString(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            kModifierSplitFeatureKey));
-
-    const bool modifier_split_key_matched =
-        (provided_key_hash == kModifierSplitHashKey);
-    if (!modifier_split_key_matched) {
-      LOG(ERROR) << "Provided secret key does not match with the expected one.";
-    }
-
-    return modifier_split_key_matched;
-  }();
-
-  return modifier_split_key_matched;
-}
-
-base::AutoReset<bool> SetIgnoreModifierSplitSecretKeyForTest() {
-  return {&g_ignore_modifier_split_secret_key, true};
 }
 
 std::optional<std::string> ObtainSparkyServerUrl() {

@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/peripherals_app_delegate.h"
@@ -746,8 +745,6 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   // in by default.
   bool should_sign_in_ = true;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
-  base::AutoReset<bool> modifier_split_reset_ =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
   std::unique_ptr<TestImageDownloader> image_downloader_;
 };
 

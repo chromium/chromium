@@ -5,7 +5,6 @@
 #include "ui/events/ash/modifier_split_dogfood_controller.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -17,8 +16,7 @@ namespace ui {
 ModifierSplitDogfoodController::ModifierSplitDogfoodController() {
   // Dogfood flag should be ignored and not considered if the secret key
   // matches.
-  modifier_split_enabled_ = ash::features::IsModifierSplitEnabled() &&
-                            ash::switches::IsModifierSplitSecretKeyMatched();
+  modifier_split_enabled_ = ash::features::IsModifierSplitEnabled();
 
   if (user_manager::UserManager::IsInitialized() &&
       ash::features::IsModifierSplitEnabled()) {

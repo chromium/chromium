@@ -298,7 +298,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceBrowserDataMigrationForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMallUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMarketingOptInUrl[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kModifierSplitFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNaturalScrollDefault[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNoteTakingAppIds[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeEulaUrlForTests[];
@@ -531,12 +530,6 @@ base::AutoReset<bool> SetIgnoreSparkySecretKeyForTest();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 std::optional<std::string> ObtainSparkyServerUrl();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsModifierSplitSecretKeyMatched();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-base::AutoReset<bool> SetIgnoreModifierSplitSecretKeyForTest();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsScannerUpdateSecretKeyMatched();

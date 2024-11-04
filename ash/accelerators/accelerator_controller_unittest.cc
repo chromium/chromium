@@ -1989,7 +1989,6 @@ TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
       {features::kModifierSplit, features::kPeripheralCustomization,
        features::kInputDeviceSettingsSplit},
       {});
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
   Shell::Get()
       ->keyboard_capability()
       ->ResetModifierSplitDogfoodControllerForTesting();
@@ -2062,7 +2061,6 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
       {features::kModifierSplit, features::kShortcutStateMachines,
        features::kPeripheralCustomization, features::kInputDeviceSettingsSplit},
       {});
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
   Shell::Get()
       ->keyboard_capability()
       ->ResetModifierSplitDogfoodControllerForTesting();

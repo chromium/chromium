@@ -5945,11 +5945,6 @@ const char kAshModifierSplitName[] = "Modifier split feature";
 const char kAshModifierSplitDescription[] =
     "Enable new modifier split feature on ChromeOS.";
 
-const char kAshModifierSplitFeatureKeyName[] =
-    "Feature key for modifier split feature";
-const char kAshModifierSplitFeatureKeyDescription[] =
-    "Feature key to use the new modifier split feature on ChromeOS.";
-
 const char kAshPickerName[] = "Picker feature";
 const char kAshPickerDescription[] = "Enable new Picker feature on ChromeOS.";
 

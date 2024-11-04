@@ -10726,11 +10726,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshModifierSplitDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kModifierSplit)},
 
-    {"ash-modifier-split-feature-key",
-     flag_descriptions::kAshModifierSplitFeatureKeyName,
-     flag_descriptions::kAshModifierSplitFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kModifierSplitFeatureKey, "")},
-
     {"ash-split-keyboard-refactor",
      flag_descriptions::kAshSplitKeyboardRefactorName,
      flag_descriptions::kAshSplitKeyboardRefactorDescription, kOsCrOS,

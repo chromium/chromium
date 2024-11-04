@@ -5,7 +5,6 @@
 #include "ash/quick_insert/quick_insert_shortcuts.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -56,8 +55,6 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
 
 TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithFnKey) {
   base::test::ScopedFeatureList scoped_feature_list(features::kModifierSplit);
-  base::AutoReset<bool> ignore_modifier_split_key =
-      switches::SetIgnoreModifierSplitSecretKeyForTest();
   Shell::Get()
       ->keyboard_capability()
       ->ResetModifierSplitDogfoodControllerForTesting();
