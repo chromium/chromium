@@ -20,13 +20,13 @@ struct ManagementState;
 // The gaia ids of the secondary accounts.
 @property(nonatomic, readonly) NSArray<NSString*>* secondaryAccountsGaiaIDs;
 
-// The email of the primary account.
+// The email of the primary account. Not nil.
 @property(nonatomic, readonly) NSString* primaryAccountEmail;
 
-// The avatar of the primary account.
+// The avatar of the primary account. Not nil.
 @property(nonatomic, readonly) UIImage* primaryAccountAvatar;
 
-// The user full name of the primary account.
+// The user full name of the primary account. May be nil.
 @property(nonatomic, readonly) NSString* primaryAccountUserFullName;
 
 // The management state of this browser and profile.

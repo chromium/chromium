@@ -77,8 +77,6 @@ UIImage* GetEnterpriseIcon() {
     _managed = managementState.is_profile_managed();
 
     self.isAccessibilityElement = YES;
-    self.accessibilityLabel =
-        _email ? [NSString stringWithFormat:@"%@, %@", _name, _email] : _name;
     self.accessibilityTraits |= UIAccessibilityTraitHeader;
 
     _imageView = [[UIImageView alloc] initWithImage:_avatarImage];
@@ -215,6 +213,20 @@ UIImage* GetEnterpriseIcon() {
     [self updateFrame];
   }
   return self;
+}
+
+- (NSString*)accessibilityLabel {
+  NSMutableString* accessibilityLabel =
+      [NSMutableString stringWithString:_name];
+  if (_email) {
+    [accessibilityLabel appendFormat:@", %@", _email];
+  }
+  if (_managed) {
+    NSString* managedString =
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
+    [accessibilityLabel appendFormat:@". %@", managedString];
+  }
+  return accessibilityLabel;
 }
 
 // Updates the frame size.
