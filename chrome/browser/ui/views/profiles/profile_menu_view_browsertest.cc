@@ -1239,6 +1239,40 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 }
 
 // List of actionable items in the correct order as they appear in the menu with
+// Sync error. If a new button is added to the menu, it should also be added to
+// this list.
+constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncError[] = {
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_SyncError,
+    ProfileMenuClickTest_SyncError,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
+    /*disabled_features=*/{}) {
+  ASSERT_TRUE(
+      sync_harness()->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  // Check that the setup was successful.
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
 constexpr ProfileMenuViewBase::ActionableItem
@@ -1309,6 +1343,47 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncPaused_UnoEnabled,
     MAYBE_ProfileMenuClickTest_SyncPaused_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+    /*disabled_features=*/{}) {
+  EnableSync();
+  sync_harness()->EnterSyncPausedStateForPrimaryAccount();
+  // Check that the setup was successful.
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_EQ(syncer::SyncService::TransportState::PAUSED,
+            sync_service()->GetTransportState());
+
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu in
+// Sync paused. If a new button is added to the menu, it should also be added to
+// this list.
+constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton};
+
+// TODO(crbug.com/40822972): flaky on Windows and Mac
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_ProfileMenuClickTest_SyncPaused \
+  DISABLED_ProfileMenuClickTest_SyncPaused
+#else
+#define MAYBE_ProfileMenuClickTest_SyncPaused ProfileMenuClickTest_SyncPaused
+#endif
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_SyncPaused,
+    MAYBE_ProfileMenuClickTest_SyncPaused,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
     /*disabled_features=*/{}) {
   EnableSync();
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
@@ -1395,8 +1470,6 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed_UnoEnabled,
 // added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_SigninDisallowed[] = {
-        // TODO(crbug.com/356603651): Remove the signin button.
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
         ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
@@ -1406,7 +1479,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
         // The first button is added again to finish the cycle and test that
         // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kSigninButton};
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SigninDisallowed,
@@ -1502,6 +1575,43 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   RunTest();
 }
 
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_WithUnconsentedPrimaryAccount[] = {
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+        ProfileMenuViewBase::ActionableItem::kSignoutButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_WithUnconsentedPrimaryAccount,
+    ProfileMenuClickTest_WithUnconsentedPrimaryAccount,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
+    /*disabled_features=*/{}) {
+  secondary_account_helper::SignInUnconsentedAccount(
+      GetProfile(), &test_url_loader_factory_, "user@example.com");
+  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
+  // Check that the setup was successful.
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  RunTest();
+}
+
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled in signin pending state. If a new button is added to the menu,
 // it should also be added to this list.
@@ -1563,7 +1673,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_WithPendingAccount[] = {
-        // TODO(crbug.com/356603651): Add the reauth button.
+        ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
         ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
@@ -1574,7 +1684,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
         // The first button is added again to finish the cycle and test that
         // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton};
+        ProfileMenuViewBase::ActionableItem::kSigninReauthButton};
 
 // TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

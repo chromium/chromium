@@ -40,6 +40,7 @@ enum class ProfileTypePixelTestParam {
 };
 
 enum class SigninStatusPixelTestParam {
+  kSigninDisallowed,
   kSignedOut,
   kWebSignedIn,
   kSignedInNoSync,
@@ -171,6 +172,21 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync},
 
     // Improved design.
+    {.pixel_test_param = {.test_suffix = "Regular_Improved"},
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SigninDisallowed_Improved"},
+     .signin_status = SigninStatusPixelTestParam::kSigninDisallowed,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "DarkTheme_Improved",
+                          .use_dark_theme = true},
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "RTL_Improved",
+                          .use_right_to_left_language = true},
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
     {.pixel_test_param = {.test_suffix = "SignedOut_MultipleProfiles_Improved"},
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved,
@@ -196,7 +212,26 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved,
      .use_multiple_profiles = true,
-     .outline_silhouette_icon = true}};
+     .outline_silhouette_icon = true},
+    {.pixel_test_param = {.test_suffix = "SignedIn_Sync_Improved"},
+     .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SignedIn_SyncPaused_Improved",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SignInPending_Improved"},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SignInPending_RTL_Improved",
+                          .use_right_to_left_language = true},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+};
 
 }  // namespace
 
@@ -235,6 +270,13 @@ class ProfileMenuViewPixelTest
   }
 
   ~ProfileMenuViewPixelTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ProfilesPixelTestBaseT<DialogBrowserTest>::SetUpCommandLine(command_line);
+    if (GetSigninStatus() == SigninStatusPixelTestParam::kSigninDisallowed) {
+      command_line->AppendSwitchASCII("allow-browser-signin", "false");
+    }
+  }
 
   ProfileTypePixelTestParam GetProfileType() const {
     return GetParam().profile_type_param;
@@ -305,27 +347,23 @@ class ProfileMenuViewPixelTest
 
     // Configures browser according to desired signin status.
     switch (GetSigninStatus()) {
-      case SigninStatusPixelTestParam::kSignedOut: {
+      case SigninStatusPixelTestParam::kSignedOut:
+      case SigninStatusPixelTestParam::kSigninDisallowed:
         // Nothing to do.
         break;
-      }
-      case SigninStatusPixelTestParam::kWebSignedIn: {
-        AccountInfo signed_out_info = SignInWithAccount(
-            AccountManagementStatus::kNonManaged, std::nullopt);
+      case SigninStatusPixelTestParam::kWebSignedIn:
+        SignInWithAccount(AccountManagementStatus::kNonManaged, std::nullopt);
         break;
-      }
-      case SigninStatusPixelTestParam::kSignedInNoSync: {
-        AccountInfo no_sync_info = SignInWithAccount();
+      case SigninStatusPixelTestParam::kSignedInNoSync:
+        SignInWithAccount();
         break;
-      }
-      case SigninStatusPixelTestParam::kSignInPendingNoSync: {
-        AccountInfo no_sync_info = SignInWithAccount();
+      case SigninStatusPixelTestParam::kSignInPendingNoSync:
+        SignInWithAccount();
         identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
         break;
-      }
       case SigninStatusPixelTestParam::kSignedInWithSync: {
-        AccountInfo sync_info = SignInWithAccount(
-            AccountManagementStatus::kNonManaged, signin::ConsentLevel::kSync);
+        SignInWithAccount(AccountManagementStatus::kNonManaged,
+                          signin::ConsentLevel::kSync);
 
         // Enable sync.
         syncer::SyncService* sync_service =
@@ -336,8 +374,8 @@ class ProfileMenuViewPixelTest
         break;
       }
       case SigninStatusPixelTestParam::kSignedInSyncPaused: {
-        AccountInfo sync_paused_info = SignInWithAccount(
-            AccountManagementStatus::kNonManaged, signin::ConsentLevel::kSync);
+        SignInWithAccount(AccountManagementStatus::kNonManaged,
+                          signin::ConsentLevel::kSync);
 
         // Enable sync.
         syncer::SyncService* sync_paused_service =
@@ -349,11 +387,10 @@ class ProfileMenuViewPixelTest
         identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
         break;
       }
-      case SigninStatusPixelTestParam::kSignedInSyncNotWorking: {
-        AccountInfo sync_not_working_info = SignInWithAccount(
-            AccountManagementStatus::kNonManaged, signin::ConsentLevel::kSync);
+      case SigninStatusPixelTestParam::kSignedInSyncNotWorking:
+        SignInWithAccount(AccountManagementStatus::kNonManaged,
+                          signin::ConsentLevel::kSync);
         break;
-      }
     }
 
     if (ShouldUseMultipleProfiles()) {
