@@ -319,7 +319,7 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     return;
   }
 
-  uma_recorder_.RecordShow(auth_request_->GetAuthReason());
+  uma_recorder_.RecordShow(auth_request_->GetAuthReason(), available_factors_);
 
   MaybePrepareFingerprint(
       BindOnce(&ActiveSessionAuthControllerImpl::AuthFactorsAreReady,
