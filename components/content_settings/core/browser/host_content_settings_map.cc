@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -415,6 +416,8 @@ ContentSetting HostContentSettingsMap::GetContentSetting(
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
+  SCOPED_CRASH_KEY_NUMBER("content_settings", "content_type",
+                          static_cast<int>(content_type));
   CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   const base::Value value =
@@ -426,6 +429,8 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
+  SCOPED_CRASH_KEY_NUMBER("content_settings", "content_type",
+                          static_cast<int>(content_type));
   CHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   const base::Value value =
