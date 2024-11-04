@@ -325,4 +325,24 @@ suite('CrLazyListTest', () => {
     await microtasksFinished();
     assertEquals(itemsInList, queryItems().length);
   });
+
+  test('Throws an error if array length changes in place', async () => {
+    await setupTest(getTestItems(3));
+    assertEquals(3, queryItems().length);
+    let error = '';
+
+    try {
+      // Modify lazyList directly to make the error catchable.
+      lazyList.items.push(...getTestItems(3));
+      lazyList.requestUpdate();
+      await lazyList.updateComplete;
+    } catch (e) {
+      error = (e as Error).message;
+    }
+
+    assertEquals(
+        'Assertion failed: Items array changed in place; ' +
+            'rendered result may be incorrect.',
+        error);
+  });
 });

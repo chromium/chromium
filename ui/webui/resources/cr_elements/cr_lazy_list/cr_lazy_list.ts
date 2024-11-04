@@ -97,6 +97,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
   private numItemsDisplayed_: number = 0;
 
   // Internal state
+  private lastItemsLength_: number = 0;
   private lastRenderedHeight_: number = 0;
   private resizeObserver_: ResizeObserver|null = null;
   private scrollListener_: EventListener = () => this.onScroll_();
@@ -105,9 +106,14 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('items')) {
+      this.lastItemsLength_ = this.items.length;
       this.numItemsDisplayed_ = this.items.length === 0 ?
           0 :
           Math.min(this.numItemsDisplayed_, this.items.length);
+    } else {
+      assert(
+          this.items.length === this.lastItemsLength_,
+          'Items array changed in place; rendered result may be incorrect.');
     }
 
     if (changedProperties.has('itemSize')) {
