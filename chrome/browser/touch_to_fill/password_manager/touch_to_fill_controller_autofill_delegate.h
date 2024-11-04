@@ -42,6 +42,16 @@ class Profile;
 
 // Delegate interface for TouchToFillController being used in an autofill
 // context.
+// The order of execution is the following:
+// - `OnShow` is called upon showing the bottom sheet with credentials.
+// - `OnCredentialSelected` is called upon selecting the credential.
+// - `VerifyBeforeFilling` shows the acknowledgement sheet (e. g. credential for
+// filling is weakly related to the current web site), calls authenticantion or
+// filling immediately (if auth beforefilling is off).
+// - `OnVerificationBeforeFillingFinished` is called upon user confirmation for
+// grouped credential or immediately from `VerifyBeforeFilling`.
+// - `OnReauthCompleted` (only of auth before filling of on).
+// - `FillCredential` finally fills the credentials.
 class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
@@ -146,6 +156,11 @@ class TouchToFillControllerAutofillDelegate
   // confirmation needed (e. g. for grouped credentials). If verification is
   // successful, it will trigger `FillCredential`.
   void VerifyBeforeFilling(const password_manager::UiCredential& credential);
+
+  // Triggered upon user confirmation to fill the credential.
+  void OnVerificationBeforeFillingFinished(
+      const password_manager::UiCredential& credential,
+      bool success);
 
   // Fills the credential into the form and triggers form submission when
   // appropriate.

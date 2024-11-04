@@ -164,7 +164,7 @@ class TouchToFillControllerAutofillTest
     return weak_filler_;
   }
 
-  MockDeviceAuthenticator* authenticator() { return authenticator_.get(); }
+  MockDeviceAuthenticator* authenticator() { return authenticator_; }
 
   ukm::TestAutoSetUkmRecorder& test_recorder() { return test_recorder_; }
 
@@ -192,13 +192,15 @@ class TouchToFillControllerAutofillTest
           should_show_hybrid_option) {
     ON_CALL(*filler, GetSubmissionReadinessState())
         .WillByDefault(Return(submission_readiness));
+    auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+    authenticator_ = authenticator.get();
     std::unique_ptr<MockPasswordAccessLossWarningBridge> mock_bridge =
         std::make_unique<MockPasswordAccessLossWarningBridge>();
     mock_access_loss_warning_bridge_ = mock_bridge.get();
 
     return std::make_unique<TouchToFillControllerAutofillDelegate>(
         base::PassKey<TouchToFillControllerAutofillTest>(), &client_,
-        web_contents(), std::move(authenticator_),
+        web_contents(), std::move(authenticator),
         webauthn_credentials_delegate_.AsWeakPtr(), std::move(filler),
         form_to_fill, focused_field_renderer_id, should_show_hybrid_option,
         show_password_migration_warning().Get(), std::move(mock_bridge),
@@ -247,8 +249,7 @@ class TouchToFillControllerAutofillTest
 
  private:
   raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
-  std::unique_ptr<MockDeviceAuthenticator> authenticator_ =
-      std::make_unique<MockDeviceAuthenticator>();
+  raw_ptr<MockDeviceAuthenticator> authenticator_;
   MockPasswordManagerClient client_;
   password_manager::MockWebAuthnCredentialsDelegate
       webauthn_credentials_delegate_;
@@ -518,7 +519,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
 TEST_F(TouchToFillControllerAutofillTest,
        Show_And_Fill_Auth_Available_Success) {
   auto filler_to_pass = CreateMockFiller();
-  auto* authenticator_ptr = authenticator();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   ON_CALL(*last_mock_filler(), ShouldTriggerSubmission())
@@ -545,7 +545,7 @@ TEST_F(TouchToFillControllerAutofillTest,
       .WillOnce(RunOnceCallback<2>(/*trigger_submission=*/true));
 
   ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
 
@@ -554,7 +554,6 @@ TEST_F(TouchToFillControllerAutofillTest,
 
 TEST_F(TouchToFillControllerAutofillTest,
        Show_And_Fill_Auth_Available_Failure) {
-  auto* authenticator_ptr = authenticator();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
@@ -574,7 +573,7 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _, _)).Times(0);
 
   ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
@@ -781,7 +780,6 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
 TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
-  auto* authenticator_ptr = authenticator();
 
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -797,10 +795,10 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
   ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
-  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage);
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  EXPECT_CALL(*authenticator_ptr, Cancel());
+  EXPECT_CALL(*authenticator(), Cancel());
 }
 
 TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
@@ -967,15 +965,17 @@ TEST_F(TouchToFillControllerAutofillTest,
           form_to_fill()->password_element_renderer_id,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
   EXPECT_CALL(*(acknowledge_grouped_credential_sheet_helper().jni_bridge()),
               Show);
-  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  // `FillUsernameAndPassword` should be called if acknowledge grouped
-  // credential sheet is accepted.
+  // Authentication and then `FillUsernameAndPassword` should be called if
+  // acknowledge grouped credential sheet is accepted.
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword);
   acknowledge_grouped_credential_sheet_helper().DismissSheet(/*accepted=*/true);
 }

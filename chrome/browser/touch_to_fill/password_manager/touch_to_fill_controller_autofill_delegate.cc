@@ -162,17 +162,8 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
-  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
-    VerifyBeforeFilling(credential);
-    return;
-  }
-  // `this` notifies the authenticator when it is destructed, resulting in
-  // the callback being reset by the authenticator. Therefore, it is safe
-  // to use base::Unretained.
-  authenticator_->AuthenticateWithMessage(
-      u"",
-      base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
-                     base::Unretained(this), credential));
+
+  VerifyBeforeFilling(credential);
 }
 
 void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
@@ -327,7 +318,7 @@ void TouchToFillControllerAutofillDelegate::OnReauthCompleted(
     return;
   }
 
-  VerifyBeforeFilling(credential);
+  FillCredential(credential);
 }
 
 void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
@@ -342,25 +333,41 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
         std::move(current_origin), std::move(credential_origin),
         base::BindOnce(
-            [](TouchToFillControllerAutofillDelegate* delegate,
-               const UiCredential& credential, bool accepted) {
-              if (!accepted) {
-                // TODO(crbug.com/372635361): Introduce new bucket to report
-                // grouped credential filling metric.
-                delegate->CleanUpFillerAndReportOutcome(
-                    TouchToFillOutcome::kSheetDismissed,
-                    /*show_virtual_keyboard=*/false);
-                std::move(delegate->action_complete_).Run();
-                return;
-              }
-              delegate->FillCredential(credential);
-            },
+            &TouchToFillControllerAutofillDelegate::
+                OnVerificationBeforeFillingFinished,
             // Using `base::Unretained` is safe here because the callback is
             // passed into the controller owned by this class.
             base::Unretained(this), credential));
     return;
   }
-  FillCredential(credential);
+
+  OnVerificationBeforeFillingFinished(credential, /*success=*/true);
+}
+
+void TouchToFillControllerAutofillDelegate::OnVerificationBeforeFillingFinished(
+    const UiCredential& credential,
+    bool success) {
+  if (!success) {
+    // TODO(crbug.com/372635361): Introduce new bucket to report
+    // grouped credential filling metric.
+    CleanUpFillerAndReportOutcome(TouchToFillOutcome::kSheetDismissed,
+                                  /*show_virtual_keyboard=*/false);
+    std::move(action_complete_).Run();
+    return;
+  }
+
+  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
+    FillCredential(credential);
+    return;
+  }
+
+  // `this` notifies the authenticator when it is destructed, resulting in
+  // the callback being reset by the authenticator. Therefore, it is safe
+  // to use base::Unretained.
+  authenticator_->AuthenticateWithMessage(
+      u"",
+      base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
+                     base::Unretained(this), credential));
 }
 
 void TouchToFillControllerAutofillDelegate::FillCredential(
