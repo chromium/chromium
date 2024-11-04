@@ -156,10 +156,9 @@ class NET_EXPORT HostCache {
           Source source,
           std::optional<base::TimeDelta> ttl = std::nullopt);
 
-    // Adaptor to construct from HostResolverInternalResults. Only supports
-    // results extracted from a single DnsTransaction. `empty_source` is Source
-    // to assume if `results` is empty of any results from which Source can be
-    // read.
+    // Adaptor to construct from HostResolverInternalResults. `empty_source` is
+    // Source to assume if `results` is empty of any results from which Source
+    // can be read.
     Entry(const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
           base::Time now,
           base::TimeTicks now_ticks,
