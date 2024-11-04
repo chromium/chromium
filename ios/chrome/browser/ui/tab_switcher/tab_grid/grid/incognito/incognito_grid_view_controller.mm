@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -89,6 +90,15 @@
   if (require) {
     [_blockingView setAuthenticateButtonText:text
                           accessibilityLabel:accessibilityLabel];
+
+    id<GridCommands> gridHandler = self.gridHandler;
+    id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
+    [_blockingView.exitIncognitoButton
+               addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                 [gridHandler closeAllItems];
+                 [reauthHandler manualAuthenticationOverride];
+               }]
+        forControlEvents:UIControlEventTouchUpInside];
   } else {
     // No primary button text or accessibility label should be set when
     // authentication is not required.
