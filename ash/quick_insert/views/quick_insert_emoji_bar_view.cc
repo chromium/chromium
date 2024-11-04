@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "ash/quick_insert/views/quick_insert_emoji_bar_view_delegate.h"
 #include "ash/quick_insert/views/quick_insert_emoji_item_view.h"
@@ -68,6 +69,9 @@ constexpr auto kGifsButtonCornerRadius = 12;
 
 // Horizontal padding between items in the item row.
 constexpr int kItemGap = 8;
+
+// Horizontal gap between the GIFs button icon and the label.
+constexpr int kGifsButtonIconLabelSpacing = 2;
 
 std::unique_ptr<views::View> CreateEmptyCell() {
   auto cell_view = std::make_unique<views::View>();
@@ -149,8 +153,11 @@ class GifsButton : public views::LabelButton {
     // icon.
     views::Builder<views::LabelButton>(this)
         .SetText(u"GIF")
-        .SetCallback(std::move(pressed_callback))
+        .SetCallback(base::BindRepeating(&GifsButton::OnButtonPressed,
+                                         base::Unretained(this))
+                         .Then(std::move(pressed_callback)))
         .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
+        .SetImageLabelSpacing(kGifsButtonIconLabelSpacing)
         .BuildChildren();
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosLabel1));
@@ -180,6 +187,23 @@ class GifsButton : public views::LabelButton {
             : cros_tokens::kCrosSysSystemOnBase,
         kGifsButtonCornerRadius));
   }
+
+  void OnButtonPressed() {
+    if (!base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
+      return;
+    }
+
+    toggled_ = !toggled_;
+    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                  toggled_
+                      ? std::make_optional(ui::ImageModel::FromVectorIcon(
+                            kCheckIcon, cros_tokens::kCrosSysOnSurface, 16))
+                      : std::nullopt);
+    PreferredSizeChanged();
+  }
+
+ private:
+  bool toggled_ = false;
 };
 
 BEGIN_METADATA(GifsButton)

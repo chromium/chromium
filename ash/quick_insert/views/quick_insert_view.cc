@@ -443,7 +443,11 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
 }
 
 void PickerView::ToggleGifs() {
-  ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
+  if (base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
+    // TODO: b/368442959 - Search and display GIF results.
+  } else {
+    ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
+  }
 }
 
 void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
