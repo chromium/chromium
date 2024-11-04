@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -56,14 +55,6 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         int MAX_COUNT = 3;
     }
 
-    private static final String SCHEDULE_DELAY_TIME_UMA =
-            "Search.AuxiliarySearch.Schedule.DelayTime";
-    private static final String SCHEDULE_DONATE_RESULT_UMA =
-            "Search.AuxiliarySearch.Schedule.FaviconDonateResult";
-    private static final String SCHEDULE_FAVICON_DONATE_COUNT_UMA =
-            "Search.AuxiliarySearch.Schedule.Favicon.DonateCount";
-    private static final String SCHEDULE_FAVICON_FETCH_TIME_UMA =
-            "Search.AuxiliarySearch.Schedule.Favicon.FetchTime";
     private final Map<Integer, Bitmap> mTabIdToFaviconMap = new HashMap<>();
 
     @NonNull private Context mContext;
@@ -97,7 +88,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                         - taskParameters
                                 .getExtras()
                                 .getLong(AuxiliarySearchProvider.TASK_CREATED_TIME);
-        RecordHistogram.recordLongTimesHistogram(SCHEDULE_DELAY_TIME_UMA, delayFromExpectedMs);
+        AuxiliarySearchMetrics.recordScheduledDelayTime(delayFromExpectedMs);
 
         Resources resources = mContext.getResources();
         int faviconSize =
@@ -209,8 +200,8 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                         // responded.
                         if (mTaskFinishedCount == tabs.size()) {
                             long currentTimeMs = TimeUtils.uptimeMillis();
-                            RecordHistogram.recordMediumTimesHistogram(
-                                    SCHEDULE_FAVICON_FETCH_TIME_UMA, currentTimeMs - startTimeMs);
+                            AuxiliarySearchMetrics.recordScheduledFaviconFetchDuration(
+                                    currentTimeMs - startTimeMs);
 
                             if (!mTabIdToFaviconMap.isEmpty()) {
                                 int size = mTabIdToFaviconMap.size();
@@ -220,24 +211,19 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                         (success) -> {
                                             taskFinishedCallback.taskFinished(
                                                     /* needsReschedule= */ false);
-                                            RecordHistogram.recordEnumeratedHistogram(
-                                                    SCHEDULE_DONATE_RESULT_UMA,
+                                            AuxiliarySearchMetrics.recordScheduledDonationResult(
                                                     success
                                                             ? DonateResult.SUCCEED
-                                                            : DonateResult.FAILED,
-                                                    DonateResult.MAX_COUNT);
+                                                            : DonateResult.FAILED);
                                         },
                                         currentTimeMs);
 
-                                RecordHistogram.recordCount1000Histogram(
-                                        SCHEDULE_FAVICON_DONATE_COUNT_UMA, size);
+                                AuxiliarySearchMetrics.recordScheduledFaviconDonateCount(size);
                             } else {
                                 // There isn't any favicons to donate, stops here.
                                 taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
-                                RecordHistogram.recordEnumeratedHistogram(
-                                        SCHEDULE_DONATE_RESULT_UMA,
-                                        DonateResult.NO_DATA,
-                                        DonateResult.MAX_COUNT);
+                                AuxiliarySearchMetrics.recordScheduledDonationResult(
+                                        DonateResult.NO_DATA);
                             }
                         }
                     });

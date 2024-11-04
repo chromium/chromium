@@ -124,6 +124,18 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.Favicon.FirstDonateCount" units="Count"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the total count of the available favicons for the first donation.
+    The histogram is logged when Chrome is paused and a small set of favicon
+    fetching is completed for the auxiliary search. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.AuxiliarySearch.QueryTime.Favicons" units="ms"
     expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>

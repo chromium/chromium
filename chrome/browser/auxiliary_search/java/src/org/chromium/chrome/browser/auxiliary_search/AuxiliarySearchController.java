@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -13,11 +14,27 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.Au
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
 
 /** This Controller for the auxiliary search. */
 public interface AuxiliarySearchController extends PauseResumeWithNativeObserver {
+    @IntDef({
+        AuxiliarySearchDataType.ALL,
+        AuxiliarySearchDataType.BOOKMARK,
+        AuxiliarySearchDataType.TAB,
+        AuxiliarySearchDataType.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AuxiliarySearchDataType {
+        int ALL = 0;
+        int BOOKMARK = 1;
+        int TAB = 2;
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * Registers to the given lifecycle dispatcher.
      *
