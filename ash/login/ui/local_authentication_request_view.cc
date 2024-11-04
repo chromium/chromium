@@ -14,8 +14,6 @@
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "ash/public/cpp/shelf_config.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -159,9 +157,10 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
 
-  // Set Backgground color and shape.
+  // Set Background color and shape.
   SetPaintToLayer();
-  layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id,

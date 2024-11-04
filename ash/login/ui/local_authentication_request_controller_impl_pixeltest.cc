@@ -230,12 +230,12 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Ready", /*revision_number=*/3, view));
+      "Ready", /*revision_number=*/4, view));
 
   SimulateValidation(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Fail", /*revision_number=*/3, view));
+      "Fail", /*revision_number=*/4, view));
 }
 
 // Tests local authentication dialog theme change
@@ -257,7 +257,7 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Light", /*revision_number=*/2, view));
+      "Light", /*revision_number=*/3, view));
 }
 
 }  // namespace
