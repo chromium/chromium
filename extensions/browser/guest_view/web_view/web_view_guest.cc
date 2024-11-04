@@ -1214,6 +1214,7 @@ void WebViewGuest::CanDownload(const GURL& url,
 }
 
 void WebViewGuest::OnOwnerAudioMutedStateUpdated(bool muted) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   CHECK(web_contents());
 
   // Mute the guest WebContents if the owner WebContents has been muted.
@@ -1502,21 +1503,29 @@ void WebViewGuest::SetAllowTransparency(bool allow) {
 }
 
 void WebViewGuest::SetAudioMuted(bool mute) {
-  CHECK(web_contents());
-  CHECK(owner_web_contents());
-
   // Only update the muted state if the owner WebContents is not muted to
   // prevent the guest frame from ignoring the muted state of the owner.
   is_audio_muted_ = mute;
-  if (owner_web_contents()->IsAudioMuted()) {
-    return;
+
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GetGuestPageHolder().SetAudioMuted(mute);
+  } else {
+    CHECK(web_contents());
+    CHECK(owner_web_contents());
+    if (owner_web_contents()->IsAudioMuted()) {
+      return;
+    }
+    web_contents()->SetAudioMuted(is_audio_muted_);
   }
-  web_contents()->SetAudioMuted(is_audio_muted_);
 }
 
 bool WebViewGuest::IsAudioMuted() {
-  CHECK(web_contents());
-  return web_contents()->IsAudioMuted();
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return GetGuestPageHolder().IsAudioMuted();
+  } else {
+    CHECK(web_contents());
+    return web_contents()->IsAudioMuted();
+  }
 }
 
 void WebViewGuest::SetTransparency(

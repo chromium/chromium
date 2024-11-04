@@ -64,6 +64,11 @@ class GuestPageHolder : public base::SupportsUserData {
   // Returns the current main frame of the guest page.
   virtual RenderFrameHost* GetGuestMainFrame() = 0;
 
+  // Indicates/Sets whether all audio output from this guest page is muted.
+  // This does not affect audio capture, just local/system output.
+  virtual bool IsAudioMuted() = 0;
+  virtual void SetAudioMuted(bool mute) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class GuestPageHolderImpl;

@@ -385,12 +385,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, FrameIteration) {
 
   // WebContentsImpl::ForEachFrameTree should include fenced frames.
   bool visited_fenced_frame_frame_tree = false;
-  web_contents()->ForEachFrameTree(
-      base::BindLambdaForTesting([&](FrameTree& frame_tree) {
-        if (&frame_tree == fenced_frame_rfh->frame_tree()) {
-          visited_fenced_frame_frame_tree = true;
-        }
-      }));
+  web_contents()->ForEachFrameTree([&](FrameTree& frame_tree) {
+    if (&frame_tree == fenced_frame_rfh->frame_tree()) {
+      visited_fenced_frame_frame_tree = true;
+    }
+  });
   EXPECT_TRUE(visited_fenced_frame_frame_tree);
 }
 

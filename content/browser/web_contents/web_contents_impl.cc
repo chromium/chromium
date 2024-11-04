@@ -711,24 +711,6 @@ uint32_t NextCompositorFrameSinkGroupingId() {
   return grouping_id++;
 }
 
-GuestPageHolderImpl* FindGuestPageHolder(
-    RenderFrameHostImpl& render_frame_host) {
-  // Escape fenced frames, looking at the outermost main frame (not escaping
-  // guests).
-  FrameTree* frame_tree =
-      render_frame_host.GetOutermostMainFrame()->frame_tree();
-  if (!frame_tree->is_guest()) {
-    return nullptr;
-  }
-  FrameTreeNode* frame_in_embedder =
-      frame_tree->root()->render_manager()->GetOuterDelegateNode();
-  CHECK(frame_in_embedder);
-  GuestPageHolderImpl* holder =
-      frame_in_embedder->parent()->FindGuestPageHolder(frame_in_embedder);
-  CHECK(holder);
-  return holder;
-}
-
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -1898,7 +1880,7 @@ void WebContentsImpl::ForEachFrameTree(
         node_iter.AdvanceSkippingChildren();
       } else {
         if (node->IsMainFrame()) {
-          on_frame_tree.Run(node->frame_tree());
+          on_frame_tree(node->frame_tree());
         }
         ++node_iter;
       }
@@ -1963,12 +1945,9 @@ void WebContentsImpl::ExecutePageBroadcastMethodForAllPages(
     PageBroadcastMethodCallback callback) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::ExecutePageBroadcastMethodForAllPages");
-  ForEachFrameTree(base::BindRepeating(
-      [](PageBroadcastMethodCallback* callback, FrameTree& frame_tree) {
-        frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
-            *callback);
-      },
-      &callback));
+  ForEachFrameTree([callback](FrameTree& frame_tree) {
+    frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(callback);
+  });
 }
 
 RenderViewHostImpl* WebContentsImpl::GetRenderViewHost() {
@@ -2354,7 +2333,7 @@ void WebContentsImpl::SetUserAgentOverride(
   // No need to reload if the current entry matches that of the
   // NavigationRequest supplied to DidStartNavigation() as NavigationRequest
   // handles it.
-  ForEachFrameTree(base::BindRepeating([](FrameTree& frame_tree) {
+  ForEachFrameTree([](FrameTree& frame_tree) {
     // For prerendering, we don't want to activate a prerendered page loaded
     // with a stale UA and will handle it even if it finishes loading.
     if (!frame_tree.IsLoadingIncludingInnerFrameTrees() &&
@@ -2379,7 +2358,7 @@ void WebContentsImpl::SetUserAgentOverride(
     } else {
       frame_tree.controller().Reload(ReloadType::BYPASSING_CACHE, true);
     }
-  }));
+  });
 
   observers_.NotifyObservers(&WebContentsObserver::UserAgentOverrideSet,
                              ua_override);
@@ -2617,6 +2596,17 @@ void WebContentsImpl::SetAudioMuted(bool mute) {
   }
 
   GetAudioStreamFactory()->SetMuted(mute);
+
+  // Notfiy all guest page holders that we are muting.
+  ForEachFrameTree([mute](FrameTree& frame_tree) {
+    if (frame_tree.is_guest()) {
+      GuestPageHolderImpl* guest_page_holder =
+          GuestPageHolderImpl::FromRenderFrameHost(
+              *frame_tree.root()->current_frame_host());
+      CHECK(guest_page_holder);
+      guest_page_holder->SetAudioMutedFromWebContents(mute);
+    }
+  });
 
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateAudioMutingState,
                              mute);
@@ -3670,8 +3660,7 @@ WebContentsImpl::GetPermissionsPolicyForIsolatedWebApp(
 
 void WebContentsImpl::Stop() {
   TRACE_EVENT0("content", "WebContentsImpl::Stop");
-  ForEachFrameTree(base::BindRepeating(
-      [](FrameTree& frame_tree) { frame_tree.StopLoading(); }));
+  ForEachFrameTree([](FrameTree& frame_tree) { frame_tree.StopLoading(); });
   GetPrerenderHostRegistry()->CancelAllHosts(PrerenderFinalStatus::kStop);
   observers_.NotifyObservers(&WebContentsObserver::NavigationStopped);
 }
@@ -8139,7 +8128,7 @@ void WebContentsImpl::ShowContextMenu(
 
   // Give guest a first crack at the context menu.
   if (GuestPageHolderImpl* guest_holder =
-          FindGuestPageHolder(render_frame_host)) {
+          GuestPageHolderImpl::FromRenderFrameHost(render_frame_host)) {
     if (auto* guest_delegate = guest_holder->delegate()) {
       if (guest_delegate->GuestHandleContextMenu(render_frame_host,
                                                  context_menu_params)) {
@@ -8965,14 +8954,11 @@ void WebContentsImpl::RegisterExistingOriginAsHavingDefaultIsolation(
     // FrameNavigationEntries.
     // * Some frames won't have FrameNavigationEntries (Issues 524208, 608402).
     // * Some pending navigations won't have NavigationEntries.
-    web_contents->ForEachFrameTree(base::BindRepeating(
-        [](const url::Origin& origin,
-           NavigationRequest* navigation_request_to_exclude,
-           FrameTree& frame_tree) {
+    web_contents->ForEachFrameTree(
+        [origin, navigation_request_to_exclude](FrameTree& frame_tree) {
           frame_tree.RegisterExistingOriginAsHavingDefaultIsolation(
               origin, navigation_request_to_exclude);
-        },
-        origin, navigation_request_to_exclude));
+        });
   }
 }
 
@@ -10438,24 +10424,34 @@ void WebContentsImpl::ClearDeviceEmulationSize() {
 
 ForwardingAudioStreamFactory* WebContentsImpl::GetAudioStreamFactory() {
   if (!audio_stream_factory_) {
-    std::unique_ptr<AudioStreamBrokerFactory> broker_factory;
-    if (delegate_) {
-      broker_factory = delegate_->CreateAudioStreamBrokerFactory(this);
-    }
-    if (!broker_factory) {
-      broker_factory = AudioStreamBrokerFactory::CreateImpl();
-    }
-    audio_stream_factory_.emplace(
-        this,
-        // BrowserMainLoop::GetInstance() may be null in unit tests.
-        BrowserMainLoop::GetInstance()
-            ? static_cast<media::UserInputMonitorBase*>(
-                  BrowserMainLoop::GetInstance()->user_input_monitor())
-            : nullptr,
-        std::move(broker_factory));
+    audio_stream_factory_ = CreateAudioStreamFactory();
   }
+  return audio_stream_factory_.get();
+}
 
-  return &*audio_stream_factory_;
+std::unique_ptr<ForwardingAudioStreamFactory>
+WebContentsImpl::CreateAudioStreamFactory(
+    base::PassKey<GuestPageHolderImpl> pass_key) {
+  return CreateAudioStreamFactory();
+}
+
+std::unique_ptr<ForwardingAudioStreamFactory>
+WebContentsImpl::CreateAudioStreamFactory() {
+  std::unique_ptr<AudioStreamBrokerFactory> broker_factory;
+  if (delegate_) {
+    broker_factory = delegate_->CreateAudioStreamBrokerFactory(this);
+  }
+  if (!broker_factory) {
+    broker_factory = AudioStreamBrokerFactory::CreateImpl();
+  }
+  return std::make_unique<ForwardingAudioStreamFactory>(
+      this,
+      // BrowserMainLoop::GetInstance() may be null in unit tests.
+      BrowserMainLoop::GetInstance()
+          ? static_cast<media::UserInputMonitorBase*>(
+                BrowserMainLoop::GetInstance()->user_input_monitor())
+          : nullptr,
+      std::move(broker_factory));
 }
 
 void WebContentsImpl::MediaStartedPlaying(
@@ -10958,10 +10954,8 @@ void WebContentsImpl::ForEachRenderViewHost(
 
   if ((view_mask & (ForEachRenderViewHostTypes::kPrerenderViews |
                     ForEachRenderViewHostTypes::kActiveViews)) != 0) {
-    ForEachFrameTree(base::BindRepeating(
-        [](ForEachRenderViewHostTypes view_mask,
-           std::set<RenderViewHostImpl*>& render_view_hosts,
-           FrameTree& frame_tree) {
+    ForEachFrameTree(
+        [view_mask, &render_view_hosts](FrameTree& frame_tree) {
           // Check the view masks.
           if (frame_tree.is_prerendering()) {
             // We are in a prerendering page.
@@ -10979,8 +10973,7 @@ void WebContentsImpl::ForEachRenderViewHost(
               [&render_view_hosts](RenderViewHostImpl* rvh) {
                 render_view_hosts.insert(rvh);
               });
-        },
-        view_mask, std::ref(render_view_hosts)));
+        });
   }
 
   if ((view_mask & ForEachRenderViewHostTypes::kBackForwardCacheViews) != 0) {

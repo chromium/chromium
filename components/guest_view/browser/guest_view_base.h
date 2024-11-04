@@ -310,6 +310,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       std::unique_ptr<content::GuestPageHolder> guest_page_holder);
   void ClearOwnedGuestPage();
 
+  // Return the GuestPageHolder. Can only be called for mparch guests.
+  content::GuestPageHolder& GetGuestPageHolder();
+
   // Called when the current `owner_rfh()` is in a different WebContents from
   // the frame that will be used for attachment. `owner_rfh` is the parent of
   // the RenderFrameHost that will be used for attachment.

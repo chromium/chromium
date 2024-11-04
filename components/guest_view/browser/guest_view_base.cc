@@ -487,6 +487,12 @@ content::NavigationController& GuestViewBase::GetController() {
   }
 }
 
+content::GuestPageHolder& GuestViewBase::GetGuestPageHolder() {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  CHECK(guest_page_);
+  return *guest_page_;
+}
+
 GuestViewManager* GuestViewBase::GetGuestViewManager() const {
   return GuestViewManager::FromBrowserContext(browser_context());
 }

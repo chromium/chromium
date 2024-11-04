@@ -14,6 +14,8 @@
 
 namespace content {
 
+class ForwardingAudioStreamFactory;
+class RenderFrameHostImpl;
 class WebContentsImpl;
 
 class GuestPageHolderImpl : public GuestPageHolder,
@@ -35,6 +37,8 @@ class GuestPageHolderImpl : public GuestPageHolder,
   // GuestPageHolder implementation.
   NavigationController& GetController() override;
   RenderFrameHost* GetGuestMainFrame() override;
+  bool IsAudioMuted() override;
+  void SetAudioMuted(bool mute) override;
 
   // FrameTree::Delegate implementation.
   void LoadingStateChanged(LoadingState new_state) override;
@@ -62,10 +66,21 @@ class GuestPageHolderImpl : public GuestPageHolder,
   bool ShouldPreserveAbortedURLs() override;
   void UpdateOverridingUserAgent() override;
 
+  ForwardingAudioStreamFactory* GetAudioStreamFactory();
+  void SetAudioMutedFromWebContents(bool web_contents_muted);
+
+  // If the `render_frame_host` is within a guest, returns the guest's
+  // associated GuestPageHolder. Will return null if `render_frame_host`
+  // is not within a guest.
+  static GuestPageHolderImpl* FromRenderFrameHost(
+      RenderFrameHostImpl& render_frame_host);
+
  private:
   const raw_ref<WebContentsImpl> owner_web_contents_;
 
   base::WeakPtr<GuestPageHolder::Delegate> delegate_;
+
+  std::unique_ptr<ForwardingAudioStreamFactory> audio_stream_factory_;
 
   // The outer FrameTreeNode is not known until the guest is attached.
   FrameTreeNodeId outer_frame_tree_node_id_;
@@ -73,6 +88,8 @@ class GuestPageHolderImpl : public GuestPageHolder,
   // This FrameTree contains the guest page. It has the type
   // `FrameTree::Type::kGuest`.
   FrameTree frame_tree_;
+
+  bool audio_muted_ = false;
 };
 
 }  // namespace content

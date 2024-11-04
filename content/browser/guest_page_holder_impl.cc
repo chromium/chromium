@@ -59,6 +59,11 @@ GuestPageHolderImpl::GuestPageHolderImpl(
       /*old_frame=*/nullptr,
       frame_tree_.root()->render_manager()->current_frame_host());
 
+  // Ensure our muted state is correct on creation.
+  if (owner_web_contents.IsAudioMuted()) {
+    GetAudioStreamFactory()->SetMuted(true);
+  }
+
   // TODO(crbug.com/40202416): MPArch based guests need to override
   // RendererPreferences from their embedder. Notably, we need to force
   // `browser_handles_all_top_level_requests` off, otherwise renderer initiated
@@ -82,6 +87,23 @@ NavigationController& GuestPageHolderImpl::GetController() {
 
 RenderFrameHost* GuestPageHolderImpl::GetGuestMainFrame() {
   return frame_tree_.root()->current_frame_host();
+}
+
+bool GuestPageHolderImpl::IsAudioMuted() {
+  return audio_stream_factory_ && audio_stream_factory_->IsMuted();
+}
+
+void GuestPageHolderImpl::SetAudioMuted(bool mute) {
+  audio_muted_ = mute;
+  // The AudioStreamFactory's mute state is an OR of our state and our
+  // owning WebContents state.
+  GetAudioStreamFactory()->SetMuted(mute ||
+                                    owner_web_contents_->IsAudioMuted());
+}
+
+void GuestPageHolderImpl::SetAudioMutedFromWebContents(
+    bool web_contents_muted) {
+  GetAudioStreamFactory()->SetMuted(audio_muted_ || web_contents_muted);
 }
 
 void GuestPageHolderImpl::LoadingStateChanged(LoadingState new_state) {
@@ -154,6 +176,32 @@ bool GuestPageHolderImpl::ShouldPreserveAbortedURLs() {
 
 void GuestPageHolderImpl::UpdateOverridingUserAgent() {
   NOTIMPLEMENTED();
+}
+
+ForwardingAudioStreamFactory* GuestPageHolderImpl::GetAudioStreamFactory() {
+  if (!audio_stream_factory_) {
+    audio_stream_factory_ = owner_web_contents_->CreateAudioStreamFactory(
+        base::PassKey<GuestPageHolderImpl>());
+  }
+  return audio_stream_factory_.get();
+}
+
+GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
+    RenderFrameHostImpl& render_frame_host) {
+  // Escape fenced frames, looking at the outermost main frame (not escaping
+  // guests).
+  FrameTree* frame_tree =
+      render_frame_host.GetOutermostMainFrame()->frame_tree();
+  if (!frame_tree->is_guest()) {
+    return nullptr;
+  }
+  FrameTreeNode* frame_in_embedder =
+      frame_tree->root()->render_manager()->GetOuterDelegateNode();
+  CHECK(frame_in_embedder);
+  GuestPageHolderImpl* holder =
+      frame_in_embedder->parent()->FindGuestPageHolder(frame_in_embedder);
+  CHECK(holder);
+  return holder;
 }
 
 }  // namespace content

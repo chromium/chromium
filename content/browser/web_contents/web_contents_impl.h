@@ -1231,6 +1231,12 @@ class CONTENT_EXPORT WebContentsImpl
 
   ForwardingAudioStreamFactory* GetAudioStreamFactory();
 
+  // Creates a new ForwardingAudioStreamFactory. This can only be used by
+  // GuestPageHolders, if you are looking for the audio stream factory you
+  // likely want to use GetAudioStreamFactory();
+  std::unique_ptr<ForwardingAudioStreamFactory> CreateAudioStreamFactory(
+      base::PassKey<GuestPageHolderImpl> pass_key);
+
   // Called by MediaWebContentsObserver when playback starts or stops.  See the
   // WebContentsObserver function stubs for more details.
   void MediaStartedPlaying(
@@ -1517,7 +1523,7 @@ class CONTENT_EXPORT WebContentsImpl
   WebContents* GetOpenedPartitionedPopin() const override;
 
  private:
-  using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
+  using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
       base::RepeatingCallback<void(RenderViewHostImpl*)>;
 
@@ -2081,6 +2087,9 @@ class CONTENT_EXPORT WebContentsImpl
       RenderFrameHostImpl* render_frame_host,
       GroupType group_type);
 
+  // Creates a new ForwardingAudioStreamFactory.
+  std::unique_ptr<ForwardingAudioStreamFactory> CreateAudioStreamFactory();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2372,7 +2381,7 @@ class CONTENT_EXPORT WebContentsImpl
   AudioStreamMonitor audio_stream_monitor_;
 
   // Coordinates all the audio streams for this WebContents. Lazily initialized.
-  std::optional<ForwardingAudioStreamFactory> audio_stream_factory_;
+  std::unique_ptr<ForwardingAudioStreamFactory> audio_stream_factory_;
 
   size_t bluetooth_connected_device_count_ = 0;
   size_t bluetooth_scanning_sessions_count_ = 0;

@@ -1022,17 +1022,15 @@ class IsAudibleObserver : public content::WebContentsObserver {
 };
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudibilityStatePropagates) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest audio.
 
   LoadAppWithGuest("web_view/simple");
 
   content::WebContents* embedder = GetEmbedderWebContents();
-  content::WebContents* guest = GetGuestWebContents();
+  content::WebContents* guest_contents = GetGuestWebContents();
   IsAudibleObserver embedder_obs(embedder);
   EXPECT_FALSE(embedder->IsCurrentlyAudible());
-  EXPECT_FALSE(guest->IsCurrentlyAudible());
+  EXPECT_FALSE(guest_contents->IsCurrentlyAudible());
 
   // Just in case we get console error messages from the guest, we should
   // surface them in the test output.
@@ -1049,23 +1047,21 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AudibilityStatePropagates) {
   std::string setup_audio_script = base::StrCat(
       {"ae = document.createElement('audio'); ae.src='", audio_url.spec(),
        "'; document.body.appendChild(ae); ae.play();"});
-  EXPECT_TRUE(content::ExecJs(guest, setup_audio_script,
+  EXPECT_TRUE(content::ExecJs(GetGuestRenderFrameHost(), setup_audio_script,
                               content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait for audio to start.
   embedder_obs.WaitForCurrentlyAudible(true);
   EXPECT_TRUE(embedder->IsCurrentlyAudible());
-  EXPECT_TRUE(guest->IsCurrentlyAudible());
+  EXPECT_TRUE(guest_contents->IsCurrentlyAudible());
 
   // Wait for audio to stop.
   embedder_obs.WaitForCurrentlyAudible(false);
   EXPECT_FALSE(embedder->IsCurrentlyAudible());
-  EXPECT_FALSE(guest->IsCurrentlyAudible());
+  EXPECT_FALSE(guest_contents->IsCurrentlyAudible());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, SetAudioMuted) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   LoadAppWithGuest("web_view/simple");
@@ -1137,28 +1133,25 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, WebViewRespectsInsets) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudioMutesWhileAttached) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
 
   content::WebContents* embedder = GetEmbedderWebContents();
-  content::WebContents* guest = GetGuestWebContents();
+  extensions::WebViewGuest* web_view_guest =
+      extensions::WebViewGuest::FromGuestViewBase(GetGuestView());
 
   EXPECT_FALSE(embedder->IsAudioMuted());
-  EXPECT_FALSE(guest->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
 
   embedder->SetAudioMuted(true);
   EXPECT_TRUE(embedder->IsAudioMuted());
-  EXPECT_TRUE(guest->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
 
   embedder->SetAudioMuted(false);
   EXPECT_FALSE(embedder->IsAudioMuted());
-  EXPECT_FALSE(guest->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudioMutesOnAttach) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAndLaunchPlatformApp("web_view/app_creates_webview",
                            "WebViewTest.LAUNCHED");
   content::WebContents* embedder = GetEmbedderWebContents();
@@ -1168,20 +1161,21 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AudioMutesOnAttach) {
   SendMessageToEmbedder("create-guest");
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   content::WebContents* guest_contents = guest_view->web_contents();
+  extensions::WebViewGuest* web_view_guest =
+      extensions::WebViewGuest::FromGuestViewBase(guest_view);
+  CHECK(web_view_guest);
 
   EXPECT_TRUE(embedder->IsAudioMuted());
   WebContentsAudioMutedObserver observer(guest_contents);
   // If the guest hasn't attached yet, it may not have received the muting
   // update, in which case we should wait until it does.
-  if (!guest_contents->IsAudioMuted()) {
+  if (!web_view_guest->IsAudioMuted()) {
     observer.WaitForUpdate();
   }
-  EXPECT_TRUE(guest_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudioStateJavascriptAPI) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
@@ -4893,28 +4887,29 @@ IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
+  content::WebContents* guest_contents = GetGuestWebContents();
 
   const GURL client_cert_url =
       https_server().GetURL("/ssl/browser_use_client_cert_store.html");
 
-  auto* guest_delegate = guest->GetDelegate();
+  auto* guest_delegate = guest_contents->GetDelegate();
   NullWebContentsDelegate null_delegate;
   // This is intentionally incorrect. The guest WebContents' delegate should
   // remain a guest_view::GuestViewBase.
-  guest->SetDelegate(&null_delegate);
+  guest_contents->SetDelegate(&null_delegate);
 
   base::RunLoop run_loop;
   ClientCertStoreStub::SetQuitClosure(run_loop.QuitClosure());
   EXPECT_TRUE(content::ExecJs(
-      guest, content::JsReplace("location.href = $1;", client_cert_url)));
+      guest_contents,
+      content::JsReplace("location.href = $1;", client_cert_url)));
   run_loop.Run();
 
   auto* manager = GetModalDialogManager(GetEmbedderWebContents());
   EXPECT_TRUE(manager->IsDialogActive());
   manager->CloseAllDialogs();
 
-  guest->SetDelegate(guest_delegate);
+  guest_contents->SetDelegate(guest_delegate);
 }
 
 // Test fixture to run the test on multiple channels.
@@ -6870,11 +6865,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  content::WebContents* guest_contents = GetGuestWebContents();
+  ASSERT_TRUE(guest_contents);
 
   // Ensure the <webview>'s SiteInstance is for a guest.
-  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_frame = guest_contents->GetPrimaryMainFrame();
   auto original_id = main_frame->GetGlobalId();
   scoped_refptr<content::SiteInstance> starting_instance =
       main_frame->GetSiteInstance();
@@ -6886,14 +6881,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   const GURL start_url =
       embedded_test_server()->GetURL("a.test", "/iframe.html");
   {
-    content::TestNavigationObserver load_observer(guest);
-    EXPECT_TRUE(ExecJs(guest, "location.href = '" + start_url.spec() + "';"));
+    content::TestNavigationObserver load_observer(guest_contents);
+    EXPECT_TRUE(
+        ExecJs(guest_contents, "location.href = '" + start_url.spec() + "';"));
     load_observer.Wait();
   }
 
   // Expect that the main frame swapped SiteInstances and RenderFrameHosts but
   // stayed in the same BrowsingInstance and StoragePartition.
-  main_frame = guest->GetPrimaryMainFrame();
+  main_frame = guest_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(main_frame->GetSiteInstance()->IsGuest());
   EXPECT_TRUE(main_frame->GetProcess()->IsForGuestsOnly());
   EXPECT_NE(main_frame->GetGlobalId(), original_id);
@@ -6916,7 +6912,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   // separate guest SiteInstance and process, but same StoragePartition.
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
+  EXPECT_TRUE(NavigateIframeToURL(guest_contents, "test", frame_url));
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
 
   EXPECT_NE(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
