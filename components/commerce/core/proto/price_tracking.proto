@@ -57,6 +57,29 @@ message BuyableProduct {
 
   // Category data of this product.
   optional CategoryData category_data = 9;
+
+  // Lowest and highest price offers.
+  repeated PriceSummary price_summary = 10;
+}
+
+message PriceSummary {
+  // The condition of the offers considered in the price summary.
+  enum ProductOfferCondition {
+    CONDITION_UNKNOWN = 0;
+    // The offers are any condition.
+    CONDITION_ANY = 1;
+    // The offers are all new products.
+    CONDITION_NEW = 2;
+  }
+
+  // The condition of the offers in this summary.
+  optional ProductOfferCondition condition = 1;
+
+  // The lowest price offer.
+  optional ProductPrice lowest_price = 2;
+
+  // The highest price offer.
+  optional ProductPrice highest_price = 3;
 }
 
 message ProductPriceUpdate {
