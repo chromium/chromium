@@ -39,6 +39,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -8646,9 +8647,14 @@ PropertyRegistry& Document::EnsurePropertyRegistry() {
 }
 
 DocumentResourceCoordinator* Document::GetResourceCoordinator() {
-  if (!resource_coordinator_ && GetFrame()) {
-    resource_coordinator_ = DocumentResourceCoordinator::MaybeCreate(
-        GetFrame()->GetBrowserInterfaceBroker());
+  // `resource_coordinator_` is cleared in Shutdown() and must not be recreated
+  // afterwards, when the Document is no longer active.
+  if (!resource_coordinator_ && IsActive()) {
+    CHECK(GetFrame(), base::NotFatalUntil::M135);
+    if (auto* frame = GetFrame()) {
+      resource_coordinator_ = DocumentResourceCoordinator::MaybeCreate(
+          frame->GetBrowserInterfaceBroker());
+    }
   }
   return resource_coordinator_.get();
 }
