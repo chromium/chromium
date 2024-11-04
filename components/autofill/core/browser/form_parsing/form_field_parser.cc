@@ -390,7 +390,8 @@ void FormFieldParser::ParseStandaloneEmailFields(
 }
 
 // static
-bool FormFieldParser::FieldMatchesMatchPatternRef(
+std::optional<FormFieldParser::MatchInfo>
+FormFieldParser::FieldMatchesMatchPatternRef(
     ParsingContext& context,
     base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
@@ -447,12 +448,13 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     }
   }
   for (const auto& [attributes, positive_patterns] : batched_patterns) {
-    if (Match(context, &field, base::JoinString(positive_patterns, u"|"),
-              attributes, regex_name)) {
-      return true;
+    if (auto match_info =
+            Match(context, &field, base::JoinString(positive_patterns, u"|"),
+                  attributes, regex_name)) {
+      return match_info;
     }
   }
-  return false;
+  return std::nullopt;
 }
 
 // static
@@ -584,11 +586,12 @@ FormFieldParser::RemoveCheckableFields(
   return processed_fields;
 }
 
-bool FormFieldParser::Match(ParsingContext& context,
-                            const AutofillField* field,
-                            std::u16string_view pattern,
-                            DenseSet<MatchAttribute> match_attributes,
-                            const char* regex_name) {
+std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
+    ParsingContext& context,
+    const AutofillField* field,
+    std::u16string_view pattern,
+    DenseSet<MatchAttribute> match_attributes,
+    const char* regex_name) {
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches
@@ -606,15 +609,15 @@ bool FormFieldParser::Match(ParsingContext& context,
       MatchesRegexWithCache(context, label, pattern, capture_destination)) {
     MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
                         matches);
-    return true;
+    return MatchInfo{.matched_attribute = MatchAttribute::kLabel};
   }
   if (match_attributes.contains(MatchAttribute::kName) &&
       MatchesRegexWithCache(context, name, pattern, capture_destination)) {
     MaybePrintMatchLogs(context.log_manager, regex_name, "name", name, matches);
-    return true;
+    return MatchInfo{.matched_attribute = MatchAttribute::kName};
   }
 
-  return false;
+  return std::nullopt;
 }
 
 // static
