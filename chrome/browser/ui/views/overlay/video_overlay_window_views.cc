@@ -533,6 +533,7 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
   if (Use2024UI()) {
     minimize_button_->SetPosition(GetBounds().size(), quadrant);
+    back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
   }
   UpdateResizeHandleBounds(quadrant);
 #endif
