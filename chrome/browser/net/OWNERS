@@ -1,4 +1,4 @@
 file://net/OWNERS
 
-per-file network_quality*=file://net/nqe/OWNERS
+per-file network_annotation_monitor*=file://chrome/browser/policy/annotations/OWNERS
 per-file private_network_access_browsertest*=titouan@chromium.org
