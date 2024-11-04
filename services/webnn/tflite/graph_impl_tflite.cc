@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
@@ -104,8 +105,13 @@ class GraphImplTflite::ComputeResources {
     }
 
     OpResolver op_resolver(context->options());
-    TfLiteStatus status = ::tflite::InterpreterBuilder(
-        *self->model_, op_resolver)(&self->interpreter_);
+    ::tflite::InterpreterBuilder builder(*self->model_, op_resolver);
+    // On a lower-end system, use only one thread for 1 or 2 cores, use half
+    // of the cores for less than 8 cores. On systems with more cores, the max
+    // number threads is 4 to be used for inference.
+    builder.SetNumThreads(
+        std::min(4, (base::SysInfo::NumberOfProcessors() + 1) / 2));
+    TfLiteStatus status = builder(&self->interpreter_);
     if (status != kTfLiteOk) {
       return base::unexpected(
           mojom::Error::New(mojom::Error::Code::kUnknownError,
@@ -378,7 +384,8 @@ void GraphImplTflite::ComputeImpl(NamedBuffers named_inputs,
                 compute_resources_state->GetExclusivelyLockedResource();
 
             base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+                FROM_HERE,
+                {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
                 base::BindOnce(
                     &ComputeResources::DoCompute,
                     // Unretained is safe here because a reference to
