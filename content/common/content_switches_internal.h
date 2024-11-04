@@ -13,6 +13,11 @@ namespace base {
 class CommandLine;
 }
 
+namespace switches {
+CONTENT_EXPORT extern const char
+    kDisablePopupFocusedWindowDetectionForTesting[];
+}
+
 namespace content {
 
 blink::mojom::V8CacheOptions GetV8CacheOptions();

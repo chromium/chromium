@@ -23,6 +23,7 @@
   testRunner.log("=== Before auto dark mode (autoDarkMode and prefers-color-scheme override) is not enabled ===");
   await session.evaluateAsync(`openPicker(document.querySelector("select"))`);
   await logScreenshotData();
+  await session.evaluateAsync(`attemptToClosePicker(document.querySelector("select"))`);
 
   await dp.Emulation.setAutoDarkModeOverride({enabled: true});
   await dp.Emulation.setEmulatedMedia({
@@ -36,6 +37,7 @@
   testRunner.log("\n=== After auto dark mode (autoDarkMode and prefers-color-scheme override) is enabled ===");
   await session.evaluateAsync(`openPicker(document.querySelector("select"))`);
   await logScreenshotData();
+  await session.evaluateAsync(`attemptToClosePicker(document.querySelector("select"))`);
 
   testRunner.completeTest();
 });
