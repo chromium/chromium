@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileSuggestionHandlerRemote} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
+import {DriveSuggestionHandlerRemote} from 'chrome://new-tab-page/drive_suggestion.mojom-webui.js';
 import type {DisableModuleEvent, DismissModuleEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
 import {driveModuleV2Descriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
@@ -14,11 +14,11 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 import {installMock} from '../../../test_support.js';
 
 suite('DriveModuleV2', () => {
-  let handler: TestMock<FileSuggestionHandlerRemote>;
+  let handler: TestMock<DriveSuggestionHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    handler = installMock(FileSuggestionHandlerRemote, FileProxy.setHandler);
+    handler = installMock(DriveSuggestionHandlerRemote, FileProxy.setHandler);
   });
 
   test(

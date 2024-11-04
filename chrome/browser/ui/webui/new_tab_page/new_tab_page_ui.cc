@@ -26,7 +26,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
-#include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
@@ -662,9 +662,9 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<file_suggestion::mojom::FileSuggestionHandler>
+    mojo::PendingReceiver<file_suggestion::mojom::DriveSuggestionHandler>
         pending_receiver) {
-  file_handler_ = std::make_unique<FileSuggestionHandler>(
+  drive_handler_ = std::make_unique<DriveSuggestionHandler>(
       std::move(pending_receiver), profile_);
 }
 

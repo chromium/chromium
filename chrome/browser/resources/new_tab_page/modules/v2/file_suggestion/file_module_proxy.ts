@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FileSuggestionHandlerRemote} from '../../../file_suggestion.mojom-webui.js';
-import {FileSuggestionHandler} from '../../../file_suggestion.mojom-webui.js';
+import type {DriveSuggestionHandlerRemote} from '../../../drive_suggestion.mojom-webui.js';
+import {DriveSuggestionHandler} from '../../../drive_suggestion.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler
@@ -11,14 +11,14 @@ import {FileSuggestionHandler} from '../../../file_suggestion.mojom-webui.js';
  * and receiving the browser response.
  */
 
-let handler: FileSuggestionHandlerRemote|null = null;
+let handler: DriveSuggestionHandlerRemote|null = null;
 
 export class FileProxy {
-  static getHandler(): FileSuggestionHandlerRemote {
-    return handler || (handler = FileSuggestionHandler.getRemote());
+  static getHandler(): DriveSuggestionHandlerRemote {
+    return handler || (handler = DriveSuggestionHandler.getRemote());
   }
 
-  static setHandler(newHandler: FileSuggestionHandlerRemote) {
+  static setHandler(newHandler: DriveSuggestionHandlerRemote) {
     handler = newHandler;
   }
 

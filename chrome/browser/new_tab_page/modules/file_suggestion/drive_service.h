@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -58,7 +59,8 @@ class DriveService : public KeyedService {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  using GetFilesCallback = file_suggestion::mojom::FileSuggestionHandler::GetFilesCallback;
+  using GetFilesCallback =
+      file_suggestion::mojom::DriveSuggestionHandler::GetFilesCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
   void GetDriveFiles(GetFilesCallback get_files_callback);
   // Retrieves classification result from segmentation platform before
