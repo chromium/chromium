@@ -2003,7 +2003,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': '5GsCU-fszfz2r6okOGtj9PIVswyZT0zRA2Dp6u7Wu2oC',
+              'version': 'prG8PCktocCJxvGti7ut9AYMypgmZIm2J843oxXxhe8C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
