@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
@@ -87,15 +88,6 @@ std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
   return iwa_install_options;
 }
 
-// Add the install source to the already installed app.
-struct AppActionAddPolicyInstallSource {
-  AppActionAddPolicyInstallSource() {}
-
-  base::Value::Dict GetDebugValue() const {
-    return base::Value::Dict().Set("type", "AppActionAddPolicyInstallSource");
-  }
-};
-
 // Remove the install source from the already installed app, possibly
 // uninstalling it if no more sources are remaining.
 struct AppActionRemoveInstallSource {
@@ -132,9 +124,7 @@ struct AppActionInstall {
   IsolatedWebAppExternalInstallOptions options;
 };
 
-using AppAction = absl::variant<AppActionRemoveInstallSource,
-                                AppActionAddPolicyInstallSource,
-                                AppActionInstall>;
+using AppAction = std::variant<AppActionRemoveInstallSource, AppActionInstall>;
 using AppActions = base::flat_map<web_package::SignedWebBundleId, AppAction>;
 
 }  // namespace
@@ -227,7 +217,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
   policy_is_being_processed_ = true;
   current_process_log_ = std::move(process_log);
 
-  if(!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
     current_process_log_.Set(
         "error",
         "policy is ignored because isolated web apps are not enabled.");
@@ -377,10 +367,10 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
         const auto& [web_bundle_id, app_action] = entry;
         return base::Value::Dict()
             .Set("web_bundle_id", base::ToString(web_bundle_id))
-            .Set("action", absl::visit(base::Overloaded{[](const auto& action) {
-                                         return action.GetDebugValue();
-                                       }},
-                                       app_action));
+            .Set("action", std::visit(base::Overloaded{[](const auto& action) {
+                                        return action.GetDebugValue();
+                                      }},
+                                      app_action));
       }));
   current_process_log_.Merge(debug_info.Clone());
 
@@ -404,26 +394,8 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   for (const auto& [web_bundle_id, app_action] : app_actions) {
     auto url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-    absl::visit(
+    std::visit(
         base::Overloaded{
-            [&](const AppActionAddPolicyInstallSource& action) {
-              auto callback = [&]() {
-                LogAddPolicyInstallSourceResult(web_bundle_id);
-                action_done_callback.Run();
-              };
-
-              {
-                ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
-                WebApp* app_to_update = update->UpdateApp(url_info.app_id());
-                app_to_update->AddSource(WebAppManagement::Type::kIwaPolicy);
-              }
-              // Trigger update discovery here, because the Update Manifest URL
-              // might have changed.
-              provider_->iwa_update_manager().MaybeDiscoverUpdatesForApp(
-                  url_info.app_id());
-
-              callback();
-            },
             [&](const AppActionRemoveInstallSource& action) {
               auto callback = base::BindOnce(&IsolatedWebAppPolicyManager::
                                                  LogRemoveInstallSourceResult,
@@ -461,12 +433,6 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   }
 
   MaybeStartNextInstallTask();
-}
-
-void IsolatedWebAppPolicyManager::LogAddPolicyInstallSourceResult(
-    web_package::SignedWebBundleId web_bundle_id) {
-  current_process_log_.EnsureDict("add_install_source_results")
-      ->Set(base::ToString(web_bundle_id), "success");
 }
 
 void IsolatedWebAppPolicyManager::LogRemoveInstallSourceResult(
