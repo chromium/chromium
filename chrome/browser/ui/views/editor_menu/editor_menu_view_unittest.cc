@@ -91,9 +91,9 @@ TEST_F(EditorMenuViewTest, CreatesChips) {
       PresetTextQuery("ID2", u"Elaborate", PresetQueryCategory::kElaborate)};
 
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
 
@@ -117,9 +117,9 @@ TEST_F(EditorMenuViewTest, CreatesChipsInMultipleRows) {
       PresetTextQuery("ID5", u"Formalize", PresetQueryCategory::kFormalize)};
 
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
 
@@ -141,9 +141,9 @@ TEST_F(EditorMenuViewTest, TabKeyMovesFocus) {
 
   // Create and focus the editor menu.
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   editor_menu_widget->Show();
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
@@ -189,9 +189,9 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsPresetQuery) {
 
   // Create and show the editor menu.
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   editor_menu_widget->Show();
 
   // Focus the first chip.
@@ -216,9 +216,9 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsFreeformQuery) {
 
   // Create and show the editor menu.
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(
-          EditorMenuMode::kWrite, LobsterMenuMode::kBlocked,
-          PresetTextQueries(), gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   PresetTextQueries(),
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
 
   // Focus the textfield.
@@ -246,9 +246,9 @@ TEST_F(EditorMenuViewTest, DisablesMenu) {
       PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
 
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   editor_menu_widget->Show();
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
@@ -274,9 +274,9 @@ TEST_F(EditorMenuViewTest, AccessibleProperties) {
 
   // Rewrite Editor Mode
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   editor_menu_widget->Show();
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
@@ -288,9 +288,9 @@ TEST_F(EditorMenuViewTest, AccessibleProperties) {
             u"Rewrite");
 
   // Write Editor Mode
-  editor_menu_widget = EditorMenuView::CreateWidget(
-      EditorMenuMode::kWrite, LobsterMenuMode::kBlocked, queries,
-      gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget =
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorWriteOnly, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
   editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
@@ -310,9 +310,9 @@ TEST_F(EditorMenuViewI18nEnabledTest, AccessibleProperties) {
 
   // Rewrite Editor Mode
   std::unique_ptr<views::Widget> editor_menu_widget =
-      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite,
-                                   LobsterMenuMode::kBlocked, queries,
-                                   gfx::Rect(200, 300, 400, 200), &delegate);
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorRewriteOnly,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
   editor_menu_widget->Show();
   auto* editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
@@ -324,9 +324,9 @@ TEST_F(EditorMenuViewI18nEnabledTest, AccessibleProperties) {
             l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE));
 
   // Write Editor Mode
-  editor_menu_widget = EditorMenuView::CreateWidget(
-      EditorMenuMode::kWrite, LobsterMenuMode::kBlocked, queries,
-      gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget =
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorWriteOnly, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
   editor_menu_view =
       views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());

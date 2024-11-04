@@ -40,9 +40,8 @@ constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
 }  // namespace
 
 EditorMenuTextfieldView::EditorMenuTextfieldView(
-    EditorMenuMode editor_menu_mode,
     EditorMenuViewDelegate* delegate)
-    : editor_menu_mode_(editor_menu_mode), delegate_(delegate) {
+    : delegate_(delegate) {
   CHECK(delegate_);
 }
 

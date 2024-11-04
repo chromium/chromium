@@ -75,6 +75,24 @@ const views::FlexSpecification kTabbedPaneFlexSpecification =
                              views::MaximumFlexSizeRule::kPreferred)
         .WithWeight(1);
 
+const std::u16string GetEditorMenuAccessibilityName(
+    TextAndImageMode text_and_image_mode) {
+  if (text_and_image_mode == TextAndImageMode::kEditorRewriteAndLobster ||
+      text_and_image_mode == TextAndImageMode::kEditorRewriteOnly) {
+    return GetEditorMenuRewriteCardTitle();
+  }
+  if (text_and_image_mode == TextAndImageMode::kEditorWriteAndLobster ||
+      text_and_image_mode == TextAndImageMode::kEditorWriteOnly) {
+    return GetEditorMenuWriteCardTitle();
+  }
+  if (text_and_image_mode == TextAndImageMode::kLobsterOnly) {
+    return GetEditorMenuLobsterTitle();
+  }
+  return u"";
+}
+
+}  // namespace
+
 int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
   const int total_chips_height = num_rows * chip_height;
   const int total_chips_paddings =
@@ -84,32 +102,26 @@ int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
   return total_chips_height + total_chips_paddings;
 }
 
-}  // namespace
-
-EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
-                               LobsterMenuMode lobster_menu_mode,
+EditorMenuView::EditorMenuView(TextAndImageMode text_and_image_mode,
                                const PresetTextQueries& preset_text_queries,
                                const gfx::Rect& anchor_view_bounds,
                                EditorMenuViewDelegate* delegate)
     : PreTargetHandlerView(CardType::kEditorMenu),
-      editor_menu_mode_(editor_menu_mode),
-      lobster_menu_mode_(lobster_menu_mode),
+      text_and_image_mode_(text_and_image_mode),
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout(preset_text_queries);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  GetViewAccessibility().SetName(editor_menu_mode_ == EditorMenuMode::kWrite
-                                     ? GetEditorMenuWriteCardTitle()
-                                     : GetEditorMenuRewriteCardTitle());
+  GetViewAccessibility().SetName(
+      GetEditorMenuAccessibilityName(text_and_image_mode_));
 }
 
 EditorMenuView::~EditorMenuView() = default;
 
 // static
 std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
-    EditorMenuMode editor_menu_mode,
-    LobsterMenuMode lobter_menu_mode,
+    TextAndImageMode text_and_image_mode,
     const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
@@ -124,10 +136,9 @@ std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
   params.name = kWidgetName;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-  EditorMenuView* editor_menu_view =
-      widget->SetContentsView(std::make_unique<EditorMenuView>(
-          editor_menu_mode, lobter_menu_mode, preset_text_queries,
-          anchor_view_bounds, delegate));
+  EditorMenuView* editor_menu_view = widget->SetContentsView(
+      std::make_unique<EditorMenuView>(text_and_image_mode, preset_text_queries,
+                                       anchor_view_bounds, delegate));
   editor_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -251,10 +262,7 @@ void EditorMenuView::AddTitleContainer() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  bool should_display_tabbed_pane =
-      editor_menu_mode_ == EditorMenuMode::kWrite &&
-      lobster_menu_mode_ == LobsterMenuMode::kEnabled;
-  if (should_display_tabbed_pane) {
+  if (text_and_image_mode_ == TextAndImageMode::kEditorWriteAndLobster) {
     tabbed_pane_ =
         title_container_->AddChildView(std::make_unique<views::TabbedPane>());
     tabbed_pane_->SetPreferredSize(kTabbedPaneSize);
@@ -265,12 +273,22 @@ void EditorMenuView::AddTitleContainer() {
     tabbed_pane_->AddTab(GetEditorMenuLobsterTitle(),
                          std::make_unique<views::View>());
     tabbed_pane_->set_listener(this);
-  } else {
+  } else if (text_and_image_mode_ == TextAndImageMode::kEditorWriteOnly) {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
-        editor_menu_mode_ == EditorMenuMode::kWrite
-            ? GetEditorMenuWriteCardTitle()
-            : GetEditorMenuRewriteCardTitle(),
-        views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
+        GetEditorMenuWriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
+        views::style::STYLE_HEADLINE_5));
+    title->SetEnabledColorId(ui::kColorSysOnSurface);
+  } else if (text_and_image_mode_ == TextAndImageMode::kEditorRewriteOnly ||
+             text_and_image_mode_ ==
+                 TextAndImageMode::kEditorRewriteAndLobster) {
+    auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
+        GetEditorMenuRewriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
+        views::style::STYLE_HEADLINE_5));
+    title->SetEnabledColorId(ui::kColorSysOnSurface);
+  } else if (text_and_image_mode_ == TextAndImageMode::kLobsterOnly) {
+    auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
+        GetEditorMenuLobsterTitle(), views::style::CONTEXT_DIALOG_TITLE,
+        views::style::STYLE_HEADLINE_5));
     title->SetEnabledColorId(ui::kColorSysOnSurface);
   }
 
@@ -316,8 +334,8 @@ void EditorMenuView::AddChipsContainer(
 }
 
 void EditorMenuView::AddTextfield() {
-  textfield_ = AddChildView(
-      std::make_unique<EditorMenuTextfieldView>(editor_menu_mode_, delegate_));
+  textfield_ =
+      AddChildView(std::make_unique<EditorMenuTextfieldView>(delegate_));
   textfield_->SetProperty(views::kMarginsKey, kTextfieldContainerInsets);
 }
 

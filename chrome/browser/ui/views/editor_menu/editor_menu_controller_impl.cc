@@ -37,6 +37,31 @@
 
 namespace chromeos::editor_menu {
 
+namespace {
+
+TextAndImageMode CalculateTextAndImageMode(EditorMenuMode editor_menu_mode,
+                                           LobsterMenuMode lobster_menu_mode) {
+  if (lobster_menu_mode == LobsterMenuMode::kBlocked) {
+    if (editor_menu_mode == EditorMenuMode::kRewrite) {
+      return TextAndImageMode::kEditorRewriteOnly;
+    }
+    if (editor_menu_mode == EditorMenuMode::kWrite) {
+      return TextAndImageMode::kEditorWriteOnly;
+    }
+    return TextAndImageMode::kBlocked;
+  }
+
+  if (editor_menu_mode == EditorMenuMode::kRewrite) {
+    return TextAndImageMode::kEditorRewriteAndLobster;
+  }
+  if (editor_menu_mode == EditorMenuMode::kWrite) {
+    return TextAndImageMode::kEditorWriteAndLobster;
+  }
+  return TextAndImageMode::kLobsterOnly;
+}
+
+}  // namespace
+
 EditorMenuControllerImpl::EditorMenuControllerImpl() = default;
 
 EditorMenuControllerImpl::~EditorMenuControllerImpl() = default;
@@ -233,7 +258,8 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
       // TODO: b:348280474 - Uses the correct Lobster mode once this card UI is
       // connected with Backend.
       editor_menu_widget_ = EditorMenuView::CreateWidget(
-          EditorMenuMode::kWrite, LobsterMenuMode::kBlocked,
+          CalculateTextAndImageMode(EditorMenuMode::kWrite,
+                                    LobsterMenuMode::kBlocked),
           PresetTextQueries(), anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
@@ -241,7 +267,8 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
       // TODO: b:348280474 - Uses the correct Lobster mode once this card UI is
       // connected with Backend.
       editor_menu_widget_ = EditorMenuView::CreateWidget(
-          EditorMenuMode::kRewrite, LobsterMenuMode::kBlocked,
+          CalculateTextAndImageMode(EditorMenuMode::kRewrite,
+                                    LobsterMenuMode::kBlocked),
           context.preset_queries, anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;

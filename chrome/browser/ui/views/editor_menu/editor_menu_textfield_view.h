@@ -33,8 +33,7 @@ class EditorMenuTextfieldView : public views::View,
   METADATA_HEADER(EditorMenuTextfieldView, views::View)
 
  public:
-  EditorMenuTextfieldView(EditorMenuMode editor_menu_mode,
-                          EditorMenuViewDelegate* delegate);
+  explicit EditorMenuTextfieldView(EditorMenuViewDelegate* delegate);
   EditorMenuTextfieldView(const EditorMenuTextfieldView&) = delete;
   EditorMenuTextfieldView& operator=(const EditorMenuTextfieldView&) = delete;
   ~EditorMenuTextfieldView() override;
@@ -55,8 +54,6 @@ class EditorMenuTextfieldView : public views::View,
  private:
   void InitLayout();
   void OnTextfieldArrowButtonPressed();
-
-  EditorMenuMode editor_menu_mode_;
 
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;

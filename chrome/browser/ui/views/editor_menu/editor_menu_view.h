@@ -28,8 +28,17 @@ namespace chromeos::editor_menu {
 class EditorMenuTextfieldView;
 class EditorMenuViewDelegate;
 
-enum class EditorMenuMode { kWrite = 0, kRewrite };
+enum class EditorMenuMode { kWrite = 0, kRewrite, kBlocked };
 enum class LobsterMenuMode { kEnabled = 0, kBlocked };
+
+enum class TextAndImageMode {
+  kBlocked,
+  kEditorWriteOnly,
+  kEditorRewriteOnly,
+  kLobsterOnly,
+  kEditorWriteAndLobster,
+  kEditorRewriteAndLobster,
+};
 
 // A bubble style view to show Editor Menu.
 class EditorMenuView : public PreTargetHandlerView,
@@ -37,8 +46,7 @@ class EditorMenuView : public PreTargetHandlerView,
   METADATA_HEADER(EditorMenuView, views::View)
 
  public:
-  EditorMenuView(EditorMenuMode editor_menu_mode,
-                 LobsterMenuMode lobter_menu_mode,
+  EditorMenuView(TextAndImageMode text_and_image_mode,
                  const PresetTextQueries& preset_text_queries,
                  const gfx::Rect& anchor_view_bounds,
                  EditorMenuViewDelegate* delegate);
@@ -49,8 +57,7 @@ class EditorMenuView : public PreTargetHandlerView,
   ~EditorMenuView() override;
 
   static std::unique_ptr<views::Widget> CreateWidget(
-      EditorMenuMode editor_menu_mode,
-      LobsterMenuMode lobter_menu_mode,
+      TextAndImageMode text_and_image_mode,
       const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
@@ -75,9 +82,7 @@ class EditorMenuView : public PreTargetHandlerView,
   EditorMenuTextfieldView* textfield_for_testing() { return textfield_; }
 
  private:
-  const EditorMenuMode editor_menu_mode_;
-
-  const LobsterMenuMode lobster_menu_mode_;
+  const TextAndImageMode text_and_image_mode_;
 
   void InitLayout(const PresetTextQueries& preset_text_queries);
   void AddTitleContainer();
