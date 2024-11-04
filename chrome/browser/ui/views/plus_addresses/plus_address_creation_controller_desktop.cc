@@ -136,6 +136,7 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
             GetWeakPtr()));
   }
 }
+
 void PlusAddressCreationControllerDesktop::OnCanceled() {
   // TODO(b/320541525) ModalEvent is in sync with actual user action. May
   // re-evaluate the use of this metric when modal becomes more complex.
@@ -193,6 +194,7 @@ PlusAddressCreationControllerDesktop::GetWeakPtr() {
 void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
   if (maybe_plus_profile.has_value()) {
+    modal_error_status_.reset();
     plus_profile_ = maybe_plus_profile.value();
     ++reserve_response_count_;
   } else {
@@ -213,6 +215,8 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
   const bool was_notice_shown = ShouldShowNotice();
   if (maybe_plus_profile.has_value()) {
+    modal_error_status_.reset();
+
     // Autofill the plus address.
     std::move(callback_).Run(*maybe_plus_profile->plus_address);
 

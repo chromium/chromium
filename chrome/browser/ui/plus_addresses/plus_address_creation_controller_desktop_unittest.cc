@@ -250,6 +250,51 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnConfirmedError) {
       kDuration, 1);
 }
 
+// Tests that the user can retry creating a plus address after the previous
+// attempt fails. Verifies that the correct metrics are logged in this case.
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       ConfirmAfterCreateError) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://timofeywashere.example")),
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  fake_plus_address_service_->set_should_fail_to_confirm(true);
+
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
+
+  fake_plus_address_service_->set_should_fail_to_confirm(false);
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
+
+  // Ensure that plus address can be confirmed after a confirm error is shown.
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 2)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      2 * kDuration, 1);
+}
+
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnReservedError) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
@@ -282,6 +327,51 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnReservedError) {
       FormatModalDurationMetrics(
           metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError),
       kDuration, 1);
+}
+
+// Tests that the user can retry confirming a plus address after the previous
+// attempt to reserve it failed. Verifies that the correct metrics are logged
+// in this case.
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       ConfirmAfterReserveError) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+  fake_plus_address_service_->set_should_fail_to_reserve(true);
+
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://timofeywashere.example")),
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->set_suppress_ui_for_testing(false);
+  controller->OnRefreshClicked();
+  ASSERT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->OnConfirmed();
+  ASSERT_TRUE(future.IsReady());
+  // Ensure that plus address can be confirmed after an error is shown and then
+  // the plus address is successfully reserved.
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed),
+      2 * kDuration, 1);
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
