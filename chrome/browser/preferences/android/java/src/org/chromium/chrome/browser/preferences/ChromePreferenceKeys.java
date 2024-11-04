@@ -10,7 +10,6 @@ import static org.chromium.components.browser_ui.site_settings.SingleCategorySet
 
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.components.browser_ui.accessibility.AccessibilityConstants;
 
 import java.util.Arrays;
 import java.util.List;
@@ -255,9 +254,6 @@ public final class ChromePreferenceKeys {
     /** See CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis(). */
     public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
-
-    public static final String FONT_USER_FONT_SCALE_FACTOR =
-            AccessibilityConstants.FONT_USER_FONT_SCALE_FACTOR;
 
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 

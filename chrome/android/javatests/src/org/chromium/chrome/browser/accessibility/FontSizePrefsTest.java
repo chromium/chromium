@@ -16,15 +16,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
-import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 
 /**
  * Tests for {@link FontSizePrefs}.
@@ -36,20 +32,12 @@ import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePr
 public class FontSizePrefsTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    private static final float EPSILON = 0.001f;
     private FontSizePrefs mFontSizePrefs;
 
     @Before
     public void setUp() {
-        resetSharedPrefs();
         Context context = ApplicationProvider.getApplicationContext();
         mFontSizePrefs = getFontSizePrefs(context);
-        setSystemFontScaleForTest(1.0f);
-    }
-
-    private void resetSharedPrefs() {
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
     }
 
     @Test
@@ -61,114 +49,9 @@ public class FontSizePrefsTest {
         Assert.assertTrue(getForceEnableZoom());
     }
 
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testFontScaleFactor() {
-        Assert.assertEquals(1f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(1f, getFontScaleFactor(), EPSILON);
-
-        TestingObserver observer = createAndAddFontSizePrefsObserver();
-
-        setUserFontScaleFactor(1.5f);
-        Assert.assertEquals(1.5f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(1.5f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-
-        setUserFontScaleFactor(0.7f);
-        Assert.assertEquals(0.7f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(0.7f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-
-        // Force enable zoom shouldn't affect font scale factor.
-        setForceEnableZoom(true);
-        Assert.assertEquals(0.7f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(0.7f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-
-        setForceEnableZoom(false);
-        Assert.assertEquals(0.7f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(0.7f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-
-        // System font scale should affect fontScaleFactor, but not userFontScaleFactor.
-        setSystemFontScaleForTest(1.3f);
-        Assert.assertEquals(0.7f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(0.7f * 1.3f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-
-        setUserFontScaleFactor(1.5f);
-        Assert.assertEquals(1.5f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(1.5f * 1.3f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-
-        setSystemFontScaleForTest(0.8f);
-        Assert.assertEquals(1.5f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(1.5f * 0.8f, getFontScaleFactor(), EPSILON);
-        observer.assertConsistent();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testUpgradeToUserFontScaleFactor() {
-        setSystemFontScaleForTest(1.3f);
-        setUserFontScaleFactor(1.5f);
-
-        // Delete PREF_USER_FONT_SCALE_FACTOR. This simulates the condition just after upgrading to
-        // M51, when userFontScaleFactor was added.
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
-
-        // Intial userFontScaleFactor should be set to fontScaleFactor / systemFontScale.
-        Assert.assertEquals(1.5f, getUserFontScaleFactor(), EPSILON);
-        Assert.assertEquals(1.5f * 1.3f, getFontScaleFactor(), EPSILON);
-    }
-
-    private class TestingObserver implements FontSizePrefsObserver {
-        private float mUserFontScaleFactor = getUserFontScaleFactor();
-        private float mFontScaleFactor = getFontScaleFactor();
-
-        @Override
-        public void onFontScaleFactorChanged(float fontScaleFactor, float userFontScaleFactor) {
-            mFontScaleFactor = fontScaleFactor;
-            mUserFontScaleFactor = userFontScaleFactor;
-        }
-
-        private void assertConsistent() {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        Assert.assertEquals(
-                                getUserFontScaleFactor(), mUserFontScaleFactor, EPSILON);
-                        Assert.assertEquals(getFontScaleFactor(), mFontScaleFactor, EPSILON);
-                    });
-        }
-    }
-
     private FontSizePrefs getFontSizePrefs(final Context context) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile()));
-    }
-
-    private TestingObserver createAndAddFontSizePrefsObserver() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TestingObserver observer = new TestingObserver();
-                    mFontSizePrefs.addObserver(observer);
-                    return observer;
-                });
-    }
-
-    private void setUserFontScaleFactor(final float fontsize) {
-        ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.setUserFontScaleFactor(fontsize));
-    }
-
-    private float getUserFontScaleFactor() {
-        return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getUserFontScaleFactor());
-    }
-
-    private float getFontScaleFactor() {
-        return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getFontScaleFactor());
     }
 
     private void setForceEnableZoom(final boolean enabled) {
@@ -177,13 +60,5 @@ public class FontSizePrefsTest {
 
     private boolean getForceEnableZoom() {
         return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getForceEnableZoom());
-    }
-
-    private void setSystemFontScaleForTest(final float systemFontScale) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mFontSizePrefs.setSystemFontScaleForTest(systemFontScale);
-                    mFontSizePrefs.onSystemFontScaleChanged();
-                });
     }
 }

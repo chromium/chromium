@@ -56,7 +56,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP,
                 ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE,
-                ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR,
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO,
                 ChromePreferenceKeys.HOMEPAGE_ENABLED,
                 ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI,

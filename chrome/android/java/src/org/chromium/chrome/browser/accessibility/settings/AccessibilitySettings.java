@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
-import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUma;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
@@ -40,7 +39,6 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 /** Fragment to keep track of all the accessibility related preferences. */
 public class AccessibilitySettings extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
-    public static final String PREF_TEXT_SCALE = "text_scale";
     public static final String PREF_PAGE_ZOOM_DEFAULT_ZOOM = "page_zoom_default_zoom";
     public static final String PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT =
             "page_zoom_include_os_adjustment";
@@ -51,29 +49,17 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static final String PREF_ZOOM_INFO = "zoom_info";
     public static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
 
-    private TextScalePreference mTextScalePref;
     private PageZoomPreference mPageZoomDefaultZoomPref;
     private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
     private ChromeSwitchPreference mPageZoomAlwaysShowPref;
     private ChromeSwitchPreference mForceEnableZoomPref;
     private ChromeSwitchPreference mJumpStartOmnibox;
-    private boolean mRecordFontSizeChangeOnStop;
     private AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
     private PrefService mPrefService;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public FontSizePrefs mFontSizePrefs;
-
-    private FontSizePrefsObserver mFontSizePrefsObserver =
-            new FontSizePrefsObserver() {
-                @Override
-                public void onFontScaleFactorChanged(
-                        float fontScaleFactor, float userFontScaleFactor) {
-                    mTextScalePref.updateFontScaleFactors(
-                            fontScaleFactor, userFontScaleFactor, true);
-                }
-            };
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -102,14 +88,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.accessibility_preferences);
 
-        mTextScalePref = (TextScalePreference) findPreference(PREF_TEXT_SCALE);
         mPageZoomDefaultZoomPref = (PageZoomPreference) findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         mPageZoomAlwaysShowPref =
                 (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW);
         mPageZoomIncludeOSAdjustment =
                 (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
-        mTextScalePref.setVisible(false);
         // Set the initial values for the page zoom settings, and set change listeners.
         mPageZoomDefaultZoomPref.setInitialValue(
                 PageZoomUtils.getDefaultZoomAsSeekBarValue(mDelegate.getBrowserContextHandle()));
@@ -185,19 +169,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mFontSizePrefs.addObserver(mFontSizePrefsObserver);
-    }
-
-    @Override
     public void onStop() {
-        mFontSizePrefs.removeObserver(mFontSizePrefsObserver);
-        if (mRecordFontSizeChangeOnStop) {
-            mFontSizePrefs.recordUserFontPrefChange();
-            mRecordFontSizeChangeOnStop = false;
-        }
-
         // Ensure that the user has set a default zoom value during this session.
         if (mPageZoomLatestDefaultZoomPrefValue != 0.0) {
             PageZoomUma.logSettingsDefaultZoomLevelChangedHistogram();
@@ -210,10 +182,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (PREF_TEXT_SCALE.equals(preference.getKey())) {
-            mRecordFontSizeChangeOnStop = true;
-            mFontSizePrefs.setUserFontScaleFactor((Float) newValue);
-        } else if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
+        if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
             mFontSizePrefs.setForceEnableZoom((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
             mPrefService.setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);

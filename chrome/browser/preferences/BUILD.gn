@@ -21,7 +21,6 @@ android_library("java") {
     "//base:base_cached_flags_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//components/browser_ui/accessibility/android:constants_java",
     "//components/browser_ui/share/android:constants_java",
     "//components/browser_ui/site_settings/android:constants_java",
     "//components/cached_flags:java",
