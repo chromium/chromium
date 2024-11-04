@@ -9195,9 +9195,15 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   // An embedding frame focusing a fenced frame is not allowed since that would
   // be an information leak.  If a renderer attempts to do that, that should be
   // blocked by `RenderFrameProxyHost::DidFocusFrame()`.
-  DCHECK(inner_contents || node->current_frame_host()
-                               ->inner_tree_main_frame_tree_node_id()
-                               .is_null());
+  //
+  // TODO(https://crbug.com/376085320): MPArch based <webview> allows focus on
+  // the inner frame tree node. For now, disable this DCHECK when the flag is
+  // enabled.
+  DCHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch) ||
+         inner_contents ||
+         node->current_frame_host()
+             ->inner_tree_main_frame_tree_node_id()
+             .is_null());
 
   if (inner_contents) {
     // An inner WebContents is not created from Fenced Frames so we
