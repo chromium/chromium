@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
+
+#include <array>
 
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -17,14 +14,15 @@ namespace blink {
 namespace {
 
 #define V(name) #name,
-constexpr const char* kShortNames[] = {FOR_EACH_COMPOSITING_REASON(V)};
+constexpr auto kShortNames =
+    std::to_array<const char* const>({FOR_EACH_COMPOSITING_REASON(V)});
 #undef V
 
 struct ReasonAndDescription {
   CompositingReasons reason;
   const char* description;
 };
-constexpr ReasonAndDescription kReasonDescriptionMap[] = {
+constexpr auto kReasonDescriptionMap = std::to_array<ReasonAndDescription>({
     {CompositingReason::k3DTransform, "Has a 3d transform."},
     {CompositingReason::k3DScale, "Has a 3d scale."},
     {CompositingReason::k3DRotate, "Has a 3d rotate."},
@@ -114,7 +112,7 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kDevToolsOverlay, "Is DevTools overlay."},
     {CompositingReason::kViewTransitionContent,
      "The layer containing the contents of a view transition element."},
-};
+});
 
 }  // anonymous namespace
 
