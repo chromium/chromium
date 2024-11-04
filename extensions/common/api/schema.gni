@@ -15,6 +15,7 @@ extensions_api_schema_files_ = [
   "runtime.json",
   "storage.json",
   "test.json",
+  "web_request.json",
 ]
 
 # Schemas that should be used only to auto-generate the C++ types.
@@ -85,7 +86,6 @@ if (enable_extensions) {
     "usb.idl",
     "virtual_keyboard.idl",
     "virtual_keyboard_private.json",
-    "web_request.json",
     "web_view_internal.json",
   ]
 
@@ -111,7 +111,6 @@ if (enable_desktop_android_extensions) {
     "declarative_net_request.idl",
     "scripts_internal.idl",
     "types.json",
-    "web_request.json",
     "extension_types.json",
     "usb.idl",
     "system_display.idl",
