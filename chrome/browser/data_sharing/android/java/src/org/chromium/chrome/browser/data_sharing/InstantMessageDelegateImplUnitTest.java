@@ -10,10 +10,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.messages.MessageBannerProperties.MESSAGE_IDENTIFIER;
+import static org.chromium.components.messages.MessageBannerProperties.ON_FULLY_VISIBLE;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -50,6 +52,7 @@ import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.lang.ref.WeakReference;
 
@@ -77,6 +80,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Before
     public void setUp() {
+        MockitoHelper.forwardBind(mSuccessCallback);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
@@ -130,13 +134,15 @@ public class InstantMessageDelegateImplUnitTest {
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
-        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
         assertTrue(title.contains(TAB_TITLE));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
     }
 
     @Test
@@ -146,13 +152,21 @@ public class InstantMessageDelegateImplUnitTest {
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
-        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
         assertTrue(title.contains(TAB_TITLE));
+
+        verify(mSuccessCallback, never()).onResult(anyBoolean());
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
+
+        // When it stops being visible, success shouldn't change.
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
+        verify(mSuccessCallback, times(1)).onResult(anyBoolean());
     }
 
     @Test
@@ -162,13 +176,15 @@ public class InstantMessageDelegateImplUnitTest {
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
-        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
         assertTrue(title.contains(TAB_GROUP_TITLE));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
     }
 
     @Test
@@ -181,13 +197,15 @@ public class InstantMessageDelegateImplUnitTest {
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
-        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
         assertTrue(title.contains(Integer.toString(13)));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
     }
 
     @Test
@@ -197,12 +215,14 @@ public class InstantMessageDelegateImplUnitTest {
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
-        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(TAB_GROUP_TITLE));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
     }
 
     @Test
@@ -215,12 +235,14 @@ public class InstantMessageDelegateImplUnitTest {
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
-        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(Integer.toString(13)));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
     }
 
     @Test

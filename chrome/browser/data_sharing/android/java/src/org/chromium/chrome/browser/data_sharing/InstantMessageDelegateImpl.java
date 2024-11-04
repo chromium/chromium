@@ -99,50 +99,54 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     @Override
     public void displayInstantaneousMessage(
             InstantMessage message, Callback<Boolean> successCallback) {
-        boolean success = false;
+        @Nullable AttachedWindowInfo attachedWindowInfo = getAttachedWindowInfo(message);
+        if (attachedWindowInfo == null) {
+            successCallback.onResult(false);
+            return;
+        }
 
-        try {
-            @Nullable AttachedWindowInfo attachedWindowInfo = getAttachedWindowInfo(message);
-            if (attachedWindowInfo == null) return;
+        @NonNull WindowAndroid windowAndroid = attachedWindowInfo.windowAndroid;
+        @Nullable Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            successCallback.onResult(false);
+            return;
+        }
 
-            @NonNull WindowAndroid windowAndroid = attachedWindowInfo.windowAndroid;
-            @Nullable Context context = windowAndroid.getContext().get();
-            if (context == null) return;
+        @NonNull TabGroupModelFilter tabGroupModelFilter = attachedWindowInfo.tabGroupModelFilter;
+        @CollaborationEvent int collaborationEvent = message.collaborationEvent;
 
-            @NonNull
-            TabGroupModelFilter tabGroupModelFilter = attachedWindowInfo.tabGroupModelFilter;
-            @CollaborationEvent int collaborationEvent = message.collaborationEvent;
-
-            if (message.level == InstantNotificationLevel.SYSTEM) {
-                if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
-                    @NonNull
-                    DataSharingNotificationManager dataSharingNotificationManager =
-                            attachedWindowInfo.dataSharingNotificationManager;
-                    showCollaborationMemberAddedSystemNotification(
-                            message, context, dataSharingNotificationManager, tabGroupModelFilter);
-                }
-                success = true;
-            } else if (message.level == InstantNotificationLevel.BROWSER) {
-                @Nullable
-                MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
-                if (messageDispatcher == null) return;
-
-                if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
-                    showTabRemoved(message, context, messageDispatcher);
-                } else if (collaborationEvent == CollaborationEvent.TAB_UPDATED) {
-                    showTabChange(message, context, messageDispatcher);
-                } else if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
-                    showCollaborationMemberAdded(
-                            message, context, messageDispatcher, tabGroupModelFilter);
-                } else if (collaborationEvent == CollaborationEvent.COLLABORATION_REMOVED) {
-                    showCollaborationRemoved(
-                            message, context, messageDispatcher, tabGroupModelFilter);
-                }
-                success = true;
+        if (message.level == InstantNotificationLevel.SYSTEM) {
+            if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
+                @NonNull
+                DataSharingNotificationManager dataSharingNotificationManager =
+                        attachedWindowInfo.dataSharingNotificationManager;
+                showCollaborationMemberAddedSystemNotification(
+                        message, context, dataSharingNotificationManager, tabGroupModelFilter);
             }
-        } finally {
-            // TODO(https://crbug.com/374803292): Implement correct usage of `successCallback`.
-            successCallback.onResult(success);
+            successCallback.onResult(true);
+        } else if (message.level == InstantNotificationLevel.BROWSER) {
+            @Nullable
+            MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
+            if (messageDispatcher == null) {
+                successCallback.onResult(false);
+                return;
+            }
+
+            Runnable onSuccess = successCallback.bind(true);
+            if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
+                showTabRemoved(message, context, messageDispatcher, onSuccess);
+            } else if (collaborationEvent == CollaborationEvent.TAB_UPDATED) {
+                showTabChange(message, context, messageDispatcher, onSuccess);
+            } else if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
+                showCollaborationMemberAdded(
+                        message, context, messageDispatcher, tabGroupModelFilter, onSuccess);
+            } else if (collaborationEvent == CollaborationEvent.COLLABORATION_REMOVED) {
+                showCollaborationRemoved(
+                        message, context, messageDispatcher, tabGroupModelFilter, onSuccess);
+            } else {
+                // Will never be able to handle this message.
+                onSuccess.run();
+            }
         }
     }
 
@@ -176,7 +180,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     private void showTabRemoved(
-            InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
+            InstantMessage message,
+            Context context,
+            MessageDispatcher messageDispatcher,
+            Runnable onSuccess) {
         String givenName = MessageUtils.extractGivenName(message);
         String tabTitle = MessageUtils.extractTabTitle(message);
         String title =
@@ -191,11 +198,15 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 title,
                 buttonText,
                 icon,
-                () -> {});
+                () -> {},
+                onSuccess);
     }
 
     private void showTabChange(
-            InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
+            InstantMessage message,
+            Context context,
+            MessageDispatcher messageDispatcher,
+            Runnable onSuccess) {
         String givenName = MessageUtils.extractGivenName(message);
         String tabTitle = MessageUtils.extractTabTitle(message);
         String title =
@@ -210,14 +221,16 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 title,
                 buttonText,
                 icon,
-                () -> {});
+                () -> {},
+                onSuccess);
     }
 
     private void showCollaborationMemberAdded(
             InstantMessage message,
             Context context,
             MessageDispatcher messageDispatcher,
-            TabGroupModelFilter tabGroupModelFilter) {
+            TabGroupModelFilter tabGroupModelFilter,
+            Runnable onSuccess) {
         String givenName = MessageUtils.extractGivenName(message);
         String tabGroupTitle = getTabGroupTitle(message, context, tabGroupModelFilter);
         String title =
@@ -234,14 +247,16 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 title,
                 buttonText,
                 icon,
-                () -> {});
+                () -> {},
+                onSuccess);
     }
 
     private void showCollaborationRemoved(
             InstantMessage message,
             Context context,
             MessageDispatcher messageDispatcher,
-            TabGroupModelFilter tabGroupModelFilter) {
+            TabGroupModelFilter tabGroupModelFilter,
+            Runnable onSuccess) {
         String tabGroupTitle = getTabGroupTitle(message, context, tabGroupModelFilter);
         String title =
                 context.getString(
@@ -254,7 +269,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 title,
                 buttonText,
                 icon,
-                () -> {});
+                () -> {},
+                onSuccess);
     }
 
     private void showCollaborationMemberAddedSystemNotification(
@@ -280,11 +296,18 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             String title,
             String buttonText,
             Drawable icon,
-            Runnable action) {
+            Runnable action,
+            Runnable onSuccess) {
         Supplier<Integer> onPrimary =
                 () -> {
                     action.run();
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                };
+        Callback<Boolean> onVisibleChange =
+                (fullyVisible) -> {
+                    if (fullyVisible) {
+                        onSuccess.run();
+                    }
                 };
         PropertyModel propertyModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -293,6 +316,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
                         .with(MessageBannerProperties.ICON, icon)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimary)
+                        .with(MessageBannerProperties.ON_FULLY_VISIBLE, onVisibleChange)
                         .build();
         messageDispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
     }
