@@ -1541,8 +1541,7 @@ void UserSessionManager::InitProfilePreferences(
         account_id, is_child ? signin::Tribool::kTrue : signin::Tribool::kFalse,
         is_under_advanced_protection);
 
-    if (is_child &&
-        base::FeatureList::IsEnabled(::features::kDMServerOAuthForChildUser)) {
+    if (is_child) {
       child_policy_observer_ = std::make_unique<ChildPolicyObserver>(profile);
     }
   } else {
@@ -1781,16 +1780,13 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     VLOG(1) << "Clearing all secrets";
     user_context_.ClearSecrets();
     if (user->GetType() == user_manager::UserType::kChild) {
-      if (base::FeatureList::IsEnabled(
-              ::features::kDMServerOAuthForChildUser)) {
-        VLOG(1) << "Waiting for child policy refresh before showing session UI";
-        DCHECK(child_policy_observer_);
-        child_policy_observer_->NotifyWhenPolicyReady(
-            base::BindOnce(&UserSessionManager::OnChildPolicyReady,
-                           GetUserSessionManagerAsWeakPtr()),
-            kWaitForChildPolicyTimeout);
-        return;
-      }
+      VLOG(1) << "Waiting for child policy refresh before showing session UI";
+      DCHECK(child_policy_observer_);
+      child_policy_observer_->NotifyWhenPolicyReady(
+          base::BindOnce(&UserSessionManager::OnChildPolicyReady,
+                         GetUserSessionManagerAsWeakPtr()),
+          kWaitForChildPolicyTimeout);
+      return;
     }
   }
 

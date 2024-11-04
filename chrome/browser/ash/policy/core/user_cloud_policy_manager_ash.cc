@@ -302,8 +302,7 @@ void UserCloudPolicyManagerAsh::OnAccessTokenAvailable(
 }
 
 bool UserCloudPolicyManagerAsh::RequiresOAuthTokenForChildUser() const {
-  return IsChildUser(account_id_) &&
-         base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
+  return IsChildUser(account_id_);
 }
 
 void UserCloudPolicyManagerAsh::OnWildcardCheckCompleted(

@@ -221,14 +221,6 @@ BASE_FEATURE(kDataLeakPreventionFilesRestriction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables passing additional user authentication in requests to DMServer
-// (policy fetch, status report upload).
-BASE_FEATURE(kDMServerOAuthForChildUser,
-             "DMServerOAuthForChildUser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // Whether to allow installed-by-default web apps to be installed or not.
 BASE_FEATURE(kPreinstalledWebAppInstallation,
