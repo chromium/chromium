@@ -73,7 +73,8 @@ SignalsAggregatorFactory::SignalsAggregatorFactory()
 
 SignalsAggregatorFactory::~SignalsAggregatorFactory() = default;
 
-KeyedService* SignalsAggregatorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
@@ -104,8 +105,8 @@ KeyedService* SignalsAggregatorFactory::BuildServiceInstanceFor(
       std::make_unique<device_signals::WinSignalsCollector>(service_host));
 #endif  // BUILDFLAG(IS_WIN)
 
-  return new device_signals::SignalsAggregatorImpl(user_permission_service,
-                                                   std::move(collectors));
+  return std::make_unique<device_signals::SignalsAggregatorImpl>(
+      user_permission_service, std::move(collectors));
 }
 
 }  // namespace enterprise_signals
