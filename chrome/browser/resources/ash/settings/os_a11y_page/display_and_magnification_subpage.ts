@@ -106,17 +106,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
             'isAccessibilityOverlayScrollbarEnabled');
         },
       },
-      /**
-       * Whether the magnifier following select to speak words feature is
-       * enabled.
-       */
-      isAccessibilityMagnifierFollowsStsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityMagnifierFollowsStsEnabled');
-        },
-      },
+
       /**
        * Whether the magnifier following ChromeVox focus feature is
        * enabled.
@@ -183,7 +173,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
   private isAccessibilityReducedAnimationsEnabled_: boolean;
   private isAccessibilityOverlayScrollbarEnabled_: boolean;
-  private isAccessibilityMagnifierFollowsStsEnabled_: boolean;
   private isAccessibilityMagnifierFollowsChromeVoxEnabled_: boolean;
 
 

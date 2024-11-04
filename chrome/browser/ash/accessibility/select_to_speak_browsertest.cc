@@ -245,17 +245,6 @@ class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
   }
 };
 
-class SelectToSpeakTestWithMagnifierFollowing : public SelectToSpeakTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMagnifierFollowsSts);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
   sts_test_utils::TurnOnSelectToSpeakForTest(
       AccessibilityManager::Get()->profile());
@@ -650,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   EXPECT_GT(final_window_position.y(), initial_window_position.y());
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithMagnifierFollowing,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        FullscreenMagnifierFollowsTextBoundsWhenPrefOn) {
   sm_.send_word_events_and_wait_to_finish(true);
   Profile* profile = AccessibilityManager::Get()->profile();

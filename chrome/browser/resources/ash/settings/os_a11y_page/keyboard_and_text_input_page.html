@@ -132,25 +132,23 @@
     sub-label="$i18n{caretHighlightLabelSubtext}"
     deep-link-focus-id$="[[Setting.kHighlightTextCaret]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isAccessibilityCaretBlinkIntervalSettingEnabled_]]">
-  <div class="settings-box" id="caretBlinkIntervalRow">
-    <div class="flex start settings-box-text">
-      <div class="label" aria-hidden="true">
-        $i18n{caretBlinkIntervalLabel}
-      </div>
+<div class="settings-box" id="caretBlinkIntervalRow">
+  <div class="flex start settings-box-text">
+    <div class="label" aria-hidden="true">
+      $i18n{caretBlinkIntervalLabel}
     </div>
-    <settings-slider
-        id="caretBlinkIntervalSlider"
-        pref="{{caretBlinkIntervalVirtualPref_}}"
-        show-markers
-        label-aria="$i18n{caretBlinkIntervalLabel}"
-        label-min="$i18n{caretBlinkIntervalOff}"
-        label-max="$i18n{caretBlinkIntervalFast}"
-        ticks="[[computeCaretBlinkIntervalTicks_()]]"
-        deep-link-focus-id$="[[Setting.kCaretBlinkInterval]]">
-    </settings-slider>
   </div>
-</template>
+  <settings-slider
+      id="caretBlinkIntervalSlider"
+      pref="{{caretBlinkIntervalVirtualPref_}}"
+      show-markers
+      label-aria="$i18n{caretBlinkIntervalLabel}"
+      label-min="$i18n{caretBlinkIntervalOff}"
+      label-max="$i18n{caretBlinkIntervalFast}"
+      ticks="[[computeCaretBlinkIntervalTicks_()]]"
+      deep-link-focus-id$="[[Setting.kCaretBlinkInterval]]">
+  </settings-slider>
+</div>
 <settings-toggle-button
     id="caretBrowsingToggle"
     class="hr"

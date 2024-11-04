@@ -224,15 +224,13 @@
         deep-link-focus-id$=
             "[[Setting.kFullscreenMagnifierFocusFollowing]]">
     </settings-toggle-button>
-    <template is="dom-if" if="[[isAccessibilityMagnifierFollowsStsEnabled_]]">
-      <settings-toggle-button
-          id="fullScreenMagnifierFollowsStsToggle"
-          class="settings-box hr"
-          pref="{{prefs.settings.a11y.screen_magnifier_select_to_speak_focus_following}}"
-          label="$i18n{screenMagnifierSelectToSpeakFocusFollowingLabel}"
-          deep-link-focus-id$="[[Setting.kAccessibilityMagnifierFollowsSts]]">
-      </settings-toggle-button>
-    </template>
+    <settings-toggle-button
+        id="fullScreenMagnifierFollowsStsToggle"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.screen_magnifier_select_to_speak_focus_following}}"
+        label="$i18n{screenMagnifierSelectToSpeakFocusFollowingLabel}"
+        deep-link-focus-id$="[[Setting.kAccessibilityMagnifierFollowsSts]]">
+    </settings-toggle-button>
     <template is="dom-if" if="[[isAccessibilityMagnifierFollowsChromeVoxEnabled_]]">
       <settings-toggle-button
           id="fullScreenMagnifierFollowsChromeVoxToggle"
@@ -280,15 +278,13 @@
           disabled="[[!prefs.ash.docked_magnifier.enabled.value]]">
       </settings-dropdown-menu>
     </div>
-    <template is="dom-if" if="[[isAccessibilityMagnifierFollowsStsEnabled_]]">
-      <settings-toggle-button
-          id="dockedMagnifierFollowsStsToggle"
-          class="settings-box hr"
-          pref="{{prefs.settings.a11y.screen_magnifier_select_to_speak_focus_following}}"
-          label="$i18n{screenMagnifierSelectToSpeakFocusFollowingLabel}"
-          deep-link-focus-id$="[[Setting.kAccessibilityMagnifierFollowsSts]]" >
-      </settings-toggle-button>
-    </template>
+    <settings-toggle-button
+        id="dockedMagnifierFollowsStsToggle"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.screen_magnifier_select_to_speak_focus_following}}"
+        label="$i18n{screenMagnifierSelectToSpeakFocusFollowingLabel}"
+        deep-link-focus-id$="[[Setting.kAccessibilityMagnifierFollowsSts]]" >
+    </settings-toggle-button>
     <template is="dom-if" if="[[isAccessibilityMagnifierFollowsChromeVoxEnabled_]]">
       <settings-toggle-button
           id="dockedMagnifierFollowsChromeVoxToggle"

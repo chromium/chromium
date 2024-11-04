@@ -31,8 +31,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   let page: SettingsCursorAndTouchpadPageElement;
   let deviceBrowserProxy: TestDevicePageBrowserProxy;
   let prefElement: SettingsPrefsElement;
-  const overscrollFeatureEnabled =
-      loadTimeData.getBoolean('isAccessibilityOverscrollSettingFeatureEnabled');
   const disableInternalTrackpadFeatureEnabled =
       loadTimeData.getBoolean('isAccessibilityDisableTouchpadEnabled');
 
@@ -549,63 +547,48 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         assertTrue(page.prefs.settings.a11y.cursor_highlight.value);
       });
 
-  if (overscrollFeatureEnabled) {
-    test('overscroll setting enabled', async () => {
-      await initPage();
-      const overscrollToggle =
-          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#overscrollToggle');
+  test('overscroll setting enabled', async () => {
+    await initPage();
+    const overscrollToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#overscrollToggle');
 
-      // Setting is visible.
-      assert(overscrollToggle);
-      assertTrue(isVisible(overscrollToggle));
+    // Setting is visible.
+    assert(overscrollToggle);
+    assertTrue(isVisible(overscrollToggle));
 
-      // Pref has default value.
-      assertTrue(overscrollToggle.checked);
-      assertTrue(page.prefs.settings.a11y.overscroll_history_navigation.value);
+    // Pref has default value.
+    assertTrue(overscrollToggle.checked);
+    assertTrue(page.prefs.settings.a11y.overscroll_history_navigation.value);
 
-      overscrollToggle.click();
+    overscrollToggle.click();
 
-      await waitBeforeNextRender(page);
-      flush();
-      assertFalse(overscrollToggle.checked);
-      assertFalse(page.prefs.settings.a11y.overscroll_history_navigation.value);
-    });
+    await waitBeforeNextRender(page);
+    flush();
+    assertFalse(overscrollToggle.checked);
+    assertFalse(page.prefs.settings.a11y.overscroll_history_navigation.value);
+  });
 
-    test('kOverscrollSetting is deep-linkable', async () => {
-      await initPage();
+  test('kOverscrollSetting is deep-linkable', async () => {
+    await initPage();
 
-      const setting = settingMojom.Setting.kOverscrollEnabled;
-      const params = new URLSearchParams();
-      params.append('settingId', setting.toString());
-      Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
+    const setting = settingMojom.Setting.kOverscrollEnabled;
+    const params = new URLSearchParams();
+    params.append('settingId', setting.toString());
+    Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
 
-      const deepLinkElement =
-          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#overscrollToggle');
+    const deepLinkElement =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#overscrollToggle');
 
-      assert(deepLinkElement);
+    assert(deepLinkElement);
 
-      await waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
 
-      assertEquals(
-          deepLinkElement, page.shadowRoot!.activeElement,
-          `Element should be focused for settingId=${setting}'`);
-    });
-  } else {
-    test('overscroll setting disabled', async () => {
-      await initPage();
-      const overscrollToggle =
-          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#overscrollToggle');
-
-      // No setting visible.
-      assertNull(overscrollToggle);
-
-      // Pref has default value.
-      assertTrue(page.prefs.settings.a11y.overscroll_history_navigation.value);
-    });
-  }
+    assertEquals(
+        deepLinkElement, page.shadowRoot!.activeElement,
+        `Element should be focused for settingId=${setting}'`);
+  });
 
   test(
       'face control feature does not show if the feature flag is disabled',

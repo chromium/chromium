@@ -104,43 +104,6 @@ class TestAccessibilityObserver : public AccessibilityObserver {
   int status_changed_count_ = 0;
 };
 
-class AccessibilityControllerDefaultCaretIntervalTest : public AshTestBase {
- protected:
-  AccessibilityControllerDefaultCaretIntervalTest() = default;
-  AccessibilityControllerDefaultCaretIntervalTest(
-      const AccessibilityControllerDefaultCaretIntervalTest&) = delete;
-  AccessibilityControllerDefaultCaretIntervalTest& operator=(
-      const AccessibilityControllerDefaultCaretIntervalTest&) = delete;
-  ~AccessibilityControllerDefaultCaretIntervalTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kAccessibilityCaretBlinkIntervalSetting);
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AccessibilityControllerDefaultCaretIntervalTest,
-       DefaultCaretBlinkInterval) {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  // The pref is not registered.
-  EXPECT_FALSE(prefs->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
-
-  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
-  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
-  // All NativeThemes use the default value.
-  base::TimeDelta default_interval = base::Milliseconds(500);
-  EXPECT_EQ(default_interval, native_theme_dark->GetCaretBlinkInterval());
-  EXPECT_EQ(default_interval, native_theme_web->GetCaretBlinkInterval());
-  EXPECT_EQ(default_interval, native_theme->GetCaretBlinkInterval());
-}
-
 class AccessibilityControllerTest : public AshTestBase {
  protected:
   AccessibilityControllerTest() = default;
@@ -155,8 +118,6 @@ class AccessibilityControllerTest : public AshTestBase {
                               ::features::kAccessibilityAccelerator,
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
-                              ::features::
-                                  kAccessibilityCaretBlinkIntervalSetting,
                               ::features::kAccessibilityFlashScreenFeature,
                               ::features::kOverlayScrollbarsOSSetting},
         /*disabled_features=*/{});

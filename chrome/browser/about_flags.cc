@@ -7949,12 +7949,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityAcceleratorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityAccelerator)},
 
-    {"enable-accessibility-caret-blink-interval-setting",
-     flag_descriptions::kAccessibilityCaretBlinkIntervalSettingName,
-     flag_descriptions::kAccessibilityCaretBlinkIntervalSettingDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityCaretBlinkIntervalSetting)},
-
     {"enable-accessibility-disable-trackpad",
      flag_descriptions::kAccessibilityDisableTouchpadName,
      flag_descriptions::kAccessibilityDisableTouchpadDescription, kOsCrOS,
@@ -7964,18 +7958,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityFlashScreenFeatureName,
      flag_descriptions::kAccessibilityFlashScreenFeatureDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityFlashScreenFeature)},
-
-    {"enable-accessibility-magnify-accelerator-dialog",
-     flag_descriptions::kAccessibilityMagnifyAcceleratorDialogName,
-     flag_descriptions::kAccessibilityMagnifyAcceleratorDialogDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityMagnifyAcceleratorDialog)},
-
-    {"enable-accessibility-overscroll-setting",
-     flag_descriptions::kAccessibilityOverscrollSettingFeatureName,
-     flag_descriptions::kAccessibilityOverscrollSettingFeatureDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityOverscrollSettingFeature)},
 
     {"enable-accessibility-shake-to-locate",
      flag_descriptions::kAccessibilityShakeToLocateName,
@@ -8013,11 +7995,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsChromeVox)},
-
-    {"enable-accessibility-magnifier-follows-sts",
-     flag_descriptions::kAccessibilityMagnifierFollowsStsName,
-     flag_descriptions::kAccessibilityMagnifierFollowsStsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsSts)},
 
     {"enable-accessibility-mousekeys",
      flag_descriptions::kAccessibilityMouseKeysName,

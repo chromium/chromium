@@ -214,19 +214,6 @@ class OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled
       ::features::kAccessibilityMagnifierFollowsChromeVox};
 };
 
-class OSSettingsMochaTestMagnifierFollowsStsEnabled
-    : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityMagnifierFollowsSts};
-};
-
-class OSSettingsMochaTestOverscrollFeatureEnabled : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityOverscrollSettingFeature};
-};
-
 class OSSettingsRevampMochaTestMouseKeysEnabled
     : public OSSettingsRevampMochaTest {
  private:
@@ -264,19 +251,6 @@ INSTANTIATE_TEST_SUITE_P(
     OSSettingsRevampMochaTestGraduationEnabled,
     testing::Bool(),
     OSSettingsRevampMochaTestGraduationEnabled::DescribeParams);
-
-class OSSettingsRevampMochaTestCaretBlinkSettingEnabled
-    : public OSSettingsRevampMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityCaretBlinkIntervalSetting};
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    RevampParameterized,
-    OSSettingsRevampMochaTestCaretBlinkSettingEnabled,
-    testing::Bool(),
-    OSSettingsRevampMochaTestCaretBlinkSettingEnabled::DescribeParams);
 
 class OSSettingsRevampMochaTestFlashNotificationsEnabled
     : public OSSettingsRevampMochaTest {
@@ -1250,11 +1224,6 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestMouseKeysEnabled,
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestOverscrollFeatureEnabled,
-                       OsA11yPageCursorAndTouchpadPage) {
-  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
                        OsA11yPageFaceGazeSubpage) {
   RunSettingsTest("os_a11y_page/facegaze_subpage_test.js");
@@ -1300,18 +1269,8 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled,
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMagnifierFollowsStsEnabled,
-                       OsA11yPageDisplayAndMagnificationSubpage) {
-  RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
-}
-
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageKeyboardAndTextInputPage) {
-  RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestCaretBlinkSettingEnabled,
-                       OsA11yPageKeyboardAndTextInputPageCaret) {
   RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
 }
 

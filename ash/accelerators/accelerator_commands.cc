@@ -1555,14 +1555,11 @@ void ToggleFullscreenMagnifier() {
   if (!current_enabled && !dialog_ever_accepted) {
     // Enable fullscreen magnifier before showing the dialog, so that users
     // can see the dialog more clearly.
-    bool magnify_dialog =
-        ::features::IsAccessibilityMagnifyAcceleratorDialogEnabled();
     int title = IDS_ASH_SCREEN_MAGNIFIER_TITLE;
     std::u16string body =
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY);
     int cancel = IDS_APP_CANCEL;
     int confirm = IDS_ASH_CONTINUE_BUTTON;
-    if (magnify_dialog) {
       Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(true);
       title = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TITLE;
       cancel = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TURN_OFF_BUTTON;
@@ -1576,15 +1573,6 @@ void ToggleFullscreenMagnifier() {
               AcceleratorAction::kMagnifierZoomOut);
       if (zoom_in_details.empty() || zoom_out_details.empty()) {
         body = l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY);
-      } else {
-        std::u16string zoom_in_text =
-            AcceleratorLookup::GetAcceleratorDetailsText(zoom_in_details[0]);
-        std::u16string zoom_out_text =
-            AcceleratorLookup::GetAcceleratorDetailsText(zoom_out_details[0]);
-        body = l10n_util::GetStringFUTF16(
-            IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY_DYNAMIC, zoom_in_text,
-            zoom_out_text);
-      }
     }
     accessibility_controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(title), body,

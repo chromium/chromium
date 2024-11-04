@@ -1328,12 +1328,6 @@ const char kAccessibilityAcceleratorName[] =
 const char kAccessibilityAcceleratorDescription[] =
     "This option enables the Accessibility accelerator.";
 
-const char kAccessibilityCaretBlinkIntervalSettingName[] =
-    "Adds text caret blink rate setting";
-const char kAccessibilityCaretBlinkIntervalSettingDescription[] =
-    "Allows the user to change their text caret blink rate setting across Ash "
-    "and Chrome.";
-
 const char kAccessibilityDisableTouchpadName[] =
     "Accessibility disable trackpad";
 const char kAccessibilityDisableTouchpadDescription[] =
@@ -1344,12 +1338,6 @@ const char kAccessibilityFlashScreenFeatureName[] =
 const char kAccessibilityFlashScreenFeatureDescription[] =
     "Allows the user to use a feature which flashes the screen for each "
     "notification.";
-
-const char kAccessibilityOverscrollSettingFeatureName[] =
-    "Adds overscroll to navigate setting";
-const char kAccessibilityOverscrollSettingFeatureDescription[] =
-    "Allows the user to change the swipe to navigate setting on ChromeOS in "
-    "Accessibility settings.";
 
 const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
 const char kAccessibilityServiceDescription[] =
@@ -1398,18 +1386,6 @@ const char kAccessibilityMagnifierFollowsChromeVoxName[] =
     "Magnifier follows ChromeVox focus";
 const char kAccessibilityMagnifierFollowsChromeVoxDescription[] =
     "This option enables the fullscreen magnifier to follow ChromeVox's focus.";
-
-const char kAccessibilityMagnifierFollowsStsName[] =
-    "Magnifier follows Select to Speak focus";
-const char kAccessibilityMagnifierFollowsStsDescription[] =
-    "This option enables the fullscreen magnifier to follow Select to Speak's "
-    "reading focus.";
-
-const char kAccessibilityMagnifyAcceleratorDialogName[] =
-    "Magnifier turns on with accelerator dialog";
-const char kAccessibilityMagnifyAcceleratorDialogDescription[] =
-    "This option enables the fullscreen magnifier to turn on as soon as the "
-    "accelerator dialog is shown.";
 
 const char kAccessibilityMouseKeysName[] = "Mouse Keys";
 const char kAccessibilityMouseKeysDescription[] =

@@ -898,10 +898,6 @@ AccessibilityPrivateSetSelectToSpeakFocusFunction::Run() {
       accessibility_private::SetSelectToSpeakFocus::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!features::IsAccessibilityMagnifierFollowsStsEnabled()) {
-    return RespondNow(NoArguments());
-  }
-
   if (!ash::AccessibilityController::Get()->fullscreen_magnifier().enabled() &&
       !ash::AccessibilityController::Get()->docked_magnifier().enabled()) {
     return RespondNow(NoArguments());

@@ -755,17 +755,11 @@ extern const char kUseMLKEMDescription[];
 extern const char kAccessibilityAcceleratorName[];
 extern const char kAccessibilityAcceleratorDescription[];
 
-extern const char kAccessibilityCaretBlinkIntervalSettingName[];
-extern const char kAccessibilityCaretBlinkIntervalSettingDescription[];
-
 extern const char kAccessibilityDisableTouchpadName[];
 extern const char kAccessibilityDisableTouchpadDescription[];
 
 extern const char kAccessibilityFlashScreenFeatureName[];
 extern const char kAccessibilityFlashScreenFeatureDescription[];
-
-extern const char kAccessibilityOverscrollSettingFeatureName[];
-extern const char kAccessibilityOverscrollSettingFeatureDescription[];
 
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
@@ -794,12 +788,6 @@ extern const char kAccessibilityFaceGazeGravityWellsDescription[];
 
 extern const char kAccessibilityMagnifierFollowsChromeVoxName[];
 extern const char kAccessibilityMagnifierFollowsChromeVoxDescription[];
-
-extern const char kAccessibilityMagnifierFollowsStsName[];
-extern const char kAccessibilityMagnifierFollowsStsDescription[];
-
-extern const char kAccessibilityMagnifyAcceleratorDialogName[];
-extern const char kAccessibilityMagnifyAcceleratorDialogDescription[];
 
 extern const char kAccessibilityMouseKeysName[];
 extern const char kAccessibilityMouseKeysDescription[];

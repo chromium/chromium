@@ -561,10 +561,6 @@ bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
   return ::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled();
 }
 
-bool IsAccessibilityMagnifierFollowsStsEnabled() {
-  return ::features::IsAccessibilityMagnifierFollowsStsEnabled();
-}
-
 bool IsAccessibilityFaceGazeEnabled() {
   return ::features::IsAccessibilityFaceGazeEnabled();
 }
@@ -575,10 +571,6 @@ bool IsAccessibilityMouseKeysEnabled() {
 
 bool IsAccessibilityDisableTouchpadEnabled() {
   return ::features::IsAccessibilityDisableTouchpadEnabled();
-}
-
-bool IsAccessibilityOverscrollSettingFeatureEnabled() {
-  return ::features::IsAccessibilityOverscrollSettingFeatureEnabled();
 }
 
 bool IsAccessibilityFlashNotificationFeatureEnabled() {
@@ -1465,7 +1457,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddInteger("defaultCaretBlinkIntervalMs",
                           ash::kDefaultCaretBlinkIntervalMs);
-
   html_source->AddInteger("defaultFaceGazeCursorSpeed",
                           ash::kDefaultFaceGazeCursorSpeed);
   html_source->AddBoolean("defaultFaceGazeCursorUseAcceleration",
@@ -1492,9 +1483,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
                           IsAccessibilityMagnifierFollowsChromeVoxEnabled());
 
-  html_source->AddBoolean("isAccessibilityMagnifierFollowsStsEnabled",
-                          IsAccessibilityMagnifierFollowsStsEnabled());
-
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
@@ -1503,13 +1491,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
                           IsAccessibilityMouseKeysEnabled());
-
-  html_source->AddBoolean(
-      "isAccessibilityCaretBlinkIntervalSettingEnabled",
-      ::features::IsAccessibilityCaretBlinkIntervalSettingEnabled());
-
-  html_source->AddBoolean("isAccessibilityOverscrollSettingFeatureEnabled",
-                          IsAccessibilityOverscrollSettingFeatureEnabled());
 
   html_source->AddBoolean("isAccessibilityFlashNotificationFeatureEnabled",
                           IsAccessibilityFlashNotificationFeatureEnabled());
@@ -1936,19 +1917,10 @@ void AccessibilitySection::UpdateSearchTags() {
         GetA11yMagnifierChromeVoxFocusFollowingSearchConcepts());
   }
 
-  if (IsAccessibilityMagnifierFollowsStsEnabled()) {
-    updater.AddSearchTags(
-        GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts());
-  } else {
-    updater.RemoveSearchTags(
-        GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts());
-  }
-
+  updater.AddSearchTags(
+      GetA11yFullscreenMagnifierSelectToSpeakFocusFollowingSearchConcepts());
   updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());
-
-  if (IsAccessibilityOverscrollSettingFeatureEnabled()) {
-    updater.AddSearchTags(GetA11yOverscrollSettingSearchConcepts());
-  }
+  updater.AddSearchTags(GetA11yOverscrollSettingSearchConcepts());
 
   if (IsAccessibilityFlashNotificationFeatureEnabled()) {
     updater.AddSearchTags(GetA11yFlashNotificationsSearchConcepts());

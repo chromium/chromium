@@ -2364,11 +2364,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "enable-accessibility-caret-blink-interval-setting",
-    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "enable-accessibility-disable-trackpad",
     "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142
@@ -2404,16 +2399,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "enable-accessibility-magnifier-follows-sts",
-    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 142
-  },
-  {
-    "name": "enable-accessibility-magnify-accelerator-dialog",
-    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "enable-accessibility-manage-broadcast-recevier-on-background",
     "owners": [ "avvall@google.com", "elabadysayed@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145
@@ -2422,11 +2407,6 @@
     "name": "enable-accessibility-mousekeys",
     "owners": [ "zork@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142
-  },
-  {
-    "name": "enable-accessibility-overscroll-setting",
-    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 145
   },
   {
     "name": "enable-accessibility-page-zoom",

@@ -100,14 +100,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
-      isAccessibilityCaretBlinkIntervalSettingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityCaretBlinkIntervalSettingEnabled');
-        },
-      },
-
       showDictationLocaleMenu_: {
         type: Boolean,
         value: false,
@@ -167,7 +159,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
   private dictationLocaleOptions_: LocaleInfo[];
   private dictationLocaleSubtitleOverride_: string;
   private dictationLocalesList_: LocaleInfo[];
-  private isAccessibilityCaretBlinkIntervalSettingEnabled_: boolean;
   private isKioskModeActive_: boolean;
   private focusHighlightEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
@@ -341,7 +332,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
 
   private computeCaretBlinkIntervalVirtualPref_():
       chrome.settingsPrivate.PrefObject<number> {
-    if (!this.isAccessibilityCaretBlinkIntervalSettingEnabled_ || !this.prefs) {
+    if (!this.prefs) {
       return {
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: this.defaultCaretBlinkRateMs_,
@@ -362,9 +353,6 @@ export class SettingsKeyboardAndTextInputPageElement extends
   }
 
   private updateCaretBlinkIntervalFromVirtualPref_(): void {
-    if (!this.isAccessibilityCaretBlinkIntervalSettingEnabled_) {
-      return;
-    }
     const percentage = this.caretBlinkIntervalVirtualPref_.value;
     // Default: do not blink.
     let delayMs = 0;

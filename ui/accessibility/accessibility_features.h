@@ -177,30 +177,13 @@ IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsChromeVox);
 AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsChromeVoxEnabled();
 
-// Whether the screen magnifier can follow the Select to Speak focus.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsSts);
-AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();
-
 // Control mouse with keyboard.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMouseKeys);
 AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
 
-// Control blink rate of text cursor.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCaretBlinkIntervalSetting);
-AX_BASE_EXPORT bool IsAccessibilityCaretBlinkIntervalSettingEnabled();
-
-// Control whether the overscroll setting is available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOverscrollSettingFeature);
-AX_BASE_EXPORT bool IsAccessibilityOverscrollSettingFeatureEnabled();
-
 // Controls whether the shake cursor to locate feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
-
-// Controls whether the turn on magnifier at accelerator dialog feature is
-// available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifyAcceleratorDialog);
-AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
 
 // Controls whether the disable trackpad feature is enabled.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);

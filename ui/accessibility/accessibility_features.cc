@@ -223,35 +223,11 @@ bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
       ::features::kAccessibilityMagnifierFollowsChromeVox);
 }
 
-BASE_FEATURE(kAccessibilityMagnifierFollowsSts,
-             "AccessibilityMagnifierFollowsSts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityMagnifierFollowsStsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityMagnifierFollowsSts);
-}
-
 BASE_FEATURE(kAccessibilityMouseKeys,
              "AccessibilityMouseKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityMouseKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
-}
-
-BASE_FEATURE(kAccessibilityCaretBlinkIntervalSetting,
-             "AccessibilityCaretBlinkIntervalSetting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityCaretBlinkIntervalSettingEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityCaretBlinkIntervalSetting);
-}
-
-BASE_FEATURE(kAccessibilityOverscrollSettingFeature,
-             "AccessibilityOverscrollSettingFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityOverscrollSettingFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityOverscrollSettingFeature);
 }
 
 BASE_FEATURE(kAccessibilityDisableTrackpad,
@@ -282,14 +258,6 @@ BASE_FEATURE(kAccessibilityShakeToLocate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
-}
-
-BASE_FEATURE(kAccessibilityMagnifyAcceleratorDialog,
-             "AccessibilityMagnifyAcceleratorDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityMagnifyAcceleratorDialogEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityMagnifyAcceleratorDialog);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

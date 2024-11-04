@@ -300,17 +300,6 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
-       * Whether to show the overscroll history navigation setting.
-       */
-      isAccessibilityOverscrollSettingFeatureEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isAccessibilityOverscrollSettingFeatureEnabled');
-        },
-      },
-
-      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -370,7 +359,6 @@ export class SettingsCursorAndTouchpadPageElement extends
   private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   private readonly isAccessibilityFaceGazeEnabled_: boolean;
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
-  private readonly isAccessibilityOverscrollSettingFeatureEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
   private hasMouse_: boolean;
   private hasTouchpad_: boolean;

@@ -1536,16 +1536,11 @@ void AccessibilityController::RegisterProfilePrefs(
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 
-  if (::features::IsAccessibilityMagnifierFollowsStsEnabled()) {
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityMagnifierFollowsSts, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
-
-  if (::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
-    registry->RegisterIntegerPref(prefs::kAccessibilityCaretBlinkInterval,
-                                  kDefaultCaretBlinkIntervalMs);
-  }
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityMagnifierFollowsSts, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(prefs::kAccessibilityCaretBlinkInterval,
+                                kDefaultCaretBlinkIntervalMs);
 
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
@@ -2655,13 +2650,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateColorCorrectionFromPrefs,
           base::Unretained(this)));
-  if (::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityCaretBlinkInterval,
-        base::BindRepeating(
-            &AccessibilityController::UpdateCaretBlinkIntervalFromPrefs,
-            base::Unretained(this)));
-  }
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityCaretBlinkInterval,
+      base::BindRepeating(
+          &AccessibilityController::UpdateCaretBlinkIntervalFromPrefs,
+          base::Unretained(this)));
   if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityFlashNotificationsColor,
@@ -3100,9 +3093,6 @@ void AccessibilityController::UpdateColorCorrectionFromPrefs() {
 }
 
 void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
-  if (!::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
-    return;
-  }
   base::TimeDelta caret_blink_interval = base::Milliseconds(
       active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval));
   bool notify_dark = false;
