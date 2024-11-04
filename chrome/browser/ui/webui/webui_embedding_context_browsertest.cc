@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -48,6 +49,108 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
   testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
+                       SetTabInterface_TracksEmbedderStateCorrectly) {
+  // Create a new WebContents, the tab and browser should start empty.
+  std::unique_ptr<content::WebContents> host_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  EXPECT_FALSE(GetTabInterface(host_contents.get()));
+  EXPECT_FALSE(GetBrowserWindowInterface(host_contents.get()));
+
+  base::MockCallback<base::RepeatingClosure> tab_changed_callback;
+  base::MockCallback<base::RepeatingClosure> browser_changed_callback;
+  base::CallbackListSubscription tab_subscription = RegisterTabInterfaceChanged(
+      host_contents.get(), tab_changed_callback.Get());
+  base::CallbackListSubscription browser_subscription =
+      RegisterBrowserWindowInterfaceChanged(host_contents.get(),
+                                            browser_changed_callback.Get());
+
+  // Set the tab interface, the tracked state should update.
+  EXPECT_CALL(tab_changed_callback, Run).Times(1);
+  EXPECT_CALL(browser_changed_callback, Run).Times(1);
+  tabs::TabInterface* tab_interface =
+      browser()->tab_strip_model()->GetActiveTab();
+  SetTabInterface(host_contents.get(), tab_interface);
+  EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
+  EXPECT_EQ(browser(), GetBrowserWindowInterface(host_contents.get()));
+  testing::Mock::VerifyAndClearExpectations(&tab_changed_callback);
+  testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
+
+  // Reset the tab interface, this should be reflected in the tracked state.
+  EXPECT_CALL(tab_changed_callback, Run).Times(1);
+  EXPECT_CALL(browser_changed_callback, Run).Times(1);
+  SetTabInterface(host_contents.get(), nullptr);
+  EXPECT_FALSE(GetTabInterface(host_contents.get()));
+  EXPECT_FALSE(GetBrowserWindowInterface(host_contents.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
+                       SetTabInterface_NotifiesBrowserChanges) {
+  // Create a new WebContents and set the emebdding tab interface.
+  std::unique_ptr<content::WebContents> host_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), 1, true);
+  tabs::TabInterface* tab_interface =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
+  SetTabInterface(host_contents.get(), tab_interface);
+  EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
+  EXPECT_EQ(browser(), GetBrowserWindowInterface(host_contents.get()));
+
+  base::MockCallback<base::RepeatingClosure> tab_changed_callback;
+  base::MockCallback<base::RepeatingClosure> browser_changed_callback;
+  base::CallbackListSubscription tab_subscription = RegisterTabInterfaceChanged(
+      host_contents.get(), tab_changed_callback.Get());
+  base::CallbackListSubscription browser_subscription =
+      RegisterBrowserWindowInterfaceChanged(host_contents.get(),
+                                            browser_changed_callback.Get());
+
+  // Create a new browser and move the tab over, the appropriate browser changed
+  // notification should be fired.
+  EXPECT_CALL(tab_changed_callback, Run).Times(0);
+  EXPECT_CALL(browser_changed_callback, Run).Times(1);
+
+  Browser* dst_browser = CreateBrowser(browser()->profile());
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(1);
+  EXPECT_EQ(tab_interface, detached_tab.get());
+  dst_browser->tab_strip_model()->InsertDetachedTabAt(
+      1, std::move(detached_tab), AddTabTypes::ADD_NONE);
+
+  EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
+  EXPECT_EQ(dst_browser, GetBrowserWindowInterface(host_contents.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
+                       SetTabInterface_TrackedStateResetOnEmbedderDestruction) {
+  // Create a new WebContents and set the emebdding tab interface.
+  std::unique_ptr<content::WebContents> host_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), 1, true);
+  tabs::TabInterface* tab_interface =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
+  SetTabInterface(host_contents.get(), tab_interface);
+  EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
+  EXPECT_EQ(browser(), GetBrowserWindowInterface(host_contents.get()));
+
+  base::MockCallback<base::RepeatingClosure> tab_changed_callback;
+  base::MockCallback<base::RepeatingClosure> browser_changed_callback;
+  base::CallbackListSubscription tab_subscription = RegisterTabInterfaceChanged(
+      host_contents.get(), tab_changed_callback.Get());
+  base::CallbackListSubscription browser_subscription =
+      RegisterBrowserWindowInterfaceChanged(host_contents.get(),
+                                            browser_changed_callback.Get());
+
+  // Destroy the embedding tab, this should be reflected in tracked state.
+  EXPECT_CALL(tab_changed_callback, Run).Times(1);
+  EXPECT_CALL(browser_changed_callback, Run).Times(1);
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+  EXPECT_FALSE(GetTabInterface(host_contents.get()));
+  EXPECT_FALSE(GetBrowserWindowInterface(host_contents.get()));
 }
 
 }  // namespace webui
