@@ -52,7 +52,8 @@ void ElementIdentifier::RegisterKnownIdentifier(
 #if DCHECK_IS_ON()
   // Enforce uniqueness in DCHECK builds.
   const ElementIdentifier existing = FromName(element_identifier.handle_->name);
-  DCHECK(!existing || existing == element_identifier);
+  DCHECK(!existing || existing == element_identifier)
+      << "Duplicate identifier: " << element_identifier.handle_->name;
 #endif
 
   GetKnownIdentifiers().insert(element_identifier.handle_);
