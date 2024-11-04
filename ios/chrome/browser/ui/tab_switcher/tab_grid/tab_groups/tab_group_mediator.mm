@@ -301,7 +301,10 @@
   if (webStateList->IsBatchInProgress() || !_tabGroup) {
     return;
   }
-  CHECK(detachChange.group() == _tabGroup.get());
+  if (detachChange.group() != _tabGroup.get()) {
+    // This can occur if a tab from a different group is closed.
+    return;
+  }
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
   GridItemIdentifier* identifierToRemove =

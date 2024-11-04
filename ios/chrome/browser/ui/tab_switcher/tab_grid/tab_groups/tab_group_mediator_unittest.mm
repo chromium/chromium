@@ -239,3 +239,22 @@ TEST_F(TabGroupMediatorTest, Ungroup) {
   ASSERT_EQ(6, web_state_list->count());
   EXPECT_EQ(0u, web_state_list->GetGroups().size());
 }
+
+// Tests that closing tabs in a group that is not captured by the current
+// mediator removes the group.
+TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(6, web_state_list->count());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+
+  tab_groups::TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
+      u"group 2", tab_groups::TabGroupColorId::kRed);
+  web_state_list->CreateGroup({4, 5}, visual_data,
+                              tab_groups::TabGroupId::GenerateNew());
+  EXPECT_EQ("| f [ 1 a* b c ] [ _ d e ]",
+            builder_->GetWebStateListDescription());
+
+  web_state_list->CloseWebStateAt(4, WebStateList::CLOSE_USER_ACTION);
+  web_state_list->CloseWebStateAt(4, WebStateList::CLOSE_USER_ACTION);
+  EXPECT_EQ("| f [ 1 a* b c ]", builder_->GetWebStateListDescription());
+}
