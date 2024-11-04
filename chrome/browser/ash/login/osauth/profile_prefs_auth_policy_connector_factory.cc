@@ -39,10 +39,11 @@ ProfilePrefsAuthPolicyConnectorFactory::ProfilePrefsAuthPolicyConnectorFactory()
 ProfilePrefsAuthPolicyConnectorFactory::
     ~ProfilePrefsAuthPolicyConnectorFactory() = default;
 
-KeyedService* ProfilePrefsAuthPolicyConnectorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProfilePrefsAuthPolicyConnectorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto* connector = new ProfilePrefsAuthPolicyConnector();
-  AuthParts::Get()->SetProfilePrefsAuthPolicyConnector(connector);
+  auto connector = std::make_unique<ProfilePrefsAuthPolicyConnector>();
+  AuthParts::Get()->SetProfilePrefsAuthPolicyConnector(connector.get());
   return connector;
 }
 
