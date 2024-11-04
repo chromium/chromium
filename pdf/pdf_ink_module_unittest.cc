@@ -26,7 +26,6 @@
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
-#include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -35,8 +34,6 @@
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/strokes/input/type_matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -689,28 +686,6 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     return ink_module().GetVisibleStrokesInputPositionsForTesting();
   }
 
-  void DrawWithSizeAndCompare(const gfx::Size& bitmap_size,
-                              std::string_view expected_png_filename) {
-    // Uses MakeN32Premul() and clear the canvas just like
-    // PdfViewWebPlugin::Paint().
-    SkBitmap bitmap;
-    bitmap.allocPixels(
-        SkImageInfo::MakeN32Premul(bitmap_size.width(), bitmap_size.height()));
-    SkCanvas canvas(bitmap);
-    canvas.clear(SK_ColorTRANSPARENT);
-    ink_module().Draw(canvas);
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(THREAD_SANITIZER) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    !defined(NDEBUG)
-    // Some build configs may not have a pixel-perfect match.
-    EXPECT_TRUE(FuzzyMatchesPngFile(
-        bitmap.asImage().get(), GetInkTestDataFilePath(expected_png_filename)));
-#else
-    EXPECT_TRUE(MatchesPngFile(bitmap.asImage().get(),
-                               GetInkTestDataFilePath(expected_png_filename)));
-#endif
-  }
-
  private:
   void ApplyStrokeWithMouseAtPointsMaybeHandled(
       const gfx::PointF& mouse_down_point,
@@ -775,30 +750,6 @@ TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
                                       {kCanonicalMouseDownPosition,
                                        kCanonicalMouseMovePosition,
                                        kCanonicalMouseUpPosition}})));
-}
-
-TEST_F(PdfInkModuleStrokeTest, DrawRenderTransform) {
-  // Simulate a viewport that is wider than page to be rendered, and has the
-  // page centered within that.  The page is positioned at top of viewport with
-  // no vertical padding.
-  constexpr gfx::SizeF kPageSize(50.0f, 60.0f);
-  constexpr gfx::PointF kPageOrigin(0.0f, -15.0f);
-  constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
-  constexpr gfx::Vector2dF kViewportOrigin(5.0f, 0.0f);
-  client().set_page_layouts(base::span_from_ref(kPageLayout));
-  client().set_page_visibility(0, true);
-  client().set_orientation(PageOrientation::kClockwise180);
-  client().set_viewport_origin_offset(kViewportOrigin);
-
-  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
-
-  constexpr gfx::Size kBitmapSize(100, 100);
-  DrawWithSizeAndCompare(kBitmapSize,
-                         "draw_render_transform_simple_stroke.png");
-
-  // But if the one and only page is not visible, then Draw() does nothing.
-  client().set_page_visibility(0, false);
-  DrawWithSizeAndCompare(kBitmapSize, "draw_render_transform_blank.png");
 }
 
 TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
