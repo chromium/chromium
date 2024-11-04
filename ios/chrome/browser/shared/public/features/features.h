@@ -304,6 +304,10 @@ extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 // should only be used for experiment.
 BASE_DECLARE_FEATURE(kLensOverlayDisablePriceInsights);
 
+// Feature flag to enable the Lens overlay location bar entrypoint. Enabled by
+// default.
+BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);
+
 // Feature to enable force showing the lens overlay onboarding screen.
 BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 

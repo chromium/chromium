@@ -556,6 +556,11 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 extern const char kLensOverlayDisablePriceInsightsName[];
 extern const char kLensOverlayDisablePriceInsightsDescription[];
 
+// Title and description for the flag to enable the Lens overlay location bar
+// entrypoint.
+extern const char kLensOverlayEnableLocationBarEntrypointName[];
+extern const char kLensOverlayEnableLocationBarEntrypointDescription[];
+
 // Title and description for the flag to enable the Lens translate toggle mode.
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];

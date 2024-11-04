@@ -642,6 +642,13 @@ extern const char kLensOverlayDisablePriceInsightsDescription[] =
     "trumps lens overlay entrypoint in the location bar. This should only be "
     "used for experiments.";
 
+extern const char kLensOverlayEnableLocationBarEntrypointName[] =
+    "Enable Lens overlay location bar entrypoint.";
+extern const char kLensOverlayEnableLocationBarEntrypointDescription[] =
+    "When enabled, shows the Lens overlay entrypoint in the location bar when "
+    "no other buttons are shown (price insight or messages). Enabled by "
+    "default. ";
+
 extern const char kLensOverlayForceShowOnboardingScreenName[] =
     "Force show Lens overlay onboarding screen";
 extern const char kLensOverlayForceShowOnboardingScreenDescription[] =
