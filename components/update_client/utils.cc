@@ -29,7 +29,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
-#include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"

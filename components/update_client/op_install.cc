@@ -6,7 +6,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -128,6 +128,8 @@ void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
     return;
   }
 
+  progress_callback.Run(-1);
+
   // Prepare the callbacks. Delete unpack_path when the completion
   // callback is called.
   auto checker = base::MakeRefCounted<CallbackChecker>(
@@ -192,7 +194,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
 
 }  // namespace
 
-void InstallOperation(
+base::OnceClosure InstallOperation(
     scoped_refptr<CrxCache> crx_cache,
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
@@ -202,8 +204,8 @@ void InstallOperation(
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
     const std::string& next_fp,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-    base::OnceCallback<void(const CrxInstaller::Result&)> callback,
     CrxInstaller::ProgressCallback progress_callback,
+    base::OnceCallback<void(const CrxInstaller::Result&)> callback,
     const base::FilePath& crx_file) {
   crx_cache->Put(
       crx_file, id, next_fp,
@@ -215,6 +217,7 @@ void InstallOperation(
                          next_fp, std::move(install_params), installer,
                          progress_callback),
           crx_file, std::move(unzipper), pk_hash, crx_format));
+  return base::DoNothing();
 }
 
 }  // namespace update_client

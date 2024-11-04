@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -270,17 +271,19 @@ void UpdateEngine::UpdateCheckResultsAvailable(
 
   update_context->update_check_error = error;
 
+  auto complete = base::BarrierCallback<bool>(
+      update_context->components_to_check_for_updates.size(),
+      base::BindOnce([](const std::vector<bool>&) {})
+          .Then(base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
+                               update_context)));
   if (error) {
     CHECK(!results);
     for (const auto& id : update_context->components_to_check_for_updates) {
       CHECK_EQ(1u, update_context->components.count(id));
       auto& component = update_context->components.at(id);
       component->SetUpdateCheckResult(std::nullopt, ErrorCategory::kUpdateCheck,
-                                      error);
+                                      error, complete);
     }
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
-                                  update_context));
     return;
   }
 
@@ -337,18 +340,14 @@ void UpdateEngine::UpdateCheckResultsAvailable(
         // the literals above, then this must be a success an not a parse error.
         return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);
       }(result.status);
-      component->SetUpdateCheckResult(result, category,
-                                      static_cast<int>(protocol_error));
+      component->SetUpdateCheckResult(
+          result, category, static_cast<int>(protocol_error), complete);
     } else {
       component->SetUpdateCheckResult(
           std::nullopt, ErrorCategory::kUpdateCheck,
-          static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND));
+          static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND), complete);
     }
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::UpdateCheckComplete, this, update_context));
 }
 
 void UpdateEngine::UpdateCheckComplete(

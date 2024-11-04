@@ -25,6 +25,7 @@ class GURL;
 namespace update_client {
 
 struct CategorizedError;
+class Configurator;
 
 // Do a download operation. Returns a cancellation callback. Once the download
 // is complete, it will invoke `callback` on the same sequence it was started
@@ -33,7 +34,9 @@ struct CategorizedError;
 // cancellation callback can only be invoked on the same sequence the operation
 // is started on.
 base::OnceClosure DownloadOperation(
-    scoped_refptr<const UpdateContext> update_context,
+    scoped_refptr<Configurator> config,
+    base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space,
+    bool is_foreground,
     const std::vector<GURL>& urls,
     int64_t size,
     const std::string& hash,

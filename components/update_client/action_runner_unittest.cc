@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -43,6 +44,7 @@ TEST(ActionRunnerTest, ErrorOnMissingPath) {
   auto handler = base::MakeRefCounted<FakeActionHandler>();
   base::RunLoop runloop;
   RunAction(handler, base::MakeRefCounted<TestInstaller>(), "file", "sid",
+            base::DoNothing(),
             base::BindLambdaForTesting(
                 [&](bool succeeded, int error_code, int extra_code1) {
                   success = succeeded;

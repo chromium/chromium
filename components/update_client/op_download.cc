@@ -39,18 +39,16 @@ namespace {
 
 #if BUILDFLAG(IS_MAC)
 // The minimum size of a download to attempt it at background priority.
-constexpr int64_t kBackgroundDownloadSizeThreshold = 10'000'000;  // 10 MB.
+constexpr int64_t kBackgroundDownloadSizeThreshold = 10'000'000; /*10 MB*/
+#else
+constexpr int64_t kBackgroundDownloadSizeThreshold = 0;
 #endif
 
-bool CanDoBackgroundDownload(scoped_refptr<const UpdateContext> update_context,
+bool CanDoBackgroundDownload(bool is_foreground,
+                             bool background_downloads_enabled,
                              int64_t size) {
-  // Foreground component updates are always downloaded in foreground.
-  bool enabled = !update_context->is_foreground &&
-                 update_context->config->EnabledBackgroundDownloader();
-#if BUILDFLAG(IS_MAC)
-  enabled &= size > kBackgroundDownloadSizeThreshold;
-#endif
-  return enabled;
+  return !is_foreground && background_downloads_enabled &&
+         size >= kBackgroundDownloadSizeThreshold;
 }
 
 // Returns a string literal corresponding to the value of the downloader |d|.
@@ -131,14 +129,14 @@ void DownloadComplete(
                             .extra_ = download_result.extra_code1})));
     return;
   }
-
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), download_result.response));
 }
 
 void HandleAvailableSpace(
-    scoped_refptr<const UpdateContext> update_context,
+    scoped_refptr<Configurator> config,
     scoped_refptr<Cancellation> cancellation,
+    bool is_foreground,
     const std::vector<GURL>& urls,
     int64_t size,
     const std::string& hash,
@@ -160,8 +158,9 @@ void HandleAvailableSpace(
     return;
   }
   scoped_refptr<CrxDownloader> crx_downloader =
-      update_context->config->GetCrxDownloaderFactory()->MakeCrxDownloader(
-          CanDoBackgroundDownload(update_context, size));
+      config->GetCrxDownloaderFactory()->MakeCrxDownloader(
+          CanDoBackgroundDownload(is_foreground,
+                                  config->EnabledBackgroundDownloader(), size));
   crx_downloader->set_progress_callback(progress_callback);
   cancellation->OnCancel(crx_downloader->StartDownload(
       urls, hash,
@@ -172,7 +171,9 @@ void HandleAvailableSpace(
 }  // namespace
 
 base::OnceClosure DownloadOperation(
-    scoped_refptr<const UpdateContext> update_context,
+    scoped_refptr<Configurator> config,
+    base::RepeatingCallback<int64_t(const base::FilePath&)> get_available_space,
+    bool is_foreground,
     const std::vector<GURL>& urls,
     int64_t size,
     const std::string& hash,
@@ -181,6 +182,7 @@ base::OnceClosure DownloadOperation(
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
   auto cancellation = base::MakeRefCounted<Cancellation>();
+  progress_callback.Run(-1, -1);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(
@@ -191,9 +193,9 @@ base::OnceClosure DownloadOperation(
                        ? get_available_space.Run(temp_dir.GetPath())
                        : int64_t{0};
           },
-          update_context->get_available_space),
-      base::BindOnce(&HandleAvailableSpace, update_context, cancellation, urls,
-                     size, hash, progress_callback, event_adder,
+          get_available_space),
+      base::BindOnce(&HandleAvailableSpace, config, cancellation, is_foreground,
+                     urls, size, hash, progress_callback, event_adder,
                      std::move(callback)));
   return base::BindOnce(&Cancellation::Cancel, cancellation);
 }

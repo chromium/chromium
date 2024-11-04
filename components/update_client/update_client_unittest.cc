@@ -1639,8 +1639,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
+        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
+        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -1825,7 +1827,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         result.error = 0;
         result.response = path;
       } else {
-        ADD_FAILURE();
+        ADD_FAILURE() << url.path();
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1924,17 +1926,17 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         .Times(1);
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloadingDiff;
+                         item.state == ComponentState::kDownloading;
                 })))
         .Times(AtLeast(1));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kUpdatingDiff;
+                         item.state == ComponentState::kUpdating;
                 })))
         .Times(1);
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kUpdatingDiff;
+                         item.state == ComponentState::kUpdating;
                 })))
         .Times(3);
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -2012,19 +2014,19 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
-    EXPECT_EQ(ComponentState::kDownloadingDiff, items[2].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[2].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
-    EXPECT_EQ(ComponentState::kDownloadingDiff, items[3].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[3].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
-    EXPECT_EQ(ComponentState::kDownloadingDiff, items[4].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[4].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdatingDiff, items[5].state);
+    EXPECT_EQ(ComponentState::kUpdating, items[5].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdatingDiff, items[6].state);
+    EXPECT_EQ(ComponentState::kUpdating, items[6].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdatingDiff, items[7].state);
+    EXPECT_EQ(ComponentState::kUpdating, items[7].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdatingDiff, items[8].state);
+    EXPECT_EQ(ComponentState::kUpdating, items[8].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[8].id.c_str());
     EXPECT_EQ(ComponentState::kUpdated, items[9].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
@@ -2318,8 +2320,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
+        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
+        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -2599,7 +2603,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         .Times(1);
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloadingDiff;
+                         item.state == ComponentState::kDownloading;
                 })))
         .Times(AtLeast(1));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -2674,9 +2678,9 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
-    EXPECT_EQ(ComponentState::kDownloadingDiff, items[2].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[2].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
-    EXPECT_EQ(ComponentState::kDownloadingDiff, items[3].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[3].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
     EXPECT_EQ(ComponentState::kDownloading, items[4].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
@@ -2711,8 +2715,10 @@ TEST_F(UpdateClientTest,
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
+        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
+        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -2881,13 +2887,13 @@ TEST_F(UpdateClientTest,
         // A download error is injected on this execution path.
         download_metrics.url = url;
         download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = -1;
+        download_metrics.error = 18;
         download_metrics.downloaded_bytes = 0;
         download_metrics.total_bytes = 2105;
         download_metrics.download_time_ms = 1000;
 
         // The response must not include a file path in the case of errors.
-        result.error = -1;
+        result.error = 18;
       } else if (url.path() ==
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx") {
         download_metrics.url = url;
@@ -2938,7 +2944,7 @@ TEST_F(UpdateClientTest,
       EXPECT_EQ(0, static_cast<int>(ping_data[1].error_category));
       EXPECT_EQ(0, ping_data[1].error_code);
       EXPECT_TRUE(ping_data[1].diff_update_failed);
-      EXPECT_EQ(2, static_cast<int>(ping_data[1].diff_error_category));
+      EXPECT_EQ(1, static_cast<int>(ping_data[1].diff_error_category));
       EXPECT_EQ(18, ping_data[1].diff_error_code);
     }
   };
@@ -3055,7 +3061,7 @@ TEST_F(UpdateClientTest,
                        runloop.QuitClosure()));
     runloop.Run();
 
-    EXPECT_EQ(6u, items.size());
+    EXPECT_EQ(8u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
@@ -3064,10 +3070,14 @@ TEST_F(UpdateClientTest,
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdating, items[4].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[4].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdated, items[5].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[5].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id.c_str());
+    EXPECT_EQ(ComponentState::kUpdating, items[6].state);
+    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id.c_str());
+    EXPECT_EQ(ComponentState::kUpdated, items[7].state);
+    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id.c_str());
   }
 
   update_client->RemoveObserver(&observer);
@@ -4014,8 +4024,10 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
+        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
+        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -4279,7 +4291,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         .Times(1);
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloadingDiff;
+                         item.state == ComponentState::kDownloading;
                 })))
         .Times(AtLeast(1));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
@@ -4362,7 +4374,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
-    EXPECT_EQ(ComponentState::kDownloadingDiff, items[2].state);
+    EXPECT_EQ(ComponentState::kDownloading, items[2].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
     EXPECT_EQ(ComponentState::kDownloading, items[3].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
@@ -5802,13 +5814,17 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 
    protected:
     ~MockPingManager() override {
-      EXPECT_EQ(1u, events().size());
+      EXPECT_EQ(2u, events().size());
 
       // "<event eventtype="42" eventresult="1" errorcode="1877345072"/>"
       const base::Value::Dict& event = events()[0];
       EXPECT_EQ(42, event.FindInt("eventtype"));
       EXPECT_EQ(1, event.FindInt("eventresult"));
       EXPECT_EQ(1877345072, event.FindInt("errorcode"));
+
+      // "<event eventtype="3" eventresult="1"/>"
+      EXPECT_EQ(3, events()[1].FindInt("eventtype"));
+      EXPECT_EQ(1, events()[1].FindInt("eventresult"));
     }
   };
 

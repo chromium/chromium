@@ -113,6 +113,8 @@ static_library("update_client") {
     "persisted_data.h",
     "ping_manager.cc",
     "ping_manager.h",
+    "pipeline.cc",
+    "pipeline.h",
     "protocol_definition.cc",
     "protocol_definition.h",
     "protocol_handler.cc",

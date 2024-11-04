@@ -4,7 +4,6 @@
 
 #include "components/update_client/op_puffin.h"
 
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -124,19 +124,20 @@ void CacheLookupDone(
 
 }  // namespace
 
-void PuffOperation(
+base::OnceClosure PuffOperation(
     scoped_refptr<CrxCache> crx_cache,
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     const std::string& id,
     const std::string& prev_fp,
     const base::FilePath& patch_file,
-    const base::FilePath& temp_dir,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
-  crx_cache->Get(id, prev_fp,
-                 base::BindOnce(&CacheLookupDone, event_adder, patcher,
-                                patch_file, temp_dir, std::move(callback)));
+  crx_cache->Get(
+      id, prev_fp,
+      base::BindOnce(&CacheLookupDone, event_adder, patcher, patch_file,
+                     patch_file.DirName(), std::move(callback)));
+  return base::DoNothing();
 }
 
 }  // namespace update_client
