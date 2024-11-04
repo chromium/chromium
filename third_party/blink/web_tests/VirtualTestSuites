@@ -3458,7 +3458,6 @@
       "fast/forms/color-scheme/select",
       "fast/forms/select",
       "fast/forms/select-popup",
-      "fast/parser/input-textarea-inside-select-element.html",
       "fast/parser/inselect-tokenization.html",
       "html5lib/generated"
     ],
@@ -3485,7 +3484,6 @@
       "fast/forms/color-scheme/select",
       "fast/forms/select",
       "fast/forms/select-popup",
-      "fast/parser/input-textarea-inside-select-element.html",
       "fast/parser/inselect-tokenization.html",
       "html5lib/generated"
     ],
