@@ -79,7 +79,7 @@ wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
       reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);
   externalImageDesc.image = egl_image_;
   DCHECK(externalImageDesc.image);
-  externalImageDesc.isInitialized = true;
+  externalImageDesc.isInitialized = IsCleared();
   texture_ = wgpu::Texture::Acquire(dawn::native::opengl::WrapExternalEGLImage(
       device_.Get(), &externalImageDesc));
   return texture_;
