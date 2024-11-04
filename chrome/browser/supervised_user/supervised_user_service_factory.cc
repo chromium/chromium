@@ -66,8 +66,9 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 }
 
 // static
-KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
-  return new supervised_user::SupervisedUserService(
+std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
+    Profile* profile) {
+  return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
@@ -94,7 +95,8 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
 
 SupervisedUserServiceFactory::~SupervisedUserServiceFactory() = default;
 
-KeyedService* SupervisedUserServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SupervisedUserServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
   return BuildInstanceFor(static_cast<Profile*>(profile));
 }
