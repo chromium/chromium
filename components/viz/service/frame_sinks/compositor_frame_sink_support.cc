@@ -110,16 +110,10 @@ void RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback(
               holds_ref_surface_id)) {
     surface_holds_ref->ResetPendingCopySurfaceId();
   }
-  if (frame_sink_manager) {
-    // Send the IPC to the browser process even if `result` is empty. The empty
-    // result will be handled on the browser side.
-    frame_sink_manager->OnScreenshotCaptured(destination_token,
-                                             std::move(result));
-  } else {
-    // TODO(https://crbug.com/369936885): Remove this once the crash reason is
-    // confirmed.
-    base::debug::DumpWithoutCrashing();
-  }
+  // Send the IPC to the browser process even if `result` is empty. The empty
+  // result will be handled on the browser side.
+  frame_sink_manager->OnScreenshotCaptured(destination_token,
+                                           std::move(result));
 }
 
 }  // namespace
