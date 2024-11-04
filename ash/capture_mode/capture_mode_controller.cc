@@ -1867,18 +1867,14 @@ void CaptureModeController::OnCopyTextButtonClicked(
 
 void CaptureModeController::OnScannerActionsFetched(
     std::vector<ScannerActionViewModel> scanner_actions) {
-  int size = static_cast<int>(scanner_actions.size());
-  for (int i = 0; i < size; ++i) {
-    ScannerActionViewModel& action = scanner_actions[i];
-    std::u16string text = action.GetText();
-    const gfx::VectorIcon& icon = action.GetIcon();
-    // TODO(b/369470078): Replace the placeholder action finished callback with
-    // a callback that closes the capture mode session.
-    capture_mode_util::AddActionButton(
-        std::move(action).ToCallback(
-            /*action_finished_callback=*/base::DoNothing()),
-        std::move(text), &icon,
-        ActionButtonRank{ActionButtonType::kScanner, i});
+  // The session may have been stopped before the Scanner actions have been
+  // received. Defensively check to ensure that we do not dereference a null
+  // pointer here.
+  if (IsActive()) {
+    // A new session may have started since the Scanner actions were requested.
+    // See the comments inside `CaptureModeSession::AddScannerActionButtons` for
+    // more details.
+    capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));
   }
 }
 

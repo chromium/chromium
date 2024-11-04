@@ -119,6 +119,9 @@ void NullCaptureModeSession::AddActionButton(
     const gfx::VectorIcon* icon,
     const ActionButtonRank rank) {}
 
+void NullCaptureModeSession::AddScannerActionButtons(
+    std::vector<ScannerActionViewModel> scanner_actions) {}
+
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");
 }

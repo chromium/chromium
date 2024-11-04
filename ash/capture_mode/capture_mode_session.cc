@@ -5,7 +5,9 @@
 #include "ash/capture_mode/capture_mode_session.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
@@ -49,6 +51,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
@@ -1409,6 +1412,50 @@ void CaptureModeSession::AddActionButton(
   }
 
   UpdateActionContainerWidget();
+}
+
+void CaptureModeSession::AddScannerActionButtons(
+    std::vector<ScannerActionViewModel> scanner_actions) {
+  // This function may be called from the controller after fetching Scanner
+  // actions from a stale session OR stale selection from the current session.
+  // Defensively check to ensure that we do not add action buttons if they are
+  // not expected.
+  if (!action_container_widget_) {
+    // `UpdateActionContainerWidget()` has not been called yet, so this session
+    // has not been initialised yet. This means the call must have come from a
+    // stale session.
+    return;
+  }
+  if (controller_->source() != CaptureModeSource::kRegion ||
+      is_selecting_region_ || controller_->user_capture_region().IsEmpty()) {
+    // A region has not been selected yet. This means the call must have come
+    // from a stale session OR stale selection from the current session.
+    return;
+  }
+  // The above checks are insufficient for stale region selections, and could
+  // make Scanner actions from a previous region appear in the active region if
+  // the Scanner action response is slow.
+  // TODO: b/369470078 - Fix this race condition by either introducing a class
+  // which represents a region selection, and fetching the Scanner actions from
+  // that, or introducing a `WeakPtrFactory` which is invalidated every time the
+  // region selection changes.
+
+  // This is inefficient, as we repeatedly sort, insert and recalculate the
+  // bounds for buttons one-by-one.
+  // TODO: b/369470078 - Fix this inefficiency by adding multiple action buttons
+  // simultaneously.
+  int size = static_cast<int>(scanner_actions.size());
+  for (int i = 0; i < size; ++i) {
+    ScannerActionViewModel& action = scanner_actions[i];
+    std::u16string text = action.GetText();
+    const gfx::VectorIcon& icon = action.GetIcon();
+    // TODO(b/369470078): Replace the placeholder action finished callback with
+    // a callback that closes the capture mode session.
+    AddActionButton(std::move(action).ToCallback(
+                        /*action_finished_callback=*/base::DoNothing()),
+                    std::move(text), &icon,
+                    ActionButtonRank{ActionButtonType::kScanner, i});
+  }
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {

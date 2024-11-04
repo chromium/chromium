@@ -5,10 +5,13 @@
 #ifndef ASH_CAPTURE_MODE_BASE_CAPTURE_MODE_SESSION_H_
 #define ASH_CAPTURE_MODE_BASE_CAPTURE_MODE_SESSION_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/controls/button/button.h"
@@ -161,6 +164,12 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
                                std::u16string text,
                                const gfx::VectorIcon* icon,
                                ActionButtonRank rank) = 0;
+
+  // Adds all Scanner action buttons provided below the selected region for this
+  // session. These will automatically be assigned a rank depending on the order
+  // in which they appear in the vector.
+  virtual void AddScannerActionButtons(
+      std::vector<ScannerActionViewModel> scanner_actions) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
