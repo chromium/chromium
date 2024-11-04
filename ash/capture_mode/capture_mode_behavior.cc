@@ -105,6 +105,15 @@ class DefaultBehavior : public CaptureModeBehavior {
            controller->source() == CaptureModeSource::kRegion;
   }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
+  void OnRegionSelectedOrAdjusted() override {
+    if (ShouldShowDefaultActionButtonsAfterRegionSelected() &&
+        features::IsScannerEnabled()) {
+      // Perform text detection to determine whether the copy text and scanner
+      // actions buttons should be shown.
+      CaptureModeController::Get()->PerformCapture(
+          PerformCaptureType::kTextDetection);
+    }
+  }
 };
 
 // -----------------------------------------------------------------------------
@@ -361,7 +370,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   void OnRegionSelectedOrAdjusted() override {
     // `CaptureModeController` will perform DLP restriction checks and determine
     // whether the image can be sent for search.
-    CaptureModeController::Get()->PerformCapture();
+    CaptureModeController::Get()->PerformCapture(PerformCaptureType::kSunfish);
   }
   void OnEnterKeyPressed() override {}
 };

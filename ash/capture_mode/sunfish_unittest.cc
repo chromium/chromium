@@ -71,11 +71,11 @@ using ::testing::SizeIs;
 constexpr char kTestSearchUrl[] =
     "https://www.google.com/search?q=cat&gsc=1&masfc=c";
 
-void WaitForImageCapturedForSearch() {
+void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
   CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
       base::BindLambdaForTesting([&](PerformCaptureType capture_type) {
-        if (capture_type == PerformCaptureType::kSearch) {
+        if (capture_type == expected_capture_type) {
           image_captured_future.SetValue();
         }
       }));
@@ -184,7 +184,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   auto* search_results_panel_widget = controller->search_results_panel_widget();
   EXPECT_TRUE(search_results_panel_widget);
   EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
@@ -208,7 +208,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   event_generator->ReleaseLeftButton();
   EXPECT_NE(controller->user_capture_region(), old_region);
 
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(search_results_panel_widget);
   EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
 
@@ -222,7 +222,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   event_generator->ReleaseLeftButton();
   EXPECT_NE(controller->user_capture_region(), old_region);
 
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(controller->search_results_panel_widget());
   EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
 }
@@ -519,7 +519,7 @@ TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
   // Test we can select a region and show the search results panel.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Test we can stop video recording.
@@ -575,7 +575,7 @@ TEST_F(SunfishTest, AddActionButton) {
   // button between it and the search results panel.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Create another action button that, when clicked, will change the value of a
@@ -611,7 +611,7 @@ TEST_F(SunfishTest, ActionButtonRank) {
   // button between it and the search results panel.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(controller->search_results_panel_widget());
 
   // Add a default action button.
@@ -796,7 +796,7 @@ TEST_F(SunfishTest, SearchActionButton) {
 
   // Click on the "Search" button. Test we end capture mode.
   LeftClickOn(session_test_api.GetActionButtons()[0]);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   EXPECT_TRUE(controller->search_results_panel_widget());
   EXPECT_FALSE(controller->IsActive());
 }
@@ -817,7 +817,7 @@ TEST_F(SunfishTest, SearchBoxInDefaultMode) {
   CaptureModeSessionTestApi session_test_api(session);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
   LeftClickOn(session_test_api.GetActionButtons()[0]);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   auto* search_results_panel = controller->GetSearchResultsPanel();
   ASSERT_TRUE(search_results_panel);
 
@@ -847,7 +847,7 @@ TEST_F(SunfishTest, SearchBoxTextfield) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
 
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   auto* widget = controller->search_results_panel_widget();
   ASSERT_TRUE(widget);
 
@@ -874,7 +874,7 @@ TEST_F(SunfishTest, SwitchSessionsWhilePanelOpen) {
   auto* generator = GetEventGenerator();
   SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   auto* search_results_panel = controller->GetSearchResultsPanel();
   ASSERT_TRUE(search_results_panel);
   search_results_panel->SetSearchBoxText(u"cat");
@@ -893,7 +893,7 @@ TEST_F(SunfishTest, NoCrashOnUpdateCaptureUisOpacity) {
   auto* generator = GetEventGenerator();
   SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   auto* panel_widget = controller->search_results_panel_widget();
   ASSERT_TRUE(panel_widget);
 
@@ -906,7 +906,7 @@ TEST_F(SunfishTest, NoCrashOnUpdateCaptureUisOpacity) {
   controller->StartSunfishSession();
   SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/false);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(controller->search_results_panel_widget());
 }
 
@@ -947,7 +947,7 @@ TEST_F(ScannerTest, CreatesScannerActionButtons) {
   capture_mode_controller->StartSunfishSession();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
 
   auto [_, callback] = fetch_actions_future.Take();
   auto output = std::make_unique<manta::proto::ScannerOutput>();
@@ -979,7 +979,7 @@ TEST_F(ScannerTest, FetchActionsImmediately) {
   capture_mode_controller->StartSunfishSession();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  WaitForImageCapturedForSearch();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
 
   // We should have successfully created two action buttons.
   const CaptureModeSessionTestApi session_test_api(

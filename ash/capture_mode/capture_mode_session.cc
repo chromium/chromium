@@ -2451,11 +2451,6 @@ void CaptureModeSession::OnLocatedEventReleased(
           u"Search", &kCaptureModeImageIcon,
           ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1));
     }
-    if (features::IsScannerEnabled()) {
-      // Perform text detection to determine whether the copy text and scanner
-      // actions buttons should be shown.
-      controller_->PerformCapture(PerformCaptureType::kTextDetection);
-    }
   }
 
   // TODO: crbug.com/375261308 - Prevent image search when the region stays the

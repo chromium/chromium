@@ -113,12 +113,23 @@ enum class ActionButtonType {
   kSunfish,
 };
 
-// Defines the capture type to be performed when "Capture" or "Search" is
-// pressed, or a region is selected for text detection.
+// Defines the capture type to be performed and how the captured image will be
+// used.
 enum class PerformCaptureType {
+  // Captured from normal capture mode to take a screenshot.
   kCapture,
+  // Captured when the "search" button is pressed from normal capture mode. The
+  // captured image will be sent to a search service.
   kSearch,
+  // Captured when the "smart actions" button is pressed from normal capture
+  // mode. The captured image will be sent to the Scanner service.
+  kScanner,
+  // Captured when a region is selected from normal capture mode. The captured
+  // image will be processed by on-device OCR to detect text.
   kTextDetection,
+  // Captured when a region is selected from Sunfish mode. The captured image
+  // will be sent to a search service and the Scanner service.
+  kSunfish,
 };
 
 // Defines the rank of an action button for a selected region. Higher ranked

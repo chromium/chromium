@@ -519,16 +519,27 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
   }
 }
 
-// Gets the capture type given the requested `capture_type`, accounting for the
-// `behavior_type`.
-PerformCaptureType GetCaptureTypeForImageCapture(
-    BehaviorType behavior_type,
-    PerformCaptureType capture_type) {
-  if (behavior_type == BehaviorType::kSunfish) {
-    // Only allow search from Sunfish behavior.
-    return PerformCaptureType::kSearch;
-  }
-  return capture_type;
+// Returns true if text detection should be performed on a captured image with
+// the given `capture_type`.
+bool ShouldPerformTextDetection(PerformCaptureType capture_type) {
+  return capture_type == PerformCaptureType::kSunfish ||
+         capture_type == PerformCaptureType::kTextDetection;
+}
+
+// Returns true if Scanner actions should be fetched for a captured image with
+// the given `capture_type`.
+bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
+  return Shell::Get()->scanner_controller() &&
+         (capture_type == PerformCaptureType::kSunfish ||
+          capture_type == PerformCaptureType::kScanner);
+}
+
+// Returns true if region search should be performed on a captured image with
+// the given `capture_type`.
+bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
+  return features::IsSunfishFeatureEnabled() &&
+         (capture_type == PerformCaptureType::kSunfish ||
+          capture_type == PerformCaptureType::kSearch);
 }
 
 gfx::Rect CalculateSearchResultPanelBounds(aura::Window* root,
@@ -1801,22 +1812,21 @@ void CaptureModeController::OnImageCapturedForSearch(
   MaybeUnlockCursor(was_cursor_originally_blocked);
 
   const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
-  if (capture_type == PerformCaptureType::kTextDetection) {
+  if (ShouldPerformTextDetection(capture_type)) {
     delegate_->DetectTextInImage(
         bitmap,
         base::BindOnce(&CaptureModeController::OnTextDetectionComplete,
                        weak_ptr_factory_.GetWeakPtr(), user_capture_region_));
-    return;
   }
 
-  if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
-    scanner_controller->FetchActionsForImage(
+  if (ShouldFetchScannerActions(capture_type)) {
+    Shell::Get()->scanner_controller()->FetchActionsForImage(
         jpeg_bytes,
         base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (features::IsSunfishFeatureEnabled()) {
+  if (ShouldSendRegionSearch(capture_type)) {
     const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     // `OnSearchUrlFetched()` will be invoked with `image` when the server
     // response is fetched.
@@ -2305,14 +2315,11 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   if (type_ == CaptureModeType::kImage) {
-    const PerformCaptureType effective_capture_type =
-        GetCaptureTypeForImageCapture(active_behavior->behavior_type(),
-                                      capture_type);
-    if (effective_capture_type == PerformCaptureType::kCapture) {
+    if (capture_type == PerformCaptureType::kCapture) {
       CaptureImage(*capture_params, BuildImagePath(),
                    capture_mode_session_->active_behavior());
     } else {
-      PerformImageSearch(effective_capture_type);
+      PerformImageSearch(capture_type);
     }
   } else {
     // HDCP affects only video recording.
