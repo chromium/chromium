@@ -102,6 +102,11 @@ class LevelDBScopes {
   bool initialize_called_ = false;
 #endif
 
+  // This task runner executes cleanup tasks in the background. When `this` is
+  // deleted, existing cleanup tasks may be dropped. This allows for faster
+  // handling of database deletion. See crbug.com/370844779
+  scoped_refptr<base::SequencedTaskRunner> cleanup_runner_;
+
   base::WeakPtrFactory<LevelDBScopes> weak_factory_{this};
 };
 
