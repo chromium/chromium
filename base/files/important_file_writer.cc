@@ -119,7 +119,8 @@ bool ImportantFileWriter::WriteFileAtomically(
   // Calling the impl by way of the public WriteFileAtomically, so
   // |from_instance| is false.
   return WriteFileAtomicallyImpl(path, data, histogram_suffix,
-                                 /*from_instance=*/false);
+                                 /*from_instance=*/false,
+                                 BindRepeating(&ReplaceFile));
 }
 
 // static
@@ -128,6 +129,7 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
     BackgroundDataProducerCallback data_producer_for_background_sequence,
     OnceClosure before_write_callback,
     OnceCallback<void(bool success)> after_write_callback,
+    ReplaceFileCallback replace_file_callback,
     const std::string& histogram_suffix) {
   // Produce the actual data string on the background sequence.
   std::optional<std::string> data =
@@ -144,7 +146,8 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
   // ProduceAndWriteStringToFileAtomically, which originated from an
   // ImportantFileWriter instance, so |from_instance| is true.
   const bool result = WriteFileAtomicallyImpl(path, *data, histogram_suffix,
-                                              /*from_instance=*/true);
+                                              /*from_instance=*/true,
+                                              std::move(replace_file_callback));
 
   if (!after_write_callback.is_null())
     std::move(after_write_callback).Run(result);
@@ -155,7 +158,8 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
     const FilePath& path,
     std::string_view data,
     std::string_view histogram_suffix,
-    bool from_instance) {
+    bool from_instance,
+    ReplaceFileCallback replace_file_callback) {
   const TimeTicks write_start = TimeTicks::Now();
   if (!from_instance)
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
@@ -234,7 +238,8 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   {
     ScopedBoostPriority scoped_boost_priority(ThreadType::kDisplayCritical);
     tmp_file.Close();
-    result = ReplaceFile(tmp_file_path, path, &replace_file_error);
+    result =
+        replace_file_callback.Run(tmp_file_path, path, &replace_file_error);
     // Save and restore the last error code so that it's not polluted by the
     // thread priority change.
     last_error = ::GetLastError();
@@ -243,20 +248,22 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
       // gets hit on a regular basis on some systems
       // (https://crbug.com/1099284), so we retry a few times before giving up.
       PlatformThread::Sleep(kReplacePauseInterval);
-      result = ReplaceFile(tmp_file_path, path, &replace_file_error);
+      result =
+          replace_file_callback.Run(tmp_file_path, path, &replace_file_error);
       last_error = ::GetLastError();
     }
   }
 
   // Log how many times we had to retry the ReplaceFile operation before it
   // succeeded. If we never succeeded then return a special value.
-  if (!result)
+  if (!result) {
     retry_count = kReplaceRetryFailure;
+  }
   UmaHistogramExactLinear("ImportantFile.FileReplaceRetryCount", retry_count,
                           kReplaceRetryFailure);
 #else
   tmp_file.Close();
-  result = ReplaceFile(tmp_file_path, path, &replace_file_error);
+  result = replace_file_callback.Run(tmp_file_path, path, &replace_file_error);
 #endif  // BUILDFLAG(IS_WIN)
 
   if (!result) {
@@ -294,7 +301,8 @@ ImportantFileWriter::ImportantFileWriter(
     : path_(path),
       task_runner_(std::move(task_runner)),
       commit_interval_(interval),
-      histogram_suffix_(histogram_suffix) {
+      histogram_suffix_(histogram_suffix),
+      replace_file_callback_(BindRepeating(&ReplaceFile)) {
   DCHECK(task_runner_);
   ImportantFileWriterCleaner::AddDirectory(path.DirName());
 }
@@ -321,15 +329,21 @@ void ImportantFileWriter::WriteNow(std::string data) {
       std::move(data)));
 }
 
+void ImportantFileWriter::SetReplaceFileCallbackForTesting(
+    ReplaceFileCallback callback) {
+  replace_file_callback_ = std::move(callback);
+}
+
 void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
     BackgroundDataProducerCallback background_data_producer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto split_task = SplitOnceCallback(
-      BindOnce(&ProduceAndWriteStringToFileAtomically, path_,
-               std::move(background_data_producer),
-               std::move(before_next_write_callback_),
-               std::move(after_next_write_callback_), histogram_suffix_));
+  auto split_task =
+      SplitOnceCallback(BindOnce(&ProduceAndWriteStringToFileAtomically, path_,
+                                 std::move(background_data_producer),
+                                 std::move(before_next_write_callback_),
+                                 std::move(after_next_write_callback_),
+                                 replace_file_callback_, histogram_suffix_));
 
   if (!task_runner_->PostTask(
           FROM_HERE, MakeCriticalClosure("ImportantFileWriter::WriteNow",
