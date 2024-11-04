@@ -294,6 +294,20 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
               state == SidePanel::State::kOpening);
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenAndCloseWithoutAnimation) {
+  coordinator()->DisableAnimationsForTesting();
+  Init();
+  // Since there is no animation opening/closing the side-panel should be
+  // synchronous.
+  coordinator()->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->state(),
+            SidePanel::State::kOpen);
+
+  coordinator()->Close();
+  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->state(),
+            SidePanel::State::kClosed);
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   Init();
   // Set side panel to right-aligned

@@ -594,6 +594,7 @@ views::View* SidePanel::GetContentParentView() {
 }
 
 void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
+  animate_transition &= ShouldShowAnimation();
   if (should_be_open) {
     state_ = animate_transition ? State::kOpening : State::kOpen;
   } else {
@@ -634,7 +635,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
       border_view_->DestroyLayer();
     }
   }
-  if (ShouldShowAnimation() && animate_transition) {
+  if (animate_transition) {
     if (should_be_open) {
       // If the side panel should remain open but there are views to hide, hide
       // them immediately.
