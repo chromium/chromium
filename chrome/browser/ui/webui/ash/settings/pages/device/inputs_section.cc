@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
@@ -41,8 +43,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_INPUT,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -70,11 +72,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSpellCheckOnOff}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetSuggestionsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSuggestionsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -82,11 +84,11 @@ const std::vector<SearchConcept>& GetSuggestionsSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kInput}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetEmojiSuggestionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -94,11 +96,11 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowEmojiSuggestions}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetHelpMeWriteSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetHelpMeWriteSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -106,11 +108,11 @@ const std::vector<SearchConcept>& GetHelpMeWriteSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowOrca}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSpellCheckSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
        mojom::kEditDictionarySubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -118,11 +120,11 @@ const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kEditDictionary}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAutoCorrectionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION,
        mojom::kInputMethodOptionsSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -130,7 +132,7 @@ const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowPKAutoCorrection}},
   });
-  return *tags;
+  return tags;
 }
 
 bool ShouldShowOrcaSettings(input_method::EditorMediator* editor_mediator) {
