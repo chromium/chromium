@@ -1081,14 +1081,6 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   } else {
     hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
   }
-  bool is_zygote_child = absl::visit(
-      base::Overloaded{[](const InvokedInBrowserProcess& invoked_in_browser) {
-                         return false;
-                       },
-                       [](const InvokedInChildProcess& invoked_in_child) {
-                         return invoked_in_child.is_zygote_child;
-                       }},
-      invoked_in);
 
   const bool is_canary_dev = IsCanaryDev();
   const bool emit_crashes =
@@ -1100,7 +1092,6 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
 #endif
 
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
-                                            /*is_zygote_child=*/is_zygote_child,
                                             emit_crashes);
 
   // Force emitting `ThreadController` profiler metadata on Canary and Dev only,

@@ -60,24 +60,14 @@ constexpr uint64_t kOnesThenZeroes = 0xAAAAAAAAAAAAAAAAu;
 constexpr uint64_t kZeroesThenOnes = 0x5555555555555555u;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-class HangWatcherEnabledInZygoteChildTest
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
+class HangWatcherEnabledInZygoteChildTest : public testing::Test {
  public:
   HangWatcherEnabledInZygoteChildTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         kFeatureAndParams;
-    std::vector<test::FeatureRef> disabled_features;
-    if (std::get<0>(GetParam())) {
-      enabled_features.push_back(test::FeatureRefAndParams(
-          base::kEnableHangWatcherInZygoteChildren, {}));
-    } else {
-      disabled_features.push_back(base::kEnableHangWatcherInZygoteChildren);
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     HangWatcher::InitializeOnMainThread(
         HangWatcher::ProcessType::kUtilityProcess,
-        /*is_zygote_child=*/std::get<1>(GetParam()),
         /*emit_crashes=*/true);
   }
 
@@ -92,17 +82,10 @@ class HangWatcherEnabledInZygoteChildTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(HangWatcherEnabledInZygoteChildTest, IsEnabled) {
-  // If the kEnableHangWatcherInZygoteChildren feature is disabled and
-  // InitializeOnMainThread is called with is_zygote_child==true, IsEnabled()
-  // should return false. It should return true in all other situations.
-  ASSERT_EQ(std::get<0>(GetParam()) || !std::get<1>(GetParam()),
-            HangWatcher::IsEnabled());
+TEST_F(HangWatcherEnabledInZygoteChildTest, IsEnabled) {
+  ASSERT_TRUE(HangWatcher::IsEnabled());
 }
 
-INSTANTIATE_TEST_SUITE_P(HangWatcherZygoteTest,
-                         HangWatcherEnabledInZygoteChildTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Waits on provided WaitableEvent before executing and signals when done.
@@ -166,8 +149,7 @@ class HangWatcherTest : public testing::Test {
   HangWatcherTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false,
-        /*emit_crashes=*/true);
+        HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
 
     hang_watcher_.SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
@@ -617,8 +599,7 @@ class HangWatcherSnapshotTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false,
-        /*emit_crashes=*/true);
+        HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
 
     // The monitoring loop behavior is not verified in this test so we want to
     // trigger monitoring manually.
@@ -878,8 +859,7 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
  public:
   HangWatcherPeriodicMonitoringTest() {
     hang_watcher_.InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false,
-        /*emit_crashes=*/true);
+        HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
 
     hang_watcher_.SetMonitoringPeriodForTesting(kMonitoringPeriod);
     hang_watcher_.SetOnHangClosureForTesting(base::BindRepeating(
@@ -1036,8 +1016,7 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
   WatchHangsInScopeBlockingTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, false,
-        /*emit_crashes=*/true);
+        HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
 
     hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
       capture_started_.Signal();

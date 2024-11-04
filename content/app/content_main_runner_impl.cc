@@ -655,8 +655,7 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
 
   ContentClientInitializer::Set(process_type, delegate);
 
-  const ContentMainDelegate::InvokedInChildProcess invoked_in_child{
-      .is_zygote_child = true};
+  const ContentMainDelegate::InvokedInChildProcess invoked_in_child;
   if (delegate->ShouldCreateFeatureList(invoked_in_child)) {
     InitializeFieldTrialAndFeatureList();
   }

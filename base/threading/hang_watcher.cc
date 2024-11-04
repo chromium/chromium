@@ -184,10 +184,6 @@ BASE_FEATURE(kEnableHangWatcher,
              "EnableHangWatcher",
              FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableHangWatcherInZygoteChildren,
-             "EnableHangWatcherInZygoteChildren",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 // Browser process.
 constexpr base::FeatureParam<int> kIOThreadLogLevel{
     &kEnableHangWatcher, "io_thread_log_level",
@@ -343,7 +339,6 @@ WatchHangsInScope::~WatchHangsInScope() {
 
 // static
 void HangWatcher::InitializeOnMainThread(ProcessType process_type,
-                                         bool is_zygote_child,
                                          bool emit_crashes) {
   DCHECK(!g_use_hang_watcher);
   DCHECK(g_io_thread_log_level == LoggingLevel::kNone);
@@ -351,14 +346,6 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
   DCHECK(g_threadpool_log_level == LoggingLevel::kNone);
 
   bool enable_hang_watcher = base::FeatureList::IsEnabled(kEnableHangWatcher);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (is_zygote_child) {
-    enable_hang_watcher =
-        enable_hang_watcher &&
-        base::FeatureList::IsEnabled(kEnableHangWatcherInZygoteChildren);
-  }
-#endif
 
   // Do not start HangWatcher in the GPU process until the issue related to
   // invalid magic signature in the GPU WatchDog is fixed
