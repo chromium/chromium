@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,6 +60,7 @@ void PlusAddressCreationControllerDesktop::OnRefreshClicked() {
   if (!plus_address_service) {
     return;
   }
+  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   plus_address_service->RefreshPlusAddress(
       relevant_origin_,
       base::BindOnce(

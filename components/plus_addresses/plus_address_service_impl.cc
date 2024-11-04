@@ -13,6 +13,8 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -554,6 +556,7 @@ void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(
         update_suggestions_callback) {
   RecordAutofillSuggestionEvent(
       SuggestionEvent::kRefreshPlusAddressInlineClicked);
+  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
   PlusAddressSuggestionGenerator(&setting_service_.get(),

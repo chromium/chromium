@@ -32227,6 +32227,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PlusAddresses.Refreshed">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User clicked or tapped to refresh to proposed plus address.
+  </description>
+</action>
+
 <action name="PPAPI.BrokerInfobarClickedAllow">
   <obsolete>Deprecated since the feature is deprecated.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

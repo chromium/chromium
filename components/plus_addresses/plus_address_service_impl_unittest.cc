@@ -18,6 +18,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1689,6 +1690,7 @@ TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
   EXPECT_CALL(callback,
               Run(ElementsAre(EqualsSuggestion(
@@ -1706,6 +1708,7 @@ TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kRefreshPlusAddressInlineClicked, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("PlusAddresses.Refreshed"), 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

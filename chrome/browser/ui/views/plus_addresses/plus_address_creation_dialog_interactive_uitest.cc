@@ -6,6 +6,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -273,6 +274,14 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
     });
   }
 
+  InteractiveTestApi::StepBuilder CheckUserAction(std::string_view user_action,
+                                                  int expected_count) {
+    return Do([this, user_action, expected_count]() {
+      EXPECT_EQ(user_action_tester_.GetActionCount(user_action),
+                expected_count);
+    });
+  }
+
   InteractiveTestApi::StepBuilder CheckModalEventHistogramBuckets(
       int shown,
       int confirmed,
@@ -297,6 +306,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   base::test::TestFuture<const std::string&> future_;
   // Keep the order of these two scoped member variables.
   ScopedPlusAddressFeatureList feature_list_;
@@ -346,7 +356,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           net::HttpStatusCode::HTTP_OK, 1),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
-          /*refresh_count=*/0, /*notice_shown=*/false));
+          /*refresh_count=*/0, /*notice_shown=*/false),
+      CheckUserAction("PlusAddresses.Refreshed", 0));
 }
 
 // An interactive UI test to exercise successful plus address user flow.
@@ -402,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           net::HttpStatusCode::HTTP_OK, 1),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
-          /*refresh_count=*/1, /*notice_shown=*/false));
+          /*refresh_count=*/1, /*notice_shown=*/false),
+      CheckUserAction("PlusAddresses.Refreshed", 1));
 }
 
 // User opens the dialog and presses the "Cancel" button.
@@ -564,7 +576,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
                                       /*canceled=*/1, /*notice_shown=*/true),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalCanceled,
-          /*refresh_count=*/0, /*notice_shown=*/true));
+          /*refresh_count=*/0, /*notice_shown=*/true),
+      CheckUserAction("PlusAddresses.Refreshed", 0));
 }
 
 // Tests that the notice is not shown if it has already been accepted.
@@ -639,7 +652,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
                                       /*canceled=*/0, /*notice_shown=*/true),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kModalConfirmed,
-          /*refresh_count=*/0, /*notice_shown=*/true));
+          /*refresh_count=*/0, /*notice_shown=*/true),
+      CheckUserAction("PlusAddresses.Refreshed", 0));
 }
 
 // Tests that clicking the "learn more" link on the notice screen opens a new
@@ -807,7 +821,8 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
                                       /*canceled=*/1, /*notice_shown=*/true),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kReservePlusAddressError,
-          /*refresh_count=*/0, /*notice_shown=*/true));
+          /*refresh_count=*/0, /*notice_shown=*/true),
+      CheckUserAction("PlusAddresses.Refreshed", 0));
 }
 
 IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
@@ -859,7 +874,8 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
                                       /*canceled=*/1, /*notice_shown=*/true),
       CheckModalOutcomeHistograms(
           PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
-          /*refresh_count=*/0, /*notice_shown=*/true));
+          /*refresh_count=*/0, /*notice_shown=*/true),
+      CheckUserAction("PlusAddresses.Refreshed", 0));
 }
 
 INSTANTIATE_TEST_SUITE_P(
