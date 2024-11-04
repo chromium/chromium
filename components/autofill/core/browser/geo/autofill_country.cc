@@ -169,7 +169,7 @@ AutofillCountry::address_format_extensions() const {
   }
 
   auto extensions =
-      base::MakeFlatMap<std::string, base::span<const AddressFormatExtension>>(
+      base::flat_map<std::string, base::span<const AddressFormatExtension>>(
           std::move(overrides));
 
   auto it = extensions.find(country_code_);

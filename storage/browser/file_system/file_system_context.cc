@@ -656,7 +656,8 @@ FileSystemContext::QuotaManagedStorageTypes() {
       quota_storage_types.push_back(storage_type);
     }
   }
-  return base::MakeFlatSet<blink::mojom::StorageType>(quota_storage_types);
+  return base::flat_set<blink::mojom::StorageType>(
+      std::move(quota_storage_types));
 }
 
 std::unique_ptr<FileSystemOperation>

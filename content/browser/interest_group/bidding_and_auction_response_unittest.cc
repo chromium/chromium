@@ -156,8 +156,8 @@ const char kAggregationCoordinator[] = "https://coordinator.example.com";
 const char kAggregationCoordinator2[] = "https://coordinator2.example.com";
 const char kDebugReportingURL[] = "https://fdo.com/report";
 
-const base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
-  return base::MakeFlatMap<url::Origin, std::vector<std::string>>(
+base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
+  return base::flat_map<url::Origin, std::vector<std::string>>(
       std::vector<std::pair<url::Origin, std::vector<std::string>>>{
           {
               url::Origin::Create(GURL(kOwnerOrigin)),
@@ -174,9 +174,9 @@ const base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
       });
 }
 
-const base::flat_map<blink::InterestGroupKey, url::Origin>
+base::flat_map<blink::InterestGroupKey, url::Origin>
 GroupAggregationCoordinators() {
-  return base::MakeFlatMap<blink::InterestGroupKey, url::Origin>(
+  return base::flat_map<blink::InterestGroupKey, url::Origin>(
       std::vector<std::pair<blink::InterestGroupKey, url::Origin>>{
           {
               blink::InterestGroupKey{url::Origin::Create(GURL(kOwnerOrigin)),

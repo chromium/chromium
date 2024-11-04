@@ -245,7 +245,7 @@ TEST_F(ActionIdMapTest, MapBetweenEnumAndString) {
 #include "ui/actions/action_id_macros.inc"
 
 TEST_F(ActionIdMapTest, MergeMaps) {
-  auto test_action_map = base::MakeFlatMap<ActionId, std::string>(
+  auto test_action_map = base::flat_map<ActionId, std::string>(
       std::vector<std::pair<ActionId, std::string>>{TEST_ACTION_IDS});
   ActionIdMap::AddActionIdToStringMappings(test_action_map);
 

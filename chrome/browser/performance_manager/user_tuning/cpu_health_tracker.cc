@@ -325,7 +325,7 @@ CpuHealthTracker::FilterForPossibleActionablePages(
     }
   }
 
-  return base::MakeFlatMap<resource_attribution::PageContext, CpuPercent>(
+  return base::flat_map<resource_attribution::PageContext, CpuPercent>(
       std::move(eligible_pages));
 }
 }  // namespace performance_manager::user_tuning
