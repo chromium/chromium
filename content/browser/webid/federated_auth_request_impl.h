@@ -333,7 +333,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnDismissErrorDialog(
       const GURL& idp_config_url,
       IdpNetworkRequestManager::FetchStatus status,
-      std::optional<TokenError> token_error,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
@@ -359,7 +358,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
       std::optional<content::FedCmRequestIdTokenStatus> token_status,
-      std::optional<TokenError> token_error,
       bool should_delay_callback);
 
   // Completes request. Displays a dialog if there is an error and the error is
