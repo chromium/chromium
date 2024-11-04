@@ -2144,11 +2144,12 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
-    Redirect_FocusExisting,
+    Redirect_FocusOrNavigateExisting,
     NavigationCapturingTestWithAppBLaunched,
     testing::Combine(
         testing::Values(
-            ClientModeCombination::kAppANavigateExistingAppBFocusExisting),
+            ClientModeCombination::kAppANavigateExistingAppBFocusExisting,
+            ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kBothStandalone),
         testing::Values(LinkCapturing::kEnabled),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
@@ -2163,10 +2164,11 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
-    Redirect_FocusExisting_Browser,
+    Redirect_FocusOrNavigateExisting_Browser,
     NavigationCapturingTestWithAppBLaunched,
     testing::Combine(
-        testing::Values(ClientModeCombination::kBothFocusExisting),
+        testing::Values(ClientModeCombination::kBothFocusExisting,
+                        ClientModeCombination::kBothNavigateExisting),
         testing::Values(AppUserDisplayMode::kAppAStandaloneAppBBrowser,
                         AppUserDisplayMode::kBothBrowser),
         testing::Values(LinkCapturing::kEnabled),

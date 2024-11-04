@@ -370,26 +370,42 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
   }
 
   // Handle the use-case where the target_app_id has a launch handling mode of
-  // kFocusExisting, and there is an existing app window already present that
-  // can be focused. The existing window is focused, and navigation is
-  // aborted.
+  // kFocusExisting or kNavigateExisting. In both cases this navigation gets
+  // aborted, and in some cases the web contents being navigated gest closed.
   if (client_mode_and_browser.effective_client_mode ==
-      LaunchHandler::ClientMode::kFocusExisting) {
+          LaunchHandler::ClientMode::kFocusExisting ||
+      client_mode_and_browser.effective_client_mode ==
+          LaunchHandler::ClientMode::kNavigateExisting) {
     CHECK(client_mode_and_browser.browser);
     CHECK(client_mode_and_browser.tab_index.has_value());
-    // Focus any existing app window if it exist1s.
+
     content::WebContents* pre_existing_contents =
         client_mode_and_browser.browser->tab_strip_model()->GetWebContentsAt(
             *client_mode_and_browser.tab_index);
     CHECK(pre_existing_contents);
+    CHECK_NE(pre_existing_contents, web_contents_for_navigation);
+
+    bool wait_for_navigation_to_complete = false;
+    if (client_mode_and_browser.effective_client_mode ==
+        LaunchHandler::ClientMode::kNavigateExisting) {
+      wait_for_navigation_to_complete = true;
+
+      content::OpenURLParams params =
+          content::OpenURLParams::FromNavigationHandle(navigation_handle());
+
+      // Reset the frame_tree_node_id to make sure we're navigating the main
+      // frame in the target web contents.
+      params.frame_tree_node_id = {};
+
+      pre_existing_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+    }
 
     pre_existing_contents->Focus();
-    CHECK_NE(pre_existing_contents, web_contents_for_navigation);
 
     // Perform post navigation operations, like recording app launch metrics,
     // or showing the navigation capturing IPH.
     EnqueueLaunchParams(pre_existing_contents, *target_app_id, final_url,
-                        /*wait_for_navigation_to_complete=*/false);
+                        wait_for_navigation_to_complete);
     MaybeShowNavigationCaptureIph(*target_app_id, &profile_.get(),
                                   client_mode_and_browser.browser);
     RecordLaunchMetrics(*target_app_id,
