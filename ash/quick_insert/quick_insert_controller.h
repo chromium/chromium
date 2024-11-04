@@ -61,14 +61,14 @@ class PickerPasteRequest;
 class PickerActionOnNextFocusRequest;
 
 // Controls a Picker widget.
-class ASH_EXPORT PickerController : public PickerViewDelegate,
-                                    public views::ViewObserver,
-                                    public PickerAssetFetcherImplDelegate {
+class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
+                                         public views::ViewObserver,
+                                         public PickerAssetFetcherImplDelegate {
  public:
-  PickerController();
-  PickerController(const PickerController&) = delete;
-  PickerController& operator=(const PickerController&) = delete;
-  ~PickerController() override;
+  QuickInsertController();
+  QuickInsertController(const QuickInsertController&) = delete;
+  QuickInsertController& operator=(const QuickInsertController&) = delete;
+  ~QuickInsertController() override;
 
   // Maximum time to wait for focus to be regained after completing the feature
   // tour. If this timeout is reached, we stop waiting for focus and show the
@@ -219,7 +219,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 
-  base::WeakPtrFactory<PickerController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

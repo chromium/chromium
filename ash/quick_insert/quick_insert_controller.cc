@@ -255,12 +255,12 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
 
 }  // namespace
 
-PickerController::PickerController()
+QuickInsertController::QuickInsertController()
     : caps_lock_bubble_controller_(&GetImeKeyboard()),
       asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)),
       search_controller_(kBurnInPeriod) {}
 
-PickerController::~PickerController() {
+QuickInsertController::~QuickInsertController() {
   // `widget_` depends on `this`. Destroy the widget synchronously to avoid a
   // dangling pointer.
   if (widget_) {
@@ -268,12 +268,12 @@ PickerController::~PickerController() {
   }
 }
 
-void PickerController::DisableFeatureTourForTesting() {
+void QuickInsertController::DisableFeatureTourForTesting() {
   CHECK_IS_TEST();
   g_feature_tour_enabled = false;
 }
 
-void PickerController::SetClient(PickerClient* client) {
+void QuickInsertController::SetClient(PickerClient* client) {
   // `PickerSearchController` may depend on the current client via
   // `StartSearch`. Stop the search before changing the `client`. This may send
   // a `StopSearch` call to the current `client_`.
@@ -281,7 +281,7 @@ void PickerController::SetClient(PickerClient* client) {
   client_ = client;
 }
 
-void PickerController::OnClientPrefsSet(PrefService* prefs) {
+void QuickInsertController::OnClientPrefsSet(PrefService* prefs) {
   if (client_ == nullptr) {
     return;
   }
@@ -289,7 +289,7 @@ void PickerController::OnClientPrefsSet(PrefService* prefs) {
   search_controller_.LoadEmojiLanguagesFromPrefs(prefs);
 }
 
-void PickerController::ToggleWidget(
+void QuickInsertController::ToggleWidget(
     const base::TimeTicks trigger_event_timestamp) {
   // Show the feature tour if it's the first time this feature is used.
   if (PrefService* prefs = GetPrefs();
@@ -300,7 +300,7 @@ void PickerController::ToggleWidget(
               ? PickerFeatureTour::EditorStatus::kEligible
               : PickerFeatureTour::EditorStatus::kNotEligible,
           base::BindRepeating(OpenLink, GURL(kSupportUrl)),
-          base::BindRepeating(&PickerController::ShowWidgetPostFeatureTour,
+          base::BindRepeating(&QuickInsertController::ShowWidgetPostFeatureTour,
                               weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
@@ -312,20 +312,21 @@ void PickerController::ToggleWidget(
   }
 }
 
-std::vector<PickerCategory> PickerController::GetAvailableCategories() {
+std::vector<PickerCategory> QuickInsertController::GetAvailableCategories() {
   return session_ == nullptr ? std::vector<PickerCategory>{}
                              : session_->model.GetAvailableCategories();
 }
 
-void PickerController::GetZeroStateSuggestedResults(
+void QuickInsertController::GetZeroStateSuggestedResults(
     SuggestedResultsCallback callback) {
   CHECK(client_);
   suggestions_controller_.GetSuggestions(*client_, session_->model,
                                          std::move(callback));
 }
 
-void PickerController::GetResultsForCategory(PickerCategory category,
-                                             SearchResultsCallback callback) {
+void QuickInsertController::GetResultsForCategory(
+    PickerCategory category,
+    SearchResultsCallback callback) {
   const PickerSectionType section_type =
       (category == PickerCategory::kUnitsMaths ||
        category == PickerCategory::kDatesTimes)
@@ -339,9 +340,9 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           .Then(std::move(callback)));
 }
 
-void PickerController::StartSearch(std::u16string_view query,
-                                   std::optional<PickerCategory> category,
-                                   SearchResultsCallback callback) {
+void QuickInsertController::StartSearch(std::u16string_view query,
+                                        std::optional<PickerCategory> category,
+                                        SearchResultsCallback callback) {
   CHECK(session_);
   CHECK(client_);
   search_controller_.StartSearch(
@@ -351,16 +352,17 @@ void PickerController::StartSearch(std::u16string_view query,
       std::move(callback));
 }
 
-void PickerController::StopSearch() {
+void QuickInsertController::StopSearch() {
   search_controller_.StopSearch();
 }
 
-void PickerController::StartEmojiSearch(std::u16string_view query,
-                                        EmojiSearchResultsCallback callback) {
+void QuickInsertController::StartEmojiSearch(
+    std::u16string_view query,
+    EmojiSearchResultsCallback callback) {
   search_controller_.StartEmojiSearch(GetPrefs(), query, std::move(callback));
 }
 
-void PickerController::CloseWidgetThenInsertResultOnNextFocus(
+void QuickInsertController::CloseWidgetThenInsertResultOnNextFocus(
     const QuickInsertSearchResult& result) {
   InsertResultOnNextFocus(result);
 
@@ -370,14 +372,14 @@ void PickerController::CloseWidgetThenInsertResultOnNextFocus(
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     close_widget_delay_timer_.Start(
         FROM_HERE, kCloseWidgetDelay,
-        base::BindOnce(&PickerController::CloseWidget,
+        base::BindOnce(&QuickInsertController::CloseWidget,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     CloseWidget();
   }
 }
 
-void PickerController::OpenResult(const QuickInsertSearchResult& result) {
+void QuickInsertController::OpenResult(const QuickInsertSearchResult& result) {
   return std::visit(
       base::Overloaded{
           [](const QuickInsertTextResult& data) { NOTREACHED(); },
@@ -440,15 +442,16 @@ void PickerController::OpenResult(const QuickInsertSearchResult& result) {
       result);
 }
 
-void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category,
-                                       std::u16string_view query) {
+void QuickInsertController::ShowEmojiPicker(ui::EmojiPickerCategory category,
+                                            std::u16string_view query) {
   ui::ShowEmojiPanelInSpecificMode(category,
                                    ui::EmojiPickerFocusBehavior::kAlwaysShow,
                                    base::UTF16ToUTF8(query));
 }
 
-void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
-                                  std::optional<std::string> freeform_text) {
+void QuickInsertController::ShowEditor(
+    std::optional<std::string> preset_query_id,
+    std::optional<std::string> freeform_text) {
   if (!show_editor_callback_.is_null()) {
     std::move(show_editor_callback_)
         .Run(std::move(preset_query_id), std::move(freeform_text));
@@ -457,7 +460,8 @@ void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
 
 // TODO: b:370885630 - Considers making selected_text as an argument of this
 // method.
-void PickerController::ShowLobster(std::optional<std::string> freeform_text) {
+void QuickInsertController::ShowLobster(
+    std::optional<std::string> freeform_text) {
   if (!show_lobster_callback_.is_null()) {
     std::move(show_lobster_callback_)
         .Run(session_ != nullptr && session_->model.selected_text() != u""
@@ -466,15 +470,15 @@ void PickerController::ShowLobster(std::optional<std::string> freeform_text) {
   }
 }
 
-PickerAssetFetcher* PickerController::GetAssetFetcher() {
+PickerAssetFetcher* QuickInsertController::GetAssetFetcher() {
   return asset_fetcher_.get();
 }
 
-PickerSessionMetrics& PickerController::GetSessionMetrics() {
+PickerSessionMetrics& QuickInsertController::GetSessionMetrics() {
   return session_->session_metrics;
 }
 
-PickerActionType PickerController::GetActionForResult(
+PickerActionType QuickInsertController::GetActionForResult(
     const QuickInsertSearchResult& result) {
   CHECK(session_);
   const PickerModeType mode = session_->model.GetMode();
@@ -538,44 +542,45 @@ PickerActionType PickerController::GetActionForResult(
       result);
 }
 
-std::vector<QuickInsertEmojiResult> PickerController::GetSuggestedEmoji() {
+std::vector<QuickInsertEmojiResult> QuickInsertController::GetSuggestedEmoji() {
   CHECK(session_);
   return session_->emoji_suggester.GetSuggestedEmoji();
 }
 
-bool PickerController::IsGifsEnabled() {
+bool QuickInsertController::IsGifsEnabled() {
   CHECK(session_);
   return session_->model.IsGifsEnabled();
 }
 
-PrefService* PickerController::GetPrefs() {
+PrefService* QuickInsertController::GetPrefs() {
   CHECK(client_);
   return client_->GetPrefs();
 }
 
-PickerModeType PickerController::GetMode() {
+PickerModeType QuickInsertController::GetMode() {
   CHECK(session_);
   return session_->model.GetMode();
 }
 
-void PickerController::OnViewIsDeleting(views::View* view) {
+void QuickInsertController::OnViewIsDeleting(views::View* view) {
   view_observation_.Reset();
 
   session_.reset();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-PickerController::GetSharedURLLoaderFactory() {
+QuickInsertController::GetSharedURLLoaderFactory() {
   return client_->GetSharedURLLoaderFactory();
 }
 
-void PickerController::FetchFileThumbnail(const base::FilePath& path,
-                                          const gfx::Size& size,
-                                          FetchFileThumbnailCallback callback) {
+void QuickInsertController::FetchFileThumbnail(
+    const base::FilePath& path,
+    const gfx::Size& size,
+    FetchFileThumbnailCallback callback) {
   client_->FetchFileThumbnail(path, size, std::move(callback));
 }
 
-PickerController::Session::Session(
+QuickInsertController::Session::Session(
     PrefService* prefs,
     ui::TextInputClient* focused_client,
     input_method::ImeKeyboard* ime_keyboard,
@@ -590,12 +595,12 @@ PickerController::Session::Session(
   feature_usage_metrics.StartUsage();
 }
 
-PickerController::Session::~Session() {
+QuickInsertController::Session::~Session() {
   feature_usage_metrics.StopUsage();
 }
 
-void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
-                                  WidgetTriggerSource trigger_source) {
+void QuickInsertController::ShowWidget(base::TimeTicks trigger_event_timestamp,
+                                       WidgetTriggerSource trigger_source) {
   ui::TextInputClient* focused_text_input_client = GetFocusedTextInputClient();
   show_editor_callback_ = client_->CacheEditorContext();
   show_lobster_callback_ = client_->CacheLobsterContext(
@@ -620,7 +625,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
           ? QuickInsertModel::LobsterStatus::kDisabled
           : QuickInsertModel::LobsterStatus::kEnabled,
       base::BindRepeating(
-          [](base::WeakPtr<PickerController> weak_controller,
+          [](base::WeakPtr<QuickInsertController> weak_controller,
              std::string_view emoji) -> std::string {
             if (weak_controller == nullptr) {
               return "";
@@ -644,7 +649,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   view_observation_.Observe(widget_->GetContentsView());
 }
 
-void PickerController::CloseWidget() {
+void QuickInsertController::CloseWidget() {
   if (!widget_) {
     return;
   }
@@ -654,15 +659,15 @@ void PickerController::CloseWidget() {
   widget_->Close();
 }
 
-void PickerController::ShowWidgetPostFeatureTour() {
+void QuickInsertController::ShowWidgetPostFeatureTour() {
   ShowWidget(base::TimeTicks::Now(), WidgetTriggerSource::kFeatureTour);
 }
 
-std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
+std::optional<PickerWebPasteTarget> QuickInsertController::GetWebPasteTarget() {
   return client_ ? client_->GetWebPasteTarget() : std::nullopt;
 }
 
-void PickerController::InsertResultOnNextFocus(
+void QuickInsertController::InsertResultOnNextFocus(
     const QuickInsertSearchResult& result) {
   if (!widget_) {
     return;
@@ -688,13 +693,13 @@ void PickerController::InsertResultOnNextFocus(
             insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
                 input_method, media, kInsertMediaTimeout,
                 base::BindOnce(
-                    [](base::WeakPtr<PickerController> weak_controller) {
+                    [](base::WeakPtr<QuickInsertController> weak_controller) {
                       return weak_controller
                                  ? weak_controller->GetWebPasteTarget()
                                  : std::nullopt;
                     },
                     weak_ptr_factory_.GetWeakPtr()),
-                base::BindOnce(&PickerController::OnInsertCompleted,
+                base::BindOnce(&QuickInsertController::OnInsertCompleted,
                                weak_ptr_factory_.GetWeakPtr(), media));
           },
           [&](QuickInsertClipboardResult data) {
@@ -712,7 +717,7 @@ void PickerController::InsertResultOnNextFocus(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 
-void PickerController::OnInsertCompleted(
+void QuickInsertController::OnInsertCompleted(
     const PickerRichMedia& media,
     PickerInsertMediaRequest::Result result) {
   // Fallback to copying to the clipboard on failure.
@@ -721,7 +726,7 @@ void PickerController::OnInsertCompleted(
   }
 }
 
-PickerCapsLockPosition PickerController::GetCapsLockPosition() {
+PickerCapsLockPosition QuickInsertController::GetCapsLockPosition() {
   // Always put the caps lock entry point at the top if the user has caps lock
   // enabled, since it is they will likely want to disable it.
   if (GetImeKeyboard().IsCapsLockEnabled()) {

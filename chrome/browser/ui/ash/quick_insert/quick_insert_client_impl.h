@@ -37,7 +37,7 @@ class SearchProvider;
 }  // namespace app_list
 
 namespace ash {
-class PickerController;
+class QuickInsertController;
 }
 
 namespace user_manager {
@@ -52,7 +52,7 @@ class PickerClientImpl
   // Sets this instance as the client of `controller`.
   // Automatically unsets the client when this instance is destroyed.
   // `manager` needs to outlive this class.
-  explicit PickerClientImpl(ash::PickerController* controller,
+  explicit PickerClientImpl(ash::QuickInsertController* controller,
                             user_manager::UserManager* user_manager);
   PickerClientImpl(const PickerClientImpl&) = delete;
   PickerClientImpl& operator=(const PickerClientImpl&) = delete;
@@ -121,7 +121,7 @@ class PickerClientImpl
 
   ash::input_method::EditorLiveRegionAnnouncer announcer_;
 
-  raw_ptr<ash::PickerController> controller_ = nullptr;
+  raw_ptr<ash::QuickInsertController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;

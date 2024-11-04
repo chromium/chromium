@@ -853,7 +853,7 @@ Shell::~Shell() {
   // since the latters destructor triggers events that the former is listening
   // to but no longer cares about.
   keyboard_controller_->DestroyVirtualKeyboard();
-  picker_controller_.reset();
+  quick_insert_controller_.reset();
 
   // Depends on |tablet_mode_controller_|.
   window_restore_controller_.reset();
@@ -1830,7 +1830,7 @@ void Shell::Init(
         shell_delegate_->CreateUserEducationDelegate());
   }
 
-  picker_controller_ = std::make_unique<PickerController>();
+  quick_insert_controller_ = std::make_unique<QuickInsertController>();
 
   if (features::IsLobsterEnabled() && LobsterController::IsEnabled()) {
     lobster_controller_ = std::make_unique<LobsterController>();

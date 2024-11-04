@@ -34,7 +34,7 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-// Lets PickerController in Ash to communicate with the browser.
+// Lets QuickInsertController in Ash to communicate with the browser.
 class ASH_EXPORT PickerClient {
  public:
   using CrosSearchResultsCallback = base::RepeatingCallback<void(

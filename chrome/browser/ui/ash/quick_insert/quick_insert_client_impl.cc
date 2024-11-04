@@ -264,7 +264,7 @@ std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromPanelContext(
 
 }  // namespace
 
-PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
+PickerClientImpl::PickerClientImpl(ash::QuickInsertController* controller,
                                    user_manager::UserManager* user_manager)
     : announcer_(kAnnouncementViewName), controller_(controller) {
   controller_->SetClient(this);
@@ -277,9 +277,9 @@ PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
 }
 
 PickerClientImpl::~PickerClientImpl() {
-  // Calling `PickerController::SetClient` with null requires the old client
-  // (this client) to be valid. This is fine as we have not started destructing
-  // anything yet.
+  // Calling `QuickInsertController::SetClient` with null requires the old
+  // client (this client) to be valid. This is fine as we have not started
+  // destructing anything yet.
   controller_->SetClient(nullptr);
 }
 

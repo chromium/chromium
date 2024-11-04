@@ -80,7 +80,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Slightly longer than the real burn in period to ensure empty results do not
   // flash on the screen before showing burn-in results.
   static constexpr base::TimeDelta kClearResultsTimeout =
-      PickerController::kBurnInPeriod + base::Milliseconds(50);
+      QuickInsertController::kBurnInPeriod + base::Milliseconds(50);
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

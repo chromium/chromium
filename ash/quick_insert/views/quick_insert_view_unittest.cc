@@ -1784,7 +1784,8 @@ TEST_F(QuickInsertViewTest, RecordsSearchLatencyAfterSearchFinished) {
                     FakePickerViewDelegate::SearchResultsCallback callback) {
             // The search automatically publishes results after burn-in + 50ms,
             // so publish "burn in results" before that.
-            task_environment()->FastForwardBy(PickerController::kBurnInPeriod);
+            task_environment()->FastForwardBy(
+                QuickInsertController::kBurnInPeriod);
             // This needs to be non-empty, or else `MarkSearchResultsUpdated`
             // will be called with `kNoResultsFound` - which does not emit the
             // search latency metric.
@@ -1803,7 +1804,7 @@ TEST_F(QuickInsertViewTest, RecordsSearchLatencyAfterSearchFinished) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
-                                   PickerController::kBurnInPeriod, 1);
+                                   QuickInsertController::kBurnInPeriod, 1);
 }
 
 TEST_F(QuickInsertViewTest,

@@ -1447,8 +1447,8 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
     return;
   }
 
-  CHECK(Shell::Get()->picker_controller());
-  Shell::Get()->picker_controller()->ToggleWidget(accelerator_timestamp);
+  CHECK(Shell::Get()->quick_insert_controller());
+  Shell::Get()->quick_insert_controller()->ToggleWidget(accelerator_timestamp);
   RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
 }
 

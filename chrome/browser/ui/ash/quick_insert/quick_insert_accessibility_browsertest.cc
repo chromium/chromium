@@ -77,7 +77,7 @@ class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
       DisableEarcons();
     });
 
-    ash::PickerController::DisableFeatureTourForTesting();
+    ash::QuickInsertController::DisableFeatureTourForTesting();
   }
 
   void TearDownOnMainThread() override {
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        InsertingAnnouncesInsertionBeforeTextfieldRefocus) {
-  ash::PickerController controller;
+  ash::QuickInsertController controller;
   PickerClientImpl client(&controller, user_manager::UserManager::Get());
   std::unique_ptr<views::Widget> textfield_widget =
       ash::TestWidgetBuilder()

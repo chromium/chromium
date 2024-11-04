@@ -214,7 +214,6 @@ class PciePeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentWindowController;
-class PickerController;
 class PipController;
 class PolicyRecommendationRestorer;
 class PostLoginGlanceablesMetricsRecorder;
@@ -225,6 +224,7 @@ class PrivacyHubController;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
+class QuickInsertController;
 class RapidKeySequenceRecorder;
 class RasterScaleController;
 class RefreshRateController;
@@ -698,7 +698,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   PeripheralBatteryListener* peripheral_battery_listener() {
     return peripheral_battery_listener_.get();
   }
-  PickerController* picker_controller() { return picker_controller_.get(); }
+  QuickInsertController* quick_insert_controller() {
+    return quick_insert_controller_.get();
+  }
   InformedRestoreController* informed_restore_controller() {
     return informed_restore_controller_.get();
   }
@@ -1124,7 +1126,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ActiveSessionAuthController> active_session_auth_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;
-  std::unique_ptr<PickerController> picker_controller_;
+  std::unique_ptr<QuickInsertController> quick_insert_controller_;
   std::unique_ptr<PrivacyHubController> privacy_hub_controller_;
   std::unique_ptr<UsbPeripheralNotificationController>
       usb_peripheral_notification_controller_;

@@ -156,7 +156,7 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
 // when it's destroyed.
 class TestPickerClient : public MockPickerClient {
  public:
-  TestPickerClient(PickerController* controller,
+  TestPickerClient(QuickInsertController* controller,
                    sync_preferences::TestingPrefServiceSyncable* prefs)
       : controller_(controller), prefs_(prefs) {
     controller_->SetClient(this);
@@ -172,7 +172,7 @@ class TestPickerClient : public MockPickerClient {
   PrefRegistrySimple* registry() { return prefs_->registry(); }
 
  private:
-  raw_ptr<PickerController> controller_ = nullptr;
+  raw_ptr<QuickInsertController> controller_ = nullptr;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ = nullptr;
 };
 
@@ -183,7 +183,7 @@ class QuickInsertControllerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    controller_ = std::make_unique<PickerController>();
+    controller_ = std::make_unique<QuickInsertController>();
     client_ = std::make_unique<NiceMock<TestPickerClient>>(controller_.get(),
                                                            &prefs_);
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
@@ -204,7 +204,7 @@ class QuickInsertControllerTest : public AshTestBase {
     return new_window_delegate_;
   }
 
-  PickerController& controller() { return *controller_; }
+  QuickInsertController& controller() { return *controller_; }
 
   NiceMock<TestPickerClient>& client() { return *client_; }
 
@@ -217,7 +217,7 @@ class QuickInsertControllerTest : public AshTestBase {
  private:
   MockNewWindowDelegate new_window_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<PickerController> controller_;
+  std::unique_ptr<QuickInsertController> controller_;
   std::unique_ptr<NiceMock<TestPickerClient>> client_;
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       metrics_recorder_;
@@ -584,7 +584,7 @@ TEST_F(QuickInsertControllerTest,
       input_method,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
   input_method->SetFocusedTextInputClient(&input_field);
-  task_environment()->FastForwardBy(PickerController::kInsertMediaTimeout);
+  task_environment()->FastForwardBy(QuickInsertController::kInsertMediaTimeout);
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
@@ -1107,7 +1107,7 @@ TEST_F(QuickInsertControllerTest,
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method->SetFocusedTextInputClient(&input_field);
-  base::MockCallback<PickerController::SearchResultsCallback> callback;
+  base::MockCallback<QuickInsertController::SearchResultsCallback> callback;
 
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
@@ -1127,7 +1127,7 @@ TEST_F(QuickInsertControllerTest, SearchesCaseTransformWhenSelectedText) {
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method->SetFocusedTextInputClient(&input_field);
-  base::MockCallback<PickerController::SearchResultsCallback> callback;
+  base::MockCallback<QuickInsertController::SearchResultsCallback> callback;
 
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,

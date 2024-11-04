@@ -116,7 +116,7 @@ class QuickInsertInteractiveUiTest : public InteractiveAshTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kPickerGrid},
         /*disabled_features=*/{});
-    ash::PickerController::DisableFeatureTourForTesting();
+    ash::QuickInsertController::DisableFeatureTourForTesting();
   }
 
   void SetUpOnMainThread() override {
