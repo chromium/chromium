@@ -439,6 +439,8 @@ if (enable_pdf) {
       "pdfium/pdfium_range_unittest.cc",
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
+      "pdfium/pdfium_test_helpers.cc",
+      "pdfium/pdfium_test_helpers.h",
       "test/run_all_unittests.cc",
       "ui/document_properties_unittest.cc",
       "ui/file_name_unittest.cc",
