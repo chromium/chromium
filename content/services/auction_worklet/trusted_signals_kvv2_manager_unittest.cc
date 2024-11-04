@@ -90,8 +90,9 @@ MATCHER_P(FailedWithError, expected_error, "") {
                                      result_listener);
 }
 
-class TrustedSignalsKVv2ManagerTest : public mojom::TrustedSignalsCache,
-                                      public testing::Test {
+class TrustedSignalsKVv2ManagerTest
+    : public mojom::TrustedSignalsCache,
+      public testing::TestWithParam<TrustedSignalsKVv2Manager::SignalsType> {
  public:
   struct PendingCacheRequest {
     base::UnguessableToken compression_group_token;
@@ -172,36 +173,93 @@ class TrustedSignalsKVv2ManagerTest : public mojom::TrustedSignalsCache,
     return result;
   }
 
-  // Returns a response with a fully populated partition 0.
-  static std::vector<std::uint8_t> OnePartitionResponse() {
-    return test::ToCborVector(
-        R"([{
-          "id": 0,
-          "dataVersion": 1,
-          "keyGroupOutputs": [
-            {
-              "tags": ["interestGroupNames"],
-              "keyValues": {
-                "group1": {
-                  "value": "{
-                    \"priorityVector\": {\"signal1\":2},
-                    \"updateIfOlderThanMs\":3
-                  }"
-                }
-              }
-            },
-            {
-              "tags": ["keys"],
-              "keyValues": {
-                "key1": {"value":"\"4\""}
-              }
-            }
-          ]
-        }])");
+  // Returns the results of calling TrustedSignals::Result::GetScoringSignals()
+  // with the provided arguments. Returns value as a JSON std::string, for easy
+  // testing.
+  std::string ExtractScoringSignals(
+      const TrustedSignals::Result& signals,
+      const GURL& render_url,
+      const std::vector<std::string>& ad_component_render_urls) {
+    base::RunLoop run_loop;
+
+    std::string result;
+    v8_helper_->v8_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
+          v8::Isolate* isolate = v8_helper_->isolate();
+          // Could use the scratch context, but using a separate one more
+          // closely resembles actual use.
+          v8::Local<v8::Context> context = v8::Context::New(isolate);
+          v8::Context::Scope context_scope(context);
+
+          v8::Local<v8::Value> value = signals.GetScoringSignals(
+              v8_helper_.get(), context, render_url, ad_component_render_urls);
+
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
+              AuctionV8Helper::Result::kSuccess) {
+            result = "JSON extraction failed.";
+          }
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
   }
 
-  // Returns a response with a partition 0 only, response is different from.
+  // Returns a response with a fully populated partition 0.
+  static std::vector<std::uint8_t> OnePartitionResponse() {
+    if (GetParam() == TrustedSignalsKVv2Manager::SignalsType::kBidding) {
+      return test::ToCborVector(
+          R"([{
+            "id": 0,
+            "dataVersion": 1,
+            "keyGroupOutputs": [
+              {
+                "tags": ["interestGroupNames"],
+                "keyValues": {
+                  "group1": {
+                    "value": "{
+                      \"priorityVector\": {\"signal1\":2},
+                      \"updateIfOlderThanMs\":3
+                    }"
+                  }
+                }
+              },
+              {
+                "tags": ["keys"],
+                "keyValues": {
+                  "key1": {"value":"\"4\""}
+                }
+              }
+            ]
+          }])");
+    } else {
+      return test::ToCborVector(
+          R"([{
+            "id": 0,
+            "dataVersion": 1,
+            "keyGroupOutputs": [
+              {
+                "tags": ["renderUrls"],
+                "keyValues": {"https://a.test/":{"value":"4"}}
+              },
+              {
+                "tags": ["adComponentRenderUrls"],
+                "keyValues": {
+                  "https://a.test/":{"value":"[5]"},
+                  "https://b.test/":{"value":"\"6\""}
+                }
+              }
+            ]
+          }])");
+    }
+  }
+
+  // Returns a response with a partition 0 only, response is different from
+  // OnePartitionResponse().
   static std::vector<std::uint8_t> DifferentOnePartitionResponse() {
+    // Since only `dataVersion` is populated, no need for different return
+    // values for bidding and scoring signals.
     return test::ToCborVector(
         R"([{
           "id": 0,
@@ -212,6 +270,8 @@ class TrustedSignalsKVv2ManagerTest : public mojom::TrustedSignalsCache,
 
   // Response with two minimally populated partitions.
   static std::vector<std::uint8_t> TwoPartitionResponse() {
+    // Since only `dataVersion` is populated, no need for different return
+    // values for bidding and scoring signals.
     return test::ToCborVector(
         R"([{
           "id": 0,
@@ -253,13 +313,18 @@ class TrustedSignalsKVv2ManagerTest : public mojom::TrustedSignalsCache,
   std::queue<PendingCacheRequest> pending_requests_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    Any,
+    TrustedSignalsKVv2ManagerTest,
+    testing::Values(TrustedSignalsKVv2Manager::SignalsType::kBidding,
+                    TrustedSignalsKVv2Manager::SignalsType::kScoring));
+
 // Test the case where a request is cancelled before receiving a result from the
 // cache. The purpose of this test is to make sure there's no crash.
-TEST_F(TrustedSignalsKVv2ManagerTest, Cancel) {
+TEST_P(TrustedSignalsKVv2ManagerTest, Cancel) {
   SignalsFuture future;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future.GetCallback());
   // Wait for cache request so the test is in a consistent state. Also, the test
   // would fail if the cache receives the request but WaitForCacheRequest() is
@@ -275,12 +340,11 @@ TEST_F(TrustedSignalsKVv2ManagerTest, Cancel) {
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, CacheReturnsError) {
+TEST_P(TrustedSignalsKVv2ManagerTest, CacheReturnsError) {
   const char kErrorString[] = "This is an error. It really is. Honest.";
   SignalsFuture future;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future.GetCallback());
 
   auto cache_request = WaitForCacheRequest();
@@ -291,54 +355,59 @@ TEST_F(TrustedSignalsKVv2ManagerTest, CacheReturnsError) {
   EXPECT_THAT(future, FailedWithError(kErrorString));
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, BadData) {
+TEST_P(TrustedSignalsKVv2ManagerTest, BadData) {
   SignalsFuture future;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future.GetCallback());
   WaitForCacheRequestAndSendResponse({});
   EXPECT_THAT(future, FailedWithError("Failed to parse content as CBOR."));
 }
 
 // Request partition 1, response only has partition 0.
-TEST_F(TrustedSignalsKVv2ManagerTest, WrongPartition) {
+TEST_P(TrustedSignalsKVv2ManagerTest, WrongPartition) {
   SignalsFuture future;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/1, future.GetCallback());
   WaitForCacheRequestAndSendResponse(OnePartitionResponse());
   EXPECT_THAT(future,
               FailedWithError(R"(Partition "1" is missing from response.)"));
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, Success) {
+TEST_P(TrustedSignalsKVv2ManagerTest, Success) {
   SignalsFuture future;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future.GetCallback());
   WaitForCacheRequestAndSendResponse(OnePartitionResponse());
 
   ASSERT_THAT(future, SucceededWithDataVersion(1));
 
   TrustedSignals::Result& result = *future.Get<ResultType>();
-  auto* per_group1_data = result.GetPerGroupData("group1");
-  ASSERT_TRUE(per_group1_data);
-  const TrustedSignals::Result::PriorityVector kExpectedPriorityVector{
-      {"signal1", 2}};
-  EXPECT_EQ(per_group1_data->priority_vector, kExpectedPriorityVector);
-  EXPECT_EQ(per_group1_data->update_if_older_than, base::Milliseconds(3));
-
-  EXPECT_EQ(ExtractBiddingSignals(result, {"key1"}), R"({"key1":"4"})");
+  if (GetParam() == TrustedSignalsKVv2Manager::SignalsType::kBidding) {
+    auto* per_group1_data = result.GetPerGroupData("group1");
+    ASSERT_TRUE(per_group1_data);
+    const TrustedSignals::Result::PriorityVector kExpectedPriorityVector{
+        {"signal1", 2}};
+    EXPECT_EQ(per_group1_data->priority_vector, kExpectedPriorityVector);
+    EXPECT_EQ(per_group1_data->update_if_older_than, base::Milliseconds(3));
+    EXPECT_EQ(ExtractBiddingSignals(result, {"key1"}), R"({"key1":"4"})");
+  } else {
+    EXPECT_EQ(
+        ExtractScoringSignals(result, GURL("https://a.test/"),
+                              {"https://a.test/", "https://b.test/"}),
+        R"({"renderURL":{"https://a.test/":4},)"
+        R"("renderUrl":{"https://a.test/":4},)"
+        R"("adComponentRenderURLs":{"https://a.test/":[5],"https://b.test/":"6"},)"
+        R"("adComponentRenderUrls":{"https://a.test/":[5],"https://b.test/":"6"}})");
+  }
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, Gzip) {
+TEST_P(TrustedSignalsKVv2ManagerTest, Gzip) {
   SignalsFuture future;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future.GetCallback());
 
   std::string compressed_string;
@@ -355,20 +424,18 @@ TEST_F(TrustedSignalsKVv2ManagerTest, Gzip) {
 }
 
 // In the case fetching a partition fails, the error is cached.
-TEST_F(TrustedSignalsKVv2ManagerTest,
+TEST_P(TrustedSignalsKVv2ManagerTest,
        MultipleRequestsReuseOnePartitionWithError) {
   const char kErrorString[] = "This is an error. It really is. Honest.";
 
   // Start two requests for the same partition.
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future2.GetCallback());
 
   // There should only be a single request to the cache.
@@ -387,8 +454,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest,
   // result, as long as the previous requests are still alive.
   SignalsFuture future3;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request3 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future3.GetCallback());
   EXPECT_THAT(future3, FailedWithError(kErrorString));
 
@@ -399,23 +465,20 @@ TEST_F(TrustedSignalsKVv2ManagerTest,
 
   SignalsFuture future4;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request4 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future4.GetCallback());
   EXPECT_THAT(future4, FailedWithError(kErrorString));
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsReuseOnePartition) {
+TEST_P(TrustedSignalsKVv2ManagerTest, MultipleRequestsReuseOnePartition) {
   // Start two requests for the same partition.
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future2.GetCallback());
 
   // There should only be a single request to the cache.
@@ -430,8 +493,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsReuseOnePartition) {
   // result, as long as the previous requests are still alive.
   SignalsFuture future3;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request3 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future3.GetCallback());
   EXPECT_EQ(future1.Get<ResultType>(), future3.Get<ResultType>());
 
@@ -442,17 +504,15 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsReuseOnePartition) {
 
   SignalsFuture future4;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request4 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future4.GetCallback());
   EXPECT_EQ(future1.Get<ResultType>(), future4.Get<ResultType>());
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, ReRequestOnePartition) {
+TEST_P(TrustedSignalsKVv2ManagerTest, ReRequestOnePartition) {
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
 
   WaitForCacheRequestAndSendResponse(OnePartitionResponse());
@@ -465,8 +525,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, ReRequestOnePartition) {
   // A new request with the same token should send a new request to the cache.
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future2.GetCallback());
 
   // Send a different response, and make sure it's received. In production, the
@@ -480,16 +539,14 @@ TEST_F(TrustedSignalsKVv2ManagerTest, ReRequestOnePartition) {
 // Test the case of multiple requests for different partitions in the same
 // compression group, one partition is missing from the response. Keeping alive
 // the request for either partition should keep the entire response alive.
-TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsOnePartitionMissing) {
+TEST_P(TrustedSignalsKVv2ManagerTest, MultipleRequestsOnePartitionMissing) {
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/1, future2.GetCallback());
 
   // There should only be a single request to the cache.
@@ -507,8 +564,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsOnePartitionMissing) {
   request2.reset();
   SignalsFuture future3;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request3 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/1, future3.GetCallback());
   EXPECT_THAT(future3,
               FailedWithError(R"(Partition "1" is missing from response.)"));
@@ -519,8 +575,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsOnePartitionMissing) {
   request1.reset();
   SignalsFuture future4;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request4 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future4.GetCallback());
   EXPECT_EQ(future1.Get<ResultType>(), future4.Get<ResultType>());
 
@@ -533,8 +588,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsOnePartitionMissing) {
   // request.
   SignalsFuture future5;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request5 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future5.GetCallback());
   auto cache_request2 = WaitForCacheRequest();
 }
@@ -542,16 +596,14 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsOnePartitionMissing) {
 // Test the case of multiple requests for different partitions in the same
 // compression group, response includes both partitions. Keeping alive the
 // request for either partition should keep the entire response alive.
-TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsTwoPartitions) {
+TEST_P(TrustedSignalsKVv2ManagerTest, MultipleRequestsTwoPartitions) {
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/1, future2.GetCallback());
 
   // There should only be a single request to the cache.
@@ -566,8 +618,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsTwoPartitions) {
   request2.reset();
   SignalsFuture future3;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request3 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/1, future3.GetCallback());
   EXPECT_EQ(future2.Get<ResultType>(), future3.Get<ResultType>());
 
@@ -577,8 +628,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsTwoPartitions) {
   request1.reset();
   SignalsFuture future4;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request4 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future4.GetCallback());
   EXPECT_EQ(future1.Get<ResultType>(), future4.Get<ResultType>());
 
@@ -591,8 +641,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsTwoPartitions) {
   // request.
   SignalsFuture future5;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request5 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future5.GetCallback());
   auto cache_request2 = WaitForCacheRequest();
 }
@@ -601,12 +650,11 @@ TEST_F(TrustedSignalsKVv2ManagerTest, MultipleRequestsTwoPartitions) {
 // compression group, where the second request is made after the first has
 // received results. Even though the second request is for a different
 // partition, it should still be in the manager's in-memory cache.
-TEST_F(TrustedSignalsKVv2ManagerTest,
+TEST_P(TrustedSignalsKVv2ManagerTest,
        MultipleRequestsTwoPartitionsSequentialRequests) {
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
 
   WaitForCacheRequestAndSendResponse(TwoPartitionResponse());
@@ -616,8 +664,7 @@ TEST_F(TrustedSignalsKVv2ManagerTest,
   // succeed without another request to the cache.
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/1, future2.GetCallback());
   EXPECT_THAT(future2, SucceededWithDataVersion(4));
   EXPECT_NE(future1.Get<ResultType>(), future2.Get<ResultType>());
@@ -628,30 +675,27 @@ TEST_F(TrustedSignalsKVv2ManagerTest,
   // the cache.
   SignalsFuture future3;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request3 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/2, future3.GetCallback());
   EXPECT_THAT(future3,
               FailedWithError(R"(Partition "2" is missing from response.)"));
 }
 
-TEST_F(TrustedSignalsKVv2ManagerTest, IndependentRequests) {
+TEST_P(TrustedSignalsKVv2ManagerTest, IndependentRequests) {
   base::UnguessableToken compression_group_token2 =
       base::UnguessableToken::Create();
 
   // Start one request.
   SignalsFuture future1;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request1 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future1.GetCallback());
   auto cache_request1 = WaitForCacheRequest(compression_group_token_);
 
   // Start another request for a different compression group.
   SignalsFuture future2;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request2 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token2,
+      manager_.RequestSignals(GetParam(), compression_group_token2,
                               /*partition_id=*/0, future2.GetCallback());
   auto cache_request2 = WaitForCacheRequest(compression_group_token2);
 
@@ -677,16 +721,14 @@ TEST_F(TrustedSignalsKVv2ManagerTest, IndependentRequests) {
   // Check the second response was cached.
   SignalsFuture future3;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request3 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token2,
+      manager_.RequestSignals(GetParam(), compression_group_token2,
                               /*partition_id=*/0, future3.GetCallback());
   EXPECT_EQ(future3.Get<ResultType>(), future2.Get<ResultType>());
 
   // Check the first response is not in the cache.
   SignalsFuture future4;
   std::unique_ptr<TrustedSignalsKVv2Manager::Request> request4 =
-      manager_.RequestSignals(TrustedSignalsKVv2Manager::SignalsType::kBidding,
-                              compression_group_token_,
+      manager_.RequestSignals(GetParam(), compression_group_token_,
                               /*partition_id=*/0, future4.GetCallback());
   auto cache_request4 = WaitForCacheRequest();
 }
