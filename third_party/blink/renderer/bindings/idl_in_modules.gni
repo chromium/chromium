@@ -407,8 +407,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/launch/dom_window_launch_queue.idl",
   "//third_party/blink/renderer/modules/launch/launch_params.idl",
   "//third_party/blink/renderer/modules/launch/launch_queue.idl",
-  "//third_party/blink/renderer/modules/lock_screen/dom_window_lock_screen.idl",
-  "//third_party/blink/renderer/modules/lock_screen/lock_screen_data.idl",
   "//third_party/blink/renderer/modules/locked_mode/locked_mode.idl",
   "//third_party/blink/renderer/modules/locked_mode/navigator_locked_mode.idl",
   "//third_party/blink/renderer/modules/locks/lock.idl",

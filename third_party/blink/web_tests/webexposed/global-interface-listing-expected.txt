@@ -13007,7 +13007,6 @@ namespace console
     method gc
     method getComputedStyle
     method getDigitalGoodsService
-    method getLockScreenData
     method getScreenDetails
     method getSelection
     method matchMedia

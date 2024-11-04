@@ -4596,10 +4596,6 @@
       base_feature: "none",
     },
     {
-      name:"WebAppsLockScreen",
-      status:"experimental",
-    },
-    {
       name: "WebAppTabStrip",
       status: {
         "ChromeOS_Ash": "stable",
