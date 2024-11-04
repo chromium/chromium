@@ -67,6 +67,10 @@ bool IsValidLensResultUrl(const GURL& url);
 // matching domains
 bool IsLensUrl(const GURL& url);
 
+// Returns true if the given URL corresponds to a Lens mWeb result page. This is
+// done by checking the URL and its parameters.
+bool IsLensMWebResult(const GURL& url);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_URL_UTILS_H_

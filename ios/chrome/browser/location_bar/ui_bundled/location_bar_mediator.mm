@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -167,7 +168,7 @@
       visibleURL = webState->GetVisibleURL();
     }
   }
-  return !IsURLNewTabPage(visibleURL);
+  return !IsURLNewTabPage(visibleURL) && !lens::IsLensMWebResult(visibleURL);
 }
 
 @end
