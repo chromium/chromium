@@ -13,6 +13,7 @@
 @class ShareKitFacePileConfiguration;
 @class ShareKitJoinConfiguration;
 @class ShareKitManageConfiguration;
+@class ShareKitReadConfiguration;
 @class ShareKitShareGroupConfiguration;
 
 // Service for ShareKit, allowing to manage tab groups sharing.
@@ -38,6 +39,10 @@ class ShareKitService : public KeyedService {
 
   // Returns a new FacePile view controller for the given `config`.
   virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config) = 0;
+
+  // Reads the info for the groups passed in `config` and returns the result
+  // through the config callback.
+  virtual void ReadGroups(ShareKitReadConfiguration* config);
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SERVICE_H_

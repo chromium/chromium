@@ -10,6 +10,8 @@ source_set("model") {
     "share_kit_join_configuration.mm",
     "share_kit_manage_configuration.h",
     "share_kit_manage_configuration.mm",
+    "share_kit_read_configuration.h",
+    "share_kit_read_configuration.mm",
     "share_kit_service.h",
     "share_kit_service.mm",
     "share_kit_service_configuration.h",
@@ -18,6 +20,7 @@ source_set("model") {
     "share_kit_share_group_configuration.mm",
   ]
   deps = [
+    "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
     "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",

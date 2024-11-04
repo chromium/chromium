@@ -29,3 +29,7 @@ UIViewController* TestShareKitService::FacePile(
   // TODO(crbug.com/358373145): add fake implementation.
   return nil;
 }
+
+void TestShareKitService::ReadGroups(ShareKitReadConfiguration* config) {
+  // TODO(crbug.com/358373145): add fake implementation.
+}
