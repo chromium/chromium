@@ -87,7 +87,6 @@ void LobsterService::OnFocus(int context_id) {
     return;
   }
 
-  if (queued_insertion_->Commit()) {
-    queued_insertion_ = nullptr;
-  }
+  queued_insertion_->Commit();
+  queued_insertion_ = nullptr;
 }
