@@ -615,10 +615,6 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
     // Configured first because it takes precedence over the getrandom() trial.
     internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-    internal::ConfigureRandBytesFieldTrial();
-#endif
   }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
