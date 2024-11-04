@@ -158,4 +158,30 @@ FilePath ContentUriBuildDocumentUriUsingTree(
   return FilePath(SafeConvertJavaStringToUTF8(env, j_uri));
 }
 
+FilePath ContentUriGetChildDocumentOrQuery(const FilePath& parent,
+                                           const std::string& display_name,
+                                           const std::string& mime_type,
+                                           bool is_directory,
+                                           bool create) {
+  JNIEnv* env = android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_uri =
+      Java_ContentUriUtils_getChildDocumentOrQuery(
+          env, parent.value(), display_name, mime_type, is_directory, create);
+  return FilePath(SafeConvertJavaStringToUTF8(env, j_uri));
+}
+
+bool ContentUriIsCreateChildDocumentQuery(const FilePath& content_uri) {
+  JNIEnv* env = android::AttachCurrentThread();
+  return Java_ContentUriUtils_isCreateChildDocumentQuery(env,
+                                                         content_uri.value());
+}
+
+FilePath ContentUriGetDocumentFromQuery(const FilePath& content_uri,
+                                        bool create) {
+  JNIEnv* env = android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_uri = Java_ContentUriUtils_getDocumentFromQuery(
+      env, content_uri.value(), create);
+  return FilePath(SafeConvertJavaStringToUTF8(env, j_uri));
+}
+
 }  // namespace base

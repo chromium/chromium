@@ -19,7 +19,7 @@ namespace base {
 namespace internal {
 
 // Check whether a content URI exists.
-bool ContentUriExists(const FilePath& content_uri);
+BASE_EXPORT bool ContentUriExists(const FilePath& content_uri);
 
 // Translates File::FLAG_* `open_flags` bitset to Java mode from
 // ParcelFileDescriptor#parseMode(): ("r", "w", "wt", "wa", "rw" or "rwt").
@@ -61,6 +61,28 @@ BASE_EXPORT bool MaybeGetFileDisplayName(const FilePath& content_uri,
 BASE_EXPORT FilePath
 ContentUriBuildDocumentUriUsingTree(const FilePath& tree_uri,
                                     const std::string& encoded_document_id);
+
+// Returns the URI of the matching document, or if document does not exist and
+// `create` is true then returns a URI that can be used with
+// ContentUriGetDocumentFromQuery() to create the specified document under
+// `parent` directory with the specified `display_name` and `mime_type`.
+BASE_EXPORT FilePath
+ContentUriGetChildDocumentOrQuery(const FilePath& parent,
+                                  const std::string& display_name,
+                                  const std::string& mime_type,
+                                  bool is_directory,
+                                  bool create);
+
+// Returns whether this is a create-child-document query returned by
+// ContentUriGetChildDocumentOrQuery().
+BASE_EXPORT bool ContentUriIsCreateChildDocumentQuery(
+    const FilePath& content_uri);
+
+// Gets a document with the details encoded in `document_query` which must be
+// the result of calling ContentUriGetChildDocumentOrQuery(). If `create` is
+// true, the document will be created if it does not exist.
+BASE_EXPORT FilePath
+ContentUriGetDocumentFromQuery(const FilePath& document_query, bool create);
 
 }  // namespace base
 

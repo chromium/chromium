@@ -10,11 +10,9 @@ import android.content.Context;
 import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.provider.DocumentsContract;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,8 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 /**
  * ContentProvider that reads files into memory when requested and returns an AssetFileDescriptor to
@@ -70,37 +66,7 @@ public class InMemoryContentProvider extends ContentProvider {
             String selection,
             String[] selectionArgs,
             String sortOrder) {
-        MatrixCursor cursor =
-                new MatrixCursor(
-                        new String[] {
-                            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-                            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                            DocumentsContract.Document.COLUMN_MIME_TYPE,
-                            DocumentsContract.Document.COLUMN_SIZE,
-                            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-                        },
-                        1);
-
-        String documentId;
-        String pathUnderCacheDir;
-        try {
-            documentId = DocumentsContract.getDocumentId(uri);
-            pathUnderCacheDir = URLDecoder.decode(documentId, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            return cursor;
-        }
-        File file = new File(mCacheDir, pathUnderCacheDir);
-        if (file.exists()) {
-            cursor.addRow(
-                    new Object[] {
-                        documentId,
-                        file.toPath().getFileName(),
-                        file.isDirectory() ? DocumentsContract.Document.MIME_TYPE_DIR : "",
-                        file.length(),
-                        file.lastModified()
-                    });
-        }
-        return cursor;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -126,18 +92,10 @@ public class InMemoryContentProvider extends ContentProvider {
     @Override
     public AssetFileDescriptor openAssetFile(Uri uri, String mode)
             throws FileNotFoundException, SecurityException {
-        String pathUnderCacheDir;
-        if (uri.toString().startsWith(PREFIX)) {
-            pathUnderCacheDir = uri.toString().substring(PREFIX.length());
-        } else {
-            try {
-                String documentId = DocumentsContract.getDocumentId(uri);
-                pathUnderCacheDir = URLDecoder.decode(documentId, "UTF-8");
-            } catch (UnsupportedEncodingException uee) {
-                throw new SecurityException("Invalid uri " + uri);
-            }
+        if (!uri.toString().startsWith(PREFIX)) {
+            throw new SecurityException("Unknonwn authority " + uri);
         }
-        File file = new File(mCacheDir, pathUnderCacheDir);
+        File file = new File(mCacheDir, uri.toString().substring(PREFIX.length()));
         try (FileInputStream fis = new FileInputStream(file)) {
             byte[] buf = FileUtils.readStream(fis);
             ParcelFileDescriptor fd = openPipeHelper(uri, null, null, buf, mPipeDataWriter);

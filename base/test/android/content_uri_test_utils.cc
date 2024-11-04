@@ -46,7 +46,7 @@ std::optional<FilePath> GetInMemoryContentTreeUriFromCacheDirDirectory(
   if (!cache_dir.AppendRelativePath(path, &document_id)) {
     return std::nullopt;
   }
-  base::FilePath uri("content://org.chromium.native_test.inmemory/tree/" +
+  base::FilePath uri("content://org.chromium.native_test.docprov/tree/" +
                      base::EscapeAllExceptUnreserved(document_id.value()));
   return uri;
 }
