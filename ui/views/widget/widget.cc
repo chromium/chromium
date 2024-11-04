@@ -1164,6 +1164,12 @@ void Widget::RunShellDrag(View* view,
   if (!widget_deletion_observer.IsWidgetAlive())
     return;
 
+    // TODO(crbug.com/375959961): On X11, the native widget's mouse button state
+    // is not updated when the mouse button is released to end a drag.
+#if !BUILDFLAG(IS_OZONE_X11)
+  is_mouse_button_pressed_ = native_widget_->IsMouseButtonDown();
+#endif
+
   // If the view is removed during the drag operation, dragged_view_ is set to
   // NULL.
   if (view && dragged_view_ == view) {

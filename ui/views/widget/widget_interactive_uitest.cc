@@ -59,6 +59,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "ui/aura/input_state_lookup.h"
+#include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/win/hwnd_util.h"
@@ -290,6 +292,71 @@ class DragView : public View, public DragController {
 BEGIN_METADATA(DragView)
 END_METADATA
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
+
+// A root view that tracks mouse events.
+class MouseEventRootView : public internal::RootView {
+  METADATA_HEADER(MouseEventRootView, View)
+
+ public:
+  using RootView::RootView;
+
+  MouseEventRootView(const MouseEventRootView&) = delete;
+  MouseEventRootView& operator=(const MouseEventRootView&) = delete;
+
+  ~MouseEventRootView() override = default;
+
+  bool OnMouseDragged(const ui::MouseEvent& event) override {
+    ++dragged_;
+    return internal::RootView::OnMouseDragged(event);
+  }
+
+  void OnMouseMoved(const ui::MouseEvent& event) override {
+    ++moved_;
+    internal::RootView::OnMouseMoved(event);
+  }
+
+  int moved() const { return moved_; }
+  int dragged() const { return dragged_; }
+  void reset_counts() {
+    moved_ = 0;
+    dragged_ = 0;
+  }
+
+ private:
+  int dragged_ = 0;
+  int moved_ = 0;
+};
+
+BEGIN_METADATA(MouseEventRootView)
+END_METADATA
+
+// A widget that uses MouseEventRootView to track mouse events.
+class MouseEventWidget : public Widget {
+  METADATA_HEADER(MouseEventWidget, Widget)
+
+ public:
+  MouseEventWidget() = default;
+
+  MouseEventWidget(const MouseEventWidget&) = delete;
+  MouseEventWidget& operator=(const MouseEventWidget&) = delete;
+
+  ~MouseEventWidget() override = default;
+
+  MouseEventRootView* root_view() { return root_view_; }
+
+ private:
+  // Widget:
+  internal::RootView* CreateRootView() override {
+    // The parent class owns and destroys the view.
+    root_view_ = new MouseEventRootView(this);
+    return root_view_;
+  }
+
+  raw_ptr<MouseEventRootView> root_view_;
+};
+
+BEGIN_METADATA(MouseEventWidget)
+END_METADATA
 
 ui::mojom::WindowShowState GetWidgetShowState(const Widget* widget) {
   // Use IsMaximized/IsMinimized/IsFullScreen instead of GetWindowPlacement
@@ -2282,8 +2349,9 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   }
 
   void TearDown() override {
-    if (deactivate_widget_)
+    if (deactivate_widget_) {
       deactivate_widget_->CloseNow();
+    }
     DesktopWidgetTestInteractive::TearDown();
   }
 
@@ -2486,7 +2554,9 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
                   base::OnceClosure on_capture_lost) {
     widget->AddObserver(this);
 
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.native_widget = new DesktopNativeWidgetAura(widget);
     params.bounds = bounds;
     widget->Init(std::move(params));
@@ -2593,6 +2663,76 @@ TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
   // Wait for the drag to be cancelled by `DragView::OnDragEntered()` /
   // `DragView::OnMouseCaptureLost()`.
   WaitForDragEnd();
+}
+
+// Tests that mouse movements made after a drag ends will be handled as
+// moves instead of drags.
+// TODO(crbug.com/375959961): On X11, the native widget's mouse button state is
+// not updated when the mouse button is released to end a drag.
+#if BUILDFLAG(IS_OZONE_X11)
+#define MAYBE_RunShellDragUpdatesMouseButtonState \
+  DISABLED_RunShellDragUpdatesMouseButtonState
+#else
+#define MAYBE_RunShellDragUpdatesMouseButtonState \
+  RunShellDragUpdatesMouseButtonState
+#endif
+TEST_F(DesktopWidgetDragTestInteractive,
+       MAYBE_RunShellDragUpdatesMouseButtonState) {
+#if BUILDFLAG(IS_WIN)
+  // The test base (views::ViewsTestBase) removes input state lookup.
+  // Windows depends on it for getting the correct mouse button state during
+  // drags.
+  aura::test::EnvTestHelper(aura::Env::GetInstance())
+      .SetInputStateLookup(aura::InputStateLookup::Create());
+#endif
+
+  auto widget = std::make_unique<MouseEventWidget>();
+
+  // Release the mouse button when we enter drag. This should end the drag.
+  auto on_enter = [&]() {
+    drag_entered_ = true;
+
+    EXPECT_TRUE(ui_controls::SendMouseEvents(
+        ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP));
+  };
+
+#if BUILDFLAG(IS_WIN)
+  // Additional mouse movement is needed on Windows before the "OnDragEnter"
+  // is triggered.
+  base::OnceClosure on_capture_lost = base::BindLambdaForTesting([&] {
+    gfx::Point target_location =
+        aura::Env::GetInstance()->last_mouse_location();
+    target_location += gfx::Vector2d(1, 1);
+    EXPECT_TRUE(
+        ui_controls::SendMouseMove(target_location.x(), target_location.y()));
+  });
+#else
+  base::OnceClosure on_capture_lost = base::DoNothing();
+#endif  // BUILDFLAG(IS_WIN)
+
+  InitWidget(widget.get(), base::BindLambdaForTesting(on_enter),
+             base::DoNothing(), std::move(on_capture_lost));
+
+  StartDrag();
+
+  // Wait for the the mouse to be released by `DragView::OnDragEntered()`.
+  WaitForDragEnd();
+
+  MouseEventRootView* root = widget->root_view();
+  root->reset_counts();
+
+  // Further mouse movement should be handled by the widget as movements rather
+  // than drags.
+  widget->native_widget_private()->SetCapture();
+  gfx::Point target_location = aura::Env::GetInstance()->last_mouse_location();
+  target_location += gfx::Vector2d(10, 10);
+  base::RunLoop move_loop;
+  EXPECT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+      target_location.x(), target_location.y(), move_loop.QuitClosure()));
+  move_loop.Run();
+
+  EXPECT_EQ(0, root->dragged());
+  EXPECT_EQ(1, root->moved());
 }
 
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
