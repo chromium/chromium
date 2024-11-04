@@ -225,6 +225,10 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
+             "OnDeviceNotificationContentDetectionModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordLeakToggleMove,
              "PasswordLeakToggleMove",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -360,6 +364,7 @@ base::Value::List GetFeatureStatusList() {
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
       &kLocalListsUseSBv5,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
+      &kOnDeviceNotificationContentDetectionModel,
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,
