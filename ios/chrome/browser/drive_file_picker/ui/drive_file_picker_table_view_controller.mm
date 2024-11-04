@@ -112,6 +112,31 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 }  // namespace
 
+#pragma mark - DriveFilePickerDataSource
+
+// Specialization of UITableViewDiffableDataSource which overrides
+// `-(BOOL)tableView:canEditRowAtIndexPath:` to return a customized value.
+@interface DriveFilePickerDataSource<SectionIdentifierType, ItemIdentifierType>
+    : UITableViewDiffableDataSource <SectionIdentifierType, ItemIdentifierType>
+
+// Set of items for which `-(BOOL)tableView:canEditRowAtIndexPath:` should
+// return YES.
+@property(nonatomic, strong) NSSet<NSString*>* editableItems;
+
+@end
+
+@implementation DriveFilePickerDataSource
+
+- (BOOL)tableView:(UITableView*)tableView
+    canEditRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* itemIdentifier = [self itemIdentifierForIndexPath:indexPath];
+  return [self.editableItems containsObject:itemIdentifier];
+}
+
+@end
+
+#pragma mark - DriveFilePickerTableViewController
+
 @interface DriveFilePickerTableViewController () <UISearchControllerDelegate,
                                                   UISearchResultsUpdating>
 
@@ -148,7 +173,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // The currently represented folder.
   NSString* _driveFolderTitle;
 
-  UITableViewDiffableDataSource<NSNumber*, NSString*>* _diffableDataSource;
+  DriveFilePickerDataSource<NSNumber*, NSString*>* _diffableDataSource;
   // Primary items i.e. items in the first section.
   NSMutableArray<DriveFilePickerItem*>* _primaryItems;
   // Secondary items i.e. items in the second section.
@@ -246,8 +271,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:itemIdentifier];
   };
   _diffableDataSource =
-      [[UITableViewDiffableDataSource alloc] initWithTableView:self.tableView
-                                                  cellProvider:cellProvider];
+      [[DriveFilePickerDataSource alloc] initWithTableView:self.tableView
+                                              cellProvider:cellProvider];
 
   self.tableView.dataSource = _diffableDataSource;
 
@@ -333,6 +358,25 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 #pragma mark - Private
+
+// Updates `_diffableDataSource.editableItems` so it contains all items which
+// are enabled files inside of `_primaryItems` and `_secondaryItems`. For the
+// changes to become visible, the relevant items need to be reconfigured after
+// calling `updateEditableItems`.
+- (void)updateEditableItems {
+  NSMutableSet<NSString*>* editableItems = [NSMutableSet set];
+  for (DriveFilePickerItem* primaryItem in _primaryItems) {
+    if (primaryItem.type == DriveItemType::kFile && primaryItem.enabled) {
+      [editableItems addObject:primaryItem.identifier];
+    }
+  }
+  for (DriveFilePickerItem* secondaryItem in _secondaryItems) {
+    if (secondaryItem.type == DriveItemType::kFile && secondaryItem.enabled) {
+      [editableItems addObject:secondaryItem.identifier];
+    }
+  }
+  _diffableDataSource.editableItems = editableItems;
+}
 
 // Creates `_cancelButton`.
 - (UIBarButtonItem*)createCancelButton {
@@ -816,6 +860,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   [_loadingIndicator stopAnimating];
   // Update the search header.
   _searchHeader.hidden = !showSearchHeader;
+  [self updateEditableItems];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:animated];
 }
 
@@ -883,6 +928,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
   [snapshot reconfigureItemsWithIdentifiers:identifiersToReconfigure];
+  [self updateEditableItems];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
