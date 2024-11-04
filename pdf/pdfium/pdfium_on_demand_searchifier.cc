@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "pdf/pdfium/pdfium_searchify.h"
-#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace {
 
@@ -19,6 +18,19 @@ constexpr base::TimeDelta kSearchifyPageDelay = base::Milliseconds(100);
 }  // namespace
 
 namespace chrome_pdf {
+
+PDFiumOnDemandSearchifier::OcrResult::OcrResult(
+    int image_index,
+    screen_ai::mojom::VisualAnnotationPtr annotation,
+    const gfx::Size& image_size)
+    : image_index(image_index),
+      annotation(std::move(annotation)),
+      image_size(image_size) {}
+
+PDFiumOnDemandSearchifier::OcrResult::OcrResult(
+    PDFiumOnDemandSearchifier::OcrResult&& other) noexcept = default;
+
+PDFiumOnDemandSearchifier::OcrResult::~OcrResult() = default;
 
 PDFiumOnDemandSearchifier::PDFiumOnDemandSearchifier(PDFiumEngine* engine)
     : engine_(raw_ref<PDFiumEngine>::from_ptr(engine)) {}
@@ -93,7 +105,11 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
   state_ = State::kWaitingForResults;
 }
 
-void PDFiumOnDemandSearchifier::RemovePageFromQueue(int page_index) {
+void PDFiumOnDemandSearchifier::CancelPage(int page_index) {
+  if (current_page_ && current_page_->index() == page_index) {
+    current_page_ = nullptr;
+    return;
+  }
   base::Erase(pages_queue_, page_index);
 }
 
@@ -114,33 +130,49 @@ void PDFiumOnDemandSearchifier::SearchifyNextPage() {
   pages_queue_.pop_front();
 
   current_page_image_object_indices_ = current_page_->GetImageObjectIndices();
+  current_page_ocr_results_.clear();
+  current_page_ocr_results_.reserve(current_page_image_object_indices_.size());
   SearchifyNextImage();
 }
 
 void PDFiumOnDemandSearchifier::SearchifyNextImage() {
-  std::optional<BitmapResult> result = GetNextBitmap();
-  if (!result.has_value()) {
-    current_page_->ReloadTextPage();
-    if (!FPDFPage_GenerateContent(current_page_->GetPage())) {
-      LOG(ERROR) << "Failed to generate content";
-    }
-    current_page_ = nullptr;
-
-    // Searchify next page.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
-                       weak_factory_.GetWeakPtr()),
-        kSearchifyPageDelay);
+  std::optional<BitmapResult> bitmap_result = GetNextBitmap();
+  if (bitmap_result.has_value()) {
+    const auto& bitmap = bitmap_result.value().bitmap;
+    perform_ocr_callback_.Run(
+        bitmap, base::BindOnce(&PDFiumOnDemandSearchifier::OnGotOcrResult,
+                               weak_factory_.GetWeakPtr(),
+                               bitmap_result.value().image_index,
+                               gfx::Size(bitmap.width(), bitmap.height())));
     return;
   }
 
-  const auto& bitmap = result.value().bitmap;
-  perform_ocr_callback_.Run(
-      bitmap,
-      base::BindOnce(&PDFiumOnDemandSearchifier::OnGotOcrResult,
-                     weak_factory_.GetWeakPtr(), result.value().image_index,
-                     gfx::Size(bitmap.width(), bitmap.height())));
+  if (!current_page_ocr_results_.empty()) {
+    // It is expected that the page would be still loaded.
+    FPDF_PAGE page = current_page_->page();
+    CHECK(page);
+    current_page_->OnSearchifyGotOcrResult();
+    for (auto& result : current_page_ocr_results_) {
+      FPDF_PAGEOBJECT image = FPDFPage_GetObject(page, result.image_index);
+      AddTextOnImage(engine_->doc(), page, font_.get(), image,
+                     std::move(result.annotation), result.image_size);
+    }
+    current_page_ocr_results_.clear();
+
+    current_page_->ReloadTextPage();
+    if (!FPDFPage_GenerateContent(page)) {
+      LOG(ERROR) << "Failed to generate content";
+    }
+  }
+
+  current_page_ = nullptr;
+
+  // Searchify next page.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
+                     weak_factory_.GetWeakPtr()),
+      kSearchifyPageDelay);
 }
 
 std::optional<PDFiumOnDemandSearchifier::BitmapResult>
@@ -161,12 +193,22 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
     const gfx::Size& image_size,
     screen_ai::mojom::VisualAnnotationPtr annotation) {
   CHECK_EQ(state_, State::kWaitingForResults);
+
+  // If current request got canceled while OCR was running, ignore the result
+  // and move to the next page.
+  if (!current_page_) {
+    current_page_ocr_results_.clear();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
+                       weak_factory_.GetWeakPtr()),
+        kSearchifyPageDelay);
+    return;
+  }
+
   if (annotation) {
-    current_page_->OnSearchifyGotOcrResult();
-    FPDF_PAGEOBJECT image =
-        FPDFPage_GetObject(current_page_->GetPage(), image_index);
-    AddTextOnImage(engine_->doc(), current_page_->GetPage(), font_.get(), image,
-                   std::move(annotation), image_size);
+    current_page_ocr_results_.emplace_back(image_index, std::move(annotation),
+                                           image_size);
   }
   SearchifyNextImage();
 }

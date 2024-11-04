@@ -4248,7 +4248,7 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
 
 void PDFiumEngine::CancelPendingSearchify(int page_index) {
   if (searchifier_) {
-    searchifier_->RemovePageFromQueue(page_index);
+    searchifier_->CancelPage(page_index);
   }
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

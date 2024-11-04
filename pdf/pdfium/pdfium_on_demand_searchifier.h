@@ -13,7 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdfium/pdfium_engine.h"
-#include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 namespace chrome_pdf {
@@ -40,8 +40,9 @@ class PDFiumOnDemandSearchifier {
   // starts.
   void SchedulePage(int page_index);
 
-  // Removes the page form the searchifying queue if it's there.
-  void RemovePageFromQueue(int page_index);
+  // If `page_index` in it the searchifying queue, it's removed. If it's
+  // currently being processed, the process gets stopped as soon as possible.
+  void CancelPage(int page_index);
 
   bool HasFailed() const { return state_ == State::kFailed; }
   bool IsIdleForTesting() const { return state_ == State::kIdle; }
@@ -55,6 +56,19 @@ class PDFiumOnDemandSearchifier {
   struct BitmapResult {
     SkBitmap bitmap;
     int image_index;
+  };
+
+  struct OcrResult {
+    OcrResult(int image_index,
+              screen_ai::mojom::VisualAnnotationPtr annotation,
+              const gfx::Size& image_size);
+    OcrResult(const OcrResult& other) = delete;
+    OcrResult(OcrResult&& other) noexcept;
+    ~OcrResult();
+
+    int image_index = 0;
+    screen_ai::mojom::VisualAnnotationPtr annotation;
+    gfx::Size image_size;
   };
 
   std::optional<BitmapResult> GetNextBitmap();
@@ -73,6 +87,7 @@ class PDFiumOnDemandSearchifier {
   // The page that is currently OCRed.
   raw_ptr<PDFiumPage> current_page_ = nullptr;
   std::vector<int> current_page_image_object_indices_;
+  std::vector<OcrResult> current_page_ocr_results_;
 
   // Scheduled pages to be searchified.
   base::circular_deque<int> pages_queue_;
