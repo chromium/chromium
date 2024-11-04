@@ -19,10 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
@@ -216,8 +212,6 @@ class KeyboardCapabilityTestBase : public testing::Test {
   ~KeyboardCapabilityTestBase() override = default;
 
   void SetUp() override {
-    user_manager_ = std::make_unique<user_manager::FakeUserManager>();
-    user_manager_->Initialize();
     keyboard_capability_ = std::make_unique<KeyboardCapability>(
         base::BindRepeating(&GetEvdevKeyCodeForScanCode));
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
@@ -226,8 +220,6 @@ class KeyboardCapabilityTestBase : public testing::Test {
   void TearDown() override {
     fake_keyboard_devices_.clear();
     keyboard_capability_.reset();
-    user_manager_->Destroy();
-    user_manager_.reset();
   }
 
   KeyboardDevice AddFakeKeyboardInfoToKeyboardCapability(
@@ -253,7 +245,6 @@ class KeyboardCapabilityTestBase : public testing::Test {
  protected:
   std::unique_ptr<KeyboardCapability> keyboard_capability_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
-  std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::vector<KeyboardDevice> fake_keyboard_devices_;
 };
 
@@ -798,74 +789,6 @@ TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForSplitModifierKeyboard) {
   base::ranges::sort(expected_modifier_keys);
   base::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
-}
-
-class KeyboardCapabilityDogfoodTest : public KeyboardCapabilityTestBase {
- public:
-  void SetUp() override {
-    modifier_split_feature_list_ =
-        std::make_unique<base::test::ScopedFeatureList>();
-    modifier_split_feature_list_->InitWithFeatures(
-        {ash::features::kModifierSplit, ash::features::kModifierSplitDogfood},
-        {});
-    KeyboardCapabilityTestBase::SetUp();
-  }
-
- protected:
-  std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
-};
-
-// With the dogfood flag enabled AND no Google account logged in, the feature
-// should act as though its disabled.
-TEST_F(KeyboardCapabilityDogfoodTest,
-       DISABLED_TestGetModifierKeysForSplitModifierKeyboardDogfood) {
-  AccountId non_google_account_id =
-      AccountId::FromUserEmail("testaccount@gmail.com");
-  AccountId google_account_id =
-      AccountId::FromUserEmail("testaccount@google.com");
-  user_manager_->AddUser(non_google_account_id);
-  user_manager_->AddUser(google_account_id);
-
-  // When a non-google account is signed in, keyboard capability should not
-  // consider it a split modifier keyboard.
-  user_manager_->UserLoggedIn(
-      non_google_account_id,
-      user_manager::FakeUserManager::GetFakeUsernameHash(non_google_account_id),
-      /*browser_restart=*/false, /*is_child=*/false);
-  const KeyboardDevice test_keyboard = AddFakeKeyboardInfoToKeyboardCapability(
-      kDeviceId1, kSplitModifierKeyboard,
-      KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-      KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom);
-  {
-    auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
-
-    std::vector<mojom::ModifierKey> expected_modifier_keys = {
-        mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
-        mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
-        mojom::ModifierKey::kAlt,       mojom::ModifierKey::kAssistant};
-    base::ranges::sort(expected_modifier_keys);
-    base::ranges::sort(modifier_keys);
-    EXPECT_EQ(expected_modifier_keys, modifier_keys);
-  }
-  user_manager_->LogoutAllUsers();
-
-  // Once a google account signs in, it should now be considered a split
-  // modifier keyboard.
-  user_manager_->UserLoggedIn(
-      google_account_id,
-      user_manager::FakeUserManager::GetFakeUsernameHash(google_account_id),
-      /*browser_restart=*/false, /*is_child=*/false);
-  {
-    auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
-    std::vector<mojom::ModifierKey> expected_modifier_keys = {
-        mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
-        mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
-        mojom::ModifierKey::kAlt,       mojom::ModifierKey::kFunction,
-        mojom::ModifierKey::kRightAlt};
-    base::ranges::sort(expected_modifier_keys);
-    base::ranges::sort(modifier_keys);
-    EXPECT_EQ(expected_modifier_keys, modifier_keys);
-  }
 }
 
 TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForEveKeyboard) {

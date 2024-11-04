@@ -1298,9 +1298,6 @@ TEST_F(KeyboardPrefHandlerTest,
        InitializeSplitModifierKeyboardPreFeatureEnable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleSplitModifierKeyboard});
@@ -1324,9 +1321,6 @@ TEST_F(KeyboardPrefHandlerTest,
        InitializeSplitModifierKeyboardPostFeatureEnable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleSplitModifierKeyboard});

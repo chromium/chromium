@@ -1153,8 +1153,7 @@ void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
 
   // Modifiers must be refreshed before settings so settings are retrieved for
   // the correct modifiers.
-  if (features::IsModifierSplitDogfoodEnabled() &&
-      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
     sequenced_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(

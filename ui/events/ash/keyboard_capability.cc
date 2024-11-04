@@ -40,7 +40,6 @@
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/keyboard_layout_util.h"
-#include "ui/events/ash/modifier_split_dogfood_controller.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -506,18 +505,14 @@ bool HasExternalKeyboardConnected() {
 KeyboardCapability::KeyboardCapability()
     : scan_code_to_evdev_key_converter_(
           base::BindRepeating(&ConvertScanCodeToEvdevKey)),
-      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())),
-      modifier_split_dogfood_controller_(
-          std::make_unique<ModifierSplitDogfoodController>()) {
+      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 KeyboardCapability::KeyboardCapability(
     ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter)
     : scan_code_to_evdev_key_converter_(
-          std::move(scan_code_to_evdev_key_converter)),
-      modifier_split_dogfood_controller_(
-          std::make_unique<ModifierSplitDogfoodController>()) {
+          std::move(scan_code_to_evdev_key_converter)) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -803,6 +798,10 @@ void KeyboardCapability::SetKeyboardInfoForTesting(
   keyboard_info_map_.insert_or_assign(keyboard.id, std::move(keyboard_info));
 }
 
+bool KeyboardCapability::IsModifierSplitEnabled() const {
+  return ash::features::IsModifierSplitEnabled();
+}
+
 void KeyboardCapability::DisableKeyboardInfoTrimmingForTesting() {
   should_disable_trimming_ = true;
 }
@@ -1007,10 +1006,6 @@ bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
 }
 
 bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
-  if (!modifier_split_dogfood_controller_->IsEnabled()) {
-    return false;
-  }
-
   if (ash::features::IsSplitKeyboardRefactorEnabled()) {
     return true;
   }
@@ -1046,7 +1041,7 @@ bool KeyboardCapability::HasFunctionKeyOnAnyKeyboard() const {
 }
 
 bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
-  if (!modifier_split_dogfood_controller_->IsEnabled()) {
+  if (!ash::features::IsModifierSplitEnabled()) {
     return false;
   }
 
@@ -1077,7 +1072,7 @@ bool KeyboardCapability::HasRightAltKey(int device_id) const {
 
 bool KeyboardCapability::HasRightAltKeyForOobe(
     const KeyboardDevice& keyboard) const {
-  if (modifier_split_dogfood_controller_->IsEnabled()) {
+  if (ash::features::IsModifierSplitEnabled()) {
     return false;
   }
 
@@ -1196,7 +1191,7 @@ ui::mojom::MetaKey KeyboardCapability::GetMetaKeyToDisplay() const {
 
   // Override meta key icon for external keyboards to be the highest priority
   // icon.
-  if (modifier_split_dogfood_controller_->IsEnabled()) {
+  if (ash::features::IsModifierSplitEnabled()) {
     return mojom::MetaKey::kLauncherRefresh;
   } else {
     return mojom::MetaKey::kLauncher;
@@ -1327,15 +1322,6 @@ bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
 
 void KeyboardCapability::SetBoardNameForTesting(const std::string& board_name) {
   board_name_ = board_name;
-}
-
-void KeyboardCapability::ForceEnableFeature() {
-  modifier_split_dogfood_controller_->ForceEnableFeature();
-}
-
-void KeyboardCapability::ResetModifierSplitDogfoodControllerForTesting() {
-  modifier_split_dogfood_controller_ =
-      std::make_unique<ModifierSplitDogfoodController>();  // IN-TEST
 }
 
 }  // namespace ui

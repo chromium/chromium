@@ -219,9 +219,6 @@ class AcceleratorAliasConverterTest : public AshTestBase {
 TEST_F(AcceleratorAliasConverterTest, UpdateSixPackKeyAliasWithFkey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -238,9 +235,6 @@ TEST_F(AcceleratorAliasConverterTest, UpdateSixPackKeyAliasWithFkey) {
 TEST_F(AcceleratorAliasConverterTest, UpdateTopRowKeysAliasWithFkey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -275,9 +269,6 @@ TEST_F(AcceleratorAliasConverterTest, UpdateTopRowKeysAliasWithFkey) {
 TEST_F(AcceleratorAliasConverterTest, UpdateFunctionAlias) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -492,9 +483,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
 TEST_F(AcceleratorAliasConverterTest, SplitModifierKeyboardCapsLockAlias) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -575,9 +563,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckRightAltInList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -600,9 +585,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckRightAltInList) {
 TEST_F(AcceleratorAliasConverterTest, CheckRightAltNotInList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();

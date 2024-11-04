@@ -55,9 +55,6 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
 
 TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithFnKey) {
   base::test::ScopedFeatureList scoped_feature_list(features::kModifierSplit);
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
   ui::KeyboardDevice keyboard(/*id=*/1, ui::INPUT_DEVICE_INTERNAL,
                               /*name=*/"Keyboard1", /*has_assistant_key=*/true,
                               /*has_function_key=*/true);
