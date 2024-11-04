@@ -13,6 +13,8 @@ namespace switches {
 // have been reuploaded.
 BASE_DECLARE_FEATURE(kSyncReuploadBookmarks);
 
+BASE_DECLARE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BOOKMARKS_SWITCHES_H_

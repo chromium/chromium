@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/bookmarks/browser:test_support",
     "//components/bookmarks/test",
     "//components/favicon/core/test:test_support",
     "//components/prefs:test_support",

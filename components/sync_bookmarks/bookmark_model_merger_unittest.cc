@@ -16,8 +16,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_test_util.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -30,19 +32,114 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Eq;
-using testing::IsEmpty;
-using testing::IsNull;
-using testing::NotNull;
-using testing::UnorderedElementsAre;
-
 namespace sync_bookmarks {
 
 namespace {
 
-MATCHER_P(HasTitle, title, "") {
-  return arg->GetTitle() == title;
+using testing::_;
+using testing::ElementsAre;
+using testing::Eq;
+using testing::IsEmpty;
+using testing::IsNull;
+using testing::Ne;
+using testing::NotNull;
+using testing::UnorderedElementsAre;
+
+MATCHER_P2(IsUrlBookmark, title, url, "") {
+  if (!arg) {
+    *result_listener << "Got null bookmark node.";
+    return false;
+  }
+  if (!arg->is_url()) {
+    *result_listener << "Expected URL bookmark but got folder.";
+    return false;
+  }
+  if (arg->GetTitle() != base::ASCIIToUTF16(title)) {
+    *result_listener << "Expected URL title \"" << title << "\" but got \""
+                     << arg->GetTitle() << "\"";
+    return false;
+  }
+  if (arg->url() != GURL(url)) {
+    *result_listener << "Expected URL \"" << url << "\" but got \""
+                     << arg->url() << "\"";
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P2(IsFolder, title, children_matcher, "") {
+  if (!arg) {
+    *result_listener << "Got null bookmark node.";
+    return false;
+  }
+  if (!arg->is_folder()) {
+    *result_listener << "Expected folder but got URL.";
+    return false;
+  }
+  if (arg->GetTitle() != base::ASCIIToUTF16(title)) {
+    *result_listener << "Expected folder title \"" << title << "\" but got \""
+                     << arg->GetTitle() << "\"";
+    return false;
+  }
+  return testing::ExplainMatchResult(children_matcher, arg->children(),
+                                     result_listener);
+}
+
+MATCHER_P(HasUuid, uuid, "") {
+  if (!arg) {
+    *result_listener << "Got null bookmark node.";
+    return false;
+  }
+  return testing::ExplainMatchResult(uuid, arg->uuid(), result_listener);
+}
+
+MATCHER_P3(IsUrlBookmarkWithUuid, title, url, uuid, "") {
+  return testing::ExplainMatchResult(IsUrlBookmark(title, url), arg,
+                                     result_listener) &&
+         testing::ExplainMatchResult(HasUuid(uuid), arg, result_listener);
+}
+
+MATCHER_P3(IsFolderWithUuid, title, uuid, children_matcher, "") {
+  return testing::ExplainMatchResult(IsFolder(title, children_matcher), arg,
+                                     result_listener) &&
+         testing::ExplainMatchResult(HasUuid(uuid), arg, result_listener);
+}
+
+MATCHER_P(IsUnsyncedBookmarkEntity, node_matcher, "") {
+  if (!arg) {
+    *result_listener << "Got null tracked entity";
+    return false;
+  }
+
+  if (!arg->IsUnsynced()) {
+    *result_listener << "Entity not marked as unsynced";
+    return false;
+  }
+
+  return testing::ExplainMatchResult(NotNull(), arg, result_listener) &&
+         testing::ExplainMatchResult(node_matcher, arg->bookmark_node(),
+                                     result_listener);
+}
+
+MATCHER_P(IsTombstone, server_id, "") {
+  if (!arg) {
+    *result_listener << "Got null tracked entity";
+    return false;
+  }
+
+  if (arg->bookmark_node()) {
+    *result_listener << "Expected tombstone but got tracked entity with title "
+                     << arg->bookmark_node()->GetTitle();
+    return false;
+  }
+
+  if (!arg->IsUnsynced()) {
+    *result_listener << "Tombstone not marked as unsynced";
+    return false;
+  }
+
+  return testing::ExplainMatchResult(server_id, arg->metadata().server_id(),
+                                     result_listener);
 }
 
 // Copy of BookmarksUuidDuplicates.
@@ -120,6 +217,14 @@ class UpdateResponseDataBuilder {
     *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
     bookmark_specifics->set_guid(uuid.AsLowercaseString());
     bookmark_specifics->set_parent_guid(parent_uuid.AsLowercaseString());
+  }
+
+  UpdateResponseDataBuilder& WithClientTagHash() {
+    CHECK(!data_.originator_client_item_id.empty());
+    data_.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+        syncer::BOOKMARKS, data_.originator_client_item_id);
+    data_.originator_client_item_id.clear();
+    return *this;
   }
 
   UpdateResponseDataBuilder& SetUrl(const GURL& url) {
@@ -1918,8 +2023,8 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByUuid) {
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model.bookmark_bar_node();
   EXPECT_THAT(bookmark_bar_node->children(),
-              UnorderedElementsAre(HasTitle(base::UTF8ToUTF16(kTitle2)),
-                                   HasTitle(base::UTF8ToUTF16(kTitle3))));
+              UnorderedElementsAre(IsUrlBookmark(kTitle2, kUrl),
+                                   IsUrlBookmark(kTitle3, kUrl)));
 
   EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ValidInputUpdates"),
@@ -1972,7 +2077,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentDuplicatesByUuid) {
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model.bookmark_bar_node();
   EXPECT_THAT(bookmark_bar_node->children(),
-              UnorderedElementsAre(HasTitle(base::UTF8ToUTF16(kTitle1))));
+              UnorderedElementsAre(IsUrlBookmark(kTitle1, kUrl)));
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
       /*sample=*/ExpectedBookmarksUuidDuplicates::kDifferentUrls,
@@ -2258,6 +2363,144 @@ TEST(BookmarkModelMergerTest, ShouldReportTimeMetrics) {
                                     0);
   histogram_tester.ExpectTotalCount("Sync.BookmarkModelMergerTime.100kUpdates",
                                     0);
+}
+
+TEST(BookmarkModelMergerTest, ShouldMigrateBookmarksWithoutClientTagHash) {
+  base::test::ScopedFeatureList override_features{
+      switches::kSyncMigrateBookmarksWithoutClientTagHash};
+
+  const std::string kFolder1Title = "folder1";
+  const std::string kFolder2Title = "folder2";
+
+  const std::string kUrl1Title = "url1";
+  const std::string kUrl2Title = "url2";
+  const std::string kUrl3Title = "url3";
+  const std::string kUrl4Title = "url4";
+
+  const GURL kUrl1("http://www.url1.com");
+  const GURL kUrl2("http://www.url2.com");
+  const GURL kUrl3("http://www.url3.com");
+  const GURL kUrl4("http://www.url4.com");
+
+  const base::Uuid kFolder1Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kUrl1Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kUrl2Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kUrl3Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kUrl4Uuid = base::Uuid::GenerateRandomV4();
+
+  TestBookmarkModelView bookmark_model;
+
+  // -------- The local model --------
+  // bookmark_bar
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model.bookmark_bar_node();
+  ASSERT_THAT(bookmark_bar_node->children(), IsEmpty());
+
+  // -------- The remote model --------
+  // bookmark_bar
+  //  |- folder 1 (kFolder1Uuid), no client tag hash
+  //    |- kUrl1 (kUrl1Uuid), no client tag hash
+  //    |- kUrl2 (kUrl2Uuid), with client tag hash
+  //  |- folder 2 (kFolder2Uuid), with client tag hash
+  //    |- kUrl3 (kUrl3Uuid), no client tag hash
+  //    |- kUrl4 (kUrl4Uuid), with client tag hash
+
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
+  syncer::UniquePosition posFolder1 =
+      syncer::UniquePosition::InitialPosition(suffix);
+  syncer::UniquePosition posFolder2 =
+      syncer::UniquePosition::After(posFolder1, suffix);
+
+  syncer::UniquePosition posUrl1 =
+      syncer::UniquePosition::InitialPosition(suffix);
+  syncer::UniquePosition posUrl2 =
+      syncer::UniquePosition::After(posUrl1, suffix);
+
+  syncer::UniquePosition posUrl3 =
+      syncer::UniquePosition::InitialPosition(suffix);
+  syncer::UniquePosition posUrl4 =
+      syncer::UniquePosition::After(posUrl3, suffix);
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateBookmarkBarNodeUpdateData());
+  updates.push_back(UpdateResponseDataBuilder(
+                        /*uuid=*/kFolder1Uuid,
+                        /*parent_uuid=*/BookmarkBarUuid(), kFolder1Title,
+                        /*unique_position=*/posFolder1)
+                        .Build());
+  const std::string kFolder1SyncId = updates.back().entity.id;
+  updates.push_back(UpdateResponseDataBuilder(
+                        /*uuid=*/kUrl1Uuid, /*parent_uuid=*/kFolder1Uuid,
+                        kUrl1Title,
+                        /*unique_position=*/posUrl1)
+                        .SetUrl(kUrl1)
+                        .Build());
+  const std::string kUrl1SyncId = updates.back().entity.id;
+  updates.push_back(UpdateResponseDataBuilder(
+                        /*uuid=*/kUrl2Uuid, /*parent_uuid=*/kFolder1Uuid,
+                        kUrl2Title,
+                        /*unique_position=*/posUrl2)
+                        .WithClientTagHash()
+                        .SetUrl(kUrl2)
+                        .Build());
+  updates.push_back(UpdateResponseDataBuilder(
+                        /*uuid=*/kFolder2Uuid,
+                        /*parent_uuid=*/BookmarkBarUuid(), kFolder2Title,
+                        /*unique_position=*/posFolder2)
+                        .WithClientTagHash()
+                        .Build());
+  updates.push_back(UpdateResponseDataBuilder(
+                        /*uuid=*/kUrl3Uuid, /*parent_uuid=*/kFolder2Uuid,
+                        kUrl3Title, /*unique_position=*/posUrl3)
+                        .SetUrl(kUrl3)
+                        .Build());
+  const std::string kUrl3SyncId = updates.back().entity.id;
+  updates.push_back(UpdateResponseDataBuilder(
+                        /*uuid=*/kUrl4Uuid, /*parent_uuid=*/kFolder2Uuid,
+                        kUrl4Title, /*unique_position=*/posUrl4)
+                        .SetUrl(kUrl4)
+                        .WithClientTagHash()
+                        .Build());
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      Merge(std::move(updates), &bookmark_model);
+
+  // -------- The merged model --------
+  // bookmark_bar
+  //  |- folder 1 ([new UUID])
+  //    |- kUrl1 ([new UUID])
+  //    |- kUrl2 (kUrl2Uuid)
+  //  |- folder 2 (kFolder2Uuid)
+  //    |- kUrl3 ([new UUID])
+  //    |- kUrl4 (kUrl4Uuid)
+  //
+  // The conflicting node UUID should have been replaced.
+  EXPECT_THAT(
+      bookmark_bar_node->children(),
+      ElementsAre(
+          IsFolderWithUuid(
+              kFolder1Title, Ne(kFolder1Uuid),
+              ElementsAre(
+                  IsUrlBookmarkWithUuid(kUrl1Title, kUrl1, Ne(kUrl1Uuid)),
+                  IsUrlBookmarkWithUuid(kUrl2Title, kUrl2, kUrl2Uuid))),
+          IsFolderWithUuid(
+              kFolder2Title, kFolder2Uuid,
+              ElementsAre(
+                  IsUrlBookmarkWithUuid(kUrl3Title, kUrl3, Ne(kUrl3Uuid)),
+                  IsUrlBookmarkWithUuid(kUrl4Title, kUrl4, kUrl4Uuid)))));
+
+  // Three bookmarks got migrated via creation+deletion and one more (kUrl2) is
+  // expected to be unsynced because the parent changed.
+  EXPECT_THAT(tracker->GetEntitiesWithLocalChanges(),
+              UnorderedElementsAre(
+                  IsUnsyncedBookmarkEntity(IsFolder(kFolder1Title, _)),
+                  IsUnsyncedBookmarkEntity(IsUrlBookmark(kUrl1Title, kUrl1)),
+                  IsUnsyncedBookmarkEntity(IsUrlBookmark(kUrl2Title, kUrl2)),
+                  IsUnsyncedBookmarkEntity(IsUrlBookmark(kUrl3Title, kUrl3)),
+                  IsTombstone(kFolder1SyncId), IsTombstone(kUrl1SyncId),
+                  IsTombstone(kUrl3SyncId)));
 }
 
 }  // namespace sync_bookmarks

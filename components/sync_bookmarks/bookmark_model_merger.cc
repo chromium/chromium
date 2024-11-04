@@ -20,6 +20,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/time.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -613,6 +614,13 @@ void BookmarkModelMerger::Merge() {
     bookmark_tracker_->SetBookmarksReuploaded();
   }
 
+  if (base::FeatureList::IsEnabled(
+          switches::kSyncMigrateBookmarksWithoutClientTagHash)) {
+    for (const auto& [server_defined_unique_tag, root] : remote_forest_) {
+      MigrateBookmarksInSubtreeWithoutClientTagHash(root);
+    }
+  }
+
   base::UmaHistogramCounts100000(
       "Sync.BookmarkModelMerger.UnsyncedEntitiesUponCompletion",
       GetNumUnsyncedEntities(bookmark_tracker_));
@@ -756,6 +764,68 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
   }
 
   return uuid_to_match_map;
+}
+
+void BookmarkModelMerger::MigrateBookmarksInSubtreeWithoutClientTagHash(
+    const RemoteTreeNode& remote_node) {
+  // Recursively iterate children first for simplicity, as the order doesn't
+  // matter.
+  for (const RemoteTreeNode& child : remote_node.children()) {
+    MigrateBookmarksInSubtreeWithoutClientTagHash(child);
+  }
+
+  // Nothing to do for permanent folders.
+  if (!remote_node.entity().server_defined_unique_tag.empty()) {
+    return;
+  }
+
+  // Nothing to do if this entity already uses a client tag hash.
+  if (!remote_node.entity().client_tag_hash.value().empty()) {
+    return;
+  }
+
+  // Guaranteed by HasExpectedBookmarkGuid().
+  CHECK(!remote_node.entity().originator_cache_guid.empty() ||
+        !remote_node.entity().originator_client_item_id.empty());
+
+  const SyncedBookmarkTrackerEntity* old_entity =
+      bookmark_tracker_->GetEntityForSyncId(remote_node.entity().id);
+  CHECK(old_entity);
+  CHECK(old_entity->bookmark_node());
+
+  const base::Time creation_time =
+      syncer::ProtoTimeToTime(old_entity->metadata().creation_time());
+  const syncer::UniquePosition pos = syncer::UniquePosition::FromProto(
+      old_entity->metadata().unique_position());
+
+  const bookmarks::BookmarkNode* node = old_entity->bookmark_node();
+  bookmark_tracker_->MarkDeleted(old_entity, FROM_HERE);
+  bookmark_tracker_->IncrementSequenceNumber(old_entity);
+
+  // TODO(crbug.com/376641665): Consider generating new UUIDs deterministically
+  // rather than randomly to guard against concurrent clients or interrupted
+  // migrations.
+  const base::Uuid new_guid = base::Uuid::GenerateRandomV4();
+  node = ReplaceBookmarkNodeUuid(node, new_guid, bookmark_model_);
+
+  const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
+      node, bookmark_model_, pos.ToProto(), /*force_favicon_load=*/true);
+
+  const SyncedBookmarkTrackerEntity* new_entity = bookmark_tracker_->Add(
+      node, /*sync_id=*/new_guid.AsLowercaseString(),
+      syncer::kUncommittedVersion, creation_time, specifics);
+
+  // Mark the entity that it needs to be committed.
+  bookmark_tracker_->IncrementSequenceNumber(new_entity);
+
+  // Make sure all direct children are marked for commit, because their parent
+  // changed.
+  for (const RemoteTreeNode& child : remote_node.children()) {
+    const SyncedBookmarkTrackerEntity* child_entity =
+        bookmark_tracker_->GetEntityForSyncId(child.entity().id);
+    CHECK(child_entity);
+    bookmark_tracker_->IncrementSequenceNumber(child_entity);
+  }
 }
 
 void BookmarkModelMerger::MergeSubtree(
@@ -967,7 +1037,6 @@ void BookmarkModelMerger::ProcessLocalCreation(
   // FindGuidMatchesOrReassignLocal() takes care of reassigning local UUIDs if
   // they won't actually be merged with the remote bookmark with the same UUID
   // (e.g. incompatible types).
-  const int64_t server_version = syncer::kUncommittedVersion;
   const base::Time creation_time = base::Time::Now();
   const syncer::UniquePosition::Suffix suffix =
       syncer::UniquePosition::GenerateSuffix(
@@ -978,9 +1047,9 @@ void BookmarkModelMerger::ProcessLocalCreation(
       GenerateUniquePositionForLocalCreation(parent, index, suffix);
   const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
       node, bookmark_model_, pos.ToProto(), /*force_favicon_load=*/true);
-  const SyncedBookmarkTrackerEntity* entity =
-      bookmark_tracker_->Add(node, /*sync_id=*/node->uuid().AsLowercaseString(),
-                             server_version, creation_time, specifics);
+  const SyncedBookmarkTrackerEntity* entity = bookmark_tracker_->Add(
+      node, /*sync_id=*/node->uuid().AsLowercaseString(),
+      syncer::kUncommittedVersion, creation_time, specifics);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
   for (size_t i = 0; i < node->children().size(); ++i) {
