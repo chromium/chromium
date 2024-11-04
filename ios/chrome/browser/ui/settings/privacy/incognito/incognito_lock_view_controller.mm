@@ -72,16 +72,19 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
   header.text = l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_HEADER);
   [model setHeader:header forSectionWithIdentifier:kLockStates];
 
-  TableViewTextItem* doNotHideItem =
-      [[TableViewTextItem alloc] initWithType:kDoNotHide];
-  doNotHideItem.text =
-      l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_DO_NOT_HIDE);
-  doNotHideItem.accessoryType = _selectedState == IncognitoLockState::kNone
-                                    ? UITableViewCellAccessoryCheckmark
-                                    : UITableViewCellAccessoryNone;
-  doNotHideItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  doNotHideItem.accessibilityIdentifier = kSettingsIncognitoLockDoNotHideCellId;
-  [model addItem:doNotHideItem toSectionWithIdentifier:kLockStates];
+  TableViewTextItem* hideWithReauthItem =
+      [[TableViewTextItem alloc] initWithType:kHideWithReauth];
+  hideWithReauthItem.text = l10n_util::GetNSStringF(
+      IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_REAUTH,
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
+  hideWithReauthItem.accessoryType =
+      _selectedState == IncognitoLockState::kReauth
+          ? UITableViewCellAccessoryCheckmark
+          : UITableViewCellAccessoryNone;
+  hideWithReauthItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  hideWithReauthItem.accessibilityIdentifier =
+      kSettingsIncognitoLockHideWithReauthCellId;
+  [model addItem:hideWithReauthItem toSectionWithIdentifier:kLockStates];
 
   TableViewDetailTextItem* hideWithSoftLockItem =
       [[TableViewDetailTextItem alloc] initWithType:kHideWithSoftLock];
@@ -100,19 +103,16 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
       kSettingsIncognitoLockHideWithSoftLockCellId;
   [model addItem:hideWithSoftLockItem toSectionWithIdentifier:kLockStates];
 
-  TableViewTextItem* hideWithReauthItem =
-      [[TableViewTextItem alloc] initWithType:kHideWithReauth];
-  hideWithReauthItem.text = l10n_util::GetNSStringF(
-      IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_REAUTH,
-      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
-  hideWithReauthItem.accessoryType =
-      _selectedState == IncognitoLockState::kReauth
-          ? UITableViewCellAccessoryCheckmark
-          : UITableViewCellAccessoryNone;
-  hideWithReauthItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  hideWithReauthItem.accessibilityIdentifier =
-      kSettingsIncognitoLockHideWithReauthCellId;
-  [model addItem:hideWithReauthItem toSectionWithIdentifier:kLockStates];
+  TableViewTextItem* doNotHideItem =
+      [[TableViewTextItem alloc] initWithType:kDoNotHide];
+  doNotHideItem.text =
+      l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_DO_NOT_HIDE);
+  doNotHideItem.accessoryType = _selectedState == IncognitoLockState::kNone
+                                    ? UITableViewCellAccessoryCheckmark
+                                    : UITableViewCellAccessoryNone;
+  doNotHideItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  doNotHideItem.accessibilityIdentifier = kSettingsIncognitoLockDoNotHideCellId;
+  [model addItem:doNotHideItem toSectionWithIdentifier:kLockStates];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
