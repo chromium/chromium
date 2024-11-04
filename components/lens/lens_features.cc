@@ -260,7 +260,8 @@ constexpr base::FeatureParam<int>
         &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
 
 constexpr base::FeatureParam<bool> kEnableEarlyInteractionOptimization{
-    &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization", true};
+    &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization",
+    true};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlayContextualSearchbox, "use-pdfs-as-context", false};
@@ -270,6 +271,9 @@ constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
 
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-html-as-context", false};
+
+constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
+    &kLensOverlayContextualSearchbox, "page-content-request-timeout-ms", 60000};
 
 constexpr base::FeatureParam<bool>
     kUseVideoContextForTextOnlyLensOverlayRequests{
@@ -592,6 +596,10 @@ bool UsePdfsAsContext() {
 
 bool UseInnerTextAsContext() {
   return kUseInnerTextAsContext.Get();
+}
+
+int GetLensOverlayPageContentRequestTimeoutMs() {
+  return kLensOverlayPageContentRequestTimeoutMs.Get();
 }
 
 bool UseInnerHtmlAsContext() {

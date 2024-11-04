@@ -174,6 +174,7 @@ class LensOverlayQueryController {
       lens::LensOverlayServerRequest* request,
       const GURL& fetch_url,
       const std::string& http_method,
+      const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers);
 
@@ -399,6 +400,7 @@ class LensOverlayQueryController {
   void PerformFetchRequest(
       lens::LensOverlayServerRequest* request,
       std::vector<std::string>* request_headers,
+      const base::TimeDelta& timeout,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
       EndpointFetcherCallback response_received_callback);

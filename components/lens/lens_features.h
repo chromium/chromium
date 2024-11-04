@@ -416,6 +416,10 @@ extern bool UseInnerTextAsContext();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerHtmlAsContext();
 
+// The timeout set for page content upload requests in milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayPageContentRequestTimeoutMs();
+
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)

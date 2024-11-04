@@ -27,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -37,8 +38,6 @@
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
-
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace lens {
 
@@ -208,6 +207,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       lens::LensOverlayServerRequest* request,
       const GURL& fetch_url,
       const std::string& http_method,
+      const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers) override {
     lens::LensOverlayServerResponse fake_server_response;
@@ -374,8 +374,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
       ASSERT_EQ(vsint.object_id(), "");
     }
     if (interaction_request.has_image_crop()) {
-    EXPECT_THAT(vsint.zoomed_crop(),
-                EqualsProto(interaction_request.image_crop().zoomed_crop()));
+      EXPECT_THAT(vsint.zoomed_crop(),
+                  EqualsProto(interaction_request.image_crop().zoomed_crop()));
     } else {
       ASSERT_FALSE(vsint.has_zoomed_crop());
     }

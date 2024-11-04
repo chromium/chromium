@@ -477,6 +477,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
     const GURL& fetch_url,
     const std::string& http_method,
+    const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers) {
   // If provided, serialize the request to a string to include as the request
@@ -493,7 +494,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*url=*/fetch_url,
       /*http_method=*/http_method,
       /*content_type=*/kContentType,
-      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
+      /*timeout=*/timeout,
       /*post_data=*/request_string,
       /*headers=*/request_headers,
       /*cors_exempt_headers=*/cors_exempt_headers,
@@ -552,7 +553,9 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   // given params. Store in class variable to keep endpoint fetcher alive until
   // the request is made.
   cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
-      nullptr, fetch_url, kHttpGetMethod, request_headers, cors_exempt_headers);
+      nullptr, fetch_url, kHttpGetMethod,
+      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
+      request_headers, cors_exempt_headers);
 
   // Finally, perform the request.
   cluster_info_endpoint_fetcher_->PerformRequest(
@@ -787,6 +790,7 @@ void LensOverlayQueryController::PerformFullImageRequest() {
   PerformFetchRequest(
       latest_full_image_request_data_->request_.get(),
       latest_full_image_request_data_->request_headers_.get(),
+      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
       base::BindOnce(
           &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
@@ -921,6 +925,8 @@ void LensOverlayQueryController::PerformPageContentRequest(
   // Pass no response callback because this is a fire and forget request.
   PerformFetchRequest(
       &request, &headers,
+      base::Milliseconds(
+          lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
       base::BindOnce(
           &LensOverlayQueryController::OnPageContentEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
@@ -1139,6 +1145,7 @@ void LensOverlayQueryController::PerformInteractionRequest() {
   PerformFetchRequest(
       latest_interaction_request_data_->request_.get(),
       latest_interaction_request_data_->request_headers_.get(),
+      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
       base::BindOnce(
           &LensOverlayQueryController::OnInteractionEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
@@ -1231,6 +1238,7 @@ void LensOverlayQueryController::RunInteractionCallbackForError() {
 void LensOverlayQueryController::PerformFetchRequest(
     lens::LensOverlayServerRequest* request,
     std::vector<std::string>* request_headers,
+    const base::TimeDelta& timeout,
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback response_received_callback) {
@@ -1254,7 +1262,7 @@ void LensOverlayQueryController::PerformFetchRequest(
   // Create the EndpointFetcher, responsible for making the request using our
   // given params.
   std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      CreateEndpointFetcher(request, fetch_url, kHttpPostMethod,
+      CreateEndpointFetcher(request, fetch_url, kHttpPostMethod, timeout,
                             *request_headers, cors_exempt_headers);
   EndpointFetcher* fetcher = endpoint_fetcher.get();
 
