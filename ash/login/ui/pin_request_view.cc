@@ -187,6 +187,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   SetLayoutManager(std::move(layout));
   SetPaintToLayer();
   layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id, kPinRequestViewRoundedCornerRadiusDp));
