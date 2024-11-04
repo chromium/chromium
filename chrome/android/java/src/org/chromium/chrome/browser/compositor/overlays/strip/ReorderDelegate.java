@@ -62,8 +62,8 @@ public class ReorderDelegate {
     /** The last x-position we processed for reorder. */
     private float mLastReorderX;
 
-    /** Half of the effective tab width at the time that we started reordering. */
-    private float mHalfTabWidth;
+    /** The effective tab width (accounting for overlap) at the time that we started reordering. */
+    private float mEffectiveTabWidth;
 
     private StripLayoutTab mInteractingTab;
 
@@ -97,10 +97,6 @@ public class ReorderDelegate {
 
     void setLastReorderX(float x) {
         mLastReorderX = x;
-    }
-
-    float getHalfTabWidth() {
-        return mHalfTabWidth;
     }
 
     StripLayoutTab getInteractingTab() {
@@ -231,7 +227,7 @@ public class ReorderDelegate {
      */
     void setEdgeMarginsForReorder(StripLayoutTab firstTab, StripLayoutTab lastTab) {
         if (!mInitialized) return;
-        float marginWidth = mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        float marginWidth = getHalfTabWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
 
         // 1. Set the start margin - margin is applied by updating scrollOffset.
         boolean firstTabIsInGroup =
@@ -250,7 +246,6 @@ public class ReorderDelegate {
      *
      * @param tab The tab to update.
      * @param groupTitle The group title associated with the tab. Null if tab is not grouped.
-     * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param shouldHaveTrailingMargin Whether the tab should have a trailing margin or not.
      * @param animationList The list to add the animation to, or {@code null} if not animating.
      * @return Whether or not the trailing margin for the given tab actually changed.
@@ -258,11 +253,10 @@ public class ReorderDelegate {
     boolean setTrailingMarginForTab(
             StripLayoutTab tab,
             StripLayoutGroupTitle groupTitle,
-            float effectiveTabWidth,
             boolean shouldHaveTrailingMargin,
             @Nullable List<Animator> animationList) {
         // Avoid triggering updates if trailing margin isn't actually changing.
-        float trailingMargin = shouldHaveTrailingMargin ? mHalfTabWidth : 0.f;
+        float trailingMargin = shouldHaveTrailingMargin ? getHalfTabWidth() : 0.f;
         if (tab.getTrailingMargin() == trailingMargin) return false;
 
         // Update group title bottom indicator width if needed.
@@ -273,7 +267,7 @@ public class ReorderDelegate {
                                     groupTitle,
                                     StripLayoutUtils.getNumOfTabsInGroup(
                                             mTabGroupModelFilter, groupTitle),
-                                    effectiveTabWidth)
+                                    mEffectiveTabWidth)
                             + trailingMargin;
 
             if (animationList != null) {
@@ -316,8 +310,8 @@ public class ReorderDelegate {
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         mLastReorderScrollTime = INVALID_TIME;
         mReorderScrollState = REORDER_SCROLL_NONE;
+        mEffectiveTabWidth = effectiveTabWidth;
         mLastReorderX = startX;
-        mHalfTabWidth = effectiveTabWidth / 2;
 
         // 2. Set edge margins.
         setEdgeMarginsForReorder(stripTabs[0], stripTabs[stripTabs.length - 1]);
@@ -338,7 +332,7 @@ public class ReorderDelegate {
      * @return The threshold to drag out of a group.
      */
     float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
-        float dragOutThreshold = mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        float dragOutThreshold = getHalfTabWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         return dragOutThreshold + (towardEnd ? 0 : groupTitle.getWidth());
     }
 
@@ -346,7 +340,14 @@ public class ReorderDelegate {
      * @return The threshold to drag into a group.
      */
     float getDragInThreshold() {
-        return mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        return getHalfTabWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+    }
+
+    /**
+     * @return Half of mEffectiveTabWidth.
+     */
+    private float getHalfTabWidth() {
+        return mEffectiveTabWidth / 2;
     }
 
     // ============================================================================================
@@ -358,15 +359,11 @@ public class ReorderDelegate {
      * {@link TabGroupModelFilter} has been updated.
      *
      * @param groupTitle the group title that is sliding for tab reorder.
-     * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
     void animateGroupIndicatorForTabReorder(
-            StripLayoutGroupTitle groupTitle,
-            float effectiveTabWidth,
-            boolean isMovingOutOfGroup,
-            boolean towardEnd) {
+            StripLayoutGroupTitle groupTitle, boolean isMovingOutOfGroup, boolean towardEnd) {
         // TODO(crbug.com/372546700): Disable animations in tests using CompositorAnimationHandler.
         if (mAnimationsDisabledForTesting) return;
 
@@ -392,7 +389,6 @@ public class ReorderDelegate {
                 mAnimationHost.getAnimationHandler(),
                 mTabGroupModelFilter,
                 groupTitle,
-                effectiveTabWidth,
                 isMovingOutOfGroup,
                 throughGroupTitle,
                 animators);
@@ -407,7 +403,6 @@ public class ReorderDelegate {
      * @param animationHandler The {@link CompositorAnimationHandler}.
      * @param modelFilter The {@link TabGroupModelFilter}.
      * @param groupTitle The {@link StripLayoutGroupTitle} of the interacting group.
-     * @param effectiveTabWidth The width of a tab, account for overlap.
      * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
      * @param throughGroupTitle True if the tab is passing the {@link StripLayoutGroupTitle}.
      * @param animators The list of animators to add to. If {@code null}, then immediately set the
@@ -417,7 +412,6 @@ public class ReorderDelegate {
             CompositorAnimationHandler animationHandler,
             TabGroupModelFilter modelFilter,
             StripLayoutGroupTitle groupTitle,
-            float effectiveTabWidth,
             boolean isMovingOutOfGroup,
             boolean throughGroupTitle,
             List<Animator> animators) {
@@ -425,8 +419,8 @@ public class ReorderDelegate {
                 StripLayoutUtils.calculateBottomIndicatorWidth(
                         groupTitle,
                         StripLayoutUtils.getNumOfTabsInGroup(modelFilter, groupTitle),
-                        effectiveTabWidth);
-        float startWidth = endWidth + MathUtils.flipSignIf(effectiveTabWidth, !isMovingOutOfGroup);
+                        mEffectiveTabWidth);
+        float startWidth = endWidth + MathUtils.flipSignIf(mEffectiveTabWidth, !isMovingOutOfGroup);
 
         if (animators != null) {
             animators.add(

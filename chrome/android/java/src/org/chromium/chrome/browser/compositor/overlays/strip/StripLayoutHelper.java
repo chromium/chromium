@@ -3596,7 +3596,6 @@ public class StripLayoutHelper
                     mUpdateHost.getAnimationHandler(),
                     mTabGroupModelFilter,
                     groupTitle,
-                    getEffectiveTabWidth(),
                     /* isMovingOutOfGroup= */ false,
                     /* throughGroupTitle= */ false,
                     animators);
@@ -3769,7 +3768,7 @@ public class StripLayoutHelper
             @Nullable List<Animator> animationList) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
         return mReorderDelegate.setTrailingMarginForTab(
-                tab, groupTitle, getEffectiveTabWidth(), shouldHaveTrailingMargin, animationList);
+                tab, groupTitle, shouldHaveTrailingMargin, animationList);
     }
 
     private void resetReorderMargins(@Nullable ArrayList<Animator> animationList) {
@@ -3811,10 +3810,9 @@ public class StripLayoutHelper
      * tab.
      *
      * @param rootId The interacting tab's group's root ID.
-     * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
-    void moveInteractingTabOutOfGroup(int rootId, float effectiveTabWidth, boolean towardEnd) {
+    void moveInteractingTabOutOfGroup(int rootId, boolean towardEnd) {
         final int tabId = mReorderDelegate.getInteractingTab().getTabId();
         if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId)
                 && mGroupIdToHideSupplier.get() == Tab.INVALID_TAB_ID
@@ -3839,7 +3837,7 @@ public class StripLayoutHelper
         StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
         if (groupTitle != null) {
             mReorderDelegate.animateGroupIndicatorForTabReorder(
-                    groupTitle, effectiveTabWidth, /* isMovingOutOfGroup= */ true, towardEnd);
+                    groupTitle, /* isMovingOutOfGroup= */ true, towardEnd);
         }
     }
 
@@ -3861,7 +3859,7 @@ public class StripLayoutHelper
 
         // Animate the group indicator after updating the tab model.
         mReorderDelegate.animateGroupIndicatorForTabReorder(
-                groupTitle, getEffectiveTabWidth(), /* isMovingOutOfGroup= */ false, towardEnd);
+                groupTitle, /* isMovingOutOfGroup= */ false, towardEnd);
     }
 
     /**
@@ -3979,8 +3977,7 @@ public class StripLayoutHelper
 
                 if (Math.abs(offset)
                         > mReorderDelegate.getDragOutThreshold(interactingGroupTitle, towardEnd)) {
-                    moveInteractingTabOutOfGroup(
-                            interactingGroupTitle.getRootId(), getEffectiveTabWidth(), towardEnd);
+                    moveInteractingTabOutOfGroup(interactingGroupTitle.getRootId(), towardEnd);
                     // TODO(crbug.com/372546700): Currently, we return a destIndex equal to the
                     //  starting index to mark that a tab move out or merge was successful. This is
                     //  not immediately clear, so track this state more directly.
@@ -4119,7 +4116,7 @@ public class StripLayoutHelper
                         : x < mStripTabs[0].getTouchTargetLeft();
         StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
         if (inStartGap && interactingTab != null) {
-            mScrollDelegate.setReorderStartMargin(mReorderDelegate.getHalfTabWidth());
+            mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ getEffectiveTabWidth() / 2);
 
             finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
