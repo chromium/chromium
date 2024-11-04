@@ -17,6 +17,13 @@ BASE_FEATURE(kAutofillAcrossIframesIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_across_iframes_ios)
 
+// Controls whether to trigger form extraction when detecting a form activity on
+// a xframe form. Only effective when Autofill is enabled across iframes
+// (kAutofillAcrossIframesIos).
+BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
+             "AutofillAcrossIframesIosTriggerFormExtraction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Feature flag to control the displaying of an ongoing hats survey that
 // measures users perception of Autofill. Differently from other surveys,
 // the Autofill user perception survey will not have a specific target
