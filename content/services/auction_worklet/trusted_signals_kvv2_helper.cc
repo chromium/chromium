@@ -628,6 +628,37 @@ ResultOrError ParseBiddingPartition(
       std::move(maybe_key_data_map).value(), data_version);
 }
 
+// Attempts to create a TrustedSignals::Result for all fields in a scoring
+// partition, given the result of calling ParseKeyGroupOutputsToMap() on the
+// partition and the partition's data version.
+ResultOrError ParseScoringPartition(
+    AuctionV8Helper* v8_helper,
+    const std::map<std::string, const cbor::Value::MapValue*>&
+        key_group_outputs_map,
+    std::optional<uint32_t> data_version) {
+  auto maybe_render_urls_map = SerializeKeyGroupOutputsMap(
+      v8_helper, key_group_outputs_map, /*keys=*/std::nullopt, kTagRenderUrls);
+  // Note that the map not being present is valid - there's only an error in the
+  // case invalid data is received.
+  if (!maybe_render_urls_map.has_value()) {
+    return base::unexpected(std::move(maybe_render_urls_map).error().error_msg);
+  }
+
+  auto maybe_ad_component_render_urls_map = SerializeKeyGroupOutputsMap(
+      v8_helper, key_group_outputs_map, /*keys=*/std::nullopt,
+      kTagAdComponentRenderUrls);
+  // Note that the map not being present is valid - there's only an error in the
+  // case invalid data is received.
+  if (!maybe_ad_component_render_urls_map.has_value()) {
+    return base::unexpected(
+        std::move(maybe_ad_component_render_urls_map).error().error_msg);
+  }
+
+  return base::MakeRefCounted<TrustedSignals::Result>(
+      std::move(maybe_render_urls_map).value(),
+      std::move(maybe_ad_component_render_urls_map).value(), data_version);
+}
+
 // Takes a cbor::Value corresponding to a partition of type `signals_type` and
 // attempts to parse it to a TrustedSignals::Result.
 ResultOrError ParsePartition(
@@ -657,8 +688,8 @@ ResultOrError ParsePartition(
     return ParseBiddingPartition(v8_helper, *key_group_outputs_map,
                                  data_version);
   } else {
-    // Scoring signals not yet supported.
-    NOTREACHED();
+    return ParseScoringPartition(v8_helper, *key_group_outputs_map,
+                                 data_version);
   }
 }
 
