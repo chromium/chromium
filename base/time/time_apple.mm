@@ -166,6 +166,11 @@ namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
   return TimeTicks() + Microseconds(ComputeCurrentTicks());
 }
+
+TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
+  return TimeTicks() + Microseconds(MachTimeToMicroseconds(
+                           clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW_APPROX)));
+}
 }  // namespace subtle
 
 // static
