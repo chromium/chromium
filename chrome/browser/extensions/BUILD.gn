@@ -744,6 +744,7 @@ source_set("extensions") {
     "//chrome/browser/feedback",
     "//chrome/browser/importer",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/prefetch",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile_util",
