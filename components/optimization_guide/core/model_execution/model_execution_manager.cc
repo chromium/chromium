@@ -185,14 +185,6 @@ ModelExecutionManager::ModelExecutionManager(
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
     return;
   }
-
-  did_register_for_supplementary_on_device_models_ = true;
-  model_provider_->AddObserverForOptimizationTargetModel(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
-      /*model_metadata=*/std::nullopt, this);
-  model_provider_->AddObserverForOptimizationTargetModel(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      /*model_metadata=*/std::nullopt, this);
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
@@ -471,6 +463,19 @@ void ModelExecutionManager::OnModelUpdated(
 
     default:
       break;
+  }
+}
+
+void ModelExecutionManager::StateChanged(
+    const OnDeviceModelComponentState* state) {
+  if (state) {
+    did_register_for_supplementary_on_device_models_ = true;
+    model_provider_->AddObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+        /*model_metadata=*/std::nullopt, this);
+    model_provider_->AddObserverForOptimizationTargetModel(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+        /*model_metadata=*/std::nullopt, this);
   }
 }
 

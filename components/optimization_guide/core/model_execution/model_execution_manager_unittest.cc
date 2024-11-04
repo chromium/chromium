@@ -16,6 +16,8 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
+#include "components/optimization_guide/core/model_execution/test/response_holder.h"
+#include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -135,6 +137,15 @@ class ModelExecutionManagerTest : public testing::Test {
         &optimization_guide_logger_, nullptr);
   }
 
+  void CreateAndObserveComponentManager() {
+    component_manager_ =
+        std::make_unique<TestOnDeviceModelComponentStateManager>(
+            local_state_.get());
+    component_manager_->get()->OnStartup();
+    task_environment_.FastForwardBy(base::Seconds(1));
+    component_manager_->get()->AddObserver(model_execution_manager_.get());
+  }
+
   bool SimulateResponse(const std::string& content,
                         net::HttpStatusCode http_status) {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -174,6 +185,15 @@ class ModelExecutionManagerTest : public testing::Test {
     EXPECT_THAT(body_bytes, HasSubstr(message));
   }
 
+  void SetModelComponentReady() {
+    component_manager_->SetReady(base::FilePath());
+  }
+
+  bool IsModelComponentReady() {
+    return component_manager_->get()->GetOnDeviceModelStatus() ==
+           optimization_guide::OnDeviceModelStatus::kReady;
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -183,7 +203,8 @@ class ModelExecutionManagerTest : public testing::Test {
   void Reset() { model_execution_manager_ = nullptr; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -192,6 +213,7 @@ class ModelExecutionManagerTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<FakeServiceController> service_controller_;
+  std::unique_ptr<TestOnDeviceModelComponentStateManager> component_manager_;
   FakeModelProvider model_provider_;
   OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<ModelExecutionManager> model_execution_manager_;
@@ -719,7 +741,22 @@ class ModelExecutionManagerSafetyEnabledTest
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
        RegistersTextSafetyModelIfEnabled) {
-  EXPECT_TRUE(model_provider()->was_registered());
+  EXPECT_FALSE(model_provider()->was_registered());
+
+  // Text safety model should only be registered after the base model is ready.
+  local_state()->SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass,
+      base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
+  CreateAndObserveComponentManager();
+  SetModelComponentReady();
+
+  // Some test devices may still be blocked by OS, or device restrictions,
+  // and not be in the "ready" state.
+  if (IsModelComponentReady()) {
+    EXPECT_TRUE(model_provider()->was_registered());
+  } else {
+    EXPECT_FALSE(model_provider()->was_registered());
+  }
 }
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
