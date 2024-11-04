@@ -47,9 +47,11 @@ SubscriberCrosapiFactory::SubscriberCrosapiFactory()
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 
-KeyedService* SubscriberCrosapiFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SubscriberCrosapiFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SubscriberCrosapi(Profile::FromBrowserContext(context));
+  return std::make_unique<SubscriberCrosapi>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace apps
