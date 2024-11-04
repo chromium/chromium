@@ -185,6 +185,17 @@ constexpr LoadAverageHistogram kLoadAverageHistograms[] = {
      base::Minutes(15)},
 };
 
+const char* ArcKeyMintLoggedOperationToString(
+    mojom::ArcKeyMintLoggedOperation operation) {
+  switch (operation) {
+    case mojom::ArcKeyMintLoggedOperation::kOther:
+      return "Other";
+    case mojom::ArcKeyMintLoggedOperation::kGenerateCertificateRequest:
+      return "GenerateCertificateRequest";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // static
@@ -828,6 +839,16 @@ void ArcMetricsService::ReportQosSocketPercentage(int perc) {
 void ArcMetricsService::ReportArcKeyMintError(mojom::ArcKeyMintError error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::UmaHistogramEnumeration("Arc.KeyMint.KeyMintError", error);
+}
+
+void ArcMetricsService::ReportArcKeyMintErrorForOperation(
+    mojom::ArcKeyMintError error,
+    mojom::ArcKeyMintLoggedOperation operation) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  const std::string histogram_name =
+      base::StringPrintf("Arc.KeyMint.KeyMintError.%s",
+                         ArcKeyMintLoggedOperationToString(operation));
+  base::UmaHistogramEnumeration(histogram_name, error);
 }
 
 void ArcMetricsService::ReportDragResizeLatency(

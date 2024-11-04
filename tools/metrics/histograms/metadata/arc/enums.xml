@@ -207,6 +207,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Invalid Arguement"/>
   <int value="5" label="Unsupported Algorithm"/>
   <int value="6" label="Unimplemented"/>
+  <int value="7" label="Unexpected Null Pointer"/>
 </enum>
 
 <enum name="ArcMainAccountHashMigrationStatus">

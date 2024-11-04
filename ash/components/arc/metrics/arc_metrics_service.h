@@ -163,6 +163,9 @@ class ArcMetricsService : public KeyedService,
       std::vector<mojom::AppCategoryDataSizePtr> list) override;
   void ReportDataDirectorySizeList(
       std::vector<mojom::DataDirectorySizePtr> list) override;
+  void ReportArcKeyMintErrorForOperation(
+      mojom::ArcKeyMintError error,
+      mojom::ArcKeyMintLoggedOperation operation) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
