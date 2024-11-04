@@ -424,9 +424,12 @@ void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
 void TabSearchPageHandler::GetTabSearchSection(
     GetTabSearchSectionCallback callback) {
   PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  const tab_search::mojom::TabSearchSection section =
+  tab_search::mojom::TabSearchSection section =
       tab_search_prefs::GetTabSearchSectionFromInt(
           prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
+  if (section == tab_search::mojom::TabSearchSection::kNone) {
+    section = tab_search::mojom::TabSearchSection::kSearch;
+  }
   std::move(callback).Run(section);
 }
 
@@ -659,9 +662,11 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
 
 void TabSearchPageHandler::SetTabSearchSection(
     tab_search::mojom::TabSearchSection section) {
-  Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
-      tab_search_prefs::kTabSearchTabIndex,
-      tab_search_prefs::GetIntFromTabSearchSection(section));
+  if (section != tab_search::mojom::TabSearchSection::kNone) {
+    Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
+        tab_search_prefs::kTabSearchTabIndex,
+        tab_search_prefs::GetIntFromTabSearchSection(section));
+  }
 }
 
 void TabSearchPageHandler::SetOrganizationFeature(
