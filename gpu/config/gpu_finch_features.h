@@ -80,6 +80,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(
     kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage);
 GPU_EXPORT BASE_DECLARE_FEATURE(
     kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage);
+GPU_EXPORT BASE_DECLARE_FEATURE(
+    kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 

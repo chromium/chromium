@@ -391,6 +391,9 @@ BASE_FEATURE(kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage,
 BASE_FEATURE(kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage,
              "SWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage,
+             "ViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable persistent storage of VkPipelineCache data.
 BASE_FEATURE(kEnableVkPipelineCache,
