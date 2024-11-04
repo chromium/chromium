@@ -19,8 +19,6 @@
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "services/screen_ai/proto/visual_annotator_proto_convertor.h"
@@ -390,15 +388,11 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
-                                         ukm::SourceId ukm_source_id,
                                          ExtractMainContentCallback callback) {
   main_content_extraction_last_used_ = base::TimeTicks::Now();
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
   bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
-  base::TimeDelta elapsed_time =
-      base::TimeTicks::Now() - main_content_extraction_last_used_;
-  RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time, success);
 
   if (success) {
     std::move(callback).Run(*content_node_ids);
@@ -457,32 +451,6 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
     const ui::AXTree* tree,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   return ComputeMainNode(tree, content_node_ids);
-}
-
-// static
-void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
-                                    ukm::UkmRecorder* ukm_recorder,
-                                    base::TimeDelta elapsed_time,
-                                    bool success) {
-  if (success) {
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Success",
-        elapsed_time);
-    if (ukm_source_id != ukm::kInvalidSourceId) {
-      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
-          .SetScreen2xDistillationTime_Success(elapsed_time.InMilliseconds())
-          .Record(ukm_recorder);
-    }
-  } else {
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
-        elapsed_time);
-    if (ukm_source_id != ukm::kInvalidSourceId) {
-      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
-          .SetScreen2xDistillationTime_Failure(elapsed_time.InMilliseconds())
-          .Record(ukm_recorder);
-    }
-  }
 }
 
 void ScreenAIService::OcrReceiverDisconnected() {

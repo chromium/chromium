@@ -80,27 +80,33 @@ class AXTreeDistiller : public content::RenderFrameObserver {
   void RecordRulesMetrics(const ukm::SourceId ukm_source_id,
                           base::TimeDelta elapsed_time,
                           bool success);
+  void RecordScreen2xMetrics(const ukm::SourceId ukm_source_id,
+                             base::TimeDelta elapsed_time,
+                             bool success);
 
   // Passes |snapshot| to the Screen2x ML model, which identifes the main
   // content nodes and calls |ProcessScreen2xResult()| on completion.
   // |content_node_ids_algorithm| are the content nodes identified by the
-  // algorithm. They are passed along to the screen2x callback. start_time is
-  // the time when DistillViaAlgorithm started and is used for
+  // algorithm. They are passed along to the screen2x callback.
+  // |merged_start_time| is the time when Distill started and is used for
   // RecordMergedMetrics.
   void DistillViaScreen2x(
       const ui::AXTree& tree,
       const ui::AXTreeUpdate& snapshot,
       const ukm::SourceId ukm_source_id,
-      base::TimeTicks start_time,
+      base::TimeTicks merged_start_time,
       std::vector<ui::AXNodeID>* content_node_ids_algorithm);
 
   // Called by the Screen2x service from the utility process. Merges the result
   // from the algorithm with the result from Screen2x and passes the merged
-  // vector to the callback.
+  // vector to the callback. |screen2x_start_time| is the time when
+  // DistillViaScreen2x started and |merged_start_time| is the time when
+  // Distill started and is used for RecordScreen2xMetrics.
   void ProcessScreen2xResult(
       const ui::AXTreeID& tree_id,
       const ukm::SourceId ukm_source_id,
-      base::TimeTicks start_time,
+      base::TimeTicks screen2x_start_time,
+      base::TimeTicks merged_start_time,
       std::vector<ui::AXNodeID> content_node_ids_algorithm,
       const std::vector<ui::AXNodeID>& content_node_ids_screen2x);
 

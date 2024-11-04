@@ -130,7 +130,7 @@ void MahiContentExtractionDelegate::ExtractContent(
   // Generates the extraction request.
   mojom::ExtractionRequestPtr extraction_request =
       mojom::ExtractionRequest::New(
-          /*ukm_source_id=*/web_content_state.ukm_source_id,
+          /*deprecated_ukm_source_id=*/ukm::kInvalidSourceId,
           /*snapshot=*/std::make_optional(web_content_state.snapshot),
           /*extraction_methods=*/
           mojom::ExtractionMethods::New(/*use_algorithm=*/true,
@@ -160,7 +160,7 @@ void MahiContentExtractionDelegate::ExtractContent(
   // Generates the extraction request.
   mojom::ExtractionRequestPtr extraction_request =
       mojom::ExtractionRequest::New(
-          /*ukm_source_id=*/web_content_state.ukm_source_id,
+          /*deprecated_ukm_source_id=*/ukm::kInvalidSourceId,
           /*snapshot=*/std::nullopt,
           /*extraction_methods=*/
           mojom::ExtractionMethods::New(/*use_algorithm=*/true,

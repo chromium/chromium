@@ -36,7 +36,6 @@ class MockMainNodeAnnotationService
   }
 
   void ExtractMainContent(const ::ui::AXTreeUpdate& snapshot,
-                          int64_t ukm_source_id,
                           ExtractMainContentCallback callback) override {}
 
   void ExtractMainNode(const ui::AXTreeUpdate& snapshot,
