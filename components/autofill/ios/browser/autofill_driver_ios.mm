@@ -18,6 +18,7 @@
 #import "components/autofill/core/browser/autofill_driver_router.h"
 #import "components/autofill/core/browser/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -296,7 +297,10 @@ void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
     return;
   }
 
-  ScanForms();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAcrossIframesIosTriggerFormExtraction)) {
+    ScanForms();
+  }
 }
 
 void AutofillDriverIOS::ScanForms() {
