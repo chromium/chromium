@@ -321912,7 +321912,7 @@
       []
      ],
      "at-scope-relative-syntax-expected.txt": [
-      "f721743863dc825f2ed0c74752e9f9cec84921e7",
+      "0495a4efad6af799963d151f6b9ea4797509a0f9",
       []
      ],
      "important-prop-ref.html": [
@@ -348045,6 +348045,10 @@
       "542f2b7d5249f8e61a9fd347f13574b36ee6a367",
       []
      ],
+     "inheritance-expected.txt": [
+      "8e0864c3ac0d0ed43ddb4a7a68e5f3a3c62694dd",
+      []
+     ],
      "max-height-table-ref.html": [
       "ab1036ebb8dffa550b499f8a334c5b6455ba072b",
       []
@@ -348068,6 +348072,12 @@
       ],
       "row-background-paint-remove-last-cell-ref.html": [
        "57beaedd479c3093f73dc52ed5957f2c576a959f",
+       []
+      ]
+     },
+     "parsing": {
+      "border-spacing-computed-expected.txt": [
+       "f2a5a967bf29ebaf7862eb17e289b552754f8d60",
        []
       ]
      },
@@ -357501,6 +357511,10 @@
      ],
      "variable-reference-visited-ref.html": [
       "8647be19a8ccb033bc569fb9d1e1e444428f1655",
+      []
+     ],
+     "variable-substitution-basic-expected.txt": [
+      "52bacfed275da685a2626656f7890af7042003db",
       []
      ],
      "wide-keyword-fallback-001-ref.html": [
@@ -385342,7 +385356,7 @@
         []
        ],
        "table-attribute-expected.txt": [
-        "9121ccdb7dc77800ac638fff7d8ec579a1aefc70",
+        "f51d0ca8e66d1ae5163a1c21efa20d4495bc914a",
         []
        ],
        "table-background-print-ref.html": [
@@ -403790,10 +403804,6 @@
      "fc6bc8634586ded123fed22ca840e5d1128f7302",
      []
     ],
-    "element-set-sanitized-html.https-expected.txt": [
-     "a312ec355b1eef9dad804417b18ccc957627c0f3",
-     []
-    ],
     "sanitizer-config.https-expected.txt": [
      "37e6dd266b3811ed179fe5406a9427e5322d9cc2",
      []
@@ -403802,25 +403812,17 @@
      "2672dfb32c0e5ca219a9b84d9be1ebc798a70dd9",
      []
     ],
-    "sanitizer-sanitize.https.tentative-expected.txt": [
-     "cb51ee49d7cf72b02c5294bc7232207e3e41f6da",
-     []
-    ],
-    "sanitizer-sanitizeFor.https.tentative-expected.txt": [
-     "c7839b085180128e845674b0e3901c40989cc370",
-     []
-    ],
     "sanitizer-unknown.https-expected.txt": [
      "eaebe36a18ce6be96156365c9fa8ddb413404fe0",
      []
     ],
+    "sethtml-tree-construction.dat": [
+     "31c0cde233e4744f01d23942fd73f00cbe1730fd",
+     []
+    ],
     "support": {
      "html5lib-testcase-support.js": [
-      "4f15e46a7eb0498658417639aa8f61e3cc46d0c6",
-      []
-     ],
-     "testcases.sub.js": [
-      "7ce755ca060b951db57d41fdf0eccf4cf70eaa22",
+      "2829fd7b79de26ec393a1376cd984c4e68a57f61",
       []
      ]
     }
@@ -412707,7 +412709,7 @@
     "animation-model": {
      "animation-types": {
       "accumulation-per-property-001-expected.txt": [
-       "830d1949449653d2cfdaeadcf9fb25dcd8453453",
+       "15adf779ce36ab7470969e2d0c1c317a1756c5dd",
        []
       ],
       "accumulation-per-property-002-expected.txt": [
@@ -412715,7 +412717,7 @@
        []
       ],
       "addition-per-property-001-expected.txt": [
-       "830d1949449653d2cfdaeadcf9fb25dcd8453453",
+       "15adf779ce36ab7470969e2d0c1c317a1756c5dd",
        []
       ],
       "addition-per-property-002-expected.txt": [
@@ -412723,7 +412725,7 @@
        []
       ],
       "interpolation-per-property-001-expected.txt": [
-       "4fc1e1d5cfb06013a54dafceeae4a58f50d8afbc",
+       "0f830f612999c432b27a2cc7384ae55f012be6a4",
        []
       ],
       "interpolation-per-property-002-expected.txt": [
@@ -412735,7 +412737,7 @@
        []
       ],
       "property-types.js": [
-       "4d693561cef44b80124b2aafc5096689aa452d16",
+       "ec28091a6c39c66177cc0fdd7ed07134fc96c159",
        []
       ],
       "property-utils.js": [
@@ -466195,7 +466197,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "2af8fd1a74e94598ef74649f981edb352101ce1c",
+      "73500b7665ea5e419f6483f0bcbde33c54e5b529",
       [
        null,
        {}
@@ -467477,7 +467479,7 @@
         ]
        ],
        "container-type-scroll-state-containment.html": [
-        "cc1af5a08ebb1454ef3ea8ae64fd27de4cbe446c",
+        "177670a0252b3b5438b7c499eb6bdf768f47c647",
         [
          null,
          {}
@@ -486418,7 +486420,7 @@
       ]
      ],
      "inheritance.html": [
-      "2c640db6d9ecb61ad02af68257d3647d24146bea",
+      "33a231f58e10d259880862e3b7833f0b78c1befa",
       [
        null,
        {}
@@ -486454,7 +486456,7 @@
        ]
       ],
       "border-spacing-computed.html": [
-       "d88acb3bb04cd805d54bd809b4a434716f63aa34",
+       "ba5b34ceafd0454ff62b5ae6e8aa0614dea1001b",
        [
         null,
         {}
@@ -495801,7 +495803,7 @@
       ]
      ],
      "variable-substitution-basic.html": [
-      "e1c0a11aad9a8840b11c966987ebba03be3b28c0",
+      "911a2437edaa251c4a3cd17f49e1d7bc58358551",
       [
        null,
        {}
@@ -601813,7 +601815,7 @@
         ]
        ],
        "table-attribute.html": [
-        "54acff0350eaee7fced7869c566bfb780b26cfd0",
+        "a9bc3fb0bf6d7168a4435e6ce18a6041d8945ac8",
         [
          null,
          {}
@@ -658451,13 +658453,6 @@
     ]
    },
    "sanitizer-api": {
-    "element-set-sanitized-html.https.html": [
-     "8fabf1ce293ada94b7777ca42f974454c123efa0",
-     [
-      null,
-      {}
-     ]
-    ],
     "html5lib-basics.tentative.html": [
      "1df4d49f704daa2e8f8370774df5d2b421972eff",
      [
@@ -658511,20 +658506,6 @@
       {}
      ]
     ],
-    "sanitizer-sanitize.https.tentative.html": [
-     "82eaeb48329f235a833aa8b8120bd6f08e64f90d",
-     [
-      null,
-      {}
-     ]
-    ],
-    "sanitizer-sanitizeFor.https.tentative.html": [
-     "77ae0abb6b0b30109157cb76dbf1df640b608733",
-     [
-      null,
-      {}
-     ]
-    ],
     "sanitizer-secure-context.https.html": [
      "0e04e04d169a40e8a4a82ce81bb3e29cd7de83a1",
      [
@@ -658534,6 +658515,13 @@
     ],
     "sanitizer-unknown.https.html": [
      "7b9835cb6d07e22481f19ef6fa3892b7e370a3a5",
+     [
+      null,
+      {}
+     ]
+    ],
+    "sethtml-tree-construction.tentative.html": [
+     "dcb414cf5e566e7bb9f43f2c726330413d6d7b82",
      [
       null,
       {}
