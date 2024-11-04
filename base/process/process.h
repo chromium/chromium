@@ -49,10 +49,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
 class ProcessPriorityDelegate;
 #endif
 
-#if BUILDFLAG(IS_WIN)
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseEcoQoSForBackgroundProcess);
-#endif
-
 // Provides a move-only encapsulation of a process.
 //
 // This object is not tied to the lifetime of the underlying process: the

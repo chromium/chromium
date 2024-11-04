@@ -4037,8 +4037,7 @@
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
                         "ReduceCookieIPCs",
-                        "UseCompositorJob",
-                        "UseEcoQoSForBackgroundProcess"
+                        "UseCompositorJob"
                     ],
                     "disable_features": [
                         "RecordSequenceManagerCrashKeys",
