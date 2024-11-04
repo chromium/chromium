@@ -154,6 +154,7 @@ android_library("unit_device_javatests") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//components/collaboration/public:core_java",
     "//components/commerce/core:proto_java",
     "//components/data_sharing/public:public_java",
     "//components/embedder_support/android:util_java",

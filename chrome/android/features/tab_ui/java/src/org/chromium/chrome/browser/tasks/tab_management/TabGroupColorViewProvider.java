@@ -25,6 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -55,6 +56,7 @@ public class TabGroupColorViewProvider implements Destroyable {
      * @param colorId The {@link TabGroupColorId} to show for the main color.
      * @param tabGroupSyncService Used to fetch the current collaboration id of the group.
      * @param dataSharingService Used to fetch and observe current share data.
+     * @param collaborationService Used to fetch current service status.
      */
     public TabGroupColorViewProvider(
             @NonNull Context context,
@@ -62,7 +64,8 @@ public class TabGroupColorViewProvider implements Destroyable {
             boolean isIncognito,
             @TabGroupColorId int colorId,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @Nullable DataSharingService dataSharingService) {
+            @Nullable DataSharingService dataSharingService,
+            @Nullable CollaborationService collaborationService) {
         assert tabGroupId != null : "Tab group id cannot be null.";
         mContext = context;
         mTabGroupId = tabGroupId;
@@ -70,7 +73,7 @@ public class TabGroupColorViewProvider implements Destroyable {
         mColorId = colorId;
 
         boolean servicesExist = tabGroupSyncService != null && dataSharingService != null;
-        if (servicesExist && dataSharingService.getServiceStatus().isAllowedToJoin()) {
+        if (servicesExist && collaborationService.getServiceStatus().isAllowedToJoin()) {
             mDataSharingService = dataSharingService;
             mSharedGroupObserver =
                     new SharedGroupObserver(tabGroupId, tabGroupSyncService, dataSharingService);

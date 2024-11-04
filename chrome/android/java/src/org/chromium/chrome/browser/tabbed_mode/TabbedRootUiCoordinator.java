@@ -39,11 +39,11 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
@@ -146,8 +146,8 @@ import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.ServiceStatus;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -1212,8 +1212,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeInitMessageDelegateOnProfile(Profile profile) {
-        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
-        @NonNull ServiceStatus serviceStatus = dataSharingService.getServiceStatus();
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(profile);
+        @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
         if (!serviceStatus.isAllowedToJoin()) return;
 
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)

@@ -26,6 +26,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
@@ -51,8 +52,9 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -272,9 +274,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
             mTabListCoordinator.initWithNative(originalProfile);
 
-            DataSharingService dataSharingService =
-                    DataSharingServiceFactory.getForProfile(originalProfile);
-            @NonNull ServiceStatus serviceStatus = dataSharingService.getServiceStatus();
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(originalProfile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
             if (serviceStatus.isAllowedToJoin()) {
                 mTabLabeller =
                         new TabLabeller(

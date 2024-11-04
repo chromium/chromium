@@ -54,6 +54,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -94,6 +95,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -364,6 +366,7 @@ class TabListMediator implements TabListNotificationHandler {
     private @Nullable Profile mOriginalProfile;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
     private @Nullable DataSharingService mDataSharingService;
+    private @Nullable CollaborationService mCollaborationService;
     private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     private Size mDefaultGridCardSize;
     private ComponentCallbacks mComponentCallbacks;
@@ -1377,6 +1380,7 @@ class TabListMediator implements TabListNotificationHandler {
             if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
                 mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
                 mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
+                mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
             }
         }
     }
@@ -1903,7 +1907,8 @@ class TabListMediator implements TabListNotificationHandler {
             DataSharingService dataSharingService = null;
             if (isTabGroupSyncEnabled
                     && mDataSharingService != null
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+                    && mCollaborationService != null
+                    && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
                 identityManager =
                         IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
                 tabGroupSyncService = mTabGroupSyncService;
@@ -3001,7 +3006,8 @@ class TabListMediator implements TabListNotificationHandler {
                             tab.isIncognitoBranded(),
                             colorId,
                             mTabGroupSyncService,
-                            mDataSharingService);
+                            mDataSharingService,
+                            mCollaborationService);
             model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
         } else {
             assert Objects.equals(tabGroupId, provider.getTabGroupId());

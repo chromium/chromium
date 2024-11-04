@@ -25,6 +25,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
@@ -43,8 +44,9 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -261,9 +263,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mThemeColorProvider);
 
             Profile profile = mTabModelSelector.getModel(false).getProfile();
-            DataSharingService dataSharingService =
-                    DataSharingServiceFactory.getForProfile(profile);
-            @NonNull ServiceStatus serviceStatus = dataSharingService.getServiceStatus();
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(profile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
             if (serviceStatus.isAllowedToJoin()) {
                 mTabBubbler =
                         new TabBubbler(

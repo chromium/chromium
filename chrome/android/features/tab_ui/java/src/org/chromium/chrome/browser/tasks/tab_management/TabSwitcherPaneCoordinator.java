@@ -38,7 +38,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.invitation_dialog.DataSharingInvitationDialogCoordinator;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -64,8 +64,8 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStatePr
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.ServiceStatus;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -380,9 +380,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mMessageManager = messageManager;
             mMessageManager.registerMessages(tabListCoordinator);
 
-            DataSharingService dataSharingService =
-                    DataSharingServiceFactory.getForProfile(profile);
-            @NonNull ServiceStatus serviceStatus = dataSharingService.getServiceStatus();
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(profile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
             if (serviceStatus.isAllowedToJoin()) {
                 mTabGroupLabeller =
                         new TabGroupLabeller(

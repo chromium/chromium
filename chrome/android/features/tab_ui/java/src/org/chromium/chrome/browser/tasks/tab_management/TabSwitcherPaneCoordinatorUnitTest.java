@@ -50,6 +50,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -80,9 +81,10 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -115,6 +117,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private DataSharingService mDataSharingService;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherMessageManager mMessageManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
@@ -127,7 +130,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
@@ -160,9 +163,10 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
-        when(mDataSharingService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
 
         TrackerFactory.setTrackerForTests(mTracker);
 

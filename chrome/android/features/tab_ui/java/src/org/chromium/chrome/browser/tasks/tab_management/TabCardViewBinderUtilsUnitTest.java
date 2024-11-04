@@ -26,8 +26,9 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.TestActivity;
@@ -44,6 +45,7 @@ public class TabCardViewBinderUtilsUnitTest {
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
 
     private Context mContext;
@@ -53,7 +55,7 @@ public class TabCardViewBinderUtilsUnitTest {
     @Before
     public void setUp() {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
-        when(mDataSharingService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
@@ -67,7 +69,8 @@ public class TabCardViewBinderUtilsUnitTest {
                         /* isIncognito= */ false,
                         TabGroupColorId.RED,
                         mTabGroupSyncService,
-                        mDataSharingService);
+                        mDataSharingService,
+                        mCollaborationService);
         mContainerView = new FrameLayout(activity);
         activity.setContentView(mContainerView);
     }

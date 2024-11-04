@@ -36,9 +36,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -61,6 +62,7 @@ public class TabGroupColorViewProviderUnitTest {
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
@@ -74,7 +76,7 @@ public class TabGroupColorViewProviderUnitTest {
     @Before
     public void setUp() {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
-        when(mDataSharingService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
 
         mSharedGroupTestHelper =
                 new SharedGroupTestHelper(mDataSharingService, mReadGroupCallbackCaptor);
@@ -92,7 +94,8 @@ public class TabGroupColorViewProviderUnitTest {
                         /* isIncognito= */ false,
                         TabGroupColorId.RED,
                         mTabGroupSyncService,
-                        mDataSharingService);
+                        mDataSharingService,
+                        mCollaborationService);
 
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
 
@@ -103,7 +106,8 @@ public class TabGroupColorViewProviderUnitTest {
                         /* isIncognito= */ true,
                         TabGroupColorId.BLUE,
                         /* tabGroupSyncService= */ null,
-                        /* dataSharingService= */ null);
+                        /* dataSharingService= */ null,
+                        /* collaborationService= */ null);
     }
 
     @Test

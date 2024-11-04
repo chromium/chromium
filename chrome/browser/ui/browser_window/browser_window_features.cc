@@ -10,8 +10,8 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -38,11 +38,10 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/data_sharing/public/data_sharing_service.h"
-#include "components/data_sharing/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -168,8 +167,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
 
-  data_sharing::DataSharingService* service =
-      data_sharing::DataSharingServiceFactory::GetForProfile(
+  collaboration::CollaborationService* service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
           browser->profile());
   if (service && service->GetServiceStatus().IsAllowedToJoin() &&
       tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
