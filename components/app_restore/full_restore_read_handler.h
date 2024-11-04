@@ -94,14 +94,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
 
-  // Returns the first restore app data (first window) associated with `app_id`.
-  // This is used for the coral feature.
-  // TODO(http://crbug.com/365839465): The window id should also be passed
-  // through the pipeline.
-  app_restore::AppRestoreData* GetFirstAppRestoreDataForActiveProfile(
-      const std::string& app_id,
-      int32_t& out_window_id);
-
   void SetPrimaryProfilePath(const base::FilePath& profile_path);
 
   void SetActiveProfilePath(const base::FilePath& profile_path);
@@ -178,14 +170,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   bool IsFullRestoreRunning() const;
 
   void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
-
-  void SetRestoreDataForTesting(
-      const base::FilePath& path,
-      std::unique_ptr<app_restore::RestoreData> restore_data);
-
-  // This will CHECK-fail if there is no restore data associated with `path`.
-  std::unique_ptr<app_restore::RestoreData> GetRestoreDataForTesting(
-      const base::FilePath& path);
 
  private:
   friend class ash::AppLaunchInfoSaveWaiter;

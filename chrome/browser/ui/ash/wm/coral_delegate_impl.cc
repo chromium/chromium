@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,7 +17,6 @@
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_constants/constants.h"
-#include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/display/display.h"
@@ -24,10 +26,36 @@ namespace {
 
 constexpr base::TimeDelta kClearLaunchDataDuration = base::Seconds(20);
 
+// Returns the first `AppRestoreData` in `restore_data` associated with
+// `app_id`. If one is found, the also `out_window_id` will have the window id
+// of the first window associated with that app.
+// TODO(http://crbug.com/365839465): The window id should also be passed
+// through the pipeline.
+app_restore::AppRestoreData* GetFirstAppRestoreData(
+    app_restore::RestoreData* restore_data,
+    const std::string& app_id,
+    int32_t& out_window_id) {
+  if (!restore_data) {
+    return nullptr;
+  }
+  auto launch_list_it = restore_data->app_id_to_launch_list().find(app_id);
+  if (launch_list_it == restore_data->app_id_to_launch_list().end()) {
+    return nullptr;
+  }
+  const app_restore::RestoreData::LaunchList& launch_list =
+      launch_list_it->second;
+  if (launch_list.empty()) {
+    return nullptr;
+  }
+  out_window_id = launch_list.begin()->first;
+  return launch_list.begin()->second.get();
+}
+
 // Converts a coral `group` to a full restore struct that can be used by
 // `DesksTemplatesAppLaunchHandler` to create a browser and launch apps.
 std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
-    coral::mojom::GroupPtr group) {
+    coral::mojom::GroupPtr group,
+    Profile* profile) {
   auto restore_data = std::make_unique<app_restore::RestoreData>();
   std::vector<GURL> tab_urls;
   std::vector<std::string> app_ids;
@@ -49,14 +77,18 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     app_restore_data = std::make_unique<app_restore::AppRestoreData>();
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
+
+  app_restore::RestoreData* full_restore_restore_data =
+      ash::full_restore::FullRestoreServiceFactory::GetForProfile(profile)
+          ->app_launch_handler()
+          ->restore_data();
   for (const std::string& app_id : app_ids) {
     // TODO(http://crbug.com/365839465): The window id should also be passed
     // through the pipeline. For now we just use the first window restore data
     // as multi window apps are rare.
     int32_t window_id;
     app_restore::AppRestoreData* full_restore_app_restore_data =
-        full_restore::FullRestoreReadHandler::GetInstance()
-            ->GetFirstAppRestoreDataForActiveProfile(app_id, window_id);
+        GetFirstAppRestoreData(full_restore_restore_data, app_id, window_id);
     if (!full_restore_app_restore_data) {
       continue;
     }
@@ -145,7 +177,7 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
   app_launch_handler_ = std::make_unique<DesksTemplatesAppLaunchHandler>(
       active_profile, DesksTemplatesAppLaunchHandler::Type::kCoral);
   app_launch_handler_->LaunchCoralGroup(
-      CoralGroupToRestoreData(std::move(group)),
+      CoralGroupToRestoreData(std::move(group), active_profile),
       DesksTemplatesAppLaunchHandler::GetNextLaunchId());
 
   // Clears the launch handler after a given duration.

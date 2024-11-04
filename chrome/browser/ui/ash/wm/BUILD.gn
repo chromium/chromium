@@ -22,6 +22,7 @@ static_library("wm") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_restore:app_restore",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/desks",
