@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Animation Manager Destroyed"/>
   <int value="18" label="Physical size changed mid-animation"/>
   <int value="19" label="Animation successfully finishes"/>
+  <int value="20" label="Primary Main Frame Render Process Is Destroyed"/>
 </enum>
 
 <enum name="AutomaticBeaconOutcome">

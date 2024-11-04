@@ -220,6 +220,14 @@ void BackForwardTransitionAnimationManagerAndroid::DidFinishNavigation(
 }
 
 void BackForwardTransitionAnimationManagerAndroid::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
+  CHECK(animator_);
+  animator_->AbortAnimation(
+      AnimationAbortReason::kPrimaryMainFrameRenderProcessDestroyed);
+  DestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::
     OnDidNavigatePrimaryMainFramePreCommit(
         NavigationRequest* navigation_request,
         RenderFrameHostImpl* old_host,

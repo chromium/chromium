@@ -178,7 +178,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // The animation has successfully finished.
     kAnimationFinished = 19,
 
-    kMaxValue = kAnimationFinished,
+    // Abort the animation when the primary main frame renderer is destroyed.
+    kPrimaryMainFrameRenderProcessDestroyed = 20,
+
+    kMaxValue = kPrimaryMainFrameRenderProcessDestroyed,
   };
 
   // Indicates what animation state caused input event suppression.

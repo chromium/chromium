@@ -2333,6 +2333,74 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
+// When the primary main frame renderer gest destroyed mid gesture, the
+// animation should be immedietly aborted.
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       PrimaryMainFrameRenderProcessDestroyedMidGesture) {
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  // Crash the green page.
+  RenderFrameHostWrapper crashed(web_contents()->GetPrimaryMainFrame());
+  RenderProcessHostWatcher crashed_obs(
+      crashed->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  crashed->GetProcess()->Shutdown(content::RESULT_CODE_KILLED);
+  crashed_obs.Wait();
+  ASSERT_TRUE(crashed.WaitUntilRenderFrameDeleted());
+  // The crashed RFH is still owned by the RFHManager.
+  ASSERT_FALSE(crashed.IsDestroyed());
+  ASSERT_FALSE(crashed->IsRenderFrameLive());
+  ASSERT_FALSE(crashed->GetView());
+
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
+// When the primary main frame renderer gest destroyed after the gesture was
+// invoked, the animation should be aborted.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTest,
+    PrimaryMainFrameRenderProcessDestroyedAfterGestureInvoked) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+  GetAnimator()->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForRequestStart());
+
+  // Crash the green page.
+  RenderFrameHostWrapper crashed(web_contents()->GetPrimaryMainFrame());
+  RenderProcessHostWatcher crashed_obs(
+      crashed->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  crashed->GetProcess()->Shutdown(content::RESULT_CODE_KILLED);
+  crashed_obs.Wait();
+  ASSERT_TRUE(crashed.WaitUntilRenderFrameDeleted());
+  // The crashed RFH is still owned by the RFHManager.
+  ASSERT_FALSE(crashed.IsDestroyed());
+  ASSERT_FALSE(crashed->IsRenderFrameLive());
+  ASSERT_FALSE(crashed->GetView());
+
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_FALSE(back_to_red.was_committed());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
 // Regression test for https://crbug.com/326516254: If the destination page is
 // skipped for a back/forward navigation due to the lack of user activation, the
 // animator should also skip that entry.

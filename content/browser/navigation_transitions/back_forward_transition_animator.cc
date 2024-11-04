@@ -148,12 +148,12 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
       return "kCompositorDetached";
     case AnimationAbortReason::kAnimationManagerDestroyed:
       return "kAnimationManagerDestroyed";
-    case BackForwardTransitionAnimator::AnimationAbortReason::
-        kPhysicalSizeChanged:
+    case AnimationAbortReason::kPhysicalSizeChanged:
       return "kPhysicalSizeChanged";
-    case BackForwardTransitionAnimator::AnimationAbortReason::
-        kAnimationFinished:
+    case AnimationAbortReason::kAnimationFinished:
       return "kAnimationFinished";
+    case AnimationAbortReason::kPrimaryMainFrameRenderProcessDestroyed:
+      return "kPrimaryMainFrameRenderProcessDestroyed";
   }
   NOTREACHED();
 }
