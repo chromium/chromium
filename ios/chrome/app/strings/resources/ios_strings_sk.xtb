@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Adresa je uložená iba v tomto zariadení</translation>
 <translation id="1445276840641906250">Všetky vaše karty v jednom prehliadači</translation>
 <translation id="1450170672351507823">Je zapnutá štandardná ochrana. Lepšie zabezpečenie dosiahnete používaním rozšírenej ochrany.</translation>
+<translation id="1455660774629812862">Neskrývať</translation>
 <translation id="1460751212339734034">Šetrite čas, píšte menej</translation>
 <translation id="1466035273550360103">Žiadne otvorené karty</translation>
 <translation id="1469381646033328562">Tvoj účet spravuje tvoj rodič.
@@ -319,6 +320,7 @@
 Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="2377336083033403521">Hľadajte karty…</translation>
 <translation id="2381405137052800939">Základy</translation>
+<translation id="2384692388811649784">Skrývať karty inkognito</translation>
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
 <translation id="2390457533592708044">Skryť <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Zásielka sa nedá doručiť</translation>
@@ -339,6 +341,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2479148705183875116">Prejsť do Nastavení</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2484459871750294497">Ako povolím túto funkciu?</translation>
+<translation id="2493269659028026145">Okamžite uzamykajte pomocou funkcie <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">História prehliadania</translation>
 <translation id="2497852260688568942">Synchronizácia je zakázaná správcom</translation>
 <translation id="2499505845365628575">Celú históriu prehliadania nájdete pomocou možnosti <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -931,6 +934,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
 <translation id="5415289094036440596">Prístupové kľúče sa nedajú zdieľať</translation>
 <translation id="5416455648658732408">Presunúť do skupiny kariet</translation>
+<translation id="5429624150850059322">Keď sa vrátite, karty budú rozmazané, kým klepnutím nepotvrdíte, že chcete pokračovať</translation>
 <translation id="5431239785743546285">Prečítané strany</translation>
 <translation id="5431252637281434233">Systém vás odhlási</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
@@ -1030,6 +1034,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5817176759448082654">Kontrola hesiel</translation>
 <translation id="5819208479324046259">Spravuje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchronizuje sa…</translation>
+<translation id="5832166137082209907">Skryť po 10 min</translation>
 <translation id="5844284118433003733">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
 <translation id="5854790677617711513">Staršie ako 30 dní</translation>
 <translation id="5857770089550859117">Spustenie synchronizácie vyžaduje prístupovú frázu.</translation>

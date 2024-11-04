@@ -17,7 +17,7 @@
 <translation id="1065552602950927991">Pogrešan unos</translation>
 <translation id="1066085461259044485">Šumskozelena</translation>
 <translation id="1087148255821848488">Trenutni stil prikaza je preklapanje</translation>
-<translation id="1087788677726983142">Sakrij filtere prijenosa događaja</translation>
+<translation id="1087788677726983142">Sakrij filtere prenosa događaja</translation>
 <translation id="1088402100970133699">Nema prethodne stavke na listi</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "cvijet", "č": "čelo", "ć": "ćevap", "d": "delta", "dž": "džip", "đ": "đon", "e": "eho", "f": "fokstrot", "g": "golf", "h": "hotel", "i": "indija", "j": "julija","k": "kilo", "l": "lavor", "lj": "ljubav", "m": "most", "n": "novembar", "nj": "njuška", "o": "oskar","p": "papa", "q": "quebec", "r": "romeo", "s": "sijera", "š": "šator", "t": "tango", "u": "uniforma", "v": "viktor", "w": "whiskey","x": "x-zraci", "y": "yankee", "z": "zulu", "ž": "život"}</translation>
 <translation id="1120938014254001895">Prevlačenje s dva prsta prema gore</translation>
@@ -116,7 +116,7 @@
 <translation id="1627222324347828322">Čisto bijela</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{znak veće od}one{# znak veće od}few{# znaka veće od}other{# znakova veće od}}</translation>
 <translation id="1653266918374749391">Prethodni naslov 3. nivoa</translation>
-<translation id="1657616855184033958">Prikaži filtere prijenosa događaja</translation>
+<translation id="1657616855184033958">Prikaži filtere prenosa događaja</translation>
 <translation id="1659072772017912254">Nije označeno</translation>
 <translation id="1674262202423278359">ChromeVox navigacija</translation>
 <translation id="16777221443363124">Traka menija</translation>
@@ -527,7 +527,7 @@
 <translation id="4255016471934258618">Široko otvaranje usta</translation>
 <translation id="4259220820964911921">Omogućiti upravljanje licem?</translation>
 <translation id="4271220233568730077">Sljedeći matematički izraz</translation>
-<translation id="4275397969489577657">Omogući zapisivanje prijenosa događaja</translation>
+<translation id="4275397969489577657">Omogući zapisivanje prenosa događaja</translation>
 <translation id="4278486392851938658">Nema prethodno posjećenih linkova</translation>
 <translation id="4281245629646759298">Svijetložuta</translation>
 <translation id="4289540628985791613">Pregled</translation>

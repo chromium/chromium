@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">የማያ ገፅ ማቆያን አሰናክል</translation>
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
 <translation id="3102119246920354026">መሸጎጫ</translation>
+<translation id="3112413615003385433">መምህርዎ የትምህርት ቤት መሣሪያዎች ውስጥ ይዘት አስወገደዋል</translation>
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3122614491980756867">ስብስቦች</translation>
 <translation id="3122883569442693641">ተጨማሪ ዝርዝሮች</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">አርትዖት ተከናውኗል</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
 <translation id="3533790840489634638">መዋኛ ገንዳ</translation>
+<translation id="3535802910192338629">መምህርዎ የትምህርት ቤት መሣሪያዎች ውስጥ አዲስ ይዘት አክለዋል</translation>
 <translation id="3547264467365135390">ቀመር</translation>
 <translation id="3557205324756024651">የአካባቢ ማንነት (ከተፈለገ)</translation>
 <translation id="3565064564551103223">የተፈቀዱ አይፒዎች</translation>
@@ -1562,6 +1564,7 @@
 <translation id="8576249514688522074">ያልተጀመረ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ወደ ሥሪት <ph name="VERSION" /> ፊርምዌር መጫኑን ለማጠናቀቅ ዳግም ማስጀመር ያስፈልጋል። ኮምፒውተርዎ በርካታ ጊዜያት ዳግም ሊነሳ የሚችል ይመስላል። ይህ ባህሪ የሚጠበቅ ነው።</translation>
 <translation id="8593058461203131755">ሚዲያን ባለበት ማቆሚያ</translation>
+<translation id="8619169570378509764">የትምህርት ቤት መሣሪያዎች</translation>
 <translation id="8620617069779373398">የውሂብ ዝውውር ሁኔታ</translation>
 <translation id="8626489604350149811">ለ<ph name="APN_NAME" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="86356131183441916">ፈዛዛ ወይን ጠጅ</translation>

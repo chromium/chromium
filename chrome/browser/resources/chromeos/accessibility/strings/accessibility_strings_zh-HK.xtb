@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">音效檔案</translation>
 <translation id="2737898226590637227">冇下一個 ARIA 地標</translation>
 <translation id="2749275490991666823">已勾選</translation>
+<translation id="2751454300227269244">嘴戚向右邊</translation>
 <translation id="27527859628328957">前往下一個可選擇的項目</translation>
 <translation id="2756452585631602151">輸入自訂標籤</translation>
 <translation id="2766299274563946262">左邊冇儲存格</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">表格「<ph name="TABLENAME" />」，包括 <ph name="TABLEROWS" /> 列 <ph name="TABLECOLS" /> 欄</translation>
 <translation id="3159493096109238499">米黃色</translation>
 <translation id="316542773973815724">瀏覽功能</translation>
+<translation id="3167446923957429259">嘴戚向左邊</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{1 個空格}other{# 個空格}}</translation>
 <translation id="3179119189286472195">唔係連結</translation>
 <translation id="3180990259147710757">下巴向左郁</translation>

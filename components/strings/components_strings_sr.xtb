@@ -63,6 +63,7 @@
 <translation id="1104409666019087579">Нека обавезна поља су празна. Попуните их пре чувања.</translation>
 <translation id="1104860668737945357">Дугме Управљај лозинкама, активирајте га да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="1108464073729874771">A3x4</translation>
+<translation id="1110809716549020493">Нема виртуелне картице? Кликните на податке о виртуелној картици да бисте их копирали у привремену меморију. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
 <translation id="1110994991967754504">Изаберите дозволу: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Желите да сачувате IBAN?</translation>
 <translation id="1113869188872983271">&amp;Опозови промену редоследа</translation>
@@ -1632,6 +1633,7 @@
 <translation id="3905894480064208252">{0,plural, =1{Пренос фајла је блокиран}one{Пренос <ph name="FILE_COUNT" /> фајла је блокиран}few{Пренос <ph name="FILE_COUNT" /> фајла је блокиран}other{Пренос <ph name="FILE_COUNT" /> фајлова је блокиран}}</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3909899182024383590">Сачуване информације и страница са <ph name="WEBSITE" /> шаљу се Google-у и могу да их виде особе које прегледају ради побољшања ове функције.</translation>
 <translation id="3910231615117880630">Сазнајте више о уграђеном садржају</translation>
 <translation id="3915878244842478983">Chrome је имао проблема са преузимањем информација</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише сајтове старије од 30 дана. Сајт који поново посетите може опет да се појави на листи. У сваком тренутку у подешавањима Chrome-а можете и да блокирате сајт да вам не би предлагао огласе, као и да искључите огласе које сајтови предлажу.</translation>

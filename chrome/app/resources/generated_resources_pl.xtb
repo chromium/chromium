@@ -308,6 +308,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1202116106683864634">Czy na pewno chcesz usunąć ten klucz?</translation>
 <translation id="1202596434010270079">Aplikacja kiosku została zaktualizowana. Odłącz pamięć USB.</translation>
 <translation id="1202892408424955784">Obserwowane produkty</translation>
+<translation id="1203247227716551969">Potwierdź, że to Twoje konto</translation>
 <translation id="1203559206734265703">Debugowanie odbiorców chronionych jest włączone.</translation>
 <translation id="120368089816228251">Nuta</translation>
 <translation id="1203942045716040624">Współdzielona instancja robocza: <ph name="SCRIPT_URL" /></translation>
@@ -1085,6 +1086,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1749733017156547309">Hasło jest wymagane</translation>
 <translation id="1750172676754093297">Na Twoim kluczu bezpieczeństwa nie można zapisywać odcisków palców</translation>
 <translation id="1750238553597293878">Nadal używaj haseł na swoim koncie Google</translation>
+<translation id="175081537116822146">Wymagane zalogowanie i synchronizacja</translation>
 <translation id="1751262127955453661">Strona <ph name="ORIGIN" /> będzie mogła edytować pliki z folderu <ph name="FOLDERNAME" />, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="1751335846119670066">Pomóż mi w czytaniu</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
@@ -1427,6 +1429,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="197989455406964291">KDC nie obsługuje tego typu szyfrowania</translation>
 <translation id="1980168597243156">Stacja kosmiczna</translation>
 <translation id="1981434377190976112">Odczytywanie wszystkich Twoich danych we wszystkich witrynach</translation>
+<translation id="1982851102516626421">Nie korzystasz teraz z konta</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} i {field_2}}few{{field_1}, {field_2} i {field_3}}many{{field_1}, {field_2} i {field_3}}other{{field_1}, {field_2} i {field_3}}}</translation>
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="198507684520034826">Pomoc</translation>
@@ -1631,6 +1634,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="212962875239908767">Medytacyjny obraz olejny przedstawiający zadumaną osobę na żółtej łące.</translation>
 <translation id="2130235198799290727">Z rozszerzeń</translation>
 <translation id="2131077480075264">Nie można zainstalować elementu „<ph name="APP_NAME" />”, bo nie zezwala na to element „<ph name="IMPORT_NAME" />”</translation>
+<translation id="2131548114076786395">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, potwierdź swoją tożsamość</translation>
 <translation id="2131863825246488194">Zwiększ swoje bezpieczeństwo online</translation>
 <translation id="2133775869826239001">Wybierz więcej funkcji do skonfigurowania</translation>
 <translation id="2133857665503360653">Spróbuj ponownie pobrać plik <ph name="FILE_NAME" /></translation>
@@ -2092,6 +2096,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2450223707519584812">Nie będzie można dodawać użytkowników, ponieważ brakuje kluczy Google API. Więcej szczegółów znajdziesz na <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Brak aktywnych widoków</translation>
 <translation id="2451298179137331965">2 x</translation>
+<translation id="2453045048779611513">Twoja organizacja nie pozwala na synchronizację niektórych typów danych</translation>
 <translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
 <translation id="2453860139492968684">Zakończ</translation>
 <translation id="2454206500483040640">Rozdzielone</translation>
@@ -2520,6 +2525,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2749881179542288782">Sprawdzaj gramatykę razem z pisownią</translation>
 <translation id="2750020734439919571">Więcej ustawień i uprawnień aplikacji Chrome</translation>
 <translation id="2750602041558385535">Pobieranie niezweryfikowanych plików zablokowane</translation>
+<translation id="2751454300227269244">Porusz ustami w prawo</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> chce poznać numer identyfikacyjny Twojego klucza bezpieczeństwa. Strona rozpozna konkretny klucz bezpieczeństwa, którego używasz.</translation>
 <translation id="275213133112113418">Karta została zapisana</translation>
 <translation id="2754226775788136540">Szukam urządzeń obsługujących Szybkie parowanie zapisanych na koncie <ph name="PRIMARY_EMAIL" /></translation>
@@ -2735,6 +2741,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2903882649406874750">Zawsze blokuj witrynie <ph name="HOST" /> dostęp do czujników</translation>
 <translation id="290415756080113152">Witryny nie mogą szukać drukarek dostępnych dla Twojego urządzenia ani ich używać</translation>
 <translation id="2904210161403910217">Twoje hasło zostało zmienione od ostatniego logowania</translation>
+<translation id="2904506722835398619">Wymagane zalogowanie i synchronizacja</translation>
 <translation id="2904845070985032877">Wstrzymaj animacje</translation>
 <translation id="2907619724991574506">Startowe adresy URL</translation>
 <translation id="2907798539022650680">Nie udało się połączyć z „<ph name="NAME" />”: <ph name="DETAILS" />
@@ -2792,6 +2799,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2946119680249604491">Dodaj połączenie</translation>
 <translation id="2946190589196900944">Wyświetlanie granic</translation>
 <translation id="2946640296642327832">Włącz Bluetooth</translation>
+<translation id="2947281105969315778">Aby udostępniać grupy kart lub do nich dołączać, musisz mieć możliwość logowania się w Chrome</translation>
 <translation id="2947605845283690091">Przeglądanie stron internetowych powinno przebiegać bez problemu. Poświęć chwilę na <ph name="BEGIN_LINK" />sprawdzenie swoich rozszerzeń<ph name="END_LINK" />.</translation>
 <translation id="2948300991547862301">Wejdź na <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Szybka, prosta i bezpieczna przeglądarka na miarę współczesnego internetu.</translation>
@@ -3060,6 +3068,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3151786313568798007">Orientacja</translation>
 <translation id="3152356229013609796">Wyświetlaj powiadomienia z telefonu, odpowiadaj na nie i je zamykaj</translation>
 <translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
+<translation id="3157330780336267229">Aby udostępniać grupy kart lub do nich dołączać, musisz włączyć synchronizację</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158033540161634471">Skonfiguruj swój odcisk palca</translation>
@@ -3079,6 +3088,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="316542773973815724">Nawigacja</translation>
 <translation id="3165734944977250074">Nie można przenieść pliku, bo już nie istnieje</translation>
 <translation id="3166443275568926403">Wydajność i stan baterii</translation>
+<translation id="3167446923957429259">Porusz ustami w lewo</translation>
 <translation id="3167562202484086668">Usuń wszystkie dane z aplikacji: <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Wybierz motyw, który pasuje do Twoich potrzeb. Aby zmienić motyw, tapetę, wygaszacz ekranu i inne opcje, naciśnij i przytrzymaj pulpit.</translation>
 <translation id="3170072451822350649">Możesz też pominąć logowanie i <ph name="LINK_START" />przeglądać internet jako gość<ph name="LINK_END" />.</translation>
@@ -4944,6 +4954,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4513872120116766993">Przewidywanie tekstu podczas pisania</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4515872537870654449">Skontaktuj się z serwisem firmy Dell. Jeśli wentylator nie działa, stacja dokująca się wyłączy.</translation>
+<translation id="4515942088136451195">Twoja organizacja nie pozwala na synchronizację niektórych typów danych</translation>
 <translation id="4516395361210407049">Przyciski na pasku narzędzi zostały zresetowane</translation>
 <translation id="4518840066030486079">Styl trybu klawisza Shift</translation>
 <translation id="4519331665958994620">Strony mogą prosić o dostęp do kamery</translation>
@@ -5609,6 +5620,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4998430619171209993">Włączono</translation>
 <translation id="4999804342505941663">Włącz tryb Nie przeszkadzać</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
+<translation id="5003070249435823986">Użyj gestu, aby przejść do trybu przewijania, a potem porusz głową w kierunku, w którym chcesz przewijać. Aby wyjść z trybu przewijania, użyj gestu ponownie.</translation>
 <translation id="5003993274120026347">Następne zdanie</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5006218871145547804">ADB aplikacji Crostini na Androida</translation>
@@ -5632,6 +5644,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5019487038187875030">Wyświetl certyfikaty zaimportowane z macOS</translation>
 <translation id="5020008942039547742">Wybierz inne okno</translation>
 <translation id="5020651427400641814">Włącz rejestrowanie mowy</translation>
+<translation id="5021500396464456616">Skontaktuj się z osobą, która wysłała ten link</translation>
 <translation id="5021750053540820849">Jeszcze nie zaktualizowano</translation>
 <translation id="5022206631034207923">Ekran blokady, ustawienia</translation>
 <translation id="5024511550058813796">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
@@ -6444,6 +6457,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5616726534702877126">Zarezerwuj rozmiar</translation>
 <translation id="561698261642843490">Zamykanie Firefoksa</translation>
 <translation id="5616991717083739666">Przypnij grupę do paska zakładek</translation>
+<translation id="561748693926762192">Synchronizuj grupy kart</translation>
 <translation id="5620163320393916465">Brak zapisanych haseł</translation>
 <translation id="5620540760831960151">Na tę listę wpływają zasady <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
           , <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" />
@@ -6585,7 +6599,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5723508132121499792">Brak aplikacji uruchomionych w tle</translation>
 <translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
-<translation id="5725112283692663422">Prześlij opinię na temat tworzenia motywu z AI</translation>
+<translation id="5725112283692663422">Prześlij opinię na temat tworzenia motywu za pomocą AI</translation>
 <translation id="5727728807527375859">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na komputerze. Czy na pewno chcesz kontynuować?</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
 <translation id="5728290366864286776">To rozszerzenie może odczytywać i zmieniać informacje o witrynie oraz działać w tle</translation>
@@ -6702,6 +6716,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5810809306422959727">To konto nie może podlegać kontroli rodzicielskiej</translation>
 <translation id="5811614940486072060">Ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="5812674658566766066">Rozwiń wszystko</translation>
+<translation id="5814776875237242830">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, zsynchronizuj je w Ustawieniach</translation>
 <translation id="5815645614496570556">Adres X.400</translation>
 <translation id="5816434091619127343">Te zmiany uniemożliwiłyby korzystanie z drukarki.</translation>
 <translation id="581659025233126501">Włącz synchronizację</translation>
@@ -7161,6 +7176,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6150116777338468525">Jakość dźwięku</translation>
 <translation id="6150278227694566734">Niektóre kontakty</translation>
 <translation id="6150961653851236686">Ten język jest używany do tłumaczenia stron</translation>
+<translation id="6151128161396960693">Zastanów się, czy ufasz osobie, która wysłała to zaproszenie</translation>
 <translation id="6151771661215463137">Plik już istnieje w folderze pobierania.</translation>
 <translation id="6152918902620844577">Czekam na następną operację</translation>
 <translation id="6153439704237222699">Więcej informacji o nagłówku Do Not Track</translation>
@@ -7557,6 +7573,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6450876761651513209">Zmiana Twoich ustawień prywatności</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i jeszcze 1 karta}few{<ph name="PAGE_TITLE" /> i jeszcze # karty}many{<ph name="PAGE_TITLE" /> i jeszcze # kart}other{<ph name="PAGE_TITLE" /> i jeszcze # karty}}</translation>
 <translation id="6451689256222386810">Jeśli nie pamiętasz hasła wielowyrazowego lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
+<translation id="6451861213630784801">Nie korzystasz teraz z konta</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
 <translation id="6452251728599530347">Ukończono <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
@@ -8221,6 +8238,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6913051485529944333">Na tej stronie nie zobaczysz już Kalendarza Google</translation>
 <translation id="6914812290245989348">Nie wyświetlaj żadnych ostrzeżeń przed przejściem do niezabezpieczonych witryn</translation>
 <translation id="6916590542764765824">Zarządzaj rozszerzeniami</translation>
+<translation id="6917873303492266709">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, otwórz ustawienia i włącz opcję Zezwalaj na logowanie się w Chrome</translation>
 <translation id="6918677045355889289">Wymagana jest aktualizacja Chrome OS</translation>
 <translation id="6918733588290914545">Szybka konfiguracja na telefonie z Androidem</translation>
 <translation id="6919354101107095996">Zaloguj się w witrynie. Następnie ponów pobieranie</translation>
@@ -8234,6 +8252,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6922745772873733498">Wpisz kod PIN, by wydrukować</translation>
 <translation id="6922763095098248079">Twoim urządzeniem zarządza organizacja. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
 <translation id="6923633482430812883">Błąd podczas podłączania udziału. Sprawdź, czy serwer plików, z którym się łączysz, obsługuje SMB w wersji 2 lub nowszej.</translation>
+<translation id="6924109527536857168">Wymagana jest synchronizacja</translation>
 <translation id="6925127338315966709">Dodajesz do tej przeglądarki profil zarządzany. Kontrolę nad nim i dostęp do jego danych ma administrator. Zakładki, historię, hasła i inne ustawienia można zsynchronizować z kontem, a administrator może nimi zarządzać.</translation>
 <translation id="6928650056523249512">Automatycznie usuwaj uprawnienia nieużywanych witryn</translation>
 <translation id="6929126689972602640">Kontrola rodzicielska nie działa z kontami szkolnymi. Aby dodać konto szkolne do korzystania z Google Classroom i innych stron przydatnych w nauce w domu, najpierw zaloguj się na osobiste konto dziecka. Konto szkolne możesz dodać na późniejszym etapie konfiguracji.</translation>
@@ -8748,6 +8767,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7313539585802573958">Kolory podświetlenia klawiatury</translation>
 <translation id="7314989823816739632">Romantyczny</translation>
+<translation id="7317342082064136423">Potwierdź, że to Twoje konto</translation>
 <translation id="7317831949569936035">Rejestracja w szkole</translation>
 <translation id="731827437403763009">Innowacje w zakresie AI</translation>
 <translation id="7319320447721994672">Jeśli odwiedzasz witrynę, która używa plików cookie, może być konieczne tymczasowe ich włączenie, aby wszystkie funkcje strony działały.</translation>
@@ -8791,6 +8811,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7347751611463936647">Aby skorzystać z tego rozszerzenia, wpisz „<ph name="EXTENSION_KEYWORD" />”, naciśnij klawisz TAB i wpisz odpowiednie polecenie lub wyszukiwany tekst.</translation>
 <translation id="7347943691222276892">Kliknij, by powrócić z podstrony <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
+<translation id="734813941605705678">Wymagana jest synchronizacja</translation>
 <translation id="7348920948593871738">Kamera jest wyłączona w ustawieniach systemowych Maca</translation>
 <translation id="7349010927677336670">Płynność obrazu</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} hasło zostało zapisane tylko na tym urządzeniu}few{{COUNT} hasła zostały zapisane tylko na tym urządzeniu}many{{COUNT} haseł zostało zapisanych tylko na tym urządzeniu}other{{COUNT} hasła zostało zapisane tylko na tym urządzeniu}}</translation>
@@ -9076,6 +9097,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7551059576287086432">Nie udało się pobrać pliku <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="755198739067769724">Cześć <ph name="CHILD_NAME" /></translation>
+<translation id="7552191410769096467">Aby udostępniać grupy kart lub do nich dołączać, musisz się zalogować i włączyć synchronizację</translation>
 <translation id="7552846755917812628">Skorzystaj z tych wskazówek:</translation>
 <translation id="7553012839257224005">Sprawdzam kontener Linuksa</translation>
 <translation id="7553242001898162573">Wpisz hasło</translation>
@@ -9097,6 +9119,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7566118625369982896">Zarządzaj linkami aplikacji Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Utwórz kombinację klawiszy</translation>
+<translation id="7568014768212280234">Twoja grupa kart jest pełna, więc nowi użytkownicy nie mogą dołączyć za pomocą linku</translation>
 <translation id="7568759527730933493">Używanie bezpiecznego połączenia do wyszukiwania adresu IP witryny w Systemie nazw domenowych (DNS). Funkcja korzysta z usługi zarządzanej dostawcy na <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Bezpieczne połączenia nie są używane w przypadku niektórych domen skonfigurowanych przez administratora.</translation>
 <translation id="756876171895853918">Dostosuj awatara</translation>
 <translation id="7568790562536448087">Aktualizowanie</translation>
@@ -9591,6 +9614,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7914399737746719723">Aplikacja została zainstalowana</translation>
 <translation id="7915457674565721553">Połącz się z internetem, by skonfigurować kontrolę rodzicielską</translation>
 <translation id="7916364730877325865">Twoja organizacja nie zezwala na włączanie synchronizacji z tym kontem</translation>
+<translation id="791698251820376781">Twoja organizacja nie zezwala na logowanie się</translation>
 <translation id="7918257978052780342">Zarejestruj</translation>
 <translation id="7919123827536834358">Automatycznie tłumacz te języki</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -10841,6 +10865,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8786824282808281903">Gdy Twoje dziecko zobaczy tę ikonę, będzie mogło użyć odcisku palca do identyfikacji lub zatwierdzenia płatności.</translation>
 <translation id="8787752878731558379">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm</translation>
 <translation id="8788008845761123079">Wybierz gest dla czynności <ph name="SELECTED_ACTION" /></translation>
+<translation id="878862491037637275">Ta grupa kart jest pełna</translation>
 <translation id="8791157330927639737">Więcej informacji o aktualizacjach</translation>
 <translation id="8791534160414513928">Wysyłaj żądanie „Do Not Track” podczas przeglądania</translation>
 <translation id="8793390639824829328">Strony używają tego ustawienia do przewijania i powiększania udostępnionych kart</translation>
@@ -11337,6 +11362,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9123287046453017203">Urządzenie używa nieaktualnej wersji oprogramowania</translation>
 <translation id="9124084978667228083">{MEMBERS,plural, =1{1 witryna w grupie, którą zarządza <ph name="RWS_OWNER" />}few{{MEMBERS} witryny w grupie, którą zarządza <ph name="RWS_OWNER" />}many{{MEMBERS} witryn w grupie, którą zarządza <ph name="RWS_OWNER" />}other{{MEMBERS} witryny w grupie, którą zarządza <ph name="RWS_OWNER" />}}</translation>
 <translation id="9125910124977405374">Usuń język <ph name="LANGUAGE_NAME" /> z języków tłumaczonych automatycznie</translation>
+<translation id="9125912770834459638">Twoja organizacja nie zezwala na logowanie się</translation>
 <translation id="9126149354162942022">Kolor kursora</translation>
 <translation id="9128317794749765148">Nie udało się ukończyć konfiguracji</translation>
 <translation id="9128335130883257666">Otwórz stronę ustawień metody wprowadzania: <ph name="INPUT_METHOD_NAME" /></translation>
@@ -11421,6 +11447,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
 <translation id="9187967020623675250">Klawisze są niezgodne. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Umożliwia odtwarzanie komunikatów głosowych, aby można było korzystać z urządzenia bez patrzenia na ekran. Komunikaty brajlowskie są dostępne na połączonych urządzeniach. Aby włączyć lub wyłączyć ChromeVoksa, naciśnij Ctrl + Alt + Z. Do nawigacji służą klawisze wyszukiwania + strzałka w lewo lub w prawo. Aby wybrać (aktywować) tę funkcję, naciśnij klawisz wyszukiwania + spację.</translation>
+<translation id="9195969368671142407">Gdy Twoja organizacja ogranicza zapisywanie danych na koncie Google, nie możesz udostępniać grup kart ani do nich dołączać</translation>
 <translation id="919686179725692564">Więcej informacji o tworzeniu kopii zapasowej danych aplikacji</translation>
 <translation id="9199503643457729322">Kliknij, aby opuścić Przewodnik po prywatności.</translation>
 <translation id="9199695835892108985">Zresetować wszystkie uprawnienia dotyczące portu szeregowego?</translation>
@@ -11529,6 +11556,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="971774202801778802">URL zakładki</translation>
 <translation id="973473557718930265">Zakończ</translation>
 <translation id="973558314812359997">Rozmiar myszy</translation>
+<translation id="973788791897303708">Ta grupa kart jest pełna</translation>
 <translation id="97381968209917373">Usuń certyfikat <ph name="CERT_NAME" /></translation>
 <translation id="975893173032473675">Język docelowy tłumaczenia</translation>
 <translation id="976499800099896273">Wyświetlane jest okno cofania autokorekty dla słowa <ph name="TYPED_WORD" /> poprawionego na <ph name="CORRECTED_WORD" />.  Naciśnij strzałkę w górę, by przejść do tego okna, albo Escape, by je zignorować.</translation>
@@ -11561,5 +11589,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="996250603853062861">Nawiązuję bezpieczne połączenie...</translation>
 <translation id="997143476478634194">Otwierane witryny automatycznie działają zgodnie z tym ustawieniem. Witryny zazwyczaj wysyłają powiadomienia o aktualnościach lub wiadomościach czatu.</translation>
 <translation id="99731366405731005">Aby korzystać z synchronizacji Wi-Fi, włącz <ph name="LINK1_BEGIN" />Synchronizację Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Więcej informacji<ph name="LINK2_END" /></translation>
+<translation id="998347228911661591">Synchronizuj grupy kart</translation>
 <translation id="998747458861718449">&amp;Zbadaj</translation>
 </translationbundle>

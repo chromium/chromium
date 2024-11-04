@@ -63,6 +63,7 @@
 <translation id="1104409666019087579">Neka obavezna polja su prazna. Popunite ih pre čuvanja.</translation>
 <translation id="1104860668737945357">Dugme Upravljaj lozinkama, aktivirajte ga da biste pregledali lozinke i upravljali njima u podešavanjima Chrome-a</translation>
 <translation id="1108464073729874771">A3x4</translation>
+<translation id="1110809716549020493">Nema virtuelne kartice? Kliknite na podatke o virtuelnoj kartici da biste ih kopirali u privremenu memoriju. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
 <translation id="1110994991967754504">Izaberite dozvolu: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite da sačuvate IBAN?</translation>
 <translation id="1113869188872983271">&amp;Opozovi promenu redosleda</translation>
@@ -1632,6 +1633,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3905894480064208252">{0,plural, =1{Prenos fajla je blokiran}one{Prenos <ph name="FILE_COUNT" /> fajla je blokiran}few{Prenos <ph name="FILE_COUNT" /> fajla je blokiran}other{Prenos <ph name="FILE_COUNT" /> fajlova je blokiran}}</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3909899182024383590">Sačuvane informacije i stranica sa <ph name="WEBSITE" /> šalju se Google-u i mogu da ih vide osobe koje pregledaju radi poboljšanja ove funkcije.</translation>
 <translation id="3910231615117880630">Saznajte više o ugrađenom sadržaju</translation>
 <translation id="3915878244842478983">Chrome je imao problema sa preuzimanjem informacija</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Chrome automatski briše sajtove starije od 30 dana. Sajt koji ponovo posetite može opet da se pojavi na listi. U svakom trenutku u podešavanjima Chrome-a možete i da blokirate sajt da vam ne bi predlagao oglase, kao i da isključite oglase koje sajtovi predlažu.</translation>

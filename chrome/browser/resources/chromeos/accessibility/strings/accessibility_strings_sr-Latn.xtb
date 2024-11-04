@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "avala", "b": "beograd", "c": "cetinje", "d": "drina", "e": "evropa", "f": "futog", "g": "golija", "h": "heroj", "i": "igalo", "j": "jadran", "k": "kosovo", "l": "lovćen", "m": "morava", "n": "niš", "o": "obilić", "p": "pirot", "q": "kvorum", "r": "ruma", "s": "sava", "t": "timok", "u": "užice", "v": "valjevo", "w": "duplo ve", "x": "ksilofon", "y": "ipsilon", "z": "zemun", "ć": "ćuprija", "č": "čačak", "dž": "džep", "đ": "đakovica", "lj": "ljubovija", "nj": "njegoš", "š": "šabac", "ž": "žabljak"}</translation>
 <translation id="1120938014254001895">Prevlačite nagore pomoću dva prsta</translation>
 <translation id="1126928665165112660">Nije kurziv</translation>
+<translation id="1133751489735776037">Triput kliknite mišem</translation>
 <translation id="113582498867142724">Kolekcija <ph name="TAG" /> sa <ph name="NUM" /> stavke(i)</translation>
 <translation id="1146441463334103638">Uključite ili isključite ekran</translation>
 <translation id="1156488781945104845">Trenutno vreme</translation>
@@ -548,6 +549,7 @@
 <translation id="4402014469255336455">Tamna nebeskoplava</translation>
 <translation id="4406249099130339147">Odjek interpunkcije:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Prikažite sve zube</translation>
 <translation id="4432457053224379116">Braoncrvena</translation>
 <translation id="4432896207833262240">Označeni sadržaj</translation>
 <translation id="4437615272777527928">Unesite tekst da biste pretražili menije. Koristite tastere sa strelicama nagore i nadole za kretanje kroz rezultate. Koristite tastere sa strelicama ulevo i udesno da biste prilagodili kursor za tekst i prelazili iz jednog menija u drugi.</translation>

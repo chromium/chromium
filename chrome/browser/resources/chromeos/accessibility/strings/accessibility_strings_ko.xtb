@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2737898226590637227">다음 ARIA 랜드마크가 없습니다</translation>
 <translation id="2749275490991666823">선택됨</translation>
+<translation id="2751454300227269244">입을 오른쪽으로 움직이기</translation>
 <translation id="27527859628328957">다음 초점 가능 항목으로 이동</translation>
 <translation id="2756452585631602151">맞춤 라벨을 입력하세요.</translation>
 <translation id="2766299274563946262">왼쪽에 셀이 없습니다</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">표 <ph name="TABLENAME" />, <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">베이지</translation>
 <translation id="316542773973815724">탐색</translation>
+<translation id="3167446923957429259">입을 왼쪽으로 움직이기</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{공백}other{공백 #개}}</translation>
 <translation id="3179119189286472195">링크 아님</translation>
 <translation id="3180990259147710757">턱을 왼쪽으로 움직이기</translation>

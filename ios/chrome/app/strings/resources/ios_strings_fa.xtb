@@ -103,6 +103,7 @@
 <translation id="143681031165817424">نشانی فقط در این دستگاه ذخیره می‌شود</translation>
 <translation id="1445276840641906250">همه برگه‌های شما در یک مرورگر</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
+<translation id="1455660774629812862">پنهان نشود</translation>
 <translation id="1460751212339734034">صرفه‌جویی در زمان، تایپ کمتر</translation>
 <translation id="1466035273550360103">برگه بازی وجود ندارد</translation>
 <translation id="1469381646033328562">حساب شما را ولی‌تان مدیریت می‌کند.
@@ -319,6 +320,7 @@
 سایت‌ها نمی‌توانند از کوکی‌ها برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند.</translation>
 <translation id="2377336083033403521">جستجو کردن برگه‌ها…</translation>
 <translation id="2381405137052800939">ساده</translation>
+<translation id="2384692388811649784">پنهان کردن برگه‌های ناشناس</translation>
 <translation id="2386793615875593361">۱ مورد انتخاب شد</translation>
 <translation id="2390457533592708044">پنهان کردن «<ph name="MODULE_NAME" />»</translation>
 <translation id="2403129868389095715">بسته شما را نمی‌توان تحویل داد</translation>
@@ -339,6 +341,7 @@
 <translation id="2479148705183875116">رفتن به تنظیمات</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2484459871750294497">چگونه این ویژگی را فعال کنم؟</translation>
+<translation id="2493269659028026145">قفل فوری با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="2499505845365628575">از <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> می‌توانید کل سابقه مرورتان را پیدا کنید.</translation>
@@ -931,6 +934,7 @@
 <translation id="5414763847370083940">اگر قیمت در سایتی کاهش پیدا کند، هشداری دریافت می‌کنید.</translation>
 <translation id="5415289094036440596">نمی‌توان گذرکلیدها را هم‌رسانی کرد</translation>
 <translation id="5416455648658732408">انتقال به گروه برگه</translation>
+<translation id="5429624150850059322">هنگام بازگشت، برگه‌ها تا زمانی که برای ادامه کار تک‌ضرب بزنید محو هستند</translation>
 <translation id="5431239785743546285">صفحه‌هایی که خوانده‌اید</translation>
 <translation id="5431252637281434233">از سیستم خارج خواهید شد</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
@@ -1030,6 +1034,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5817176759448082654">بازبینی گذرواژه</translation>
 <translation id="5819208479324046259">توسط <ph name="MANAGER" /> مدیریت می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">درحال همگام‌سازی…</translation>
+<translation id="5832166137082209907">پنهان کردن پس‌از ۱۰ دقیقه</translation>
 <translation id="5844284118433003733">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>
 <translation id="5857770089550859117">برای شروع همگام‌سازی به گذرعبارت نیاز است.</translation>

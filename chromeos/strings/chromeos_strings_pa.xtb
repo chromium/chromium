@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="3091839911843451378">ਅਸਫਲ ਰਹੀ - ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
 <translation id="3102119246920354026">ਕੈਚ</translation>
+<translation id="3112413615003385433">ਤੁਹਾਡੇ ਅਧਿਆਪਕ ਨੇ ਸਕੂਲ ਵਾਲੇ ਟੂਲਾਂ ਵਿੱਚ ਸਮੱਗਰੀ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ਪੂਲ</translation>
 <translation id="3122883569442693641">ਹੋਰ ਵੇਰਵੇ</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">ਸੰਪਾਦਨ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3533790840489634638">ਪੂਲ</translation>
+<translation id="3535802910192338629">ਤੁਹਾਡੇ ਅਧਿਆਪਕ ਨੇ ਸਕੂਲ ਵਾਲੇ ਟੂਲਾਂ ਵਿੱਚ ਨਵੀਂ ਸਮੱਗਰੀ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਹੈ</translation>
 <translation id="3547264467365135390">ਫ਼ਾਰਮੂਲਾ</translation>
 <translation id="3557205324756024651">ਸਥਾਨਕ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6673898378497337661">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਵਧਾਓ</translation>
 <translation id="6692996468359469499">ਆਪਣੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6694534975463174713">ਲਾਕ</translation>
+<translation id="6700703207451721535">ਇਸ ਲਿੰਕ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ। ਜੇ ਤੁਹਾਨੂੰ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਆਪਣੇ ਅਧਿਆਪਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="6704062477274546131">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="6712933881624804031">ਵਾਦੀ</translation>
 <translation id="6716013206176357696">ਸਟ੍ਰਾਬਰੀਆਂ</translation>
@@ -1562,6 +1565,7 @@
 <translation id="8576249514688522074">ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ਦੇ ਲਈ <ph name="VERSION" /> ਵਰਜਨ 'ਤੇ ਫ਼ਰਮਵੇਅਰ ਦੀ ਸਥਾਪਨਾ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ, ਉਸਨੂੰ ਇੱਕ ਵਾਰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਅਜਿਹਾ ਲੱਗ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਕਈ ਵਾਰ ਰੀਬੂਟ ਹੋ ਰਿਹਾ ਹੈ। ਅਜਿਹਾ ਹੋਣਾ ਆਮ ਗੱਲ ਹੈ।</translation>
 <translation id="8593058461203131755">ਮੀਡੀਆ ਰੋਕੋ</translation>
+<translation id="8619169570378509764">ਸਕੂਲ ਵਾਲੇ ਟੂਲ</translation>
 <translation id="8620617069779373398">ਰੋਮਿੰਗ ਅਵਸਥਾ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="86356131183441916">ਹਲਕਾ ਜਾਮਨੀ</translation>

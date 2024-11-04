@@ -306,6 +306,7 @@
 <translation id="1202116106683864634">確定要刪除此密鑰嗎？</translation>
 <translation id="1202596434010270079">Kiosk 應用程式已更新。請移除 USB 記憶體。</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
+<translation id="1203247227716551969">驗證帳戶</translation>
 <translation id="1203559206734265703">「Protected Audience 偵錯功能」已啟用。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共用工作程式：<ph name="SCRIPT_URL" /></translation>
@@ -1091,6 +1092,7 @@
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="1750172676754093297">您的安全密鑰無法儲存指紋</translation>
 <translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
+<translation id="175081537116822146">需要登入和同步</translation>
 <translation id="1751262127955453661">在您關閉此網站所有分頁前，<ph name="ORIGIN" /> 都能編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="1751335846119670066">幫我讀</translation>
 <translation id="17513872634828108">開啟分頁</translation>
@@ -1439,6 +1441,7 @@
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
 <translation id="1980168597243156">太空站</translation>
 <translation id="1981434377190976112">讀取您在所有網站上的所有資料</translation>
+<translation id="1982851102516626421">你已登出</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">無保護功能 (不建議)</translation>
 <translation id="198507684520034826">說明</translation>
@@ -1644,6 +1647,7 @@
 <translation id="212962875239908767">讓人沉思的油畫，描繪一位智者在黃色草地上沉思中。</translation>
 <translation id="2130235198799290727">來自擴充程式</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
+<translation id="2131548114076786395">如要分享、加入分頁群組和協作，請驗證你的身分</translation>
 <translation id="2131863825246488194">加強網上安全</translation>
 <translation id="2133775869826239001">選擇更多要設定的功能</translation>
 <translation id="2133857665503360653">重試 <ph name="FILE_NAME" /></translation>
@@ -2119,6 +2123,7 @@
 <translation id="2450223707519584812">找不到 Google API 金鑰，因此您無法新增使用者。詳情請參閱 <ph name="DETAILS_URL" />。</translation>
 <translation id="2450849356604136918">沒有運作中的檢視</translation>
 <translation id="2451298179137331965">2 倍</translation>
+<translation id="2453045048779611513">你的機構對可儲存的內容設有限制</translation>
 <translation id="245322989586167203">網站通常會連接序列連接埠，以提供設定網路等資料傳輸功能</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454206500483040640">已分割</translation>
@@ -2548,6 +2553,7 @@
 <translation id="2749881179542288782">檢查拼字及文法</translation>
 <translation id="2750020734439919571">更多 Chrome 應用程式設定和權限</translation>
 <translation id="2750602041558385535">已封鎖未經驗證的下載內容</translation>
+<translation id="2751454300227269244">嘴戚向右邊</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> 想取得安全密鑰的 ID 編號。該網站將明確得知你正在使用哪一組安全密鑰。</translation>
 <translation id="275213133112113418">已儲存付款卡</translation>
 <translation id="2754226775788136540">正在尋找已儲存至 <ph name="PRIMARY_EMAIL" /> 的「快速配對」裝置</translation>
@@ -2763,6 +2769,7 @@
 <translation id="2903882649406874750">永遠封鎖 <ph name="HOST" /> 存取感應器</translation>
 <translation id="290415756080113152">網站不可搜尋或使用能存取你裝置的打印機</translation>
 <translation id="2904210161403910217">密碼已在您上次登入後變更</translation>
+<translation id="2904506722835398619">需要登入和同步</translation>
 <translation id="2904845070985032877">暫停動畫</translation>
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" />
@@ -2820,6 +2827,7 @@
 <translation id="2946119680249604491">新增連線</translation>
 <translation id="2946190589196900944">顯示界線</translation>
 <translation id="2946640296642327832">啟用藍牙</translation>
+<translation id="2947281105969315778">你必須能夠登入 Chrome，才能分享或加入分頁群組</translation>
 <translation id="2947605845283690091">網絡瀏覽速度應該快速流暢。請花一點時間立即<ph name="BEGIN_LINK" />檢查您的擴充功能<ph name="END_LINK" />。</translation>
 <translation id="2948300991547862301">前往<ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">一款快速、簡單又安全的新世代網絡瀏覽器。</translation>
@@ -3088,6 +3096,7 @@
 <translation id="3151786313568798007">方向</translation>
 <translation id="3152356229013609796">查看、關閉和回覆手機的通知</translation>
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
+<translation id="3157330780336267229">你需要開啟同步功能，才能分享或加入分頁群組</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158033540161634471">設定指紋</translation>
@@ -3107,6 +3116,7 @@
 <translation id="316542773973815724">瀏覽功能</translation>
 <translation id="3165734944977250074">檔案已不存在，因此無法移動</translation>
 <translation id="3166443275568926403">效能和電池狀態</translation>
+<translation id="3167446923957429259">嘴戚向左邊</translation>
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
@@ -4967,6 +4977,7 @@
 <translation id="4513872120116766993">預測輸入內容</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4515872537870654449">請聯絡 Dell 以取得支援服務。風扇故障時，插座會停止運作。</translation>
+<translation id="4515942088136451195">你的機構對可儲存的內容設有限制</translation>
 <translation id="4516395361210407049">工具列按鈕已重設</translation>
 <translation id="4518840066030486079">Shift 鍵模式樣式</translation>
 <translation id="4519331665958994620">網站可要求使用攝錄機</translation>
@@ -5632,6 +5643,7 @@
 <translation id="4998430619171209993">開啟</translation>
 <translation id="4999804342505941663">開啟「請勿騷擾」</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
+<translation id="5003070249435823986">使用手勢進入捲動模式，然後將頭部轉向要捲動的方向。再次做出手勢即可退出捲動模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006218871145547804">Crostini 的 Android 應用程式 ADB</translation>
@@ -5655,6 +5667,7 @@
 <translation id="5019487038187875030">查看從 MacOS 匯入的憑證</translation>
 <translation id="5020008942039547742">選擇其他視窗</translation>
 <translation id="5020651427400641814">啟用語音記錄功能</translation>
+<translation id="5021500396464456616">請與傳送此連結的使用者聯絡</translation>
 <translation id="5021750053540820849">尚未更新</translation>
 <translation id="5022206631034207923">上鎖畫面、控制項</translation>
 <translation id="5024511550058813796">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
@@ -6468,6 +6481,7 @@
 <translation id="5616726534702877126">預留空間大小</translation>
 <translation id="561698261642843490">關閉 Firefox</translation>
 <translation id="5616991717083739666">將群組固定在書籤列上</translation>
+<translation id="561748693926762192">同步分頁群組</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
 <translation id="5620540760831960151">此清單受 <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> 和 <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> 政策影響</translation>
 <translation id="5620568081365989559">DevTools 要求全權存取 <ph name="FOLDER_PATH" />。請務必小心，不要透露任何敏感資料。</translation>
@@ -6724,6 +6738,7 @@
 <translation id="5810809306422959727">此帳戶不符合家長監控設定的資格</translation>
 <translation id="5811614940486072060">此檔案不常下載，代表此檔案可能不安全</translation>
 <translation id="5812674658566766066">全部展開</translation>
+<translation id="5814776875237242830">如要分享、加入分頁群組和協作，請前往「設定」頁面同步處理分頁群組</translation>
 <translation id="5815645614496570556">X.400 地址</translation>
 <translation id="5816434091619127343">要求的打印機變更會讓此打印機無法使用。</translation>
 <translation id="581659025233126501">開啟同步處理功能</translation>
@@ -7182,6 +7197,7 @@
 <translation id="6150116777338468525">音效品質</translation>
 <translation id="6150278227694566734">部分聯絡人</translation>
 <translation id="6150961653851236686">將網頁翻譯成此語言</translation>
+<translation id="6151128161396960693">請確保你信任邀請者</translation>
 <translation id="6151771661215463137">下載資料夾中已有此檔案。</translation>
 <translation id="6152918902620844577">正在等待下一次操作</translation>
 <translation id="6153439704237222699">進一步了解 Do Not Track</translation>
@@ -7578,6 +7594,7 @@
 <translation id="6450876761651513209">變更私隱權相關設定</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6451689256222386810">如果您忘記密碼短語，或要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />。</translation>
+<translation id="6451861213630784801">你已登出</translation>
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">網絡發生問題或領域錯誤</translation>
@@ -8240,6 +8257,7 @@
 <translation id="6913051485529944333">此頁面不會再顯示「Google 日曆」</translation>
 <translation id="6914812290245989348">在前往不安全的網站前不要顯示任何警告</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
+<translation id="6917873303492266709">如要分享、加入分頁群組和協作，請前往設定頁面開啟「允許登入 Chrome」</translation>
 <translation id="6918677045355889289">必須更新 Chrome OS</translation>
 <translation id="6918733588290914545">透過 Android 手機快速設定</translation>
 <translation id="6919354101107095996">請嘗試登入網站，然後再次下載</translation>
@@ -8253,6 +8271,7 @@
 <translation id="6922745772873733498">輸入 PIN 即可列印</translation>
 <translation id="6922763095098248079">您的裝置由您的機構管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="6923633482430812883">連接共用裝置時發生錯誤。請檢查您正連接的檔案伺服器是否支援 SMBv2 或以上版本。</translation>
+<translation id="6924109527536857168">需要同步</translation>
 <translation id="6925127338315966709">您即將在此瀏覽器中新增受管理的設定檔。管理員可以控制該設定檔，並存取其中的資料。書籤、記錄、密碼和其他設定可能會同步至您的帳戶，並由管理員管理。</translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
@@ -8767,6 +8786,7 @@
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
 <translation id="7313539585802573958">鍵盤背光顏色</translation>
 <translation id="7314989823816739632">浪漫</translation>
+<translation id="7317342082064136423">驗證帳戶</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
 <translation id="731827437403763009">AI 創新技術</translation>
 <translation id="7319320447721994672">如果你瀏覽使用 Cookie 的網站，可能需要暫時啟用 Cookie，才能讓所有網站功能正常運作。</translation>
@@ -8810,6 +8830,7 @@
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，再輸入您的指令或搜尋項目。</translation>
 <translation id="7347943691222276892">撳一下就可以離開<ph name="SUBPAGE_TITLE" />。</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
+<translation id="734813941605705678">需要同步</translation>
 <translation id="7348920948593871738">已關閉 Mac 系統設定中的攝錄機</translation>
 <translation id="7349010927677336670">影片流暢度</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} 個密碼只會儲存至此裝置。}other{{COUNT} 個密碼只會儲存至此裝置。}}</translation>
@@ -9095,6 +9116,7 @@
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="7551643184018910560">固定至捷徑列</translation>
 <translation id="755198739067769724"><ph name="CHILD_NAME" />，歡迎使用</translation>
+<translation id="7552191410769096467">你需要登入並開啟同步功能，才能分享或加入分頁群組</translation>
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">輸入您的密碼</translation>
@@ -9116,6 +9138,7 @@
 <translation id="7566118625369982896">管理 Play 應用程式連結</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">管理按鍵組合</translation>
+<translation id="7568014768212280234">分頁群組已滿，新成員無法透過連結加入</translation>
 <translation id="7568759527730933493">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商。管理員設定的部分網域不會使用安全連線。</translation>
 <translation id="756876171895853918">自訂顯示圖片</translation>
 <translation id="7568790562536448087">正在更新</translation>
@@ -9610,6 +9633,7 @@
 <translation id="7914399737746719723">已安裝應用程式</translation>
 <translation id="7915457674565721553">連線至互聯網即可設定家長監控設定</translation>
 <translation id="7916364730877325865">您的機構不允許您開啟此帳戶的同步功能</translation>
+<translation id="791698251820376781">你的機構不允許你登入</translation>
 <translation id="7918257978052780342">註冊</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
@@ -10860,6 +10884,7 @@
 <translation id="8786824282808281903">當子女看到此圖示時，可以使用指紋識別身份或核准購物交易。</translation>
 <translation id="8787752878731558379">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome</translation>
 <translation id="8788008845761123079">選擇「<ph name="SELECTED_ACTION" />」的手勢</translation>
+<translation id="878862491037637275">此分頁群組已滿</translation>
 <translation id="8791157330927639737">進一步了解點樣更新</translation>
 <translation id="8791534160414513928">與瀏覽流量一併傳送「Do Not Track」要求</translation>
 <translation id="8793390639824829328">網站會使用此功能捲動及縮放已分享的分頁</translation>
@@ -11357,6 +11382,7 @@
 <translation id="9123287046453017203">您的裝置不是最新版本</translation>
 <translation id="9124084978667228083">{MEMBERS,plural, =1{<ph name="RWS_OWNER" /> 的群組中有 1 個網站}other{<ph name="RWS_OWNER" /> 的群組中有 {MEMBERS} 個網站}}</translation>
 <translation id="9125910124977405374">將<ph name="LANGUAGE_NAME" />由自動翻譯嘅語言移除</translation>
+<translation id="9125912770834459638">你的機構不允許你登入</translation>
 <translation id="9126149354162942022">游標顏色</translation>
 <translation id="9128317794749765148">無法完成設定</translation>
 <translation id="9128335130883257666">打開<ph name="INPUT_METHOD_NAME" />嘅設定頁面</translation>
@@ -11441,6 +11467,7 @@
 <translation id="9186963452600581158">使用子女的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="9192019773545828776">使用朗讀功能，讓您無需查看螢幕亦可使用裝置。您可透過已連接裝置使用點字功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左箭咀或向右箭咀即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
+<translation id="9195969368671142407">如果機構限制你儲存內容至 Google 帳戶，你便無法分享或加入分頁群組</translation>
 <translation id="919686179725692564">進一步瞭解如何備份應用程式</translation>
 <translation id="9199503643457729322">㩒一下就可以離開私隱權指南。</translation>
 <translation id="9199695835892108985">要重設所有序列連接埠權限嗎？</translation>
@@ -11549,6 +11576,7 @@
 <translation id="971774202801778802">書籤網址</translation>
 <translation id="973473557718930265">離開</translation>
 <translation id="973558314812359997">滑鼠大小</translation>
+<translation id="973788791897303708">此分頁群組已滿</translation>
 <translation id="97381968209917373">刪除憑證「<ph name="CERT_NAME" />」</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>
 <translation id="976499800099896273">針對「<ph name="TYPED_WORD" />」更正做「<ph name="CORRECTED_WORD" />」，顯示復原自動更正內容對話框。㩒向上箭咀就可以存取，㩒 Esc 掣就可以忽略。</translation>
@@ -11581,5 +11609,6 @@
 <translation id="996250603853062861">正在建立安全連線…</translation>
 <translation id="997143476478634194">網頁會在您瀏覽時自動採用此設定。網站通常會傳送通知，讓您掌握突發新聞或即時通訊訊息。</translation>
 <translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi Sync。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
+<translation id="998347228911661591">同步分頁群組</translation>
 <translation id="998747458861718449">檢查(&amp;N)</translation>
 </translationbundle>

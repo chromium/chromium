@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Anwani imehifadhiwa kwenye kifaa hiki</translation>
 <translation id="1445276840641906250">Vichupo vyako vyote katika kivinjari kimoja</translation>
 <translation id="1450170672351507823">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama Ulioboreshwa.</translation>
+<translation id="1455660774629812862">Usivifiche</translation>
 <translation id="1460751212339734034">Okoa muda, andika kidogo</translation>
 <translation id="1466035273550360103">Hakuna vichupo vilivyofunguliwa</translation>
 <translation id="1469381646033328562">Akaunti yako inadhibitiwa na mzazi wako.
@@ -319,6 +320,7 @@
 Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="2377336083033403521">Tafuta vichupo…</translation>
 <translation id="2381405137052800939">Mambo ya Msingi</translation>
+<translation id="2384692388811649784">Ficha Vichupo vya faragha</translation>
 <translation id="2386793615875593361">1 iliyochaguliwa</translation>
 <translation id="2390457533592708044">Ficha "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Kifurushi chako hakiwezi kuwasilishwa</translation>
@@ -339,6 +341,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2479148705183875116">Nenda kwenye Mipangilio</translation>
 <translation id="2482878487686419369">Arifa</translation>
 <translation id="2484459871750294497">Ninawezaje kuwasha kipengele hiki?</translation>
+<translation id="2493269659028026145">Funga papo hapo ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Historia ya kuvinjari</translation>
 <translation id="2497852260688568942">Usawazishaji umezimwa na msimamizi wako</translation>
 <translation id="2499505845365628575">Unaweza kupata historia yako yote ya kuvinjari kwenye kitufe cha <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -931,6 +934,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5414763847370083940">Utapata arifa iwapo bei itapungua kwenye tovuti yoyote.</translation>
 <translation id="5415289094036440596">Funguo za siri haziwezi kufikiwa</translation>
 <translation id="5416455648658732408">Hamishia kwenye Kikundi cha Vichupo</translation>
+<translation id="5429624150850059322">Utakaporudi, vichupo vitakuwa vimetiwa ukungu hadi utakapogusa ili kuendelea</translation>
 <translation id="5431239785743546285">Kurasa ulizosoma</translation>
 <translation id="5431252637281434233">Utaondolewa kwenye akaunti</translation>
 <translation id="543338862236136125">Badilisha nenosiri</translation>
@@ -1030,6 +1034,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5817176759448082654">Kikagua Manenosiri</translation>
 <translation id="5819208479324046259">Inadhibitiwa na <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Inasawazisha…</translation>
+<translation id="5832166137082209907">Ficha baada ya dakika 10</translation>
 <translation id="5844284118433003733">Unapoingia katika akaunti, data hii huunganishwa kwenye Akaunti yako ya Google ili kukulinda kwenye huduma zote za Google, kwa mfano kuongeza ulinzi katika Gmail baada ya tukio lililotishia usalama.</translation>
 <translation id="5854790677617711513">Iliyohifadhiwa kwa zaidi ya siku 30</translation>
 <translation id="5857770089550859117">Kauli ya siri inahitajika ili kuanza kusawazisha.</translation>

@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">화면 보호기 사용 중지</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
 <translation id="3102119246920354026">캐시</translation>
+<translation id="3112413615003385433">선생님이 School Tools에서 콘텐츠를 삭제했습니다.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">수영장</translation>
 <translation id="3122883569442693641">세부정보 더보기</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">수정 완료</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="3533790840489634638">수영장</translation>
+<translation id="3535802910192338629">선생님이 School Tools에 새 콘텐츠를 추가했습니다.</translation>
 <translation id="3547264467365135390">공식</translation>
 <translation id="3557205324756024651">로컬 ID(선택사항)</translation>
 <translation id="3565064564551103223">허용된 IP</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6673898378497337661">키보드 밝기를 높입니다</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6694534975463174713">잠금</translation>
+<translation id="6700703207451721535">이 링크에 대한 액세스가 허용되지 않습니다. 액세스 권한이 필요한 경우 교사에게 문의하세요.</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6712933881624804031">계곡</translation>
 <translation id="6716013206176357696">딸기</translation>
@@ -1562,6 +1565,7 @@
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> 버전 <ph name="VERSION" />의 펌웨어 설치를 완료하려면 기기를 다시 시작해야 합니다. 컴퓨터가 여러 번 재부팅되는 것처럼 보일 수 있습니다. 이는 예상되는 동작입니다.</translation>
 <translation id="8593058461203131755">미디어를 일시중지합니다</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />의 작업 더보기</translation>
 <translation id="86356131183441916">연한 보라색</translation>

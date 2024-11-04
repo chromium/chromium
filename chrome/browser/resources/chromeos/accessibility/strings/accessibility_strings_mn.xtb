@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">Дуу</translation>
 <translation id="2737898226590637227">Дараагийн ARIA газрын тэмдэглэгээ алга байна</translation>
 <translation id="2749275490991666823">Шалгагдсан</translation>
+<translation id="2751454300227269244">Амаа баруун тийш мушийлгана уу</translation>
 <translation id="27527859628328957">Дараагийн анхаарал хандуулах зүйл рүү шилжих</translation>
 <translation id="2756452585631602151">Тусгай шошго оруулна уу</translation>
 <translation id="2766299274563946262">Зүүн талд нүд алга байна</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Хүснэгт <ph name="TABLENAME" />, <ph name="TABLEROWS" /> <ph name="TABLECOLS" />-р</translation>
 <translation id="3159493096109238499">Цайвар бор (Бэйж)</translation>
 <translation id="316542773973815724">Навигац</translation>
+<translation id="3167446923957429259">Амаа зүүн тийш мушийлгана уу</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{ зай}other{# зайнууд}}</translation>
 <translation id="3179119189286472195">Холбоос биш байна</translation>
 <translation id="3180990259147710757">Эрүүгээ зүүн тийш хөдөлгөх</translation>

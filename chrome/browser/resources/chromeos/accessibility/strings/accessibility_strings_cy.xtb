@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">sain</translation>
 <translation id="2737898226590637227">Nid oes cyfarwyddnod ARIA nesaf</translation>
 <translation id="2749275490991666823">Wedi gwirio</translation>
+<translation id="2751454300227269244">Symudwch eich ceg i'r dde</translation>
 <translation id="27527859628328957">Neidio i'r eitem nesaf y gellir canolbwyntio arni</translation>
 <translation id="2756452585631602151">Rhowch label personol</translation>
 <translation id="2766299274563946262">Dim cell i'r chwith</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabl <ph name="TABLENAME" />, <ph name="TABLEROWS" /> gan <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Gwlanen</translation>
 <translation id="316542773973815724">Llywio</translation>
+<translation id="3167446923957429259">Symudwch eich ceg i'r chwith</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{blwch}zero{# blwch}two{# flwch}few{# blwch}many{# blwch}other{# blwch}}</translation>
 <translation id="3179119189286472195">Testun heb ddolen.</translation>
 <translation id="3180990259147710757">Symudwch eich gên i'r chwith</translation>

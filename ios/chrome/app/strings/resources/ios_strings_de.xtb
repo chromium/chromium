@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Die Adresse wird nur auf diesem Gerät gespeichert</translation>
 <translation id="1445276840641906250">Alle deine Tabs in einem Browser</translation>
 <translation id="1450170672351507823">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
+<translation id="1455660774629812862">Nicht ausblenden</translation>
 <translation id="1460751212339734034">Zeit sparen, weniger tippen</translation>
 <translation id="1466035273550360103">Keine geöffneten Tabs</translation>
 <translation id="1469381646033328562">Dein Konto wird von deinen Eltern verwaltet.
@@ -319,6 +320,7 @@
 Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="2377336083033403521">Tabs suchen…</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
+<translation id="2384692388811649784">Inkognitotabs ausblenden</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
 <translation id="2390457533592708044">„<ph name="MODULE_NAME" />“ ausblenden</translation>
 <translation id="2403129868389095715">Paket kann nicht zugestellt werden</translation>
@@ -339,6 +341,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484459871750294497">Wie aktiviere ich diese Funktion?</translation>
+<translation id="2493269659028026145">Sofort mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> sperren</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497852260688568942">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="2499505845365628575">Über die Schaltfläche „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“ kannst du deinen gesamten Browserverlauf aufrufen.</translation>
@@ -931,6 +934,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5414763847370083940">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="5415289094036440596">Passkeys können nicht geteilt werden</translation>
 <translation id="5416455648658732408">In Tabgruppe verschieben</translation>
+<translation id="5429624150850059322">Wenn du zurückkehrst, werden die Tabs unkenntlich gemacht, bis du zum Fortfahren tippst</translation>
 <translation id="5431239785743546285">Seiten, die du gelesen hast</translation>
 <translation id="5431252637281434233">Du wirst abgemeldet</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
@@ -1030,6 +1034,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5817176759448082654">Passwortcheck</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wird synchronisiert…</translation>
+<translation id="5832166137082209907">Nach 10 Minuten ausblenden</translation>
 <translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>

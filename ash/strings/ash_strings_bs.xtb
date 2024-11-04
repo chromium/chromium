@@ -357,7 +357,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2282073721614284166">Otvaranje linka u kartici</translation>
 <translation id="2292698582925480719">Razmjer prikaza</translation>
 <translation id="2293443480080733021">Na šta se želite fokusirati? Dodavanje zadatka pritiskanjem Entera.</translation>
-<translation id="229397294990920565">Isključivanje prijenosa podataka na mobilnoj mreži...</translation>
+<translation id="229397294990920565">Isključivanje prenosa podataka na mobilnoj mreži...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen. Deaktiviranjem će se isključiti unos govora.</translation>
 <translation id="2302092602801625023">Ovim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključivanje/isključivanje pregleda prozora</translation>
@@ -384,7 +384,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2367972762794486313">Prikaži aplikacije</translation>
 <translation id="2368828502825385061">Pronađi</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
-<translation id="2370971919968699910">Mogu nastati troškovi prijenosa podataka.
+<translation id="2370971919968699910">Mogu nastati troškovi prenosa podataka.
 Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2386292613071805067">Odabir svega na stranici</translation>
 <translation id="2392659840443812875">Nije dostupna nijedna pristupna tačka. Provjerite je li uređaj u blizini i je li Bluetooth uključen.</translation>
@@ -748,7 +748,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="3604801046548457007">Radna površina <ph name="DESK_TITILE" /> je kreirana</translation>
 <translation id="3606978283550408104">Brailleov ekran je povezan.</translation>
 <translation id="3612634595000403645">Postavke efekata izgleda</translation>
-<translation id="3615926715408477684">Omogućavanjem prijenosa podataka na mobilnoj mreži omogućit će se Bluetooth</translation>
+<translation id="3615926715408477684">Omogućavanjem prenosa podataka na mobilnoj mreži omogućit će se Bluetooth</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3616883743181209306">Meni je pomjeren u gornji desni ugao ekrana.</translation>
 <translation id="3619536907358025872">Postavke snimanja ekrana</translation>
@@ -1013,7 +1013,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4471432286288241507">{0,plural, =0{Ažurirajte uređaj sada}=1{Ažurirajte uređaj u roku od 1 sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
 <translation id="4472575034687746823">Započnite</translation>
 <translation id="4477350412780666475">Sljedeća numera</translation>
-<translation id="4477751544736611934">Mogu nastati troškovi prijenosa podataka.
+<translation id="4477751544736611934">Mogu nastati troškovi prenosa podataka.
 Povezan je 1 uređaj.</translation>
 <translation id="4477892968187500306">Ovaj uređaj može sadržavati aplikacije koje Google nije potvrdio.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -1286,7 +1286,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="533282197239610265">Pogledajte uređaje za emitiranje</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desno)</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
-<translation id="5354804064646502504">Mogu nastati troškovi prijenosa podataka.
+<translation id="5354804064646502504">Mogu nastati troškovi prenosa podataka.
 Nije povezan nijedan uređaj.</translation>
 <translation id="5356963482258194581">Prebacite se između tamne i svijetle teme. Kliknite desnim klikom na radnoj površini i odaberite pozadinsku sliku i stil.</translation>
 <translation id="536019650977002321">Vaš administrator ne dozvoljava snimanje zvuka. Kontaktirajte administratora da dobijete više informacija.</translation>
@@ -1398,7 +1398,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5701785125601597013">Brzo šaljite ili odgovarajte na telefonske poruke pomoću Phone Huba</translation>
 <translation id="570390244361237317">Sve aplikacije, navigirajte tipkama sa strelicama da pristupite svim aplikacijama</translation>
 <translation id="5705197514573687092">Prikaz postavki fokusiranja. Tajmer je postavljen na <ph name="FOCUS_DURATION" />.</translation>
-<translation id="5707775774148071965">Uređaj podržava veću brzinu prijenosa podataka od kabla. Performanse uređaja su možda ograničene.</translation>
+<translation id="5707775774148071965">Uređaj podržava veću brzinu prenosa podataka od kabla. Performanse uređaja su možda ograničene.</translation>
 <translation id="5710450975648804523">Uključen je način rada Ne ometaj</translation>
 <translation id="5711984160978177607">Još <ph name="REMAINING_TIME" /></translation>
 <translation id="5712132663381964774">Koristite aplikacije da uradite sve što vam je potrebno na uređaju <ph name="PRODUCT_NAME" />. Aplikacije možete pronaći u Pokretaču.</translation>

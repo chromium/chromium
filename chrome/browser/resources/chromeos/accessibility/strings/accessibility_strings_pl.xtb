@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">dźwięk</translation>
 <translation id="2737898226590637227">Nie ma następnego punktu orientacyjnego ARIA</translation>
 <translation id="2749275490991666823">Zaznaczony</translation>
+<translation id="2751454300227269244">Porusz ustami w prawo</translation>
 <translation id="27527859628328957">Przejdź do następnego elementu, który można zaznaczyć</translation>
 <translation id="2756452585631602151">Dodaj etykietę własną</translation>
 <translation id="2766299274563946262">Nie ma komórki z lewej strony</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabela <ph name="TABLENAME" />, <ph name="TABLEROWS" /> na <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beżowy</translation>
 <translation id="316542773973815724">Nawigacja</translation>
+<translation id="3167446923957429259">Porusz ustami w lewo</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{spacja}few{# spacje}many{# spacji}other{# spaces}}</translation>
 <translation id="3179119189286472195">To nie link</translation>
 <translation id="3180990259147710757">Przesunięcie żuchwy w lewo</translation>

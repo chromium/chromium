@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Adres został zapisany tylko na tym urządzeniu</translation>
 <translation id="1445276840641906250">Wszystkie Twoje karty w 1 przeglądarce</translation>
 <translation id="1450170672351507823">Włączona jest standardowa ochrona. Jeśli zależy Ci na większym bezpieczeństwie, użyj silniejszej ochrony.</translation>
+<translation id="1455660774629812862">Nie ukrywaj</translation>
 <translation id="1460751212339734034">Oszczędzaj czas, pisz mniej</translation>
 <translation id="1466035273550360103">Brak otwartych kart</translation>
 <translation id="1469381646033328562">Twoim kontem zarządza rodzic.
@@ -319,6 +320,7 @@
 Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="2377336083033403521">Wyszukaj karty…</translation>
 <translation id="2381405137052800939">Podstawowe</translation>
+<translation id="2384692388811649784">Ukrywaj karty incognito</translation>
 <translation id="2386793615875593361">Wybrano: 1</translation>
 <translation id="2390457533592708044">Ukryj „<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">Nie można dostarczyć paczki</translation>
@@ -339,6 +341,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484459871750294497">Jak włączyć tę funkcję?</translation>
+<translation id="2493269659028026145">Blokuj natychmiast za pomocą: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2497852260688568942">Synchronizację wyłączył administrator</translation>
 <translation id="2499505845365628575">Całą historię przeglądania znajdziesz w <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -931,6 +934,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5414763847370083940">Otrzymasz alert, jeśli cena w którejkolwiek witrynie spadnie.</translation>
 <translation id="5415289094036440596">Nie można udostępniać kluczy dostępu</translation>
 <translation id="5416455648658732408">Przenieś do grupy kart</translation>
+<translation id="5429624150850059322">Gdy wrócisz, karty będą rozmyte, dopóki nie klikniesz, aby kontynuować</translation>
 <translation id="5431239785743546285">Przeczytane strony</translation>
 <translation id="5431252637281434233">Nastąpi wylogowanie</translation>
 <translation id="543338862236136125">Edytuj hasło</translation>
@@ -1030,6 +1034,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5817176759448082654">Sprawdzanie haseł</translation>
 <translation id="5819208479324046259">Przeglądarką zarządza <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchronizuję…</translation>
+<translation id="5832166137082209907">Ukrywaj po 10 minutach</translation>
 <translation id="5844284118433003733">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="5854790677617711513">Sprzed ponad 30 dni</translation>
 <translation id="5857770089550859117">Wpisz hasło wielowyrazowe, by rozpocząć synchronizację.</translation>

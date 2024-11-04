@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">звук</translation>
 <translation id="2737898226590637227">Няма следваща област за ARIA</translation>
 <translation id="2749275490991666823">С отметка</translation>
+<translation id="2751454300227269244">Преместване на устните надясно</translation>
 <translation id="27527859628328957">Преминаване към следващия елемент, който може да получи фокус</translation>
 <translation id="2756452585631602151">Въведете персонализиран етикет</translation>
 <translation id="2766299274563946262">Няма клетка отляво</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Таблица „<ph name="TABLENAME" />“, <ph name="TABLEROWS" /> на <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">бежово</translation>
 <translation id="316542773973815724">Навигация</translation>
+<translation id="3167446923957429259">Преместване на устните наляво</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{интервал}other{# интервала}}</translation>
 <translation id="3179119189286472195">Не е връзка</translation>
 <translation id="3180990259147710757">Преместване на челюстта наляво</translation>

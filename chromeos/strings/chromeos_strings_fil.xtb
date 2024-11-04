@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
+<translation id="3112413615003385433">Nag-alis ng content ang iyong guro sa Mga Tool sa Paaralan</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">mga pool</translation>
 <translation id="3122883569442693641">Higit pang detalye</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Tapos nang mag-edit</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3533790840489634638">pool</translation>
+<translation id="3535802910192338629">Nagdagdag ng bagong content ang iyong guro sa Mga Tool sa Paaralan</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokal na pagkakakilanlan (opsyonal)</translation>
 <translation id="3565064564551103223">Mga pinapayagang IP</translation>
@@ -1562,6 +1564,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8576249514688522074">Hindi Nasimulan</translation>
 <translation id="8584654835905316966">Nire-require na mag-restart para makumpleto ang pag-install ng firmware para sa <ph name="DEVICE_NAME" /> sa bersyon <ph name="VERSION" />. Posibleng magmukhang nagre-reboot nang ilang beses ang iyong computer. Inaasahan ang gawing ito.</translation>
 <translation id="8593058461203131755">mag-pause ng media</translation>
+<translation id="8619169570378509764">Mga Tool sa Paaralan</translation>
 <translation id="8620617069779373398">Status ng roaming</translation>
 <translation id="8626489604350149811">Higit pang pagkilos para sa <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>

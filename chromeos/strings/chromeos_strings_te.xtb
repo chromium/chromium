@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">స్క్రీన్ సేవర్‌ను డిజేబుల్ చేయి</translation>
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
 <translation id="3102119246920354026">కాష్</translation>
+<translation id="3112413615003385433">మీ టీచర్ స్కూల్ టూల్స్‌లోని కంటెంట్‌ను తీసివేశారు</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">పూల్స్</translation>
 <translation id="3122883569442693641">మరిన్ని వివరాలు</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">ఎడిట్ చేయడం పూర్తయింది</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
 <translation id="3533790840489634638">పూల్</translation>
+<translation id="3535802910192338629">మీ టీచర్ స్కూల్ టూల్స్‌లో కొత్త కంటెంట్‌ను జోడించారు</translation>
 <translation id="3547264467365135390">ఫార్ములా</translation>
 <translation id="3557205324756024651">లోకల్ గుర్తింపు (ఆప్షనల్)</translation>
 <translation id="3565064564551103223">అనుమతించబడిన IPలు</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6673898378497337661">కీబోర్డ్ బ్రైట్‌నెస్‌ను పెంచుతుంది</translation>
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6694534975463174713">లాక్</translation>
+<translation id="6700703207451721535">ఈ లింక్ కోసం యాక్సెస్ అనుమతించబడదు. మీకు యాక్సెస్ కావాలంటే మీ టీచర్‌ను సంప్రదించండి.</translation>
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
 <translation id="6712933881624804031">లోయ</translation>
 <translation id="6716013206176357696">స్ట్రాబెర్రీలు</translation>
@@ -1562,6 +1565,7 @@
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> కోసం <ph name="VERSION" /> వెర్షన్‌లో ఫర్మ్‌వేర్ ఇన్‌స్టాలేషన్‌ను పూర్తి చేయడానికి, రీస్టార్ట్ చేయాల్సి ఉంటుంది. మీ కంప్యూటర్ చాలాసార్లు రీబూట్ అవుతున్నట్లు అనిపించవచ్చు. ఇలా జరగడం మామూలే.</translation>
 <translation id="8593058461203131755">మీడియాను పాజ్ చేస్తుంది</translation>
+<translation id="8619169570378509764">స్కూల్ టూల్స్</translation>
 <translation id="8620617069779373398">రోమింగ్ స్థితి</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="86356131183441916">లేత ఊదా రంగు</translation>

@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Osoite on tallennettu vain tälle laitteelle</translation>
 <translation id="1445276840641906250">Kaikki välilehdet yhdessä selaimessa</translation>
 <translation id="1450170672351507823">Perustason suojaus on päällä. Käytä parannettua suojausta, jos haluat lisäsuojaa.</translation>
+<translation id="1455660774629812862">Älä piilota</translation>
 <translation id="1460751212339734034">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="1466035273550360103">Ei avoimia välilehtiä</translation>
 <translation id="1469381646033328562">Vanhempi ylläpitää tiliäsi.
@@ -319,6 +320,7 @@
 Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia.</translation>
 <translation id="2377336083033403521">Hae välilehtiä…</translation>
 <translation id="2381405137052800939">Perusasetukset</translation>
+<translation id="2384692388811649784">Piilota incognito-välilehdet</translation>
 <translation id="2386793615875593361">1 valittu</translation>
 <translation id="2390457533592708044">Piilota "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Pakettia ei voida toimittaa</translation>
@@ -339,6 +341,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2479148705183875116">Avaa Asetukset</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2484459871750294497">Miten otan tämän ominaisuuden käyttöön?</translation>
+<translation id="2493269659028026145">Lukitse heti tällä: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2497852260688568942">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä.</translation>
 <translation id="2499505845365628575">Näet koko selaushistoriasi täältä: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -931,6 +934,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="5415289094036440596">Avainkoodeja ei voi jakaa</translation>
 <translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
+<translation id="5429624150850059322">Kun palaat, välilehdet ovat sumennettuja, kunnes jatkat napauttamalla</translation>
 <translation id="5431239785743546285">Luetut sivut</translation>
 <translation id="5431252637281434233">Sinut kirjataan ulos</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
@@ -1030,6 +1034,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5817176759448082654">Salasanan tarkistus</translation>
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkronoidaan…</translation>
+<translation id="5832166137082209907">Piilota 10 minuutin kuluttua</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5857770089550859117">Synkronointi edellyttää tunnuslausetta.</translation>

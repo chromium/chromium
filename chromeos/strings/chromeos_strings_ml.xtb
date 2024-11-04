@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">സ്ക്രീൻ സേവർ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
 <translation id="3102119246920354026">കാഷെ</translation>
+<translation id="3112413615003385433">നിങ്ങളുടെ അദ്ധ്യാപകർ School Tools-ൽ നിന്ന് ഉള്ളടക്കം നീക്കം ചെയ്തു</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">പൂളുകൾ</translation>
 <translation id="3122883569442693641">കൂടുതൽ വിശദാംശങ്ങൾ</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">എഡിറ്റ് ചെയ്യൽ പൂർത്തിയാക്കി</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="3533790840489634638">പൂൾ</translation>
+<translation id="3535802910192338629">നിങ്ങളുടെ അദ്ധ്യാപകർ School Tools-ലേക്ക് പുതിയ ഉള്ളടക്കം ചേർത്തു</translation>
 <translation id="3547264467365135390">ഫോർമുല</translation>
 <translation id="3557205324756024651">ലോക്കൽ ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="3565064564551103223">അനുവദനീയമായ IP-കൾ</translation>
@@ -1563,6 +1565,7 @@
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> എന്നതിനുള്ള ഫേംവെയർ <ph name="VERSION" /> പതിപ്പിലേക്ക് ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പൂർത്തിയാക്കാൻ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. നിങ്ങളുടെ കമ്പ്യൂട്ടർ പല തവണ റീബൂട്ട് ചെയ്യുന്നതായി ദൃശ്യമായേക്കാം. ഈ പ്രവർത്തനം പ്രതീക്ഷിച്ചതാണ്.</translation>
 <translation id="8593058461203131755">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="86356131183441916">ഇളം പർപ്പിൾ</translation>

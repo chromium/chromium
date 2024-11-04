@@ -103,6 +103,7 @@
 <translation id="143681031165817424">Adresa a fost salvată numai pe acest dispozitiv</translation>
 <translation id="1445276840641906250">Toate filele într-un singur browser</translation>
 <translation id="1450170672351507823">Protecția standard este activată. Pentru securitate sporită, folosește Protecția îmbunătățită.</translation>
+<translation id="1455660774629812862">Nu ascunde</translation>
 <translation id="1460751212339734034">Economisește timp, tastează mai puțin</translation>
 <translation id="1466035273550360103">Nu există file deschise</translation>
 <translation id="1469381646033328562">Contul tău este gestionat de un părinte.
@@ -319,6 +320,7 @@
 Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="2377336083033403521">Caută în file…</translation>
 <translation id="2381405137052800939">Setări de bază</translation>
+<translation id="2384692388811649784">Ascunde filele incognito</translation>
 <translation id="2386793615875593361">1 selectată</translation>
 <translation id="2390457533592708044">Ascunde <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Coletul nu poate fi livrat</translation>
@@ -339,6 +341,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2479148705183875116">Accesează Setările</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2484459871750294497">Cum activez această funcție?</translation>
+<translation id="2493269659028026145">Blochează imediat cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Istoricul de navigare</translation>
 <translation id="2497852260688568942">Sincronizarea este dezactivată de administrator</translation>
 <translation id="2499505845365628575">Poți găsi tot istoricul de navigare din <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -931,6 +934,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5414763847370083940">Vei primi o alertă dacă prețul scade pe orice site.</translation>
 <translation id="5415289094036440596">Cheile de acces nu pot fi trimise</translation>
 <translation id="5416455648658732408">Mută în grupul de file</translation>
+<translation id="5429624150850059322">Când revii, filele sunt neclare până când atingi pentru a continua</translation>
 <translation id="5431239785743546285">Pagini citite</translation>
 <translation id="5431252637281434233">Vei fi deconectat(ă)</translation>
 <translation id="543338862236136125">Editează parola</translation>
@@ -1030,6 +1034,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5817176759448082654">Verificarea parolei</translation>
 <translation id="5819208479324046259">Gestionat de <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Se sincronizează…</translation>
+<translation id="5832166137082209907">Ascunde după 10 minute</translation>
 <translation id="5844284118433003733">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
 <translation id="5854790677617711513">Mai vechi de 30 de zile</translation>
 <translation id="5857770089550859117">Pentru a începe sincronizarea este necesară expresia de acces.</translation>

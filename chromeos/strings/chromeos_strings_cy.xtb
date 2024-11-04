@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Analluogi'r arbedydd sgrîn</translation>
 <translation id="3091839911843451378">Methwyd - Wedi'i stopio</translation>
 <translation id="3102119246920354026">Storfa</translation>
+<translation id="3112413615003385433">Mae eich athro wedi tynnu cynnwys yn Offer Ysgol</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pyllau</translation>
 <translation id="3122883569442693641">Rhagor o fanylion</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Wedi gorffen golygu</translation>
 <translation id="3532980081107202182">Tua <ph name="MIN_REMAINING" /> o funudau ar ôl</translation>
 <translation id="3533790840489634638">pwll</translation>
+<translation id="3535802910192338629">Mae eich athro wedi ychwanegu cynnwys newydd yn Offer Ysgol</translation>
 <translation id="3547264467365135390">Fformiwla</translation>
 <translation id="3557205324756024651">Hunaniaeth leol (dewisol)</translation>
 <translation id="3565064564551103223">Cyfeiriadau IP a ganiateir</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6673898378497337661">disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
 <translation id="6694534975463174713">clo</translation>
+<translation id="6700703207451721535">Ni chaniateir mynediad ar gyfer y ddolen hon. Gwiriwch gyda'ch athro os oes angen mynediad.</translation>
 <translation id="6704062477274546131">Cydraniad DNS</translation>
 <translation id="6712933881624804031">dyffryn</translation>
 <translation id="6716013206176357696">mefus</translation>
@@ -1562,6 +1565,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8576249514688522074">Heb ei gychwyn</translation>
 <translation id="8584654835905316966">Mae angen ailgychwyn i gwblhau gosod cadarnwedd ar gyfer <ph name="DEVICE_NAME" /> i fersiwn <ph name="VERSION" />. Mae'n bosib y bydd eich cyfrifiadur yn ailgychwyn sawl gwaith. Disgwylir yr ymddygiad hwn.</translation>
 <translation id="8593058461203131755">seibio'r cyfryngau</translation>
+<translation id="8619169570378509764">Offer Ysgol</translation>
 <translation id="8620617069779373398">Statws crwydro</translation>
 <translation id="8626489604350149811">Rhagor o weithredoedd ar gyfer <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porffor golau</translation>

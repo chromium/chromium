@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">停用屏保功能</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3102119246920354026">缓存</translation>
+<translation id="3112413615003385433">老师从 School Tools 中移除了内容</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">水池</translation>
 <translation id="3122883569442693641">更多详情</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">完成修改</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3533790840489634638">水池</translation>
+<translation id="3535802910192338629">老师在 School Tools 中添加了新内容</translation>
 <translation id="3547264467365135390">公式</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
@@ -1563,6 +1565,7 @@
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8584654835905316966">必须重启，才能完成<ph name="DEVICE_NAME" />固件安装操作，并更新至版本 <ph name="VERSION" />。电脑可能会重启几次。这是正常现象。</translation>
 <translation id="8593058461203131755">暂停媒体内容</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">漫游状态</translation>
 <translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>

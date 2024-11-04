@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">ປິດການນຳໃຊ້ສກຣີນເຊັບເວີ</translation>
 <translation id="3091839911843451378">ບໍ່ສຳເລັດ, ຢຸດແລ້ວ</translation>
 <translation id="3102119246920354026">ແຄ​ຊ໌</translation>
+<translation id="3112413615003385433">ຄູຂອງທ່ານໄດ້ລຶບເນື້ອຫາໃນເຄື່ອງມືຂອງໂຮງຮຽນອອກແລ້ວ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ສະລອຍນ້ຳ</translation>
 <translation id="3122883569442693641">ລາຍລະອຽດເພີ່ມເຕີມ</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">ສຳເລັດການແກ້ໄຂ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
 <translation id="3533790840489634638">ອ່າງ</translation>
+<translation id="3535802910192338629">ຄູຂອງທ່ານໄດ້ເພີ່ມເນື້ອຫາໃໝ່ໃນເຄື່ອງມືຂອງໂຮງຮຽນແລ້ວ</translation>
 <translation id="3547264467365135390">ສູດຄິດໄລ່</translation>
 <translation id="3557205324756024651">ຂໍ້ມູນປະຈຳຕົວໃນເຄື່ອງ (ບໍ່ບັງຄັບ)</translation>
 <translation id="3565064564551103223">IP ທີ່ອະນຸຍາດ</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6673898378497337661">ເພີ່ມຄວາມສະຫວ່າງແປ້ນພິມ</translation>
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6694534975463174713">ລັອກ</translation>
+<translation id="6700703207451721535">ບໍ່ອະນຸຍາດໃຫ້ເຂົ້າເຖິງລິ້ງນີ້. ກະລຸນາກວດສອບກັບຄູຂອງທ່ານຫາກທ່ານຕ້ອງການສິດເຂົ້າເຖິງ.</translation>
 <translation id="6704062477274546131">ຄວາມລະອຽດ DNS</translation>
 <translation id="6712933881624804031">ຮ່ອມພູ</translation>
 <translation id="6716013206176357696">ສະຕຣໍເບີຣີ</translation>
@@ -1563,6 +1566,7 @@
 <translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>
 <translation id="8584654835905316966">ຕ້ອງຣີສະຕາດເພື່ອຕິດຕັ້ງເຟີມແວສຳລັບ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ໃຫ້ສຳເລັດ. ຄອມພິວເຕີຂອງທ່ານອາດເບິ່ງຄືວ່າປິດເປີດໃໝ່ຫຼາຍເທື່ອ. ລັກສະນະການເຮັດວຽກນີ້ເປັນສິ່ງທີ່ຄາດໄວ້ຢູ່ແລ້ວ.</translation>
 <translation id="8593058461203131755">ຢຸດມີເດຍໄວ້ຊົ່ວຄາວ</translation>
+<translation id="8619169570378509764">ເຄື່ອງມືຂອງໂຮງຮຽນ</translation>
 <translation id="8620617069779373398">ສະຖານະການໂຣມມິງ</translation>
 <translation id="8626489604350149811">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">ສີມ່ວງອ່ອນ</translation>

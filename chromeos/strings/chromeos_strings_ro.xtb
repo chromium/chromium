@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">Dezactivează screensaverul</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
 <translation id="3102119246920354026">Memoria cache</translation>
+<translation id="3112413615003385433">Profesorul tău a eliminat conținut din Instrumentele pentru școală</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">iazuri</translation>
 <translation id="3122883569442693641">Mai multe detalii</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">Editarea s-a încheiat</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
 <translation id="3533790840489634638">iaz</translation>
+<translation id="3535802910192338629">Profesorul tău a adăugat conținut nou în Instrumentele pentru școală</translation>
 <translation id="3547264467365135390">Formulă</translation>
 <translation id="3557205324756024651">Identitate locală (opțională)</translation>
 <translation id="3565064564551103223">Adrese IP permise</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6673898378497337661">mărește luminozitatea tastaturii</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6694534975463174713">lacăt</translation>
+<translation id="6700703207451721535">Accesul nu este permis pentru acest link. Întreabă profesorul dacă ai nevoie de acces.</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6712933881624804031">vale</translation>
 <translation id="6716013206176357696">căpșuni</translation>
@@ -1562,6 +1565,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8576249514688522074">Neinițializată</translation>
 <translation id="8584654835905316966">Este necesară o repornire pentru a finaliza instalarea firmware-ului pentru <ph name="DEVICE_NAME" /> la versiunea <ph name="VERSION" />. Poate părea că computerul repornește de câteva ori. Acest comportament este normal.</translation>
 <translation id="8593058461203131755">întrerupe conținutul media</translation>
+<translation id="8619169570378509764">Instrumente pentru școală</translation>
 <translation id="8620617069779373398">Stare roaming</translation>
 <translation id="8626489604350149811">Mai multe acțiuni pentru <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Mov deschis</translation>

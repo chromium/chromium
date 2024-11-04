@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">Audio</translation>
 <translation id="2737898226590637227">Keine nächste ARIA-Markierung</translation>
 <translation id="2749275490991666823">Aktiviert</translation>
+<translation id="2751454300227269244">Mund nach rechts bewegen</translation>
 <translation id="27527859628328957">Zum nächsten fokussierbaren Element springen</translation>
 <translation id="2756452585631602151">Benutzerdefiniertes Label eingeben</translation>
 <translation id="2766299274563946262">Keine Zelle links</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabelle <ph name="TABLENAME" />, <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigation</translation>
+<translation id="3167446923957429259">Mund nach links bewegen</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{Leerzeichen}other{# Leerzeichen}}</translation>
 <translation id="3179119189286472195">Kein Link</translation>
 <translation id="3180990259147710757">Kiefer nach links verschieben</translation>

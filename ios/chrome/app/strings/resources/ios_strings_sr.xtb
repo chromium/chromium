@@ -1196,6 +1196,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6503077044568424649">Најпосећенији</translation>
 <translation id="6503763061813913607">Обавештења Провере безбедности</translation>
 <translation id="6505334220040167806">Скупите групу картица.</translation>
+<translation id="6506996418997555004">Делите групу картица <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Пријавите се да би вам листа за читање била доступна на свим уређајима.</translation>
 <translation id="6518133107902771759">Верификуј</translation>
 <translation id="6523575793810663688">Покажи ми како</translation>
@@ -1415,6 +1416,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="750493650310597496">Изабрано је 0 ставки</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Да бисте закључали картице без архивирања, подесите Touch ID, Face ID или шифру.</translation>
+<translation id="7512075701202892785">Прегледач који волите сада и на iPad-у</translation>
 <translation id="7512909159512473473">Унеси приступну фразу…</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7521117365186708026">Савети за подешавање који вам помажу да искористите Chrome на најбољи начин.</translation>

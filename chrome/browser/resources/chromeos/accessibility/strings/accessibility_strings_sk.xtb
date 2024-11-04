@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">zvuk</translation>
 <translation id="2737898226590637227">Žiadny ďalší orientačný bod ARIA</translation>
 <translation id="2749275490991666823">Začiarknuté</translation>
+<translation id="2751454300227269244">Pohnite ústami doprava</translation>
 <translation id="27527859628328957">Prejsť na ďalšiu zamerateľnú položku</translation>
 <translation id="2756452585631602151">Zadajte vlastný štítok</translation>
 <translation id="2766299274563946262">Žiadna bunka vľavo</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Tabuľka <ph name="TABLENAME" />, <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Béžová</translation>
 <translation id="316542773973815724">Navigácia</translation>
+<translation id="3167446923957429259">Pohnite ústami doľava</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{medzera}few{# medzery}many{# spaces}other{# medzier}}</translation>
 <translation id="3179119189286472195">Nie je odkaz</translation>
 <translation id="3180990259147710757">Posuňte čeľusť doľava</translation>

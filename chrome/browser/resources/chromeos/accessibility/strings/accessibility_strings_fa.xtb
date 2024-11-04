@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">صدا</translation>
 <translation id="2737898226590637227">‏نشانگر مکانی ARIA بعدی وجود ندارد</translation>
 <translation id="2749275490991666823">دارای علامت</translation>
+<translation id="2751454300227269244">حرکت دادن دهان به‌سمت راست</translation>
 <translation id="27527859628328957">پرش به مورد قابل فوکوس بعدی</translation>
 <translation id="2756452585631602151">برچسبی سفارشی وارد کنید</translation>
 <translation id="2766299274563946262">سلولی در سمت چپ وجود ندارد</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">جدول <ph name="TABLENAME" />، <ph name="TABLEROWS" /> در <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">بژ</translation>
 <translation id="316542773973815724">پیمایش</translation>
+<translation id="3167446923957429259">حرکت دادن دهان به‌سمت چپ</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{فاصله}one{# فاصله}other{# فاصله}}</translation>
 <translation id="3179119189286472195">پیوند نیست</translation>
 <translation id="3180990259147710757">بردن فک به چپ</translation>

@@ -271,6 +271,7 @@
 <translation id="2723001399770238859">zvok</translation>
 <translation id="2737898226590637227">Ni naslednjega identifikatorja območja na strani ARIA</translation>
 <translation id="2749275490991666823">Potrjeno</translation>
+<translation id="2751454300227269244">Premaknite usta desno</translation>
 <translation id="27527859628328957">Pomik na naslednji element, ki ga je mogoče izbrati</translation>
 <translation id="2756452585631602151">Vnesite oznako po meri</translation>
 <translation id="2766299274563946262">Ni več celic</translation>
@@ -352,6 +353,7 @@
 <translation id="3153928844647607688">Razpredelnica <ph name="TABLENAME" />, <ph name="TABLEROWS" /> krat <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Bež</translation>
 <translation id="316542773973815724">Krmarjenje</translation>
+<translation id="3167446923957429259">Premaknite usta levo</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{presledek}one{# presledek}two{# presledka}few{# presledki}other{# presledkov}}</translation>
 <translation id="3179119189286472195">Ni povezava</translation>
 <translation id="3180990259147710757">Premik čeljusti levo</translation>

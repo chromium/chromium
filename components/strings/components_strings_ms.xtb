@@ -63,6 +63,7 @@
 <translation id="1104409666019087579">Beberapa medan yang diperlukan kosong. Isi sebelum menyimpan.</translation>
 <translation id="1104860668737945357">Butang urus kata laluan, aktifkan untuk melihat dan mengurus kata laluan anda dalam tetapan Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
+<translation id="1110809716549020493">Kad maya tidak diisi? Klik butiran kad maya untuk disalin kepada papan keratan. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
 <translation id="1110994991967754504">Pilih kebenaran untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Buat asal susun semula</translation>
@@ -1633,6 +1634,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3905894480064208252">{0,plural, =1{Fail disekat daripada dipindahkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dipindahkan}}</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3909899182024383590">Maklumat yang disimpan dan halaman daripada <ph name="WEBSITE" /> akan dihantar kepada Google dan mungkin disemak oleh jurusemak untuk meningkatkan ciri ini.</translation>
 <translation id="3910231615117880630">Ketahui lebih lanjut tentang kandungan terbenam</translation>
 <translation id="3915878244842478983">Chrome mengalami masalah untuk mendapatkan maklumat anda</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cara mengurus data anda:<ph name="END_BOLD" /> Chrome memadamkan laman yang disimpan melebihi 30 hari secara automatik. Laman yang anda lawati sekali lagi mungkin dipaparkan semula dalam senarai. Anda juga boleh menyekat laman daripada mencadangkan iklan untuk anda dan mematikan iklan yang dicadangkan laman dalam tetapan Chrome pada bila-bila masa.</translation>

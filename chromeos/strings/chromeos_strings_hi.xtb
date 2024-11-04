@@ -431,6 +431,7 @@
 <translation id="3084958266922136097">स्क्रीन सेवर बंद करें</translation>
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
 <translation id="3102119246920354026">संचय</translation>
+<translation id="3112413615003385433">आपके शिक्षक ने School Tools में मौजूद कॉन्टेंट को हटा दिया है</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">पूल्स</translation>
 <translation id="3122883569442693641">ज़्यादा जानकारी</translation>
@@ -513,6 +514,7 @@
 <translation id="353214771040290298">बदलाव हो गया</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
 <translation id="3533790840489634638">पूल</translation>
+<translation id="3535802910192338629">आपके शिक्षक ने School Tools में नया कॉन्टेंट जोड़ा है</translation>
 <translation id="3547264467365135390">फ़ॉर्मूला</translation>
 <translation id="3557205324756024651">लोकल आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
@@ -1562,6 +1564,7 @@
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> के लिए <ph name="VERSION" /> वर्शन पर फ़र्मवेयर का इंस्टॉलेशन पूरा करने के लिए, उसे रीस्टार्ट करना ज़रूरी है. ऐसा लग सकता है कि आपका कंप्यूटर कई बार रीबूट हो रहा हो. ऐसा होना सामान्य है.</translation>
 <translation id="8593058461203131755">मीडिया रोकें</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">रोमिंग की स्‍थिति</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="86356131183441916">हल्का बैंगनी</translation>
