@@ -172,7 +172,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Assert: verify divider and delete group menu item.
         assertEquals(ListMenuItemType.DIVIDER, modelList.get(5).type);
         assertEquals(
-                R.id.delete_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.delete_tab_group,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -320,7 +321,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group closed.
-        mOnItemClickedCallback.onClick(R.id.close_tab, mTabId, /* collaborationId= */ null);
+        mOnItemClickedCallback.onClick(R.id.close_tab_group, mTabId, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(
                         argThat(
@@ -337,7 +338,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group deleted.
-        mOnItemClickedCallback.onClick(R.id.delete_tab, mTabId, /* collaborationId= */ null);
+        mOnItemClickedCallback.onClick(R.id.delete_tab_group, mTabId, /* collaborationId= */ null);
         verify(mActionConfirmationManager)
                 .processDeleteGroupAttempt(mActionConfirmationResultCaptor.capture());
         mActionConfirmationResultCaptor
@@ -418,7 +419,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 R.id.ungroup_tab, modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         assertEquals(
-                R.id.close_tab,
+                R.id.close_tab_group,
                 modelList.get(closeGroupPosition).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 

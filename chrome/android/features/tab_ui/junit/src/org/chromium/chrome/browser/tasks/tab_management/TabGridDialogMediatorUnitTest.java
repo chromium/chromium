@@ -1376,7 +1376,8 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
-        mMediator.onToolbarMenuItemClick(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onToolbarMenuItemClick(
+                R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(TabClosureParams.closeTabs(tabGroup).hideTabGroups(true).build());
 
@@ -1391,12 +1392,14 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
-        mMediator.onToolbarMenuItemClick(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onToolbarMenuItemClick(
+                R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
         verify(mTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabGroup).build());
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
-        mMediator.onToolbarMenuItemClick(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onToolbarMenuItemClick(
+                R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         assertEquals(2, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
     }

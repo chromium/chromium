@@ -69,7 +69,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.close_tab_group_menu_item,
-                        R.id.close_tab,
+                        R.id.close_tab_group,
                         /* startIconId= */ Resources.ID_NULL,
                         /* iconTintColorStateList= */ Resources.ID_NULL,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
@@ -100,7 +100,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,
-                            R.id.delete_tab,
+                            R.id.delete_tab_group,
                             /* startIconId= */ Resources.ID_NULL,
                             /* iconTintColorStateList= */ Resources.ID_NULL,
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,

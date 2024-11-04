@@ -140,8 +140,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.select_tabs,
                         R.id.edit_group_name,
                         R.id.edit_group_color,
-                        R.id.close_tab,
-                        R.id.delete_tab);
+                        R.id.close_tab_group,
+                        R.id.delete_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -159,7 +159,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.select_tabs,
                         R.id.edit_group_name,
                         R.id.edit_group_color,
-                        R.id.close_tab);
+                        R.id.close_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -177,7 +177,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.select_tabs,
                         R.id.edit_group_name,
                         R.id.edit_group_color,
-                        R.id.close_tab);
+                        R.id.close_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -195,7 +195,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.select_tabs,
                         R.id.edit_group_name,
                         R.id.edit_group_color,
-                        R.id.close_tab);
+                        R.id.close_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -271,7 +271,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.edit_group_color,
                         R.id.manage_sharing,
                         R.id.recent_activity,
-                        R.id.close_tab,
+                        R.id.close_tab_group,
                         R.id.leave_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
@@ -316,7 +316,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.edit_group_color,
                         R.id.manage_sharing,
                         R.id.recent_activity,
-                        R.id.close_tab,
+                        R.id.close_tab_group,
                         R.id.delete_shared_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 

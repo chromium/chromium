@@ -208,7 +208,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabId,
                         isTabGroupSyncEnabled);
                 recordUserAction("Ungroup");
-            } else if (menuId == org.chromium.chrome.R.id.close_tab) {
+            } else if (menuId == org.chromium.chrome.R.id.close_tab_group) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         actionConfirmationManager,
@@ -217,7 +217,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
                 recordUserAction("CloseGroup");
-            } else if (menuId == org.chromium.chrome.R.id.delete_tab) {
+            } else if (menuId == org.chromium.chrome.R.id.delete_tab_group) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         actionConfirmationManager,
@@ -345,7 +345,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.tab_grid_dialog_toolbar_close_group,
-                        R.id.close_tab,
+                        R.id.close_tab_group,
                         R.drawable.ic_tab_close_24dp,
                         R.color.default_icon_color_light_tint_list,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
@@ -358,7 +358,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.tab_grid_dialog_toolbar_delete_group,
-                            R.id.delete_tab,
+                            R.id.delete_tab_group,
                             R.drawable.material_ic_delete_24dp,
                             true));
         }
@@ -372,10 +372,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             IdentityManager identityManager,
             GroupDataOrFailureOutcome outcome) {
         @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
-        // TODO(crbug.com/372752719): Replace the old ids(e.g. close_tab, delete tab) with
-        // close_tab_group, delete_tab_group.
         if (memberRole != MemberRole.UNKNOWN) {
-            int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab);
+            int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab_group);
             itemList.add(
                     insertionIndex++,
                     BrowserUiListMenuUtils.buildMenuListItem(

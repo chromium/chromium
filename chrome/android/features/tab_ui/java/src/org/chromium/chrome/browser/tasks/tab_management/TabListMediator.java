@@ -2748,8 +2748,8 @@ class TabListMediator implements TabListNotificationHandler {
         boolean isSyncEnabled =
                 !mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
                         && TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
-        if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
-            boolean hideTabGroups = menuId == R.id.close_tab;
+        if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
+            boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
                 RecordUserAction.record("TabGroupItemMenu.Close");
             } else {

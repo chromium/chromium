@@ -135,7 +135,11 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 /* hasCollaborationData= */ false);
 
         List<Integer> menuIds =
-                List.of(R.id.close_tab, R.id.edit_group_name, R.id.ungroup_tab, R.id.delete_tab);
+                List.of(
+                        R.id.close_tab_group,
+                        R.id.edit_group_name,
+                        R.id.ungroup_tab,
+                        R.id.delete_tab_group);
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -148,7 +152,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ true);
 
-        List<Integer> menuIds = List.of(R.id.close_tab, R.id.edit_group_name);
+        List<Integer> menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name);
         assertListMenuItemsAre(modelList, menuIds);
 
         modelList = new ModelList();
@@ -158,7 +162,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 /* isTabGroupSyncEnabled= */ false,
                 /* hasCollaborationData= */ false);
 
-        menuIds = List.of(R.id.close_tab, R.id.edit_group_name, R.id.ungroup_tab);
+        menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.ungroup_tab);
         assertListMenuItemsAre(modelList, menuIds);
 
         modelList = new ModelList();
@@ -235,7 +239,8 @@ public class TabListGroupMenuCoordinatorUnitTest {
         verify(mMenuCoordinator)
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), any(), any());
 
-        List<Integer> menuIds = List.of(R.id.close_tab, R.id.edit_group_name, R.id.leave_group);
+        List<Integer> menuIds =
+                List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.leave_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
         mMenuCoordinator.dismissForTesting();
@@ -272,7 +277,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), any(), any());
 
         List<Integer> menuIds =
-                List.of(R.id.close_tab, R.id.edit_group_name, R.id.delete_shared_group);
+                List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.delete_shared_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
         mMenuCoordinator.dismissForTesting();

@@ -4269,7 +4269,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onMenuItemClicked(R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
     }
@@ -4318,7 +4318,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onMenuItemClicked(R.id.delete_tab_group, TAB1_ID, /* collaborationId= */ null);
         verify(mIncognitoTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabs).build());
     }
 
@@ -4338,7 +4338,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
+        mMediator.onMenuItemClicked(R.id.close_tab_group, TAB1_ID, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
     }
