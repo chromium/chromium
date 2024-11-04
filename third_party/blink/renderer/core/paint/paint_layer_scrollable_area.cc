@@ -830,9 +830,6 @@ bool PaintLayerScrollableArea::UserInputScrollable(
     return false;
   }
 
-  if (GetLayoutBox()->IsIntrinsicallyScrollable(orientation))
-    return true;
-
   if (IsA<LayoutView>(GetLayoutBox())) {
     Document& document = GetLayoutBox()->GetDocument();
     Element* fullscreen_element = Fullscreen::FullscreenElementFrom(document);
