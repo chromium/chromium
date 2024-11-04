@@ -444,8 +444,6 @@ export default [
     files: ['chrome/browser/resources/ash/settings/**/*.[jt]s'],
 
     rules: {
-      '@typescript-eslint/consistent-type-imports': 'off',
-
       '@typescript-eslint/explicit-function-return-type': [
         'error', {
           allowExpressions: true,
