@@ -470,6 +470,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPositionArea:
     case CSSPropertyID::kInsetArea:
       return a.GetPositionArea() == b.GetPositionArea();
+    case CSSPropertyID::kInteractivity:
+      return a.Interactivity() == b.Interactivity();
     case CSSPropertyID::kInterpolateSize:
       return a.InterpolateSize() == b.InterpolateSize();
     case CSSPropertyID::kIsolation:

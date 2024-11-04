@@ -2025,6 +2025,8 @@ data/accessibility/css/iframe-hidden-expected-blink.txt
 data/accessibility/css/iframe-hidden.html
 data/accessibility/css/inline-position-relative-expected-blink.txt
 data/accessibility/css/inline-position-relative.html
+data/accessibility/css/interactivity-inert-expected-blink.txt
+data/accessibility/css/interactivity-inert.html
 data/accessibility/css/language-expected-android-assist-data.txt
 data/accessibility/css/language-expected-android-external.txt
 data/accessibility/css/language-expected-android.txt
@@ -2119,8 +2121,6 @@ data/accessibility/css/visibility-expected-blink.txt
 data/accessibility/css/visibility-expected-mac.txt
 data/accessibility/css/visibility-expected-uia-win.txt
 data/accessibility/css/visibility-expected-win.txt
-data/accessibility/css/visibility-inert-expected-blink.txt
-data/accessibility/css/visibility-inert.html
 data/accessibility/css/visibility-to-collapsed-expected-blink.txt
 data/accessibility/css/visibility-to-collapsed.html
 data/accessibility/css/visibility-to-hidden-expected-blink.txt

@@ -1705,7 +1705,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // TODO: `visibility: hidden` shouldn't prevent focusability, see
     // https://html.spec.whatwg.org/multipage/interaction.html#focusable-area
     return !IsEnsuredInDisplayNone() && !IsInert() &&
-           UsedVisibility() == EVisibility::kVisible &&
+           Visibility() == EVisibility::kVisible &&
            (Display() != EDisplay::kContents ||
             RuntimeEnabledFeatures::DisplayContentsFocusableEnabled());
   }
@@ -1854,25 +1854,15 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollsOverflowX() || ScrollsOverflowY();
   }
 
-  // Returns true if the element is HTML inert, or if the visibility computes to
-  // 'inert'.
+  // Returns true if the element is HTML inert, or if 'interactivity' computes
+  // to 'inert'.
   bool IsInert() const {
-    return IsHTMLInert() || Visibility() == EVisibility::kInert;
-  }
-
-  // Return the visibility property value with 'inert' translated into
-  // 'visible'. Use IsInert() to query inertness.
-  EVisibility UsedVisibility() const {
-    EVisibility visibility = Visibility();
-    if (visibility == EVisibility::kInert) {
-      visibility = EVisibility::kVisible;
-    }
-    return visibility;
+    return IsHTMLInert() || Interactivity() == EInteractivity::kInert;
   }
 
   // Visibility utility functions.
   bool VisibleToHitTesting() const {
-    return UsedVisibility() == EVisibility::kVisible &&
+    return Visibility() == EVisibility::kVisible &&
            UsedPointerEvents() != EPointerEvents::kNone;
   }
 

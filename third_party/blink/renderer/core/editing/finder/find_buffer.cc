@@ -170,7 +170,7 @@ Node* GetVisibleTextNode(Node& start_node) {
       node = Direction::NextSkippingSubtree(*node);
       continue;
     }
-    if (style && style->UsedVisibility() == EVisibility::kVisible &&
+    if (style && style->Visibility() == EVisibility::kVisible &&
         node->IsTextNode() &&
         (!RuntimeEnabledFeatures::FindTextSkipCollapsedTextEnabled() ||
          node->GetLayoutObject())) {
@@ -347,7 +347,7 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
         node->GetComputedStyleForElementOrLayoutObject();
     if (ShouldIgnoreContents(*node) || !style ||
         style->Display() == EDisplay::kNone ||
-        style->UsedVisibility() != EVisibility::kVisible) {
+        style->Visibility() != EVisibility::kVisible) {
       continue;
     }
 
@@ -494,7 +494,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       continue;
     }
 
-    if (style->UsedVisibility() == EVisibility::kVisible &&
+    if (style->Visibility() == EVisibility::kVisible &&
         node->GetLayoutObject()) {
       // This node is in its own sub-block separate from our starting position.
       if (last_added_text_node && last_added_text_node->GetLayoutObject() &&

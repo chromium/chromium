@@ -473,8 +473,7 @@ static void Write(StringBuilder& ts,
 
   WriteIndent(ts, indent);
 
-  if (layer.GetLayoutObject().StyleRef().UsedVisibility() ==
-      EVisibility::kHidden) {
+  if (layer.GetLayoutObject().StyleRef().Visibility() == EVisibility::kHidden) {
     ts << "hidden ";
   }
 

@@ -203,7 +203,7 @@ PhysicalRect VisualRectInDocument(const LayoutObject& object,
 }
 
 PhysicalRect LocalVisualRect(const LayoutObject& object) {
-  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible &&
+  if (object.StyleRef().Visibility() != EVisibility::kVisible &&
       object.VisualRectRespectsVisibility()) {
     return PhysicalRect();
   }

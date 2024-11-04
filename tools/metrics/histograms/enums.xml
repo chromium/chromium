@@ -26547,6 +26547,7 @@ Called by update_use_counter_css.py.-->
   <int value="808" label="masonry-slack"/>
   <int value="809" label="caret-animation"/>
   <int value="810" label="view-transition-capture-mode"/>
+  <int value="811" label="interactivity"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

@@ -168,7 +168,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.IsSVGChild())
     return false;
 
-  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+  if (object.StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
   }
 

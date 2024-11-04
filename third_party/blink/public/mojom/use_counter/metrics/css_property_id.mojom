@@ -867,6 +867,7 @@ enum CSSSampleId {
     kMasonrySlack = 808,
     kCaretAnimation = 809,
     kViewTransitionCaptureMode = 810,
+    kInteractivity = 811,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

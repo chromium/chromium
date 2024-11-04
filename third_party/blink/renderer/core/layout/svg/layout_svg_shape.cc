@@ -475,7 +475,7 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
       PointerEventsHitRules::kSvgGeometryHitTesting, result.GetHitTestRequest(),
       style.UsedPointerEvents());
   if (hit_rules.require_visible &&
-      style.UsedVisibility() != EVisibility::kVisible) {
+      style.Visibility() != EVisibility::kVisible) {
     return false;
   }
 

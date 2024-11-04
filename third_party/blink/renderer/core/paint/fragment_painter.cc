@@ -37,7 +37,7 @@ void FragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
   DCHECK(paint_info.ShouldAddUrlMetadata());
 
   const PhysicalBoxFragment& fragment = PhysicalFragment();
-  if (fragment.Style().UsedVisibility() != EVisibility::kVisible) {
+  if (fragment.Style().Visibility() != EVisibility::kVisible) {
     return;
   }
 

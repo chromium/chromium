@@ -414,7 +414,7 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
   // TODO(tkent): We generate unnecessary "style: {\n},\n" even if no
   // additional style.
   PagePopupClient::AddString("style: {\n", data);
-  if (style->UsedVisibility() == EVisibility::kHidden) {
+  if (style->Visibility() == EVisibility::kHidden) {
     AddProperty("visibility", String("hidden"), data);
   }
   if (style->Display() == EDisplay::kNone) {

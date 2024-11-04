@@ -882,7 +882,7 @@ void InputType::WarnIfValueIsInvalidAndElementIsVisible(
     const String& value) const {
   // Don't warn if the value is set in Modernizr.
   const ComputedStyle* style = GetElement().GetComputedStyle();
-  if (style && style->UsedVisibility() != EVisibility::kHidden) {
+  if (style && style->Visibility() != EVisibility::kHidden) {
     WarnIfValueIsInvalid(value);
   }
 }
@@ -1244,7 +1244,7 @@ void InputType::StepUpFromLayoutObject(int n) {
 
 void InputType::CountUsageIfVisible(WebFeature feature) const {
   if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
-    if (style->UsedVisibility() != EVisibility::kHidden) {
+    if (style->Visibility() != EVisibility::kHidden) {
       UseCounter::Count(GetElement().GetDocument(), feature);
     }
   }

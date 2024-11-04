@@ -4826,13 +4826,14 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
 
   if (style) {
     if (GetLayoutObject()) {
-      return style->UsedVisibility() != EVisibility::kVisible;
+      return style->Visibility() != EVisibility::kVisible;
     }
+
     // TODO(crbug.com/1286465): It's not consistent to only check
     // IsEnsuredInDisplayNone() on layoutless elements.
     return GetNode() && GetNode()->IsElementNode() &&
            (style->IsEnsuredInDisplayNone() ||
-            style->UsedVisibility() != EVisibility::kVisible);
+            style->Visibility() != EVisibility::kVisible);
   }
 
   Node* node = GetNode();

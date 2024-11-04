@@ -1422,9 +1422,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kVisibility:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
-             value_id == CSSValueID::kCollapse ||
-             (RuntimeEnabledFeatures::CSSVisibilityInertEnabled() &&
-              value_id == CSSValueID::kInert);
+             value_id == CSSValueID::kCollapse;
     case CSSPropertyID::kAppRegion:
       return (value_id >= CSSValueID::kDrag &&
               value_id <= CSSValueID::kNoDrag) ||
@@ -1685,6 +1683,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kTrimStart ||
              value_id == CSSValueID::kTrimEnd ||
              value_id == CSSValueID::kTrimBoth;
+    case CSSPropertyID::kInteractivity:
+      DCHECK(RuntimeEnabledFeatures::CSSInertEnabled());
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kInert;
     default:
       NOTREACHED();
   }
@@ -1822,6 +1823,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kOverlay,
     CSSPropertyID::kTextBoxTrim,
     CSSPropertyID::kScrollStartTarget,
+    CSSPropertyID::kInteractivity,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

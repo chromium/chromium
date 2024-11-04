@@ -2188,7 +2188,7 @@ gfx::Rect PaintLayerScrollableArea::ScrollCornerAndResizerRect() const {
 bool PaintLayerScrollableArea::IsAbsolutePointInResizeControl(
     const gfx::Point& absolute_point,
     ResizerHitTestType resizer_hit_test_type) const {
-  if (GetLayoutBox()->StyleRef().UsedVisibility() != EVisibility::kVisible ||
+  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
       !GetLayoutBox()->CanResize()) {
     return false;
   }
@@ -2201,7 +2201,7 @@ bool PaintLayerScrollableArea::IsAbsolutePointInResizeControl(
 bool PaintLayerScrollableArea::IsLocalPointInResizeControl(
     const gfx::Point& local_point,
     ResizerHitTestType resizer_hit_test_type) const {
-  if (GetLayoutBox()->StyleRef().UsedVisibility() != EVisibility::kVisible ||
+  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
       !GetLayoutBox()->CanResize()) {
     return false;
   }
@@ -2507,7 +2507,7 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   }
 
   bool is_visible =
-      GetLayoutBox()->StyleRef().UsedVisibility() == EVisibility::kVisible;
+      GetLayoutBox()->StyleRef().Visibility() == EVisibility::kVisible;
   bool did_scroll_overflow = scrolls_overflow_;
   if (auto* layout_view = DynamicTo<LayoutView>(GetLayoutBox())) {
     mojom::blink::ScrollbarMode h_mode;

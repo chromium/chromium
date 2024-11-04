@@ -144,7 +144,7 @@ class ChunkGraphBuilder {
           }
         }
       }
-      if (style->UsedVisibility() == EVisibility::kVisible &&
+      if (style->Visibility() == EVisibility::kVisible &&
           node->GetLayoutObject()) {
         // `node` is in its own sub-block separate from our starting position.
         if (last_added_text_node && !FindBuffer::IsInSameUninterruptedBlock(

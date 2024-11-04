@@ -222,7 +222,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     return;
 
   const ComputedStyle& style = text_item.Style();
-  if (style.UsedVisibility() != EVisibility::kVisible) {
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
   }
 

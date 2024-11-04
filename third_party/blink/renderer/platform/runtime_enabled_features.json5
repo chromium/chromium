@@ -1045,6 +1045,11 @@
       status: "stable",
     },
     {
+      // Support making elements inert through the interactivity property.
+      name: "CSSInert",
+      status: "experimental",
+    },
+    {
       // The `inset-area` CSS property has been renamed to `position-area`. This
       // feature (CSSInsetAreaProperty) enables the old `inset-area` property.
       // This was deprecated in M129, and disabled by default in M131. Assuming
@@ -1316,11 +1321,6 @@
       // https://chromestatus.com/feature/5064894363992064
       name: "CSSViewTransitionClass",
       status: "stable"
-    },
-    {
-      // Support the 'inert' keyword for the visibility property.
-      name: "CSSVisibilityInert",
-      status: "experimental",
     },
     {
       name: "CursorAnchorInfoMojoPipe",

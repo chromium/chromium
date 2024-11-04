@@ -42,7 +42,7 @@ static std::optional<AffineTransform> SetupNonScalingStrokeContext(
 
 void SVGShapePainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground ||
-      layout_svg_shape_.StyleRef().UsedVisibility() != EVisibility::kVisible ||
+      layout_svg_shape_.StyleRef().Visibility() != EVisibility::kVisible ||
       layout_svg_shape_.IsShapeEmpty()) {
     return;
   }

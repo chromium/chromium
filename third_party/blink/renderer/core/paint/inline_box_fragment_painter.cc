@@ -91,7 +91,7 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
 void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
                                          const PhysicalOffset& paint_offset) {
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
-  if (!style_.HasMask() || style_.UsedVisibility() != EVisibility::kVisible) {
+  if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -146,7 +146,7 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground);
-  if (inline_box_fragment_.Style().UsedVisibility() != EVisibility::kVisible ||
+  if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible ||
       inline_box_fragment_.IsOpaque()) {
     return;
   }
@@ -212,7 +212,7 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
-      line_style_.UsedVisibility() != EVisibility::kVisible) {
+      line_style_.Visibility() != EVisibility::kVisible) {
     return;
   }
 

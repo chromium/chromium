@@ -101,9 +101,8 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable CSSReadingFlow, used by AccessibilityCSSReadingFlow.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CSSReadingFlow");
-  // Enable CSSVisibilityInert, used by AccessibilityCSSVisibilityInert
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "CSSVisibilityInert");
+  // Enable CSSInert, used by AccessibilityCSSInteractivityInert.
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "CSSInert");
   // Enable reference target
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "ShadowRootReferenceTarget");
@@ -4235,8 +4234,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSVisibilityInert) {
-  RunCSSTest(FILE_PATH_LITERAL("visibility-inert.html"));
+                       AccessibilityCSSInteractivityInert) {
+  RunCSSTest(FILE_PATH_LITERAL("interactivity-inert.html"));
 }
 
 //

@@ -115,7 +115,7 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       continue;
     }
     const ComputedStyle& style = layout_object->StyleRef();
-    if (style.UsedVisibility() != EVisibility::kVisible) {
+    if (style.Visibility() != EVisibility::kVisible) {
       previous_node_iterator = previousNode();
       continue;
     }
@@ -240,7 +240,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
       continue;
     }
     const ComputedStyle& style = layout_object->StyleRef();
-    if (style.UsedVisibility() != EVisibility::kVisible) {
+    if (style.Visibility() != EVisibility::kVisible) {
       next_node_iterator = nextNode();
       continue;
     }

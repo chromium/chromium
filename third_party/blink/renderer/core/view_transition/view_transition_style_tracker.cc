@@ -2228,9 +2228,8 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     }
   }
 
-  const bool visible =
-      box.StyleRef().UsedVisibility() == EVisibility::kVisible ||
-      !box.VisualRectRespectsVisibility();
+  const bool visible = box.StyleRef().Visibility() == EVisibility::kVisible ||
+                       !box.VisualRectRespectsVisibility();
   const bool layered_effects_contribute_to_visual_overflow =
       ancestor || !ViewTransitionUtils::UseLayeredCapture(box.StyleRef());
   PhysicalRect result;
@@ -2275,7 +2274,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
         }
 
         const bool child_visible =
-            child_text->StyleRef().UsedVisibility() == EVisibility::kVisible ||
+            child_text->StyleRef().Visibility() == EVisibility::kVisible ||
             !child_text->VisualRectRespectsVisibility();
         if (!child_visible) {
           continue;

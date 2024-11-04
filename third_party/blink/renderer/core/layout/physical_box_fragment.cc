@@ -74,7 +74,7 @@ bool ShouldUsePositionForPointInBlockFlowDirection(
 
 inline bool IsHitTestCandidate(const PhysicalBoxFragment& fragment) {
   return fragment.Size().height &&
-         fragment.Style().UsedVisibility() == EVisibility::kVisible &&
+         fragment.Style().Visibility() == EVisibility::kVisible &&
          !fragment.IsFloatingOrOutOfFlowPositioned();
 }
 
@@ -1262,7 +1262,7 @@ PositionWithAffinity PhysicalBoxFragment::PositionForPointByClosestChild(
       // we'll lower our requirements somewhat. The exact reasoning behind the
       // details here is unknown, but it is something that evolved during
       // WebKit's early years.
-      if (box_fragment.Style().UsedVisibility() != EVisibility::kVisible ||
+      if (box_fragment.Style().Visibility() != EVisibility::kVisible ||
           (box_fragment.Children().empty() && !box_fragment.IsBlockFlow())) {
         continue;
       }

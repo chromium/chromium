@@ -55,7 +55,7 @@ void SVGModelObjectPainter::RecordRegionCaptureData(
 void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground)
     return;
-  if (layout_svg_model_object_.StyleRef().UsedVisibility() !=
+  if (layout_svg_model_object_.StyleRef().Visibility() !=
       EVisibility::kVisible) {
     return;
   }

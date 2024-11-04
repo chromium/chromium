@@ -2036,7 +2036,7 @@ static bool IsCandidateForOpaquenessTest(const LayoutBox& child_box) {
   if (child_box.HasLayer())
     return false;
   const ComputedStyle& child_style = child_box.StyleRef();
-  if (child_style.UsedVisibility() != EVisibility::kVisible ||
+  if (child_style.Visibility() != EVisibility::kVisible ||
       child_style.ShapeOutside()) {
     return false;
   }

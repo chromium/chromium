@@ -10183,7 +10183,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   if ((options->checkVisibilityCSS() ||
        (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
         options->visibilityProperty())) &&
-      style->UsedVisibility() != EVisibility::kVisible) {
+      style->Visibility() != EVisibility::kVisible) {
     return false;
   }
 

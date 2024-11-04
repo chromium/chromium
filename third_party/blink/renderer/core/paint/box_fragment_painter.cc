@@ -79,7 +79,7 @@ inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
                              const ComputedStyle& style) {
   if (fragment.IsHiddenForPaint())
     return false;
-  if (style.UsedVisibility() != EVisibility::kVisible) {
+  if (style.Visibility() != EVisibility::kVisible) {
     auto display = style.Display();
     // Hidden section/row backgrounds still paint into cells.
     if (display != EDisplay::kTableRowGroup && display != EDisplay::kTableRow &&
@@ -110,7 +110,7 @@ inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
 inline bool IsVisibleToPaint(const FragmentItem& item,
                              const ComputedStyle& style) {
   return !item.IsHiddenForPaint() &&
-         style.UsedVisibility() == EVisibility::kVisible;
+         style.Visibility() == EVisibility::kVisible;
 }
 
 inline bool IsVisibleToHitTest(const ComputedStyle& style,
@@ -131,7 +131,7 @@ inline bool IsVisibleToHitTest(const FragmentItem& item,
   PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgTextHitTesting,
                                   request, style.UsedPointerEvents());
   if (hit_rules.require_visible &&
-      style.UsedVisibility() != EVisibility::kVisible) {
+      style.Visibility() != EVisibility::kVisible) {
     return false;
   }
   if (hit_rules.can_hit_bounding_box ||
@@ -1793,7 +1793,7 @@ void BoxFragmentPainter::PaintBackplate(InlineCursor* line_boxes,
   // element is visible.
   const ComputedStyle& style = GetPhysicalFragment().Style();
   if (style.ForcedColorAdjust() != EForcedColorAdjust::kAuto ||
-      style.UsedVisibility() != EVisibility::kVisible) {
+      style.Visibility() != EVisibility::kVisible) {
     return;
   }
 
