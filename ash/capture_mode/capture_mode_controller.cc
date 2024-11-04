@@ -34,6 +34,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -1909,6 +1910,9 @@ void CaptureModeController::MaybeShowDisclaimer(bool success) {
 }
 
 void CaptureModeController::OnDisclaimerAction(bool accepted) {
+  RecordScannerFeatureUserState(
+      accepted ? ScannerFeatureUserState::kConsentDisclaimerAccepted
+               : ScannerFeatureUserState::kConsentDisclaimerRejected);
   GetActiveUserPrefService()->SetBoolean(kSunfishConsentDisclaimerAccepted,
                                          accepted);
 

@@ -29,6 +29,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -40,6 +41,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
@@ -426,6 +428,48 @@ class MockSearchResultsPanel : public SearchResultsPanel {
  private:
   bool mouse_events_received_ = false;
 };
+
+TEST_F(SunfishTest, DisclaimerAcceptRecordsHistogramOnce) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  views::Widget* disclaimer = controller->disclaimer_widget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  LeftClickOn(accept_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kConsentDisclaimerAccepted, 1);
+}
+
+TEST_F(SunfishTest, DisclaimerDeclineRecordsHistogramOnce) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  views::Widget* disclaimer = controller->disclaimer_widget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  LeftClickOn(decline_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kConsentDisclaimerRejected, 1);
+}
 
 TEST_F(SunfishTest,
        DisclaimerAcceptHidesDisclaimerSetPrefsAndContinuesSession) {
