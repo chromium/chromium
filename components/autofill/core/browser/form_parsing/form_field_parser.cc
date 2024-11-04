@@ -222,8 +222,13 @@ void FormFieldParser::ParseFormFields(
   ParseFormFieldsPass(SearchFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
-  // Single fields pass.
-  ParseSingleFieldForms(context, fields, field_candidates);
+  // Merchant promo code pass.
+  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context,
+                      processed_fields, field_candidates);
+
+  // IBAN pass.
+  ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
+                      field_candidates);
 
   ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
       context, fields, field_candidates, is_form_tag);
