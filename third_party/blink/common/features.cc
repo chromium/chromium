@@ -2778,12 +2778,6 @@ BASE_FEATURE(kWebAppManifestLockScreen,
              "WebAppManifestLockScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabling this flag bypasses additional buffering when using the Web Audio
-// API, which may reduce audio output latency but may also increase the
-// probability of an audio glitch.
-BASE_FEATURE(kWebAudioBypassOutputBuffering,
-             "WebAudioBypassOutputBuffering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Parameters can be used to control to which latency hints the feature is
 // applied.
 BASE_FEATURE_PARAM(bool,

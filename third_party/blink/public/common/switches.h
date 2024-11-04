@@ -62,6 +62,7 @@ BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy_Character[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy_Direction[];
 BLINK_COMMON_EXPORT extern const char kDisableStandardizedBrowserZoom[];
+BLINK_COMMON_EXPORT extern const char kWebAudioBypassOutputBufferingOptOut[];
 
 }  // namespace switches
 }  // namespace blink

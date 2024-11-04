@@ -2174,6 +2174,7 @@ chromium-metrics-reviews@google.com.
   <int value="1307" label="ClassManagementEnabled"/>
   <int value="1308" label="EnterpriseSearchAggregatorSettings"/>
   <int value="1309" label="TranslatorAPIAllowed"/>
+  <int value="1310" label="WebAudioOutputBufferingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

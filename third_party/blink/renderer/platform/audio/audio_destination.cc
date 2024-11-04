@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
@@ -79,7 +80,10 @@ const char* DeviceStateToString(AudioDestination::DeviceState state) {
 }
 
 bool BypassOutputBuffer(const WebAudioLatencyHint& latency_hint) {
-  if (!base::FeatureList::IsEnabled(features::kWebAudioBypassOutputBuffering)) {
+  if (RuntimeEnabledFeatures::WebAudioBypassOutputBufferingOptOutEnabled()) {
+    return false;
+  }
+  if (!RuntimeEnabledFeatures::WebAudioBypassOutputBufferingEnabled()) {
     return false;
   }
   switch (latency_hint.Category()) {

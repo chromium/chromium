@@ -184,5 +184,11 @@ const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";
 
+// Used to communicate managed policy for WebAudioBypassOutputBuffering.  This
+// feature is typically controlled by a RuntimeEnabledFeature, but requires an
+// enterprise policy override.
+const char kWebAudioBypassOutputBufferingOptOut[] =
+    "web-audio-bypass-output-buffering-opt-out";
+
 }  // namespace switches
 }  // namespace blink

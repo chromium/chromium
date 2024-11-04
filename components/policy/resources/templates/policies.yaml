@@ -1308,6 +1308,7 @@ policies:
   1307: ClassManagementEnabled
   1308: EnterpriseSearchAggregatorSettings
   1309: TranslatorAPIAllowed
+  1310: WebAudioOutputBufferingEnabled
 
 atomic_groups:
   1: Homepage

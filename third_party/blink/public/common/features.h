@@ -1802,8 +1802,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensions);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableUrlHandlers);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
 
-// Enables synchronous AudioWorklet rendering.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioBypassOutputBuffering);
 // Parameters are used to control to which latency hints the feature is applied
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

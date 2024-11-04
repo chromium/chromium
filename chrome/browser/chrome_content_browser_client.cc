@@ -1672,6 +1672,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
 #endif
+
+  registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
 }
 
 // static
@@ -2858,6 +2860,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                 kForcePermissionPolicyUnloadDefaultEnabled)) {
         command_line->AppendSwitch(
             blink::switches::kForcePermissionPolicyUnloadDefaultEnabled);
+      }
+
+      if (prefs->GetBoolean(prefs::kWebAudioOutputBufferingEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kWebAudioBypassOutputBufferingOptOut);
       }
 
 #if !BUILDFLAG(IS_ANDROID)

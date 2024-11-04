@@ -4645,6 +4645,16 @@
       origin_trial_feature_name: "WebAssemblyJSStringBuiltins",
       status: "stable",
     },
+    {
+      // https://chromestatus.com/feature/5077691662073856
+      name: "WebAudioBypassOutputBuffering",
+    },
+    {
+      // https://chromestatus.com/feature/5077691662073856
+      // Allows an Enterprise Policy to override WebAudioBypassOutputBuffering
+      name: "WebAudioBypassOutputBufferingOptOut",
+      public: true,
+    },
     // WebAuth is disabled on Android versions prior to N (7.0) due to lack of
     // supporting APIs, see runtime_features.cc.
     {
