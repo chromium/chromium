@@ -11,6 +11,7 @@ namespace safe_browsing {
 extern const char kSuspiciousVerdictLabel[];
 
 // Histogram names.
+extern const char kAllowlistCheckLatencyHistogram[];
 extern const char kSuspiciousScoreHistogram[];
 
 }  // namespace safe_browsing

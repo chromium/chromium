@@ -40,8 +40,9 @@ class NotificationContentDetectionModel
   ~NotificationContentDetectionModel() override;
 
   // Perform inference on the model with the provided notification contents.
-  // Pass `PostprocessCategories` as the `ExecuteModelWithInput` callback.
-  void Execute(blink::PlatformNotificationData& notification_data);
+  // Pass `PostprocessCategories` as the `ExecuteModelWithInput` callback. This
+  // method is virtual for testing.
+  virtual void Execute(blink::PlatformNotificationData& notification_data);
 
  private:
   // Log UMA metrics, given the `output` result of model inference.

@@ -8,6 +8,8 @@ namespace safe_browsing {
 
 const char kSuspiciousVerdictLabel[] = "suspicious";
 
+const char kAllowlistCheckLatencyHistogram[] =
+    "SafeBrowsing.NotificationContentDetection.AllowlistCheckLatency";
 const char kSuspiciousScoreHistogram[] =
     "SafeBrowsing.NotificationContentDetection.SuspiciousScore";
 

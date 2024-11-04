@@ -11,11 +11,14 @@ source_set("notification_content_detection") {
     "notification_content_detection_constants.h",
     "notification_content_detection_model.cc",
     "notification_content_detection_model.h",
+    "notification_content_detection_service.cc",
+    "notification_content_detection_service.h",
   ]
 
   deps = [
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/core:features",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//third_party/blink/public/common:headers",
     "//url:url",
   ]
@@ -24,7 +27,10 @@ source_set("notification_content_detection") {
 source_set("unittests") {
   testonly = true
   sources = [
+    "mock_safe_browsing_database_manager.cc",
+    "mock_safe_browsing_database_manager.h",
     "notification_content_detection_model_unittest.cc",
+    "notification_content_detection_service_unittest.cc",
     "test_model_observer_tracker.cc",
     "test_model_observer_tracker.h",
     "test_notification_content_detection_model.cc",
@@ -39,6 +45,9 @@ source_set("unittests") {
     "//components/optimization_guide/core:model_executor",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:prefs",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
   ]
 }

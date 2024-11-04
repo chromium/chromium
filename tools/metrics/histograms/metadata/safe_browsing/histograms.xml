@@ -1984,6 +1984,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.NotificationContentDetection.AllowlistCheckLatency"
+    units="ms" expires_after="2025-10-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the latency of performing an allowlist check that happens before
+    (possibly) performing inference on the notification content detection model.
+    Logged when there is a request to display a persisitent notification.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NotificationContentDetection.SuspiciousScore"
     units="score" expires_after="2025-10-22">
   <owner>skrakowi@chromium.org</owner>
