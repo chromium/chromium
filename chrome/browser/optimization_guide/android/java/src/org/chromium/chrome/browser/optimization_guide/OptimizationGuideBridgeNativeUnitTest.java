@@ -89,7 +89,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         }
 
         public Map<OptimizationType, OptimizationGuideDecisionWithMetadata>
-                getDecisionMetadataForURL(GURL url) {
+                getDecisionMetadataForUrl(GURL url) {
             return mDecisions.get(url);
         }
     }
@@ -127,6 +127,19 @@ public class OptimizationGuideBridgeNativeUnitTest {
     }
 
     @CalledByNative
+    public void testSyncCanApplyOptimizationHasHint() {
+        var result =
+                mOptimizationGuideBridge.canApplyOptimization(
+                        new GURL(TEST_URL), OptimizationType.LOADING_PREDICTOR);
+
+        assertEquals(OptimizationGuideDecision.TRUE, result.getDecision());
+        assertNotNull(result.getMetadata());
+        assertEquals(
+                "optimization_guide.proto.LoadingPredictorMetadata",
+                result.getMetadata().getTypeUrl());
+    }
+
+    @CalledByNative
     public void testCanApplyOptimizationOnDemand() {
         RequestContextMetadata requestContextMetadata = RequestContextMetadata.newBuilder().build();
 
@@ -142,7 +155,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
                 requestContextMetadata);
 
         Map<OptimizationType, OptimizationGuideDecisionWithMetadata> test_url_metadata =
-                callback.getDecisionMetadataForURL(new GURL(TEST_URL));
+                callback.getDecisionMetadataForUrl(new GURL(TEST_URL));
         assertNotNull(test_url_metadata);
         OptimizationGuideDecisionWithMetadata test_url_lp_metadata =
                 test_url_metadata.get(OptimizationType.LOADING_PREDICTOR);
@@ -159,7 +172,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         assertNull(test_url_ds_metadata.getMetadata());
 
         Map<OptimizationType, OptimizationGuideDecisionWithMetadata> test_url2_metadata =
-                callback.getDecisionMetadataForURL(new GURL(TEST_URL2));
+                callback.getDecisionMetadataForUrl(new GURL(TEST_URL2));
         assertNotNull(test_url2_metadata);
         OptimizationGuideDecisionWithMetadata test_url2_lp_metadata =
                 test_url2_metadata.get(OptimizationType.LOADING_PREDICTOR);

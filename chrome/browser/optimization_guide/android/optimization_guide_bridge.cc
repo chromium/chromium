@@ -232,6 +232,23 @@ void OptimizationGuideBridge::CanApplyOptimization(
                      ScopedJavaGlobalRef<jobject>(env, java_callback)));
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+OptimizationGuideBridge::CanApplyOptimizationSync(JNIEnv* env,
+                                                  GURL& url,
+                                                  jint optimization_type) {
+  optimization_guide::OptimizationMetadata metadata;
+
+  auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
+      url,
+      static_cast<optimization_guide::proto::OptimizationType>(
+          optimization_type),
+      /* optimization_metadata = */ &metadata);
+
+  return Java_OptimizationGuideBridge_createDecisionWithMetadata(
+      env, static_cast<int>(decision),
+      ToJavaSerializedAnyMetadata(env, metadata));
+}
+
 void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     JNIEnv* env,
     std::vector<GURL>& urls,
