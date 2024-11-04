@@ -23,13 +23,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -277,9 +273,9 @@ bool DecodingImageGenerator::GetYUVAPlanes(
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
 
-  SkISize plane_sizes[3];
-  wtf_size_t plane_row_bytes[3];
-  void* plane_addrs[3];
+  std::array<SkISize, 3> plane_sizes;
+  std::array<wtf_size_t, 3> plane_row_bytes;
+  std::array<void*, 3> plane_addrs;
 
   // Verify sizes and extract DecodeToYUV parameters
   for (int i = 0; i < 3; ++i) {
@@ -299,8 +295,8 @@ bool DecodingImageGenerator::GetYUVAPlanes(
   ScopedSegmentReaderDataLocker lock_data(data_.get());
   return frame_generator_->DecodeToYUV(
       data_.get(), static_cast<wtf_size_t>(frame_index),
-      pixmaps.plane(0).colorType(), plane_sizes, plane_addrs, plane_row_bytes,
-      client_id);
+      pixmaps.plane(0).colorType(), plane_sizes.data(), plane_addrs.data(),
+      plane_row_bytes.data(), client_id);
 }
 
 SkISize DecodingImageGenerator::GetSupportedDecodeSize(
