@@ -45,7 +45,7 @@ DnsOverHttpsServerConfig ParseValidDohTemplate(
   }
 
   auto parsed_template = DnsOverHttpsServerConfig::FromString(
-      std::move(server_template), endpoints);
+      std::move(server_template), std::move(endpoints));
   DCHECK(parsed_template.has_value());  // Template must be valid.
   return std::move(*parsed_template);
 }

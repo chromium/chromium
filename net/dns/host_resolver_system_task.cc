@@ -115,7 +115,7 @@ int ResolveOnWorkerThread(scoped_refptr<HostResolverProc> resolver_proc,
                           handles::NetworkHandle network,
                           AddressList* addrlist,
                           int* os_error) {
-  std::string hostname_str = hostname ? *hostname : GetHostName();
+  std::string hostname_str = hostname ? *std::move(hostname) : GetHostName();
   if (resolver_proc) {
     return resolver_proc->Resolve(hostname_str, address_family, flags, addrlist,
                                   os_error, network);
@@ -228,7 +228,7 @@ std::unique_ptr<HostResolverSystemTask> HostResolverSystemTask::Create(
     handles::NetworkHandle network,
     std::optional<CacheParams> cache_params) {
   return std::make_unique<HostResolverSystemTask>(
-      hostname, address_family, flags, params, job_net_log, network,
+      std::move(hostname), address_family, flags, params, job_net_log, network,
       std::move(cache_params));
 }
 
