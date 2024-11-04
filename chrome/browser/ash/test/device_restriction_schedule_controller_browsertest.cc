@@ -226,8 +226,16 @@ IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
   ASSERT_TRUE(future.Wait());
 }
 
+// TODO(crbug.com/377134347): Consistently failing on linux-chromeos bots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RestrictionScheduleMessageChanged \
+  DISABLED_RestrictionScheduleMessageChanged
+#else
+#define MAYBE_RestrictionScheduleMessageChanged \
+  RestrictionScheduleMessageChanged
+#endif
 IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
-                       RestrictionScheduleMessageChanged) {
+                       MAYBE_RestrictionScheduleMessageChanged) {
   auto mock_timer_owned = std::make_unique<FakeWallClockTimer>();
   FakeWallClockTimer* mock_timer = mock_timer_owned.get();
   controller().SetMessageUpdateTimerForTesting(std::move(mock_timer_owned));
