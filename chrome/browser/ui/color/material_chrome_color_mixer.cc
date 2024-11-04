@@ -230,6 +230,21 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorLabelForegroundDisabled};
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
+  // History Embeddings colors.
+  mixer[kColorHistoryEmbeddingsBackground] = {ui::kColorSysSurface};
+  mixer[kColorHistoryEmbeddingsDivider] = {ui::kColorSysDivider};
+  mixer[kColorHistoryEmbeddingsForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorHistoryEmbeddingsForegroundSubtle] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorHistoryEmbeddingsImageBackground] = {
+      ui::kColorSysNeutralContainer};
+  mixer[kColorHistoryEmbeddingsImageBackgroundGradientEnd] = {
+      ui::kColorSysGradientTertiary};
+  mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
+      ui::kColorSysGradientPrimary};
+  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {
+      ui::kColorSysBaseContainerElevated};
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
@@ -297,21 +312,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
   mixer[kColorFrameCaptionInactive] = {ui::kColorSysOnHeaderPrimaryInactive};
-
-  // History Embeddings colors.
-  mixer[kColorHistoryEmbeddingsBackground] = {ui::kColorSysSurface};
-  mixer[kColorHistoryEmbeddingsDivider] = {ui::kColorSysDivider};
-  mixer[kColorHistoryEmbeddingsForeground] = {ui::kColorSysOnSurface};
-  mixer[kColorHistoryEmbeddingsForegroundSubtle] = {
-      ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorHistoryEmbeddingsImageBackground] = {
-      ui::kColorSysNeutralContainer};
-  mixer[kColorHistoryEmbeddingsImageBackgroundGradientEnd] = {
-      ui::kColorSysGradientTertiary};
-  mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
-      ui::kColorSysGradientPrimary};
-  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {
-      ui::kColorSysBaseContainerElevated};
 
   mixer[kColorTabHoverCardSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarBackground] = {ui::kColorSysBase};
