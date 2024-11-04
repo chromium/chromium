@@ -1134,8 +1134,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Sync.TabGroup.Closed.Reason" enum="GroupCloseReason"
-    expires_after="2025-03-30">
+<histogram name="TabGroups.Sync.TabGroup.Closed.Reason"
+    enum="GroupClosingSource" expires_after="2025-03-30">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -1166,8 +1166,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Sync.TabGroup.Opened.Reason" enum="GroupOpenReason"
-    expires_after="2025-03-23">
+<histogram name="TabGroups.Sync.TabGroup.Opened.Reason"
+    enum="GroupOpeningSource" expires_after="2025-03-23">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>

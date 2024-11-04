@@ -83,9 +83,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Found"/>
 </enum>
 
-<!-- LINT.IfChange(GroupCloseReason) -->
+<!-- LINT.IfChange(GroupClosingSource) -->
 
-<enum name="GroupCloseReason">
+<enum name="GroupClosingSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Closed by user"/>
   <int value="2" label="Deleted by user"/>
@@ -102,9 +102,9 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:ClosingSource) -->
 
-<!-- LINT.IfChange(GroupOpenReason) -->
+<!-- LINT.IfChange(GroupOpeningSource) -->
 
-<enum name="GroupOpenReason">
+<enum name="GroupOpeningSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Opened from revisit UI"/>
   <int value="2" label="Auto-opened from sync"/>

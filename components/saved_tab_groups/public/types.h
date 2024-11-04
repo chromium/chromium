@@ -88,7 +88,7 @@ enum class OpeningSource {
 
   kMaxValue = kConnectOnGroupShare,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpenReason)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpeningSource)
 
 // LINT.IfChange(ClosingSource)
 // Specifies the source of an action that closed a tab group.
@@ -119,7 +119,7 @@ enum class ClosingSource {
   kDisconnectOnGroupShared = 9,
   kMaxValue = kDisconnectOnGroupShared,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupCloseReason)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupClosingSource)
 
 // LINT.IfChange(TabGroupEvent)
 // Various types of mutation events associated with tab groups and tabs.
