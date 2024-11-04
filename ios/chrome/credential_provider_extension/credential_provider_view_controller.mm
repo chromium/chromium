@@ -286,6 +286,14 @@ UIColor* BackgroundColor() {
     return;
   }
 
+  NSString* gaia = [self gaia];
+  if ([gaia length] == 0) {
+    // If we don't have a gaia, either the user is signed out of Chrome or has
+    // never opened Chrome. Passkeys require the user to be signed in to Chrome.
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
   ASPasskeyCredentialRequest* passkeyCredentialRequest =
       base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
           registrationRequest);
@@ -312,6 +320,7 @@ UIColor* BackgroundColor() {
         relyingPartyIdentifier:identity.relyingPartyIdentifier
                       username:identity.userName
                     userHandle:identity.userHandle
+                          gaia:gaia
       userVerificationRequired:[self shouldPerformUserVerificationForPreference:
                                          passkeyCredentialRequest
                                              .userVerificationPreference]];
@@ -760,11 +769,12 @@ UIColor* BackgroundColor() {
         relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
                       username:(NSString*)username
                     userHandle:(NSData*)userHandle
+                          gaia:(NSString*)gaia
          securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
       PerformPasskeyCreation(clientDataHash, relyingPartyIdentifier, username,
-                             userHandle, [self gaia], securityDomainSecrets);
+                             userHandle, gaia, securityDomainSecrets);
   if (passkeyRegistrationCredential) {
     [self completeRegistrationRequestWithSelectedPasskeyCredential:
               passkeyRegistrationCredential];
@@ -779,6 +789,7 @@ UIColor* BackgroundColor() {
         relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
                       username:(NSString*)username
                     userHandle:(NSData*)userHandle
+                          gaia:(NSString*)gaia
       userVerificationRequired:(BOOL)userVerificationRequired
     API_AVAILABLE(ios(17.0)) {
   __weak __typeof(self) weakSelf = self;
@@ -787,10 +798,11 @@ UIColor* BackgroundColor() {
               relyingPartyIdentifier:relyingPartyIdentifier
                             username:username
                           userHandle:userHandle
+                                gaia:gaia
                securityDomainSecrets:securityDomainSecrets];
   };
 
-  [self fetchSecurityDomainSecretForGaia:[self gaia]
+  [self fetchSecurityDomainSecretForGaia:gaia
                                  purpose:PasskeyKeychainProvider::
                                              ReauthenticatePurpose::kEncrypt
                 userVerificationRequired:userVerificationRequired
