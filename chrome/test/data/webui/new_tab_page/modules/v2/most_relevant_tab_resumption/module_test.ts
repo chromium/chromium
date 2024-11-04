@@ -171,6 +171,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       assertEquals(`Tabs hidden`, dismissEvent.detail.message);
       assertEquals(
           1, metrics.count(`NewTabPage.TabResumption.VisitDismissIndex`, 0));
+      assertEquals(1, handler.getCallCount(`dismissURLVisit`));
 
       // Act.
       const restoreCallback = dismissEvent.detail.restoreCallback!;

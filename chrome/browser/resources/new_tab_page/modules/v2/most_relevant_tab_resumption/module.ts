@@ -156,10 +156,11 @@ export class ModuleElement extends I18nMixinLit
 
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.TabResumption.VisitDismissIndex', index);
+    MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissURLVisit(
+        this.urlVisits[index]);
 
     this.urlVisits =
         [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
-
     if (this.urlVisits.length > 0) {
       this.fire('dismiss-module-element', {
         message: loadTimeData.getStringF(
