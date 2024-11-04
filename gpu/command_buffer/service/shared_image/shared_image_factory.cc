@@ -303,7 +303,8 @@ SharedImageFactory::SharedImageFactory(
   }
   if (is_ahb_supported) {
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
-        feature_info.get(), gpu_preferences_);
+        feature_info.get(), gpu_preferences_,
+        context_state_->vk_context_provider());
     factories_.push_back(std::move(ahb_factory));
   }
 #elif BUILDFLAG(IS_OZONE)
