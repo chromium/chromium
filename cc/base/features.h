@@ -60,12 +60,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
 // commit is running concurrently on the impl thread.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBlockingCommit);
 
-// When enabled, LayerTreeImpl will not preserve the last mutation. This map
-// of the last mutated value should not be necessary as animations are always
-// ticked after the commit which should restore their animated values. Removing
-// this should improve performance and reduce technical complexity.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNoPreserveLastMutation);
-
 // When enabled, the scheduler will allow deferring impl invalidation frames
 // for N frames (default 1) to reduce contention with main frames, allowing
 // main a chance to commit.

@@ -192,20 +192,18 @@ void KeyframeEffect::UpdateTickingState() {
   }
   if (was_ticking && !is_ticking_) {
     awaiting_deletion_ = false;
-    if (base::FeatureList::IsEnabled(features::kNoPreserveLastMutation)) {
-      for (const auto& keyframe_model : keyframe_models()) {
-        // deleted impl side keyframe models keep ticking until the commit
-        // removes them.
-        KeyframeModel* cc_keyframe_model =
-            KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
-        if (keyframe_model->run_state() ==
-                gfx::KeyframeModel::WAITING_FOR_DELETION &&
-            cc_keyframe_model->is_controlling_instance() &&
-            !cc_keyframe_model->is_impl_only()) {
-          awaiting_deletion_ = true;
-          is_ticking_ = true;
-          break;
-        }
+    for (const auto& keyframe_model : keyframe_models()) {
+      // deleted impl side keyframe models keep ticking until the commit
+      // removes them.
+      KeyframeModel* cc_keyframe_model =
+          KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+      if (keyframe_model->run_state() ==
+              gfx::KeyframeModel::WAITING_FOR_DELETION &&
+          cc_keyframe_model->is_controlling_instance() &&
+          !cc_keyframe_model->is_impl_only()) {
+        awaiting_deletion_ = true;
+        is_ticking_ = true;
+        break;
       }
     }
   }

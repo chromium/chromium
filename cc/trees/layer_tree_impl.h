@@ -288,23 +288,6 @@ class CC_EXPORT LayerTreeImpl {
   void SetBackdropFilterMutated(ElementId element_id,
                                 const FilterOperations& backdrop_filters);
 
-  const std::unordered_map<ElementId, float, ElementIdHash>&
-  element_id_to_opacity_animations_for_testing() const {
-    return element_id_to_opacity_animations_;
-  }
-  const std::unordered_map<ElementId, gfx::Transform, ElementIdHash>&
-  element_id_to_transform_animations_for_testing() const {
-    return element_id_to_transform_animations_;
-  }
-  const std::unordered_map<ElementId, FilterOperations, ElementIdHash>&
-  element_id_to_filter_animations_for_testing() const {
-    return element_id_to_filter_animations_;
-  }
-  const std::unordered_map<ElementId, FilterOperations, ElementIdHash>&
-  element_id_to_backdrop_filter_animations_for_testing() const {
-    return element_id_to_backdrop_filter_animations_;
-  }
-
   int source_frame_number() const { return source_frame_number_; }
   void set_source_frame_number(int frame_number) {
     source_frame_number_ = frame_number;
@@ -939,15 +922,6 @@ class CC_EXPORT LayerTreeImpl {
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
   RAW_PTR_EXCLUSION base::flat_set<LayerImpl*>
       layers_that_should_push_properties_;
-
-  std::unordered_map<ElementId, float, ElementIdHash>
-      element_id_to_opacity_animations_;
-  std::unordered_map<ElementId, gfx::Transform, ElementIdHash>
-      element_id_to_transform_animations_;
-  std::unordered_map<ElementId, FilterOperations, ElementIdHash>
-      element_id_to_filter_animations_;
-  std::unordered_map<ElementId, FilterOperations, ElementIdHash>
-      element_id_to_backdrop_filter_animations_;
 
   struct ScrollbarLayerIds {
     int horizontal = Layer::INVALID_ID;
