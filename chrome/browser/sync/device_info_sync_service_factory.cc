@@ -77,7 +77,8 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
 
 DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() = default;
 
-KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DeviceInfoSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -92,7 +93,7 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   auto device_prefs = std::make_unique<syncer::DeviceInfoPrefs>(
       profile->GetPrefs(), base::DefaultClock::GetInstance());
 
-  return new syncer::DeviceInfoSyncServiceImpl(
+  return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client),
