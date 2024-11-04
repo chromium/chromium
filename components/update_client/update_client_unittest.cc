@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -68,14 +69,20 @@ auto MakeMockCallback() {
 
 // Makes factories for creating update checker instances. `UpdateClient` uses
 // the factory to make one update client checker for each update check. This
-// factory of factories counts instances of update checkers made.
+// factory of factories counts instances of update checkers made. The factory
+// scope must enclose the scope of its clients since the `num_calls_` member
+// is captured by the lambda.
 template <typename MockUpdateChecker>
 class MockUpdateCheckerFactory {
  public:
   typename MockUpdateChecker::Factory GetFactory() {
     return base::BindLambdaForTesting(
         [&](scoped_refptr<Configurator>) -> std::unique_ptr<UpdateChecker> {
-          return std::make_unique<MockUpdateChecker>(++num_calls_);
+          if constexpr (std::is_default_constructible_v<MockUpdateChecker>) {
+            return std::make_unique<MockUpdateChecker>();
+          } else {
+            return std::make_unique<MockUpdateChecker>(++num_calls_);
+          }
         });
   }
 
@@ -345,7 +352,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -377,7 +384,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -478,7 +485,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -558,7 +565,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -753,7 +760,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -817,7 +824,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -994,7 +1001,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -1058,7 +1065,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -1217,7 +1224,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -1230,7 +1237,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -1337,7 +1344,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -1436,7 +1443,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -1789,7 +1796,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -2123,7 +2130,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -2182,7 +2189,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -2467,7 +2474,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -2860,7 +2867,7 @@ TEST_F(UpdateClientTest,
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -3127,7 +3134,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -3158,7 +3165,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -3279,7 +3286,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -3345,7 +3352,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -3518,7 +3525,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -3531,7 +3538,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -3646,7 +3653,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -3677,7 +3684,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -3774,7 +3781,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -3786,7 +3793,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -3849,7 +3856,7 @@ TEST_F(UpdateClientTest, DiskFull) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -3916,7 +3923,7 @@ TEST_F(UpdateClientTest, DiskFull) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -4176,7 +4183,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -4421,7 +4428,7 @@ TEST_P(SendPingTest, TestCases) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -4440,7 +4447,7 @@ TEST_P(SendPingTest, TestCases) {
       return nullptr;
     }
 
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -4549,7 +4556,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int num_calls = 0) : num_calls_(num_calls) {}
+    explicit MockUpdateChecker(int num_calls) : num_calls_(num_calls) {}
 
    private:
     void CheckForUpdates(
@@ -4589,7 +4596,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -4739,7 +4746,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -4838,7 +4845,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -5024,7 +5031,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -5087,7 +5094,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -5248,7 +5255,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -5269,7 +5276,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -5403,7 +5410,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -5440,7 +5447,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -5562,7 +5569,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
 TEST_F(UpdateClientTest, ActionRun_Install) {
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -5626,7 +5633,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -5753,7 +5760,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -5796,7 +5803,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -5943,7 +5950,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -5976,7 +5983,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -6125,7 +6132,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -6165,7 +6172,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -6269,7 +6276,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -6309,7 +6316,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -6459,7 +6466,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -6499,7 +6506,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -6631,7 +6638,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -6663,7 +6670,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -6747,7 +6754,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -6808,7 +6815,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -6902,7 +6909,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -6934,7 +6941,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -7043,7 +7050,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -7075,7 +7082,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -7156,7 +7163,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
 TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -7167,7 +7174,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -7282,7 +7289,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -7343,7 +7350,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
@@ -7471,7 +7478,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
 
   class MockUpdateChecker : public UpdateChecker {
    public:
-    explicit MockUpdateChecker(int) {}
+    MockUpdateChecker() = default;
 
     void CheckForUpdates(
         scoped_refptr<UpdateContext> context,
@@ -7533,7 +7540,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
 
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
+    MockCrxDownloader() = default;
 
    private:
     ~MockCrxDownloader() override = default;
