@@ -94,7 +94,7 @@ BOOL ApplicationIsInBackground() {
 @implementation AppStateObserverList
 @end
 
-#pragma mark - AppStateObserverList
+#pragma mark - UIBlockerManagerObserverList
 
 @interface UIBlockerManagerObserverList
     : CRBProtocolObservers <UIBlockerManagerObserver>
@@ -697,15 +697,13 @@ BOOL ApplicationIsInBackground() {
   CHECK(self.uiBlockerTarget == nil || target == self.uiBlockerTarget)
       << "Another scene is already showing a blocking UI!";
   self.blockingUICounter++;
-  if (!self.uiBlockerTarget) {
-    self.uiBlockerTarget = target;
-  }
+  self.uiBlockerTarget = target;
 }
 
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
-  CHECK(self.blockingUICounter > 0 && self.uiBlockerTarget == target);
-  self.blockingUICounter--;
-  if (self.blockingUICounter == 0) {
+  CHECK_GT(self.blockingUICounter, 0u);
+  CHECK_EQ(self.uiBlockerTarget, target);
+  if (--self.blockingUICounter == 0) {
     self.uiBlockerTarget = nil;
     [self.uiBlockerManagerObservers currentUIBlockerRemoved];
   }

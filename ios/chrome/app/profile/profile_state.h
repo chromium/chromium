@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class AppState;
 class ProfileIOS;
@@ -18,7 +19,7 @@ class ProfileIOS;
 
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
-@interface ProfileState : NSObject
+@interface ProfileState : NSObject <UIBlockerManager>
 
 // The global AppState.
 @property(nonatomic, weak, readonly) AppState* appState;

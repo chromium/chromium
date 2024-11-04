@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+#pragma mark - ProfileStateObserverList
+
 // A sub-class of CRBProtocolObservers that declares it conforms to the
 // ProfileStateObserver protocol to please the compiler as it can't see
 // that CRBProtocolObservers conforms to any protocol of the registered
@@ -35,6 +37,17 @@
 
 @end
 
+#pragma mark - UIBlockerManagerObserverList
+
+@interface UIBlockerManagerObservers
+    : CRBProtocolObservers <UIBlockerManagerObserver>
+@end
+
+@implementation UIBlockerManagerObservers
+@end
+
+#pragma mark - ProfileState
+
 @interface ProfileState () <SceneStateObserver>
 
 @end
@@ -50,6 +63,17 @@
 
   // Observers registered with this profile state.
   ProfileStateObserverList* _observers;
+
+  // The current blocker target if any.
+  id<UIBlockerTarget> _uiBlockerTarget;
+
+  // The counter of currently shown blocking UIs. Do not use this directly,
+  // instead use incrementBlockingUICounterForScene: and
+  // incrementBlockingUICounterForScene or the ScopedUIBlocker.
+  NSUInteger _blockingUICounter;
+
+  // Container for observers.
+  UIBlockerManagerObservers* _uiBlockerManagerObservers;
 }
 
 #pragma mark - NSObject
@@ -60,6 +84,8 @@
     _agents = [[NSMutableArray alloc] init];
     _connectedSceneStates = [[NSMutableArray alloc] init];
     _observers = [ProfileStateObserverList observers];
+    _uiBlockerManagerObservers = [UIBlockerManagerObservers
+        observersWithProtocol:@protocol(UIBlockerManagerObserver)];
   }
   return self;
 }
@@ -219,6 +245,36 @@
     _firstSceneHasInitializedUI = YES;
     [_observers profileState:self firstSceneHasInitializedUI:sceneState];
   }
+}
+
+#pragma mark - UIBlockerManager
+
+- (void)incrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
+  CHECK(_uiBlockerTarget == nil || target == _uiBlockerTarget)
+      << "Another scene is already showing a blocking UI!";
+  _blockingUICounter++;
+  _uiBlockerTarget = target;
+}
+
+- (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
+  CHECK_GT(_blockingUICounter, 0u);
+  CHECK_EQ(_uiBlockerTarget, target);
+  if (--_blockingUICounter == 0) {
+    _uiBlockerTarget = nil;
+    [_uiBlockerManagerObservers currentUIBlockerRemoved];
+  }
+}
+
+- (id<UIBlockerTarget>)currentUIBlocker {
+  return _uiBlockerTarget;
+}
+
+- (void)addUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
+  [_uiBlockerManagerObservers addObserver:observer];
+}
+
+- (void)removeUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
+  [_uiBlockerManagerObservers removeObserver:observer];
 }
 
 @end

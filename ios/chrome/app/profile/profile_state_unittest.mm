@@ -19,6 +19,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 @interface ObserverForProfileStateTest : NSObject <ProfileStateObserver>
 
@@ -252,4 +254,26 @@ TEST_F(ProfileStateTest, firstSceneHasInitializedUI) {
 
   scene2.activationLevel = SceneActivationLevelDisconnected;
   EXPECT_TRUE(state.firstSceneHasInitializedUI);
+}
+
+// Tests observers for UIBlockerManager
+TEST_F(ProfileStateTest, ProfileAgentUIBlockerManagerObserver) {
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
+
+  id<UIBlockerManagerObserver> observer =
+      [OCMockObject mockForProtocol:@protocol(UIBlockerManagerObserver)];
+  id<UIBlockerTarget> blocker_target =
+      [OCMockObject mockForProtocol:@protocol(UIBlockerTarget)];
+
+  [state addUIBlockerManagerObserver:observer];
+  EXPECT_EQ(state.currentUIBlocker, nil);
+
+  [state incrementBlockingUICounterForTarget:blocker_target];
+  EXPECT_NSEQ(state.currentUIBlocker, blocker_target);
+  EXPECT_OCMOCK_VERIFY(observer);
+
+  OCMExpect([observer currentUIBlockerRemoved]);
+  [state decrementBlockingUICounterForTarget:blocker_target];
+  EXPECT_NSEQ(state.currentUIBlocker, nil);
+  EXPECT_OCMOCK_VERIFY(observer);
 }
