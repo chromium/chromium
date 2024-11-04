@@ -37,6 +37,10 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
     send_safe_area_to_frame_call_count_ = 0;
   }
 
+  void SetHasSentNonZeroInsets(bool has_sent_non_zero_insets) {
+    has_sent_non_zero_insets_ = has_sent_non_zero_insets;
+  }
+
   // Override to allow test access.
   void ViewportFitChangedForFrame(RenderFrameHost* rfh,
                                   blink::mojom::ViewportFit value) override {
@@ -109,6 +113,11 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
 
   void ResetSendSafeAreaToFrameCallCount() {
     test_safe_area_insets_host()->ResetSendSafeAreaToFrameCallCount();
+  }
+
+  void SetHasSentNonZeroInsets(bool has_sent_non_zero_insets) {
+    test_safe_area_insets_host()->SetHasSentNonZeroInsets(
+        has_sent_non_zero_insets);
   }
 
   blink::mojom::ViewportFit GetValueOrDefault() {
@@ -197,6 +206,11 @@ TEST_F(SafeAreaInsetsHostImplTest, AutoToCover) {
       /*enabled_features=*/{features::kDrawCutoutEdgeToEdge},
       /*disabled_features=*/{});
 
+  // Redundant zero insets are not sent if no non-zero insets have been sent
+  // previously. Navigate to cover to send non-zero insets such that no future
+  // inset updates will be skipped.
+  NavigateToCover();
+
   ResetSafeAreaTracking();
   NavigateToAuto();
   ExpectAuto();
@@ -256,28 +270,49 @@ TEST_F(SafeAreaInsetsHostImplTest, GetValueOrDefault_ExpiredRfh) {
 }
 
 TEST_F(SafeAreaInsetsHostImplTest, NavigateNoViewportFitChange) {
-  FocusWebContentsOnMainFrame();
+  // Redundant zero insets are not sent if no non-zero insets have been sent
+  // previously. Navigate to cover to send non-zero insets such that no future
+  // inset updates will be skipped.
+  NavigateToCover();
+
+  ResetSafeAreaTracking();
   ResetSendSafeAreaToFrameCallCount();
 
   NavigateAndCommit(GURL("https://www.test-site-a.com"));
   EXPECT_EQ(1,
             test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
-      << "Navigating to a new url without a change in viewoort-fit should only "
+      << "Navigating to a new url without a change in viewport-fit should only "
          "trigger one update to safe-area-insets.";
   ResetSendSafeAreaToFrameCallCount();
 
   NavigateAndCommit(GURL("https://www.test-site-b.com"));
   EXPECT_EQ(1,
             test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
-      << "Navigating to a new url without a change in viewoort-fit should only "
+      << "Navigating to a new url without a change in viewport-fit should only "
          "trigger one update to safe-area-insets.";
   ResetSendSafeAreaToFrameCallCount();
 
   NavigateAndCommit(GURL("https://www.test-site-c.com"));
   EXPECT_EQ(1,
             test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
-      << "Navigating to a new url without a change in viewoort-fit should only "
+      << "Navigating to a new url without a change in viewport-fit should only "
          "trigger one update to safe-area-insets.";
+}
+
+TEST_F(SafeAreaInsetsHostImplTest, NavigateOnlyZeroInsets) {
+  SetHasSentNonZeroInsets(false);
+  ResetSafeAreaTracking();
+  ResetSendSafeAreaToFrameCallCount();
+
+  NavigateAndCommit(GURL("https://www.test-site-a.com"));
+  NavigateAndCommit(GURL("https://www.test-site-b.com"));
+  NavigateAndCommit(GURL("https://www.test-site-c.com"));
+  test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets(0));
+
+  EXPECT_EQ(0,
+            test_safe_area_insets_host()->send_safe_area_to_frame_call_count())
+      << "If no non-zero insets have been sent, updates sending zero insets "
+         "should be skipped.";
 }
 
 TEST_F(SafeAreaInsetsHostImplTest, ActiveFrameInFullscreen) {

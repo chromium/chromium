@@ -84,7 +84,7 @@ void SafeAreaInsetsHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
     // Skip sending the safe area to frame if the values match the latest sent
     // values.
     if (insets != insets_) {
-      SendSafeAreaToFrame(rfh, insets);
+      MaybeSendSafeAreaToFrame(rfh, insets);
     }
   }
   insets_ = insets;
@@ -116,14 +116,28 @@ void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
   }
   // Update Blink so its document displays with the current insets.
   if (new_active_rfh) {
-    SendSafeAreaToFrame(new_active_rfh.get(), insets_);
+    MaybeSendSafeAreaToFrame(new_active_rfh.get(), insets_);
   }
 }
 
 void SafeAreaInsetsHostImpl::ClearSafeAreaInsetsForActiveFrame() {
   if (active_rfh_.get()) {
-    SendSafeAreaToFrame(active_rfh_.get(), gfx::Insets());
+    MaybeSendSafeAreaToFrame(active_rfh_.get(), gfx::Insets());
   }
+}
+
+// TODO (crbug.com/376573458): Improve logic further to track per frame, such
+// that the optimization isn't lost when one non-zero inset is sent.
+void SafeAreaInsetsHostImpl::MaybeSendSafeAreaToFrame(RenderFrameHost* rfh,
+                                                      gfx::Insets insets) {
+  bool are_zero_insets = (insets == kZeroInsets);
+  if (are_zero_insets && !has_sent_non_zero_insets_) {
+    return;
+  }
+  if (!are_zero_insets) {
+    has_sent_non_zero_insets_ = true;
+  }
+  SendSafeAreaToFrame(rfh, insets);
 }
 
 RenderFrameHostImpl* SafeAreaInsetsHostImpl::ActiveRenderFrameHost() {
