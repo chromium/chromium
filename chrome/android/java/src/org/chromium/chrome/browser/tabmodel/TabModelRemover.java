@@ -306,11 +306,9 @@ class TabModelRemover {
 
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, savedTabGroup);
 
-        @MemberRole int memberRole = MemberRole.UNKNOWN;
-        @Nullable CollaborationService collaborationService = getCollaborationService();
-        if (collaborationService != null) {
-            memberRole = collaborationService.getCurrentUserRoleForGroup(collaborationId);
-        }
+        CollaborationService collaborationService = getCollaborationService();
+        @MemberRole
+        int memberRole = collaborationService.getCurrentUserRoleForGroup(collaborationId);
         return new CollaborationInfo(memberRole, collaborationId, title);
     }
 
@@ -348,7 +346,7 @@ class TabModelRemover {
         return mDataSharingService;
     }
 
-    private @Nullable CollaborationService getCollaborationService() {
+    private @NonNull CollaborationService getCollaborationService() {
         if (mCollaborationService == null) {
             Profile profile = getProfile();
             mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
