@@ -124,8 +124,8 @@ class TipsNotificationClientTest : public PlatformTest {
 
   // Returns a mock UNNotification for the given notification `type`.
   id MockNotification(TipsNotificationType type) {
-    UNNotificationRequest* request =
-        TipsNotificationRequest(type, TipsNotificationUserType::kUnknown);
+    UNNotificationRequest* request = TipsNotificationRequest(
+        type, false, TipsNotificationUserType::kUnknown);
     id mock_notification = OCMClassMock([UNNotification class]);
     OCMStub([mock_notification request]).andReturn(request);
     return mock_notification;
@@ -610,14 +610,15 @@ TEST_F(TipsNotificationClientTest, ClassifyUserLessEngaged) {
 // Tests that the correct trigger time is used, depending on the user's
 // classification.
 TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
-  EXPECT_EQ(TipsNotificationTriggerDelta(TipsNotificationUserType::kUnknown),
-            base::Days(3));
   EXPECT_EQ(
-      TipsNotificationTriggerDelta(TipsNotificationUserType::kLessEngaged),
-      base::Days(21));
-  EXPECT_EQ(
-      TipsNotificationTriggerDelta(TipsNotificationUserType::kActiveSeeker),
-      base::Days(7));
+      TipsNotificationTriggerDelta(false, TipsNotificationUserType::kUnknown),
+      base::Days(3));
+  EXPECT_EQ(TipsNotificationTriggerDelta(
+                false, TipsNotificationUserType::kLessEngaged),
+            base::Days(21));
+  EXPECT_EQ(TipsNotificationTriggerDelta(
+                false, TipsNotificationUserType::kActiveSeeker),
+            base::Days(7));
 
   // Verify that the feature params can set the trigger delta.
   base::test::ScopedFeatureList feature_list;
@@ -628,14 +629,26 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
           {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "2d"},
           {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "3d"},
       });
-  EXPECT_EQ(TipsNotificationTriggerDelta(TipsNotificationUserType::kUnknown),
-            base::Days(1));
   EXPECT_EQ(
-      TipsNotificationTriggerDelta(TipsNotificationUserType::kLessEngaged),
-      base::Days(2));
+      TipsNotificationTriggerDelta(false, TipsNotificationUserType::kUnknown),
+      base::Days(1));
+  EXPECT_EQ(TipsNotificationTriggerDelta(
+                false, TipsNotificationUserType::kLessEngaged),
+            base::Days(2));
+  EXPECT_EQ(TipsNotificationTriggerDelta(
+                false, TipsNotificationUserType::kActiveSeeker),
+            base::Days(3));
+
+  // Verify that the Reactivation feature param can set the trigger delta.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSReactivationNotifications,
+      {
+          {kIOSReactivationNotificationsTriggerTimeParam, "30s"},
+      });
   EXPECT_EQ(
-      TipsNotificationTriggerDelta(TipsNotificationUserType::kActiveSeeker),
-      base::Days(3));
+      TipsNotificationTriggerDelta(true, TipsNotificationUserType::kUnknown),
+      base::Seconds(30));
 }
 
 // Tests that the order of notification types changes correctly when the feature

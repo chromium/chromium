@@ -934,6 +934,10 @@ BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
 // Feature flag to enable Reactivation Notifications.
 BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
 
+// Feature param to specify how much time should elapse before a Reactivation
+// notification should trigger.
+extern const char kIOSReactivationNotificationsTriggerTimeParam[];
+
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsIOSReactivationNotificationsEnabled();
 

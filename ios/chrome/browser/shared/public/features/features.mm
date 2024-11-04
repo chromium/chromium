@@ -1120,6 +1120,9 @@ BASE_FEATURE(kIOSReactivationNotifications,
              "IOSReactivationNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kIOSReactivationNotificationsTriggerTimeParam[] =
+    "reactivation_trigger_time";
+
 bool IsIOSReactivationNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSReactivationNotifications);
 }

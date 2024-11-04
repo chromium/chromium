@@ -329,7 +329,8 @@ void TipsNotificationClient::ClearAllRequestedNotifications() {
 void TipsNotificationClient::RequestNotification(TipsNotificationType type,
                                                  base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UNNotificationRequest* request = TipsNotificationRequest(type, user_type_);
+  UNNotificationRequest* request =
+      TipsNotificationRequest(type, CanSendReactivation(), user_type_);
 
   auto completion_block = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
@@ -419,8 +420,9 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   // The Set Up List only shows for 14 days after FirstRun, so this
   // notification should only be requested 14 days minus the trigger interval
   // after FirstRun.
-  if (!IsFirstRunRecent(base::Days(14) -
-                        TipsNotificationTriggerDelta(user_type_))) {
+  if (!IsFirstRunRecent(
+          base::Days(14) -
+          TipsNotificationTriggerDelta(CanSendReactivation(), user_type_))) {
     return false;
   }
   return !set_up_list_prefs::AllItemsComplete(local_prefs);
@@ -738,6 +740,7 @@ void TipsNotificationClient::ClassifyUser() {
   }
 
   if (now > last_request + TipsNotificationTriggerDelta(
+                               CanSendReactivation(),
                                TipsNotificationUserType::kUnknown)) {
     user_type_ = TipsNotificationUserType::kLessEngaged;
   } else {

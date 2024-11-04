@@ -70,9 +70,6 @@ enum class TipsNotificationUserType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
-// The default amount of time after which a Tips notification is triggered.
-extern const base::TimeDelta kTipsNotificationDefaultTriggerDelta;
-
 // Returns true if the given `notification` is a Tips notification.
 bool IsTipsNotification(UNNotificationRequest* request);
 
@@ -87,6 +84,7 @@ std::optional<TipsNotificationType> ParseTipsNotificationType(
 // a trigger appropriate for a Tips notification.
 UNNotificationRequest* TipsNotificationRequest(
     TipsNotificationType type,
+    bool for_reactivation,
     TipsNotificationUserType user_type);
 
 // Returns the notification content for a given Tips notification type.
@@ -95,10 +93,12 @@ UNNotificationContent* ContentForTipsNotificationType(
 
 // Returns the time delta used to trigger Tips notifications.
 base::TimeDelta TipsNotificationTriggerDelta(
+    bool for_reactivation,
     TipsNotificationUserType user_type);
 
 // Returns a trigger to be used when requesting a Tips notification.
 UNNotificationTrigger* TipsNotificationTrigger(
+    bool for_reactivation,
     TipsNotificationUserType user_type);
 
 // Returns a bitfield indicating which types of notifications should be
