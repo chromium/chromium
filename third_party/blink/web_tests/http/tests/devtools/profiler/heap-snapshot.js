@@ -250,14 +250,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           'D': {count: 1, self: 5, maxRet: 5, name: 'D'},
           'E': {count: 1, self: 6, maxRet: 6, name: 'E'}
         };
-
-        // TODO (357902505): We're renaming a function in DevTools, so for now,
-        // this test accepts either name. After the DevTools change is complete,
-        // this code can be simplified.
-        const getAggregatesFunctionName = snapshot.getAggregatesByClassName ?
-            'getAggregatesByClassName' : 'getAggregatesByClassKey';
-
-        var aggregates = snapshot[getAggregatesFunctionName](false);
+        var aggregates = snapshot.getAggregatesByClassKey(false);
         for (var key in aggregates) {
           var aggregate = aggregates[key];
           var expectedAggregate = expectedAggregates[aggregate.name];
@@ -273,7 +266,7 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           'D': [28],  // 50
           'E': [35]   // 57
         };
-        var indexes = snapshot[getAggregatesFunctionName](true);
+        var indexes = snapshot.getAggregatesByClassKey(true);
         for (var key in aggregates) {
           var aggregate = aggregates[key];
           var expectedIndex = expectedIndexes[aggregate.name];
