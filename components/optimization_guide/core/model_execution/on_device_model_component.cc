@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -62,14 +63,9 @@ bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
 }
 
 bool IsDeviceCapable(const PrefService& local_state) {
-  int value = local_state.GetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass);
-  if (value < 0 ||
-      value > static_cast<int>(OnDeviceModelPerformanceClass::kMaxValue)) {
-    return false;
-  }
-  return features::IsPerformanceClassCompatibleWithOnDeviceModel(
-      static_cast<OnDeviceModelPerformanceClass>(value));
+  return IsPerformanceClassCompatible(
+      features::kPerformanceClassListForOnDeviceModel.Get(),
+      PerformanceClassFromPref(local_state));
 }
 
 void LogInstallCriteria(std::string_view event_name,
@@ -196,10 +192,7 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
 void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
     OnDeviceModelPerformanceClass performance_class) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass,
-      base::to_underlying(performance_class));
-
+  UpdatePerformanceClassPref(local_state_, performance_class);
   BeginUpdateRegistration();
 }
 

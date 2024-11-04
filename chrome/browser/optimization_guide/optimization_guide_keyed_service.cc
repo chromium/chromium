@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -49,6 +50,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
@@ -89,6 +91,7 @@ namespace {
 using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
+using ::optimization_guide::OnDeviceModelServiceController;
 
 // Deletes old store paths that were written in incorrect locations.
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
@@ -122,58 +125,6 @@ Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
     }
   }
   return profile->GetOriginalProfile();
-}
-
-OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(
-    std::optional<on_device_model::mojom::PerformanceClass> performance_class) {
-  if (!performance_class) {
-    return OnDeviceModelPerformanceClass::kServiceCrash;
-  }
-
-  switch (*performance_class) {
-    case on_device_model::mojom::PerformanceClass::kError:
-      return OnDeviceModelPerformanceClass::kError;
-    case on_device_model::mojom::PerformanceClass::kVeryLow:
-      return OnDeviceModelPerformanceClass::kVeryLow;
-    case on_device_model::mojom::PerformanceClass::kLow:
-      return OnDeviceModelPerformanceClass::kLow;
-    case on_device_model::mojom::PerformanceClass::kMedium:
-      return OnDeviceModelPerformanceClass::kMedium;
-    case on_device_model::mojom::PerformanceClass::kHigh:
-      return OnDeviceModelPerformanceClass::kHigh;
-    case on_device_model::mojom::PerformanceClass::kVeryHigh:
-      return OnDeviceModelPerformanceClass::kVeryHigh;
-    case on_device_model::mojom::PerformanceClass::kGpuBlocked:
-      return OnDeviceModelPerformanceClass::kGpuBlocked;
-    case on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary:
-      return OnDeviceModelPerformanceClass::kFailedToLoadLibrary;
-  }
-}
-
-std::string OnDeviceModelPerformanceClassToString(
-    OnDeviceModelPerformanceClass performance_class) {
-  switch (performance_class) {
-    case OnDeviceModelPerformanceClass::kUnknown:
-      return "Unknown";
-    case OnDeviceModelPerformanceClass::kError:
-      return "Error";
-    case OnDeviceModelPerformanceClass::kVeryLow:
-      return "VeryLow";
-    case OnDeviceModelPerformanceClass::kLow:
-      return "Low";
-    case OnDeviceModelPerformanceClass::kMedium:
-      return "Medium";
-    case OnDeviceModelPerformanceClass::kHigh:
-      return "High";
-    case OnDeviceModelPerformanceClass::kVeryHigh:
-      return "VeryHigh";
-    case OnDeviceModelPerformanceClass::kGpuBlocked:
-      return "GpuBlocked";
-    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
-      return "FailedToLoadLibrary";
-    case OnDeviceModelPerformanceClass::kServiceCrash:
-      return "ServiceCrash";
-  }
 }
 
 scoped_refptr<optimization_guide::OnDeviceModelServiceController>
@@ -256,38 +207,24 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
 }
 
 // static
-// We're using a weakptr here for testing purposes. We need to allow
-// OnDeviceModelComponentStateManager to be destroyed along with a test harness.
 void OptimizationGuideKeyedService::DeterminePerformanceClass(
-    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+    base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager) {
-  auto controller =
-      GetOnDeviceModelServiceController(on_device_component_state_manager);
-  controller->GetEstimatedPerformanceClass(base::BindOnce(
-      [](base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-             on_device_component_state_manager,
-         // Keep a reference to the controller to avoid it being deleted and
-         // killing the service.
-         scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-             controller,
-         std::optional<on_device_model::mojom::PerformanceClass>
-             performance_class) {
-        auto optimization_guide_performance_class =
-            ConvertToOnDeviceModelPerformanceClass(performance_class);
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      GetOnDeviceModelServiceController(on_device_component_state_manager),
+      base::BindOnce([](OnDeviceModelPerformanceClass perf_class) {
         base::UmaHistogramEnumeration(
             "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-            optimization_guide_performance_class);
-        if (on_device_component_state_manager) {
-          on_device_component_state_manager->DevicePerformanceClassChanged(
-              optimization_guide_performance_class);
-        }
+            perf_class);
         ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
             "SyntheticOnDeviceModelPerformanceClass",
-            OnDeviceModelPerformanceClassToString(
-                optimization_guide_performance_class),
+            SyntheticTrialGroupForPerformanceClass(perf_class),
             variations::SyntheticTrialAnnotationMode::kCurrentLog);
-      },
-      on_device_component_state_manager, controller));
+        return perf_class;
+      })
+          .Then(base::BindOnce(&OnDeviceModelComponentStateManager::
+                                   DevicePerformanceClassChanged,
+                               on_device_component_state_manager)));
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(

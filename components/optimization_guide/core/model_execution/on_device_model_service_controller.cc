@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -24,6 +25,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
@@ -200,15 +202,18 @@ OnDeviceModelServiceController::CreateSession(
       optimization_guide_logger, log_uploader, config_params);
 }
 
+// static
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-    GetEstimatedPerformanceClassCallback callback) {
-  service_client_.Get()->GetEstimatedPerformanceClass(base::BindOnce(
-      [](GetEstimatedPerformanceClassCallback callback,
-         on_device_model::mojom::PerformanceClass performance_class) {
-        std::move(callback).Run(performance_class);
-      },
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  std::nullopt)));
+    scoped_refptr<OnDeviceModelServiceController> controller,
+    base::OnceCallback<void(OnDeviceModelPerformanceClass)> callback) {
+  auto* raw_controller = controller.get();
+  raw_controller->service_client_.Get()->GetEstimatedPerformanceClass(
+      base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
+          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(callback),
+              OnDeviceModelPerformanceClass::kServiceCrash))
+          .Then(base::OnceClosure(
+              base::DoNothingWithBoundArgs(std::move(controller)))));
 }
 
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&

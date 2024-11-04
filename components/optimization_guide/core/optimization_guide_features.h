@@ -87,6 +87,13 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<bool> kShowAiSettingsForTesting;
 #endif
 
+// Comma-separated list of performance classes (e.g. "3,4,5") that should
+// download the base model. Use "*" if there is no performance class
+// requirement.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPerformanceClassListForOnDeviceModel;
+
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
                       proto::RequestContext_MAX>
@@ -428,13 +435,6 @@ base::TimeDelta GetOnDeviceModelTimeForInitialResponse();
 // means a crash) the message should be sent to the server for processing.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool GetOnDeviceFallbackToServerOnDisconnect();
-
-// Returns whether the performance class is compatible with executing the
-// on-device model. Used to determine whether or not to fetch the on-device
-// model.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsPerformanceClassCompatibleWithOnDeviceModel(
-    OnDeviceModelPerformanceClass performance_class);
 
 // Whether any features are enabled that allow launching the on-device
 // service.

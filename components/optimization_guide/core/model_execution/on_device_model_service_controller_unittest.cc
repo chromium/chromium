@@ -39,6 +39,7 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -2241,15 +2242,25 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 TEST_F(OnDeviceModelServiceControllerTest,
        ShutsDownServiceAfterPerformanceCheck) {
   Initialize();
-  base::test::TestFuture<
-      std::optional<on_device_model::mojom::PerformanceClass>>
-      result_future;
-  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
-  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
-            *result_future.Get());
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      test_controller_, result_future.GetCallback());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
-
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       PerformanceCheckKeepsControllerAlive) {
+  Initialize();
+  auto weak_controller = test_controller_->GetWeakPtr();
+  access_controller_ = nullptr;  // Avoid dangling pointer
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      std::move(test_controller_), result_future.GetCallback());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  // Verify there wasn't something else keeping the controller alive.
+  EXPECT_FALSE(weak_controller);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
@@ -3785,12 +3796,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<
-      std::optional<on_device_model::mojom::PerformanceClass>>
-      result_future;
-  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
-  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
-            *result_future.Get());
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      test_controller_, result_future.GetCallback());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
 
   // Performance check sh;ould not shut down service.
@@ -3816,10 +3825,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<
-      std::optional<on_device_model::mojom::PerformanceClass>>
-      result_future;
-  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      test_controller_, result_future.GetCallback());
 
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
@@ -3831,8 +3839,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OnDeviceModelValidationResult::kSuccess, 1);
 
   EXPECT_FALSE(result_future.IsReady());
-  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
-            *result_future.Get());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }

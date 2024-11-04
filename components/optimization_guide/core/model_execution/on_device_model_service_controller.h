@@ -87,13 +87,13 @@ class OnDeviceModelServiceController
           model_quality_uploader_service,
       const std::optional<SessionConfigParams>& config_params);
 
-  // Starts the service and calls |callback| with the estimated performance
-  // class. Will call with std::nullopt if the service crashes.
-  using GetEstimatedPerformanceClassCallback = base::OnceCallback<void(
-      std::optional<on_device_model::mojom::PerformanceClass>
-          performance_class)>;
-  void GetEstimatedPerformanceClass(
-      GetEstimatedPerformanceClassCallback callback);
+  // Starts the service and executes a benchmark to determine the performance
+  // class, returning the result via `callback`. The controller will be kept
+  // alive until the benchmark completes. Returns kServiceCrash if the service
+  // crashes.
+  static void GetEstimatedPerformanceClass(
+      scoped_refptr<OnDeviceModelServiceController> controller,
+      base::OnceCallback<void(OnDeviceModelPerformanceClass)> callback);
 
   bool IsConnectedForTesting() {
     return base_model_remote_.is_bound() || service_client_.is_bound();

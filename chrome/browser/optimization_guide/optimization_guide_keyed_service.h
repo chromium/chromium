@@ -239,7 +239,7 @@ class OptimizationGuideKeyedService
   friend class optimization_guide::android::OptimizationGuideBridge;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Evaluates and logs the device performance class.
+  // Evaluates and records the device performance class to local state prefs.
   static void DeterminePerformanceClass(
       base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
           on_device_component_state_manager);

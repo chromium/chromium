@@ -343,23 +343,6 @@ TEST_F(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
   }
 }
 
-TEST_F(OptimizationGuideFeaturesTest,
-       IsPerformanceClassCompatibleWithOnDeviceModel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"compatible_on_device_performance_classes", "4,6"}});
-
-  EXPECT_FALSE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
-      OnDeviceModelPerformanceClass::kError));
-  EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
-      OnDeviceModelPerformanceClass::kMedium));
-  EXPECT_FALSE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
-      OnDeviceModelPerformanceClass::kHigh));
-  EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
-      OnDeviceModelPerformanceClass::kVeryHigh));
-}
-
 TEST_F(OptimizationGuideFeaturesTest, AllowedAdaptationRanks) {
   // Default value
   EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
