@@ -1203,6 +1203,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.OnTask.MaxNumberOfTabsDuringSession" units="tabs"
+    expires_after="2025-04-04">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the maximum number of tabs shared by the provider throughout a
+    session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Boca.OnTask.NumberOfTabsWhenSessionEnded" units="tabs"
+    expires_after="2025-04-04">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the number of tabs shared by the provider when the session ends.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.OnTask.{State}SessionDurationPercentage"
     units="% of session" expires_after="2025-04-04">
   <owner>zhumatthew@google.com</owner>

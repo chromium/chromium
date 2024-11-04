@@ -24,4 +24,13 @@ void RecordOnTaskLockedStateDurationPercentage(
                            percentage_unlocked);
 }
 
+void RecordOnTaskNumOfTabsWhenSessionEnded(int num_of_tabs) {
+  UMA_HISTOGRAM_COUNTS_100(kBocaOnTaskNumOfTabsWhenSessionEnded, num_of_tabs);
+}
+
+void RecordOnTaskMaxNumOfTabsDuringSession(int max_num_of_tabs) {
+  UMA_HISTOGRAM_COUNTS_100(kBocaOnTaskMaxNumOfTabsDuringSession,
+                           max_num_of_tabs);
+}
+
 }  // namespace ash::boca

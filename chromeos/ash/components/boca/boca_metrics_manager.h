@@ -43,6 +43,12 @@ class BocaMetricsManager : public boca::BocaSessionManager::Observer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Current number of tabs in the bundle sent by the provider.
+  int num_of_tabs_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  // Max number of tabs in the bundle sent by the provider during a session.
+  int max_num_of_tabs_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
   // Keeps track of the previous locked state before the switch happens.
   bool is_lock_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };

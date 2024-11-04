@@ -20,6 +20,8 @@ namespace ash::boca {
 
 constexpr base::TimeDelta fast_forward_timeskip =
     BocaSessionManager::kIndefinitePollingInterval + base::Seconds(1);
+constexpr char kTestUrl1[] = "https://www.test1.com";
+constexpr char kTestUrl2[] = "https://www.test2.com";
 
 class BocaMetricsManagerTest : public testing::Test {
  protected:
@@ -68,6 +70,46 @@ TEST_F(BocaMetricsManagerProducerTest,
                                expected_percentage_unlocked, 1);
 }
 
+TEST_F(BocaMetricsManagerProducerTest,
+       RecordNumOfTabsWhenSessionEndedMetricsForProducerCorrectly) {
+  base::HistogramTester histograms;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  ::boca::Bundle bundle_1;
+  bundle_1.add_content_configs()->set_url(kTestUrl1);
+  bundle_1.add_content_configs()->set_url(kTestUrl2);
+  metrics_manager_.OnBundleUpdated(bundle_1);
+  ::boca::Bundle bundle_2;
+  bundle_2.add_content_configs()->set_url(kTestUrl1);
+  metrics_manager_.OnBundleUpdated(bundle_2);
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  const int expected_num_of_tabs = 1;
+  histograms.ExpectTotalCount(kBocaOnTaskNumOfTabsWhenSessionEnded, 1);
+  histograms.ExpectBucketCount(kBocaOnTaskNumOfTabsWhenSessionEnded,
+                               expected_num_of_tabs, 1);
+}
+
+TEST_F(BocaMetricsManagerProducerTest,
+       RecordMaxNumOfTabsDuringSessionMetricsForProducerCorrectly) {
+  base::HistogramTester histograms;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  ::boca::Bundle bundle_1;
+  bundle_1.add_content_configs()->set_url(kTestUrl1);
+  bundle_1.add_content_configs()->set_url(kTestUrl2);
+  metrics_manager_.OnBundleUpdated(bundle_1);
+  ::boca::Bundle bundle_2;
+  bundle_2.add_content_configs()->set_url(kTestUrl1);
+  metrics_manager_.OnBundleUpdated(bundle_2);
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  const int expected_max_num_of_tabs = 2;
+  histograms.ExpectTotalCount(kBocaOnTaskMaxNumOfTabsDuringSession, 1);
+  histograms.ExpectBucketCount(kBocaOnTaskMaxNumOfTabsDuringSession,
+                               expected_max_num_of_tabs, 1);
+}
+
 class BocaMetricsManagerConsumerTest : public BocaMetricsManagerTest {
  protected:
   BocaMetricsManager metrics_manager_{/*is_producer*/ false};
@@ -86,5 +128,33 @@ TEST_F(BocaMetricsManagerConsumerTest,
 
   histograms.ExpectTotalCount(kBocaOnTaskLockedSessionDurationPercentage, 0);
   histograms.ExpectTotalCount(kBocaOnTaskUnlockedSessionDurationPercentage, 0);
+}
+
+TEST_F(BocaMetricsManagerConsumerTest,
+       DoNotRecordNumOfTabsWhenSessionEndedMetricsForConsumer) {
+  base::HistogramTester histograms;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url(kTestUrl2);
+  metrics_manager_.OnBundleUpdated(bundle);
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  histograms.ExpectTotalCount(kBocaOnTaskNumOfTabsWhenSessionEnded, 0);
+}
+
+TEST_F(BocaMetricsManagerConsumerTest,
+       DoNotRecordMaxNumOfTabsDuringSessionMetricsForConsumer) {
+  base::HistogramTester histograms;
+
+  metrics_manager_.OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url(kTestUrl2);
+  metrics_manager_.OnBundleUpdated(bundle);
+  metrics_manager_.OnSessionEnded("test_session_id");
+
+  histograms.ExpectTotalCount(kBocaOnTaskMaxNumOfTabsDuringSession, 0);
 }
 }  // namespace ash::boca
