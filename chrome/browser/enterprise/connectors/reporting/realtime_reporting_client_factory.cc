@@ -42,9 +42,10 @@ RealtimeReportingClientFactory::RealtimeReportingClientFactory()
 
 RealtimeReportingClientFactory::~RealtimeReportingClientFactory() = default;
 
-KeyedService* RealtimeReportingClientFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+RealtimeReportingClientFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new RealtimeReportingClient(context);
+  return std::make_unique<RealtimeReportingClient>(context);
 }
 
 bool RealtimeReportingClientFactory::ServiceIsCreatedWithBrowserContext()
