@@ -3398,12 +3398,17 @@ TEST_F(LockContentsViewUnitTest, LoginAccessibleProperties) {
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents.get()));
+  Shelf* shelf = Shelf::ForWindow(contents->GetWidget()->GetNativeWindow());
 
   ui::AXNodeData data;
-  contents.get()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  contents->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME));
+  EXPECT_EQ(contents->GetViewAccessibility().GetNextWindowFocus(),
+            shelf->shelf_widget());
+  EXPECT_EQ(contents->GetViewAccessibility().GetPreviousWindowFocus(),
+            shelf->GetStatusAreaWidget());
 }
 
 TEST_F(LockContentsViewUnitTest, LockAccessibleProperties) {
@@ -3412,12 +3417,17 @@ TEST_F(LockContentsViewUnitTest, LockAccessibleProperties) {
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents.get()));
+  Shelf* shelf = Shelf::ForWindow(contents->GetWidget()->GetNativeWindow());
 
   ui::AXNodeData data;
-  contents.get()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  contents->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME));
+  EXPECT_EQ(contents->GetViewAccessibility().GetNextWindowFocus(),
+            shelf->shelf_widget());
+  EXPECT_EQ(contents->GetViewAccessibility().GetPreviousWindowFocus(),
+            shelf->GetStatusAreaWidget());
 }
 
 TEST_F(LockContentsViewUnitTest, LoginToolTipViewAccessibleProperties) {

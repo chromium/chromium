@@ -139,7 +139,6 @@ class ASH_EXPORT LockContentsView
   void OnFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // LoginDataDispatcher::Observer:
@@ -403,6 +402,8 @@ class ASH_EXPORT LockContentsView
   void CheckIfPinEnabled(const AccountId& account_id);
 
   void ForceSyncLayoutOfAllViews();
+
+  void UpdateAccessiblePreviousAndNextFocus();
 
   const LockScreen::ScreenType screen_type_;
 

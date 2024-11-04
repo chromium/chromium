@@ -756,6 +756,8 @@ void LockContentsView::AddedToWidget() {
   if (primary_big_view_) {
     primary_big_view_->RequestFocus();
   }
+
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void LockContentsView::RemovedFromWidget() {
@@ -767,6 +769,8 @@ void LockContentsView::RemovedFromWidget() {
     focus_manager->RemoveFocusChangeListener(this);
   }
   widget_ = nullptr;
+
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void LockContentsView::OnFocus() {
@@ -789,13 +793,6 @@ void LockContentsView::AboutToRequestFocusFromTabTraversal(bool reverse) {
   }
 
   FocusNextWidget(reverse);
-}
-
-void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-  ShelfWidget* shelf_widget = shelf->shelf_widget();
-  GetViewAccessibility().SetNextFocus(shelf_widget);
-  GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
 }
 
 bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -2533,6 +2530,18 @@ void LockContentsView::CheckIfPinEnabled(const AccountId& account_id) {
 void LockContentsView::ForceSyncLayoutOfAllViews() {
   InvalidateLayoutForAllDescendants(this);
   DeprecatedLayoutImmediately();
+}
+
+void LockContentsView::UpdateAccessiblePreviousAndNextFocus() {
+  if (GetWidget() && GetWidget()->GetNativeWindow()) {
+    Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+    ShelfWidget* shelf_widget = shelf->shelf_widget();
+    GetViewAccessibility().SetNextFocus(shelf_widget);
+    GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
+  } else {
+    GetViewAccessibility().SetNextFocus(nullptr);
+    GetViewAccessibility().SetPreviousFocus(nullptr);
+  }
 }
 
 BEGIN_METADATA(LockContentsView)
