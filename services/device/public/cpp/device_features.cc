@@ -59,6 +59,14 @@ BASE_FEATURE(kUsbDeviceLinuxOpenCrashKey,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables registering & unregistering of the Battery Status Manager broadcast
+// receiver to the background thread.
+BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
+             "BatteryStatusManagerBroadcastReceiverInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
     location_provider_manager_mode_options[] = {
         {device::mojom::LocationProviderManagerMode::kNetworkOnly,
