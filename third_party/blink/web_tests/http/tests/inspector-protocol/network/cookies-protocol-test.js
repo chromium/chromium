@@ -109,7 +109,7 @@
   testRunner.log('Enabling network');
   await dp.Network.enable();
 
-  testRunner.runTestSuite([
+  await testRunner.runTestSuite([
     deleteAllCookies,
 
     async function nonUnicodeCookie() {
@@ -147,7 +147,7 @@
         value: 'bar',
         partitionKey: {
           topLevelSite: 'https://devtools.test:8443',
-          hasCrossSiteAncestor: false
+          hasCrossSiteAncestor: true
         },
         sameSite: 'None'
       });
@@ -158,7 +158,7 @@
         value: 'bar',
         partitionKey: {
           topLevelSite: 'https://notinset.test:8443',
-          hasCrossSiteAncestor: false
+          hasCrossSiteAncestor: true
         },
         sameSite: 'None'
       });
@@ -247,47 +247,6 @@
       ]);
     },
 
-    getPartitionedCookies,
-    deleteAllCookies,
-
-    async function setPartitionedCookiesWithAncestorChainBitVals() {
-      await setCookies([
-        {
-          url: 'https://acbDefaultFalse.test:8443',
-          secure: true,
-          name: '__Host-foo',
-          value: 'bar',
-          partitionKey: {
-            topLevelSite: 'https://example.test:8443',
-            hasCrossSiteAncestor: false
-          },
-          sameSite: 'None'
-        },
-        {
-          url: 'https://acbFalse.test:8443',
-          secure: true,
-          name: '__Host-foo',
-          value: 'bar',
-          partitionKey: {
-            topLevelSite: 'https://example.test:8443',
-            hasCrossSiteAncestor: false
-          },
-          sameSite: 'None'
-        },
-        {
-          url: 'https://acbTrue.test:8443',
-          secure: true,
-          name: '__Host-foo',
-          value: 'bar',
-          partitionKey: {
-            topLevelSite: 'https://devtools.test:8443',
-            hasCrossSiteAncestor: true
-          },
-          sameSite: 'None'
-        }
-      ]);
-      logCookies((await dp.Network.getCookies()).result);
-    },
     getPartitionedCookies,
     deleteAllCookies,
 
