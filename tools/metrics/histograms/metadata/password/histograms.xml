@@ -4789,6 +4789,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.SharedPrefCredentialsAccessOutcome"
+    enum="SharedPrefCredentialsAccessOutcome" expires_after="2025-04-25">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of attempts to access credentials from SharedPreferences.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.SuccessfulPhishingDetectionWithinTimeout"
     enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>andysjlim@chromium.org</owner>

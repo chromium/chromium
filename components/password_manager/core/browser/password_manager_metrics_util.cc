@@ -508,6 +508,12 @@ void LogLocalPwdMigrationProgressState(
       scheduling_state);
 }
 
+void LogSharedPrefCredentialsAccessOutcome(
+    SharedPrefCredentialsAccessOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "PasswordProtection.SharedPrefCredentialsAccessOutcome", outcome);
+}
+
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome) {
   base::UmaHistogramEnumeration(

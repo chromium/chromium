@@ -1610,6 +1610,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Not saved"/>
 </enum>
 
+<enum name="SharedPrefCredentialsAccessOutcome">
+  <int value="0" label="No credentials"/>
+  <int value="1" label="Parse error"/>
+  <int value="2" label="Bad type"/>
+  <int value="3" label="Empty credentials"/>
+  <int value="4" label="Login match"/>
+  <int value="5" label="Login mismatch"/>
+</enum>
+
 <enum name="SingleUsernameFillingAssistance">
   <int value="0" label=":-D Username filled automatically"/>
   <int value="1"

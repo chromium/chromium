@@ -728,6 +728,20 @@ enum class LocalPwdMigrationProgressState {
   kMaxValue = kFinished,
 };
 
+// Enum specifying the outcome of an attempt to access credentials stored in a
+// SharedPref. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused. Keep in sync with
+// `SharedPrefCredentialsAccessOutcome` in passwords' enums.xml.
+enum class SharedPrefCredentialsAccessOutcome {
+  kNoCredentials = 0,
+  kParseError = 1,
+  kBadType = 2,
+  kEmptyCredentials = 3,
+  kLoginMatch = 4,
+  kLoginMismatch = 5,
+  kMaxValue = kLoginMismatch,
+};
+
 // Enum that describes different outcomes on the attempt of triggering the
 // Touch-To-Fill bottom sheet for password generation.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -990,6 +1004,8 @@ base::OnceCallback<R(Args...)> TimeCallbackMediumTimes(
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
 void LogFormSubmissionsVsSavePromptsHistogram(SaveFlowStep save_flow_step);
+void LogSharedPrefCredentialsAccessOutcome(
+    SharedPrefCredentialsAccessOutcome outcome);
 #endif
 
 // Record that password deletion from Chrome settings happened.
