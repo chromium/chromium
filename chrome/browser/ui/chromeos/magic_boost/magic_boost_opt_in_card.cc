@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_metrics.h"
-#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

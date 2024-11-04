@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
-#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 
 class QuickAnswersControllerImpl;

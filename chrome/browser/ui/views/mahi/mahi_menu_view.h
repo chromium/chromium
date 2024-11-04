@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
+#include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"

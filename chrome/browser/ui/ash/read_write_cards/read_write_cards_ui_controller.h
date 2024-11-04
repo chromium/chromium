@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
+#include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"

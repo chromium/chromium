@@ -2,7 +2,7 @@ include_rules = [
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ui/ash/read_write_cards",
-  "+chrome/browser/ui/views/editor_menu/utils",
+  "+chrome/browser/ui/ash/editor_menu/utils",
 ]
 
 specific_include_rules = {
