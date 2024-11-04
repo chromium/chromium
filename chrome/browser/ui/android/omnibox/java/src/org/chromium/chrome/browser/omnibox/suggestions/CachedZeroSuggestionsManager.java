@@ -63,17 +63,21 @@ public class CachedZeroSuggestionsManager {
             Set.of(KEY_JUMP_START_URL, KEY_JUMP_START_PAGE_CLASS);
 
     /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
+    @SuppressWarnings("ApplySharedPref")
     public static void saveToCache(int pageClass, @NonNull AutocompleteResult resultToCache) {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
 
         var serializedBytes = resultToCache.serialize().toByteArray();
+
+        // Note: this code has very little time to run. Be sure data is persisted. Don't use
+        // asynchronous `apply()` method, because the asynchronously persisted details may never
+        // make it to the data file.
         prefs.edit()
                 .putString(
                         getCacheKey(pageClass),
                         Base64.encodeToString(serializedBytes, Base64.DEFAULT))
-                .apply();
+                .commit();
 
-        // This may take slightly more time once. Changes are applied asynchronously.
         eraseOldCachedData();
     }
 
@@ -98,12 +102,15 @@ public class CachedZeroSuggestionsManager {
             } catch (InvalidProtocolBufferException e) {
                 // Bad protobuf.
             }
+            // This is a best-effort cleanup which is okay if it doesn't complete before Chrome
+            // dies.
             prefs.edit().remove(key).apply();
         }
         return AutocompleteResult.fromCache(null, null);
     }
 
     /** Save the context of the most recently visited page. */
+    @SuppressWarnings("ApplySharedPref")
     public static void saveJumpStartContext(@Nullable JumpStartContext jsContext) {
         SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
         if (jsContext == null || GURL.isEmptyOrInvalid(jsContext.url)) {
@@ -113,7 +120,10 @@ public class CachedZeroSuggestionsManager {
             editor.putString(KEY_JUMP_START_URL, jsContext.url.getSpec());
             editor.putInt(KEY_JUMP_START_PAGE_CLASS, jsContext.pageClass);
         }
-        editor.apply();
+        // Note: this code has very little time to run. Be sure data is persisted. Don't use
+        // asynchronous `apply()` method, because the asynchronously persisted details may never
+        // make it to the data file.
+        editor.commit();
     }
 
     /**
@@ -142,6 +152,7 @@ public class CachedZeroSuggestionsManager {
         for (String key : ADDITIONAL_KEYS_TO_ERASE) {
             editor.remove(key);
         }
+        // This is a best-effort cleanup which is okay if it doesn't complete before Chrome dies.
         editor.apply();
 
         eraseOldCachedData();
@@ -171,6 +182,7 @@ public class CachedZeroSuggestionsManager {
             editor.remove(KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX.createKey(index));
             editor.remove(KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(index));
         }
+        // This is a best-effort cleanup which is okay if it doesn't complete before Chrome dies.
         editor.apply();
     }
 
