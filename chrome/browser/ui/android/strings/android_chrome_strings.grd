@@ -6220,13 +6220,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON" desc="The button text on the error dialog for the user to acknowledge that an error has occurred in their attempt to sign in with an account from an identity provider.">
         Got it
       </message>
-      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON" desc="The button text on the error dialog for the user to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
+      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON" desc="The button text on the error dialog for the user to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider.">
         More details
       </message>
-      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON_PROMPT" desc="Prompt user to click on the more details button to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
+      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON_PROMPT" desc="Prompt user to click on the more details button to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider.">
         Choose "More details" below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph>.
       </message>
-      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON_RETRY_PROMPT" desc="Prompt user to click on the more details button to get more details about an error if it continues to occur after their first attempt to sign in with an account from an identity provider." translateable="false">
+      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON_RETRY_PROMPT" desc="Prompt user to click on the more details button to get more details about an error if it continues to occur after their first attempt to sign in with an account from an identity provider.">
         If this issue keeps happening, choose "More details" below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph>.
       </message>
       <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY" desc="Summary of generic error upon user failing to sign in with an account from an identity provider.">
