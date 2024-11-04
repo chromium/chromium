@@ -35,10 +35,18 @@ export class FaceGaze {
 
     this.bubbleController_ = new BubbleController(() => {
       return {
-        paused: this.gestureHandler_.isPaused(),
-        scrollModeActive: this.mouseController_.isScrollModeActive(),
-        longClickActive: this.mouseController_.isLongClickActive(),
-        dictationActive: isDictationActive(),
+        paused: this.gestureHandler_.isPaused() ?
+            this.gestureHandler_.getGestureForPause() :
+            undefined,
+        scrollMode: this.mouseController_.isScrollModeActive() ?
+            this.gestureHandler_.getGestureForScroll() :
+            undefined,
+        longClick: this.mouseController_.isLongClickActive() ?
+            this.gestureHandler_.getGestureForLongClick() :
+            undefined,
+        dictation: isDictationActive() ?
+            this.gestureHandler_.getGestureForDictation() :
+            undefined,
       };
     });
 

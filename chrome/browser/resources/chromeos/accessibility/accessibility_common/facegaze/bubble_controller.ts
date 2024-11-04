@@ -13,10 +13,10 @@ import {FacialGesture} from './facial_gestures.js';
 export class BubbleController {
   private resetBubbleTimeoutId_: number|undefined;
   private baseText_: string[] = [];
-  private getState_: () => BubbleController.GetStateResult;
+  private getStateGesture_: () => BubbleController.GetStateGestureResult;
 
-  constructor(getState: () => BubbleController.GetStateResult) {
-    this.getState_ = getState;
+  constructor(getStateGesture: () => BubbleController.GetStateGestureResult) {
+    this.getStateGesture_ = getStateGesture;
   }
 
   updateBubble(text: string): void {
@@ -39,22 +39,28 @@ export class BubbleController {
 
   resetBubble(): void {
     this.baseText_ = [];
-    const {paused, scrollModeActive, longClickActive, dictationActive} =
-        this.getState_();
+    const {
+      paused,
+      scrollMode,
+      longClick,
+      dictation,
+    } = this.getStateGesture_();
     if (paused) {
-      this.baseText_.push(chrome.i18n.getMessage('facegaze_state_paused'));
-    }
-    if (scrollModeActive) {
-      this.baseText_.push(
-          chrome.i18n.getMessage('facegaze_state_scroll_active'));
-    }
-    if (longClickActive) {
-      this.baseText_.push(
-          chrome.i18n.getMessage('facegaze_state_long_click_active'));
-    }
-    if (dictationActive) {
-      this.baseText_.push(
-          chrome.i18n.getMessage('facegaze_state_dictation_active'));
+      this.baseText_.push(chrome.i18n.getMessage(
+          'facegaze_state_paused',
+          BubbleController.getDisplayTextForGesture_(paused)));
+    } else if (scrollMode) {
+      this.baseText_.push(chrome.i18n.getMessage(
+          'facegaze_state_scroll_active',
+          BubbleController.getDisplayTextForGesture_(scrollMode)));
+    } else if (longClick) {
+      this.baseText_.push(chrome.i18n.getMessage(
+          'facegaze_state_long_click_active',
+          BubbleController.getDisplayTextForGesture_(longClick)));
+    } else if (dictation) {
+      this.baseText_.push(chrome.i18n.getMessage(
+          'facegaze_state_dictation_active',
+          BubbleController.getDisplayTextForGesture_(dictation)));
     }
 
     chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));
@@ -230,11 +236,11 @@ export class BubbleController {
 export namespace BubbleController {
   export const RESET_BUBBLE_TIMEOUT_MS = 2500;
 
-  export interface GetStateResult {
-    paused: boolean;
-    scrollModeActive: boolean;
-    longClickActive: boolean;
-    dictationActive: boolean;
+  export interface GetStateGestureResult {
+    paused: FacialGesture|undefined;
+    scrollMode: FacialGesture|undefined;
+    longClick: FacialGesture|undefined;
+    dictation: FacialGesture|undefined;
   }
 }
 

@@ -186,6 +186,32 @@ export class GestureHandler {
     this.paused_ = newPaused;
   }
 
+  getGestureForPause(): FacialGesture|undefined {
+    return this.getGestureFor_(MacroName.TOGGLE_FACEGAZE);
+  }
+
+  getGestureForScroll(): FacialGesture|undefined {
+    return this.getGestureFor_(MacroName.TOGGLE_SCROLL_MODE);
+  }
+
+  getGestureForLongClick(): FacialGesture|undefined {
+    return this.getGestureFor_(MacroName.MOUSE_LONG_CLICK_LEFT);
+  }
+
+  getGestureForDictation(): FacialGesture|undefined {
+    return this.getGestureFor_(MacroName.TOGGLE_DICTATION);
+  }
+
+  private getGestureFor_(macroName: MacroName): FacialGesture|undefined {
+    // Return the first found gesture assigned to the given macro.
+    for (const [gesture, macro] of this.gestureToMacroName_.entries()) {
+      if (macro === macroName) {
+        return gesture;
+      }
+    }
+    return undefined;
+  }
+
   private gesturesToMacros_(gestures: FacialGesture[]): DetectMacrosResult {
     const macroNames: Map<MacroName, FacialGesture> = new Map();
     for (const gesture of gestures) {
