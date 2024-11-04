@@ -7226,7 +7226,6 @@ crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
 crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-new-wait-loop/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
 crbug.com/40943541 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326123178 accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326123298 virtual/third-party-cookie-phaseout-enabled/external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Pass Timeout ]
 
 # Flaky tests: 2024-02-21
