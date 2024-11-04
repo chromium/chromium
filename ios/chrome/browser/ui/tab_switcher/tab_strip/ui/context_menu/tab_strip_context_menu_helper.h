@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_provider.h"
 
 class BrowserList;
+class ProfileIOS;
 @protocol TabStripMutator;
 @protocol TabStripCommands;
 class WebStateList;
@@ -23,6 +24,8 @@ class WebStateList;
 @property(nonatomic, weak) id<TabStripCommands> handler;
 // Whether this context menu is displayed in an Incognito browser.
 @property(nonatomic, assign) BOOL incognito;
+// Weak reference to ProfileIOS;
+@property(nonatomic, assign) ProfileIOS* profile;
 
 // Initializes the helper. `browserList` and `webStateList` cannot be nil.
 - (instancetype)initWithBrowserList:(BrowserList*)browserList

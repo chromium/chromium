@@ -11,7 +11,12 @@
 #import "base/uuid.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -109,6 +114,7 @@
       initWithBrowserList:browserList
              webStateList:self.browser->GetWebStateList()];
   self.contextMenuHelper.incognito = profile->IsOffTheRecord();
+  self.contextMenuHelper.profile = profile;
   self.contextMenuHelper.mutator = self.mediator;
   self.contextMenuHelper.handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
@@ -296,6 +302,42 @@
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessage:message];
+}
+
+- (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
+  ProfileIOS* profile = self.browser->GetProfile();
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(profile);
+  NSString* collabID =
+      tab_groups::utils::GetTabGroupCollabID(group.get(), syncService);
+  if (!shareKitService || !collabID) {
+    return;
+  }
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = self.baseViewController;
+  config.collabID = collabID;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ManageGroup(config);
+}
+
+- (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+  const TabGroup* tabGroup = group.get();
+  if (!tabGroup || !shareKitService) {
+    return;
+  }
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ShareGroup(config);
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
