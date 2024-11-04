@@ -69,4 +69,8 @@ public interface EducationalTipCardProvider {
 
     /** Called when the module is hidden. */
     default void destroy() {}
+
+    /** Gets the type of the card. */
+    @EducationalTipCardType
+    int getCardType();
 }

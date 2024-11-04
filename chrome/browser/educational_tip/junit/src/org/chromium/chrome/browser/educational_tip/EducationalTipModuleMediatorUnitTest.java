@@ -204,6 +204,24 @@ public class EducationalTipModuleMediatorUnitTest {
                 mEducationalTipModuleMediator.onGetClassificationResult(classificationResult));
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    public void testOnViewCreated() {
+        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+
+        mEducationalTipModuleMediator.showModuleWithCardInfo(
+                EducationalTipCardType.DEFAULT_BROWSER_PROMO);
+        mEducationalTipModuleMediator.onViewCreated();
+        verify(mEducationalTipModuleMediatorJniMock)
+                .notifyCardShown(mProfile, EducationalTipCardType.DEFAULT_BROWSER_PROMO);
+
+        mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUPS);
+        mEducationalTipModuleMediator.onViewCreated();
+        verify(mEducationalTipModuleMediatorJniMock)
+                .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUPS);
+    }
+
     private void testShowModuleWithForcedCardTypeImpl(
             String enabledParam,
             int titleId,

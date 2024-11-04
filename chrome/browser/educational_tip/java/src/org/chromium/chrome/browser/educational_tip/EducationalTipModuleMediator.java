@@ -71,7 +71,14 @@ public class EducationalTipModuleMediator {
         }
     }
 
-    private void showModuleWithCardInfo(@Nullable Integer cardType) {
+    /** Called when the educational tip module is visible to users on the magic stack. */
+    void onViewCreated() {
+        EducationalTipModuleMediatorJni.get()
+                .notifyCardShown(mProfile, mEducationalTipCardProvider.getCardType());
+    }
+
+    @VisibleForTesting
+    void showModuleWithCardInfo(@Nullable Integer cardType) {
         if (cardType == null) {
             mModuleDelegate.onDataFetchFailed(mModuleType);
             return;
@@ -157,9 +164,6 @@ public class EducationalTipModuleMediator {
         } else {
             Integer cardType =
                     EducationalTipCardProvider.convertLabelToCardType(result.orderedLabels.get(0));
-            if (cardType != null) {
-                EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
-            }
             return cardType;
         }
     }

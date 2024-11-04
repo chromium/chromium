@@ -394,6 +394,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     mHomeModulesContextMenuManager.createContextMenu(
                             contextMenu, view, moduleProvider);
                 });
+        moduleProvider.onViewCreated();
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
         HomeModulesMetricsUtils.recordModuleShown(
                 moduleType, position, mModuleDelegateHost.isHomeSurface());
