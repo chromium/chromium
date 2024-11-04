@@ -145,10 +145,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
   // accessibility focus, or returns false if it cannot find the focus.
   bool GetAccessibilityFocus(AXTreeID* tree_id, int* node_id) const;
 
-  // Find the node with the given ID in the tree with the given ID, or
-  // returns nullptr if not found.
-  AXNode* GetNodeFromTree(const AXTreeID& tree_id, int node_id) const;
-
   void AddTreeChangeObserver(int observer_id, TreeChangeObserverFilter filter);
   void RemoveTreeChangeObserver(int observer_id);
   void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);

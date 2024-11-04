@@ -865,16 +865,6 @@ bool AutomationTreeManagerOwner::GetAccessibilityFocus(AXTreeID* tree_id,
   return true;
 }
 
-AXNode* AutomationTreeManagerOwner::GetNodeFromTree(const AXTreeID& tree_id,
-                                                    int node_id) const {
-  AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return nullptr;
-
-  return tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
-}
-
 void AutomationTreeManagerOwner::AddTreeChangeObserver(
     int observer_id,
     TreeChangeObserverFilter filter) {
