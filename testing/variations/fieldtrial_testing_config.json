@@ -6918,7 +6918,7 @@
             ]
         }
     ],
-    "CrOSLocalImageSearch": [
+    "CrOSLocalImageSearchIca": [
         {
             "platforms": [
                 "chromeos"
@@ -6927,42 +6927,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "LauncherImageSearch",
-                        "LauncherImageSearchIndexingLimit",
-                        "LauncherImageSearchOcr",
-                        "LauncherSearchControl",
-                        "ProductivityLauncherImageSearch"
-                    ]
-                },
-                {
-                    "name": "Enabled_20240516",
-                    "enable_features": [
-                        "LauncherImageSearch",
-                        "LauncherImageSearchIndexingLimit",
-                        "LauncherImageSearchOcr",
-                        "LauncherSearchControl",
-                        "ProductivityLauncherImageSearch"
-                    ]
-                },
-                {
-                    "name": "Disabled_20240516",
-                    "disable_features": [
-                        "LauncherImageSearch",
-                        "LauncherImageSearchIndexingLimit",
-                        "LauncherImageSearchOcr",
-                        "LauncherSearchControl",
-                        "ProductivityLauncherImageSearch"
-                    ]
-                },
-                {
-                    "name": "EnabledOnCore",
-                    "enable_features": [
-                        "LauncherImageSearch",
-                        "LauncherImageSearchIndexingLimit",
-                        "LauncherImageSearchOcr",
-                        "LauncherSearchControl",
-                        "LocalImageSearchOnCore",
-                        "ProductivityLauncherImageSearch"
+                        "LauncherImageSearchIca"
                     ]
                 }
             ]
