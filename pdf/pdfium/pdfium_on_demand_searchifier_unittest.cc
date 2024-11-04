@@ -30,6 +30,25 @@ using VisualAnnotationPtr = screen_ai::mojom::VisualAnnotationPtr;
 
 constexpr base::TimeDelta kOcrDelay = base::Milliseconds(100);
 
+class SearchifierTestClient : public TestClient {
+ public:
+  explicit SearchifierTestClient() = default;
+  SearchifierTestClient(const SearchifierTestClient&) = delete;
+  SearchifierTestClient& operator=(const SearchifierTestClient&) = delete;
+  ~SearchifierTestClient() override = default;
+
+  void OnSearchifyStateChange(bool busy) override {
+    if (busy) {
+      busy_state_changed_count_++;
+    } else {
+      idle_state_changed_count_++;
+    }
+  }
+
+  int busy_state_changed_count_ = 0;
+  int idle_state_changed_count_ = 0;
+};
+
 void WaitUntilIdle(PDFiumOnDemandSearchifier* searchifier,
                    base::OnceClosure callback) {
   if (searchifier->IsIdleForTesting()) {
@@ -130,11 +149,17 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
 
   int performed_ocrs() const { return performed_ocrs_; }
   PDFiumEngine* engine() { return engine_.get(); }
+  int busy_state_changed_count() const {
+    return client_.busy_state_changed_count_;
+  }
+  int idle_state_changed_count() const {
+    return client_.idle_state_changed_count_;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PDFiumEngine> engine_;
-  TestClient client_;
+  SearchifierTestClient client_;
   int performed_ocrs_ = 0;
 };
 
@@ -370,6 +395,60 @@ TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
   // Performing OCR is async and has some delay. It is expected that
   // cancellation takes effect before all pages are OCRed.
   ASSERT_LT(performed_ocrs(), kPageCount);
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest, SearchifyStateChanges) {
+  CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
+
+  // Trigger one page load.
+  GetPDFiumPageForTest(*engine(), 0).GetPage();
+
+  EXPECT_EQ(busy_state_changed_count(), 1);
+  EXPECT_EQ(idle_state_changed_count(), 0);
+
+  StartSearchify(/*empty_results=*/false);
+
+  EXPECT_EQ(busy_state_changed_count(), 1);
+  EXPECT_EQ(idle_state_changed_count(), 0);
+
+  // Wait for searchifier to process all pending tasks.
+  {
+    base::test::TestFuture<void> future;
+    WaitUntilIdle(engine()->GetSearchifierForTesting(), future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  EXPECT_EQ(busy_state_changed_count(), 1);
+  EXPECT_EQ(idle_state_changed_count(), 1);
+
+  // Trigger more page loads.
+  GetPDFiumPageForTest(*engine(), 1).GetPage();
+  GetPDFiumPageForTest(*engine(), 2).GetPage();
+
+  EXPECT_EQ(busy_state_changed_count(), 2);
+  EXPECT_EQ(idle_state_changed_count(), 1);
+
+  // Wait for searchifier to process all pending tasks.
+  {
+    base::test::TestFuture<void> future;
+    WaitUntilIdle(engine()->GetSearchifierForTesting(), future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  EXPECT_EQ(busy_state_changed_count(), 2);
+  EXPECT_EQ(idle_state_changed_count(), 2);
+
+  // Trigger more page loads.
+  GetPDFiumPageForTest(*engine(), 3).GetPage();
+
+  EXPECT_EQ(busy_state_changed_count(), 3);
+  EXPECT_EQ(idle_state_changed_count(), 2);
+
+  // Disconnect OCR before searchifier processes the pending task.
+  engine()->GetOcrDisconnectHandler().Run();
+
+  EXPECT_EQ(busy_state_changed_count(), 3);
+  EXPECT_EQ(idle_state_changed_count(), 3);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumOnDemandSearchifierTest, testing::Bool());

@@ -19,5 +19,6 @@ source_set("pdf") {
     "//components/pdf/browser",
     "//extensions/browser",
     "//pdf:features",
+    "//services/screen_ai/buildflags",
   ]
 }

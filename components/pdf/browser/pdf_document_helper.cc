@@ -128,6 +128,12 @@ void PDFDocumentHelper::SetPluginCanSave(bool can_save) {
                             can_save);
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PDFDocumentHelper::OnSearchifyStateChange(bool busy) {
+  client_->OnSearchifyStateChange(busy, &GetWebContents());
+}
+#endif
+
 void PDFDocumentHelper::DidScroll() {
   if (!touch_selection_controller_client_manager_) {
     InitTouchSelectionClientManager();

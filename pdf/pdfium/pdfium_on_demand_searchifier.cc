@@ -66,6 +66,7 @@ void PDFiumOnDemandSearchifier::OnOcrDisconnected() {
       current_page_ = nullptr;
       pages_queue_.clear();
       state_ = State::kFailed;
+      engine_->OnSearchifyStateChange(/*busy=*/false);
       return;
 
     case State::kFailed:
@@ -89,6 +90,9 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
   CHECK_NE(state_, State::kFailed);
   if (IsPageScheduled(page_index)) {
     return;
+  }
+  if (!current_page_ && pages_queue_.empty() && state_ == State::kIdle) {
+    engine_->OnSearchifyStateChange(/*busy=*/true);
   }
   pages_queue_.push_back(page_index);
   if (state_ == State::kWaitingForResults || !perform_ocr_callback_) {
@@ -123,6 +127,7 @@ void PDFiumOnDemandSearchifier::SearchifyNextPage() {
 
   if (pages_queue_.empty()) {
     state_ = State::kIdle;
+    engine_->OnSearchifyStateChange(/*busy=*/false);
     return;
   }
 

@@ -387,10 +387,13 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // if the page is not scheduled for searchify.
   void CancelPendingSearchify(int page_index);
 
+  // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
+  void OnSearchifyStateChange(bool busy);
+
   PDFiumOnDemandSearchifier* GetSearchifierForTesting() {
     return searchifier_.get();
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void UnsupportedFeature(const std::string& feature);
 

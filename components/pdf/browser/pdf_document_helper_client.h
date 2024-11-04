@@ -35,6 +35,10 @@ class PDFDocumentHelperClient {
   // Lets the client observe scroll events. Only used for testing.
   virtual void OnDidScroll(const gfx::SelectionBound& start,
                            const gfx::SelectionBound& end) {}
+
+  // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
+  virtual void OnSearchifyStateChange(bool busy,
+                                      content::WebContents* contents) = 0;
 };
 
 }  // namespace pdf

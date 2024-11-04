@@ -353,6 +353,9 @@ class FakePdfHost : public pdf::mojom::PdfHost {
               (const gfx::PointF&, int32_t, const gfx::PointF&, int32_t),
               (override));
   MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  MOCK_METHOD(void, OnSearchifyStateChange, (bool), (override));
+#endif
 };
 
 }  // namespace

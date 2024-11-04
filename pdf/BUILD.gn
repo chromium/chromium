@@ -405,6 +405,7 @@ if (enable_pdf) {
       "//cc:test_support",
       "//pdf/loader",
       "//printing",
+      "//services/screen_ai/buildflags",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",

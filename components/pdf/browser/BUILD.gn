@@ -30,6 +30,7 @@ source_set("browser") {
     "//components/pdf/common:util",
     "//content/public/common",
     "//pdf:features",
+    "//services/screen_ai/buildflags",
     "//ui/base",
     "//ui/gfx/geometry",
   ]

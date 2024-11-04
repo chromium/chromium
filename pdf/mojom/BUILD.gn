@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 mojom("mojom") {
   sources = [ "pdf.mojom" ]
@@ -15,4 +16,8 @@ mojom("mojom") {
   ]
 
   cpp_only = true
+
+  if (enable_screen_ai_service) {
+    enabled_features = [ "enable_screen_ai_service" ]
+  }
 }

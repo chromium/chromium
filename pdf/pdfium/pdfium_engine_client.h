@@ -14,6 +14,7 @@
 
 #include "base/functional/callback.h"
 #include "pdf/buildflags.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
@@ -202,6 +203,11 @@ class PDFiumEngineClient {
   // Returns true if the client is in annotation mode.
   virtual bool IsInAnnotationMode() const = 0;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
+  virtual void OnSearchifyStateChange(bool busy) = 0;
+#endif
 };
 
 }  // namespace chrome_pdf

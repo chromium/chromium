@@ -1338,6 +1338,12 @@ bool PdfViewWebPlugin::IsInAnnotationMode() const {
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
+  pdf_host_->OnSearchifyStateChange(busy);
+}
+#endif
+
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
   engine_->SetCaretPosition(FrameToPdfCoordinates(position));
 }
