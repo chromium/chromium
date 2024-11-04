@@ -2021,9 +2021,6 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     return;
   }
 
-  CanDownloadCallback cb = base::BindOnce(
-      &ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete,
-      weak_ptr_factory_.GetWeakPtr(), std::move(check_download_allowed_cb));
 #if BUILDFLAG(IS_ANDROID)
   if (ShouldOpenPdfInline() && mime_type == pdf::kPDFMimeType) {
     // If this is a forward/back navigation, the native page should trigger a
@@ -2036,6 +2033,13 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     }
     NewNavigationObserver::GetInstance()->StartObserving(web_contents);
   }
+#endif
+
+  CanDownloadCallback cb = base::BindOnce(
+      &ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete,
+      weak_ptr_factory_.GetWeakPtr(), std::move(check_download_allowed_cb));
+
+#if BUILDFLAG(IS_ANDROID)
   DownloadControllerBase::Get()->AcquireFileAccessPermission(
       web_contents_getter,
       base::BindOnce(&OnDownloadAcquireFileAccessPermissionDone,
