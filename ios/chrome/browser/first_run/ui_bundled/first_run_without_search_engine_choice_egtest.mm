@@ -215,14 +215,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 }
 
 // Tests to turn off UMA, and open the UMA dialog to turn it back on.
-// TODO(crbug.com/40073685): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testUMAUncheckedAndCheckItAgain \
-  DISABLED_testUMAUncheckedAndCheckItAgain
-#else
-#define MAYBE_testUMAUncheckedAndCheckItAgain testUMAUncheckedAndCheckItAgain
-#endif
-- (void)MAYBE_testUMAUncheckedAndCheckItAgain {
+// TODO(crbug.com/377227225): Reenable when flakiness is fixed.
+- (void)DISABLED_testUMAUncheckedAndCheckItAgain {
   // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
