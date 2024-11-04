@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
@@ -27,13 +29,16 @@ class EditorMenuTextfieldView;
 class EditorMenuViewDelegate;
 
 enum class EditorMenuMode { kWrite = 0, kRewrite };
+enum class LobsterMenuMode { kEnabled = 0, kBlocked };
 
 // A bubble style view to show Editor Menu.
-class EditorMenuView : public PreTargetHandlerView {
+class EditorMenuView : public PreTargetHandlerView,
+                       public views::TabbedPaneListener {
   METADATA_HEADER(EditorMenuView, views::View)
 
  public:
   EditorMenuView(EditorMenuMode editor_menu_mode,
+                 LobsterMenuMode lobter_menu_mode,
                  const PresetTextQueries& preset_text_queries,
                  const gfx::Rect& anchor_view_bounds,
                  EditorMenuViewDelegate* delegate);
@@ -45,6 +50,7 @@ class EditorMenuView : public PreTargetHandlerView {
 
   static std::unique_ptr<views::Widget> CreateWidget(
       EditorMenuMode editor_menu_mode,
+      LobsterMenuMode lobter_menu_mode,
       const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
@@ -57,6 +63,9 @@ class EditorMenuView : public PreTargetHandlerView {
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
+  // views::TabbedPaneListener
+  void TabSelectedAt(int index) override;
+
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
   void DisableMenu();
@@ -67,6 +76,8 @@ class EditorMenuView : public PreTargetHandlerView {
 
  private:
   const EditorMenuMode editor_menu_mode_;
+
+  const LobsterMenuMode lobster_menu_mode_;
 
   void InitLayout(const PresetTextQueries& preset_text_queries);
   void AddTitleContainer();
@@ -85,6 +96,7 @@ class EditorMenuView : public PreTargetHandlerView {
 
   // Containing title, badge, and icons.
   raw_ptr<views::View> title_container_ = nullptr;
+  raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   // Containing chips.

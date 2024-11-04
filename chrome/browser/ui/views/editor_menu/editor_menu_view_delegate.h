@@ -19,6 +19,8 @@ class EditorMenuViewDelegate {
 
   virtual void OnChipButtonPressed(std::string_view text_query_id) = 0;
 
+  virtual void OnTabSelected(int index) = 0;
+
   virtual void OnTextfieldArrowButtonPressed(std::u16string_view text) = 0;
 
   virtual void OnPromoCardWidgetClosed(

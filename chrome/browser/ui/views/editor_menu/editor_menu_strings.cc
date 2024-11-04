@@ -6,10 +6,15 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace chromeos::editor_menu {
 
@@ -32,6 +37,14 @@ bool ShouldUseL10nStrings() {
 }
 
 }  // namespace
+
+std::u16string GetEditorMenuLobsterTitle() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_CARD_LOBSTER_TAB_LABEL);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
 
 std::u16string GetEditorMenuPromoCardTitle() {
   return ShouldUseL10nStrings()

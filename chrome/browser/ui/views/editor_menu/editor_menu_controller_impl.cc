@@ -111,6 +111,13 @@ void EditorMenuControllerImpl::OnChipButtonPressed(
       std::string(text_query_id));
 }
 
+void EditorMenuControllerImpl::OnTabSelected(int index) {
+  if (!card_session_) {
+    return;
+  }
+  card_session_->lobster_tab_selected = index == 1;
+}
+
 void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
     std::u16string_view text) {
   if (text.empty() || !card_session_) {
@@ -118,6 +125,11 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
   }
 
   DisableEditorMenu();
+
+  if (card_session_->lobster_tab_selected) {
+    // TODO: b/348280474 - Open Lobster dialog.
+  }
+
   card_session_->manager().StartEditingFlowWithFreeform(
       base::UTF16ToUTF8(text));
 }
@@ -218,14 +230,19 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     case EditorMode::kSoftBlocked:
       break;
     case EditorMode::kWrite:
+      // TODO: b:348280474 - Uses the correct Lobster mode once this card UI is
+      // connected with Backend.
       editor_menu_widget_ = EditorMenuView::CreateWidget(
-          EditorMenuMode::kWrite, PresetTextQueries(), anchor_bounds, this);
+          EditorMenuMode::kWrite, LobsterMenuMode::kBlocked,
+          PresetTextQueries(), anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
     case EditorMode::kRewrite:
+      // TODO: b:348280474 - Uses the correct Lobster mode once this card UI is
+      // connected with Backend.
       editor_menu_widget_ = EditorMenuView::CreateWidget(
-          EditorMenuMode::kRewrite, context.preset_queries, anchor_bounds,
-          this);
+          EditorMenuMode::kRewrite, LobsterMenuMode::kBlocked,
+          context.preset_queries, anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
     case EditorMode::kPromoCard:

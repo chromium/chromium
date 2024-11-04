@@ -46,6 +46,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // EditorMenuViewDelegate:
   void OnSettingsButtonPressed() override;
   void OnChipButtonPressed(std::string_view text_query_id) override;
+  void OnTabSelected(int index) override;
   void OnTextfieldArrowButtonPressed(std::u16string_view text) override;
   void OnPromoCardWidgetClosed(
       views::Widget::ClosedReason closed_reason) override;
@@ -89,6 +90,8 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     void OnEditorModeChanged(const EditorMode& mode) override;
 
     EditorManager& manager();
+
+    bool lobster_tab_selected = false;
 
    private:
     // Not owned by this class

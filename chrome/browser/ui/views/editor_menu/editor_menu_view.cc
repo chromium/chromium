@@ -34,6 +34,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -67,6 +68,13 @@ constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 12, 16);
 
+constexpr gfx::Size kTabbedPaneSize = gfx::Size(180, 36);
+
+const views::FlexSpecification kTabbedPaneFlexSpecification =
+    views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                             views::MaximumFlexSizeRule::kPreferred)
+        .WithWeight(1);
+
 int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
   const int total_chips_height = num_rows * chip_height;
   const int total_chips_paddings =
@@ -79,11 +87,13 @@ int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
 }  // namespace
 
 EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
+                               LobsterMenuMode lobster_menu_mode,
                                const PresetTextQueries& preset_text_queries,
                                const gfx::Rect& anchor_view_bounds,
                                EditorMenuViewDelegate* delegate)
     : PreTargetHandlerView(CardType::kEditorMenu),
       editor_menu_mode_(editor_menu_mode),
+      lobster_menu_mode_(lobster_menu_mode),
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout(preset_text_queries);
@@ -99,6 +109,7 @@ EditorMenuView::~EditorMenuView() = default;
 // static
 std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
     EditorMenuMode editor_menu_mode,
+    LobsterMenuMode lobter_menu_mode,
     const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
@@ -115,7 +126,8 @@ std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
   auto widget = std::make_unique<views::Widget>(std::move(params));
   EditorMenuView* editor_menu_view =
       widget->SetContentsView(std::make_unique<EditorMenuView>(
-          editor_menu_mode, preset_text_queries, anchor_view_bounds, delegate));
+          editor_menu_mode, lobter_menu_mode, preset_text_queries,
+          anchor_view_bounds, delegate));
   editor_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -193,6 +205,11 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
+void EditorMenuView::TabSelectedAt(int index) {
+  CHECK(delegate_);
+  delegate_->OnTabSelected(index);
+}
+
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   gfx::Rect editor_menu_bounds = GetEditorMenuBounds(anchor_view_bounds, this);
   GetWidget()->SetBounds(editor_menu_bounds);
@@ -234,12 +251,28 @@ void EditorMenuView::AddTitleContainer() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
-      editor_menu_mode_ == EditorMenuMode::kWrite
-          ? GetEditorMenuWriteCardTitle()
-          : GetEditorMenuRewriteCardTitle(),
-      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
-  title->SetEnabledColorId(ui::kColorSysOnSurface);
+  bool should_display_tabbed_pane =
+      editor_menu_mode_ == EditorMenuMode::kWrite &&
+      lobster_menu_mode_ == LobsterMenuMode::kEnabled;
+  if (should_display_tabbed_pane) {
+    tabbed_pane_ =
+        title_container_->AddChildView(std::make_unique<views::TabbedPane>());
+    tabbed_pane_->SetPreferredSize(kTabbedPaneSize);
+    tabbed_pane_->SetProperty(views::kFlexBehaviorKey,
+                              kTabbedPaneFlexSpecification);
+    tabbed_pane_->AddTab(GetEditorMenuWriteCardTitle(),
+                         std::make_unique<views::View>());
+    tabbed_pane_->AddTab(GetEditorMenuLobsterTitle(),
+                         std::make_unique<views::View>());
+    tabbed_pane_->set_listener(this);
+  } else {
+    auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
+        editor_menu_mode_ == EditorMenuMode::kWrite
+            ? GetEditorMenuWriteCardTitle()
+            : GetEditorMenuRewriteCardTitle(),
+        views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
+    title->SetEnabledColorId(ui::kColorSysOnSurface);
+  }
 
   auto* badge =
       title_container_->AddChildView(std::make_unique<EditorMenuBadgeView>());

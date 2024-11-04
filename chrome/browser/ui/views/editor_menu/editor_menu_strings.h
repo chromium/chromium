@@ -9,6 +9,8 @@
 
 namespace chromeos::editor_menu {
 
+std::u16string GetEditorMenuLobsterTitle();
+
 std::u16string GetEditorMenuPromoCardTitle();
 
 std::u16string GetEditorMenuPromoCardDescription();
