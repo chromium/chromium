@@ -372,7 +372,6 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaScript(
         websocket, context_id, url_base):
-
     serialized_url = {"type": "string", "value": url_base}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
@@ -687,7 +686,8 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
 }],
                          indirect=True)
 async def test_speculationrules_prerender(websocket, context_id, html,
-                                          test_headless_mode):
+                                          test_headless_mode,
+                                          read_sorted_messages):
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support prerendering")
 
@@ -718,16 +718,21 @@ async def test_speculationrules_prerender(websocket, context_id, html,
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({'id': command_id, 'type': 'success'})
+    [command_result, context_created_event] = await read_sorted_messages(2)
+
+    # Assert that the navigation command was finished.
+    assert command_result == AnyExtending({
+        'id': command_id,
+        'type': 'success'
+    })
 
     # Wait the preloaded page to be created.
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
+    assert context_created_event == AnyExtending({
         'method': 'browsingContext.contextCreated',
         'type': 'event'
     })
 
+    # Assert that there are two contexts: the original and prerendered.
     response = await execute_command(websocket, {
         'method': "browsingContext.getTree",
         'params': {}
