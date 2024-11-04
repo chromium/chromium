@@ -23,6 +23,7 @@
 enum class PriceInsightsIconLabelType;
 
 class GURL;
+class SidePanelEntryScope;
 class SidePanelRegistry;
 class SidePanelUI;
 namespace bookmarks {
@@ -158,7 +159,8 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
  protected:
   const std::optional<bool>& GetPendingTrackingStateForTesting();
 
-  virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
+  virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView(
+      SidePanelEntryScope& scope);
 
   virtual GURL GetComparisonTableURL();
 

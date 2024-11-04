@@ -191,7 +191,8 @@ void CompanionSidePanelController::RemoveObserver() {
 }
 
 std::unique_ptr<views::View>
-CompanionSidePanelController::CreateCompanionWebView() {
+CompanionSidePanelController::CreateCompanionWebView(
+    SidePanelEntryScope& scope) {
   auto panel_container_view = std::make_unique<views::FlexLayoutView>();
   panel_container_view_ = panel_container_view.get();
 

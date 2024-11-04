@@ -70,8 +70,9 @@ namespace {
 // when shown.
 std::unique_ptr<SidePanelEntry> CreateEntry(const SidePanelEntry::Key& key) {
   return std::make_unique<SidePanelEntry>(
-      key,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); }));
+      key, base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      }));
 }
 
 }  // namespace
@@ -93,7 +94,9 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
                          ->side_panel_registry();
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kShoppingInsights,
-        base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+        base::BindRepeating([](SidePanelEntryScope&) {
+          return std::make_unique<views::View>();
+        })));
     contextual_registries_.push_back(registry);
 
     // Add some entries to the second tab.
@@ -104,7 +107,9 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
                    ->side_panel_registry();
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLens,
-        base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+        base::BindRepeating([](SidePanelEntryScope&) {
+          return std::make_unique<views::View>();
+        })));
     contextual_registries_.push_back(browser()
                                          ->GetActiveTabInterface()
                                          ->GetTabFeatures()
@@ -114,14 +119,18 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     // tab.
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLensOverlayResults,
-        base::BindRepeating([]() { return std::make_unique<views::View>(); }),
+        base::BindRepeating([](SidePanelEntryScope&) {
+          return std::make_unique<views::View>();
+        }),
         std::nullopt, base::BindRepeating([]() {
           return std::unique_ptr<ui::MenuModel>(
               new ui::SimpleMenuModel(nullptr));
         })));
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kShoppingInsights,
-        base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+        base::BindRepeating([](SidePanelEntryScope&) {
+          return std::make_unique<views::View>();
+        })));
 
     coordinator()->SetNoDelaysForTesting(true);
   }
@@ -132,7 +141,9 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     auto* const registry = SidePanelRegistry::GetDeprecated(web_contents);
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kAboutThisSite,
-        base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+        base::BindRepeating([](SidePanelEntryScope&) {
+          return std::make_unique<views::View>();
+        })));
     contextual_registries_.push_back(registry);
   }
 
@@ -1256,7 +1267,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       std::make_unique<TestSidePanelObserver>(contextual_registries_[0]);
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kAboutThisSite,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); }));
+      base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      }));
   entry->AddObserver(observer.get());
   contextual_registries_[0]->Register(std::move(entry));
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -1285,7 +1298,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       std::make_unique<TestSidePanelObserver>(contextual_registries_[0]);
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kAboutThisSite,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); }));
+      base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      }));
   entry->AddObserver(observer.get());
   contextual_registries_[0]->Register(std::move(entry));
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -1312,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   int count = 0;
   global_registry()->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kLens, base::BindRepeating(
-                                     [](int* count) {
+                                     [](int* count, SidePanelEntryScope&) {
                                        (*count)++;
                                        return std::make_unique<views::View>();
                                      },
@@ -1681,7 +1696,8 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     // Add a kShoppingInsights entry to the global registry with loading content
     // not available.
     std::unique_ptr<SidePanelEntry> entry1 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kShoppingInsights, base::BindRepeating([]() {
+        SidePanelEntry::Id::kShoppingInsights,
+        base::BindRepeating([](SidePanelEntryScope&) {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
@@ -1693,7 +1709,8 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     // Add a kLens entry to the global registry with loading content not
     // available.
     std::unique_ptr<SidePanelEntry> entry2 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLens, base::BindRepeating([]() {
+        SidePanelEntry::Id::kLens,
+        base::BindRepeating([](SidePanelEntryScope&) {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
@@ -1704,7 +1721,8 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
 
     // Add a kAboutThisSite entry to the global registry with content available.
     std::unique_ptr<SidePanelEntry> entry3 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kAboutThisSite, base::BindRepeating([]() {
+        SidePanelEntry::Id::kAboutThisSite,
+        base::BindRepeating([](SidePanelEntryScope&) {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(true);

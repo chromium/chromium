@@ -526,8 +526,8 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
 }
 
-std::unique_ptr<views::View>
-CommerceUiTabHelper::CreateShoppingInsightsWebView() {
+std::unique_ptr<views::View> CommerceUiTabHelper::CreateShoppingInsightsWebView(
+    SidePanelEntryScope& scope) {
   auto shopping_insights_web_view =
       std::make_unique<SidePanelWebUIViewT<ShoppingInsightsSidePanelUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),

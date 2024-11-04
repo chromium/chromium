@@ -144,7 +144,8 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 std::unique_ptr<views::View>
-ReadAnythingSidePanelController::CreateContainerView() {
+ReadAnythingSidePanelController::CreateContainerView(
+    SidePanelEntryScope& scope) {
   // If there was an old WebView, clear the reference.
   if (web_view_) {
     web_view_->contents_wrapper()->web_contents()->RemoveUserData(

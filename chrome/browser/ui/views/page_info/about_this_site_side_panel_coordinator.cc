@@ -155,7 +155,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
 }
 
 std::unique_ptr<views::View>
-AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
+AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView(
+    SidePanelEntryScope& scope) {
   DCHECK(GetBrowserView());
   DCHECK(last_url_info_);
   if (registered_but_not_shown_) {

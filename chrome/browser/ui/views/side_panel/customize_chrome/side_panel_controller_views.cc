@@ -192,7 +192,8 @@ void SidePanelControllerViews::CloseSidePanel() {
 }
 
 std::unique_ptr<views::View>
-SidePanelControllerViews::CreateCustomizeChromeWebView() {
+SidePanelControllerViews::CreateCustomizeChromeWebView(
+    SidePanelEntryScope& scope) {
   auto customize_chrome_web_view =
       std::make_unique<SidePanelWebUIViewT<CustomizeChromeUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),

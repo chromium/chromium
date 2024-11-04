@@ -18,6 +18,7 @@
 
 class Browser;
 class SidePanelCoordinator;
+class SidePanelEntryScope;
 
 // LensSidePanelCoordinator handles the creation and registration of the
 // LensUnifiedSidePanelEntry.
@@ -83,7 +84,8 @@ class LensSidePanelCoordinator
   void OnTemplateURLServiceChanged() override;
 
   std::unique_ptr<views::View> CreateLensWebView(
-      const content::OpenURLParams& params);
+      const content::OpenURLParams& params,
+      SidePanelEntryScope& scope);
 
   raw_ptr<TemplateURLService> template_url_service_;
   base::WeakPtr<lens::LensUnifiedSidePanelView> lens_side_panel_view_;

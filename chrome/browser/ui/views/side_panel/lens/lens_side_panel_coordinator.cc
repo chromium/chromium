@@ -242,7 +242,8 @@ bool LensSidePanelCoordinator::OpenResultsInNewTabForTesting() {
 }
 
 std::unique_ptr<views::View> LensSidePanelCoordinator::CreateLensWebView(
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    SidePanelEntryScope& scope) {
   auto side_panel_view_ = std::make_unique<lens::LensUnifiedSidePanelView>(
       GetBrowserView(),
       base::BindRepeating(&LensSidePanelCoordinator::UpdateNewTabButtonState,

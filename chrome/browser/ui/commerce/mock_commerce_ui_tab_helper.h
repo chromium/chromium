@@ -53,7 +53,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
               (override));
   MOCK_METHOD(std::unique_ptr<views::View>,
               CreateShoppingInsightsWebView,
-              (),
+              (SidePanelEntryScope & scope),
               (override));
   MOCK_METHOD(const std::optional<commerce::PriceInsightsInfo>&,
               GetPriceInsightsInfo,

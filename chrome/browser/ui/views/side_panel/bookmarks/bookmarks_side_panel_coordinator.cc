@@ -46,7 +46,8 @@ void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
 }
 
 std::unique_ptr<views::View>
-BookmarksSidePanelCoordinator::CreateBookmarksWebView() {
+BookmarksSidePanelCoordinator::CreateBookmarksWebView(
+    SidePanelEntryScope& scope) {
   auto bookmarks_web_view =
       std::make_unique<SidePanelWebUIViewT<BookmarksSidePanelUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),

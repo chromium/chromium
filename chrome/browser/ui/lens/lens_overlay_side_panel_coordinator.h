@@ -17,6 +17,7 @@
 class GURL;
 class LensOverlayController;
 class LensOverlaySidePanelWebView;
+class SidePanelEntryScope;
 
 enum class SidePanelEntryHideReason;
 
@@ -113,7 +114,8 @@ class LensOverlaySidePanelCoordinator
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
 
-  std::unique_ptr<views::View> CreateLensOverlayResultsView();
+  std::unique_ptr<views::View> CreateLensOverlayResultsView(
+      SidePanelEntryScope& scope);
 
   // Returns the more info callback for creating the side panel entry.
   base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>

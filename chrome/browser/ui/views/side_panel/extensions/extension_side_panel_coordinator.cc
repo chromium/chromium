@@ -202,7 +202,8 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
                           base::Unretained(this))));
 }
 
-std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
+std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
+    SidePanelEntryScope& scope) {
   host_ = ExtensionViewHostFactory::CreateSidePanelHost(
       side_panel_url_, browser_, tab_interface_);
 

@@ -294,7 +294,8 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
 }
 
 std::unique_ptr<views::View>
-LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
+LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
+    SidePanelEntryScope& scope) {
   // TODO(b/328295358): Change task manager string ID in view creation when
   // available.
   auto view = std::make_unique<LensOverlaySidePanelWebView>(

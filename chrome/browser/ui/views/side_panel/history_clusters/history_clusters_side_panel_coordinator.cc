@@ -73,7 +73,8 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
 }
 
 std::unique_ptr<views::View>
-HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
+HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView(
+    SidePanelEntryScope& scope) {
   // Construct our URL including our initial query. Other ways of passing the
   // initial query to the WebUI interface are mostly all racy.
   std::string query_string = base::StringPrintf(

@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_icon_image.h"
 
 class BrowserWindowInterface;
+class SidePanelEntryScope;
 class SidePanelRegistry;
 
 namespace tabs {
@@ -85,7 +86,7 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Creates a view for the extension's resource URL. This is called when this
   // extension's SidePanelEntry is about to be shown in the side panel and a
   // view for the entry has not been cached.
-  std::unique_ptr<views::View> CreateView();
+  std::unique_ptr<views::View> CreateView(SidePanelEntryScope& scope);
 
   // Called when window.close() is called from the extension's side panel page.
   // This closes the side panel if the extension's panel is showing. Otherwise

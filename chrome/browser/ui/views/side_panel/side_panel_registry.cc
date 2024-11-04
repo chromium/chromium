@@ -16,11 +16,17 @@
 #include "extensions/common/extension_id.h"
 
 SidePanelRegistry::SidePanelRegistry(tabs::TabInterface* tab_interface)
-    : owner_(tab_interface) {}
+    : SidePanelEntryScope(SidePanelEntryScope::ScopeType::kTab),
+      owner_(tab_interface) {
+  CHECK(tab_interface);
+}
 
 SidePanelRegistry::SidePanelRegistry(
     BrowserWindowInterface* browser_window_interface)
-    : owner_(browser_window_interface) {}
+    : SidePanelEntryScope(SidePanelEntryScope::ScopeType::kBrowser),
+      owner_(browser_window_interface) {
+  CHECK(browser_window_interface);
+}
 
 SidePanelRegistry::~SidePanelRegistry() = default;
 
@@ -61,6 +67,7 @@ bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   // It's important to add `this` as an observer to `entry` before notifying
   // SidePanelRegistryObservers of the entry's registration because some
   // registry observers can call SidePanelEntryObserver methods for `entry`.
+  entry->set_scope(this);
   entry->AddObserver(this);
   entries_.push_back(std::move(entry));
   return true;
@@ -81,6 +88,7 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
       &deregistering_entry_key_, key);
 
   entry->RemoveObserver(this);
+  entry->set_scope(nullptr);
   if (active_entry_.has_value() &&
       entry->key() == active_entry_.value()->key()) {
     active_entry_.reset();
@@ -127,13 +135,19 @@ void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
   active_entry_ = entry;
 }
 
+const tabs::TabInterface& SidePanelRegistry::GetTabInterface() const {
+  CHECK_EQ(SidePanelEntryScope::ScopeType::kTab, get_scope_type());
+  return *std::get<tabs::TabInterface*>(owner_);
+}
+
+const BrowserWindowInterface& SidePanelRegistry::GetBrowserWindowInterface()
+    const {
+  return get_scope_type() == SidePanelEntryScope::ScopeType::kTab
+             ? *std::get<tabs::TabInterface*>(owner_)
+                    ->GetBrowserWindowInterface()
+             : *std::get<BrowserWindowInterface*>(owner_);
+}
+
 SidePanelCoordinator* SidePanelRegistry::GetCoordinator() {
-  BrowserWindowInterface* browser_window_interface = nullptr;
-  if (auto* ptr = std::get_if<BrowserWindowInterface*>(&owner_)) {
-    browser_window_interface = *ptr;
-  } else {
-    browser_window_interface =
-        std::get<tabs::TabInterface*>(owner_)->GetBrowserWindowInterface();
-  }
-  return browser_window_interface->GetFeatures().side_panel_coordinator();
+  return GetBrowserWindowInterface().GetFeatures().side_panel_coordinator();
 }
