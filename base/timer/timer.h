@@ -163,10 +163,6 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   // the timer is not running, this will start it by posting a task.
   virtual void Reset();
 
-  // DEPRECATED. Call Stop() instead.
-  // TODO(crbug.com/40202541): Remove this method and all callers.
-  void AbandonAndStop();
-
   TimeTicks desired_run_time() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return desired_run_time_;

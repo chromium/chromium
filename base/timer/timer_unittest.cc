@@ -488,8 +488,8 @@ TEST(TimerTest, AbandonedTaskIsCancelled) {
   timer.Start(FROM_HERE, kTestDelay, base::DoNothing());
   EXPECT_EQ(1u, task_environment.GetPendingMainThreadTaskCount());
 
-  // After AbandonAndStop(), the task is correctly treated as cancelled.
-  timer.AbandonAndStop();
+  // After Stop(), the task is correctly treated as cancelled.
+  timer.Stop();
   EXPECT_EQ(0u, task_environment.GetPendingMainThreadTaskCount());
   EXPECT_FALSE(timer.IsRunning());
 }
