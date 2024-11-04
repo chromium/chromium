@@ -4720,7 +4720,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabGrid.TabSelected.TimeSinceLastActivation" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
