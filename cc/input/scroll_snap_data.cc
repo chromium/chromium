@@ -415,9 +415,7 @@ SnapContainerData::GetTargetSnapAreaSearchResult(
   for (const SnapAreaData& area : snap_area_list_) {
     if (area.element_id == target_id && strategy.IsValidSnapArea(axis, area)) {
       auto aligned_result = GetSnapSearchResult(axis, area);
-      if (base::FeatureList::IsEnabled(
-              features::kScrollSnapPreferCloserCovering) &&
-          CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
+      if (CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
         // This code path handles snapping after layout changes. If the
         // target snap area is larger than the snapport, we need to consider
         // snap areas nested within it, which may themselves be large snap areas
@@ -601,9 +599,7 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
     SnapSearchResult candidate = GetSnapSearchResult(axis, area);
     evaluate(candidate, area);
     if (should_consider_covering &&
-        (base::FeatureList::IsEnabled(features::kScrollSnapPreferCloserCovering)
-             ? CanCoverSnapportOnAxis(axis, snapport(), area.rect)
-             : IsSnapportCoveredOnAxis(axis, intended_position, area.rect))) {
+        CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
       if (std::optional<SnapSearchResult> covering =
               FindCoveringCandidate(area, axis, candidate, intended_position)) {
         covering->set_has_focus_within(area.has_focus_within);

@@ -37,12 +37,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas);
 // allowing much more natural scrolling within these areas.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringUseNativeFling);
 
-// When enabled, if a snap container is snapping to a large snap area, it will
-// snap to the closest covering position if it is closer than the aligned
-// position. This avoid unnecessary jumps that attempt to honor the
-// scroll-snap-align value.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapPreferCloserCovering);
-
 // Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
