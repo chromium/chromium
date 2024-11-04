@@ -352,7 +352,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
                     // If this is a new tab group creation that will show a dialog, do not trigger a
                     // snackbar.
-                    if (TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
+                    if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                             TabGroupFeatureUtils
                                     .shouldShowGroupCreationDialogViaSettingsSwitch())) {
                         continue;
