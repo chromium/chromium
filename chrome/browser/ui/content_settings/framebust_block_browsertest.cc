@@ -33,6 +33,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -114,8 +115,16 @@ class FramebustBlockBrowserTest
   }
 
   bool ExecuteAndCheckBlockedRedirection() {
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/iframe.html")));
+    return ExecuteAndCheckBlockedRedirection(
+        embedded_test_server()->GetURL("b.com", "/title1.html"));
+  }
+
+  // Attempts to framebust to `redirect_url` and ensures the navigation is
+  // blocked. (The test fails if not.) Returns whether the blocked URL is added
+  // to the tab helper, where the user can proceed to it if desired.
+  bool ExecuteAndCheckBlockedRedirection(const GURL& redirect_url) {
+    const GURL original_url = embedded_test_server()->GetURL("/iframe.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
 
     const GURL child_url =
         embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -125,9 +134,6 @@ class FramebustBlockBrowserTest
         content::ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
     EXPECT_EQ(child_url, child->GetLastCommittedURL());
 
-    const GURL redirect_url =
-        embedded_test_server()->GetURL("b.com", "/title1.html");
-
     base::RunLoop block_waiter;
     blocked_url_added_closure_ = block_waiter.QuitClosure();
     child->ExecuteJavaScriptForTests(
@@ -136,6 +142,12 @@ class FramebustBlockBrowserTest
         base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
     block_waiter.Run();
 
+    // Ensure we have not left the original page.
+    EXPECT_EQ(original_url, GetWebContents()->GetLastCommittedURL());
+
+    // Return whether the redirect URL itself ended up in the list of blocked
+    // URLs, which only happens if the renderer had the ability to navigate to
+    // the URL in the first place.
     return base::Contains(GetFramebustTabHelper()->blocked_urls(),
                           redirect_url);
   }
@@ -152,8 +164,9 @@ class FramebustBlockBrowserTest
 // to that URL.
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   const GURL blocked_urls[] = {
-      GURL(chrome::kChromeUIHistoryURL), GURL(chrome::kChromeUISettingsURL),
-      GURL(chrome::kChromeUIVersionURL),
+      embedded_test_server()->GetURL("b.com", "/title1.html"),
+      embedded_test_server()->GetURL("c.com", "/title1.html"),
+      embedded_test_server()->GetURL("d.com", "/title1.html"),
   };
 
   // Signal that a blocked redirection happened.
@@ -183,7 +196,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   EXPECT_TRUE(clicked_index_.has_value());
   EXPECT_TRUE(clicked_url_.has_value());
   EXPECT_EQ(1u, clicked_index_.value());
-  EXPECT_EQ(GURL(chrome::kChromeUISettingsURL), clicked_url_.value());
+  EXPECT_EQ(embedded_test_server()->GetURL("c.com", "/title1.html"),
+            clicked_url_.value());
   EXPECT_FALSE(helper->HasBlockedUrls());
   EXPECT_EQ(blocked_urls[1], GetWebContents()->GetLastCommittedURL());
 }
@@ -286,6 +300,30 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, SimpleFramebust_Blocked) {
   EXPECT_TRUE(ExecuteAndCheckBlockedRedirection());
+}
+
+// Attempts to navigate to chrome:// URLs should be blocked without allowing the
+// user to proceed. Instead, the blocked URLs list includes content:kBlockedURL,
+// which is about:blank#blocked, similar to other cases where a renderer
+// attempts to navigate to an off-limits URL. See https://crbug.com/375550814.
+IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
+                       Framebust_WebUI_Blocked_No_Bypass) {
+  const GURL chrome_url(chrome::kChromeUISettingsURL);
+  EXPECT_FALSE(ExecuteAndCheckBlockedRedirection(chrome_url));
+  EXPECT_TRUE(base::Contains(GetFramebustTabHelper()->blocked_urls(),
+                             GURL(content::kBlockedURL)));
+}
+
+// Attempts to navigate to file:// URLs should be blocked without allowing the
+// user to proceed. Instead, the blocked URLs list includes content:kBlockedURL,
+// which is about:blank#blocked, similar to other cases where a renderer
+// attempts to navigate to an off-limits URL. See https://crbug.com/375550814.
+IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
+                       Framebust_File_Blocked_No_Bypass) {
+  const GURL file_url("file:///");
+  EXPECT_FALSE(ExecuteAndCheckBlockedRedirection(file_url));
+  EXPECT_TRUE(base::Contains(GetFramebustTabHelper()->blocked_urls(),
+                             GURL(content::kBlockedURL)));
 }
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
