@@ -582,53 +582,10 @@ TEST_F(AddressSuggestionGeneratorTest,
   ASSERT_TRUE(profiles_to_suggest.empty());
 }
 
-// Tests that disused profiles get removed.
-TEST_F(AddressSuggestionGeneratorTest,
-       GetProfilesToSuggest_RemoveDisusedProfiles_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillChangeDisusedAddressSuggestionTreatment);
-  base::Time kCurrentTime = AutofillClock::Now();
-  constexpr size_t kNumProfiles = 10;
-  constexpr base::TimeDelta k30Days = base::Days(30);
-  constexpr size_t kNbSuggestions =
-      (kDisusedDataModelTimeDelta + base::Days(29)) / k30Days;
-
-  // Set up the profile vectors with last use dates ranging from `kCurrentTime`
-  // to 270 days ago, in 30 day increments.
-  std::vector<AutofillProfile> profiles(
-      kNumProfiles,
-      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
-  for (size_t i = 0; i < kNumProfiles; ++i) {
-    profiles[i].SetRawInfo(
-        NAME_FULL, base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
-    profiles[i].set_use_date(kCurrentTime - (i * k30Days));
-    address_data().AddProfile(profiles[i]);
-  }
-
-  base::HistogramTester histogram_tester;
-  std::vector<AutofillProfile> profiles_to_suggest =
-      GetProfilesToSuggestForTest(address_data(), NAME_FULL, u"",
-                                  /*field_is_autofilled=*/false, {NAME_FULL});
-
-  ASSERT_EQ(kNbSuggestions, profiles_to_suggest.size());
-  for (size_t i = 0; i < kNbSuggestions; ++i) {
-    EXPECT_EQ(profiles[i].guid(), profiles_to_suggest[i].guid()) << i;
-  }
-  histogram_tester.ExpectUniqueSample(kAddressesSuppressedHistogramName,
-                                      kNumProfiles - kNbSuggestions, 1);
-}
-
 // Tests that disused profiles get removed, but that this doesn't affect the
-// first few profiles in the list, depending on the parameterization of the
-// feature AutofillChangeDisusedAddressSuggestionTreatment.
+// first few profiles in the list.
 TEST_F(AddressSuggestionGeneratorTest,
-       GetProfilesToSuggest_RemoveDisusedProfiles_FeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillChangeDisusedAddressSuggestionTreatment,
-      base::FieldTrialParams{
-          {features::kNumberOfIgnoredSuggestions.name, "1"}});
+       GetProfilesToSuggest_RemoveDisusedProfiles) {
   base::Time kDisusedTime =
       AutofillClock::Now() - kDisusedDataModelTimeDelta - base::Days(1);
 

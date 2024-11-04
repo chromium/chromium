@@ -288,17 +288,6 @@ BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
              "AutofillImportFromAutocompleteUnrecognized",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Makes disused suggestion suppression logic ignore the first
-// `kNumberOfIgnoredSuggestions` suggestions (in frecency order), so that the
-// logic never returns an empty list after being passed a non-empty one.
-BASE_FEATURE(kAutofillChangeDisusedAddressSuggestionTreatment,
-             "AutofillChangeDisusedAddressSuggestionTreatment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kNumberOfIgnoredSuggestions{
-    &kAutofillChangeDisusedAddressSuggestionTreatment, "ignored-suggestions",
-    1};
-
 // If enabled, we start forwarding submissions with source
 // DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.
 BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,

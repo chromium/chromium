@@ -920,6 +920,9 @@ GetPrefixMatchedProfiles(const std::vector<const AutofillProfile*>& profiles,
 // relative ordering of `profiles` is maintained.
 void RemoveDisusedSuggestions(
     std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles) {
+  if (profiles.empty()) {
+    return;
+  }
   const base::Time min_last_used =
       AutofillClock::Now() - kDisusedDataModelTimeDelta;
   auto is_profile_disused =
@@ -927,22 +930,12 @@ void RemoveDisusedSuggestions(
           const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
         return profile->use_date() <= min_last_used;
       };
-  if (base::ranges::count_if(profiles, is_profile_disused) == 0) {
-    AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(0);
-    return;
-  }
   const size_t original_size = profiles.size();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillChangeDisusedAddressSuggestionTreatment)) {
-    profiles.erase(
-        std::remove_if(profiles.begin() +
-                           std::min(features::kNumberOfIgnoredSuggestions.Get(),
-                                    static_cast<int>(profiles.size())),
-                       profiles.end(), is_profile_disused),
-        profiles.end());
-  } else {
-    std::erase_if(profiles, is_profile_disused);
-  }
+  // Exclude the first address from the list of potentially removed ones so that
+  // this strategy never results in a non empty list becoming empty.
+  profiles.erase(
+      std::remove_if(profiles.begin() + 1, profiles.end(), is_profile_disused),
+      profiles.end());
   AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(original_size -
                                                            profiles.size());
 }
