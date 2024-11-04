@@ -190,6 +190,18 @@ std::optional<UpdateManifest::VersionEntry> UpdateManifest::GetLatestVersion(
   return latest_version_entry;
 }
 
+std::optional<UpdateManifest::VersionEntry> UpdateManifest::GetVersion(
+    const base::Version& version,
+    const UpdateChannel& channel) const {
+  for (const VersionEntry& version_entry : version_entries_) {
+    if (version_entry.channels().contains(channel) &&
+        version_entry.version() == version) {
+      return version_entry;
+    }
+  }
+  return std::nullopt;
+}
+
 UpdateManifest::ChannelMetadata UpdateManifest::GetChannelMetadata(
     const UpdateChannel& channel) const {
   const ChannelMetadata* channel_metadata =

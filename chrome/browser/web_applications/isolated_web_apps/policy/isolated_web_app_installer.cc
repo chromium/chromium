@@ -80,6 +80,17 @@ IsolatedWebAppInstallSource GetIsolatedWebAppInstallSource(
       return IsolatedWebAppInstallSource::FromKiosk(std::move(src_bundle));
   }
 }
+
+std::optional<UpdateManifest::VersionEntry> GetVersionWithOptions(
+    const UpdateManifest& update_manifest,
+    const IsolatedWebAppExternalInstallOptions& install_options) {
+  if (install_options.pinned_version()) {
+    return update_manifest.GetVersion(*install_options.pinned_version(),
+                                      install_options.update_channel());
+  } else {
+    return update_manifest.GetLatestVersion(install_options.update_channel());
+  }
+}
 }  // namespace
 
 IwaInstaller::IwaInstallCommandWrapperImpl::IwaInstallCommandWrapperImpl(
@@ -194,18 +205,20 @@ void IwaInstaller::OnUpdateManifestParsed(
         }
       });
 
-  std::optional<UpdateManifest::VersionEntry> latest_version =
-      update_manifest.GetLatestVersion(install_options_.update_channel());
-  if (!latest_version.has_value()) {
+  std::optional<UpdateManifest::VersionEntry> version_to_install =
+      GetVersionWithOptions(update_manifest, install_options_);
+
+  if (!version_to_install) {
     Finish(Result(Result::Type::kErrorWebBundleUrlCantBeDetermined));
     return;
   }
 
-  log_->Append(base::Value("Downloaded Update Manifest. Latest version: " +
-                           latest_version->version().GetString() + " from " +
-                           latest_version->src().possibly_invalid_spec()));
+  log_->Append(base::Value("Downloaded Update Manifest. Version to install: " +
+                           version_to_install->version().GetString() +
+                           " from " +
+                           version_to_install->src().possibly_invalid_spec()));
   std::move(next_step_callback)
-      .Run(latest_version->src(), latest_version->version());
+      .Run(version_to_install->src(), version_to_install->version());
 }
 
 void IwaInstaller::DownloadWebBundle(

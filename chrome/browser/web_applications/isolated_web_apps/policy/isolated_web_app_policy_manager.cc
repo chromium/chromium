@@ -117,10 +117,16 @@ struct AppActionInstall {
       : options(std::move(options)) {}
 
   base::Value::Dict GetDebugValue() const {
-    return base::Value::Dict()
-        .Set("type", "AppActionInstall")
-        .Set("update_manifest_url",
-             options.update_manifest_url().possibly_invalid_spec());
+    base::Value::Dict debug_value =
+        base::Value::Dict()
+            .Set("type", "AppActionInstall")
+            .Set("update_manifest_url",
+                 options.update_manifest_url().possibly_invalid_spec())
+            .Set("update_channel", options.update_channel().ToString());
+    if (options.pinned_version()) {
+      debug_value.Set("pinned_version", options.pinned_version()->GetString());
+    }
+    return debug_value;
   }
 
   IsolatedWebAppExternalInstallOptions options;

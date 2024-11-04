@@ -181,6 +181,11 @@ class UpdateManifest {
   std::optional<VersionEntry> GetLatestVersion(
       const UpdateChannel& channel) const;
 
+  // Returns version entry for given version and channel. If there is no entry
+  // matching the criteria, then it returns `std::nullopt'.
+  std::optional<VersionEntry> GetVersion(const base::Version& version,
+                                         const UpdateChannel& channel) const;
+
   // Returns channel metadata for a provided update channel ID. If no metadata
   // for the provided channel ID is present in the Update Manifest, then this
   // will still return an empty `ChannelMetadata` instance for that channel ID.
