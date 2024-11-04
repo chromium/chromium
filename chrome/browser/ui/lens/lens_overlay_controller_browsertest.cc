@@ -2003,8 +2003,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
+// TODO(crbug.com/377033756): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SidePanel_SameTabSameOriginLinkClick \
+  DISABLED_SidePanel_SameTabSameOriginLinkClick
+#else
+#define MAYBE_SidePanel_SameTabSameOriginLinkClick \
+  SidePanel_SameTabSameOriginLinkClick
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SidePanel_SameTabSameOriginLinkClick) {
+                       MAYBE_SidePanel_SameTabSameOriginLinkClick) {
   WaitForPaint();
 
   // State should start in off.
@@ -2483,8 +2491,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
+// TODO(crbug.com/377033756): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PopAndLoadQueryFromHistory DISABLED_PopAndLoadQueryFromHistory
+#else
+#define MAYBE_PopAndLoadQueryFromHistory PopAndLoadQueryFromHistory
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadQueryFromHistory) {
+                       MAYBE_PopAndLoadQueryFromHistory) {
   WaitForPaint();
 
   // State should start in off.
@@ -2578,8 +2592,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                             first_search_url);
 }
 
+// TODO(crbug.com/377033756): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PopAndLoadTranslateQueryFromHistory \
+  DISABLED_PopAndLoadTranslateQueryFromHistory
+#else
+#define MAYBE_PopAndLoadTranslateQueryFromHistory \
+  PopAndLoadTranslateQueryFromHistory
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadTranslateQueryFromHistory) {
+                       MAYBE_PopAndLoadTranslateQueryFromHistory) {
   WaitForPaint();
 
   // State should start in off.
@@ -2937,8 +2959,16 @@ IN_PROC_BROWSER_TEST_F(
             loaded_search_query->selected_text_);
 }
 
+// TODO(crbug.com/377033756): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PopAndLoadQueryFromHistoryWithInitialImageBytes \
+  DISABLED_PopAndLoadQueryFromHistoryWithInitialImageBytes
+#else
+#define MAYBE_PopAndLoadQueryFromHistoryWithInitialImageBytes \
+  PopAndLoadQueryFromHistoryWithInitialImageBytes
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadQueryFromHistoryWithInitialImageBytes) {
+                       MAYBE_PopAndLoadQueryFromHistoryWithInitialImageBytes) {
   WaitForPaint();
 
   // State should start in off.
@@ -3053,9 +3083,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifyTextQueriesAreEqual(third_observer.last_navigation_url(),
                             first_search_url);
 }
-
+// TODO(crbug.com/377033756): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PopAndLoadQueryFromHistoryWithMultimodalRequest \
+  DISABLED_PopAndLoadQueryFromHistoryWithMultimodalRequest
+#else
+#define MAYBE_PopAndLoadQueryFromHistoryWithMultimodalRequest \
+  PopAndLoadQueryFromHistoryWithMultimodalRequest
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadQueryFromHistoryWithMultimodalRequest) {
+                       MAYBE_PopAndLoadQueryFromHistoryWithMultimodalRequest) {
   WaitForPaint();
 
   // State should start in off.
