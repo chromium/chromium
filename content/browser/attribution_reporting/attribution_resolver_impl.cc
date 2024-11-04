@@ -106,15 +106,6 @@ DestinationLimitResult GetDestinationLimitResult(
   return result;
 }
 
-bool IsSuccessResult(std::optional<EventLevelResult> result) {
-  return result == EventLevelResult::kSuccess ||
-         result == EventLevelResult::kSuccessDroppedLowerPriority;
-}
-
-bool IsSuccessResult(std::optional<AggregatableResult> result) {
-  return result == AggregatableResult::kSuccess;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -170,6 +161,36 @@ void RecordDebugKeyUsage(const AttributionReport& report) {
 
   base::UmaHistogramEnumeration("Conversions.AttributionReportDebugKeyUsage",
                                 usage);
+}
+
+CreateReportResult::EventLevelSuccess* GetSuccessResult(
+    CreateReportResult::EventLevel& result) {
+  return absl::get_if<CreateReportResult::EventLevelSuccess>(&result);
+}
+
+CreateReportResult::AggregatableSuccess* GetSuccessResult(
+    CreateReportResult::Aggregatable& result) {
+  return absl::get_if<CreateReportResult::AggregatableSuccess>(&result);
+}
+
+bool IsInternalError(const CreateReportResult::EventLevel& result) {
+  return absl::holds_alternative<CreateReportResult::InternalError>(result);
+}
+
+bool IsInternalError(const CreateReportResult::Aggregatable& result) {
+  return absl::holds_alternative<CreateReportResult::InternalError>(result);
+}
+
+std::optional<CreateReportResult::Aggregatable> MergeResult(
+    std::optional<CreateReportResult::Aggregatable> current_result,
+    std::optional<CreateReportResult::Aggregatable> new_result) {
+  if (!new_result.has_value()) {
+    return current_result;
+  }
+  if (!current_result.has_value() || GetSuccessResult(*current_result)) {
+    return new_result;
+  }
+  return current_result;
 }
 
 }  // namespace
@@ -513,59 +534,46 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   // Declarations for all of the various pieces of information which may be
   // collected and/or returned as a result of computing new reports in order to
   // produce a `CreateReportResult`.
-  std::optional<EventLevelResult> event_level_status;
-  std::optional<AttributionReport> new_event_level_report;
-
-  std::optional<AggregatableResult> aggregatable_status;
-  std::optional<AttributionReport> new_aggregatable_report;
-
-  std::optional<AttributionReport> replaced_event_level_report;
-  std::optional<AttributionReport> dropped_event_level_report;
+  std::optional<CreateReportResult::EventLevel> event_level_result;
+  std::optional<CreateReportResult::Aggregatable> aggregatable_result;
 
   std::optional<StoredSourceData> source_to_attribute;
 
   std::optional<base::Time> min_null_aggregatable_report_time;
 
-  CreateReportResult::Limits limits;
-
   auto assemble_report_result =
-      [&](std::optional<EventLevelResult> new_event_level_status,
-          std::optional<AggregatableResult> new_aggregatable_status) {
+      [&](std::optional<CreateReportResult::EventLevel> new_event_level_result,
+          std::optional<CreateReportResult::Aggregatable>
+              new_aggregatable_result) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-        event_level_status = event_level_status.has_value()
-                                 ? event_level_status
-                                 : new_event_level_status;
-        DCHECK(event_level_status.has_value());
-
-        if (!IsSuccessResult(*event_level_status)) {
-          new_event_level_report = std::nullopt;
-          replaced_event_level_report = std::nullopt;
+        if (!event_level_result.has_value() ||
+            (GetSuccessResult(*event_level_result) &&
+             new_event_level_result.has_value())) {
+          event_level_result = std::move(new_event_level_result);
         }
+        DCHECK(event_level_result.has_value());
 
-        aggregatable_status = aggregatable_status.has_value()
-                                  ? aggregatable_status
-                                  : new_aggregatable_status;
-        DCHECK(aggregatable_status.has_value());
+        aggregatable_result = MergeResult(std::move(aggregatable_result),
+                                          std::move(new_aggregatable_result));
+        DCHECK(aggregatable_result.has_value());
 
-        if (!IsSuccessResult(*aggregatable_status)) {
-          new_aggregatable_report = std::nullopt;
-        }
-
-        if (event_level_status == EventLevelResult::kInternalError ||
-            aggregatable_status == AggregatableResult::kInternalError) {
+        if (IsInternalError(*event_level_result) ||
+            IsInternalError(*aggregatable_result)) {
           min_null_aggregatable_report_time.reset();
         }
 
-        if (new_event_level_report.has_value()) {
-          RecordDebugKeyUsage(*new_event_level_report);
+        if (const CreateReportResult::EventLevelSuccess* v =
+                GetSuccessResult(*event_level_result)) {
+          RecordDebugKeyUsage(v->new_report);
         }
-        if (new_aggregatable_report.has_value()) {
-          RecordDebugKeyUsage(*new_aggregatable_report);
+        if (const CreateReportResult::AggregatableSuccess* v =
+                GetSuccessResult(*aggregatable_result)) {
+          RecordDebugKeyUsage(v->new_report);
         }
 
-        if (new_event_level_report.has_value() ||
-            new_aggregatable_report.has_value()) {
+        if (GetSuccessResult(*event_level_result) ||
+            GetSuccessResult(*aggregatable_result)) {
           if (int64_t count =
                   storage_.CountUniqueReportingOriginsPerSiteForAttribution(
                       trigger, trigger_time);
@@ -577,62 +585,65 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
         }
 
         return CreateReportResult(
-            trigger_time, std::move(trigger), *event_level_status,
-            *aggregatable_status, std::move(replaced_event_level_report),
-            std::move(new_event_level_report),
-            std::move(new_aggregatable_report),
+            trigger_time, std::move(trigger), *std::move(event_level_result),
+            *std::move(aggregatable_result),
             source_to_attribute
                 ? std::make_optional(std::move(source_to_attribute->source))
                 : std::nullopt,
-            limits, std::move(dropped_event_level_report),
             min_null_aggregatable_report_time);
       };
 
   auto generate_null_reports_and_assemble_report_result =
-      [&](std::optional<EventLevelResult> new_event_level_status,
-          std::optional<AggregatableResult> new_aggregatable_status,
+      [&](std::optional<CreateReportResult::EventLevel> new_event_level_result,
+          std::optional<CreateReportResult::Aggregatable>
+              new_aggregatable_result,
           AttributionStorageSql::Transaction& transaction)
           VALID_CONTEXT_REQUIRED(sequence_checker_) {
-            DCHECK(!new_aggregatable_report.has_value());
+            aggregatable_result =
+                MergeResult(std::move(aggregatable_result),
+                            std::move(new_aggregatable_result));
+            DCHECK(aggregatable_result.has_value());
+            DCHECK(!GetSuccessResult(*aggregatable_result));
 
             if (!GenerateNullAggregatableReportsAndStoreReports(
                     trigger, attribution_info,
                     source_to_attribute ? &source_to_attribute->source
                                         : nullptr,
-                    new_aggregatable_report,
+                    /*new_aggregatable_report=*/nullptr,
                     min_null_aggregatable_report_time) ||
                 !transaction.Commit()) {
               min_null_aggregatable_report_time.reset();
             }
 
-            return assemble_report_result(new_event_level_status,
-                                          new_aggregatable_status);
+            return assemble_report_result(
+                std::move(new_event_level_result),
+                /*new_aggregatable_result=*/std::nullopt);
           };
 
   if (trigger_registration.event_triggers.empty()) {
-    event_level_status = EventLevelResult::kNotRegistered;
+    event_level_result = CreateReportResult::NotRegistered();
   }
 
   if (!trigger.HasAggregatableData()) {
-    aggregatable_status = AggregatableResult::kNotRegistered;
+    aggregatable_result = CreateReportResult::NotRegistered();
   }
 
-  if (event_level_status.has_value() && aggregatable_status.has_value()) {
-    return assemble_report_result(/*new_event_level_status=*/std::nullopt,
-                                  /*new_aggregatable_status=*/std::nullopt);
+  if (event_level_result.has_value() && aggregatable_result.has_value()) {
+    return assemble_report_result(/*new_event_level_result=*/std::nullopt,
+                                  /*new_aggregatable_result=*/std::nullopt);
   }
 
   if (!storage_.LazyInit(
           AttributionStorageSql::DbCreationPolicy::kCreateIfAbsent)) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   std::unique_ptr<AttributionStorageSql::Transaction> transaction =
       storage_.StartTransaction();
   if (!transaction) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   std::optional<StoredSource::Id> source_id_to_attribute;
@@ -641,20 +652,20 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   if (!storage_.FindMatchingSourceForTrigger(
           trigger, trigger_time, source_id_to_attribute, source_ids_to_delete,
           source_ids_to_deactivate)) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
   if (!source_id_to_attribute.has_value()) {
     return generate_null_reports_and_assemble_report_result(
-        EventLevelResult::kNoMatchingImpressions,
-        AggregatableResult::kNoMatchingImpressions, *transaction);
+        CreateReportResult::NoMatchingImpressions(),
+        CreateReportResult::NoMatchingImpressions(), *transaction);
   }
 
   source_to_attribute = storage_.ReadSourceToAttribute(*source_id_to_attribute);
   // This is only possible if there is a corrupt DB.
   if (!source_to_attribute.has_value()) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   base::UmaHistogramBoolean(
@@ -669,49 +680,42 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
 
   if (!top_level_filters_match) {
     return generate_null_reports_and_assemble_report_result(
-        EventLevelResult::kNoMatchingSourceFilterData,
-        AggregatableResult::kNoMatchingSourceFilterData, *transaction);
+        CreateReportResult::NoMatchingSourceFilterData(),
+        CreateReportResult::NoMatchingSourceFilterData(), *transaction);
   }
 
   // Delete all unattributed sources and deactivate all attributed sources not
   // used.
   if (!storage_.DeleteSources(source_ids_to_delete) ||
       !storage_.DeactivateSources(source_ids_to_deactivate)) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   std::optional<uint64_t> dedup_key;
-  if (!event_level_status.has_value()) {
-    if (EventLevelResult create_event_level_status =
-            MaybeCreateEventLevelReport(attribution_info,
-                                        source_to_attribute->source, trigger,
-                                        new_event_level_report, dedup_key);
-        create_event_level_status != EventLevelResult::kSuccess) {
-      event_level_status = create_event_level_status;
-    }
+  if (!event_level_result.has_value()) {
+    event_level_result = MaybeCreateEventLevelReport(
+        attribution_info, source_to_attribute->source, trigger, dedup_key);
   }
 
   std::optional<uint64_t> aggregatable_dedup_key;
-  if (!aggregatable_status.has_value()) {
-    if (AggregatableResult create_aggregatable_status =
-            MaybeCreateAggregatableAttributionReport(
-                attribution_info, source_to_attribute->source, trigger,
-                new_aggregatable_report, aggregatable_dedup_key,
-                limits.max_aggregatable_reports_per_destination,
-                limits.rate_limits_max_attributions);
-        create_aggregatable_status != AggregatableResult::kSuccess) {
-      aggregatable_status = create_aggregatable_status;
-    }
+  if (!aggregatable_result.has_value()) {
+    aggregatable_result = MaybeCreateAggregatableAttributionReport(
+        attribution_info, source_to_attribute->source, trigger,
+        aggregatable_dedup_key);
   }
 
-  if (event_level_status == EventLevelResult::kInternalError ||
-      aggregatable_status == AggregatableResult::kInternalError) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+  DCHECK(event_level_result.has_value());
+  DCHECK(aggregatable_result.has_value());
+
+  if (IsInternalError(*event_level_result) ||
+      IsInternalError(*aggregatable_result)) {
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
-  if (event_level_status.has_value() && aggregatable_status.has_value()) {
+  if (!GetSuccessResult(*event_level_result) &&
+      !GetSuccessResult(*aggregatable_result)) {
     return generate_null_reports_and_assemble_report_result(
         /*new_event_level_status=*/std::nullopt,
         /*new_aggregatable_status=*/std::nullopt, *transaction);
@@ -721,77 +725,65 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
       attribution_info, source_to_attribute->source)) {
     case RateLimitResult::kAllowed:
       break;
-    case RateLimitResult::kNotAllowed:
-      limits.rate_limits_max_attribution_reporting_origins =
+    case RateLimitResult::kNotAllowed: {
+      int64_t max =
           delegate_->GetRateLimits().max_attribution_reporting_origins;
-      new_aggregatable_report.reset();
       return generate_null_reports_and_assemble_report_result(
-          EventLevelResult::kExcessiveReportingOrigins,
-          AggregatableResult::kExcessiveReportingOrigins, *transaction);
+          CreateReportResult::ExcessiveReportingOrigins(max),
+          CreateReportResult::ExcessiveReportingOrigins(max), *transaction);
+    }
     case RateLimitResult::kError:
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
+      return assemble_report_result(CreateReportResult::InternalError(),
+                                    CreateReportResult::InternalError());
   }
 
-  std::optional<EventLevelResult> store_event_level_status;
-  if (!event_level_status.has_value()) {
-    DCHECK(new_event_level_report.has_value());
-    store_event_level_status = MaybeStoreEventLevelReport(
-        *new_event_level_report, source_to_attribute->source, dedup_key,
-        source_to_attribute->num_attributions, replaced_event_level_report,
-        dropped_event_level_report,
-        limits.max_event_level_reports_per_destination,
-        limits.rate_limits_max_attributions);
+  if (CreateReportResult::EventLevelSuccess* success =
+          GetSuccessResult(*event_level_result)) {
+    event_level_result = MaybeStoreEventLevelReport(
+        source_to_attribute->source, dedup_key,
+        source_to_attribute->num_attributions, std::move(*success));
   }
 
-  std::optional<AggregatableResult> store_aggregatable_status;
-  if (!aggregatable_status.has_value()) {
-    DCHECK(new_aggregatable_report.has_value());
-    store_aggregatable_status =
-        storage_.MaybeStoreAggregatableAttributionReportData(
-            *new_aggregatable_report, source_to_attribute->source.source_id(),
-            source_to_attribute->source
-                .remaining_aggregatable_attribution_budget(),
-            source_to_attribute->num_aggregatable_attribution_reports,
-            aggregatable_dedup_key, limits.max_aggregatable_reports_per_source);
+  if (CreateReportResult::AggregatableSuccess* success =
+          GetSuccessResult(*aggregatable_result)) {
+    aggregatable_result = storage_.MaybeStoreAggregatableAttributionReportData(
+        source_to_attribute->source.source_id(),
+        source_to_attribute->source.remaining_aggregatable_attribution_budget(),
+        source_to_attribute->num_aggregatable_attribution_reports,
+        aggregatable_dedup_key, std::move(*success));
   }
 
-  if (store_event_level_status == EventLevelResult::kInternalError ||
-      store_aggregatable_status == AggregatableResult::kInternalError) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
-  }
-
-  if (!IsSuccessResult(store_event_level_status)) {
-    new_event_level_report.reset();
-  }
-
-  if (!IsSuccessResult(store_aggregatable_status)) {
-    new_aggregatable_report.reset();
+  if (IsInternalError(*event_level_result) ||
+      IsInternalError(*aggregatable_result)) {
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   // Stores null reports and the aggregatable report here to be in the same
   // transaction.
-  if (!GenerateNullAggregatableReportsAndStoreReports(
+  if (CreateReportResult::AggregatableSuccess* v =
+          GetSuccessResult(*aggregatable_result);
+      !GenerateNullAggregatableReportsAndStoreReports(
           trigger, attribution_info, &source_to_attribute->source,
-          new_aggregatable_report, min_null_aggregatable_report_time)) {
+          v ? &v->new_report : nullptr, min_null_aggregatable_report_time)) {
     min_null_aggregatable_report_time.reset();
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   // Early exit if done modifying the storage. Noised reports still need to
   // clean sources.
-  if (!IsSuccessResult(store_event_level_status) &&
-      !IsSuccessResult(store_aggregatable_status) &&
-      store_event_level_status != EventLevelResult::kNeverAttributedSource) {
+  if (!GetSuccessResult(*event_level_result) &&
+      !GetSuccessResult(*aggregatable_result) &&
+      !absl::holds_alternative<CreateReportResult::NeverAttributedSource>(
+          *event_level_result)) {
     if (!transaction->Commit()) {
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
+      return assemble_report_result(CreateReportResult::InternalError(),
+                                    CreateReportResult::InternalError());
     }
 
-    return assemble_report_result(store_event_level_status,
-                                  store_aggregatable_status);
+    return assemble_report_result(/*new_event_level_result=*/std::nullopt,
+                                  /*new_aggregatable_result=*/std::nullopt);
   }
 
   // Based on the deletion logic here and the fact that we delete sources
@@ -803,57 +795,60 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   // |RateLimitTable::ClearDataForSourceIds()| here.
 
   // Reports which are dropped do not need to make any further changes.
-  if (store_event_level_status == EventLevelResult::kNeverAttributedSource &&
-      !IsSuccessResult(store_aggregatable_status)) {
+  if (absl::holds_alternative<CreateReportResult::NeverAttributedSource>(
+          *event_level_result) &&
+      !GetSuccessResult(*aggregatable_result)) {
     if (!transaction->Commit()) {
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
+      return assemble_report_result(CreateReportResult::InternalError(),
+                                    CreateReportResult::InternalError());
     }
 
-    return assemble_report_result(store_event_level_status,
-                                  store_aggregatable_status);
+    return assemble_report_result(/*new_event_level_result=*/std::nullopt,
+                                  /*new_aggregatable_result=*/std::nullopt);
   }
 
-  RecordAttributionResult(IsSuccessResult(store_event_level_status),
-                          IsSuccessResult(store_aggregatable_status));
+  RecordAttributionResult(GetSuccessResult(*event_level_result),
+                          GetSuccessResult(*aggregatable_result));
 
-  if (new_event_level_report.has_value() &&
+  if (const CreateReportResult::EventLevelSuccess* v =
+          GetSuccessResult(*event_level_result);
+      v &&
       !storage_.AddRateLimitForAttribution(
           attribution_info, source_to_attribute->source,
-          RateLimitTable::Scope::kEventLevelAttribution,
-          new_event_level_report->id())) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+          RateLimitTable::Scope::kEventLevelAttribution, v->new_report.id())) {
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
-  if (new_aggregatable_report.has_value() &&
-      !storage_.AddRateLimitForAttribution(
-          attribution_info, source_to_attribute->source,
-          RateLimitTable::Scope::kAggregatableAttribution,
-          new_aggregatable_report->id())) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+  if (const CreateReportResult::AggregatableSuccess* v =
+          GetSuccessResult(*aggregatable_result);
+      v && !storage_.AddRateLimitForAttribution(
+               attribution_info, source_to_attribute->source,
+               RateLimitTable::Scope::kAggregatableAttribution,
+               v->new_report.id())) {
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
   if (!transaction->Commit()) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
+    return assemble_report_result(CreateReportResult::InternalError(),
+                                  CreateReportResult::InternalError());
   }
 
-  return assemble_report_result(store_event_level_status,
-                                store_aggregatable_status);
+  return assemble_report_result(/*new_event_level_result=*/std::nullopt,
+                                /*new_aggregatable_result=*/std::nullopt);
 }
 
-EventLevelResult AttributionResolverImpl::MaybeCreateEventLevelReport(
+CreateReportResult::EventLevel
+AttributionResolverImpl::MaybeCreateEventLevelReport(
     const AttributionInfo& attribution_info,
     const StoredSource& source,
     const AttributionTrigger& trigger,
-    std::optional<AttributionReport>& report,
     std::optional<uint64_t>& dedup_key) {
   if (source.attribution_logic() == StoredSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(source.active_state(),
               StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
-    return EventLevelResult::kFalselyAttributedSource;
+    return CreateReportResult::FalselyAttributedSource();
   }
 
   const CommonSourceInfo& common_info = source.common_info();
@@ -869,18 +864,18 @@ EventLevelResult AttributionResolverImpl::MaybeCreateEventLevelReport(
       });
 
   if (event_trigger == trigger.registration().event_triggers.end()) {
-    return EventLevelResult::kNoMatchingConfigurations;
+    return CreateReportResult::NoMatchingConfigurations();
   }
 
   if (event_trigger->dedup_key.has_value() &&
       base::Contains(source.dedup_keys(), *event_trigger->dedup_key)) {
-    return EventLevelResult::kDeduplicated;
+    return CreateReportResult::Deduplicated();
   }
 
   auto trigger_spec_it = source.trigger_specs().find(
       event_trigger->data, source.trigger_data_matching());
   if (!trigger_spec_it) {
-    return EventLevelResult::kNoMatchingTriggerData;
+    return CreateReportResult::NoMatchingTriggerData();
   }
 
   auto [trigger_data, trigger_spec] = *trigger_spec_it;
@@ -890,44 +885,41 @@ EventLevelResult AttributionResolverImpl::MaybeCreateEventLevelReport(
     case EventReportWindows::WindowResult::kFallsWithin:
       break;
     case EventReportWindows::WindowResult::kNotStarted:
-      return EventLevelResult::kReportWindowNotStarted;
+      return CreateReportResult::ReportWindowNotStarted();
     case EventReportWindows::WindowResult::kPassed:
-      return EventLevelResult::kReportWindowPassed;
+      return CreateReportResult::ReportWindowPassed();
   }
 
   const base::Time report_time = delegate_->GetEventLevelReportTime(
       trigger_spec.event_report_windows(), source.source_time(),
       attribution_info.time);
 
-  report = AttributionReport(
-      attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
-      /*initial_report_time=*/report_time, delegate_->NewReportID(),
-      /*failed_send_attempts=*/0,
-      AttributionReport::EventLevelData(trigger_data, event_trigger->priority,
-                                        source),
-      common_info.reporting_origin(), source.debug_key());
-
   dedup_key = event_trigger->dedup_key;
 
-  return EventLevelResult::kSuccess;
+  return CreateReportResult::EventLevelSuccess(
+      AttributionReport(
+          attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
+          /*initial_report_time=*/report_time, delegate_->NewReportID(),
+          /*failed_send_attempts=*/0,
+          AttributionReport::EventLevelData(trigger_data,
+                                            event_trigger->priority, source),
+          common_info.reporting_origin(), source.debug_key()),
+      /*replaced_report=*/std::nullopt);
 }
 
-AggregatableResult
+CreateReportResult::Aggregatable
 AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
     const AttributionInfo& attribution_info,
     const StoredSource& source,
     const AttributionTrigger& trigger,
-    std::optional<AttributionReport>& report,
-    std::optional<uint64_t>& dedup_key,
-    std::optional<int>& max_aggregatable_reports_per_destination,
-    std::optional<int64_t>& rate_limits_max_attributions) {
+    std::optional<uint64_t>& dedup_key) {
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
   const CommonSourceInfo& common_info = source.common_info();
 
   if (attribution_info.time >= source.aggregatable_report_window_time()) {
-    return AggregatableResult::kReportWindowPassed;
+    return CreateReportResult::ReportWindowPassed();
   }
 
   const SourceType source_type = common_info.source_type();
@@ -949,7 +941,7 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
 
   if (dedup_key.has_value() &&
       base::Contains(source.aggregatable_dedup_keys(), *dedup_key)) {
-    return AggregatableResult::kDeduplicated;
+    return CreateReportResult::Deduplicated();
   }
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
@@ -959,19 +951,18 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
           trigger_registration.aggregatable_trigger_data,
           trigger_registration.aggregatable_values);
   if (contributions.empty()) {
-    return AggregatableResult::kNoHistograms;
+    return CreateReportResult::NoHistograms();
   }
 
   if (int64_t count = storage_.CountReportsWithDestinationSite(
           net::SchemefulSite(attribution_info.context_origin),
           AttributionReport::Type::kAggregatableAttribution);
       count < 0) {
-    return AggregatableResult::kInternalError;
-  } else if (max_aggregatable_reports_per_destination =
-                 delegate_->GetMaxReportsPerDestination(
-                     AttributionReport::Type::kAggregatableAttribution);
-             count >= *max_aggregatable_reports_per_destination) {
-    return AggregatableResult::kNoCapacityForConversionDestination;
+    return CreateReportResult::InternalError();
+  } else if (int max = delegate_->GetMaxReportsPerDestination(
+                 AttributionReport::Type::kAggregatableAttribution);
+             count >= max) {
+    return CreateReportResult::NoCapacityForConversionDestination(max);
   }
 
   switch (storage_.AttributionAllowedForAttributionLimit(
@@ -980,17 +971,16 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      rate_limits_max_attributions =
-          delegate_->GetRateLimits().max_attributions;
-      return AggregatableResult::kExcessiveAttributions;
+      return CreateReportResult::ExcessiveAttributions(
+          delegate_->GetRateLimits().max_attributions);
     case RateLimitResult::kError:
-      return AggregatableResult::kInternalError;
+      return CreateReportResult::InternalError();
   }
 
   base::Time report_time =
       GetAggregatableReportTime(trigger, attribution_info.time);
 
-  report = AttributionReport(
+  return CreateReportResult::AggregatableSuccess(AttributionReport(
       attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
       /*failed_send_attempts=*/0,
@@ -999,16 +989,14 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
           trigger_registration.aggregatable_trigger_config,
           source.source_time(), std::move(contributions),
           source.common_info().source_origin()),
-      source.common_info().reporting_origin(), source.debug_key());
-
-  return AggregatableResult::kSuccess;
+      source.common_info().reporting_origin(), source.debug_key()));
 }
 
 bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
     const AttributionTrigger& trigger,
     const AttributionInfo& attribution_info,
     const StoredSource* source,
-    std::optional<AttributionReport>& new_aggregatable_report,
+    AttributionReport* new_aggregatable_report,
     std::optional<base::Time>& min_null_aggregatable_report_time) {
   std::optional<base::Time> attributed_source_time;
 
@@ -1357,48 +1345,53 @@ AttributionResolverImpl::MaybeReplaceLowerPriorityEventLevelReport(
   return ReplaceOldReport(*std::move(replaced));
 }
 
-EventLevelResult AttributionResolverImpl::MaybeStoreEventLevelReport(
-    AttributionReport& report,
+CreateReportResult::EventLevel
+AttributionResolverImpl::MaybeStoreEventLevelReport(
     const StoredSource& source,
     std::optional<uint64_t> dedup_key,
     int num_attributions,
-    std::optional<AttributionReport>& replaced_report,
-    std::optional<AttributionReport>& dropped_report,
-    std::optional<int>& max_event_level_reports_per_destination,
-    std::optional<int64_t>& rate_limits_max_attributions) {
+    CreateReportResult::EventLevelSuccess success) {
+  AttributionReport& report = success.new_report;
   const auto* event_level_data =
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(event_level_data);
 
   if (source.active_state() ==
       StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
-    dropped_report = std::move(report);
-    return EventLevelResult::kExcessiveReports;
+    return CreateReportResult::ExcessiveEventLevelReports(std::move(report));
   }
 
   std::unique_ptr<AttributionStorageSql::Transaction> transaction =
       storage_.StartTransaction();
   if (!transaction) {
-    return EventLevelResult::kInternalError;
+    return CreateReportResult::InternalError();
   }
 
   auto replace_report_result = MaybeReplaceLowerPriorityEventLevelReport(
       report, source, num_attributions);
 
-  const auto commit_and_return = [&](EventLevelResult result) {
-    return transaction->Commit() ? result : EventLevelResult::kInternalError;
+  const auto commit_and_return = [&](CreateReportResult::EventLevel result) {
+    return transaction->Commit() ? result : CreateReportResult::InternalError();
   };
 
-  EventLevelResult result = absl::visit(
+  std::optional<CreateReportResult::EventLevel> result = absl::visit(
       base::Overloaded{
-          [](ReplaceReportError) { return EventLevelResult::kInternalError; },
-          [&](DropNewReport drop) {
-            dropped_report = std::move(report);
-            return commit_and_return(drop.source_deactivated
-                                         ? EventLevelResult::kExcessiveReports
-                                         : EventLevelResult::kPriorityTooLow);
+          [](ReplaceReportError)
+              -> std::optional<CreateReportResult::EventLevel> {
+            return CreateReportResult::InternalError();
           },
-          [&](AddNewReport) {
+          [&](DropNewReport drop)
+              -> std::optional<CreateReportResult::EventLevel> {
+            return commit_and_return(
+                drop.source_deactivated
+                    ? CreateReportResult::EventLevel(
+                          CreateReportResult::ExcessiveEventLevelReports(
+                              std::move(report)))
+                    : CreateReportResult::EventLevel(
+                          CreateReportResult::PriorityTooLow(
+                              std::move(report))));
+          },
+          [&](AddNewReport) -> std::optional<CreateReportResult::EventLevel> {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
             switch (storage_.AttributionAllowedForAttributionLimit(
@@ -1407,12 +1400,12 @@ EventLevelResult AttributionResolverImpl::MaybeStoreEventLevelReport(
               case RateLimitResult::kAllowed:
                 break;
               case RateLimitResult::kNotAllowed:
-                rate_limits_max_attributions =
-                    delegate_->GetRateLimits().max_attributions;
                 return commit_and_return(
-                    EventLevelResult::kExcessiveAttributions);
+                    CreateReportResult::ExcessiveAttributions(
+                        delegate_->GetRateLimits().max_attributions));
               case RateLimitResult::kError:
-                return EventLevelResult::kInternalError;
+                return CreateReportResult::EventLevel(
+                    CreateReportResult::InternalError());
             }
 
             if (int64_t count = storage_.CountReportsWithDestinationSite(
@@ -1420,32 +1413,33 @@ EventLevelResult AttributionResolverImpl::MaybeStoreEventLevelReport(
                         report.attribution_info().context_origin),
                     AttributionReport::Type::kEventLevel);
                 count < 0) {
-              return EventLevelResult::kInternalError;
-            } else if (max_event_level_reports_per_destination =
-                           delegate_->GetMaxReportsPerDestination(
-                               AttributionReport::Type::kEventLevel);
-                       count >= *max_event_level_reports_per_destination) {
-              return commit_and_return(
-                  EventLevelResult::kNoCapacityForConversionDestination);
+              return CreateReportResult::EventLevel(
+                  CreateReportResult::InternalError());
+            } else if (int max = delegate_->GetMaxReportsPerDestination(
+                           AttributionReport::Type::kEventLevel);
+                       count >= max) {
+              return commit_and_return(CreateReportResult::EventLevel(
+                  CreateReportResult::NoCapacityForConversionDestination(max)));
             }
 
             // Only increment the number of conversions associated with the
             // source if we are adding a new one, rather than replacing a
             // dropped one.
             if (!storage_.IncrementNumAttributions(source.source_id())) {
-              return EventLevelResult::kInternalError;
+              return CreateReportResult::InternalError();
             }
 
-            return EventLevelResult::kSuccess;
+            return std::nullopt;
           },
-          [&](ReplaceOldReport replace) {
-            replaced_report = std::move(replace.replaced_report);
-            return EventLevelResult::kSuccessDroppedLowerPriority;
+          [&](ReplaceOldReport replace)
+              -> std::optional<CreateReportResult::EventLevel> {
+            success.replaced_report = std::move(replace.replaced_report);
+            return std::nullopt;
           }},
       std::move(replace_report_result));
 
-  if (!IsSuccessResult(result)) {
-    return result;
+  if (result.has_value()) {
+    return *std::move(result);
   }
 
   // Reports with `AttributionLogic::kNever` should be included in all
@@ -1464,7 +1458,7 @@ EventLevelResult AttributionResolverImpl::MaybeStoreEventLevelReport(
             event_level_data->trigger_data, event_level_data->priority);
 
     if (!report_id.has_value()) {
-      return EventLevelResult::kInternalError;
+      return CreateReportResult::InternalError();
     }
 
     report.set_id(*report_id);
@@ -1476,14 +1470,14 @@ EventLevelResult AttributionResolverImpl::MaybeStoreEventLevelReport(
   if (dedup_key.has_value() &&
       !storage_.StoreDedupKey(source.source_id(), *dedup_key,
                               AttributionReport::Type::kEventLevel)) {
-    return EventLevelResult::kInternalError;
+    return CreateReportResult::InternalError();
   }
 
   if (!create_report) {
-    return commit_and_return(EventLevelResult::kNeverAttributedSource);
+    return commit_and_return(CreateReportResult::NeverAttributedSource());
   }
 
-  return commit_and_return(result);
+  return commit_and_return(std::move(success));
 }
 
 }  // namespace content

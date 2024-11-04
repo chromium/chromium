@@ -20,9 +20,8 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
-#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/event_level_result.mojom-forward.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -370,14 +369,12 @@ class CONTENT_EXPORT AttributionStorageSql {
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in
   // `GenerateNullAggregatableReportsAndStoreReports()`.
-  attribution_reporting::mojom::AggregatableResult
-  MaybeStoreAggregatableAttributionReportData(
-      AttributionReport& report,
+  CreateReportResult::Aggregatable MaybeStoreAggregatableAttributionReportData(
       StoredSource::Id source_id,
       int remaining_aggregatable_attribution_budget,
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
-      std::optional<int>& max_aggregatable_reports_per_source);
+      CreateReportResult::AggregatableSuccess);
 
   struct ReportIdAndPriority {
     AttributionReport::Id id;

@@ -2673,36 +2673,35 @@ AttributionStorageSql::StoreAttributionReport(
   return AttributionReport::Id(db_.GetLastInsertRowId());
 }
 
-AggregatableResult
+CreateReportResult::Aggregatable
 AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
-    AttributionReport& report,
     StoredSource::Id source_id,
     int remaining_aggregatable_attribution_budget,
     int num_aggregatable_attribution_reports,
     std::optional<uint64_t> dedup_key,
-    std::optional<int>& max_aggregatable_reports_per_source) {
+    CreateReportResult::AggregatableSuccess success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  AttributionReport& report = success.new_report;
 
   const auto* aggregatable_attribution =
       absl::get_if<AttributionReport::AggregatableData>(&report.data());
   DCHECK(aggregatable_attribution);
 
-  if (num_aggregatable_attribution_reports >=
-      delegate_->GetMaxAggregatableReportsPerSource()) {
-    max_aggregatable_reports_per_source =
-        delegate_->GetMaxAggregatableReportsPerSource();
-    return AggregatableResult::kExcessiveReports;
+  if (int max = delegate_->GetMaxAggregatableReportsPerSource();
+      num_aggregatable_attribution_reports >= max) {
+    return CreateReportResult::ExcessiveAggregatableReports(max);
   }
 
   if (!AggregatableAttributionAllowedForBudgetLimit(
           *aggregatable_attribution,
           remaining_aggregatable_attribution_budget)) {
-    return AggregatableResult::kInsufficientBudget;
+    return CreateReportResult::InsufficientBudget();
   }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return AggregatableResult::kInternalError;
+    return CreateReportResult::InternalError();
   }
 
   base::CheckedNumeric<int64_t> budget_required =
@@ -2714,20 +2713,20 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
   CHECK(base::IsValueInRangeForNumericType<int>(budget_required_value));
   if (!AdjustBudgetConsumedForSource(source_id,
                                      static_cast<int>(budget_required_value))) {
-    return AggregatableResult::kInternalError;
+    return CreateReportResult::InternalError();
   }
 
   if (dedup_key.has_value() &&
       !StoreDedupKey(source_id, *dedup_key,
                      AttributionReport::Type::kAggregatableAttribution)) {
-    return AggregatableResult::kInternalError;
+    return CreateReportResult::InternalError();
   }
 
   if (!transaction.Commit()) {
-    return AggregatableResult::kInternalError;
+    return CreateReportResult::InternalError();
   }
 
-  return AggregatableResult::kSuccess;
+  return success;
 }
 
 std::set<AttributionDataModel::DataKey>
