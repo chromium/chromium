@@ -88,7 +88,7 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
     static int next_value = 1;
     tab_to_edit.SetLocalTabID(++next_value);
 #else
-    tab_to_edit.SetLocalTabID(base::Token::CreateRandom());
+    tab_to_edit.SetLocalTabID(tab_groups::test::GenerateRandomTabID());
 #endif
   }
 

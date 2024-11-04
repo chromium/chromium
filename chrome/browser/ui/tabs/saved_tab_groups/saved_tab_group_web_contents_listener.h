@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 
 #include "base/callback_list.h"
-#include "base/token.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,7 +33,7 @@ class TabGroupSyncService;
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
   SavedTabGroupWebContentsListener(TabGroupSyncService* service,
-                                   const LocalTabID& token,
+                                   const LocalTabID& local_tab_id,
                                    tabs::TabModel* local_tab);
   ~SavedTabGroupWebContentsListener() override;
 
@@ -44,9 +44,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   void NavigateToUrl(const GURL& url);
 
   // Accessors.
-  const LocalTabID& saved_tab_group_tab_id() const {
-    return saved_tab_group_tab_id_;
-  }
+  LocalTabID local_tab_id() const { return local_tab_id_; }
 
   content::WebContents* contents() const;
 
@@ -66,14 +64,14 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   void UpdateTabRedirectChain(content::NavigationHandle* navigation_handle);
 
   // Retrieves the SavedTabGroup that contains the tab with the id
-  // |saved_tab_group_tab_id_|.
+  // |local_tab_id_|.
   const SavedTabGroup saved_group();
 
   // The service used to query and manage SavedTabGroups.
   const raw_ptr<TabGroupSyncService> service_ = nullptr;
 
   // The saved tab group tab's ID.
-  const LocalTabID saved_tab_group_tab_id_;
+  const LocalTabID local_tab_id_;
 
   // the local tab that is being listened to.
   const raw_ptr<tabs::TabModel> local_tab_ = nullptr;

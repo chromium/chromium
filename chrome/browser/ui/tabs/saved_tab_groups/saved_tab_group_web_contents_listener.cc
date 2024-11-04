@@ -79,11 +79,9 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     TabGroupSyncService* service,
-    const LocalTabID& saved_tab_group_tab_id,
+    const LocalTabID& local_tab_id,
     tabs::TabModel* local_tab)
-    : service_(service),
-      saved_tab_group_tab_id_(saved_tab_group_tab_id),
-      local_tab_(local_tab) {
+    : service_(service), local_tab_id_(local_tab_id), local_tab_(local_tab) {
   tab_discard_subscription_ = local_tab->RegisterWillDiscardContents(
       base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
                           base::Unretained(this)));
@@ -100,7 +98,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* saved_tab = group->GetTab(saved_tab_group_tab_id_);
+  SavedTabGroupTab* saved_tab = group->GetTab(local_tab_id());
   CHECK(saved_tab);
 
   // If the URL is inside current tab URL's redirect chain, there is no need to
@@ -134,7 +132,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   std::optional<SavedTabGroup> group = saved_group();
   if (group) {
     TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
-        saved_tab_group_tab_id_,
+        local_tab_id(),
         group->collaboration_id() ? SavedTabGroupType::SHARED
                                   : SavedTabGroupType::SYNCED,
         navigation_handle, service_);
@@ -157,13 +155,13 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id());
   CHECK(tab);
 
   if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
     // TODO(crbug.com/359715038): Implement in TGSS then remove cast.
     static_cast<TabGroupSyncServiceProxy*>(service_)->SetFaviconForTab(
-        group->local_group_id().value(), saved_tab_group_tab_id_,
+        group->local_group_id().value(), local_tab_id(),
         favicon::TabFaviconFromWebContents(contents()));
   }
 
@@ -171,7 +169,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   tab_builder.SetURL(contents()->GetURL());
   tab_builder.SetTitle(contents()->GetTitle());
 
-  service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
+  service_->UpdateTab(group->local_group_id().value(), local_tab_id(),
                       std::move(tab_builder));
 }
 
@@ -189,7 +187,7 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   std::optional<SavedTabGroup> group = saved_group();
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
-  service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
+  service_->UpdateTab(group->local_group_id().value(), local_tab_id(),
                       tab_builder);
 }
 
@@ -197,7 +195,7 @@ const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {
   std::vector<SavedTabGroup> all_groups = service_->GetAllGroups();
   auto iter = base::ranges::find_if(
       all_groups, [&](const SavedTabGroup& potential_group) {
-        return potential_group.ContainsTab(saved_tab_group_tab_id_);
+        return potential_group.ContainsTab(local_tab_id());
       });
   CHECK(iter != all_groups.end());
 

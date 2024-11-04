@@ -32,7 +32,7 @@ LocalTabGroupListener::LocalTabGroupListener(
     std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping)
     : service_(service), local_id_(local_id), saved_guid_(saved_guid) {
   for (const auto& [local_tab, saved_tab_guid] : tab_guid_mapping) {
-    const base::Token local_tab_id = base::Token::CreateRandom();
+    const LocalTabID local_tab_id = base::Token::CreateRandom();
     tab_listener_mapping_.try_emplace(local_tab, service_, local_tab_id,
                                       local_tab);
 
@@ -76,8 +76,7 @@ void LocalTabGroupListener::ResumeTracking() {
     const SavedTabGroupWebContentsListener& listener = map_entry->second;
 
     const auto is_local_tab = [&listener](const SavedTabGroupTab& saved_tab) {
-      return saved_tab.local_tab_id().value() ==
-             listener.saved_tab_group_tab_id();
+      return saved_tab.local_tab_id() == listener.local_tab_id();
     };
     CHECK(std::find_if(saved_tabs.begin(), saved_tabs.end(), is_local_tab) !=
           saved_tabs.end());
@@ -119,9 +118,9 @@ void LocalTabGroupListener::AddTabFromLocal(tabs::TabModel* local_tab,
       tab_strip_model->GetIndexOfTab(local_tab->GetHandle()) -
       tabstrip_index_of_first_tab_in_group.value();
 
-  base::Token token = base::Token::CreateRandom();
+  LocalTabID local_tab_id = base::Token::CreateRandom();
 
-  // Create a new SavedTabGroupTab linked to `token`.
+  // Create a new SavedTabGroupTab linked to `local_tab_id`.
   SavedTabGroupTab tab =
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
           local_tab->contents(), saved_guid_);
@@ -129,11 +128,12 @@ void LocalTabGroupListener::AddTabFromLocal(tabs::TabModel* local_tab,
     tab.SetURL(GURL(chrome::kChromeUINewTabURL));
   }
 
-  service_->AddTab(local_id_, token, tab.title(), tab.url(),
+  service_->AddTab(local_id_, local_tab_id, tab.title(), tab.url(),
                    relative_index_of_tab_in_group);
 
-  // Link `web_contents` to `token`.
-  tab_listener_mapping_.try_emplace(local_tab, service_, token, local_tab);
+  // Link `web_contents` to `local_tab_id`.
+  tab_listener_mapping_.try_emplace(local_tab, service_, local_tab_id,
+                                    local_tab);
 }
 
 void LocalTabGroupListener::MoveWebContentsFromLocal(
@@ -181,7 +181,7 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   const SavedTabGroupWebContentsListener& web_contents_listener =
       tab_listener_mapping_.at(local_tab);
 
-  service_->MoveTab(local_id_, web_contents_listener.saved_tab_group_tab_id(),
+  service_->MoveTab(local_id_, web_contents_listener.local_tab_id(),
                     index_in_group);
 }
 
@@ -192,24 +192,27 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
     return Liveness::kGroupExists;
   }
 
+  // Find the tab listener entry from the map corresponding to the
+  // `web_contents`. Remove it from the map. If it's the last tab, the group
+  // listener itself should be deleted.
   const auto tab_guid_pair_iter =
       std::find_if(tab_listener_mapping_.begin(), tab_listener_mapping_.end(),
                    [web_contents](auto& pair) {
                      return pair.first->contents() == web_contents;
                    });
 
-  if (std::find_if(tab_listener_mapping_.begin(), tab_listener_mapping_.end(),
-                   [web_contents](auto& pair) {
-                     return pair.first->contents() == web_contents;
-                   }) == tab_listener_mapping_.end()) {
+  if (tab_guid_pair_iter == tab_listener_mapping_.end()) {
+    // The tab doesn't belong to the group, just return. This is natural
+    // since this method is invoked for every LocalTabGroupListener in the
+    // service.
     return Liveness::kGroupExists;
   }
 
-  const base::Token tab_id =
-      tab_guid_pair_iter->second.saved_tab_group_tab_id();
+  const LocalTabID local_tab_id = tab_guid_pair_iter->second.local_tab_id();
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
-  const base::Uuid tab_guid = saved_group->GetTab(tab_id)->saved_tab_guid();
+  const base::Uuid tab_guid =
+      saved_group->GetTab(local_tab_id)->saved_tab_guid();
   CHECK(saved_group->local_group_id().has_value());
 
   tab_listener_mapping_.erase(tab_guid_pair_iter->first);
@@ -221,7 +224,7 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   // TODO(crbug.com/352802808): Use a PostTask to prevent re-entrancy when the
   // group is removed.
   const bool was_last_tab_in_group = saved_group->saved_tabs().size() == 1;
-  service_->RemoveTab(local_id_, tab_id);
+  service_->RemoveTab(local_id_, local_tab_id);
   return was_last_tab_in_group ? Liveness::kGroupDeleted
                                : Liveness::kGroupExists;
 }
@@ -269,7 +272,7 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   std::unordered_map<base::Token, tabs::TabModel*, base::TokenHash>
       saved_id_tab_mapping;
   for (auto& [tabs, listener] : tab_listener_mapping_) {
-    saved_id_tab_mapping[listener.saved_tab_group_tab_id()] = tabs;
+    saved_id_tab_mapping[listener.local_tab_id()] = tabs;
   }
 
   // Add, navigate, and reorder local tabs to match saved tabs.
@@ -344,9 +347,10 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
       browser->tab_strip_model()->GetTabForWebContents(opened_contents);
 
   // Listen to navigations.
-  base::Token token = base::Token::CreateRandom();
-  service_->UpdateLocalTabId(local_id_, tab.saved_tab_guid(), token);
-  tab_listener_mapping_.try_emplace(local_tab, service_, token, local_tab);
+  LocalTabID local_tab_id = base::Token::CreateRandom();
+  service_->UpdateLocalTabId(local_id_, tab.saved_tab_guid(), local_tab_id);
+  tab_listener_mapping_.try_emplace(local_tab, service_, local_tab_id,
+                                    local_tab);
 }
 
 void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
@@ -358,7 +362,7 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
   for (tabs::TabModel* const local_tab : tabs_in_local_group) {
     const auto& it = tab_listener_mapping_.find(local_tab);
     CHECK(it != tab_listener_mapping_.end());
-    if (!saved_group->ContainsTab(it->second.saved_tab_group_tab_id())) {
+    if (!saved_group->ContainsTab(it->second.local_tab_id())) {
       RemoveTabFromSync(local_tab, /*should_close_tab=*/true);
     }
   }

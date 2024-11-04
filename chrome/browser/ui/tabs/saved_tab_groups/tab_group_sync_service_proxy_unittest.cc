@@ -16,6 +16,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -103,9 +104,9 @@ class TabGroupSyncServiceProxyUnitTest
   const base::Uuid kFirstTabId = base::Uuid::GenerateRandomV4();
   const base::Uuid kSecondTabId = base::Uuid::GenerateRandomV4();
   const base::Uuid kThirdTabId = base::Uuid::GenerateRandomV4();
-  const LocalTabID kFirstTabToken = base::Token::CreateRandom();
-  const LocalTabID kSecondTabToken = base::Token::CreateRandom();
-  const LocalTabID kThirdTabToken = base::Token::CreateRandom();
+  const LocalTabID kFirstTabToken = test::GenerateRandomTabID();
+  const LocalTabID kSecondTabToken = test::GenerateRandomTabID();
+  const LocalTabID kThirdTabToken = test::GenerateRandomTabID();
   const std::u16string kFirstTabTitle = u"first tab";
   const std::u16string kSecondTabTitle = u"second tab";
   const std::u16string kThirdTabTitle = u"third tab";
@@ -521,7 +522,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabId) {
   const base::Uuid tab_1_guid =
       retrieved_group->saved_tabs()[0].saved_tab_guid();
 
-  LocalTabID new_local_tab_id = base::Token::CreateRandom();
+  LocalTabID new_local_tab_id = test::GenerateRandomTabID();
   service()->UpdateLocalTabId(local_id, tab_1_guid, new_local_tab_id);
 
   retrieved_group = service()->GetGroup(local_id);
