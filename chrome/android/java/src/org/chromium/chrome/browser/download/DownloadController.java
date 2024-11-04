@@ -59,11 +59,14 @@ public class DownloadController {
         if (nativePage == null || !nativePage.isPdf()) {
             return;
         }
-        assert nativePage instanceof PdfPage;
-        ((PdfPage) nativePage)
-                .onDownloadComplete(
-                        downloadInfo.getFileName(), downloadInfo.getFilePath(), isDownloadSafe);
-        tab.updateTitle();
+        // The PdfPage may become a FrozenNativePage while downloading.
+        // Need to check before cast to PdfPage.
+        if (nativePage instanceof PdfPage) {
+            ((PdfPage) nativePage)
+                    .onDownloadComplete(
+                            downloadInfo.getFileName(), downloadInfo.getFilePath(), isDownloadSafe);
+            tab.updateTitle();
+        }
     }
 
     /**
