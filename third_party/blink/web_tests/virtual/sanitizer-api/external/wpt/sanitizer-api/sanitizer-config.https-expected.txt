@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] SanitizerAPI: elements stays is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: elements modify is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: elements config is not kept as reference.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: replaceWithChildrenElements stays is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: replaceWithChildrenElements modify is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: replaceWithChildrenElements config is not kept as reference.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: removeElements stays is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: removeElements modify is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: removeElements config is not kept as reference.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: attributes stays is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: attributes modify is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: attributes config is not kept as reference.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: removeAttributes stays is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: removeAttributes modify is okay.
+  sanitizer.sanitize is not a function
+[FAIL] SanitizerAPI: removeAttributes config is not kept as reference.
+  sanitizer.sanitize is not a function
+Harness: the test ran to completion.
+
