@@ -2834,6 +2834,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       client().GetPlusAddressDelegate()->IsPlusAddress(
           base::UTF16ToUTF8(potential_email_override)) &&
       original_email != potential_email_override) {
+    client().GetPlusAddressDelegate()->DidFillPlusAddress();
     // TODO(crbug.com/324557053): Filter out notifications for suggestion type
     // `SuggestionType::kFillFullEmail`.
     client().ShowPlusAddressEmailOverrideNotification(
