@@ -410,12 +410,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
     }
   }
 
-  // This can happen if the animation is forced to abort before Viz activates
-  // the first frame post-navigation.
-  if (new_render_widget_host_) {
-    CHECK_EQ(state_, State::kAnimationAborted) << StateToString(state_);
-    UnregisterNewFrameActivationObserver();
-  }
+  UnregisterNewFrameActivationObserver();
 }
 
 // protected.
@@ -1908,6 +1903,9 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
 }
 
 void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
+  if (!new_render_widget_host_) {
+    return;
+  }
   new_render_widget_host_->render_frame_metadata_provider()->RemoveObserver(
       animation_manager_);
   new_render_widget_host_->RemoveObserver(animation_manager_);
