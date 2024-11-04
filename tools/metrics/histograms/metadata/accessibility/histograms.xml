@@ -2118,7 +2118,6 @@ even if they fit the naming pattern. -->
 <histogram name="Accessibility.Performance.AXTree.Destroy2"
     units="microseconds" expires_after="2025-02-28">
   <owner>mschillaci@google.com</owner>
-  <owner>agarwaltushar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
