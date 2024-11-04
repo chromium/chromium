@@ -21,29 +21,31 @@ static_library("boca") {
     "boca_session_util.cc",
     "boca_session_util.h",
     "boca_window_observer.h",
+    "notifications/boca_notification_handler.cc",
+    "notifications/boca_notification_handler.h",
   ]
   deps = [
     # TODO(crbug.com/376673450):Clean up unused and unwanted dependencies.
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/resources/vector_icons",
     "//base",
-    "//chromeos/ash/components/boca:notifications",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/cpp",
+    "//chromeos/strings:strings_grit",
     "//components/prefs",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
+    "//ui/base",
     "//ui/message_center",
   ]
 
-  allow_circular_includes_from = [
-    "//chromeos/ash/components/boca/session_api",
-    "//chromeos/ash/components/boca:notifications",
-  ]
+  allow_circular_includes_from =
+      [ "//chromeos/ash/components/boca/session_api" ]
 }
 
 static_library("invalidations") {
@@ -65,22 +67,6 @@ static_library("invalidations") {
   ]
 }
 
-static_library("notifications") {
-  sources = [
-    "notifications/boca_notification_handler.cc",
-    "notifications/boca_notification_handler.h",
-  ]
-  deps = [
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//ash/resources/vector_icons",
-    "//base",
-    "//chromeos/strings:strings_grit",
-    "//ui/base",
-    "//ui/message_center",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
@@ -97,7 +83,6 @@ source_set("unit_tests") {
   deps = [
     ":boca",
     ":invalidations",
-    ":notifications",
     "//ash:test_support",
     "//base",
     "//base/test:test_support",
