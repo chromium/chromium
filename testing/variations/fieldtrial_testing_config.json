@@ -17562,6 +17562,26 @@
             ]
         }
     ],
+    "PreserveDiscardableImageMapQuality": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreserveDiscardableImageMapQuality"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
