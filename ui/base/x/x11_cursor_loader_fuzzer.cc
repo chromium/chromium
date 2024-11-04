@@ -16,7 +16,7 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
   auto memory = base::MakeRefCounted<base::RefCountedBytes>(
-      base::as_bytes(base::make_span(provider.ConsumeRandomLengthString())));
+      base::as_byte_span(provider.ConsumeRandomLengthString()));
   uint32_t preferred_size = provider.ConsumeIntegralInRange<uint32_t>(0, 1000);
   std::ignore = ui::ParseCursorFile(memory, preferred_size);
   return 0;

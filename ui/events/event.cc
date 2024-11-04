@@ -542,7 +542,7 @@ std::string MouseEvent::ToString() const {
   return base::StrCat({
       LocatedEvent::ToString(),
       " flags=",
-      base::JoinString(base::make_span(MouseEventFlagsNames(flags())), "|"),
+      base::JoinString(MouseEventFlagsNames(flags()), "|"),
       base::StringPrintf("(0x%04x)", flags()),
   });
 }
@@ -1129,7 +1129,7 @@ std::string KeyEvent::ToString() const {
       base::StringPrintf("(0x%04x)", scan_code_),
 #endif  // BUILDFLAG(IS_OZONE)
       " flags=",
-      base::JoinString(base::make_span(KeyEventFlagsNames(flags())), "|"),
+      base::JoinString(KeyEventFlagsNames(flags()), "|"),
       base::StringPrintf("(0x%04x)", flags()),
   });
 }

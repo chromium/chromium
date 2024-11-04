@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
@@ -31,8 +32,7 @@ std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor) {
   const bool encoding_succeeded =
       SkPngEncoder::Encode(&stream, bitmap.pixmap(), {});
   DCHECK(encoding_succeeded);
-  return MakeDataURIForImage(
-      base::as_bytes(base::make_span(stream.TakeBuffer())), "png");
+  return MakeDataURIForImage(base::as_byte_span(stream.TakeBuffer()), "png");
 }
 
 }  // namespace webui

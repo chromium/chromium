@@ -273,8 +273,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>
       wrapped_key_to_key_id;
   unexportable_key_service().FromWrappedSigningKeySlowlyAsync(
-      base::make_span(
-          std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end())),
+      base::as_byte_span(wrapped_key),
       unexportable_keys::BackgroundTaskPriority::kBestEffort,
       wrapped_key_to_key_id.GetCallback());
   EXPECT_TRUE(wrapped_key_to_key_id.IsReady());

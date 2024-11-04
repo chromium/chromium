@@ -242,7 +242,7 @@ class ClipboardInternal {
       return;
 
     std::optional<std::u16string> maybe_result = ReadCustomDataForType(
-        base::as_bytes(base::span(data->GetDataTransferCustomData())), type);
+        base::as_byte_span(data->GetDataTransferCustomData()), type);
     if (maybe_result) {
       *result = std::move(*maybe_result);
     }
@@ -631,8 +631,8 @@ void ClipboardNonBacked::ReadAvailableTypes(
   if (clipboard_internal.IsFormatAvailable(ClipboardInternalFormat::kCustom) &&
       clipboard_internal.GetData()) {
     ReadCustomDataTypes(
-        base::as_bytes(base::span(
-            clipboard_internal.GetData()->GetDataTransferCustomData())),
+        base::as_byte_span(
+            clipboard_internal.GetData()->GetDataTransferCustomData()),
         types);
   }
 }

@@ -4234,10 +4234,8 @@ TEST_P(NearbySharingServiceImplTest, SendText_Success) {
 
   ASSERT_TRUE(
       fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
-  auto advertisement =
-      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
-          *fake_nearby_connections_manager_->connection_endpoint_info(
-              kEndpointId)));
+  auto advertisement = sharing::AdvertisementDecoder::FromEndpointInfo(
+      *fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
   ASSERT_TRUE(advertisement);
   EXPECT_EQ(kDeviceName, advertisement->device_name());
   EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
@@ -4624,10 +4622,8 @@ TEST_P(NearbySharingServiceImplTest, SendPayloadWithArcCallback) {
 
   ASSERT_TRUE(
       fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
-  auto advertisement =
-      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
-          *fake_nearby_connections_manager_->connection_endpoint_info(
-              kEndpointId)));
+  auto advertisement = sharing::AdvertisementDecoder::FromEndpointInfo(
+      *fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
   ASSERT_TRUE(advertisement);
   EXPECT_EQ(kDeviceName, advertisement->device_name());
   EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,

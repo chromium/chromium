@@ -434,7 +434,7 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (change.cause == net::CookieChangeCause::INSERTED) {
       if (!cookie_file_.WriteAndCheck(
-              0, base::as_bytes(base::make_span(change.cookie.Value()))) ||
+              0, base::as_byte_span(change.cookie.Value())) ||
           !cookie_file_.SetLength(change.cookie.Value().length())) {
         LOG(ERROR) << "Failed to write logging cookie: "
                    << change.cookie.DebugString();

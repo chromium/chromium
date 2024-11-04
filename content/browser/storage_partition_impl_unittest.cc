@@ -355,40 +355,34 @@ class RemoveLocalStorageTester {
     access_data.set_last_accessed(now.ToInternalValue());
     write_data.set_last_modified(now.ToInternalValue());
     write_data.set_size_bytes(16);
-    ASSERT_TRUE(
-        db.Put(CreateAccessMetaDataKey(origin1),
-               base::as_bytes(base::make_span(access_data.SerializeAsString())))
-            .ok());
-    ASSERT_TRUE(
-        db.Put(CreateWriteMetaDataKey(origin1),
-               base::as_bytes(base::make_span(write_data.SerializeAsString())))
-            .ok());
+    ASSERT_TRUE(db.Put(CreateAccessMetaDataKey(origin1),
+                       base::as_byte_span(access_data.SerializeAsString()))
+                    .ok());
+    ASSERT_TRUE(db.Put(CreateWriteMetaDataKey(origin1),
+                       base::as_byte_span(write_data.SerializeAsString()))
+                    .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin1), {}).ok());
 
     base::Time one_day_ago = now - base::Days(1);
     access_data.set_last_accessed(one_day_ago.ToInternalValue());
     write_data.set_last_modified(one_day_ago.ToInternalValue());
-    ASSERT_TRUE(
-        db.Put(CreateAccessMetaDataKey(origin2),
-               base::as_bytes(base::make_span(access_data.SerializeAsString())))
-            .ok());
+    ASSERT_TRUE(db.Put(CreateAccessMetaDataKey(origin2),
+                       base::as_byte_span(access_data.SerializeAsString()))
+                    .ok());
     ASSERT_TRUE(db.Put(CreateWriteMetaDataKey(origin2),
-                       base::as_bytes(
-                           base::make_span((write_data.SerializeAsString()))))
+                       base::as_byte_span((write_data.SerializeAsString())))
                     .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin2), {}).ok());
 
     base::Time sixty_days_ago = now - base::Days(60);
     access_data.set_last_accessed(sixty_days_ago.ToInternalValue());
     write_data.set_last_modified(sixty_days_ago.ToInternalValue());
-    ASSERT_TRUE(
-        db.Put(CreateAccessMetaDataKey(origin3),
-               base::as_bytes(base::make_span(access_data.SerializeAsString())))
-            .ok());
-    ASSERT_TRUE(
-        db.Put(CreateWriteMetaDataKey(origin3),
-               base::as_bytes(base::make_span(write_data.SerializeAsString())))
-            .ok());
+    ASSERT_TRUE(db.Put(CreateAccessMetaDataKey(origin3),
+                       base::as_byte_span(access_data.SerializeAsString()))
+                    .ok());
+    ASSERT_TRUE(db.Put(CreateWriteMetaDataKey(origin3),
+                       base::as_byte_span(write_data.SerializeAsString()))
+                    .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin3), {}).ok());
   }
 

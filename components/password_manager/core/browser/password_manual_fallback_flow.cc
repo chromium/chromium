@@ -343,7 +343,7 @@ void PasswordManualFallbackFlow::RunFlowImpl(
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
           form_fetcher_->GetBestMatches(),
-          base::make_span(passwords_presenter_->GetSavedPasswords()),
+          passwords_presenter_->GetSavedPasswords(),
           IsTriggeredOnPasswordForm(
               password_form &&
               IsTriggerFieldRelevantInPasswordForm(password_form) &&
