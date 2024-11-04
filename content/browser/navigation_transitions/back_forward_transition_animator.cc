@@ -45,6 +45,9 @@ using IgnoringInputReason = BackForwardTransitionAnimator::IgnoringInputReason;
 using AnimationAbortReason =
     BackForwardTransitionAnimator::AnimationAbortReason;
 
+static constexpr char kAnimationAbortedReason[] =
+    "Navigation.GestureTransition.AnimationAbortReason";
+
 static constexpr base::TimeDelta kDismissScreenshotAfter = base::Seconds(4);
 
 void ResetTransformForLayer(cc::slim::Layer* layer) {
@@ -148,6 +151,9 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
     case BackForwardTransitionAnimator::AnimationAbortReason::
         kPhysicalSizeChanged:
       return "kPhysicalSizeChanged";
+    case BackForwardTransitionAnimator::AnimationAbortReason::
+        kAnimationFinished:
+      return "kAnimationFinished";
   }
   NOTREACHED();
 }
@@ -337,6 +343,11 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
               "BackForwardTransitionAnimator::~BackForwardTransitionAnimator");
 
   CHECK(IsTerminalState()) << StateToString(state_);
+
+  if (state_ == State::kAnimationFinished) {
+    base::UmaHistogramEnumeration(kAnimationAbortedReason,
+                                  AnimationAbortReason::kAnimationFinished);
+  }
 
   switch (ignoring_input_reason_) {
     case IgnoringInputReason::kAnimationInvokedOccurred: {
@@ -1125,8 +1136,7 @@ void BackForwardTransitionAnimator::AbortAnimation(
   TRACE_EVENT("browser,navigation",
               "BackForwardTransitionAnimator::AbortAnimation", "abort_reason",
               AnimationAbortReasonToString(abort_reason));
-  base::UmaHistogramEnumeration(
-      "Navigation.GestureTransition.AnimationAbortReason", abort_reason);
+  base::UmaHistogramEnumeration(kAnimationAbortedReason, abort_reason);
   AdvanceAndProcessState(State::kAnimationAborted);
 }
 

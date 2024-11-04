@@ -175,7 +175,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // This can happen when the user rotates the phone mid-animation.
     kPhysicalSizeChanged = 18,
 
-    kMaxValue = kPhysicalSizeChanged,
+    // The animation has successfully finished.
+    kAnimationFinished = 19,
+
+    kMaxValue = kAnimationFinished,
   };
 
   // Indicates what animation state caused input event suppression.
