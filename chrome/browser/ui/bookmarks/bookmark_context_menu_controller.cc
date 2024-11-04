@@ -529,8 +529,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
              incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_,
-                                                           profile_) &&
+      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_) &&
              !profile_->IsOffTheRecord() &&
              incognito_avail != policy::IncognitoModeAvailability::kDisabled;
     case IDC_BOOKMARK_BAR_OPEN_ALL:

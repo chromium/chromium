@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/browser_navigator.h"
 
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -22,6 +21,5 @@ class BrowserNavigatorUnitTest : public testing::Test {
 
 // Ensure empty view source is allowed in Incognito.
 TEST_F(BrowserNavigatorUnitTest, EmptyViewSourceIncognito) {
-  TestingProfile profile;
-  EXPECT_TRUE(IsURLAllowedInIncognito(GURL("view-source:"), &profile));
+  EXPECT_TRUE(IsURLAllowedInIncognito(GURL("view-source:")));
 }

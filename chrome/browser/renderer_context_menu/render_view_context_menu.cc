@@ -4080,7 +4080,7 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
     return false;
   }
 
-  if (!IsURLAllowedInIncognito(params_.link_url, browser_context_)) {
+  if (!IsURLAllowedInIncognito(params_.link_url)) {
     return false;
   }
 
