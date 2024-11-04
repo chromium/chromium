@@ -25,10 +25,15 @@ import {Browser, computeSystemExecutablePath} from '@puppeteer/browsers';
  * to the browser specified in `CHANNEL` environment variable if specified. If
  * no channel or browser bin is provided in environment variable,
  * returns defined in `.browser` file, downloading the required version if
- * needed.
+ * needed. If `HEADLESS` environment variable is set to `old`, downloads the
+ * Headless Shell instead of the Chrome binary.
  * @return {string}
  */
 export function installAndGetChromePath() {
+  // Old headless means "headless shell", which is implemented in a separate
+  // binary: https://developer.chrome.com/blog/chrome-headless-shell.
+  const isHeadlessShell = process.env.HEADLESS === 'old';
+
   if (process.env.BROWSER_BIN) {
     return process.env.BROWSER_BIN;
   }
@@ -36,9 +41,18 @@ export function installAndGetChromePath() {
   const channel = getChannel();
 
   if (channel === 'local') {
-    return execSync(['node', join('tools', 'install-browser.mjs')].join(' '))
-      .toString()
-      .trim();
+    const commandArray = ['node', join('tools', 'install-browser.mjs')];
+    if (isHeadlessShell) {
+      commandArray.push('--chrome-headless-shell');
+    }
+    return execSync(commandArray.join(' ')).toString().trim();
+  }
+  if (isHeadlessShell) {
+    throw new Error(
+      'Auto download of headless shell is supported only for ' +
+        '`local` channel. Either use `CHANNEL=local` or set `BROWSER_BIN` ' +
+        'environment variable to the path of the headless shell binary.',
+    );
   }
 
   return computeSystemExecutablePath({

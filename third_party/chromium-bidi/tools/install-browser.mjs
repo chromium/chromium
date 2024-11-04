@@ -25,6 +25,9 @@
  * If `--chromedriver` is set, the ChromeDriver is installed instead of a
  * browser.
  *
+ * If `--chrome-headless-shell` is set, Headless Shell is installed.
+ * https://developer.chrome.com/blog/chrome-headless-shell
+ *
  * If `--github` is set, the executable path is written to the
  * `executablePath` output param for GitHub actions. Otherwise, the executable
  * is written to stdout.
@@ -33,6 +36,7 @@
  *  - `node tools/install-browser.mjs`
  *  - `node tools/install-browser.mjs /tmp/cache`
  *  - `node tools/install-browser.mjs --chromedriver`
+ *  - `node tools/install-browser.mjs --chrome-headless-shell`
  */
 
 import {readFile} from 'fs/promises';
@@ -44,6 +48,23 @@ import {install, computeExecutablePath} from '@puppeteer/browsers';
 
 const GITHUB_SHELL_ARG = '--github';
 const CHROME_DRIVER_ARG = '--chromedriver';
+const CHROME_HEADLESS_SHELL_ARG = '--chrome-headless-shell';
+
+/**
+ * Returns the browser name based on the command line arguments and `.browser`
+ * content.
+ * @return {'chrome'|'chromedriver'|'chrome-headless-shell'}
+ */
+function getProduct(browserSpec) {
+  if (process.argv.includes(CHROME_DRIVER_ARG)) {
+    return 'chromedriver';
+  }
+  if (process.argv.includes(CHROME_HEADLESS_SHELL_ARG)) {
+    return 'chrome-headless-shell';
+  }
+  // Default `chrome`.
+  return browserSpec.split('@')[0];
+}
 
 try {
   const browserSpec = (await readFile('.browser', 'utf-8')).trim();
@@ -52,16 +73,14 @@ try {
   if (
     process.argv[2] &&
     process.argv[2] !== GITHUB_SHELL_ARG &&
-    process.argv[2] !== CHROME_DRIVER_ARG
+    process.argv[2] !== CHROME_DRIVER_ARG &&
+    process.argv[2] !== CHROME_HEADLESS_SHELL_ARG
   ) {
     cacheDir = process.argv[2];
   }
 
   // See .browser for the format.
-  // Contains either a browser name or `chromedriver`.
-  const product = process.argv.includes(CHROME_DRIVER_ARG)
-    ? 'chromedriver'
-    : browserSpec.split('@')[0];
+  const product = getProduct(browserSpec);
   const buildId = browserSpec.split('@')[1];
 
   await install({

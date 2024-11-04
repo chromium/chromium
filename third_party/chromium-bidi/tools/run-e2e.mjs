@@ -171,7 +171,14 @@ if (argv.fileOrFolder) {
       : [argv.fileOrFolder]),
   );
 }
-if (process.env.HEADLESS === 'false' && !argv.k) {
+
+// Default headless is `new`.
+const HEADLESS = ['old', 'new', 'false'].includes(process.env.HEADLESS)
+  ? process.env.HEADLESS
+  : 'new';
+
+if (HEADLESS === 'false' && !argv.k) {
+  // Ignore headful input e2e tests, as they are too slow.
   e2eArgs.push('--ignore=tests/input');
 }
 if (argv.k) {
@@ -181,8 +188,9 @@ if (argv.k) {
 const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
   env: {
-    BROWSER_BIN: installAndGetChromePath(),
     ...process.env,
+    BROWSER_BIN: installAndGetChromePath(),
+    HEADLESS,
   },
 });
 
