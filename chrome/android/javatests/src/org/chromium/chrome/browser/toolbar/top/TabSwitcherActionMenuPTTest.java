@@ -95,9 +95,8 @@ public class TabSwitcherActionMenuPTTest {
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         WebPageStation blankPage = mTransitEntryPoints.startOnBlankPageNonBatched();
 
-        IncognitoNewTabPageStation incognitoNtp =
-                blankPage.openGenericAppMenu().openNewIncognitoTab();
-        RegularNewTabPageStation ntp = incognitoNtp.openGenericAppMenu().openNewTab();
+        IncognitoNewTabPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
+        RegularNewTabPageStation ntp = incognitoNtp.openNewTabFast();
 
         TabModel regularTabModel = getTabModelSelector().getModel(/* incognito= */ false);
         TabModel incognitoTabModel = getTabModelSelector().getModel(/* incognito= */ true);

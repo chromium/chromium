@@ -82,7 +82,7 @@ public class TabGroupSyncLocalToRemoteTest {
         String firstTabTitle = ChromeTabUtils.getTitleOnUiThread(firstTab);
         String firstTabUrl = ChromeTabUtils.getUrlStringOnUiThread(firstTab);
 
-        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         Tab secondTab = secondPage.getLoadedTab();
         int secondTabId = secondTab.getId();
         String secondTabTitle = ChromeTabUtils.getTitleOnUiThread(secondTab);

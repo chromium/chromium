@@ -256,7 +256,7 @@ public class TabSwitcherLayoutPTTest {
 
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.getLoadedTab().getId();
         // Make sure all thumbnails are there before switching tabs.
         RegularTabSwitcherStation tabSwitcher = enterRegularHTSWithThumbnailChecking(secondPage);
@@ -324,7 +324,7 @@ public class TabSwitcherLayoutPTTest {
     @EnableAnimations
     public void testTabToGridAndBack_SoftCleanup_Ntp() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        RegularNewTabPageStation ntp = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation ntp = firstPage.openNewTabFast();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         Runnable resetHTSStateOnUiThread =
                 () -> {

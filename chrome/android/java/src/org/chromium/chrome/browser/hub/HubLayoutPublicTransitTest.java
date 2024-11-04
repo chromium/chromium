@@ -91,8 +91,7 @@ public class HubLayoutPublicTransitTest {
     @LargeTest
     public void testChangeTabSwitcherPanes() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        IncognitoNewTabPageStation incognitoNewTabPage =
-                firstPage.openGenericAppMenu().openNewIncognitoTab();
+        IncognitoNewTabPageStation incognitoNewTabPage = firstPage.openNewIncognitoTabFast();
 
         IncognitoTabSwitcherStation incognitoTabSwitcher =
                 incognitoNewTabPage.openIncognitoTabSwitcher();
@@ -117,7 +116,7 @@ public class HubLayoutPublicTransitTest {
         ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
 
         WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
-        RegularNewTabPageStation newTabPage = blankPage.openGenericAppMenu().openNewTab();
+        RegularNewTabPageStation newTabPage = blankPage.openNewTabFast();
         RegularTabSwitcherStation tabSwitcher = newTabPage.openRegularTabSwitcher();
         blankPage = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
         tabSwitcher = blankPage.openRegularTabSwitcher();

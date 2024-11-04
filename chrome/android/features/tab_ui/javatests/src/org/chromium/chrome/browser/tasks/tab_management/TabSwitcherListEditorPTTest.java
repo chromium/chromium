@@ -83,7 +83,7 @@ public class TabSwitcherListEditorPTTest {
     public void testClose2Tabs() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.getLoadedTab().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
@@ -108,7 +108,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.getLoadedTab().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();

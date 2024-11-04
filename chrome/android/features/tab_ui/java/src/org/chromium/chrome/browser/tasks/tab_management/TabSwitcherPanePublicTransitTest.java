@@ -65,10 +65,10 @@ public class TabSwitcherPanePublicTransitTest {
 
         PageStation page = firstPage;
         for (int i = 1; i < 10; i++) {
-            page = page.openGenericAppMenu().openNewTab();
+            page = page.openNewTabFast();
         }
         assertEquals(9, cta.getCurrentTabModel().index());
-        IncognitoNewTabPageStation incognitoNtp = page.openGenericAppMenu().openNewIncognitoTab();
+        IncognitoNewTabPageStation incognitoNtp = page.openNewIncognitoTabFast();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 
         IncognitoTabSwitcherStation incognitoTabSwitcher = incognitoNtp.openIncognitoTabSwitcher();
@@ -110,8 +110,7 @@ public class TabSwitcherPanePublicTransitTest {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
-        IncognitoNewTabPageStation incognitoNtp =
-                firstPage.openGenericAppMenu().openNewIncognitoTab();
+        IncognitoNewTabPageStation incognitoNtp = firstPage.openNewIncognitoTabFast();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 
         IncognitoTabSwitcherStation incognitoTabSwitcher = incognitoNtp.openIncognitoTabSwitcher();

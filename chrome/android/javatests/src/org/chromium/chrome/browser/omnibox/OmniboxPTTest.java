@@ -72,7 +72,7 @@ public class OmniboxPTTest {
     @Test
     public void testOpenTypeDelete_fromNtp() {
         WebPageStation blankPage = mEntryPoints.startOnBlankPage(mBatchedRule);
-        RegularNewTabPageStation ntp = blankPage.openGenericAppMenu().openNewTab();
+        RegularNewTabPageStation ntp = blankPage.openNewTabFast();
         var omniboxAndKeyboard = ntp.openOmnibox(sFakeSuggestions);
 
         doOpenTypeDelete(omniboxAndKeyboard);
@@ -87,8 +87,7 @@ public class OmniboxPTTest {
     @Test
     public void testOpenTypeDelete_fromIncognitoNtp() {
         WebPageStation blankPage = mEntryPoints.startOnBlankPage(mBatchedRule);
-        IncognitoNewTabPageStation incognitoNtp =
-                blankPage.openGenericAppMenu().openNewIncognitoTab();
+        IncognitoNewTabPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
         var omniboxAndKeyboard = incognitoNtp.openOmnibox(sFakeSuggestions);
 
         doOpenTypeDelete(omniboxAndKeyboard);

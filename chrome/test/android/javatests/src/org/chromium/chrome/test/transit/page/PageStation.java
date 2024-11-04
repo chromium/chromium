@@ -9,6 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CallbackCondition;
@@ -29,6 +31,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -307,6 +312,37 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         recheckActiveConditions();
 
         return enterFacilitySync(new PageAppMenuFacility<PageStation>(), MENU_BUTTON::click);
+    }
+
+    /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
+    public RegularNewTabPageStation openNewTabFast() {
+        return travelToSync(
+                RegularNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .build(),
+                () ->
+                        MenuUtils.invokeCustomMenuActionSync(
+                                InstrumentationRegistry.getInstrumentation(),
+                                getActivity(),
+                                R.id.new_tab_menu_id));
+    }
+
+    /**
+     * Shortcut to open a new incognito tab programmatically as if selecting "New Incognito Tab"
+     * from the app menu.
+     */
+    public IncognitoNewTabPageStation openNewIncognitoTabFast() {
+        return travelToSync(
+                IncognitoNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .build(),
+                () ->
+                        MenuUtils.invokeCustomMenuActionSync(
+                                InstrumentationRegistry.getInstrumentation(),
+                                getActivity(),
+                                R.id.new_incognito_tab_menu_id));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
