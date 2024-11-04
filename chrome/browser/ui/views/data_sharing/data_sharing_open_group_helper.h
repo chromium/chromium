@@ -41,6 +41,8 @@ class DataSharingOpenGroupHelper
   // case.
   bool OpenTabGroupIfSynced(std::string group_id);
 
+  std::set<std::string> group_ids_for_testing() const { return group_ids_; }
+
  private:
   raw_ptr<Browser> browser_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_service_ = nullptr;

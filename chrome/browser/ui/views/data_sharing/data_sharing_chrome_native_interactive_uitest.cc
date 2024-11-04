@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
   EXPECT_EQ(url.value().spec(), expected_join_flow_url);
 }
 
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, Foo) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
   std::string fake_collab_id = "fake_collab_id";
   tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
   auto* tab_group_service =
@@ -277,10 +277,14 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, Foo) {
                 ->browser_window_features()
                 ->data_sharing_open_group_helper();
         open_group_helper->OpenTabGroupWhenAvailable(fake_collab_id);
+        EXPECT_TRUE(open_group_helper->group_ids_for_testing().contains(
+            fake_collab_id));
 
         // Mock group sync from remote.
         open_group_helper->OnTabGroupAdded(group_copy.value(),
                                            tab_groups::TriggerSource::REMOTE);
+        EXPECT_FALSE(open_group_helper->group_ids_for_testing().contains(
+            fake_collab_id));
       }),
       // The group is opened into the tab strip.
       WaitForShow(kTabGroupHeaderElementId));

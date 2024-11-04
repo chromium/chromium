@@ -8,6 +8,10 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -75,6 +79,14 @@ void DataSharingPageHandler::AssociateTabGroupWithGroupId(
     const std::string& group_id) {
   data_sharing::AssociateTabGroupWithGroupId(tab_group_id, group_id,
                                              GetProfile());
+}
+
+void DataSharingPageHandler::OpenTabGroup(const std::string& group_id) {
+  Browser* const browser = chrome::FindLastActiveWithProfile(GetProfile());
+  CHECK(browser);
+  browser->browser_window_features()
+      ->data_sharing_open_group_helper()
+      ->OpenTabGroupWhenAvailable(group_id);
 }
 
 Profile* DataSharingPageHandler::GetProfile() {

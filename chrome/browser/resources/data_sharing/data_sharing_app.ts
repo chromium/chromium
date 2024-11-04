@@ -147,10 +147,10 @@ export class DataSharingApp extends CustomElement {
               parent,
               groupId: groupId!,
               tokenSecret: tokenSecret!,
-              learnMoreUrlMap,
-              // TODO(crbug.com/376348679): Hook up with Chrome open group logic
-              // once join successful.
-              onJoinSuccessful: () => {},
+              learnMoreUrlMap: learnMoreUrlMap,
+              onJoinSuccessful: () => {
+                this.browserProxy_.handler!.openTabGroup(groupId!);
+              },
               fetchPreviewData: () => {
                 return this.getTabGroupPreview(groupId!, tokenSecret!);
               },

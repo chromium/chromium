@@ -76,6 +76,10 @@ interface PageHandler {
   // `tab_group_id` is the local id of the group in tab strip that gets shared.
   // `group_id` is the id that connects the people with the shared tab group.
   AssociateTabGroupWithGroupId(string tab_group_id, string group_id);
+
+  // Ask Chrome to open the tab group in current browser once the "Join and
+  // Open" is pressed from the Join dialog.
+  OpenTabGroup(string group_id);
 };
 
 // WebUI-side handler for requests from the browser.
