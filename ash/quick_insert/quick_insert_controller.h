@@ -38,6 +38,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace input_method {
@@ -82,6 +83,9 @@ class ASH_EXPORT QuickInsertController : public PickerViewDelegate,
   // Time from when a search starts to when the first set of results are
   // published.
   static constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
+
+  // Registers Quick Insert prefs to the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets the `client` used by this class and the widget to communicate with the
   // browser. `client` may be set to null, which will close the Widget if it's

@@ -268,6 +268,11 @@ QuickInsertController::~QuickInsertController() {
   }
 }
 
+void QuickInsertController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  PickerFeatureTour::RegisterProfilePrefs(registry);
+  PickerSessionMetrics::RegisterProfilePrefs(registry);
+}
+
 void QuickInsertController::DisableFeatureTourForTesting() {
   CHECK_IS_TEST();
   g_feature_tour_enabled = false;
