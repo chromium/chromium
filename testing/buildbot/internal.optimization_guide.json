@@ -86,7 +86,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16a242d"
+          "16b40"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -108,7 +108,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_16a242d",
+              "name": "xcode_ios_16b40",
               "path": "Xcode.app"
             }
           ],
@@ -124,7 +124,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16a242d"
+          "16b40"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -146,7 +146,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_16a242d",
+              "name": "xcode_ios_16b40",
               "path": "Xcode.app"
             }
           ],
@@ -171,7 +171,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16a242d"
+          "16b40"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -196,7 +196,7 @@
               "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_16a242d",
+              "name": "xcode_ios_16b40",
               "path": "Xcode.app"
             }
           ],
@@ -216,7 +216,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "16a242d"
+          "16b40"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -241,7 +241,7 @@
               "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_16a242d",
+              "name": "xcode_ios_16b40",
               "path": "Xcode.app"
             }
           ],

@@ -5,7 +5,7 @@
         "args": [
           "--no-wpt-internal",
           "--xcode-build-version",
-          "16a242d"
+          "16b40"
         ],
         "merge": {
           "args": [
@@ -36,7 +36,7 @@
           "hard_timeout": 14400,
           "named_caches": [
             {
-              "name": "xcode_ios_16a242d",
+              "name": "xcode_ios_16b40",
               "path": "Xcode.app"
             }
           ],

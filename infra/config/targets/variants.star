@@ -497,17 +497,17 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPHONE_14_PLUS_18_0",
-    identifier = "iPhone 14 Plus 18.0",
+    name = "SIM_IPHONE_14_PLUS_18_1",
+    identifier = "iPhone 14 Plus 18.1",
     generate_pyl_entry = False,
     mixins = [
-        "ios_runtime_cache_18_0",
+        "ios_runtime_cache_18_1",
     ],
     args = [
         "--platform",
         "iPhone 14 Plus",
         "--version",
-        "18.0",
+        "18.1",
     ],
 )
 
