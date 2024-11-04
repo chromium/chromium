@@ -613,14 +613,15 @@ ConnectorsServiceFactory::ConnectorsServiceFactory()
 
 ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 
-KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ConnectorsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   bool observe_prefs =
       IsManagedGuestSession()
           ? base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)
           : true;
 
-  return new ConnectorsService(
+  return std::make_unique<ConnectorsService>(
       context, std::make_unique<ConnectorsManager>(
                    user_prefs::UserPrefs::Get(context),
                    GetServiceProviderConfig(), observe_prefs));
