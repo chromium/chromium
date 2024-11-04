@@ -202,9 +202,8 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Display weather information in birch UI. The feature is rolled out via Finch
-// to allow measurement of weather server load (QPS).
-BASE_FEATURE(kBirchWeather, "BirchWeather", base::FEATURE_DISABLED_BY_DEFAULT);
+// Display weather information in birch UI.
+BASE_FEATURE(kBirchWeather, "BirchWeather", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
