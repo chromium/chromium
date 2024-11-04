@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
+#import "ios/chrome/browser/text_selection/model/text_classifier_util.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
@@ -110,6 +111,11 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
     if (!has_no_intent_detection || has_no_intent_detection.value()) {
       return;
     }
+  }
+
+  // TODO: 367770207 - Move the checks before the text is extracted.
+  if (!IsEntitySelectionAllowedForURL(web_state)) {
+    return;
   }
 
   NSTextCheckingType handled_types =

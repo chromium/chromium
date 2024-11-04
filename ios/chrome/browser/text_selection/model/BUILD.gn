@@ -11,6 +11,7 @@ source_set("model") {
   ]
   deps = [
     ":model_utils",
+    ":text_classifier_utils",
     "//base",
     "//components/keyed_service/ios",
     "//components/optimization_guide/core",
@@ -27,6 +28,20 @@ source_set("model_utils") {
     "text_selection_util.mm",
   ]
   deps = [ "//base" ]
+}
+
+source_set("text_classifier_utils") {
+  sources = [
+    "text_classifier_util.h",
+    "text_classifier_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+  ]
 }
 
 source_set("test_support") {
