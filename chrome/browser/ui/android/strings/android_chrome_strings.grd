@@ -6089,6 +6089,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Notification permission flow closed
       </message>
 
+      <!-- Notification Trampoline Toast Messages-->
+      <message name="IDS_NOTIFICATION_TRAMPOLINE_TOAST_MESSAGE" desc="A short message that was shown when a notification is clicked while Chrome is in background waiting to be launched.">
+        Processing notification
+      </message>
+
       <!-- Get Image Descriptions -->
       <message name="IDS_IMAGE_DESCRIPTIONS_DIALOG_HEADER" desc="Header for confirmation dialog to enable image descriptions.">
         Get image descriptions?

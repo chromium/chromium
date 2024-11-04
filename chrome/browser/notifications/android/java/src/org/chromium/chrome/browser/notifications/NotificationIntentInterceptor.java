@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -154,6 +156,18 @@ public class NotificationIntentInterceptor {
             if (!handleNotificationIntent()) {
                 TrampolineActivityTracker.getInstance().finishTrackedActivity();
             }
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                Toast.makeText(
+                                this,
+                                R.string.notification_trampoline_toast_message,
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+            return super.onTouchEvent(event);
         }
 
         private static boolean hasVisibleActivities() {

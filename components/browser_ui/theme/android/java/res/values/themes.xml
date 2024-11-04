@@ -299,6 +299,7 @@ found in the LICENSE file.
     <style name="Theme.BrowserUI.Translucent.NoTitleBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ElegantTextHeight" parent="">
