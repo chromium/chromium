@@ -3825,6 +3825,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_swangle_telemetry_tests",
+    targets = [
+        "gpu_webgl_conformance_swangle_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_vulkan_gtests",
     targets = [
         "vulkan_tests",
@@ -3915,6 +3922,27 @@ targets.bundle(
                 ],
                 swarming = targets.swarming(
                     shards = 3,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_swangle_passthrough_telemetry_tests",
+    targets = [
+        "webgl_conformance_swangle_passthrough_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_swangle_passthrough_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
+                    "--xvfb",
+                ],
+                swarming = targets.swarming(
+                    shards = 1,
                 ),
             ),
             "gpu_integration_test_common_args",
@@ -5529,6 +5557,121 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 10,
             ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "swangle_gtests",
+    targets = [
+        "angle_deqp_egl_tests",
+        "angle_deqp_gles2_tests",
+        "angle_deqp_gles31_rotate180_tests",
+        "angle_deqp_gles31_rotate270_tests",
+        "angle_deqp_gles31_rotate90_tests",
+        "angle_deqp_gles31_tests",
+        "angle_deqp_gles3_rotate180_tests",
+        "angle_deqp_gles3_rotate270_tests",
+        "angle_deqp_gles3_rotate90_tests",
+        "angle_deqp_gles3_tests",
+        "angle_deqp_khr_gles2_tests",
+        "angle_deqp_khr_gles31_tests",
+        "angle_deqp_khr_gles3_tests",
+        "angle_end2end_tests",
+    ],
+    per_test_modifications = {
+        "angle_deqp_egl_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles2_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles31_rotate180_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles31_rotate270_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles31_rotate90_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles31_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles3_rotate180_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles3_rotate270_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles3_rotate90_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_gles3_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_khr_gles2_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_khr_gles31_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_deqp_khr_gles3_tests": targets.mixin(
+            args = [
+                "--use-angle=swiftshader",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+        "angle_end2end_tests": targets.mixin(
+            args = [
+                "--gtest_filter=*Vulkan_SwiftShader*",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+            use_isolated_scripts_api = True,
         ),
     },
 )

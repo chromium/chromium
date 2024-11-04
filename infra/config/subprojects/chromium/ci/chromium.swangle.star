@@ -3,12 +3,13 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.swangle builder group."""
 
-load("//lib/builders.star", "gardener_rotations", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builders.star", "gardener_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = "recipe:angle_chromium",
@@ -23,6 +24,12 @@ ci.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.console_view(
@@ -74,6 +81,22 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_swangle_telemetry_tests",
+        ],
+        mixins = [
+            "gpu-swarming-pool",
+            "isolate_profile_data",
+            "linux-jammy",
+            "no_gpu",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Linux",
         short_name = "x64",
@@ -113,6 +136,19 @@ ci.gpu.linux_builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        mixins = [
+            "gpu-swarming-pool",
+            "isolate_profile_data",
+            "linux-jammy",
+            "no_gpu",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
@@ -156,6 +192,22 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "swangle_gtests",
+        ],
+        mixins = [
+            "gpu-swarming-pool",
+            "isolate_profile_data",
+            "linux-jammy",
+            "no_gpu",
+            "timeout_15m",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.LINUX,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
@@ -194,6 +246,22 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "swangle_gtests",
+        ],
+        mixins = [
+            "gpu-swarming-pool",
+            "isolate_profile_data",
+            "linux-jammy",
+            "no_gpu",
+            "timeout_15m",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.LINUX,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux",
         short_name = "x64",
@@ -231,6 +299,19 @@ ci.gpu.linux_builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        mixins = [
+            "gpu-swarming-pool",
+            "isolate_profile_data",
+            "linux-jammy",
+            "no_gpu",
+            "timeout_15m",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.LINUX,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
@@ -274,6 +355,18 @@ ci.gpu.mac_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_swangle_telemetry_tests",
+        ],
+        mixins = [
+            "mac_mini_intel_gpu_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Mac",
         short_name = "x64",
@@ -313,6 +406,18 @@ ci.gpu.windows_builder(
             "resource_allowlisting",
             "win",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_swangle_telemetry_tests",
+        ],
+        mixins = [
+            "win10_gce_gpu_pool",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Windows",
@@ -354,6 +459,18 @@ ci.gpu.windows_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "swangle_gtests",
+        ],
+        mixins = [
+            "win10_gce_gpu_pool",
+            "timeout_15m",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.WINDOWS,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Windows",
         short_name = "x64",
@@ -394,6 +511,18 @@ ci.gpu.windows_builder(
             "x86",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "swangle_gtests",
+        ],
+        mixins = [
+            "win10_gce_gpu_pool",
+            "timeout_15m",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.WINDOWS,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Windows",
         short_name = "x86",
@@ -432,6 +561,18 @@ ci.gpu.windows_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "swangle_gtests",
+        ],
+        mixins = [
+            "win10_gce_gpu_pool",
+            "timeout_15m",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.WINDOWS,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows",
         short_name = "x64",
@@ -469,6 +610,18 @@ ci.gpu.windows_builder(
             "win",
             "x86",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "swangle_gtests",
+        ],
+        mixins = [
+            "win10_gce_gpu_pool",
+            "timeout_15m",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows",

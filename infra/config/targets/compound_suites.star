@@ -110,13 +110,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "gpu_swangle_telemetry_tests",
-    basic_suites = [
-        "gpu_webgl_conformance_swangle_passthrough_telemetry_tests",
-    ],
-)
-
 # END composition test suites used by the GPU bots
 
 # This is:

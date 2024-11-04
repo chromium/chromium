@@ -2247,27 +2247,6 @@
       },
     },
 
-    'gpu_webgl_conformance_swangle_passthrough_telemetry_tests': {
-      'webgl_conformance_swangle_passthrough_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-        'telemetry_test_name': 'webgl1_conformance',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough',
-          '--xvfb',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_validating_telemetry_tests': {
       'webgl_conformance_validating_tests': {
         'test_common': {
@@ -2657,102 +2636,6 @@
       },
     },
 
-    'swangle_gtests': {
-      'angle_deqp_egl_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles2_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles31_rotate180_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles31_rotate270_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles31_rotate90_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles31_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles3_rotate180_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles3_rotate270_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles3_rotate90_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_gles3_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'swarming': {
-          'shards': 4,
-        },
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_khr_gles2_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_khr_gles31_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_deqp_khr_gles3_tests': {
-        'args': [
-          '--use-angle=swiftshader',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'angle_end2end_tests': {
-        'args': [
-          '--gtest_filter=*Vulkan_SwiftShader*',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'telemetry_perf_unittests_isolated_scripts': {
       'telemetry_perf_unittests': {
         'args': [
@@ -2940,10 +2823,6 @@
       'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_swangle_telemetry_tests': [
-      'gpu_webgl_conformance_swangle_passthrough_telemetry_tests',
     ],
 
     'linux_chromeos_gtests': [

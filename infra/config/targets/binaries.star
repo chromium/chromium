@@ -45,71 +45,99 @@ targets.binaries.console_test_launcher(
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_egl_tests",
     label = "//third_party/angle/src/tests:angle_deqp_egl_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles2_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles2_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles31_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles31_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles3_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles3_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_khr_gles2_tests",
     label = "//third_party/angle/src/tests:angle_deqp_khr_gles2_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_khr_gles3_tests",
     label = "//third_party/angle/src/tests:angle_deqp_khr_gles3_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_khr_gles31_tests",
     label = "//third_party/angle/src/tests:angle_deqp_khr_gles31_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles3_rotate180_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles3_rotate180_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles3_rotate270_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles3_rotate270_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles3_rotate90_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles3_rotate90_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles31_rotate180_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles31_rotate180_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles31_rotate270_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles31_rotate270_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_deqp_gles31_rotate90_tests",
     label = "//third_party/angle/src/tests:angle_deqp_gles31_rotate90_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
     name = "angle_end2end_tests",
     label = "//third_party/angle/src/tests:angle_end2end_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(

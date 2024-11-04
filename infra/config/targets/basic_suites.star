@@ -1589,24 +1589,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_swangle_passthrough_telemetry_tests",
-    tests = {
-        "webgl_conformance_swangle_passthrough_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                "--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
-                "--xvfb",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_validating_telemetry_tests",
     tests = {
         "webgl_conformance_validating_tests": targets.legacy_test_config(
@@ -1957,105 +1939,6 @@ targets.legacy_basic_suite(
             linux_args = [
                 "-use-xvfb",
             ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "swangle_gtests",
-    tests = {
-        "angle_deqp_egl_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles2_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles31_rotate180_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles31_rotate270_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles31_rotate90_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles31_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles3_rotate180_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles3_rotate270_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles3_rotate90_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_gles3_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_khr_gles2_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_khr_gles31_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_deqp_khr_gles3_tests": targets.legacy_test_config(
-            args = [
-                "--use-angle=swiftshader",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-        "angle_end2end_tests": targets.legacy_test_config(
-            args = [
-                "--gtest_filter=*Vulkan_SwiftShader*",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-            use_isolated_scripts_api = True,
         ),
     },
 )

@@ -45,7 +45,8 @@
           "builder": "win-swangle-try-x64",
           "group": "tryserver.chromium.swangle"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-swangle-x64/targets"
     }
   },
   "$build/reclient": {
