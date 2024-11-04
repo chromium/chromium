@@ -349,50 +349,7 @@ void BeginMemoryExperimentationAfterDelay() {
                               ChangeProfileCommands,
                               PrefObserverDelegate,
                               ProfileStateObserver,
-                              SceneStateObserver> {
-  // The object that drives the Chrome startup/shutdown logic.
-  std::unique_ptr<IOSChromeMain> _chromeMain;
-
-  // True if the current session began from a cold start. False if the app has
-  // entered the background at least once since start up.
-  BOOL _isColdStart;
-
-  // True if the launch metrics have already been recorded.
-  BOOL _launchMetricsRecorded;
-
-  // An object to record metrics related to the user's first action.
-  std::unique_ptr<FirstUserActionRecorder> _firstUserActionRecorder;
-
-  // Bridge to listen to pref changes.
-  std::unique_ptr<PrefObserverBridge> _localStatePrefObserverBridge;
-
-  // Registrar for pref changes notifications to the local state.
-  PrefChangeRegistrar _localStatePrefChangeRegistrar;
-
-  // Vector updating search engine data (to be accessed in extensions)
-  // for all loaded profiles.
-  std::vector<std::unique_ptr<ExtensionSearchEngineDataUpdater>>
-      _extensionSearchEngineDataUpdaters;
-
-  // The class in charge of showing/hiding the memory debugger when the
-  // appropriate pref changes.
-  MemoryDebuggerManager* _memoryDebuggerManager;
-
-  // Responsible for indexing chrome links (such as bookmarks, most likely...)
-  // in system Spotlight index for all loaded profiles.
-  NSMutableArray<SpotlightManager*>* _spotlightManagers;
-
-  // Variable backing metricsMediator property.
-  __weak MetricsMediator* _metricsMediator;
-
-  // Holds the ProfileController for all loaded profiles.
-  std::map<std::string, ProfileController*> _profileControllers;
-
-  WindowConfigurationRecorder* _windowConfigurationRecorder;
-
-  // Handler for the startup tasks, deferred or not.
-  StartupTasks* _startupTasks;
-}
+                              SceneStateObserver>
 
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
@@ -464,9 +421,53 @@ void BeginMemoryExperimentationAfterDelay() {
 // Initializes the browser objects for the browser UI (e.g., the browser
 // state).
 - (void)startUpBrowserForegroundInitialization;
+
 @end
 
 @implementation MainController {
+  // The object that drives the Chrome startup/shutdown logic.
+  std::unique_ptr<IOSChromeMain> _chromeMain;
+
+  // True if the current session began from a cold start. False if the app has
+  // entered the background at least once since start up.
+  BOOL _isColdStart;
+
+  // True if the launch metrics have already been recorded.
+  BOOL _launchMetricsRecorded;
+
+  // An object to record metrics related to the user's first action.
+  std::unique_ptr<FirstUserActionRecorder> _firstUserActionRecorder;
+
+  // Bridge to listen to pref changes.
+  std::unique_ptr<PrefObserverBridge> _localStatePrefObserverBridge;
+
+  // Registrar for pref changes notifications to the local state.
+  PrefChangeRegistrar _localStatePrefChangeRegistrar;
+
+  // Vector updating search engine data (to be accessed in extensions)
+  // for all loaded profiles.
+  std::vector<std::unique_ptr<ExtensionSearchEngineDataUpdater>>
+      _extensionSearchEngineDataUpdaters;
+
+  // The class in charge of showing/hiding the memory debugger when the
+  // appropriate pref changes.
+  MemoryDebuggerManager* _memoryDebuggerManager;
+
+  // Responsible for indexing chrome links (such as bookmarks, most likely...)
+  // in system Spotlight index for all loaded profiles.
+  NSMutableArray<SpotlightManager*>* _spotlightManagers;
+
+  // Variable backing metricsMediator property.
+  __weak MetricsMediator* _metricsMediator;
+
+  // Holds the ProfileController for all loaded profiles.
+  std::map<std::string, ProfileController*> _profileControllers;
+
+  WindowConfigurationRecorder* _windowConfigurationRecorder;
+
+  // Handler for the startup tasks, deferred or not.
+  StartupTasks* _startupTasks;
+
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 }
