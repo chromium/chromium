@@ -26,7 +26,6 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task/task_features.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -39,7 +38,6 @@
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -1205,11 +1203,8 @@ TEST_F(ThreadGroupImplBlockingTest, ThreadBusyShutdown) {
   thread_group_.reset();
 }
 
-enum class ReclaimType { DELAYED_RECLAIM, NO_RECLAIM };
-
-class ThreadGroupImplOverCapacityTest
-    : public ThreadGroupImplImplTestBase,
-      public testing::TestWithParam<ReclaimType> {
+class ThreadGroupImplOverCapacityTest : public ThreadGroupImplImplTestBase,
+                                        public testing::Test {
  public:
   ThreadGroupImplOverCapacityTest() = default;
   ThreadGroupImplOverCapacityTest(const ThreadGroupImplOverCapacityTest&) =
@@ -1218,9 +1213,6 @@ class ThreadGroupImplOverCapacityTest
       const ThreadGroupImplOverCapacityTest&) = delete;
 
   void SetUp() override {
-    if (GetParam() == ReclaimType::NO_RECLAIM) {
-      feature_list.InitAndEnableFeature(kNoWorkerThreadReclaim);
-    }
     CreateThreadGroup();
     task_runner_ =
         test::CreatePooledTaskRunner({MayBlock(), WithBaseSyncPrimitives()},
@@ -1230,7 +1222,6 @@ class ThreadGroupImplOverCapacityTest
   void TearDown() override { ThreadGroupImplImplTestBase::CommonTearDown(); }
 
  protected:
-  base::test::ScopedFeatureList feature_list;
   scoped_refptr<TaskRunner> task_runner_;
   static constexpr size_t kLocalMaxTasks = 3;
 
@@ -1249,7 +1240,7 @@ class ThreadGroupImplOverCapacityTest
 
 // Verify that workers that become idle due to the thread group being over
 // capacity will eventually cleanup.
-TEST_P(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
+TEST_F(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
   StartThreadGroup(kReclaimTimeForCleanupTests, kLocalMaxTasks);
   TestWaitableEvent threads_running;
   TestWaitableEvent threads_continue;
@@ -1311,28 +1302,15 @@ TEST_P(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
                                   kReclaimTimeForCleanupTests * i * 0.5);
   }
 
-  if (GetParam() == ReclaimType::DELAYED_RECLAIM) {
-    // Note: one worker above capacity will not get cleaned up since it's on the
-    // front of the idle set.
-    thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks - 1);
-    EXPECT_EQ(kLocalMaxTasks + 1, thread_group_->NumberOfWorkersForTesting());
-    threads_continue.Signal();
-  } else {
-    // When workers are't automatically reclaimed after a delay, blocking tasks
-    // need to return for extra workers to be cleaned up.
-    threads_continue.Signal();
-    thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks);
-    EXPECT_EQ(kLocalMaxTasks, thread_group_->NumberOfWorkersForTesting());
-  }
+  // When workers are't automatically reclaimed after a delay, blocking tasks
+  // need to return for extra workers to be cleaned up.
+  threads_continue.Signal();
+  thread_group_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks);
+  EXPECT_EQ(kLocalMaxTasks, thread_group_->NumberOfWorkersForTesting());
 
   threads_continue.Signal();
   task_tracker_.FlushForTesting();
 }
-
-INSTANTIATE_TEST_SUITE_P(ReclaimType,
-                         ThreadGroupImplOverCapacityTest,
-                         ::testing::Values(ReclaimType::DELAYED_RECLAIM,
-                                           ReclaimType::NO_RECLAIM));
 
 // Verify that the maximum number of workers is 256 and that hitting the max
 // leaves the thread group in a valid state with regards to max tasks.

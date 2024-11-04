@@ -406,7 +406,6 @@ class BASE_EXPORT ThreadGroup {
 
     // Suggested reclaim time for workers.
     TimeDelta suggested_reclaim_time;
-    bool no_worker_reclaim = false;
 
     // Environment to be initialized per worker.
     WorkerEnvironment worker_environment = WorkerEnvironment::NONE;

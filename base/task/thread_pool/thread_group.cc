@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_features.h"
@@ -154,7 +153,6 @@ void ThreadGroup::StartImpl(
     worker_started_for_testing_->declare_only_used_while_idle();
   }
 
-  in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
   in_start().may_block_threshold =
       may_block_threshold ? may_block_threshold.value()
                           : (thread_type_hint_ != ThreadType::kBackground

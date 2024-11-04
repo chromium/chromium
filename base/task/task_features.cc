@@ -26,10 +26,6 @@ BASE_FEATURE(kUseUtilityThreadGroup,
              "UseUtilityThreadGroup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNoWorkerThreadReclaim,
-             "NoWorkerThreadReclaim",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDelayFirstWorkerWake,
              "DelayFirstWorkerWake",
              base::FEATURE_ENABLED_BY_DEFAULT);

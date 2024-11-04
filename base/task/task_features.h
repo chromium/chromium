@@ -21,10 +21,6 @@ extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
 
-// Under this feature, worker threads are not reclaimed after a timeout. Rather,
-// only excess workers are cleaned up immediately after finishing a task.
-BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
-
 // This feature controls whether ThreadPool WorkerThreads should hold off waking
 // up to purge PartitionAlloc within the first minute of their lifetime. See
 // base::internal::GetSleepDurationBeforePurge.
