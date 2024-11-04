@@ -9,7 +9,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "components/sync/service/local_data_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,37 +24,16 @@ const std::map<syncer::DataType,
 using MockBatchUploadDialogResultCallback =
     base::MockCallback<BatchUploadSelectedDataTypeItemsCallback>;
 
-// Testing implementation of `BatchUploadDataProvider`.
-class BatchUploadDataProviderFake : public BatchUploadDataProvider {
- public:
-  explicit BatchUploadDataProviderFake(syncer::DataType type)
-      : BatchUploadDataProvider(type) {}
-
-  void SetHasLocalData(bool has_local_data) {
-    has_local_data_ = has_local_data;
+syncer::LocalDataDescription GetLocalDataDescription(syncer::DataType type,
+                                                     bool with_local_data) {
+  syncer::LocalDataDescription local_data_description;
+  local_data_description.type = type;
+  if (with_local_data) {
+    // Add an arbitrary item.
+    local_data_description.local_data_models.emplace_back();
   }
-
-  bool HasLocalData() const override { return has_local_data_; }
-
-  syncer::LocalDataDescription GetLocalData() const override {
-    syncer::LocalDataDescription local_data_description;
-    local_data_description.type = GetDataType();
-    if (has_local_data_) {
-      // Add an arbitrary item.
-      local_data_description.local_data_models.emplace_back();
-    }
-    return local_data_description;
-  }
-
-  bool MoveToAccountStorage(
-      const std::vector<syncer::LocalDataItemModel::DataId>& item_ids_to_move)
-      override {
-    return true;
-  }
-
- private:
-  bool has_local_data_ = false;
-};
+  return local_data_description;
+}
 
 class BatchUploadDelegateMock : public BatchUploadDelegate {
  public:
@@ -70,7 +48,7 @@ class BatchUploadDelegateMock : public BatchUploadDelegate {
 
 }  // namespace
 
-TEST(BatchUploadControllerTest, EmptyController) {
+TEST(BatchUploadControllerTest, ControllerWithNoDataDescription) {
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
   MockBatchUploadDialogResultCallback mock_callback;
@@ -85,20 +63,17 @@ TEST(BatchUploadControllerTest, EmptyController) {
   EXPECT_FALSE(controller.ShowDialog(mock, nullptr, {}, mock_callback.Get()));
 }
 
-TEST(BatchUploadControllerTest, ProviderWithLocalData) {
-  std::unique_ptr<BatchUploadDataProviderFake> provider =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::PASSWORDS);
-  provider->SetHasLocalData(true);
-
+TEST(BatchUploadControllerTest, DataDescriptionWithLocalData) {
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
   MockBatchUploadDialogResultCallback mock_callback;
+  syncer::LocalDataDescription local_data = GetLocalDataDescription(
+      syncer::DataType::PASSWORDS, /*with_local_data=*/true);
 
   // Having local data should show the dialog.
   std::vector<syncer::LocalDataDescription> expected_descriptions_list;
   // local_description has data and should be part of the input.
-  expected_descriptions_list.push_back(provider->GetLocalData());
+  expected_descriptions_list.push_back(local_data);
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .WillOnce(
           [&expected_descriptions_list](
@@ -112,55 +87,50 @@ TEST(BatchUploadControllerTest, ProviderWithLocalData) {
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
-  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  input.insert_or_assign(local_data.type, local_data);
   EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
                                     mock_callback.Get()));
 }
 
-TEST(BatchUploadControllerTest, ProvideWithoutLocalData) {
-  std::unique_ptr<BatchUploadDataProviderFake> provider =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::PASSWORDS);
-  provider->SetHasLocalData(false);
-
+TEST(BatchUploadControllerTest, DataDescriptionWithoutLocalData) {
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
   MockBatchUploadDialogResultCallback mock_callback;
 
-  // Even if the provider exists, having no data should not show the dialog.
+  syncer::LocalDataDescription local_data = GetLocalDataDescription(
+      syncer::DataType::PASSWORDS, /*with_local_data=*/false);
+
+  // Even if the description exists, having no data should not show the dialog.
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .Times(0);
   // Not showing the bubble should just return directly without invoking the
   // callback.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
-  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  input.insert_or_assign(local_data.type, local_data);
   EXPECT_FALSE(controller.ShowDialog(mock, nullptr, std::move(input),
                                      mock_callback.Get()));
 }
 
-TEST(BatchUploadControllerTest, MultipleProvidersWithAndWithoutLocalData) {
-  // Provider without data.
-  std::unique_ptr<BatchUploadDataProviderFake> provider1 =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::PASSWORDS);
-  provider1->SetHasLocalData(false);
+TEST(BatchUploadControllerTest,
+     MultipleDataDescriptionsWithAndWithoutLocalData) {
+  // Description without data.
+  syncer::LocalDataDescription local_data1 = GetLocalDataDescription(
+      syncer::DataType::PASSWORDS, /*with_local_data=*/false);
 
-  // Provider with data.
-  std::unique_ptr<BatchUploadDataProviderFake> provider2 =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::CONTACT_INFO);
-  provider2->SetHasLocalData(true);
+  // Description with data.
+  syncer::LocalDataDescription local_data2 = GetLocalDataDescription(
+      syncer::DataType::CONTACT_INFO, /*with_local_data=*/true);
 
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
   MockBatchUploadDialogResultCallback mock_callback;
 
-  // One local_description with data is enough to allow showing the dialog.
+  // One description with data is enough to allow showing the dialog.
   std::vector<syncer::LocalDataDescription> expected_descriptions_list;
-  // Only local_description from provider2 has data and should be part of the
+  // Only `local_data2` has data and should be part of the
   // input.
-  expected_descriptions_list.push_back(provider2->GetLocalData());
+  expected_descriptions_list.push_back(local_data2);
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .WillOnce(
           [&expected_descriptions_list](
@@ -174,40 +144,33 @@ TEST(BatchUploadControllerTest, MultipleProvidersWithAndWithoutLocalData) {
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
-  input.insert_or_assign(provider1->GetDataType(), provider1->GetLocalData());
-  input.insert_or_assign(provider2->GetDataType(), provider2->GetLocalData());
+  input.insert_or_assign(local_data1.type, local_data1);
+  input.insert_or_assign(local_data2.type, local_data2);
   EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
                                     mock_callback.Get()));
 }
 
-TEST(BatchUploadControllerTest, MultipleProvidersAllWithLocalData) {
-  // Provider with data.
-  std::unique_ptr<BatchUploadDataProviderFake> provider1 =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::PASSWORDS);
-  provider1->SetHasLocalData(true);
+TEST(BatchUploadControllerTest, MultipleDataDescriptionsAllWithLocalData) {
+  // Description with data.
+  syncer::LocalDataDescription local_data1 = GetLocalDataDescription(
+      syncer::DataType::CONTACT_INFO, /*with_local_data=*/true);
 
-  // Provider with data.
-  std::unique_ptr<BatchUploadDataProviderFake> provider2 =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::CONTACT_INFO);
-  provider2->SetHasLocalData(true);
-
-  syncer::LocalDataDescription local_description1 = provider1->GetLocalData();
-  syncer::LocalDataDescription local_description2 = provider2->GetLocalData();
+  // Description with data.
+  syncer::LocalDataDescription local_data2 = GetLocalDataDescription(
+      syncer::DataType::PASSWORDS, /*with_local_data=*/true);
 
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
   MockBatchUploadDialogResultCallback mock_callback;
 
-  // One provider with data is enough to allow showing the dialog.
+  // One description with data is enough to allow showing the dialog.
   std::vector<syncer::LocalDataDescription> expected_descriptions_list;
-
-  // Both providers have data and should be part of the input.
-  // Provider1 has a higher priority than provider2, so it should be fist.
-  EXPECT_LT(provider1->GetDataType(), provider2->GetDataType());
-  expected_descriptions_list.push_back(provider1->GetLocalData());
-  expected_descriptions_list.push_back(provider2->GetLocalData());
+  // Both descriptions have data and should be part of the input.
+  // `local_data2`'s type has a higher priority than `local_data1`'s type, so it
+  // should be first.
+  EXPECT_LT(local_data2.type, local_data1.type);
+  expected_descriptions_list.push_back(local_data2);
+  expected_descriptions_list.push_back(local_data1);
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .WillOnce(
           [&expected_descriptions_list](
@@ -221,32 +184,27 @@ TEST(BatchUploadControllerTest, MultipleProvidersAllWithLocalData) {
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
-  input.insert_or_assign(provider1->GetDataType(), provider1->GetLocalData());
-  input.insert_or_assign(provider2->GetDataType(), provider2->GetLocalData());
+  input.insert_or_assign(local_data1.type, local_data1);
+  input.insert_or_assign(local_data2.type, local_data2);
   EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
                                     mock_callback.Get()));
 }
 
-TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
-  // Provider with data.
-  std::unique_ptr<BatchUploadDataProviderFake> provider =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::PASSWORDS);
-  provider->SetHasLocalData(true);
-
+TEST(BatchUploadControllerTest, WithItemsToMoveDoneCallback) {
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
   MockBatchUploadDialogResultCallback mock_callback;
 
+  syncer::LocalDataDescription local_data = GetLocalDataDescription(
+      syncer::DataType::PASSWORDS, /*with_local_data=*/true);
   // Extract the first item id.
-  syncer::LocalDataDescription local_description = provider->GetLocalData();
   syncer::LocalDataItemModel::DataId first_item_id =
-      local_description.local_data_models[0].id;
+      local_data.local_data_models[0].id;
 
   // Close the dialog directly when shown, with returned items to move.
   std::vector<syncer::LocalDataDescription> expected_descriptions_list;
-  // Provider has data and should be part of the input.
-  expected_descriptions_list.push_back(std::move(local_description));
+  // `local_data` has data and should be part of the input.
+  expected_descriptions_list.push_back(local_data);
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .WillOnce(
           [&first_item_id](
@@ -261,7 +219,7 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
             std::map<syncer::DataType,
                      std::vector<syncer::LocalDataItemModel::DataId>>
                 selected_items;
-            // Insert the first item of the first available local_description.
+            // Insert the first item of the first available local_data.
             std::vector<syncer::LocalDataItemModel::DataId> item_ids;
             item_ids.emplace_back(first_item_id);
             selected_items.insert_or_assign(local_data_description_list[0].type,
@@ -272,23 +230,21 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
   // Data was requested to be moved. Map contains the first item id.
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
       expected_result_map{
-          {provider->GetDataType(),
-           std::vector<syncer::LocalDataItemModel::DataId>{first_item_id}}};
+          {local_data.type,
+           {syncer::LocalDataItemModel::DataId{first_item_id}}}};
   EXPECT_CALL(mock_callback, Run(expected_result_map)).Times(1);
 
-  // One provider with data is enough to allow showing the dialog.
+  // One description with data is enough to allow showing the dialog.
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
-  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  input.insert_or_assign(local_data.type, local_data);
   EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
                                     mock_callback.Get()));
 }
 
-TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
-  // Provider without data.
-  std::unique_ptr<BatchUploadDataProviderFake> provider =
-      std::make_unique<BatchUploadDataProviderFake>(
-          syncer::DataType::PASSWORDS);
-  provider->SetHasLocalData(true);
+TEST(BatchUploadControllerTest, WithoutItemsToMoveDoneCallback) {
+  // Description with data.
+  syncer::LocalDataDescription local_data = GetLocalDataDescription(
+      syncer::DataType::PASSWORDS, /*with_local_data=*/true);
 
   BatchUploadController controller;
   BatchUploadDelegateMock mock;
@@ -306,9 +262,9 @@ TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
 
   // No move request.
   EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
-  // One provider with data is enough to allow showing the dialog.
+  // One description with data is enough to allow showing the dialog.
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
-  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  input.insert_or_assign(local_data.type, local_data);
   EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
                                     mock_callback.Get()));
 }

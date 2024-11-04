@@ -6,7 +6,6 @@
 
 #include "base/i18n/number_formatting.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -17,6 +16,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/ui_base_switches.h"
@@ -28,52 +28,28 @@ namespace {
 const gfx::Image kSignedInImage = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
 const char kSignedInImageUrl[] = "SIGNED_IN_IMAGE_URL";
 
-// Testing implementation of `BatchUploadDataProvider`.
-// TODO(b/362733052): Separate into its own file to be used by
-// other tests with more useful functions for testing.
-class BatchUploadDataProviderFake : public BatchUploadDataProvider {
- public:
-  explicit BatchUploadDataProviderFake(syncer::DataType type, int item_count)
-      : BatchUploadDataProvider(type),
-        item_count_(item_count),
-        section_name_id_(type == syncer::DataType::PASSWORDS
-                             ? IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS
-                             : IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES),
-        data_name(type == syncer::DataType::PASSWORDS ? "password"
-                                                      : "address") {}
+syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
+                                              int item_count) {
+  syncer::LocalDataDescription data_descriptions;
+  data_descriptions.type = type;
 
-  bool HasLocalData() const override { return item_count_ > 0; }
-
-  syncer::LocalDataDescription GetLocalData() const override {
-    syncer::LocalDataDescription data_descriptions;
-    data_descriptions.type = GetDataType();
-    // Add arbitrary items.
-    for (int i = 0; i < item_count_; ++i) {
-      syncer::LocalDataItemModel item;
-      item.id = syncer::LocalDataItemModel::DataId(base::ToString(i));
-      item.icon_url = GetDataType() == syncer::DataType::PASSWORDS
-                          ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
-                          : GURL();
-      item.title =
-          data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
-      item.subtitle =
-          data_name + "_subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
-      data_descriptions.local_data_models.push_back(std::move(item));
-    }
-    return data_descriptions;
+  const std::string data_name =
+      type == syncer::DataType::PASSWORDS ? "password" : "address";
+  // Add arbitrary items.
+  for (int i = 0; i < item_count; ++i) {
+    syncer::LocalDataItemModel item;
+    item.id = syncer::LocalDataItemModel::DataId(base::ToString(i));
+    item.icon_url = type == syncer::DataType::PASSWORDS
+                        ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
+                        : GURL();
+    item.title =
+        data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
+    item.subtitle =
+        data_name + "_subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
+    data_descriptions.local_data_models.push_back(std::move(item));
   }
-
-  bool MoveToAccountStorage(
-      const std::vector<syncer::LocalDataItemModel::DataId>& item_ids_to_move)
-      override {
-    return true;
-  }
-
- private:
-  int item_count_;
-  int section_name_id_;
-  const std::string data_name;
-};
+  return data_descriptions;
+}
 
 struct TestParam {
   std::string test_suffix = "";
@@ -142,8 +118,8 @@ class BatchUploadDialogViewPixelTest
       public testing::WithParamInterface<TestParam> {
  public:
   BatchUploadDialogViewPixelTest() {
-    for (const auto& input_section : GetParam().section_item_count_type) {
-      fake_providers_.emplace_back(input_section.second, input_section.first);
+    for (const auto& [count, type] : GetParam().section_item_count_type) {
+      fake_descriptions_.emplace_back(GetFakeLocalData(type, count));
     }
 
     // The Batch Upload view seems not to be resized properly on changes which
@@ -155,16 +131,6 @@ class BatchUploadDialogViewPixelTest
     // `TestBrowserDialog::should_verify_dialog_bounds_` definition and default
     // value.
     set_should_verify_dialog_bounds(false);
-  }
-
-  // Gets the list of data descriptions from the providers.
-  std::vector<syncer::LocalDataDescription> GetDataDescriptions() {
-    std::vector<syncer::LocalDataDescription> ret;
-    std::ranges::transform(fake_providers_, std::back_inserter(ret),
-                           [](const BatchUploadDataProviderFake& provider) {
-                             return provider.GetLocalData();
-                           });
-    return ret;
   }
 
   // DialogBrowserTest:
@@ -203,7 +169,7 @@ class BatchUploadDialogViewPixelTest
         views::test::AnyWidgetTestPasskey{}, "BatchUploadDialogView");
 
     BatchUploadDialogView::CreateBatchUploadDialogView(
-        *browser(), GetDataDescriptions(),
+        *browser(), fake_descriptions_,
         /*complete_callback*/ base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();
@@ -211,7 +177,7 @@ class BatchUploadDialogViewPixelTest
   }
 
  private:
-  std::vector<BatchUploadDataProviderFake> fake_providers_;
+  std::vector<syncer::LocalDataDescription> fake_descriptions_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kBatchUploadDesktop};

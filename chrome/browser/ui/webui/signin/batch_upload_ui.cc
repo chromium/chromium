@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 
-#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"

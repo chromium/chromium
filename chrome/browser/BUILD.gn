@@ -7442,8 +7442,6 @@ static_library("browser") {
       "password_manager/multi_profile_credentials_filter.h",
       "profiles/batch_upload/batch_upload_controller.cc",
       "profiles/batch_upload/batch_upload_controller.h",
-      "profiles/batch_upload/batch_upload_data_provider.cc",
-      "profiles/batch_upload/batch_upload_data_provider.h",
       "profiles/batch_upload/batch_upload_delegate.h",
       "profiles/batch_upload/batch_upload_service.cc",
       "profiles/batch_upload/batch_upload_service.h",
