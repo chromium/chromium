@@ -299,7 +299,7 @@ suite('history-clusters', () => {
     assertEquals(123, clustersElement.$.clusters.scrollOffset);
   });
 
-  test('loads more results for tall monitors', async () => {
+  test('loads and renders more results for tall monitors', async () => {
     const clustersElement = new HistoryClustersElement();
     clustersElement.scrollTarget = document.body;
     document.body.appendChild(clustersElement);
@@ -334,5 +334,18 @@ suite('history-clusters', () => {
     assertEquals(
         1, handler.getCallCount('loadMoreClusters'),
         'should load more results for tall scroll target');
+    await microtasksFinished();
+    // Initial 2 results are rendered.
+    assertEquals(
+        2,
+        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+
+    // More clusters requested. Simulate a response.
+    callbackRouterRemote.onClustersQueryResult(Object.assign(
+        getTestResult(), {canLoadMore: false, isContinuation: true}));
+    await microtasksFinished();
+    assertEquals(
+        4,
+        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
   });
 });
