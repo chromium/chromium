@@ -24,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -264,9 +263,10 @@ TabSearchPageHandler::~TabSearchPageHandler() {
 }
 
 void TabSearchPageHandler::CloseTab(int32_t tab_id) {
-  std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
-  if (!optional_details)
+  std::optional<TabDetails> details = GetTabDetails(tab_id);
+  if (!details) {
     return;
+  }
 
   ++num_tabs_closed_;
 
@@ -276,10 +276,13 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
   // that no further actions are performed following the call to
   // CloseWebContentsAt(). See (https://crbug.com/1175507).
-  auto* tab_strip_model = optional_details->tab_strip_model.get();
-  const int tab_index = optional_details->index;
+  TabStripModel* const tab_strip_model = details->tab->owning_model();
+  CHECK(tab_strip_model);
+  const int index = details->GetIndex();
+  // Don't dangle a tabs::TabModel* in `details`.
+  details.reset();
   tab_strip_model->CloseWebContentsAt(
-      tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+      index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   // Do not add code past this point.
 }
 
@@ -293,16 +296,14 @@ void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
   std::vector<tabs::TabModel*> tab_models;
 
   // Add tabs that are present in the current browser.
-  for (auto tab_id : tab_ids) {
-    std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
-    if (!optional_details || optional_details->tab_strip_model.get() !=
-                                 tab_declutter_controller_->tab_strip_model()) {
+  for (const int32_t tab_id : tab_ids) {
+    const std::optional<TabDetails> details = GetTabDetails(tab_id);
+    if (!details || details->tab->owning_model() !=
+                        tab_declutter_controller_->tab_strip_model()) {
       continue;
     }
 
-    const int tab_index = optional_details->index;
-    tab_models.push_back(
-        tab_declutter_controller_->tab_strip_model()->GetTabAtIndex(tab_index));
+    tab_models.push_back(details->tab);
   }
   tab_declutter_controller_->DeclutterTabs(tab_models);
 
@@ -331,16 +332,15 @@ void TabSearchPageHandler::AcceptTabOrganization(
     return;
   }
 
-  std::vector<int> tabs_tab_ids;
+  std::unordered_set<int> tabs_tab_ids;
   for (tab_search::mojom::TabPtr& tab : tabs) {
-    tabs_tab_ids.emplace_back(tab->tab_id);
+    tabs_tab_ids.emplace(tab->tab_id);
   }
 
   std::vector<TabData::TabID> tab_ids_to_remove;
   for (const auto& tab_data : organization->tab_datas()) {
     if (!tab_data->tab()->contents() ||
-        !base::Contains(tabs_tab_ids, extensions::ExtensionTabUtil::GetTabId(
-                                          tab_data->tab()->contents()))) {
+        !base::Contains(tabs_tab_ids, tab_data->tab_id())) {
       tab_ids_to_remove.emplace_back(tab_data->tab_id());
     }
   }
@@ -386,24 +386,16 @@ void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
     return;
   }
 
-  std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
+  std::optional<TabDetails> details = GetTabDetails(tab_id);
 
-  if (!optional_details || optional_details->tab_strip_model.get() !=
-                               tab_declutter_controller_->tab_strip_model()) {
+  if (!details || details->tab->owning_model() !=
+                      tab_declutter_controller_->tab_strip_model()) {
     return;
   }
 
-  tab_declutter_controller_->ExcludeFromStaleTabs(
-      tab_declutter_controller_->tab_strip_model()->GetTabAtIndex(
-          optional_details->index));
+  tab_declutter_controller_->ExcludeFromStaleTabs(details->tab);
 
-  stale_tabs_.erase(
-      std::remove_if(stale_tabs_.begin(), stale_tabs_.end(),
-                     [tab_id](const tabs::TabModel* tab_model) {
-                       return extensions::ExtensionTabUtil::GetTabId(
-                                  tab_model->contents()) == tab_id;
-                     }),
-      stale_tabs_.end());
+  std::erase(stale_tabs_, details->tab);
 
   page_->StaleTabsChanged(GetMojoStaleTabs());
 }
@@ -566,17 +558,20 @@ void TabSearchPageHandler::GetTabOrganizationSession(
 
 std::optional<TabSearchPageHandler::TabDetails>
 TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabModel* const tab = handle.Get();
+  if (!tab) {
+    return std::nullopt;
+  }
+
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser)) {
       continue;
     }
 
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int index = 0; index < tab_strip_model->count(); ++index) {
-      content::WebContents* contents = tab_strip_model->GetWebContentsAt(index);
-      if (extensions::ExtensionTabUtil::GetTabId(contents) == tab_id) {
-        return TabDetails(browser, tab_strip_model, index);
-      }
+    TabStripModel* const tab_strip_model = browser->tab_strip_model();
+    if (tab_strip_model == tab->owning_model()) {
+      return TabDetails(browser, tab);
     }
   }
 
@@ -596,16 +591,16 @@ void TabSearchPageHandler::GetTabOrganizationModelStrategy(
 
 void TabSearchPageHandler::SwitchToTab(
     tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) {
-  std::optional<TabDetails> optional_details =
+  const std::optional<TabDetails> details =
       GetTabDetails(switch_to_tab_info->tab_id);
-  if (!optional_details)
+  if (!details) {
     return;
+  }
 
   called_switch_to_tab_ = true;
 
-  const TabDetails& details = optional_details.value();
-  details.tab_strip_model->ActivateTabAt(details.index);
-  details.browser->window()->Activate();
+  details->tab->owning_model()->ActivateTabAt(details->GetIndex());
+  details->browser->window()->Activate();
   metrics_reporter_->Measure(
       "SwitchToTab",
       base::BindOnce(
@@ -677,13 +672,7 @@ void TabSearchPageHandler::RemoveTabFromOrganization(
     return;
   }
 
-  for (const auto& tab_data : organization->tab_datas()) {
-    if (extensions::ExtensionTabUtil::GetTabId(tab_data->tab()->contents()) ==
-        tab->tab_id) {
-      organization->RemoveTabData(tab_data->tab_id());
-      break;
-    }
-  }
+  organization->RemoveTabData(tab->tab_id);
 }
 
 void TabSearchPageHandler::RejectSession(int32_t session_id) {
@@ -1176,18 +1165,19 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     int index,
     std::string custom_last_active_text) const {
   auto tab_data = tab_search::mojom::Tab::New();
+  const tabs::TabModel* const tab = tab_strip_model->GetTabAtIndex(index);
 
-  tab_data->active = tab_strip_model->active_index() == index;
-  tab_data->tab_id = extensions::ExtensionTabUtil::GetTabId(contents);
+  tab_data->active = tab->IsInForeground();
+  tab_data->tab_id = tab->GetHandle().raw_value();
   tab_data->index = index;
-  const std::optional<tab_groups::TabGroupId> group_id =
-      tab_strip_model->GetTabGroupForTab(index);
+  const std::optional<tab_groups::TabGroupId> group_id = tab->group();
   if (group_id.has_value()) {
     tab_data->group_id = group_id.value().token();
   }
+  tab_data->pinned = tab->pinned();
+
   TabRendererData tab_renderer_data =
       TabRendererData::FromTabInModel(tab_strip_model, index);
-  tab_data->pinned = tab_renderer_data.pinned;
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
   const auto& last_committed_url = tab_renderer_data.last_committed_url;
   // A visible URL is used when the a new tab is still loading.
@@ -1256,6 +1246,7 @@ TabSearchPageHandler::GetRecentlyClosedTab(sessions::tab_restore::Tab* tab,
   DCHECK(tab->navigations.size() > 0);
   sessions::SerializedNavigationEntry& entry =
       tab->navigations[tab->current_navigation_index];
+  // N.B. Recently closed tabs use session ids, not TabHandle ids.
   recently_closed_tab->tab_id = tab->id.id();
   recently_closed_tab->url = entry.virtual_url();
   recently_closed_tab->title = entry.title().empty()
@@ -1288,13 +1279,13 @@ void TabSearchPageHandler::OnTabStripModelChanged(
   if (change.type() == TabStripModelChange::kRemoved) {
     std::vector<int> tab_ids;
     std::set<SessionID> tab_restore_ids;
-    for (auto& content_with_index : change.GetRemove()->contents) {
-      tab_ids.push_back(
-          extensions::ExtensionTabUtil::GetTabId(content_with_index.contents));
+    for (const auto& removed_tab : change.GetRemove()->contents) {
+      tabs::TabModel* tab = removed_tab.tab;
+      tab_ids.push_back(tab->GetHandle().raw_value());
 
-      if (content_with_index.session_id.has_value() &&
-          content_with_index.session_id.value().is_valid()) {
-        tab_restore_ids.insert(content_with_index.session_id.value());
+      if (removed_tab.session_id.has_value() &&
+          removed_tab.session_id.value().is_valid()) {
+        tab_restore_ids.insert(removed_tab.session_id.value());
       }
     }
 
@@ -1435,9 +1426,9 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
   mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
   mojo_session->active_tab_id =
-      session->base_session_tab() ? extensions::ExtensionTabUtil::GetTabId(
-                                        session->base_session_tab()->contents())
-                                  : -1;
+      session->base_session_tab()
+          ? session->base_session_tab()->GetHandle().raw_value()
+          : tabs::TabHandle::NullValue;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
   TabOrganizationRequest::State state = session->request()->state();

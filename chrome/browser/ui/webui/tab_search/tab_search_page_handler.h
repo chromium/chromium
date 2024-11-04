@@ -183,12 +183,13 @@ class TabSearchPageHandler
 
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {
-    TabDetails(Browser* browser, TabStripModel* tab_strip_model, int index)
-        : browser(browser), tab_strip_model(tab_strip_model), index(index) {}
+    TabDetails(Browser* browser, tabs::TabModel* tab)
+        : browser(browser), tab(tab) {}
+
+    int GetIndex() const { return tab->owning_model()->GetIndexOfTab(tab); }
 
     raw_ptr<Browser> browser;
-    raw_ptr<TabStripModel> tab_strip_model;
-    int index;
+    raw_ptr<tabs::TabModel> tab;
   };
 
   // Show the UI if all tabs are ready to be shown.

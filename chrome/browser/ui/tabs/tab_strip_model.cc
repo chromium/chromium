@@ -444,25 +444,31 @@ void TabStripModel::SendDetachWebContentsNotifications(
                      dwc2->index_before_any_removals;
             });
 
-  TabStripModelChange::Remove remove;
-  for (auto& dwc : notifications->detached_web_contents) {
-    remove.contents.emplace_back(dwc->contents, dwc->index_before_any_removals,
-                                 dwc->remove_reason, dwc->id);
-  }
-  TabStripModelChange change(std::move(remove));
+  // `change` must be deleted before the unique_ptr<Tab>s in `notifications` are
+  // reset, or their raw_ptr<Tab>s will dangle.
+  {
+    TabStripModelChange::Remove remove;
+    for (auto& dwc : notifications->detached_web_contents) {
+      remove.contents.emplace_back(dwc->contents,
+                                   dwc->index_before_any_removals,
+                                   dwc->remove_reason, dwc->id, dwc->tab.get());
+    }
 
-  TabStripSelectionChange selection;
-  selection.old_contents = notifications->initially_active_web_contents;
-  selection.new_contents = GetActiveWebContents();
-  selection.old_model = notifications->selection_model;
-  selection.new_model = selection_model_;
-  selection.reason = TabStripModelObserver::CHANGE_REASON_NONE;
-  selection.selected_tabs_were_removed = base::ranges::any_of(
-      notifications->detached_web_contents, [&notifications](auto& dwc) {
-        return notifications->selection_model.IsSelected(
-            dwc->index_before_any_removals);
-      });
-  OnChange(change, selection);
+    TabStripModelChange change(std::move(remove));
+
+    TabStripSelectionChange selection;
+    selection.old_contents = notifications->initially_active_web_contents;
+    selection.new_contents = GetActiveWebContents();
+    selection.old_model = notifications->selection_model;
+    selection.new_model = selection_model_;
+    selection.reason = TabStripModelObserver::CHANGE_REASON_NONE;
+    selection.selected_tabs_were_removed = base::ranges::any_of(
+        notifications->detached_web_contents, [&notifications](auto& dwc) {
+          return notifications->selection_model.IsSelected(
+              dwc->index_before_any_removals);
+        });
+    OnChange(change, selection);
+  }
 
   for (auto& dwc : notifications->detached_web_contents) {
     if (dwc->remove_reason == TabStripModelChange::RemoveReason::kDeleted) {

@@ -242,9 +242,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 
   // Add a new tab and detach the FedCM tab without closing it.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+  std::unique_ptr<tabs::TabModel> tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(0);
 
   ASSERT_FALSE(GetDialog());
+
+  // Add the the FedCM tab back in to the tabstrip to complete the transfer so
+  // we can tear down cleanly.
+  browser()->tab_strip_model()->AppendTab(std::move(tab), true);
 }
 
 // Test that the dialog is disabled when occluded by a PiP window.

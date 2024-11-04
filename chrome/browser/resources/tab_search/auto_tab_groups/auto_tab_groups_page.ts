@@ -335,7 +335,8 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     }
 
     const id = this.session_.activeTabId;
-    if (id === -1) {
+    // Id 0 is a sentinel value that indicates 'no tab'.
+    if (id === 0) {
       return false;
     }
     let foundTab = false;

@@ -75,16 +75,18 @@ class TabStripModelChange {
     RemovedTab(content::WebContents* contents,
                int index,
                RemoveReason remove_reason,
-               std::optional<SessionID> session_id);
+               std::optional<SessionID> session_id,
+               tabs::TabModel* tab);
     virtual ~RemovedTab();
     RemovedTab(RemovedTab&& other);
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    raw_ptr<content::WebContents, DanglingUntriaged> contents;
+    raw_ptr<content::WebContents> contents;
     int index;
     RemoveReason remove_reason;
     std::optional<SessionID> session_id;
+    raw_ptr<tabs::TabModel> tab;
   };
 
   struct ContentsWithIndex {
