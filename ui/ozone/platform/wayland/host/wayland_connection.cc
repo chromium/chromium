@@ -82,7 +82,7 @@ namespace {
 // advertised by the server.
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
-constexpr uint32_t kMaxXdgShellVersion = 5;
+constexpr uint32_t kMaxXdgShellVersion = 6;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerV1Version = 1;

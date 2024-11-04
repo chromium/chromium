@@ -318,7 +318,11 @@ void XDGToplevelWrapperImpl::OnToplevelConfigure(void* data,
   window_states.is_activated =
       CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
 
-#if BUILDFLAG(IS_LINUX)
+  if (xdg_toplevel_get_version(toplevel) >=
+      XDG_TOPLEVEL_STATE_SUSPENDED_SINCE_VERSION) {
+    window_states.is_suspended =
+        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_SUSPENDED);
+  }
   if (xdg_toplevel_get_version(toplevel) >=
       XDG_TOPLEVEL_STATE_TILED_LEFT_SINCE_VERSION) {
     // All four tiled states have the same since version, so it is enough to
@@ -330,7 +334,6 @@ void XDGToplevelWrapperImpl::OnToplevelConfigure(void* data,
         .bottom =
             CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_TILED_BOTTOM)};
   }
-#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
   self->wayland_window_->HandleToplevelConfigure(width, height, window_states);
 }
