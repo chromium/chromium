@@ -76,10 +76,6 @@
 }
 
 - (SceneState*)foregroundActiveScene {
-  if (_initStage < ProfileInitStage::kUIReady) {
-    return nil;
-  }
-
   for (SceneState* sceneState in _connectedSceneStates) {
     if (sceneState.activationLevel == SceneActivationLevelForegroundActive) {
       return sceneState;
@@ -90,18 +86,10 @@
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  if (_initStage < ProfileInitStage::kUIReady) {
-    return nil;
-  }
-
   return [_connectedSceneStates copy];
 }
 
 - (NSArray<SceneState*>*)foregroundScenes {
-  if (_initStage < ProfileInitStage::kUIReady) {
-    return nil;
-  }
-
   NSMutableArray<SceneState*>* foregroundScenes = [[NSMutableArray alloc] init];
   for (SceneState* sceneState in _connectedSceneStates) {
     if (sceneState.activationLevel >= SceneActivationLevelForegroundInactive) {
@@ -139,15 +127,6 @@
   [_observers profileState:self
       didTransitionToInitStage:initStage
                  fromInitStage:fromStage];
-
-  if (initStage == ProfileInitStage::kUIReady) {
-    for (SceneState* sceneState in _connectedSceneStates) {
-      [_observers profileState:self sceneConnected:sceneState];
-      if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
-        [_observers profileState:self sceneDidBecomeActive:sceneState];
-      }
-    }
-  }
 }
 
 - (id<StartupInformation>)startupInformation {
@@ -195,9 +174,7 @@
 - (void)sceneStateConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
   [_connectedSceneStates addObject:sceneState];
-  if (_initStage >= ProfileInitStage::kUIReady) {
-    [_observers profileState:self sceneConnected:sceneState];
-  }
+  [_observers profileState:self sceneConnected:sceneState];
 }
 
 - (void)queueTransitionToNextInitStage {
@@ -231,9 +208,7 @@
       break;
 
     case SceneActivationLevelForegroundActive:
-      if (_initStage >= ProfileInitStage::kUIReady) {
-        [_observers profileState:self sceneDidBecomeActive:sceneState];
-      }
+      [_observers profileState:self sceneDidBecomeActive:sceneState];
       break;
   }
 }

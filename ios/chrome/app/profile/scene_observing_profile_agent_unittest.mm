@@ -26,11 +26,10 @@
 
 using SceneObservingProfileAgentTest = PlatformTest;
 
-// Tests that if a scene is connected while the ProfileState is ready then
-// the agent is notified about the scene.
+// Tests that if a scene is connected then the agent is notified about the
+// scene.
 TEST_F(SceneObservingProfileAgentTest, sceneConnected) {
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
-  SetProfileStateInitStage(profile_state, ProfileInitStage::kUIReady);
 
   SampleSceneObservingProfileAgent* agent =
       [[SampleSceneObservingProfileAgent alloc] init];
@@ -42,21 +41,4 @@ TEST_F(SceneObservingProfileAgentTest, sceneConnected) {
 
   scene_state.activationLevel = SceneActivationLevelBackground;
   EXPECT_TRUE(agent.notifiedSceneTransitioned);
-}
-
-// Tests that if a scene is connected while the ProfileState is not ready
-// then the agent is not notified about the scene.
-TEST_F(SceneObservingProfileAgentTest, sceneConnected_NotReady) {
-  ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
-
-  SampleSceneObservingProfileAgent* agent =
-      [[SampleSceneObservingProfileAgent alloc] init];
-  [profile_state addAgent:agent];
-  ASSERT_EQ(agent.profileState, profile_state);
-
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
-  [profile_state sceneStateConnected:scene_state];
-
-  scene_state.activationLevel = SceneActivationLevelBackground;
-  EXPECT_FALSE(agent.notifiedSceneTransitioned);
 }
