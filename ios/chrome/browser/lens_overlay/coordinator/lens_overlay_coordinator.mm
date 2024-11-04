@@ -442,7 +442,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   if (_associatedTabHelper) {
     _associatedTabHelper->SetLensOverlayShown(false);
     _associatedTabHelper->UpdateSnapshot();
-    _associatedTabHelper = nil;
   }
 
   if (!animated) {
@@ -947,6 +946,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   _mediator = nil;
   _consentViewController = nil;
   _isExiting = NO;
+  _associatedTabHelper = nil;
   _scopedForceOrientation.reset();
 }
 
