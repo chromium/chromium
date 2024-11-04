@@ -371,6 +371,7 @@ source_set("app_internal") {
     ":app",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
+    ":change_profile_commands",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
     ":launch_screen_ui",
@@ -541,6 +542,10 @@ source_set("app_internal") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/shared/coordinator/scene",
   ]
+}
+
+source_set("change_profile_commands") {
+  sources = [ "change_profile_commands.h" ]
 }
 
 source_set("blocking_scene_commands") {
