@@ -33,10 +33,11 @@ void TestPredicateOrRegisterOnNextIdleCallback(
 }
 
 bool RunUntil(base::FunctionRef<bool(void)> condition) {
-  CHECK(!subtle::ScopedTimeClockOverrides::overrides_active())
-      << "Mocked timesource detected, which would cause `RunUntil` to hang "
-         "forever on failure.";
-  CHECK(test::ScopedRunLoopTimeout::ExistsForCurrentThread())
+  // We expect a RunLoop timeout except under MOCK_TIME where TaskEnvironment
+  // disables TaskEnvironment::mock_time_domain_ after fast-forwarding into the
+  // timeout.
+  CHECK(test::ScopedRunLoopTimeout::ExistsForCurrentThread() ||
+        subtle::ScopedTimeClockOverrides::overrides_active())
       << "No RunLoop timeout set, meaning `RunUntil` will hang forever on "
          "failure.";
 

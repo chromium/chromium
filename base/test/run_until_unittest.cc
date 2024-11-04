@@ -6,9 +6,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/synchronization/atomic_flag.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,14 +112,86 @@ TEST_F(RunUntilTest, ShouldReturnFalseIfTimeoutHappens) {
   test::ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   // `ScopedRunLoopTimeout` will automatically fail the test when a timeout
-  // happens, so we use EXPECT_FATAL_FAILURE to handle this failure.
-  // EXPECT_FATAL_FAILURE only works on static objects.
+  // happens, so we use EXPECT_NONFATAL_FAILURE to handle this failure.
+  // EXPECT_NONFATAL_FAILURE only works on static objects.
   static bool success;
 
   EXPECT_NONFATAL_FAILURE(
       { success = RunUntil([] { return false; }); }, "timed out");
 
   EXPECT_FALSE(success);
+}
+
+// Tests that RunUntil supports MOCK_TIME when used with a delayed task posted
+// directly to the main thread. This verifies that time advances correctly and
+// the condition is satisfied after the expected delay.
+TEST(RunUntilTestWithThreadPool, SupportsMockTime) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  bool done;
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce([](bool* flag) { *flag = true; }, &done),
+      base::Days(1));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return done; }));
+
+  EXPECT_EQ(base::TimeTicks::Now() - start_time, base::Days(1));
+}
+
+// Documents that this API can be flaky if the condition is global (time, global
+// var, etc.) and doesn't result in waking the main thread.
+TEST(RunUntilTestWithThreadPool, TimesOutWhenMainThreadSleepsForever) {
+  TaskEnvironment task_environment;
+
+  base::AtomicFlag done;
+  const auto start_time = TimeTicks::Now();
+
+  ThreadPool::PostDelayedTask(
+      FROM_HERE, BindLambdaForTesting([&]() { done.Set(); }), Milliseconds(1));
+
+  // Program a timeout wakeup on the main thread, it doesn't need to do
+  // anything, being awake will cause the RunUntil predicate to be checked once
+  // idle again.
+  PostDelayedTask(base::DoNothing(), TestTimeouts::tiny_timeout());
+
+  EXPECT_TRUE(RunUntil([&]() { return done.IsSet(); }));
+
+  // Reached timeout on main thread despite condition being satisfied on
+  // ThreadPool earlier... Ideally we could flip this expectation to EXPECT_LT
+  // but for now it documents the reality.
+  auto wait_time = TimeTicks::Now() - start_time;
+
+  // TODO(crbug.com/368805258): The main thread on iOS seems to wakeup without
+  // waiting for the delayed task to fire, causing the condition to be checked
+  // early, unexpectedly.
+#if !BUILDFLAG(IS_IOS)
+  EXPECT_GE(wait_time, TestTimeouts::tiny_timeout());
+#else
+  // Just check if RunUntil did it's job.
+  EXPECT_GE(wait_time, Milliseconds(1));
+#endif
+  EXPECT_TRUE(done.IsSet());
+}
+
+// Same as "TimesOutWhenMainThreadSleepsForever" but under MOCK_TIME.
+// We would similarly like this to exit RunUntil after the condition is
+// satisfied after 1ms but this documents that this is not currently WAI.
+TEST(RunUntilTestWithMockTime, ConditionOnlyObservedIfWorkIsDone) {
+  TaskEnvironment task_environment{TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::AtomicFlag done;
+  const auto start_time = TimeTicks::Now();
+
+  ThreadPool::PostDelayedTask(FROM_HERE,
+                              BindLambdaForTesting([&done]() { done.Set(); }),
+                              Milliseconds(1));
+  PostDelayedTask(base::DoNothing(), TestTimeouts::tiny_timeout());
+  EXPECT_TRUE(RunUntil([&]() { return done.IsSet(); }));
+  // Should be exactly EQ under MOCK_TIME.
+  EXPECT_EQ(TimeTicks::Now() - start_time, TestTimeouts::tiny_timeout());
 }
 
 }  // namespace base::test
