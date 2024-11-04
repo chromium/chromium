@@ -34,6 +34,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -335,6 +336,50 @@ public class UrlBarUnitTest {
         // No subsequent events.
         mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
         verifyNoMoreInteractions(mUrlBarDelegate);
+    }
+
+    /**
+     * Mouse and touchpad requires special handling for clicks. If we don't gain focus, we
+     * explicitly fire focus for these input types.
+     */
+    @Test
+    public void onTouchEvent_ensureTouchpadFocusFired() {
+        // 1. Fire a touchpad event
+        MotionEvent evt = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        evt.setSource(InputDevice.SOURCE_TOUCHPAD);
+        mUrlBar.onTouchEvent(evt);
+
+        // 2. Fire a mouse event
+        evt.setSource(InputDevice.SOURCE_MOUSE);
+        mUrlBar.onTouchEvent(evt);
+
+        // // 3. Fire a touchscreen event
+        evt.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        mUrlBar.onTouchEvent(evt);
+
+        // Expect only two explicit calls to request focus (mouse and touchpad only)
+        verify(mUrlBar, times(2)).requestFocus();
+    }
+
+    @Test
+    public void onTouchEvent_ensureTouchpadFocusFiredSkipped() {
+        doReturn(true).when(mUrlBar).isFocused();
+
+        // 1. Fire a touchpad event
+        MotionEvent evt = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        evt.setSource(InputDevice.SOURCE_TOUCHPAD);
+        mUrlBar.onTouchEvent(evt);
+
+        // 2. Fire a mouse event
+        evt.setSource(InputDevice.SOURCE_MOUSE);
+        mUrlBar.onTouchEvent(evt);
+
+        // // 3. Fire a touchscreen event
+        evt.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        mUrlBar.onTouchEvent(evt);
+
+        // Since we already have focus, expect zero explicit requests to gain focus.
+        verify(mUrlBar, times(0)).requestFocus();
     }
 
     @Test

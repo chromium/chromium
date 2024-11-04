@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -446,7 +447,38 @@ public class UrlBar extends AutocompleteEditText {
         if (event.getActionMasked() == MotionEvent.ACTION_UP) {
             performClick();
         }
-        return super.onTouchEvent(event);
+        boolean handledTouchEvent = super.onTouchEvent(event);
+
+        // mouse/touchpad might not fire a focus request from the super.onTouchEvent() call, so
+        // may need to explicitly do so.
+        ensureMouseTouchpadFocusFired(event);
+
+        return handledTouchEvent;
+    }
+
+    protected void ensureMouseTouchpadFocusFired(MotionEvent event) {
+        // TLDR: this is to ensure focus is fired for mouse/touchpad, which framework side has
+        // an issue and may not work reliably.
+        //
+        // This is to handle the case where touchpad or mouse input has a slight
+        // movement during a click.
+        // This results in three fired events instead of two:
+        // 1) ACTION_DOWN (2) ACTION_MOVE (3) ACTION_UP  <-- where ACTION_MOVE is the
+        // additional event.
+        // For touchscreen input, the combo of the 3 movements may indicate touch scrolling or a
+        // click, so there is logic in place (View) to differentiate this (i.e. tiny movements do
+        // not count as a scroll).
+        // For mouse/touchpad input, it shares the same touchscroll/click detection logic as the
+        // above, but the problem is that the ACTION_MOVE may be intercepted by child UI components
+        // (e.g. TextView) to be a drag event (e.g. drag to select text), and hence the
+        // touchscroll/click differentiation logic in the View component cannot kick in.
+        // TODO: Remove this once framework fix lands: crbug.com/376184128
+        if ((event.getSource() == InputDevice.SOURCE_TOUCHPAD
+                        || event.getSource() == InputDevice.SOURCE_MOUSE) &&
+                        !isFocused()
+                && event.getActionMasked() == MotionEvent.ACTION_UP) {
+            requestFocus();
+        }
     }
 
     @Override
