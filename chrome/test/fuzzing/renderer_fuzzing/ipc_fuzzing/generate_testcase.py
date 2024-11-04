@@ -258,8 +258,6 @@ def run_ipc_dumper(dumper_path: str, out_file: str):
       os.path.abspath(dumper_path),
       '--single-process-tests',
   ]
-  # TODO(349980051): crbug.com/349980051: when ubsan is enabled by default in
-  # ASAN enabled builds, we had timeout issues running this binary.
   try:
     subprocess.run(args, capture_output=True, env=env, check=True)
   except subprocess.CalledProcessError as e:
