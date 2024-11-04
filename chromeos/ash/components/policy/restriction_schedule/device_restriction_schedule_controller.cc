@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
@@ -75,6 +76,8 @@ DeviceRestrictionScheduleController::DeviceRestrictionScheduleController(
       chromeos::prefs::kDeviceRestrictionSchedule,
       base::BindRepeating(&DeviceRestrictionScheduleController::OnPolicyUpdated,
                           base::Unretained(this)));
+
+  login_state_observation_.Observe(ash::LoginState::Get());
 
   MaybeShowPostLogoutNotification();
   OnPolicyUpdated();
@@ -146,6 +149,10 @@ void DeviceRestrictionScheduleController::AddObserver(Observer* observer) {
 
 void DeviceRestrictionScheduleController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void DeviceRestrictionScheduleController::LoggedInStateChanged() {
+  Run();
 }
 
 void DeviceRestrictionScheduleController::OnPolicyUpdated() {

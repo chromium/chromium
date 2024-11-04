@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/weekly_time/test_support.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval_checked.h"
 #include "chromeos/constants/pref_names.h"
@@ -112,13 +113,19 @@ class DeviceRestrictionScheduleControllerTest : public testing::Test {
   DeviceRestrictionScheduleControllerTest() {
     DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
         local_state_.registry());
+  }
+
+  void SetUp() override {
+    ash::LoginState::Initialize();
     controller_ = std::make_unique<DeviceRestrictionScheduleController>(
         delegate_, local_state_);
     controller_->AddObserver(&observer_);
   }
 
-  ~DeviceRestrictionScheduleControllerTest() override {
+  void TearDown() override {
     controller_->RemoveObserver(&observer_);
+    controller_.reset();
+    ash::LoginState::Shutdown();
   }
 
   void UpdatePolicyPref(const char* policy_json) {
@@ -401,59 +408,89 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   AdvanceTime(base::TimeDelta());
 }
 
+// Verify that `ShowUpcomingLogoutNotification` is called after login if there's
+// less than 30 minutes until restricted schedule begins.
+TEST_F(DeviceRestrictionScheduleControllerTest,
+       ShowUpcomingLogoutNotification_CalledAfterLogin) {
+  // Set time 20 minutes before restricted schedule.
+  SetTime(Day::kWednesday, 11, 40);
+
+  // Not logged in, notification doesn't show.
+  EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(false));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
+  UpdatePolicyPref(kPolicyJson);
+
+  // Run any pending timers.
+  AdvanceTime(base::TimeDelta());
+  Mock::VerifyAndClearExpectations(&observer_);
+
+  // Logged in, notification shows.
+  EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(true));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(1);
+
+  // Perform login.
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
+
+  // Run any pending timers.
+  AdvanceTime(base::TimeDelta());
+  Mock::VerifyAndClearExpectations(&observer_);
+}
+
+class DeviceRestrictionScheduleControllerTestShowPostLogoutNotification
+    : public DeviceRestrictionScheduleControllerTest {
+ public:
+  // Manually driven inside the tests to allow custom pre-setup.
+  void SetUp() override {}
+};
+
 // Verify that `ShowPostLogoutNotification` is called during startup if the
 // `chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification` pref
 // was set to true.
-TEST(DeviceRestrictionScheduleController_ShowPostLogoutNotification,
-     PrefTrue_Shown) {
-  TestingPrefServiceSimple local_state;
-  DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
-      local_state.registry());
-  local_state.SetBoolean(
+TEST_F(DeviceRestrictionScheduleControllerTestShowPostLogoutNotification,
+       PrefTrue_Shown) {
+  local_state_.SetBoolean(
       chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
       true);
-  MockDelegate delegate;
 
   // Notification is shown.
-  EXPECT_CALL(delegate, ShowPostLogoutNotification()).Times(1);
-  DeviceRestrictionScheduleController controller{delegate, local_state};
+  EXPECT_CALL(delegate_, ShowPostLogoutNotification()).Times(1);
+
+  // This call creates the controller which then does some startup time logic.
+  DeviceRestrictionScheduleControllerTest::SetUp();
 
   // Pref was reset.
-  EXPECT_FALSE(local_state.GetBoolean(
+  EXPECT_FALSE(local_state_.GetBoolean(
       chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification));
 }
 
 // Verify that `ShowPostLogoutNotification` is not called during startup if the
 // `chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification` pref
 // was set to false.
-TEST(DeviceRestrictionScheduleController_ShowPostLogoutNotification,
-     PrefFalse_NotShown) {
-  TestingPrefServiceSimple local_state;
-  DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
-      local_state.registry());
-  local_state.SetBoolean(
+TEST_F(DeviceRestrictionScheduleControllerTestShowPostLogoutNotification,
+       PrefFalse_NotShown) {
+  local_state_.SetBoolean(
       chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
       false);
-  MockDelegate delegate;
 
   // Notification is not shown.
-  EXPECT_CALL(delegate, ShowPostLogoutNotification()).Times(0);
-  DeviceRestrictionScheduleController controller{delegate, local_state};
+  EXPECT_CALL(delegate_, ShowPostLogoutNotification()).Times(0);
+
+  // This call creates the controller which then does some startup time logic.
+  DeviceRestrictionScheduleControllerTest::SetUp();
 }
 
 // Verify that `ShowPostLogoutNotification` is not called during startup if the
 // `chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification` pref
 // was not set.
-TEST(DeviceRestrictionScheduleController_ShowPostLogoutNotification,
-     PrefUnset_NotShown) {
-  TestingPrefServiceSimple local_state;
-  DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
-      local_state.registry());
-  MockDelegate delegate;
-
+TEST_F(DeviceRestrictionScheduleControllerTestShowPostLogoutNotification,
+       PrefUnset_NotShown) {
   // Notification is not shown.
-  EXPECT_CALL(delegate, ShowPostLogoutNotification()).Times(0);
-  DeviceRestrictionScheduleController controller{delegate, local_state};
+  EXPECT_CALL(delegate_, ShowPostLogoutNotification()).Times(0);
+
+  // This call creates the controller which then does some startup time logic.
+  DeviceRestrictionScheduleControllerTest::SetUp();
 }
 
 // Verify `RestrictionScheduleEndDay` & `RestrictionScheduleEndTime` functions.

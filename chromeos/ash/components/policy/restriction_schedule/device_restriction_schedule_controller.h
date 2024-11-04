@@ -14,11 +14,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
@@ -31,7 +33,7 @@ class WeeklyTimeIntervalChecked;
 // This class observes the pref `kDeviceRestrictionSchedule`, and handles
 // restricting the device access when the schedule is active.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
-    DeviceRestrictionScheduleController {
+    DeviceRestrictionScheduleController : public ash::LoginState::Observer {
  public:
   class Delegate {
    public:
@@ -59,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
   DeviceRestrictionScheduleController(Delegate& delegate,
                                       PrefService& local_state);
-  ~DeviceRestrictionScheduleController();
+  ~DeviceRestrictionScheduleController() override;
 
   DeviceRestrictionScheduleController(
       const DeviceRestrictionScheduleController&) = delete;
@@ -82,6 +84,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
  private:
   enum class State { kRegular, kRestricted };
 
+  // ash::LoginState::Observer:
+  void LoggedInStateChanged() override;
+
   void OnPolicyUpdated();
   void Run();
   void MaybeShowUpcomingLogoutNotification(base::Time logout_time);
@@ -99,6 +104,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   PrefChangeRegistrar registrar_;
   base::ObserverList<Observer> observers_;
   raw_ref<const base::Clock> clock_{*base::DefaultClock::GetInstance()};
+  base::ScopedObservation<ash::LoginState, ash::LoginState::Observer>
+      login_state_observation_{this};
 
   std::vector<WeeklyTimeIntervalChecked> intervals_;
   State state_ = State::kRegular;
