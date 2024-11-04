@@ -248,9 +248,10 @@ void PasswordSelectionScreen::ProcessOptions() {
 void PasswordSelectionScreen::ShowPasswordChoice() {
   view_->ShowPasswordChoice();
 
+  // The back button is only visible to go back to PIN setup as a main factor.
   const bool should_show_back_button =
-      context()
-          ->knowledge_factor_setup.password_selection_can_go_back_to_pin_setup;
+      context()->knowledge_factor_setup.pin_setup_mode ==
+      WizardContext::PinSetupMode::kUserChosePasswordInstead;
   if (should_show_back_button) {
     view_->ShowBackButton();
   }

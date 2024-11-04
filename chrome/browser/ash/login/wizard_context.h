@@ -112,7 +112,9 @@ class WizardContext {
     kSetupAsPrimaryFactor,
     kSetupAsSecondaryFactor,
     kRecovery,
+    // Setup modes that reflect the past user choice.
     kAlreadyPerformed,
+    kUserChosePasswordInstead,
   };
 
   struct KnowledgeFactorSetup {
@@ -126,10 +128,6 @@ class WizardContext {
     AuthFactorsSet modified_factors;
 
     PinSetupMode pin_setup_mode = PinSetupMode::kSetupAsSecondaryFactor;
-
-    // The PasswordSelectionScreeen only has a 'Back' button when the PinSetup
-    // screen was shown before it.
-    bool password_selection_can_go_back_to_pin_setup = false;
   };
 
   enum class OSAuthErrorKind {

@@ -683,13 +683,14 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, MainFactorSet) {
   CheckCredentialsWereCleared();
 }
 
-// PIN is offered as an additional factor at the end of the auth factor setup
-// flow when the user chooses not to use it as a main factor.
+// PIN is not offered as a second factor when the user explicitly chooses a
+// password.
 IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
-                       SkippingLeadsToPinBeingOfferedAsSecondaryFactor) {
+                       NoAdditionalPinOfferingWhenUserChoosesPassword) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
+  // "Use password instead"
   TapSkipButton();
 
   // The flow leads to the password selection screen. Ensure that the
@@ -702,10 +703,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   WaitForFingerprintScreenExit();
   ExpectFingerprintScreenExitedAndContinue();
 
-  // Skip offering to set a PIN as an additional factor.
-  WaitForScreenShown();
-  TapSkipButton();
-  ExpectExitResult(PinSetupScreen::Result::kUserSkip);
+  // PIN is not offered again.
   CheckCredentialsWereCleared();
 }
 

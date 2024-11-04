@@ -2449,11 +2449,6 @@ void WizardController::OnPasswordSelectionScreenExit(
     PasswordSelectionScreen::Result result) {
   OnScreenExit(PasswordSelectionScreenView::kScreenId,
                PasswordSelectionScreen::GetResultString(result));
-  // Reset 'Back' button logic after exiting.
-  const bool could_go_back = wizard_context_->knowledge_factor_setup
-                                 .password_selection_can_go_back_to_pin_setup;
-  wizard_context_->knowledge_factor_setup
-      .password_selection_can_go_back_to_pin_setup = false;
 
   switch (result) {
     // TODO(b/291808449): add an edge case for Enterprise users
@@ -2462,9 +2457,9 @@ void WizardController::OnPasswordSelectionScreenExit(
       ShowFingerprintSetupScreen();
       return;
     case PasswordSelectionScreen::Result::BACK: {
-      // Check that this is a valid transition and set the PIN screen for main
-      // factor setup again.
-      CHECK(could_go_back);
+      // The back button is only shown for going back to main PIN setup.
+      CHECK_EQ(wizard_context_->knowledge_factor_setup.pin_setup_mode,
+               WizardContext::PinSetupMode::kUserChosePasswordInstead);
       ShowPinSetupScreenAsMainFactor();
       return;
     }
@@ -2600,6 +2595,9 @@ void WizardController::OnFactorSetupSuccessScreenExit(
   }
 }
 
+// After FingerprintSetup, PIN is offered as an additional factor, unless:
+// - The user has already set a PIN as their main factor.
+// - The user chose 'Use Password instead' when offered a PIN.
 void WizardController::OnFingerprintSetupScreenExit(
     FingerprintSetupScreen::Result result) {
   OnScreenExit(FingerprintSetupScreenView::kScreenId,
@@ -2607,8 +2605,11 @@ void WizardController::OnFingerprintSetupScreenExit(
   const bool pin_was_already_set =
       wizard_context_->knowledge_factor_setup.pin_setup_mode ==
       WizardContext::PinSetupMode::kAlreadyPerformed;
+  const bool user_chose_password_instead =
+      wizard_context_->knowledge_factor_setup.pin_setup_mode ==
+      WizardContext::PinSetupMode::kUserChosePasswordInstead;
 
-  if (pin_was_already_set) {
+  if (pin_was_already_set || user_chose_password_instead) {
     FinishAuthFactorsSetup();
   } else {
     ShowPinSetupScreenAsSecondaryFactor();
@@ -2620,13 +2621,15 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
                PinSetupScreen::GetResultString(result));
   if (features::IsAllowPasswordlessSetupEnabled()) {
     switch (result) {
-      // PIN as a main factor is not supported or not wanted, it will be
-      // offered later again as a secondary factor after the fingerprint setup
-      // screen. Proceed to PasswordSelection. In case it was manually skipped,
-      // show the back button as well.
+      // PIN as a main factor is not supported or not wanted. In both cases,
+      // proceed to the PasswordSelectionScreen.
       case PinSetupScreen::Result::kUserChosePassword:
-        wizard_context_->knowledge_factor_setup
-            .password_selection_can_go_back_to_pin_setup = true;
+        // The user does not wish to have a PIN as their main authentication
+        // factor. Setting this setup mode ensures that the screen is not
+        // resurfaced later in the flow a second time, and that a back button
+        // will be shown on PasswordSelectionScreen for the user to go back.
+        wizard_context_->knowledge_factor_setup.pin_setup_mode =
+            WizardContext::PinSetupMode::kUserChosePasswordInstead;
         [[fallthrough]];
       case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
         ShowPasswordSelectionScreen();
