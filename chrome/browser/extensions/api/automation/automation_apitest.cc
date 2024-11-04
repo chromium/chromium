@@ -406,7 +406,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   EXPECT_EQ(expected_mode, accessibility_mode);
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Events) {
+// Flaky on Win and ChromeOS: crbug.com/375385426
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Events DISABLED_Events
+#else
+#define MAYBE_Events Events
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_Events) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/events.js")) << message_;
 }
@@ -416,7 +422,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Actions) {
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/actions.js")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Location) {
+// Flaky on Win and ChromeOS: crbug.com/375385426
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Location DISABLED_Location
+#else
+#define MAYBE_Location Location
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_Location) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/location.js")) << message_;
 }
