@@ -46,6 +46,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/shadow_types.h"
 
 namespace chromeos::editor_menu {
 
@@ -130,7 +131,9 @@ std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.shadow_elevation = 2;
+  params.corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kMenuRadius);
+  params.shadow_elevation = wm::kShadowElevationMenuOrTooltip;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.name = kWidgetName;

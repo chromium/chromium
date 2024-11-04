@@ -96,6 +96,7 @@ source_set("views") {
     "//ui/base",
     "//ui/gfx",
     "//ui/views",
+    "//ui/wm",
   ]
 
   if (is_chrome_branded) {
