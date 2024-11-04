@@ -95,7 +95,7 @@ public class TabGroupSyncLocalToRemoteTest {
 
         String title = "test_tab_group_name";
         NewTabGroupDialogFacility dialog =
-                editor.openAppMenuWithEditor().groupTabsWithParityEnabled();
+                editor.openAppMenuWithEditor().groupTabs();
         dialog = dialog.inputName(title);
         dialog = dialog.pickColor(TabGroupColorId.RED);
         dialog.pressDone();

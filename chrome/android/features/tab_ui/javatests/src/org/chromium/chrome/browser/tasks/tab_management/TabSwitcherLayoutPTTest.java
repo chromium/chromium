@@ -265,7 +265,7 @@ public class TabSwitcherLayoutPTTest {
         editor = editor.addTabToSelection(1, secondTabId);
 
         NewTabGroupDialogFacility dialog =
-                editor.openAppMenuWithEditor().groupTabsWithParityEnabled();
+                editor.openAppMenuWithEditor().groupTabs();
         dialog = dialog.inputName("test_tab_group_name");
         dialog = dialog.pickColor(TabGroupColorId.RED);
         dialog.pressDone();

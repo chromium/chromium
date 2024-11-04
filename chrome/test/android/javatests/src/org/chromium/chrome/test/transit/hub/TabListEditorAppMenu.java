@@ -24,7 +24,6 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
 
     private final TabSwitcherListEditorFacility mListEditor;
     private Item<Void> mCloseMenuItem;
-    private Item<TabSwitcherGroupCardFacility> mGroupMenuItem;
     private Item<NewTabGroupDialogFacility> mGroupWithParityMenuItem;
 
     public TabListEditorAppMenu(TabSwitcherListEditorFacility listEditor) {
@@ -47,7 +46,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
             items.declareItemToFacility(
                 itemViewMatcher("Group " + tabOrTabs),
                 itemDataMatcher(R.id.tab_list_editor_group_menu_item),
-                this::doGroupTabsWithParityEnabled);
+                this::doGroupTabs);
 
         items.declareStubItem(
                 itemViewMatcher("Bookmark " + tabOrTabs),
@@ -61,30 +60,14 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
     /**
      * Select "Group tabs" to create a new group with the selected tabs.
      *
-     * @return the next state of the TabSwitcher as a Station and the newly created tab group card
-     *     as a Facility.
-     */
-    public TabSwitcherGroupCardFacility groupTabs() {
-        return mGroupMenuItem.scrollToAndSelect();
-    }
-
-    /** Factory for the result of {@link #groupTabs()}. */
-    private TabSwitcherGroupCardFacility doGroupTabsWithParityDisabled() {
-        return new TabSwitcherGroupCardFacility(mListEditor.getTabIdsSelected());
-    }
-
-    /**
-     * Select "Group tabs" to create a new group with the selected tabs when TAB_GROUP_PARITY is
-     * enabled.
-     *
      * @return the "New tab group" dialog as a Facility.
      */
-    public NewTabGroupDialogFacility groupTabsWithParityEnabled() {
+    public NewTabGroupDialogFacility groupTabs() {
         return mGroupWithParityMenuItem.scrollToAndSelect();
     }
 
-    /** Factory for the result of {@link #groupTabsWithParityEnabled()}. */
-    private NewTabGroupDialogFacility doGroupTabsWithParityEnabled() {
+    /** Factory for the result of {@link #groupTabs()}. */
+    private NewTabGroupDialogFacility doGroupTabs() {
         return new NewTabGroupDialogFacility(mListEditor.getTabIdsSelected());
     }
 
