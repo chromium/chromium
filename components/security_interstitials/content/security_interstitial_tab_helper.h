@@ -102,8 +102,9 @@ class SecurityInterstitialTabHelper
   friend class content::WebContentsUserData<SecurityInterstitialTabHelper>;
 
   // Retrieves the blocking page for the target frame for which a Mojo command
-  // is being processed. Calling this method when a Mojo command is not on the
-  // stack will result in a crash.
+  // is being processed, or returns nullptr if there is no such blocking page.
+  // Calling this method when a Mojo command is not on the stack will result in
+  // a crash.
   SecurityInterstitialPage* GetBlockingPageForCurrentTargetFrame();
 
   SecurityInterstitialPage* GetBlockingPageForMainFrame() const;
