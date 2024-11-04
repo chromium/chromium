@@ -404,7 +404,14 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       blink::mojom::PushEventStatus status);
 
   // Checks if a given origin is allowed to use Push.
-  bool IsPermissionSet(const GURL& origin, bool user_visible = true);
+  //
+  // `user_visible` is the userVisibleOnly value provided to the push
+  // registration.
+  //
+  // For most origins this checks if the origin has the notifications
+  // permission. An exception is for extensions that use service workers where
+  // `user_visible` is false.
+  bool IsPermissionSet(const GURL& origin, bool user_visible);
 
   // Wrapper around {GCMDriver, InstanceID}::GetEncryptionInfo.
   void GetEncryptionInfoForAppId(
@@ -494,7 +501,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // Tracks those that are attempting to bypass the user visible
   // requirement on push notifications. E.g. they set userVisibleOnly to false
   // on push registration.
-  std::set<GURL> origins_bypassing_user_visible_requirement;
+  std::set<GURL> origins_requesting_user_visible_requirement_bypass;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };
