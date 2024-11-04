@@ -8383,6 +8383,8 @@ crbug.com/339041663 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-M
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-video.https.html [ Crash Timeout ]
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Timeout ]
 crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-060-print.html [ Failure Pass ]
+crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure Pass ]
+crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Failure Pass ]
 crbug.com/339041663 [ Linux ] external/wpt/css/css-break/transform-022-print.html [ Failure Pass ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
 crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Timeout Failure ]
