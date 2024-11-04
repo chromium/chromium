@@ -11825,6 +11825,21 @@
             ]
         }
     ],
+    "IOSPasswordBottomSheetV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasswordBottomSheetV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPriceInsightsContextualPanel": [
         {
             "platforms": [
