@@ -478,7 +478,8 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           .SetElideBehavior(elide_behavior)
           .SetProperty(
               views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+              views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                       views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
