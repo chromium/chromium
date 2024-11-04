@@ -57,7 +57,8 @@ ProfileStatisticsFactory::ProfileStatisticsFactory()
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
 }
 
-KeyedService* ProfileStatisticsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
@@ -72,7 +73,7 @@ KeyedService* ProfileStatisticsFactory::BuildServiceInstanceFor(
       nullptr;
 #endif
 
-  return new ProfileStatistics(
+  return std::make_unique<ProfileStatistics>(
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),

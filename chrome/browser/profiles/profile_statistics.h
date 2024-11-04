@@ -35,18 +35,8 @@ class HistoryService;
 // ProfileStatisticsFactory instead.
 class ProfileStatistics : public KeyedService {
  public:
-  // Profile Statistics --------------------------------------------------------
-
-  // This function collects statistical information about |profile|, also
-  // returns the information via |callback| if |callback| is not null.
-  // Currently bookmarks, history, logins and autofill forms are counted. The
-  // callback function will probably be called more than once, so binding
-  // parameters with bind::Passed() is prohibited.
-  void GatherStatistics(profiles::ProfileStatisticsCallback callback);
-
- private:
-  friend class ProfileStatisticsFactory;
-
+  // Uses ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext
+  // instead.
   ProfileStatistics(
       scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
       autofill::PersonalDataManager* personal_data_manager,
@@ -59,6 +49,16 @@ class ProfileStatistics : public KeyedService {
       std::unique_ptr<device::fido::PlatformCredentialStore>
           platform_credential_store);
   ~ProfileStatistics() override;
+  // Profile Statistics --------------------------------------------------------
+
+  // This function collects statistical information about |profile|, also
+  // returns the information via |callback| if |callback| is not null.
+  // Currently bookmarks, history, logins and autofill forms are counted. The
+  // callback function will probably be called more than once, so binding
+  // parameters with bind::Passed() is prohibited.
+  void GatherStatistics(profiles::ProfileStatisticsCallback callback);
+
+ private:
   void DeregisterAggregator();
 
   const scoped_refptr<autofill::AutofillWebDataService>
