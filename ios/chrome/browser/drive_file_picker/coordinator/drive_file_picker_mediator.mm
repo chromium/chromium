@@ -720,7 +720,7 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
   NSURL* fileURL = DriveFilePickerGenerateDownloadFileURL(
-      _webState->GetUniqueIdentifier(), item->name);
+      _webState->GetUniqueIdentifier(), item->identifier, item->name);
   CHECK(fileURL);
   __weak __typeof(self) weakSelf = self;
   _selectedFileDownloadID = _driveDownloader->DownloadFile(

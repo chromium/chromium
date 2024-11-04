@@ -83,6 +83,16 @@ NSString* kShortcutMIMEType = @"application/vnd.google-apps.shortcut";
 // Prefix of MIME types associated with images.
 NSString* kImageMIMETypePrefix = @"image/";
 
+// Replaces `/` and `\` characters with `_` in `file_path` and returns the
+// result.
+NSString* ReplaceFilePathSeparatorsWithUnderscores(NSString* file_path) {
+  file_path = [file_path stringByReplacingOccurrencesOfString:@"/"
+                                                   withString:@"_"];
+  file_path = [file_path stringByReplacingOccurrencesOfString:@"\\"
+                                                   withString:@"_"];
+  return file_path;
+}
+
 }  // namespace
 
 NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
@@ -473,24 +483,32 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   return std::nullopt;
 }
 
-NSURL* DriveFilePickerGenerateDownloadFileURL(web::WebStateID web_state_id,
-                                              NSString* download_file_name) {
+NSURL* DriveFilePickerGenerateDownloadFileURL(
+    web::WebStateID web_state_id,
+    NSString* download_file_identifier,
+    NSString* download_file_name) {
   std::optional<base::FilePath> web_state_dir =
       GetTabChooseFileDirectory(web_state_id);
   if (!web_state_dir) {
     return nil;
   }
+
+  // Remove the potential file separator.
+  download_file_identifier =
+      ReplaceFilePathSeparatorsWithUnderscores(download_file_identifier);
+  base::FilePath download_file_identifier_path(
+      base::SysNSStringToUTF8(download_file_identifier));
+  // Do not allow empty folder names.
+  if (download_file_identifier_path.empty()) {
+    download_file_identifier_path =
+        base::FilePath(base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
+  }
   base::FilePath download_dir =
-      (*web_state_dir)
-          .Append(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+      (*web_state_dir).Append(download_file_identifier_path);
 
   // Remove the potential file separator.
   download_file_name =
-      [download_file_name stringByReplacingOccurrencesOfString:@"/"
-                                                    withString:@"_"];
-  download_file_name =
-      [download_file_name stringByReplacingOccurrencesOfString:@"\\"
-                                                    withString:@"_"];
+      ReplaceFilePathSeparatorsWithUnderscores(download_file_name);
   base::FilePath download_file_name_path(
       base::SysNSStringToUTF8(download_file_name));
   // Do not allow empty file names.
@@ -498,9 +516,9 @@ NSURL* DriveFilePickerGenerateDownloadFileURL(web::WebStateID web_state_id,
     download_file_name_path =
         base::FilePath(base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
   }
-
   base::FilePath download_file_path =
       download_dir.Append(download_file_name_path);
+
   CHECK(download_dir.IsParent(download_file_path));
   return base::apple::FilePathToNSURL(download_file_path);
 }

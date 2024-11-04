@@ -95,8 +95,10 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
     NSString* identifier);
 
 // Generates the `URL` to which the local copy of a file will be saved.
-NSURL* DriveFilePickerGenerateDownloadFileURL(web::WebStateID web_state_id,
-                                              NSString* download_file_name);
+NSURL* DriveFilePickerGenerateDownloadFileURL(
+    web::WebStateID web_state_id,
+    NSString* download_file_identifier,
+    NSString* download_file_name);
 
 // Returns the placeholder icon for `item`.
 UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item);
