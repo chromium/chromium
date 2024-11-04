@@ -380,7 +380,7 @@
 <translation id="4040753847560036377">Pogrešan PUK</translation>
 <translation id="4057991113334098539">Aktiviranje…</translation>
 <translation id="4092890906744441904">irski</translation>
-<translation id="4101601646343868113">Prijavite se na mobilnu mrežu i potvrdite da je paket prijenosa podataka na mobilnoj mreži aktivan</translation>
+<translation id="4101601646343868113">Prijavite se na mobilnu mrežu i potvrdite da je paket prenosa podataka na mobilnoj mreži aktivan</translation>
 <translation id="4124731372776320263">Sinhronizacija 1 fajla s Diska</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Premjestite stavke koje su vam nepotrebne u otpad</translation>
@@ -685,11 +685,11 @@
 <translation id="6267547857941397424">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6271903698064569429">Nije moguće otpremiti fajlove jer na disku "<ph name="SHARED_DRIVE_NAME" />" nema dovoljno prostora za pohranu.</translation>
-<translation id="6279140785485544797">Vaš paket prijenosa podataka na mobilnoj mreži je možda istekao. Kontaktirajte operatera za podršku.</translation>
+<translation id="6279140785485544797">Vaš paket prenosa podataka na mobilnoj mreži je možda istekao. Kontaktirajte operatera za podršku.</translation>
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
 <translation id="6295542640242147836">Zaključaj SIM</translation>
 <translation id="6296410173147755564">Nevažeći PUK</translation>
-<translation id="6308243004861726558">Fajl je povjerljiv i podložan pravilima administratora. Primjenjuju se sljedeće radnje pristupa i prijenosa fajla.</translation>
+<translation id="6308243004861726558">Fajl je povjerljiv i podložan pravilima administratora. Primjenjuju se sljedeće radnje pristupa i prenosa fajla.</translation>
 <translation id="6312403991423642364">Nepoznata greška na mreži</translation>
 <translation id="6317608858038767920">Prilagođeni naziv servera <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arhiva</translation>
@@ -769,7 +769,7 @@
 <translation id="6949408524333579394">srpski (transliteracija)</translation>
 <translation id="69548399407432279">Prošla godina</translation>
 <translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
-<translation id="696203921837389374">Omogući sinhronizaciju putem prijenosa podataka na mobilnoj mreži</translation>
+<translation id="696203921837389374">Omogući sinhronizaciju putem prenosa podataka na mobilnoj mreži</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6965648386495488594">Priključak</translation>
 <translation id="6970230597523682626">Bugarska</translation>
