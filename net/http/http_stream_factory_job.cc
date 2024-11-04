@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +24,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/session_usage.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -494,6 +496,7 @@ void HttpStreamFactory::Job::OnNeedsClientAuthCallback(
 }
 
 void HttpStreamFactory::Job::OnPreconnectsComplete(int result) {
+  RecordPreconnectHistograms(result);
   delegate_->OnPreconnectsComplete(this, result);
   // |this| may be deleted after this call.
 }
@@ -1261,6 +1264,19 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
   // Only throttle the request if the server is believed to support H2.
   return session_->http_server_properties()->GetSupportsSpdy(
       scheme_host_port, request_info_.network_anonymization_key);
+}
+
+void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
+  if (!IsGoogleHost(destination_.host())) {
+    return;
+  }
+  if (using_quic_) {
+    // TODO(crbug.com/376304027): Expand this to non-Quic as well. Currently,
+    // H1 and H2 does not return precise failure reason.
+    base::UmaHistogramSparse(
+        "Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult",
+        -result);
+  }
 }
 
 }  // namespace net

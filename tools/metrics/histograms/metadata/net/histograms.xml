@@ -4988,6 +4988,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult"
+    enum="NetErrorCodes" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The network error code of the session creation for preconnect to
+    GoogleSearch using Quic. This is recorded everytime a preconnect is
+    attempted to GoogleSearch, after preconnect attempt is finished.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryManagerOnDisk.DictionarySizeKB" units="KB"
     expires_after="2024-12-20">
   <owner>horo@chromium.org</owner>

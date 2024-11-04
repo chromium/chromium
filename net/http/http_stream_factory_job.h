@@ -359,6 +359,8 @@ class HttpStreamFactory::Job
 
   bool disable_cert_verification_network_fetches() const;
 
+  void RecordPreconnectHistograms(int result);
+
   const StreamRequestInfo request_info_;
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
