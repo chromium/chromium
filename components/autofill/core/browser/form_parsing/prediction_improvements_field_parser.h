@@ -31,10 +31,6 @@ class PredictionImprovementsFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PredictionImprovementsFieldParser, ParseSearchTerm);
-  FRIEND_TEST_ALL_PREFIXES(PredictionImprovementsFieldParser,
-                           ParseNonSearchTerm);
-
   raw_ptr<const AutofillField> field_;
 };
 
