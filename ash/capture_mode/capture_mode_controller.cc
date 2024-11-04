@@ -20,6 +20,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
@@ -59,6 +60,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "capture_mode_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -128,6 +130,11 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 // way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
+
+// The name of a boolean pref that records whether the sunfish consent
+// disclaimer has been accepted.
+constexpr char kSunfishConsentDisclaimerAccepted[] =
+    "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
@@ -658,6 +665,8 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
+  registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
+                                /*default_value=*/false);
 }
 
 SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
@@ -820,7 +829,9 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 
 void CaptureModeController::StartSunfishSession() {
   DCHECK(features::CanStartSunfishSession());
-  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
+  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish,
+                base::BindOnce(&CaptureModeController::MaybeShowDisclaimer,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeController::Stop() {
@@ -1863,6 +1874,40 @@ void CaptureModeController::OnCopyTextButtonClicked(
   CopyTextToClipboard(text);
   // TODO(crbug.com/375963884): Show a notification for the copied text.
   Stop();
+}
+
+void CaptureModeController::MaybeShowDisclaimer(bool success) {
+  if (!success) {
+    return;
+  }
+  // TODO(b/367882127): Should also check prefs to see if sunfish was completely
+  // disabled, which should happen when the decline button is pressed in
+  // disclaimer.
+  if (!GetActiveUserPrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted)) {
+    disclaimer_ = DisclaimerView::CreateWidget(
+        capture_mode_util::GetPreferredRootWindow(),
+        base::BindRepeating(&CaptureModeController::OnDisclaimerAction,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            /*accepted=*/true),
+        base::BindRepeating(&CaptureModeController::OnDisclaimerAction,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            /*accepted=*/false));
+    disclaimer_->Show();
+  }
+}
+
+void CaptureModeController::OnDisclaimerAction(bool accepted) {
+  GetActiveUserPrefService()->SetBoolean(kSunfishConsentDisclaimerAccepted,
+                                         accepted);
+
+  if (disclaimer_.get() != nullptr) {
+    disclaimer_.reset();
+  }
+
+  if (!accepted && IsActive()) {
+    Stop();
+  }
 }
 
 void CaptureModeController::OnScannerActionsFetched(

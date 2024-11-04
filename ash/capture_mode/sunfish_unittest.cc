@@ -29,6 +29,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
@@ -44,6 +45,7 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
+#include "disclaimer_view.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +72,8 @@ using ::testing::SizeIs;
 
 constexpr char kTestSearchUrl[] =
     "https://www.google.com/search?q=cat&gsc=1&masfc=c";
+constexpr char kSunfishConsentDisclaimerAccepted[] =
+    "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
@@ -100,6 +104,9 @@ class SunfishTest : public AshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kAshDebugShortcuts);
     AshTestBase::SetUp();
+
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        kSunfishConsentDisclaimerAccepted, true);
   }
 
  private:
@@ -419,6 +426,51 @@ class MockSearchResultsPanel : public SearchResultsPanel {
  private:
   bool mouse_events_received_ = false;
 };
+
+TEST_F(SunfishTest,
+       DisclaimerAcceptHidesDisclaimerSetPrefsAndContinuesSession) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  views::Widget* disclaimer = controller->disclaimer_widget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  LeftClickOn(accept_button);
+
+  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(controller->IsActive());
+}
+
+TEST_F(SunfishTest, DisclaimerDeclineHidesDisclaimerSetPrefsAndEndsSession) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  views::Widget* disclaimer = controller->disclaimer_widget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  LeftClickOn(decline_button);
+
+  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_FALSE(controller->IsActive());
+}
 
 // Tests that the search results panel receives mouse events.
 TEST_F(SunfishTest, OnLocatedEvent) {
@@ -916,6 +968,14 @@ class ScannerTest : public AshTestBase {
   ScannerTest(const ScannerTest&) = delete;
   ScannerTest& operator=(const ScannerTest&) = delete;
   ~ScannerTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        kSunfishConsentDisclaimerAccepted, true);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};

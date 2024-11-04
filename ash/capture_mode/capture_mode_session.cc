@@ -2065,6 +2065,16 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
+  // If disclaimer dialog is visible, block all actions.
+  if (controller_->disclaimer_widget()) {
+    // TODO(b/367882127): See if we can never create a cursor_setter_ instead of
+    // having to reset it.
+    if (cursor_setter_) {
+      cursor_setter_->ResetCursor();
+    }
+    return;
+  }
+
   // |ui::EventType::kMouseExited| and |ui::EventType::kMouseEntered| events
   // will be generated during moving capture mode bar to another display. We
   // should ignore them here, since they will overwrite the capture mode bar's
