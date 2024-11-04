@@ -217,13 +217,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
 };
 
-// TODO(b/276829737): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ShowNetworkDialog DISABLED_ShowNetworkDialog
-#else
-#define MAYBE_ShowNetworkDialog ShowNetworkDialog
-#endif
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -244,13 +238,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
   reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN and linux-chromeos-rel.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TriggerDialogOnNetworkOff DISABLED_TriggerDialogOnNetworkOff
-#else
-#define MAYBE_TriggerDialogOnNetworkOff TriggerDialogOnNetworkOff
-#endif
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_TriggerDialogOnNetworkOff) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -360,16 +348,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   reauth_dialog_helper->ExpectNetworkDialogHidden();
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
-#define MAYBE_TriggerAndHideCaptivePortalDialog \
-  DISABLED_TriggerAndHideCaptivePortalDialog
-#else
-#define MAYBE_TriggerAndHideCaptivePortalDialog \
-  TriggerAndHideCaptivePortalDialog
-#endif
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
-                       MAYBE_TriggerAndHideCaptivePortalDialog) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -420,6 +399,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
 
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
   reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
@@ -533,16 +513,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   EXPECT_FALSE(HttpAuthDialog::IsEnabled());
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-// TODO(crbug.com/40272814): Flaky on linux-chromeos-rel.
-#if defined(MEMORY_SANITIZER) || \
-    (defined(NDEBUG) && !defined(ADDRESS_SANITIZER))
-#define MAYBE_ProxyAuthCanBeCancelled DISABLED_ProxyAuthCanBeCancelled
-#else
-#define MAYBE_ProxyAuthCanBeCancelled ProxyAuthCanBeCancelled
-#endif
-IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
-                       MAYBE_ProxyAuthCanBeCancelled) {
+IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -569,6 +540,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
 
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 class AutoStartTest : public LockscreenWebUiTest {
@@ -754,15 +727,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlEgaiButtonHidden) {
   reauth_dialog_helper->ExpectChangeIdPButtonHidden();
 }
 
-// Tests the close button in SAML Screen.
-// TODO(crbug.com/1401612): re-enable this test. Flakily times out on
-// linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SamlScreenCancel DISABLED_SamlScreenCancel
-#else
-#define MAYBE_SamlScreenCancel SamlScreenCancel
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_SamlScreenCancel) {
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlScreenCancel) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   Login();
@@ -944,15 +909,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_ScrapedNone) {
   ScreenLockerTester().WaitForUnlock();
 }
 
-// Tests another account is authenticated other than the one used in sign
-// in.
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_VerifyAgainFlow DISABLED_VerifyAgainFlow
-#else
-#define MAYBE_VerifyAgainFlow VerifyAgainFlow
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_VerifyAgainFlow) {
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, VerifyAgainFlow) {
   fake_gaia_mixin()->fake_gaia()->SetConfigurationHelper(
       FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie1,
       kTestAuthLSIDCookie1);
@@ -987,13 +944,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_VerifyAgainFlow) {
   ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_LoadAbort DISABLED_LoadAbort
-#else
-#define MAYBE_LoadAbort LoadAbort
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_LoadAbort) {
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, LoadAbort) {
   Login();
 
   // Make gaia landing page unreachable
@@ -1015,6 +966,8 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_LoadAbort) {
 
   // Close dialog at the end of the test - otherwise test will crash on exit
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SAMLBlocklistNavigationDisallowed) {

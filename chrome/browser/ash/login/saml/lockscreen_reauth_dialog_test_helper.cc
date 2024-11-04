@@ -133,12 +133,12 @@ LockScreenReauthDialogTestHelper::InitForShownDialog() {
 
 void LockScreenReauthDialogTestHelper::ClickCancelButtonOnErrorScreen() {
   ExpectErrorScreenVisible();
-  DialogJS().TapOnPath(kErrorCancelButton);
+  DialogJS().TapOnPathAsync(kErrorCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ClickCancelButtonOnSamlScreen() {
   ExpectSigninWebviewVisible();
-  DialogJS().TapOnPath(kSamlCancelButton);
+  DialogJS().TapOnPathAsync(kSamlCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ClickChangeIdPButtonOnSamlScreen() {
@@ -367,7 +367,7 @@ void LockScreenReauthDialogTestHelper::ExpectNetworkDialogHidden() {
 }
 
 void LockScreenReauthDialogTestHelper::ClickCloseNetworkButton() {
-  NetworkJS().TapOnPath(kNetworkCancelButton);
+  NetworkJS().TapOnPathAsync(kNetworkCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogVisible() {
