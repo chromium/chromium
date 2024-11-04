@@ -273,7 +273,7 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
             "intended instead.";
         break;
       case GPUSingletonWarning::kCount:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     ExecutionContext* execution_context = GetExecutionContext();

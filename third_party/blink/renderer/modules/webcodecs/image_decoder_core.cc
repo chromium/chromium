@@ -180,8 +180,7 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(SkYUVColorSpace yuv_cs,
                              gfx::ColorSpace::MatrixID::YCOCG,
                              gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::ColorSpace();
+      NOTREACHED();
   };
 }
 
@@ -320,10 +319,7 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
                               : SkImages::RasterFromBitmap(image->Bitmap());
   if (!sk_image) {
-    NOTREACHED_IN_MIGRATION()
-        << "Failed to retrieve SkImage for decoded image.";
-    result->status = Status::kDecodeError;
-    return result;
+    NOTREACHED() << "Failed to retrieve SkImage for decoded image.";
   }
 
   if (!is_complete) {

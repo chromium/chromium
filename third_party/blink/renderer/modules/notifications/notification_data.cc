@@ -153,8 +153,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     } else if (action->type() == "text") {
       notification_action->type = mojom::blink::NotificationActionType::TEXT;
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown action type: " << IDLEnumAsString(action->type());
+      NOTREACHED() << "Unknown action type: "
+                   << IDLEnumAsString(action->type());
     }
 
     if (!action->placeholder().IsNull() &&

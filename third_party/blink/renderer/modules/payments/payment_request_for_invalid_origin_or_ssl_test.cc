@@ -37,16 +37,16 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
   void Show(bool wait_for_updated_details, bool had_user_activation) override {}
   void Retry(
       payments::mojom::blink::PaymentValidationErrorsPtr errors) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void UpdateWith(
       payments::mojom::blink::PaymentDetailsPtr update_with_details) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void OnPaymentDetailsNotUpdated() override { NOTREACHED_IN_MIGRATION(); }
-  void Abort() override { NOTREACHED_IN_MIGRATION(); }
+  void OnPaymentDetailsNotUpdated() override { NOTREACHED(); }
+  void Abort() override { NOTREACHED(); }
   void Complete(payments::mojom::PaymentComplete result) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void CanMakePayment() override {}
   void HasEnrolledInstrument() override {}

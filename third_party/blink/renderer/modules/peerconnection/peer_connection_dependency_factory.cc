@@ -590,9 +590,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   // BoringSSL no longer requires this after
   // https://bugs.chromium.org/p/boringssl/issues/detail?id=35
   if (!rtc::InitializeSSL()) {
-    LOG(ERROR) << "Failed on InitializeSSL.";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Failed on InitializeSSL.";
   }
 
   base::WaitableEvent create_network_manager_event(

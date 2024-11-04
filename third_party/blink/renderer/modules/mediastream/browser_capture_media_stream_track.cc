@@ -110,7 +110,7 @@ void ResolveApplySubCaptureTargetPromiseHelper(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

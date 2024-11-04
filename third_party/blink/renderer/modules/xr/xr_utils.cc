@@ -55,8 +55,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     case V8XRWebGLRenderingContext::ContentType::kWebGLRenderingContext:
       return context->GetAsWebGLRenderingContext();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::optional<device::Pose> CreatePose(const gfx::Transform& matrix) {
@@ -117,8 +116,7 @@ device::mojom::blink::XRHandJoint StringToMojomHandJoint(
     return device::mojom::blink::XRHandJoint::kPinkyFingerTip;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::mojom::blink::XRHandJoint::kMaxValue;
+  NOTREACHED();
 }
 
 V8XRHandJoint::Enum MojomHandJointToV8Enum(

@@ -444,8 +444,7 @@ IDBObjectStore* IDBCursor::EffectiveObjectStore() const {
     case Source::ContentType::kIDBObjectStore:
       return source_->GetAsIDBObjectStore();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool IDBCursor::IsDeleted() const {
@@ -455,8 +454,7 @@ bool IDBCursor::IsDeleted() const {
     case Source::ContentType::kIDBObjectStore:
       return source_->GetAsIDBObjectStore()->IsDeleted();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

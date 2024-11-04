@@ -113,8 +113,6 @@ VideoTrackRecorder::CodecId CodecIdFromMediaVideoCodec(media::VideoCodec id) {
     default:
       return VideoTrackRecorder::CodecId::kLast;
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported video codec";
-  return VideoTrackRecorder::CodecId::kLast;
 }
 
 media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
@@ -136,8 +134,7 @@ media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
     case VideoTrackRecorder::CodecId::kLast:
       return media::VideoCodec::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported video codec";
-  return media::VideoCodec::kUnknown;
+  NOTREACHED() << "Unsupported video codec";
 }
 
 media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
@@ -151,8 +148,7 @@ media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
     case AudioTrackRecorder::CodecId::kLast:
       return media::AudioCodec::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported audio codec";
-  return media::AudioCodec::kUnknown;
+  NOTREACHED() << "Unsupported audio codec";
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) || \

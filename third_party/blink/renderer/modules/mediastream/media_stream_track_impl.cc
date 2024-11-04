@@ -217,8 +217,7 @@ WebString GetDisplaySurfaceString(
     case media::mojom::DisplayCaptureSurfaceType::BROWSER:
       return WebString::FromUTF8("browser");
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebString();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -313,8 +312,7 @@ String MediaStreamTrackImpl::kind() const {
       return video_kind;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return audio_kind;
+  NOTREACHED();
 }
 
 String MediaStreamTrackImpl::id() const {

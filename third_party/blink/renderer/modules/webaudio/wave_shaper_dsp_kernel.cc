@@ -87,7 +87,7 @@ void WaveShaperDSPKernel::Process(const float* source,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -384,7 +384,7 @@ double WaveShaperDSPKernel::LatencyTime() const {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return static_cast<double>(latency_frames) / SampleRate();

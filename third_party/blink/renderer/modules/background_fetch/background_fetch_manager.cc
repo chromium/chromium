@@ -309,7 +309,7 @@ void BackgroundFetchManager::DidFetch(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ScriptPromise<IDLNullable<BackgroundFetchRegistration>>
@@ -457,7 +457,7 @@ void BackgroundFetchManager::DidGetRegistration(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ScriptPromise<IDLArray<IDLString>> BackgroundFetchManager::getIds(
@@ -515,7 +515,7 @@ void BackgroundFetchManager::DidGetDeveloperIds(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BackgroundFetchManager::Trace(Visitor* visitor) const {

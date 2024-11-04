@@ -130,9 +130,7 @@ std::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
       return *mojo_from_local * local_from_floor;
     }
     case ReferenceSpaceType::kBoundedFloor: {
-      NOTREACHED_IN_MIGRATION()
-          << "kBoundedFloor should be handled by subclass";
-      return std::nullopt;
+      NOTREACHED() << "kBoundedFloor should be handled by subclass";
     }
   }
 }

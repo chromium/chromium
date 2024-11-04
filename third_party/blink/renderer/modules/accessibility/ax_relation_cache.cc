@@ -498,9 +498,7 @@ bool AXRelationCache::IsValidOwnsRelation(AXObject* owner,
 // static
 bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (!owner->GetNode()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Cannot use aria-owns without a node on both ends";
-    return false;
+    NOTREACHED() << "Cannot use aria-owns without a node on both ends";
   }
 
   // Can't have element children.

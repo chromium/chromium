@@ -75,8 +75,7 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
   } else if (buffer_source->IsArrayBufferView()) {
     array_piece = DOMArrayPiece(buffer_source->GetAsArrayBufferView().Get());
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return true;  // true to be consistent with `exception_state`.
+    NOTREACHED();
   }
   if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength()).IsValid()) {
     exception_state.ThrowRangeError(
@@ -224,7 +223,7 @@ static NDEFRecord* CreateTextRecord(const ScriptState* script_state,
       return nullptr;
     bytes = GetUTF8DataFromString(data);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return MakeGarbageCollected<NDEFRecord>(id, encoding_label, language,

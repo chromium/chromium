@@ -293,9 +293,8 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
   }
 
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "IsValidType() and Create() have inconsistent implementations.";
-  return nullptr;
 }
 
 ClipboardWriter::ClipboardWriter(SystemClipboard* system_clipboard,

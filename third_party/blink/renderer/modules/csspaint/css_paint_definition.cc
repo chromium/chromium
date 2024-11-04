@@ -149,8 +149,7 @@ void CSSPaintDefinition::ApplyAnimatedPropertyOverrides(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

@@ -413,7 +413,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
         } else if (avc_format == "annexb") {
           result->options.avc.produce_annexb = true;
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
       break;
@@ -427,7 +427,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
         } else if (hevc_format == "annexb") {
           result->options.hevc.produce_annexb = true;
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
       break;

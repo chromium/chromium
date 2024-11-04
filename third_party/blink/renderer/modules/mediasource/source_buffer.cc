@@ -1535,10 +1535,10 @@ bool SourceBuffer::InitializationSegmentReceived(
       if (first_initialization_segment_received_)
         track = FindExistingTrackById(videoTracks(), track_info.id);
     } else {
-      DVLOG(3) << __func__ << " this=" << this
-               << " failed: unsupported track type " << track_info.track_type;
       // TODO(servolk): Add handling of text tracks.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED() << __func__ << " this=" << this
+                   << " failed: unsupported track type "
+                   << track_info.track_type;
     }
     if (first_initialization_segment_received_ && !track) {
       DVLOG(3) << __func__ << " this=" << this

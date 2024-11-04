@@ -192,7 +192,7 @@ void PresentationConnection::DidChangeState(
                    TaskType::kPresentation);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PresentationConnection::DidClose(
@@ -568,7 +568,7 @@ void PresentationConnection::DidReceiveBinaryMessage(
       DispatchEvent(*MessageEvent::Create(buffer));
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 mojom::blink::PresentationConnectionState PresentationConnection::GetState()

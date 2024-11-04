@@ -307,7 +307,7 @@ void EncoderBase<Traits>::ProcessRequests() {
         ProcessFlush(request);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -101,8 +101,7 @@ sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
 PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
     const {
   // PaintRenderingContext2D does not call getImageData or createImageData.
-  NOTREACHED_IN_MIGRATION();
-  return PredefinedColorSpace::kSRGB;
+  NOTREACHED();
 }
 
 

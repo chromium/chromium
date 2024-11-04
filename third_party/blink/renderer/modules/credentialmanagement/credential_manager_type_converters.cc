@@ -186,8 +186,7 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
     case CredentialType::EMPTY:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -351,8 +350,7 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
   if (transport == AuthenticatorTransport::INTERNAL) {
     return "internal";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "usb";
+  NOTREACHED();
 }
 
 // static

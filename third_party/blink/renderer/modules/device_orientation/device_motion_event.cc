@@ -74,8 +74,7 @@ DeviceMotionEvent::requestPermission(ScriptState* script_state) {
 
   auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
   if (!window) {
-    NOTREACHED_IN_MIGRATION();
-    return EmptyPromise();
+    NOTREACHED();
   }
 
   return DeviceMotionController::From(*window).RequestPermission(script_state);

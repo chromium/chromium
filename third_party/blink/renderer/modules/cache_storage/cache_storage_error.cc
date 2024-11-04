@@ -39,8 +39,7 @@ String GetDefaultMessage(mojom::CacheStorageError web_error) {
     case mojom::CacheStorageError::kErrorCrossOriginResourcePolicy:
       return "Failed Cross-Origin-Resource-Policy check.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -54,8 +53,7 @@ void RejectCacheStorageWithError(ScriptPromiseResolverBase* resolver,
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
       // This function should only be called with an error.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case mojom::CacheStorageError::kErrorExists:
       resolver->RejectWithDOMException(DOMExceptionCode::kInvalidAccessError,
                                        final_message);

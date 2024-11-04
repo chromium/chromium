@@ -108,29 +108,29 @@ class TestInterfaceFactory final : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
       mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
           dst_video_decoder) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateStableVideoDecoder(
       mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
           video_decoder) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void CreateDefaultRenderer(
       const std::string& audio_device_id,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   void CreateCastRenderer(
       const base::UnguessableToken& overlay_plane_id,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif
 #if BUILDFLAG(IS_ANDROID)
@@ -140,19 +140,19 @@ class TestInterfaceFactory final : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
           renderer_extension_receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
           client_extension,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   void CreateCdm(const media::CdmConfig& cdm_config,
                  CreateCdmCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #if BUILDFLAG(IS_WIN)
   void CreateMediaFoundationRenderer(
@@ -163,7 +163,7 @@ class TestInterfaceFactory final : public media::mojom::InterfaceFactory {
       mojo::PendingRemote<
           ::media::mojom::MediaFoundationRendererClientExtension>
           client_extension_remote) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_WIN)
 

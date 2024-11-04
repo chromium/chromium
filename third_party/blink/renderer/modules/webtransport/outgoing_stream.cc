@@ -322,7 +322,7 @@ void OutgoingStream::OnHandleReady(MojoResult result,
       HandlePipeClosed();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -336,7 +336,7 @@ void OutgoingStream::OnPeerClosed(MojoResult result,
       HandlePipeClosed();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -458,8 +458,7 @@ size_t OutgoingStream::WriteDataSynchronously(base::span<const uint8_t> data) {
       return 0;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

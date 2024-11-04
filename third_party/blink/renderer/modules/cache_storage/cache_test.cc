@@ -165,7 +165,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
                             mojom::blink::CacheQueryOptionsPtr query_options,
                             int64_t trace_id,
                             GetAllMatchedEntriesCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void Keys(mojom::blink::FetchAPIRequestPtr fetch_api_request,
             mojom::blink::CacheQueryOptionsPtr query_options,
@@ -192,7 +192,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
                      mojo_base::BigBuffer data,
                      int64_t trace_id,
                      WriteSideDataCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:

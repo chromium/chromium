@@ -291,8 +291,7 @@ String Notification::dir() const {
       return "auto";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String Notification::lang() const {
@@ -377,8 +376,7 @@ v8::LocalVector<v8::Value> Notification::actions(
         action->setType("text");
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown action type: " << actions[i]->type;
+        NOTREACHED() << "Unknown action type: " << actions[i]->type;
     }
 
     action->setAction(actions[i]->action);
@@ -405,8 +403,7 @@ String Notification::scenario() const {
       return "incoming-call";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 V8NotificationPermission::Enum Notification::PermissionToV8Enum(

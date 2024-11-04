@@ -853,7 +853,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       return result;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CachedStorageArea::EvictCachedData() {

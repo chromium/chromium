@@ -364,15 +364,12 @@ int SQLiteDatabase::AuthorizerFunction(void* user_data,
     case SQLITE_RECURSIVE:
       return kSQLAuthDeny;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kSQLAuthDeny;
+  NOTREACHED();
 }
 
 void SQLiteDatabase::SetAuthorizer(DatabaseAuthorizer* authorizer) {
   if (!db_) {
-    NOTREACHED_IN_MIGRATION()
-        << "Attempt to set an authorizer on a non-open SQL database";
-    return;
+    NOTREACHED() << "Attempt to set an authorizer on a non-open SQL database";
   }
 
   base::AutoLock locker(authorizer_lock_);

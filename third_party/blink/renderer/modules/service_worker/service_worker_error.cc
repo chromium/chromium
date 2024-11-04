@@ -80,8 +80,7 @@ ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
                              web_error.message);
     case mojom::blink::ServiceWorkerErrorType::kNavigation:
       // ErrorTypeNavigation should have bailed out before calling this.
-      NOTREACHED_IN_MIGRATION();
-      return ExceptionParams(DOMExceptionCode::kUnknownError);
+      NOTREACHED();
     case mojom::blink::ServiceWorkerErrorType::kNetwork:
       return ExceptionParams(DOMExceptionCode::kNetworkError,
                              "The Service Worker failed by network.",
@@ -111,11 +110,9 @@ ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
     case mojom::blink::ServiceWorkerErrorType::kNone:
     case mojom::blink::ServiceWorkerErrorType::kType:
       // ErrorTypeType should have been handled before reaching this point.
-      NOTREACHED_IN_MIGRATION();
-      return ExceptionParams(DOMExceptionCode::kUnknownError);
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return ExceptionParams(DOMExceptionCode::kUnknownError);
+  NOTREACHED();
 }
 
 }  // namespace

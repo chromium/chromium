@@ -57,8 +57,7 @@ base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
     case V8UnionInt32ArrayAllowSharedOrLongSequence::ContentType::kLongSequence:
       return array->GetAsLongSequence();
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 // static
@@ -73,8 +72,7 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
         kUnsignedLongSequence:
       return array->GetAsUnsignedLongSequence();
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 }  // namespace blink

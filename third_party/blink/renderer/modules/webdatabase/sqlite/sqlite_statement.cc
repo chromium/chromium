@@ -225,8 +225,7 @@ int SQLiteStatement::BindValue(int index, const SQLValue& value) {
       return BindNull(index);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SQLITE_ERROR;
+  NOTREACHED();
 }
 
 unsigned SQLiteStatement::BindParameterCount() const {
@@ -280,8 +279,7 @@ SQLValue SQLiteStatement::GetColumnValue(int col) {
     case SQLITE_NULL:
       return SQLValue();
   }
-  NOTREACHED_IN_MIGRATION();
-  return SQLValue();
+  NOTREACHED();
 }
 
 String SQLiteStatement::GetColumnText(int col) {

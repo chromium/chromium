@@ -747,8 +747,7 @@ bool AudioContext::AreAutoplayRequirementsFulfilled() const {
       return AutoplayPolicy::IsDocumentAllowedToPlay(*GetWindow()->document());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
@@ -782,8 +781,7 @@ bool AudioContext::IsAllowedToStart() const {
 
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case AutoplayPolicy::Type::kUserGestureRequired:
       DCHECK(window->GetFrame());
       DCHECK(window->GetFrame()->IsCrossOriginToOutermostMainFrame());

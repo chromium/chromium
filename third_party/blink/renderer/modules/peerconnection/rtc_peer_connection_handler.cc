@@ -582,8 +582,7 @@ class RTCPeerConnectionHandler::Observer
     DCHECK(native_peer_connection_);
     std::string sdp;
     if (!candidate->ToString(&sdp)) {
-      NOTREACHED_IN_MIGRATION() << "OnIceCandidate: Could not get SDP string.";
-      return;
+      NOTREACHED() << "OnIceCandidate: Could not get SDP string.";
     }
     // The generated candidate may have been added to the pending or current
     // local description, take a snapshot and surface them to the main thread.
@@ -2097,8 +2096,7 @@ wtf_size_t RTCPeerConnectionHandler::GetTransceiverIndex(
     if (platform_transceiver.Id() == rtp_transceivers_[i]->Id())
       return i;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0u;
+  NOTREACHED();
 }
 
 std::unique_ptr<blink::RTCRtpTransceiverImpl>

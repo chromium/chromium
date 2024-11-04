@@ -632,8 +632,7 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
       }
       return periodic_wave_triangle_.Get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

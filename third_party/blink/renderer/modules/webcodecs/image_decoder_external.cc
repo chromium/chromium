@@ -232,8 +232,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       }
       break;
     case V8ImageBufferSource::ContentType::kReadableStream:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   auto buffer_contents =

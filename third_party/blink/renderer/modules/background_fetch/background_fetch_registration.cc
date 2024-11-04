@@ -344,7 +344,7 @@ void BackgroundFetchRegistration::DidAbort(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 V8BackgroundFetchResult BackgroundFetchRegistration::result() const {

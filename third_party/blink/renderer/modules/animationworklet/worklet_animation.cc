@@ -95,8 +95,7 @@ bool IsActive(V8AnimationPlayState::Enum state) {
       return true;
     default:
       // kUnset and kFinished are not used in WorkletAnimation.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -125,8 +124,7 @@ AnimationTimeline* ConvertAnimationTimeline(
     case V8UnionDocumentTimelineOrScrollTimeline::ContentType::kScrollTimeline:
       return timeline->GetAsScrollTimeline();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void StartEffectOnCompositor(CompositorAnimation* animation,

@@ -114,8 +114,7 @@ WebGPUExecutionContextToken GetExecutionContextToken(
   if (execution_context->IsWindow()) {
     return To<LocalDOMWindow>(execution_context)->document()->Token();
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebGPUExecutionContextToken();
+  NOTREACHED();
 }
 
 }  // anonymous namespace

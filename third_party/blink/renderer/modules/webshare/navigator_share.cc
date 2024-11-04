@@ -50,8 +50,7 @@ constexpr uint32_t kMaxUrlLength = 16U * 1024;
 String ErrorToString(mojom::blink::ShareError error) {
   switch (error) {
     case mojom::blink::ShareError::OK:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::ShareError::INTERNAL_ERROR:
       return "Share failed";
     case mojom::blink::ShareError::PERMISSION_DENIED:
@@ -59,8 +58,7 @@ String ErrorToString(mojom::blink::ShareError error) {
     case mojom::blink::ShareError::CANCELED:
       return "Share canceled";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 bool HasFiles(const ShareData& data) {

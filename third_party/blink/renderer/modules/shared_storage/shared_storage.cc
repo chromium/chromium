@@ -93,7 +93,7 @@ void LogTimingHistogramForSetterMethod(SharedStorageSetterMethod method,
           base::StrCat({histogram_prefix, "Timing.Clear"}), elapsed_time);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -147,8 +147,7 @@ inline ImageBitmapSource* ToImageBitmapSourceInternal(
       return value->GetAsVideoFrame();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmapFromBlob(
@@ -325,7 +324,7 @@ void ImageBitmapFactories::ImageBitmapLoader::RejectPromise(
           "The ImageBitmap could not be allocated."));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   if (loader_) {
     loader_->Cancel();

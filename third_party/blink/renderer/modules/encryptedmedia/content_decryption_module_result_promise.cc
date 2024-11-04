@@ -44,7 +44,7 @@ void WebCdmExceptionToPromiseRejection(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ContentDecryptionModuleResultPromise::ContentDecryptionModuleResultPromise(
@@ -57,32 +57,17 @@ ContentDecryptionModuleResultPromise::~ContentDecryptionModuleResultPromise() =
     default;
 
 void ContentDecryptionModuleResultPromise::Complete() {
-  NOTREACHED_IN_MIGRATION();
-  if (!IsValidToFulfillPromise())
-    return;
-  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "Unexpected completion.");
-  resolver_.Clear();
+  NOTREACHED();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithContentDecryptionModule(
     std::unique_ptr<WebContentDecryptionModule> cdm) {
-  NOTREACHED_IN_MIGRATION();
-  if (!IsValidToFulfillPromise())
-    return;
-  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "Unexpected completion.");
-  resolver_.Clear();
+  NOTREACHED();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithSession(
     WebContentDecryptionModuleResult::SessionStatus status) {
-  NOTREACHED_IN_MIGRATION();
-  if (!IsValidToFulfillPromise())
-    return;
-  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                    "Unexpected completion.");
-  resolver_.Clear();
+  NOTREACHED();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithKeyStatus(

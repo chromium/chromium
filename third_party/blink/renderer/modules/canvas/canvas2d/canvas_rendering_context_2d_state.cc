@@ -128,7 +128,7 @@ FontSelectionValue CanvasFontStretchToSelectionValue(
       stretch_value = kSemiExpandedWidthValue;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return stretch_value;
 }
@@ -150,7 +150,7 @@ TextRenderingMode CanvasTextRenderingToTextRenderingMode(
       text_rendering_mode = TextRenderingMode::kGeometricPrecision;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return text_rendering_mode;
 }
@@ -490,7 +490,7 @@ void CanvasRenderingContext2DState::ValidateFilterState() const {
       DCHECK(css_filter_value_ || canvas_filter_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 #endif
 }
@@ -801,10 +801,7 @@ const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
       flags = &stroke_flags_;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      // no break on purpose: flags needs to be assigned to avoid compiler
-      // warning about uninitialized variable.
-      [[fallthrough]];
+      NOTREACHED();
     case kFillPaintType:
       fill_style_.SyncFlags(fill_flags_, global_alpha_);
       flags = &fill_flags_;

@@ -156,7 +156,7 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
     } else if (playback_rate == 2.0) {
       RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k2X);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // Close the playback speed list.

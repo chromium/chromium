@@ -26,8 +26,7 @@ struct TypeConverter<String, shape_detection::mojom::blink::LandmarkType> {
         return "nose";
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 };
 

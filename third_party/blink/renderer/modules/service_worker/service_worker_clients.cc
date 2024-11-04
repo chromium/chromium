@@ -61,8 +61,7 @@ void DidGetClient(ScriptPromiseResolver<ServiceWorkerClient>* resolver,
       client = MakeGarbageCollected<ServiceWorkerClient>(*info);
       break;
     case mojom::blink::ServiceWorkerClientType::kAll:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   resolver->Resolve(client);
 }

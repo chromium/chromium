@@ -565,7 +565,7 @@ class MediaStreamConstraintsRemoteAPMTest
       case ChromeWideAecExperiment::kEnabled:
         return ApmLocation::kAudioService;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

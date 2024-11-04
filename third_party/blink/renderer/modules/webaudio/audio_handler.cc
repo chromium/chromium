@@ -143,8 +143,7 @@ String AudioHandler::NodeTypeName() const {
     case kNodeTypeUnknown:
     case kNodeTypeEnd:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "UnknownNode";
+      NOTREACHED();
   }
 }
 

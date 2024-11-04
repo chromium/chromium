@@ -33,7 +33,7 @@ class FileSystemDispatcher::WriteListener
   void ResultsRetrieved(
       Vector<filesystem::mojom::blink::DirectoryEntryPtr> entries,
       bool has_more) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ErrorOccurred(base::File::Error error_code) override {
@@ -70,9 +70,7 @@ class FileSystemDispatcher::ReadDirectoryListener
     callbacks_->DidFail(error_code);
   }
 
-  void DidWrite(int64_t byte_count, bool complete) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void DidWrite(int64_t byte_count, bool complete) override { NOTREACHED(); }
 
  private:
   std::unique_ptr<EntriesCallbacks> callbacks_;

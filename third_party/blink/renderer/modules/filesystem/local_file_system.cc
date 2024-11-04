@@ -118,7 +118,7 @@ void LocalFileSystem::RequestFileSystemAccessInternal(
     }
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LocalFileSystem::FileSystemNotAllowedInternal(

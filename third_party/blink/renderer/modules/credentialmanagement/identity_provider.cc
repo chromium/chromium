@@ -55,7 +55,7 @@ void OnRequestUserInfo(
       return;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

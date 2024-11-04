@@ -77,8 +77,7 @@ VibrationController::SanitizeVibrationPattern(
       return sanitizeVibrationPatternInternal(
           input->GetAsUnsignedLongSequence());
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 // static

@@ -202,8 +202,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
                     static_cast<double>(playback_size));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     return std::make_unique<MockWebAudioDeviceForAudioContext>(

@@ -49,9 +49,7 @@ void PaymentHandlerUtils::ReportResponseError(
     case ServiceWorkerResponseError::kResponseBodyBroken:
     case ServiceWorkerResponseError::kDisallowedByCorp:
     case ServiceWorkerResponseError::kRequestBodyUnusable:
-      NOTREACHED_IN_MIGRATION();
-      error_message = error_message + "an unexpected error occurred.";
-      break;
+      NOTREACHED();
   }
 
   DCHECK(execution_context);

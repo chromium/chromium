@@ -53,9 +53,7 @@ void QueryStorageUsageAndQuotaCallback(
     case mojom::blink::QuotaStatusCode::kErrorNotSupported:
     case mojom::blink::QuotaStatusCode::kErrorInvalidModification:
     case mojom::blink::QuotaStatusCode::kErrorInvalidAccess:
-      NOTREACHED_IN_MIGRATION();
-      error_message = kGenericErrorMessage;
-      break;
+      NOTREACHED();
     case mojom::blink::QuotaStatusCode::kUnknown:
       error_message = kGenericErrorMessage;
       break;

@@ -245,8 +245,7 @@ wgpu::PipelineLayout AsDawnType(
       return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

@@ -436,10 +436,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual bool HasAlpha() const = 0;
 
-  virtual bool IsDesynchronized() const {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  virtual bool IsDesynchronized() const { NOTREACHED(); }
 
   virtual bool isContextLost() const = 0;
 
@@ -634,12 +631,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                            size_t row_bytes,
                            int x,
                            int y) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   void CheckOverdraw(const cc::PaintFlags*,
@@ -858,10 +853,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void PutByteArray(const SkPixmap& source,
                     const gfx::Rect& source_rect,
                     const gfx::Vector2d& dest_offset);
-  virtual bool IsCanvas2DBufferValid() const {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  virtual bool IsCanvas2DBufferValid() const { NOTREACHED(); }
 
   virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 

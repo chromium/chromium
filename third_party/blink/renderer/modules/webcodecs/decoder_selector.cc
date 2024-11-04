@@ -31,9 +31,7 @@ class NullDemuxerStream : public media::DemuxerStream {
 
   ~NullDemuxerStream() override = default;
 
-  void Read(uint32_t count, ReadCB read_cb) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void Read(uint32_t count, ReadCB read_cb) override { NOTREACHED(); }
 
   void Configure(DecoderConfigType config);
 
@@ -49,10 +47,7 @@ class NullDemuxerStream : public media::DemuxerStream {
 
   Type type() const override { return stream_type; }
 
-  bool SupportsConfigChanges() override {
-    NOTREACHED_IN_MIGRATION();
-    return true;
-  }
+  bool SupportsConfigChanges() override { NOTREACHED(); }
 
   void set_low_delay(bool low_delay) { low_delay_ = low_delay; }
   media::StreamLiveness liveness() const override {

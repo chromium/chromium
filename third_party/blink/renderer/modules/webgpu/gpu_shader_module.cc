@@ -94,8 +94,7 @@ void GPUShaderModule::OnCompilationInfoCallback(
     const char* message = nullptr;
     switch (status) {
       case wgpu::CompilationInfoRequestStatus::Success:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case wgpu::CompilationInfoRequestStatus::Error:
         message = "Unexpected error in getCompilationInfo";
         break;

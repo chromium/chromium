@@ -31,7 +31,7 @@ mojom::blink::AIRewriterTone ToMojoAIRewriterTone(V8AIRewriterTone tone) {
     case V8AIRewriterTone::Enum::kMoreCasual:
       return mojom::blink::AIRewriterTone::kMoreCasual;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 mojom::blink::AIRewriterLength ToMojoAIRewriterLength(V8AIRewriterLength tone) {
@@ -43,7 +43,7 @@ mojom::blink::AIRewriterLength ToMojoAIRewriterLength(V8AIRewriterLength tone) {
     case V8AIRewriterLength::Enum::kLonger:
       return mojom::blink::AIRewriterLength::kLonger;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,

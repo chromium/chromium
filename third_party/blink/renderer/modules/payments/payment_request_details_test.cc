@@ -86,8 +86,7 @@ std::ostream& operator<<(std::ostream& out, DetailsTestCase test_case) {
       out << "error ";
       break;
     case kPaymentTestDetailNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   switch (test_case.data_) {
@@ -107,8 +106,7 @@ std::ostream& operator<<(std::ostream& out, DetailsTestCase test_case) {
       out << "value ";
       break;
     case kPaymentTestDataNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   switch (test_case.mod_type_) {

@@ -52,12 +52,10 @@ static String ErrorCodeToString(
     case media::mojom::blink::SpeechRecognitionErrorCode::kLanguageNotSupported:
       return "language-not-supported";
     case media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 SpeechRecognitionErrorEvent* SpeechRecognitionErrorEvent::Create(

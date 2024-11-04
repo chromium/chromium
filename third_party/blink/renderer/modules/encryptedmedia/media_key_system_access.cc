@@ -117,9 +117,8 @@ HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
         capability->setEncryptionScheme("cbcs-1-9");
         break;
       case WebMediaKeySystemMediaCapability::EncryptionScheme::kUnrecognized:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Unrecognized encryption scheme should never be returned.";
-        break;
     }
 
     result[i] = capability;

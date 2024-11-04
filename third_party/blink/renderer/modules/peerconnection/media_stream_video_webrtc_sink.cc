@@ -40,8 +40,7 @@ webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
       return webrtc::VideoTrackInterface::ContentHint::kNone;
     case WebMediaStreamTrack::ContentHintType::kAudioSpeech:
     case WebMediaStreamTrack::ContentHintType::kAudioMusic:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case WebMediaStreamTrack::ContentHintType::kVideoMotion:
       return webrtc::VideoTrackInterface::ContentHint::kFluid;
     case WebMediaStreamTrack::ContentHintType::kVideoDetail:
@@ -49,8 +48,7 @@ webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
     case WebMediaStreamTrack::ContentHintType::kVideoText:
       return webrtc::VideoTrackInterface::ContentHint::kText;
   }
-  NOTREACHED_IN_MIGRATION();
-  return webrtc::VideoTrackInterface::ContentHint::kNone;
+  NOTREACHED();
 }
 
 void RequestRefreshFrameOnRenderTaskRunner(MediaStreamComponent* component) {

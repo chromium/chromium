@@ -614,7 +614,7 @@ V8IDBTransactionDurability IDBTransaction::durability() const {
           V8IDBTransactionDurability::Enum::kRelaxed);
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DOMStringList* IDBTransaction::objectStoreNames() const {
@@ -640,8 +640,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
   switch (state_) {
     case kActive:
       // Callers should check !IsActive() before calling.
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case kInactive:
       return IDBDatabase::kTransactionInactiveErrorMessage;
     case kCommitting:
@@ -649,8 +648,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
     case kFinished:
       return IDBDatabase::kTransactionFinishedErrorMessage;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 DispatchEventResult IDBTransaction::DispatchEventInternal(Event& event) {

@@ -23,7 +23,7 @@ std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
     case AIMetrics::AISessionType::kSummarizer:
       return "Summarizer";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

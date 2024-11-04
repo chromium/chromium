@@ -402,8 +402,7 @@ TextDecorationStyleToAXTextDecorationStyle(
       return ax::mojom::blink::TextDecorationStyle::kWavy;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ax::mojom::blink::TextDecorationStyle::kNone;
+  NOTREACHED();
 }
 
 String GetTitle(blink::Element* element) {
@@ -2400,9 +2399,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
 #endif
 
   if (IsDetached()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Do not compute role on detached object: " << this;
-    return ax::mojom::blink::Role::kUnknown;
+    NOTREACHED() << "Do not compute role on detached object: " << this;
   }
 
   native_role_ = NativeRoleIgnoringAria();
@@ -3292,8 +3289,7 @@ ax::mojom::blink::ListStyle AXNodeObject::GetListStyle() const {
         return ax::mojom::blink::ListStyle::kOther;
       case CounterStyleSpeakAs::kAuto:
       case CounterStyleSpeakAs::kReference:
-        NOTREACHED_IN_MIGRATION();
-        return ax::mojom::blink::ListStyle::kOther;
+        NOTREACHED();
     }
   }
 
@@ -3532,8 +3528,7 @@ ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
       return ax::mojom::blink::WritingDirection::kBtt;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return AXObject::GetTextDirection();
+  NOTREACHED();
 }
 
 ax::mojom::blink::TextPosition AXNodeObject::GetTextPositionFromRole() const {
@@ -4491,8 +4486,7 @@ static LayoutBlockFlow* GetNearestBlockFlow(LayoutObject* object) {
     current = current->Parent();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // Returns true if |r1| and |r2| are both non-null, both inline, and are
@@ -5716,10 +5710,9 @@ void AXNodeObject::AddOwnedChildren() {
 }
 
 void AXNodeObject::AddChildrenImpl() {
-#define CHECK_ATTACHED()                                               \
-  if (IsDetached()) {                                                  \
-    NOTREACHED_IN_MIGRATION() << "Detached adding children: " << this; \
-    return;                                                            \
+#define CHECK_ATTACHED()                                  \
+  if (IsDetached()) {                                     \
+    NOTREACHED() << "Detached adding children: " << this; \
   }
 
   CHECK(NeedsToUpdateChildren());

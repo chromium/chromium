@@ -49,9 +49,8 @@ V8GamepadHapticsResult ResultToV8(GamepadHapticsResult result) {
       return V8GamepadHapticsResult(
           V8GamepadHapticsResult::Enum::kNotSupported);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return V8GamepadHapticsResult(V8GamepadHapticsResult::Enum::kNotSupported);
 }
 
 }  // namespace

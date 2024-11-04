@@ -56,8 +56,7 @@ PushMessageData* PushMessageData::Create(
           base::as_byte_span(encoded_string));
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 PushMessageData::PushMessageData(base::span<const uint8_t> data) {

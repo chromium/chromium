@@ -72,7 +72,7 @@ std::tuple<int, int> ComputeExpectedSourceAndOutputBufferSizes(
       // ProcessedLocalAudioSource requests audio in the post-processing format.
       return {kExpectedOutputBufferSize, kExpectedOutputBufferSize};
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -442,8 +442,7 @@ bool PannerHandler::SetDistanceModel(unsigned model) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   return true;

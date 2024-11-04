@@ -24,8 +24,7 @@ namespace blink {
 namespace {
 
 mojom::blink::MediaDevicesDispatcherHost* UnusedMediaDevicesDispatcherHost() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void SignalSourceReady(

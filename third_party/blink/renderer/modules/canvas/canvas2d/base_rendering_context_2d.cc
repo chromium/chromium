@@ -2522,8 +2522,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
           "layers are open in the source canvas.");
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   if (!image_for_rendering)
@@ -3012,9 +3011,9 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
         exception_state.ThrowRangeError("Out of memory in putImageData");
         return;
       }
-      if (!converted_bitmap.writePixels(data_pixmap, 0, 0))
-        NOTREACHED_IN_MIGRATION()
-            << "Failed to convert ImageData with writePixels.";
+      if (!converted_bitmap.writePixels(data_pixmap, 0, 0)) {
+        NOTREACHED() << "Failed to convert ImageData with writePixels.";
+      }
 
       PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
       if (GetPaintCanvas()) {
@@ -3357,8 +3356,7 @@ static inline TextDirection ToTextDirection(
     case CanvasRenderingContext2DState::kDirectionLTR:
       return TextDirection::kLtr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return TextDirection::kLtr;
+  NOTREACHED();
 }
 
 HTMLCanvasElement* BaseRenderingContext2D::HostAsHTMLCanvasElement() const {

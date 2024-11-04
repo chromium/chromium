@@ -148,8 +148,7 @@ void SerialPortUnderlyingSink::SignalError(SerialSendError error) {
   v8::Local<v8::Value> exception;
   switch (error) {
     case SerialSendError::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SerialSendError::DISCONNECTED:
       exception = V8ThrowDOMException::CreateOrDie(
           isolate, DOMExceptionCode::kNetworkError,
@@ -205,7 +204,7 @@ void SerialPortUnderlyingSink::OnHandleReady(MojoResult result,
       PipeClosed();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -258,7 +257,7 @@ void SerialPortUnderlyingSink::WriteData() {
       PipeClosed();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -138,8 +138,7 @@ std::optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
       return device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::unique_ptr<gfx::Transform> getPoseMatrix(
@@ -396,8 +395,8 @@ XRSession::XRSession(
       blend_mode_ = V8XREnvironmentBlendMode::Enum::kAlphaBlend;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown environment blend mode: " << environment_blend_mode;
+      NOTREACHED() << "Unknown environment blend mode: "
+                   << environment_blend_mode;
   }
 
   switch (interaction_mode) {

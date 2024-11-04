@@ -35,8 +35,7 @@ static ax::mojom::blink::TextAffinity ToAXAffinity(TextAffinity affinity) {
     case TextAffinity::kDownstream:
       return ax::mojom::blink::TextAffinity::kDownstream;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ax::mojom::blink::TextAffinity::kDownstream;
+      NOTREACHED();
   }
 }
 
@@ -298,11 +297,7 @@ void BlinkAXTreeSource::SerializeNode(const AXObject* src,
 #endif
 
   if (!src || src->IsDetached() || !src->IsIncludedInTree()) {
-    dst->AddState(ax::mojom::blink::State::kIgnored);
-    dst->id = -1;
-    dst->role = ax::mojom::blink::Role::kUnknown;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   src->Serialize(dst, ax_object_cache_->GetAXMode(), is_snapshot_);

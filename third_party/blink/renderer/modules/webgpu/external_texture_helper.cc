@@ -42,7 +42,7 @@ wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
     case media::VIDEO_ROTATION_270:
       return wgpu::ExternalTextureRotation::Rotate270Degrees;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // TODO(crbug.com/40227105): Support HDR color space and color range in

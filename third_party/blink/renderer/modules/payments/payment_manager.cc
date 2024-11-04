@@ -69,7 +69,7 @@ ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
         mojo_delegation = MojoPaymentDelegation::PAYER_EMAIL;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     mojo_delegations.push_back(mojo_delegation);
   }

@@ -282,7 +282,7 @@ void MediaControlsMediaEventListener::Invoke(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MediaControlsMediaEventListener::OnRemotePlaybackAvailabilityChanged() {

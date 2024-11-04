@@ -79,8 +79,7 @@ std::unique_ptr<IDBKey> IDBKey::Clone(const IDBKey* rkey) {
     case mojom::IDBKeyType::Min:
       break;  // Not used, NOTREACHED.
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 IDBKey::IDBKey()
@@ -174,12 +173,10 @@ int IDBKey::Compare(const IDBKey* other) const {
     case mojom::IDBKeyType::Invalid:
     case mojom::IDBKeyType::None:
     case mojom::IDBKeyType::Min:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
@@ -188,8 +185,7 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
   switch (type_) {
     case mojom::IDBKeyType::Invalid:
     case mojom::IDBKeyType::Min:
-      NOTREACHED_IN_MIGRATION();
-      return v8::Local<v8::Value>();
+      NOTREACHED();
     case mojom::IDBKeyType::None:
       return v8::Null(isolate);
     case mojom::IDBKeyType::Number:
@@ -221,8 +217,7 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return v8::Local<v8::Value>();
+  NOTREACHED();
 }
 
 bool IDBKey::IsLessThan(const IDBKey* other) const {

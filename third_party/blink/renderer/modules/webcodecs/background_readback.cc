@@ -260,11 +260,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
     base::span<uint8_t> dest_buffer,
     ReadbackDoneCallback done_cb) {
   if (dest_layout.NumPlanes() != 1) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "This method shouldn't be called on anything but RGB frames";
-    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
-        .Run(false);
-    return;
   }
 
   auto* ri = GetSharedGpuRasterInterface();

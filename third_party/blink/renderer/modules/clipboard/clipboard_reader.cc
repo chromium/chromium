@@ -55,9 +55,7 @@ class ClipboardPngReader final : public ClipboardReader {
   }
 
  private:
-  void NextRead(Vector<uint8_t> utf8_bytes) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void NextRead(Vector<uint8_t> utf8_bytes) override { NOTREACHED(); }
 };
 
 // Reads an image from the System Clipboard as a Blob with text/plain content.
@@ -349,9 +347,8 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
   }
 
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "IsValidType() and Create() have inconsistent implementations.";
-  return nullptr;
 }
 
 ClipboardReader::ClipboardReader(SystemClipboard* system_clipboard,

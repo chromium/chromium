@@ -53,8 +53,7 @@ String EncryptedMediaUtils::ConvertFromInitDataType(
       return String();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 // static
@@ -79,12 +78,10 @@ String EncryptedMediaUtils::ConvertFromSessionType(
       return kPersistentLicense;
     case WebEncryptedMediaSessionType::kUnknown:
       // Unexpected session type from Chromium.
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 // static
@@ -107,8 +104,7 @@ String EncryptedMediaUtils::ConvertKeyStatusToString(
       return "internal-error";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "internal-error";
+  NOTREACHED();
 }
 
 // static

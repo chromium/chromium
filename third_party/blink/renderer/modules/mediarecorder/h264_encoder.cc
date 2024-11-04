@@ -203,8 +203,7 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
   TRACE_EVENT0("media", "H264Encoder::ConfigureEncoder");
   ISVCEncoder* temp_encoder = nullptr;
   if (WelsCreateSVCEncoder(&temp_encoder) != 0) {
-    NOTREACHED_IN_MIGRATION() << "Failed to create OpenH264 encoder";
-    return false;
+    NOTREACHED() << "Failed to create OpenH264 encoder";
   }
   openh264_encoder_.reset(temp_encoder);
   configured_size_ = size;
@@ -305,8 +304,7 @@ SEncParamExt H264Encoder::GetEncoderOptionForTesting() {
   SEncParamExt params;
   if (openh264_encoder_->GetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT,
                                    &params) != 0) {
-    NOTREACHED_IN_MIGRATION()
-        << "Failed to get ENCODER_OPTION_SVC_ENCODE_PARAM_EXT";
+    NOTREACHED() << "Failed to get ENCODER_OPTION_SVC_ENCODE_PARAM_EXT";
   }
 
   return params;

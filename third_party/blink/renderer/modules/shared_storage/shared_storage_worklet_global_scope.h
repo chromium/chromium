@@ -168,14 +168,13 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       SharedStorageOperationDefinition*& operation_definition);
 
   network::mojom::RequestDestination GetDestination() const override {
-    // Not called as the current implementation uses the custom module script
-    // loader.
-    NOTREACHED_IN_MIGRATION();
-
     // Once we migrate to the blink-worklet's script loading infra, this needs
     // to return a valid destination defined in the Fetch standard:
     // https://fetch.spec.whatwg.org/#concept-request-destination
-    return network::mojom::RequestDestination::kEmpty;
+    //
+    // Not called as the current implementation uses the custom module script
+    // loader.
+    NOTREACHED();
   }
 
   // Sets continuation-preserved embedder data to allow us to identify this
