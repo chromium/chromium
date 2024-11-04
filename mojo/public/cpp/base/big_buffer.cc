@@ -9,6 +9,8 @@
 
 #include "mojo/public/cpp/base/big_buffer.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
@@ -68,18 +70,7 @@ void TryCreateSharedMemory(
 
 }  // namespace
 
-// static
-constexpr size_t BigBuffer::kMaxInlineBytes;
-
-BigBuffer::BigBuffer() : storage_type_(StorageType::kBytes) {}
-
-BigBuffer::BigBuffer(BigBuffer&& other)
-    : storage_type_(other.storage_type_),
-      bytes_(std::move(other.bytes_)),
-      shared_memory_(std::move(other.shared_memory_)) {
-  // Make sure |other| looks empty.
-  other.storage_type_ = StorageType::kInvalidBuffer;
-}
+BigBuffer::BigBuffer() = default;
 
 BigBuffer::BigBuffer(base::span<const uint8_t> data) {
   *this = BigBufferView::ToBigBuffer(BigBufferView(data));
@@ -98,23 +89,26 @@ BigBuffer::BigBuffer(size_t size) {
   }
 }
 
-BigBuffer::~BigBuffer() = default;
+BigBuffer::BigBuffer(BigBuffer&& other)
+    // Make sure |other| looks empty.
+    : storage_type_(
+          std::exchange(other.storage_type_, StorageType::kInvalidBuffer)),
+      bytes_(std::move(other.bytes_)),
+      shared_memory_(std::move(other.shared_memory_)) {}
 
 BigBuffer& BigBuffer::operator=(BigBuffer&& other) {
-  storage_type_ = other.storage_type_;
+  // Make sure |other| looks empty.
+  storage_type_ =
+      std::exchange(other.storage_type_, StorageType::kInvalidBuffer);
   bytes_ = std::move(other.bytes_);
   shared_memory_ = std::move(other.shared_memory_);
-  // Make sure |other| looks empty.
-  other.storage_type_ = StorageType::kInvalidBuffer;
   return *this;
 }
 
+BigBuffer::~BigBuffer() = default;
+
 BigBuffer BigBuffer::Clone() const {
   return BigBuffer(base::span(*this));
-}
-
-uint8_t* BigBuffer::data() {
-  return const_cast<uint8_t*>(const_cast<const BigBuffer*>(this)->data());
 }
 
 const uint8_t* BigBuffer::data() const {
