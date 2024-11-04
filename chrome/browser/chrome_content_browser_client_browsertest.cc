@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   test_theme_.set_forced_colors(GetParam());
 
-  const char* url = "https://foo.com";
+  const char* url = "http://foo.com";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   // Add url to the page colors block list.

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -173,7 +172,6 @@ class TypedNavigationUpgradeThrottleBrowserTest
     } else {
       disabled_features.push_back(omnibox::kDefaultTypedNavigationsToHttps);
     }
-    disabled_features.push_back(features::kHttpsFirstBalancedModeAutoEnable);
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -534,11 +532,8 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
 // If the feature is disabled, typing a URL in the omnibox without a scheme
 // should load the HTTP version.
-// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
-// under HFM Balanced Mode and typed nav upgrades is being removed.
-IN_PROC_BROWSER_TEST_P(
-    TypedNavigationUpgradeThrottleBrowserTest,
-    DISABLED_UrlTypedWithoutScheme_FeatureDisabled_ShouldNotUpgrade) {
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       UrlTypedWithoutScheme_FeatureDisabled_ShouldNotUpgrade) {
   if (IsFeatureEnabled()) {
     return;
   }
@@ -717,12 +712,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 // Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
 // press enter. This should hit a bad HTTPS URL and fallback to HTTP, never
 // showing an interstitial.
-// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
-// under HTTPS-Upgrades only. Will be removed as part of removing the typed nav
-// upgrades feature.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleBrowserTest,
-    DISABLED_PasteUrlWithoutASchemeAndHitEnter_BadHttps_ShouldFallback) {
+    PasteUrlWithoutASchemeAndHitEnter_BadHttps_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -799,12 +791,10 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded, 1);
 }
 
-// If the upgraded HTTPS URL is not available (because of an SSL error), we
+// If the upgraded HTTPS URL is not available because of an SSL error), we
 // should load the HTTP URL.
-// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
-// under HFM Balanced Mode and typed nav upgrades is being removed.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       DISABLED_UrlTypedWithoutScheme_BadHttps_ShouldFallback) {
+                       UrlTypedWithoutScheme_BadHttps_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -835,11 +825,9 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
 // Similar to UrlTypedWithoutScheme_BadHttps_ShouldFallback, except this time
 // user presses CTRL+Enter to navigate.
-// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
-// under HFM Balanced Mode and typed nav upgrades is being removed.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleBrowserTest,
-    DISABLED_UrlTypedWithoutScheme_CtrlEnter_BadHttps_ShouldFallback) {
+    UrlTypedWithoutScheme_CtrlEnter_BadHttps_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -871,10 +859,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // If the upgraded HTTPS URL is not available because of a net error, we should
 // load the HTTP URL.
-// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
-// under HFM Balanced Mode and typed nav upgrades is being removed.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       DISABLED_UrlTypedWithoutScheme_NetError_ShouldFallback) {
+                       UrlTypedWithoutScheme_NetError_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }

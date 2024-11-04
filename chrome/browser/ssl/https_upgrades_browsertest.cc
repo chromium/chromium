@@ -122,8 +122,7 @@ enum class HttpsUpgradesTestType {
   kHttpsFirstModeForTypicallySecureUsers,
 
   // Enables HFM with Site Engagement and HFM for Typically Secure Users (both
-  // automatically enable HFM). Disables BalancedModeByDefault as that case is
-  // already tested by kHttpsFirstBalancedMode.
+  // automatically enable HFM).
   kAllAutoHFM,
 
   // Enables HFM in Incognito mode. Runs testcases inside an Incognito
@@ -191,7 +190,9 @@ class HttpsUpgradesBrowserTest
             /*enabled_features=*/{},
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForEngagedSites,
-                features::kHttpsFirstModeV2ForTypicallySecureUsers});
+                features::kHttpsFirstModeV2ForTypicallySecureUsers,
+                features::kHttpsFirstModeIncognito,
+                features::kHttpsFirstBalancedMode});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeWithSiteEngagement:
@@ -200,8 +201,7 @@ class HttpsUpgradesBrowserTest
             /*enabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites,
                                   features::kHttpsFirstBalancedMode},
             /*disabled_features=*/{
-                features::kHttpsFirstModeV2ForTypicallySecureUsers,
-                features::kHttpsFirstBalancedModeAutoEnable});
+                features::kHttpsFirstModeV2ForTypicallySecureUsers});
         break;
 
       case HttpsUpgradesTestType::
@@ -220,9 +220,7 @@ class HttpsUpgradesBrowserTest
             /*enabled_features=*/{features::
                                       kHttpsFirstModeV2ForTypicallySecureUsers,
                                   features::kHttpsFirstBalancedMode},
-            /*disabled_features=*/{
-                features::kHttpsFirstModeV2ForEngagedSites,
-                features::kHttpsFirstBalancedModeAutoEnable});
+            /*disabled_features=*/{features::kHttpsFirstModeV2ForEngagedSites});
         break;
 
       case HttpsUpgradesTestType::kAllAutoHFM:
@@ -232,8 +230,7 @@ class HttpsUpgradesBrowserTest
                                       kHttpsFirstModeV2ForTypicallySecureUsers,
                                   features::kHttpsFirstModeV2ForEngagedSites,
                                   features::kHttpsFirstBalancedMode},
-            /*disabled_features=*/{
-                features::kHttpsFirstBalancedModeAutoEnable});
+            /*disabled_features=*/{});
         break;
 
       case HttpsUpgradesTestType::kHttpsFirstModeIncognito:
@@ -244,8 +241,7 @@ class HttpsUpgradesBrowserTest
 
       case HttpsUpgradesTestType::kHttpsFirstBalancedMode:
         feature_list_.InitWithFeatures(
-            /*enabled_features=*/{features::kHttpsFirstBalancedMode,
-                                  features::kHttpsFirstBalancedModeAutoEnable},
+            /*enabled_features=*/{features::kHttpsFirstBalancedMode},
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
                 features::kHttpsFirstModeV2ForEngagedSites});
@@ -263,7 +259,6 @@ class HttpsUpgradesBrowserTest
                 features::kHttpsFirstModeForAdvancedProtectionUsers,
                 features::kHttpsFirstModeIncognito,
                 features::kHttpsFirstBalancedMode,
-                features::kHttpsFirstBalancedModeAutoEnable,
             },
             /*disabled_features=*/{});
         break;
@@ -278,8 +273,7 @@ class HttpsUpgradesBrowserTest
             /*disabled_features=*/{
                 features::kHttpsFirstModeV2ForEngagedSites,
                 features::kHttpsFirstModeV2ForTypicallySecureUsers,
-                features::kHttpsFirstBalancedMode,
-                features::kHttpsFirstBalancedModeAutoEnable});
+                features::kHttpsFirstBalancedMode});
         break;
     }
 
