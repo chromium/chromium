@@ -8,7 +8,6 @@
 #include <iterator>
 
 #include "base/strings/to_string.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"

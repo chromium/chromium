@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

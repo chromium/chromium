@@ -10,7 +10,6 @@
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"

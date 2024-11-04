@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -40,6 +39,39 @@ const std::array<syncer::DataType, 2> kBatchUploadOrderedAvailableTypes{
     syncer::DataType::CONTACT_INFO,
 };
 
+// Data descriptions with no local data will be filtered out.
+std::vector<syncer::LocalDataDescription>
+GetOrderedListOfNonEmptyDataDescriptions(
+    std::map<syncer::DataType, syncer::LocalDataDescription>
+        local_data_descriptions_map) {
+  // TODO(crbug.com/361340640): make the data type entry point the first one.
+  // TODO(crbug.com/374133537): Use `kBatchUploadOrderedAvailableTypes` types
+  // order to reorder the returned list for display order.
+  std::vector<syncer::LocalDataDescription> local_data_description_list;
+  for (auto& [type, local_data_description] : local_data_descriptions_map) {
+    if (!local_data_description.local_data_models.empty()) {
+      CHECK_EQ(type, local_data_description.type)
+          << "Non empty data description's data type and the keyed mapping "
+             "value should always match.";
+
+      local_data_description_list.push_back(std::move(local_data_description));
+    }
+  }
+  return local_data_description_list;
+}
+
+// Whether there exist a current local data item of any type.
+bool HasLocalDataToShow(
+    const std::map<syncer::DataType, syncer::LocalDataDescription>&
+        local_data_descriptions) {
+  // As long as a data type has at least a single item to show, the dialog can
+  // be shown.
+  return std::ranges::any_of(
+      local_data_descriptions, [](const auto& local_data_description) {
+        return !local_data_description.second.local_data_models.empty();
+      });
+}
+
 }  // namespace
 
 BatchUploadService::BatchUploadService(
@@ -60,7 +92,7 @@ void BatchUploadService::OpenBatchUpload(
     return;
   }
 
-  // Do not allow to have more than one controller/dialog shown at a time.
+  // Do not allow to have more than one dialog shown at a time.
   if (IsDialogOpened()) {
     // TODO(b/361330952): give focus to the browser that is showing the dialog
     // currently.
@@ -68,11 +100,10 @@ void BatchUploadService::OpenBatchUpload(
     return;
   }
 
-  // Create the state of the dialog that may be shown, creating the controller
-  // in preparation for showing the dialog once all the local data descriptions
-  // are ready in `OnGetLocalDataDescriptionsReady()`. Allows to make sure that
-  // while getting the local data descriptions, no other dialog opening is
-  // triggered.
+  // Create the state of the dialog that may be shown, in preparation for
+  // showing the dialog once all the local data descriptions are ready in
+  // `OnGetLocalDataDescriptionsReady()`. Allows to make sure that while getting
+  // the local data descriptions, no other dialog opening is triggered.
   state_.dialog_state_ = std::make_unique<ResettableState::DialogState>();
   state_.dialog_state_->browser_ = browser;
   state_.dialog_state_->dialog_shown_callback_ = std::move(success_callback);
@@ -95,21 +126,19 @@ void BatchUploadService::RequestLocalDataDescriptions() {
 
 void BatchUploadService::OnGetLocalDataDescriptionsReady(
     std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
-  if (local_data_map.empty()) {
+  if (local_data_map.empty() || !HasLocalDataToShow(local_data_map)) {
     std::move(state_.dialog_state_->dialog_shown_callback_).Run(false);
     ResetDialogState();
     return;
   }
 
-  bool opened = state_.dialog_state_->controller_.ShowDialog(
-      *delegate_, state_.dialog_state_->browser_,
-      std::move(local_data_map), /*selected_items_callback=*/
+  delegate_->ShowBatchUploadDialog(
+      state_.dialog_state_->browser_,
+      GetOrderedListOfNonEmptyDataDescriptions(std::move(local_data_map)),
+      /*complete_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
                      base::Unretained(this)));
-  std::move(state_.dialog_state_->dialog_shown_callback_).Run(opened);
-  if (!opened) {
-    ResetDialogState();
-  }
+  std::move(state_.dialog_state_->dialog_shown_callback_).Run(true);
 }
 
 void BatchUploadService::OnBatchUplaodDialogResult(
@@ -127,9 +156,12 @@ void BatchUploadService::OnBatchUplaodDialogResult(
 
   sync_service_->TriggerLocalDataMigration(item_ids_to_move);
 
-  state_.saving_browser_state_ =
-      std::make_unique<ResettableState::SavingBrowserState>();
-  TriggerAvatarButtonSavingDataText(browser);
+  // `browser` may be null in tests.
+  if (browser) {
+    state_.saving_browser_state_ =
+        std::make_unique<ResettableState::SavingBrowserState>();
+    TriggerAvatarButtonSavingDataText(browser);
+  }
 }
 
 bool BatchUploadService::IsUserEligibleToOpenDialog() const {

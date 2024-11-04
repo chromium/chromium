@@ -10,12 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/service/local_data_description.h"
 
 class Browser;
-class BatchUploadController;
 class BatchUploadDelegate;
 
 namespace signin {
@@ -27,9 +25,9 @@ class SyncService;
 }  // namespace syncer
 
 // Service that allows the management of the Batch Upload Dialog. Used to open
-// the dialog and manages the lifetime of the controller.
-// It communicates with the `sync_service` to get information of the current
-// local data for eligible types.
+// the dialog and manages its lifetime.
+// It communicates with the `syncer::SyncService` to get information of the
+// current local data for eligible types.
 class BatchUploadService : public KeyedService {
  public:
   BatchUploadService(signin::IdentityManager* identity_manager,
@@ -96,8 +94,6 @@ class BatchUploadService : public KeyedService {
   struct ResettableState {
     // Fields related to the dialog currently showing.
     struct DialogState {
-      // Controller lifetime is bind to when the dialog is currently showing.
-      BatchUploadController controller_;
       // Browser that is showing the dialog.
       raw_ptr<Browser> browser_;
       // Called when the decision about showing the dialog is made.

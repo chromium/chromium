@@ -6,7 +6,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
@@ -69,8 +68,6 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFeatureOffBrowserTest, BatchUploadNull) {
   EXPECT_FALSE(batch_upload);
 }
 
-// TODO(crbug.com/374134588): Make these tests as unit tests. No need for
-// browser tests.
 class BatchUploadBrowserTest : public InProcessBrowserTest {
  public:
   BatchUploadBrowserTest() {
@@ -223,58 +220,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(batch_upload->IsDialogOpened());
 }
 
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       SignedOutUserShouldNotBeAbleToOpenTheDialog) {
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
-  ASSERT_FALSE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
-  EXPECT_FALSE(batch_upload->IsDialogOpened());
-}
-
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       SycningUserShouldNotBeAbleToOpenTheDialog) {
-  SigninWithFullInfo(signin::ConsentLevel::kSync);
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
-  EXPECT_FALSE(batch_upload->IsDialogOpened());
-}
-
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       SigninPendingUserShouldNotBeAbleToOpenTheDialog) {
-  SigninWithFullInfo();
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
-  CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(primary_account.IsEmpty());
-
-  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
-  // Signed in but in Signin Pending state.
-  ASSERT_TRUE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account.account_id));
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
-  EXPECT_FALSE(batch_upload->IsDialogOpened());
-}
-
 IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
   SigninWithFullInfo();
   SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
@@ -335,49 +280,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
   EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
 }
 
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       EmptyDescriptionsDoNotOpenDialog) {
-  SigninWithFullInfo();
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-
-  ClearReturnDescriptions();
-  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
-
-  // Setting 1 element should open the dialog now.
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
-}
-
-IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
-                       DescriptionsWithEmptyModelsDoNotOpenDialog) {
-  SigninWithFullInfo();
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(batch_upload);
-
-  // Set empty return data models per type.
-  ClearReturnDescriptions();
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 0);
-  SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 0);
-  EXPECT_FALSE(OpenBatchUpload(batch_upload, browser()));
-
-  // Setting 1 element should open the dialog now.
-  ClearReturnDescriptions();
-  SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
-  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
-}
-
 // Used to control the creation of the dialog (not actually creating it), and
 // the expected output without having to deal with the real dialog.
-// TODO(b/359146556): Delegate to be used when dummy implementations are removed
-// and the actual data providers are implemented to better controlled the data
-// that is expected to move.
 class BatchUploadDelegateFake : public BatchUploadDelegate {
  public:
   // No data move requested.
