@@ -190,34 +190,6 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
   }
 }
 
-- (void)reattachListeners {
-  web::WebState* webState = [self getActiveWebState];
-  if (!webState) {
-    return;
-  }
-
-  web::WebFramesManager* webFramesManager =
-      AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          webState);
-  web::WebFrame* frame = webFramesManager->GetFrameWithId(_params.frame_id);
-  if (!frame) {
-    return;
-  }
-
-  auto* driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
-  if (!driver) {
-    return;
-  }
-
-  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
-    autofill::FormGlobalId form_global_id(driver->GetFrameToken(),
-                                          _params.form_renderer_id);
-    tabHelper->AttachListenersForPaymentsForm(
-        driver->GetAutofillManager(), form_global_id, /*only_new=*/false);
-  }
-}
-
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PaymentsSuggestionBottomSheetConsumer>)consumer {

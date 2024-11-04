@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
-#import "base/feature_list.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
@@ -138,7 +136,6 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf.settingsHandler showCreditCardSettings];
-                           [weakSelf reattachListenersIfNeeded];
                            [weakSelf.browserCoordinatorCommandsHandler
                                    dismissPaymentSuggestions];
                          }];
@@ -157,7 +154,6 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
         [](__weak __typeof(self) weak_self, autofill::CreditCard credit_card) {
           [weak_self.settingsHandler showCreditCardDetails:credit_card
                                                 inEditMode:NO];
-          [weak_self reattachListenersIfNeeded];
           [weak_self
                   .browserCoordinatorCommandsHandler dismissPaymentSuggestions];
         },
@@ -211,13 +207,6 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 - (void)setInitialVoiceOverFocus {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.viewController.image);
-}
-
-// Reattaches the listeners for the latest focused form if deemed needed.
-- (void)reattachListenersIfNeeded {
-  if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios)) {
-    [self.mediator reattachListeners];
-  }
 }
 
 @end
