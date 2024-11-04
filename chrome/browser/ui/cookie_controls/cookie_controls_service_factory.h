@@ -20,7 +20,7 @@ class CookieControlsServiceFactory : public ProfileKeyedServiceFactory {
   static CookieControlsServiceFactory* GetInstance();
 
   // Used to create instances for testing.
-  static KeyedService* BuildInstanceFor(Profile* profile);
+  static std::unique_ptr<KeyedService> BuildInstanceFor(Profile* profile);
 
  private:
   friend base::NoDestructor<CookieControlsServiceFactory>;
@@ -29,7 +29,7 @@ class CookieControlsServiceFactory : public ProfileKeyedServiceFactory {
   ~CookieControlsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
