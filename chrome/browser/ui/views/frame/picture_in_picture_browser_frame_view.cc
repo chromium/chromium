@@ -499,7 +499,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   for (auto& model : models) {
     model->SetIconSize(kContentSettingIconSize);
     auto image_view = std::make_unique<ContentSettingImageView>(
-        std::move(model), this, this, font_list);
+        std::move(model), this, this, browser_view->browser(), font_list);
 
     // The ContentSettingImageView loses 4px of margin that we don't want to
     // lose in the document picture-in-picture toolbar.

@@ -56,6 +56,7 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
       "IPH_DesktopPWAsLinkCapturingLaunch",
       "IPH_ExplicitBrowserSigninPreferenceRemembered",
       "IPH_SignoutWebIntercept",
+      "IPH_PwaQuietNotification",
   };
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {

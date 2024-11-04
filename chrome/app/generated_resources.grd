@@ -4095,9 +4095,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_EARLY_PROMO" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar. The promo follows the user action of blocking notifications for the site they are visiting, and informs the user that we (Chrome) understood that they do not usually accept notification prompts, and we will automatically block notification prompts in the future.">
         Got it. By default, new sites that you visit won't send you notifications.
       </message>
-      <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar, when a site requests notifications permission. The promo informs the user that as a result of them usually blocking notifications, the request from the site is automatically blocked, and the user can click on the icon to allow notifications.">
-        You usually block notifications. To let this site notify you, click here.
-      </message>
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION" desc="Subtitle for the Notifications permission prompt, shown when a user clicks on a site's notifications permission request that is automatically blocked by Chrome, as this permission prompt is often denied by other users for this site.">
         Most people block notifications from this site
       </message>

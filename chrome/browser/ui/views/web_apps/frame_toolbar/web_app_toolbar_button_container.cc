@@ -120,8 +120,9 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 
   if (app_controller->HasTitlebarContentSettings()) {
-    content_settings_container_ = AddChildView(
-        std::make_unique<WebAppContentSettingsContainer>(this, this));
+    content_settings_container_ =
+        AddChildView(std::make_unique<WebAppContentSettingsContainer>(
+            browser_view_->browser(), this, this));
     views::SetHitTestComponent(content_settings_container_,
                                static_cast<int>(HTCLIENT));
   }

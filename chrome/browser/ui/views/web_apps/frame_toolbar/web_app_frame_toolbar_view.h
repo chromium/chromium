@@ -19,6 +19,7 @@
 
 namespace {
 class WebAppNonClientFrameViewChromeOSTest;
+class LocationBarViewQuietNotificationInteractiveUITest;
 }
 
 namespace views {
@@ -111,6 +112,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
   friend class WebAppNonClientFrameViewChromeOSTest;
+  friend class LocationBarViewQuietNotificationInteractiveUITest;
 
   views::View* GetContentSettingContainerForTesting();
 

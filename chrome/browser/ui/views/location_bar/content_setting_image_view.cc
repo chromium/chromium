@@ -14,7 +14,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
@@ -24,8 +28,11 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -91,14 +98,18 @@ ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate,
+    Browser* browser,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       delegate_(delegate),
       content_setting_image_model_(std::move(image_model)),
-      bubble_view_(nullptr) {
+      bubble_view_(nullptr),
+      browser_(browser) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
+
+  UpdateElementIdentifier();
 
   std::optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());
@@ -144,7 +155,6 @@ void ContentSettingImageView::Update() {
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
     GetViewAccessibility().SetIsIgnored(true);
-    critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
@@ -189,8 +199,15 @@ void ContentSettingImageView::Update() {
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);
 
+  UpdateElementIdentifier();
+}
+
+void ContentSettingImageView::UpdateElementIdentifier() {
   std::optional<ui::ElementIdentifier> element_identifier;
   switch (content_setting_image_model_->image_type()) {
+    case ContentSettingImageModel::ImageType::NOTIFICATIONS:
+      element_identifier = kNotificationContentSettingImageView;
+      break;
     case ContentSettingImageModel::ImageType::MEDIASTREAM:
       element_identifier = kMediaActivityIndicatorElementId;
       break;
@@ -202,6 +219,8 @@ void ContentSettingImageView::Update() {
   }
   if (element_identifier) {
     SetProperty(views::kElementIdentifierKey, *element_identifier);
+  } else {
+    ClearProperty(views::kElementIdentifierKey);
   }
 }
 
@@ -329,28 +348,13 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
 
   // The promo currently is only used for Notifications, and it is only shown
   // directly after the animation is shown.
-  if (web_contents &&
-      content_setting_image_model_->ShouldShowPromo(web_contents)) {
-    // TODO(https://crbug.com/369386219): This isn't a true promo; it was a
-    // "legacy critical promo" previously - a category that no longer exists.
-    // This should either be changed to an actual promo, or removed.
-    //
-    // DO NOT COPY THIS PATTERN ELSEWHERE; DIRECTLY CREATING A HELP BUBBLE IS
-    // GENERALLY PROHIBITED AND SHOULD BE AVOIDED IN ALL NEW CODE.
-    auto* const service = UserEducationServiceFactory::GetForBrowserContext(
-        web_contents->GetBrowserContext());
-    auto* const anchor =
-        views::ElementTrackerViews::GetInstance()->GetElementForView(this,
-                                                                     true);
-    user_education::HelpBubbleParams params;
-    params.body_text = l10n_util::GetStringUTF16(
-        IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO);
-    params.close_button_alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
-    critical_promo_bubble_ =
-        service->help_bubble_factory_registry().CreateHelpBubble(
-            anchor, std::move(params));
-    if (critical_promo_bubble_) {
-      content_setting_image_model_->SetPromoWasShown(web_contents);
+  if (web_contents) {
+    const webapps::AppId* app_id =
+        web_app::WebAppTabHelper::GetAppId(web_contents);
+    if (app_id) {
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHPwaQuietNotificationFeature, *app_id);
+      browser_->window()->MaybeShowFeaturePromo(std::move(params));
     }
   }
 }

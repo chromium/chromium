@@ -177,6 +177,9 @@ BASE_FEATURE(kIPHSideSearchPageActionLabelFeature,
 BASE_FEATURE(kIPHSignoutWebInterceptFeature,
              "IPH_SignoutWebIntercept",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPwaQuietNotificationFeature,
+             "IPH_PwaQuietNotification",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabGroupsSaveV2IntroFeature,
              "IPH_TabGroupsSaveV2Intro",
              base::FEATURE_ENABLED_BY_DEFAULT);

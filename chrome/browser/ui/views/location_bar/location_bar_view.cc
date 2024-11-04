@@ -333,7 +333,7 @@ void LocationBarView::Init() {
       ContentSettingImageModel::GenerateContentSettingImageModels();
   for (auto& model : models) {
     auto image_view = std::make_unique<ContentSettingImageView>(
-        std::move(model), this, this, page_action_font_list);
+        std::move(model), this, this, browser_, page_action_font_list);
     image_view->SetIconColor(icon_color);
     image_view->SetVisible(false);
     content_setting_views_.push_back(AddChildView(std::move(image_view)));

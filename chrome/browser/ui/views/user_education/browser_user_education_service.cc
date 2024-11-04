@@ -705,6 +705,21 @@ void MaybeRegisterChromeFeaturePromos(
           .SetReshowPolicy(base::Days(14), /*max_show_count=*/6)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  // kIPHPwaQuietNotificationFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHPwaQuietNotificationFeature,
+          kNotificationContentSettingImageView, IDS_QUIET_NOTIFICATION_IPH_TEXT,
+          IDS_QUIET_NOTIFICATION_IPH_TEXT_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetPromoSubtype(user_education::FeaturePromoSpecification::
+                               PromoSubtype::kKeyedNotice)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetReshowPolicy(base::Days(100), /*max_show_count=*/5)
+          .SetMetadata(80, "lyf@chromium.org",
+                       "Triggered once per-app when is in quiet notification "
+                       "mode and a notification is triggered in a PWA.")));
+
   // kIPHCookieControlsFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

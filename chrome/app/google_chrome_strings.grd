@@ -1369,6 +1369,14 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Quiet Notification IPH -->
+      <message name="IDS_QUIET_NOTIFICATION_IPH_TEXT" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar, when a site requests notifications permission. The promo informs the user that as a result of them usually blocking notifications, the request from the site is automatically blocked, and the user can click on the icon to allow notifications.">
+        You usually block notifications. To let this site notify you, click here.
+      </message>
+      <message name="IDS_QUIET_NOTIFICATION_IPH_TEXT_SCREENREADER" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar, when a site requests notifications permission. The promo informs the user that as a result of them usually blocking notifications, the request from the site is automatically blocked, and the user can click on the icon to allow notifications.">
+        You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.
+      </message>
+
       <if expr="not is_android">
         <!-- Desktop User Education IPH Strings -->
         <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH" desc="The body text of the IPH describing how to find side panel entry points in the Chrome menu.">

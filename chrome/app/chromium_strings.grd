@@ -2191,6 +2191,14 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Notification quiet permission IPH -->
+      <message name="IDS_QUIET_NOTIFICATION_IPH_TEXT" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar, when a site requests notifications permission. The promo informs the user that as a result of them usually blocking notifications, the request from the site is automatically blocked, and the user can click on the icon to allow notifications.">
+        You usually block notifications. To let this site notify you, click here.
+      </message>
+      <message name="IDS_QUIET_NOTIFICATION_IPH_TEXT_SCREENREADER" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar, when a site requests notifications permission. The promo informs the user that as a result of them usually blocking notifications, the request from the site is automatically blocked, and the user can click on the icon to allow notifications.">
+        You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.
+      </message>
+
       <!-- ChromeLabs bubble -->
       <message name="IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE" desc="Text that shows in the footer of the Chrome Labs bubble when relaunch is needed for changes to take effect.">
         Your changes will take effect the next time you relaunch Chromium.

@@ -396,6 +396,8 @@ chromium-metrics-reviews@google.com.
       summary="switching profiles using the profile menu"/>
   <variant name="IPH_PwaInstallAvailableFeature"
       summary="surfacing the Android PWA install option"/>
+  <variant name="IPH_PwaQuietNotification"
+      summary="the PWA quiet notification feature"/>
   <variant name="IPH_QuietNotificationPrompts"
       summary="the quiet notification prompts feature"/>
   <variant name="IPH_ReadAloudAppMenuFeature"
