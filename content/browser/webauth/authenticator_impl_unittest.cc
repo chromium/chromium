@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/webauth/authenticator_impl.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <list>
 #include <map>
 #include <memory>
@@ -238,13 +234,13 @@ constexpr char kTestSignClientDataJsonString[] =
     R"("https://a.google.com", "type":"webauthn.get"})";
 
 typedef struct {
-  const char* origin;
+  std::string_view origin;
   // Either a relying party ID or a U2F AppID.
-  const char* claimed_authority;
+  std::string_view claimed_authority;
   AuthenticatorStatus expected_status;
 } OriginClaimedAuthorityPair;
 
-constexpr OriginClaimedAuthorityPair kValidRelyingPartyTestCases[] = {
+const auto kValidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
     {"http://localhost", "localhost", AuthenticatorStatus::SUCCESS},
     {"https://myawesomedomain", "myawesomedomain",
      AuthenticatorStatus::SUCCESS},
@@ -271,9 +267,9 @@ constexpr OriginClaimedAuthorityPair kValidRelyingPartyTestCases[] = {
     {"https://..google.com", ".google.com", AuthenticatorStatus::SUCCESS},
     {"https://accounts.google.com", ".google.com",
      AuthenticatorStatus::SUCCESS},
-};
+});
 
-constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
+const auto kInvalidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
     {"https://google.com", "com", AuthenticatorStatus::BAD_RELYING_PARTY_ID},
     {"http://google.com", "google.com", AuthenticatorStatus::INVALID_DOMAIN},
     {"http://myawesomedomain", "myawesomedomain",
@@ -378,7 +374,7 @@ constexpr OriginClaimedAuthorityPair kInvalidRelyingPartyTestCases[] = {
      AuthenticatorStatus::BAD_RELYING_PARTY_ID},
     {"https://com", "https://www.gstatic.com/securitykey/origins.json",
      AuthenticatorStatus::BAD_RELYING_PARTY_ID},
-};
+});
 
 using TestGetClientCapabilityFuture = base::test::TestFuture<
     std::vector<blink::mojom::WebAuthnClientCapabilityPtr>>;
@@ -851,8 +847,8 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     return status;
   }
 
-  AuthenticatorStatus TryAuthenticationWithAppId(const std::string& origin,
-                                                 const std::string& appid) {
+  AuthenticatorStatus TryAuthenticationWithAppId(std::string_view origin,
+                                                 std::string_view appid) {
     const GURL origin_url(origin);
     NavigateAndCommit(origin_url);
 
@@ -865,8 +861,8 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
   }
 
   AuthenticatorStatus TryRegistrationWithAppIdExclude(
-      const std::string& origin,
-      const std::string& appid_exclude) {
+      std::string_view origin,
+      std::string_view appid_exclude) {
     const GURL origin_url(origin);
     NavigateAndCommit(origin_url);
 
@@ -994,10 +990,9 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
     EXPECT_EQ(*parsed->GetDict().FindString(type_key), expected_type);
     EXPECT_EQ(*parsed->GetDict().FindString("origin"), test.origin.Serialize());
     std::string expected_challenge;
-    base::Base64UrlEncode(
-        std::string_view(reinterpret_cast<const char*>(test.challenge.data()),
-                         test.challenge.size()),
-        base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_challenge);
+    base::Base64UrlEncode(test.challenge,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindString("challenge"), expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindBool("crossOrigin"), test.is_cross_origin);
     if (test.is_cross_origin) {
@@ -1011,17 +1006,14 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
 
 // Verify behavior for various combinations of origins and RP IDs.
 TEST_F(AuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
-  std::vector<OriginClaimedAuthorityPair> tests(
-      &kValidRelyingPartyTestCases[0],
-      &kValidRelyingPartyTestCases[std::size(kValidRelyingPartyTestCases)]);
-  tests.insert(
-      tests.end(), &kInvalidRelyingPartyTestCases[0],
-      &kInvalidRelyingPartyTestCases[std::size(kInvalidRelyingPartyTestCases)]);
+  std::vector<OriginClaimedAuthorityPair> tests;
+  base::ranges::copy(kValidRpTestCases, std::back_inserter(tests));
+  base::ranges::copy(kInvalidRpTestCases, std::back_inserter(tests));
 
   int test_case_count = 0;
   for (const auto& test_case : tests) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     NavigateAndCommit(GURL(test_case.origin));
     PublicKeyCredentialCreationOptionsPtr options =
@@ -1223,10 +1215,9 @@ TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
 TEST_F(AuthenticatorImplTest, GetAssertionOriginAndRpIds) {
   // These instances should return security errors (for circumstances
   // that would normally crash the renderer).
-  for (const OriginClaimedAuthorityPair& test_case :
-       kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     NavigateAndCommit(GURL(test_case.origin));
 
@@ -1243,10 +1234,9 @@ TEST_F(AuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 TEST_F(AuthenticatorImplTest, ReportOriginAndRpIds) {
   // These instances should return security errors (for circumstances
   // that would normally crash the renderer).
-  for (const OriginClaimedAuthorityPair& test_case :
-       kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     NavigateAndCommit(GURL(test_case.origin));
     PublicKeyCredentialReportOptionsPtr options =
@@ -1259,7 +1249,7 @@ TEST_F(AuthenticatorImplTest, ReportOriginAndRpIds) {
   }
 }
 
-constexpr OriginClaimedAuthorityPair kValidAppIdCases[] = {
+const auto kValidAppIdCases = std::to_array<OriginClaimedAuthorityPair>({
     {"https://example.com", "https://example.com",
      AuthenticatorStatus::SUCCESS},
     {"https://www.example.com", "https://example.com",
@@ -1281,13 +1271,13 @@ constexpr OriginClaimedAuthorityPair kValidAppIdCases[] = {
     {"https://accounts.google.com",
      "https://www.gstatic.com/securitykey/origins.json",
      AuthenticatorStatus::SUCCESS},
-};
+});
 
 // Verify behavior for various combinations of origins and RP IDs.
 TEST_F(AuthenticatorImplTest, AppIdExtensionValues) {
   for (const auto& test_case : kValidAppIdCases) {
-    SCOPED_TRACE(std::string(test_case.origin) + " " +
-                 std::string(test_case.claimed_authority));
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
               TryAuthenticationWithAppId(test_case.origin,
@@ -1299,11 +1289,11 @@ TEST_F(AuthenticatorImplTest, AppIdExtensionValues) {
   }
 
   // All the invalid relying party test cases should also be invalid as AppIDs.
-  for (const auto& test_case : kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.origin) + " " +
-                 std::string(test_case.claimed_authority));
+  for (const auto& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
-    if (strlen(test_case.claimed_authority) == 0) {
+    if (test_case.claimed_authority.empty()) {
       // In this case, no AppID is actually being tested.
       continue;
     }
@@ -2280,7 +2270,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
     EnterprisePolicy enterprise_policy;
     AuthenticatorStatus expected_status;
     AttestationType expected_attestation;
-    const char* expected_certificate_substring;
+    std::string_view expected_certificate_substring;
   };
 
   void SetUp() override {
@@ -2334,24 +2324,24 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
       switch (test.expected_attestation) {
         case AttestationType::ANY:
-          ASSERT_STREQ("", test.expected_certificate_substring);
+          ASSERT_TRUE(test.expected_certificate_substring.empty());
           break;
 
         case AttestationType::NONE:
-          ASSERT_STREQ("", test.expected_certificate_substring);
+          ASSERT_TRUE(test.expected_certificate_substring.empty());
           ExpectMapHasKeyWithStringValue(attestation, "fmt", "none");
           EXPECT_TRUE(auth_data.attested_data()->IsAaguidZero());
           break;
 
         case AttestationType::NONE_WITH_NONZERO_AAGUID:
-          ASSERT_STREQ("", test.expected_certificate_substring);
+          ASSERT_TRUE(test.expected_certificate_substring.empty());
           ExpectMapHasKeyWithStringValue(attestation, "fmt", "none");
           EXPECT_FALSE(auth_data.attested_data()->IsAaguidZero());
           break;
 
         case AttestationType::U2F:
           ExpectMapHasKeyWithStringValue(attestation, "fmt", "fido-u2f");
-          if (strlen(test.expected_certificate_substring) > 0) {
+          if (!test.expected_certificate_substring.empty()) {
             ExpectCertificateContainingSubstring(
                 attestation, test.expected_certificate_substring);
           }
@@ -2359,14 +2349,14 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
         case AttestationType::PACKED:
           ExpectMapHasKeyWithStringValue(attestation, "fmt", "packed");
-          if (strlen(test.expected_certificate_substring) > 0) {
+          if (!test.expected_certificate_substring.empty()) {
             ExpectCertificateContainingSubstring(
                 attestation, test.expected_certificate_substring);
           }
           break;
 
         case AttestationType::SELF: {
-          ASSERT_STREQ("", test.expected_certificate_substring);
+          ASSERT_TRUE(test.expected_certificate_substring.empty());
           ExpectMapHasKeyWithStringValue(attestation, "fmt", "packed");
 
           // A self-attestation should not include an X.509 chain nor ECDAA key.
@@ -2385,7 +2375,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
           break;
         }
         case AttestationType::SELF_WITH_NONZERO_AAGUID: {
-          ASSERT_STREQ("", test.expected_certificate_substring);
+          ASSERT_TRUE(test.expected_certificate_substring.empty());
           ExpectMapHasKeyWithStringValue(attestation, "fmt", "packed");
 
           // A self-attestation should not include an X.509 chain nor ECDAA key.
@@ -2430,7 +2420,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
   // single X.509 certificate containing |substring|.
   static void ExpectCertificateContainingSubstring(
       const Value::MapValue& attestation,
-      const std::string& substring) {
+      std::string_view substring) {
     const auto& attestation_statement_it = attestation.find(Value("attStmt"));
     ASSERT_TRUE(attestation_statement_it != attestation.end());
     ASSERT_TRUE(attestation_statement_it->second.is_map());
@@ -5520,23 +5510,25 @@ class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
-static constexpr device::UserVerificationRequirement kUVLevel[3] = {
+static constexpr std::array<device::UserVerificationRequirement, 3> kUVLevel = {
     device::UserVerificationRequirement::kDiscouraged,
     device::UserVerificationRequirement::kPreferred,
     device::UserVerificationRequirement::kRequired,
 };
 
-static const char* kUVDescription[3] = {"discouraged", "preferred", "required"};
+static const std::array<std::string_view, 3> kUVDescription = {
+    "discouraged", "preferred", "required"};
 
-static const char* kPINSupportDescription[3] = {"no PIN support", "PIN not set",
-                                                "PIN set"};
+static const std::array<std::string_view, 3> kPINSupportDescription = {
+    "no PIN support", "PIN not set", "PIN set"};
 
 TEST_F(PINAuthenticatorImplTest, MakeCredential) {
-  typedef int Expectations[3][3];
+  typedef std::array<int, 3> UvRequirement;
+  typedef std::array<UvRequirement, 3> Expectations;
   // kExpectedWithUISupport enumerates the expected behaviour when the embedder
   // supports prompting the user for a PIN.
   // clang-format off
-  const Expectations kExpectedWithUISupport = {
+  const Expectations kExpectedWithUISupport = std::to_array<UvRequirement>({
     //                   discouraged | preferred | required
     /* No support */  {    kNoPIN,      kNoPIN,     kFailure },
     /* PIN not set */ {    kNoPIN,      kNoPIN,     kSetPIN  },
@@ -5544,13 +5536,13 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
     //                        ^
     //                        |
     //            VirtualCtap2Device cannot fall back to U2F.
-  };
+  });
   // clang-format on
 
   // kExpectedWithoutUISupport enumerates the expected behaviour when the
   // embedder cannot prompt the user for a PIN.
   // clang-format off
-  const Expectations kExpectedWithoutUISupport = {
+  const Expectations kExpectedWithoutUISupport = std::to_array<UvRequirement>({
     //                   discouraged | preferred | required
     /* No support */  {    kNoPIN,      kNoPIN,     kFailure },
     /* PIN not set */ {    kNoPIN,      kNoPIN,     kFailure },
@@ -5560,7 +5552,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
     //            VirtualCtap2Device cannot fall back to U2F and
     //            a PIN is required to create credentials once set
     //            in CTAP 2.0.
-  };
+  });
   // clang-format on
 
   for (bool pin_uv_auth_token : {false, true}) {
@@ -5974,27 +5966,28 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialHMACSecret) {
 }
 
 TEST_F(PINAuthenticatorImplTest, GetAssertion) {
-  typedef int Expectations[3][3];
+  typedef std::array<int, 3> UvRequirement;
+  typedef std::array<UvRequirement, 3> Expectations;
   // kExpectedWithUISupport enumerates the expected behaviour when the embedder
   // supports prompting the user for a PIN.
   // clang-format off
-  const Expectations kExpectedWithUISupport = {
+  const Expectations kExpectedWithUISupport = std::to_array<UvRequirement>({
     //                   discouraged | preferred | required
     /* No support */  {    kNoPIN,      kNoPIN,     kFailure },
     /* PIN not set */ {    kNoPIN,      kNoPIN,     kFailure },
     /* PIN set */     {    kNoPIN,      kUsePIN,    kUsePIN  },
-  };
+  });
   // clang-format on
 
   // kExpectedWithoutUISupport enumerates the expected behaviour when the
   // embedder cannot prompt the user for a PIN.
   // clang-format off
-  const Expectations kExpectedWithoutUISupport = {
+  const Expectations kExpectedWithoutUISupport = std::to_array<UvRequirement>({
     //                   discouraged | preferred | required
     /* No support */  {    kNoPIN,      kNoPIN,     kFailure },
     /* PIN not set */ {    kNoPIN,      kNoPIN,     kFailure },
     /* PIN set */     {    kNoPIN,      kNoPIN,     kFailure },
-  };
+  });
   // clang-format on
 
   PublicKeyCredentialRequestOptionsPtr dummy_options = get_credential_options();
@@ -8146,12 +8139,12 @@ TEST_F(ResidentKeyAuthenticatorImplTest, AuthenticatorSetsCredProtect) {
   // Some authenticators are expected to set the credProtect extension ad
   // libitum. Therefore we should only require that the returned extension is at
   // least as restrictive as requested, but perhaps not exactly equal.
-  constexpr blink::mojom::ProtectionPolicy kMojoLevels[] = {
+  constexpr std::array<blink::mojom::ProtectionPolicy, 3> kMojoLevels = {
       blink::mojom::ProtectionPolicy::NONE,
       blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED,
       blink::mojom::ProtectionPolicy::UV_REQUIRED,
   };
-  constexpr device::CredProtect kDeviceLevels[] = {
+  constexpr std::array<device::CredProtect, 3> kDeviceLevels = {
       device::CredProtect::kUVOptional,
       device::CredProtect::kUVOrCredIDRequired,
       device::CredProtect::kUVRequired,
@@ -9060,7 +9053,7 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionSkipTLSCheck) {
 TEST_F(InternalAuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
   // These instances should return security errors (for circumstances
   // that would normally crash the renderer).
-  for (auto test_case : kInvalidRelyingPartyTestCases) {
+  for (auto test_case : kInvalidRpTestCases) {
     SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
                  std::string(test_case.origin));
 
@@ -9084,7 +9077,7 @@ TEST_F(InternalAuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
 
   // These instances should bypass security errors, by setting the effective
   // origin to a valid one.
-  for (auto test_case : kValidRelyingPartyTestCases) {
+  for (auto test_case : kValidRpTestCases) {
     SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
                  std::string(test_case.origin));
 
@@ -9107,10 +9100,9 @@ TEST_F(InternalAuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
 TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
   // These instances should return security errors (for circumstances
   // that would normally crash the renderer).
-  for (const OriginClaimedAuthorityPair& test_case :
-       kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     GURL origin = GURL(test_case.origin);
     if (url::Origin::Create(origin).opaque()) {
@@ -9133,10 +9125,9 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 
   // These instances should bypass security errors, by setting the effective
   // origin to a valid one.
-  for (const OriginClaimedAuthorityPair& test_case :
-       kValidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kValidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     NavigateAndCommit(GURL("https://this.isthewrong.origin"));
     InternalAuthenticatorImpl* authenticator =
@@ -9147,7 +9138,8 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 
     ResetVirtualDevice();
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-        options->allow_credentials[0].id, test_case.claimed_authority));
+        options->allow_credentials[0].id,
+        std::string(test_case.claimed_authority)));
     TestGetAssertionFuture future;
     authenticator->GetAssertion(std::move(options), future.GetCallback());
     EXPECT_TRUE(future.Wait());
@@ -10388,10 +10380,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
   request_proxy().config().make_credential_response->info =
       CommonCredentialInfo::New();
 
-  for (const OriginClaimedAuthorityPair& test_case :
-       kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     NavigateAndCommit(GURL(test_case.origin));
     BrowserContext* context = main_rfh()->GetBrowserContext();
@@ -10433,8 +10424,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
       CommonCredentialInfo::New();
 
   for (const auto& test_case : kValidAppIdCases) {
-    SCOPED_TRACE(std::string(test_case.origin) + " " +
-                 std::string(test_case.claimed_authority));
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     BrowserContext* context = main_rfh()->GetBrowserContext();
     ASSERT_TRUE(
@@ -10454,14 +10445,13 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
     request_proxy().observations().create_requests.clear();
   }
 
-  // Test invalid cases that should be rejected. `kInvalidRelyingPartyTestCases`
+  // Test invalid cases that should be rejected. `kInvalidRpTestCases`
   // contains a mix of RP ID an App ID cases, but they should all be rejected.
-  for (const OriginClaimedAuthorityPair& test_case :
-       kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
-    if (strlen(test_case.claimed_authority) == 0) {
+    if (test_case.claimed_authority.empty()) {
       // In this case, no AppID is actually being tested.
       continue;
     }
@@ -10567,10 +10557,9 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionOriginAndRpIds) {
   request_proxy().config().get_assertion_response->info =
       CommonCredentialInfo::New();
 
-  for (const OriginClaimedAuthorityPair& test_case :
-       kInvalidRelyingPartyTestCases) {
-    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
-                 std::string(test_case.origin));
+  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+    SCOPED_TRACE(
+        base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
     NavigateAndCommit(GURL(test_case.origin));
     BrowserContext* context = main_rfh()->GetBrowserContext();

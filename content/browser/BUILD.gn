@@ -2287,6 +2287,8 @@ source_set("browser") {
     "web_ui_browser_interface_broker_registry.cc",
     "webauth/client_data_json.cc",
     "webauth/client_data_json.h",
+    "webauth/common_utils.cc",
+    "webauth/common_utils.h",
     "webauth/webauth_request_security_checker.cc",
     "webauth/webauth_request_security_checker.h",
     "webid/digital_credentials/digital_identity_request_impl.cc",

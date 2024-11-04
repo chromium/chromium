@@ -15,6 +15,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +32,7 @@
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/client_data_json.h"
+#include "content/browser/webauth/common_utils.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -124,15 +126,6 @@ WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
 
-std::string Base64UrlEncode(const base::span<const uint8_t> input) {
-  std::string ret;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(input.data()),
-                       input.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
-  return ret;
-}
-
 // The application parameter is the SHA-256 hash of the UTF-8 encoding of
 // the application identity (i.e. relying_party_id) of the application
 // requesting the registration.
@@ -176,16 +169,14 @@ bool AddTransportsFromCertificate(
     base::flat_set<device::FidoTransportProtocol>* out_transports) {
   // See
   // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html#fido-u2f-certificate-transports-extension
-  static constexpr uint8_t kTransportTypesOID[] = {
+  static constexpr std::array<uint8_t, 11> kTransportTypesOID = {
       0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0xe5, 0x1c, 0x02, 0x01, 0x01};
   bool present, critical;
   std::string_view contents;
   if (!net::asn1::ExtractExtensionFromDERCert(
-          std::string_view(reinterpret_cast<const char*>(der_cert.data()),
-                           der_cert.size()),
-          std::string_view(reinterpret_cast<const char*>(kTransportTypesOID),
-                           sizeof(kTransportTypesOID)),
-          &present, &critical, &contents) ||
+          base::as_string_view(der_cert),
+          base::as_string_view(kTransportTypesOID), &present, &critical,
+          &contents) ||
       !present) {
     return false;
   }
@@ -2507,7 +2498,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.attestation_object.GetCredentialId();
-  common_info->id = Base64UrlEncode(common_info->raw_id);
+  common_info->id = Base64UrlEncodeChallenge(common_info->raw_id);
 
   response->authenticator_attachment =
       response_data.transport_used
@@ -2708,7 +2699,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.credential->id;
-  common_info->id = Base64UrlEncode(common_info->raw_id);
+  common_info->id = Base64UrlEncodeChallenge(common_info->raw_id);
   response->info = std::move(common_info);
   response->info->authenticator_data =
       response_data.authenticator_data.SerializeToByteArray();
