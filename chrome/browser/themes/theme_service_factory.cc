@@ -104,7 +104,8 @@ ThemeServiceFactory::ThemeServiceFactory()
 
 ThemeServiceFactory::~ThemeServiceFactory() = default;
 
-KeyedService* ThemeServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ThemeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
 #if BUILDFLAG(IS_LINUX)
   using ThemeService = ThemeServiceAuraLinux;
@@ -113,7 +114,7 @@ KeyedService* ThemeServiceFactory::BuildServiceInstanceFor(
   auto provider = std::make_unique<ThemeService>(static_cast<Profile*>(profile),
                                                  GetThemeHelper());
   provider->Init();
-  return provider.release();
+  return provider;
 }
 
 void ThemeServiceFactory::RegisterProfilePrefs(
