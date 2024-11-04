@@ -89,7 +89,11 @@ if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
     }
   } else if (is_ios) {
     if (is_asan) {
-      _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+      if (target_environment == "simulator") {
+        _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+      } else {
+        _clang_rt_dso_path = "darwin/libclang_rt.asan_ios_dynamic.dylib"
+      }
     } else {
       assert(is_ubsan_any)
       _clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
