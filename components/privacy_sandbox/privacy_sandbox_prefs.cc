@@ -52,6 +52,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(
+      prefs::kPrivacySandboxFakeNoticePromptShownTimeSync, base::Time(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(prefs::kPrivacySandboxFakeNoticePromptShownTime,
+                             base::Time());
 
   registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
                                 false);

@@ -155,6 +155,16 @@ inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
 inline constexpr char kPrivacySandboxSentimentSurveyLastSeen[] =
     "privacy_sandbox.sentiment_survey.last_seen";
 
+// Pref that records when a generic prompt is shown to understand the behavior
+// of synced prefs.
+inline constexpr char kPrivacySandboxFakeNoticePromptShownTimeSync[] =
+    "privacy_sandbox.fake_notice.prompt_shown_time_sync";
+
+// Pref that records when a generic prompt is shown to compare against synced
+// pref behavior.
+inline constexpr char kPrivacySandboxFakeNoticePromptShownTime[] =
+    "privacy_sandbox.fake_notice.prompt_shown_time";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
