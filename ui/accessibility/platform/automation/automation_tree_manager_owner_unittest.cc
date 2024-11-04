@@ -668,9 +668,9 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
 
   // Adding this app id should not impact the above bounds computation.
   wrapper0_client_data.AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeNodeAppId, "lacrosHost");
+      ax::mojom::StringAttribute::kChildTreeNodeAppId, "app2");
   wrapper1_root_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
-                                        "lacrosHost");
+                                        "app2");
 
   std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
