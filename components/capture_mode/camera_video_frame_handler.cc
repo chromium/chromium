@@ -45,14 +45,6 @@ namespace {
 // SharedMemory GMBs are used.
 bool g_force_use_gpu_memory_buffer_for_test = false;
 
-// A constant flag that describes which APIs the shared images created
-// for the video frames will be used with. They will be read via the raster
-// interface (which will be going over GLES2 if OOP-R is not enabled), sent
-// to the display compositor, and may be used as overlays.
-constexpr gpu::SharedImageUsageSet kSharedImageUsage =
-    gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
 viz::SharedImageFormat GetSharedImageFormat() {
   return g_force_use_gpu_memory_buffer_for_test
              ? viz::SinglePlaneFormat::kBGRA_8888
@@ -306,6 +298,16 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       format.SetPrefersExternalSampler();
     }
 #endif
+
+    // A flag that describes which APIs the shared images created
+    // for the video frames will be used with. They will be read via the raster
+    // interface (which will be going over GLES2 if OOP-R is not enabled), sent
+    // to the display compositor, and may be used as overlays.
+    constexpr gpu::SharedImageUsageSet kSharedImageUsage =
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
     // We clone our handle `gpu_memory_buffer_handle_` and use the cloned handle
     // to create the shared image. This way, the lifetime of our
     // `gpu_memory_buffer_handle_` remains tied to the lifetime of this object
