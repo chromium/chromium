@@ -523,8 +523,7 @@ TEST_F(SunfishTest, UpdateCursor) {
             cursor_manager->GetCursor().type());
 
   // Simulate a drag in the panel.
-  event_generator->MoveMouseTo(
-      search_results_panel->GetBoundsInScreen().bottom_right());
+  event_generator->MoveMouseBy(10, 10);
   EXPECT_EQ(ui::mojom::CursorType::kCross, cursor_manager->GetCursor().type());
 
   // Simulate mouse release in the panel.

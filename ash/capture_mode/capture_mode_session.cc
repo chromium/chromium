@@ -2102,11 +2102,13 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
   wm::ConvertPointToScreen(event_target, &screen_location);
 
-  // Allow events that target the results panel (if present) to go through. This
-  // must be done before running `deferred_cursor_updater` to allow the panel to
-  // update the cursor type.
-  if (capture_mode_util::IsEventTargetedOnWidget(
-          *event, controller_->search_results_panel_widget())) {
+  // Allow all events located on the results panel (if present) to go through.
+  // See `CaptureModeController::IsEventOnSearchResultsPanel()`.
+  // TODO(b/377019438): Block all events that aren't targeting the panel from
+  // reaching other UI elements underneath.
+  // This must be done before running `deferred_cursor_updater` to allow the
+  // panel to update the cursor type.
+  if (controller_->IsEventOnSearchResultsPanel(screen_location)) {
     if (cursor_setter_) {
       cursor_setter_->ResetCursor();
     }
