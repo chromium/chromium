@@ -7,5 +7,3 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
-
-void ShareKitService::ReadGroups(ShareKitReadConfiguration* config) {}

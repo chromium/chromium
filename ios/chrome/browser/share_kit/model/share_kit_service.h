@@ -42,7 +42,7 @@ class ShareKitService : public KeyedService {
 
   // Reads the info for the groups passed in `config` and returns the result
   // through the config callback.
-  virtual void ReadGroups(ShareKitReadConfiguration* config);
+  virtual void ReadGroups(ShareKitReadConfiguration* config) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SERVICE_H_
