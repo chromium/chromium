@@ -34,7 +34,12 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
     kMediaApp,
   };
 
-  explicit MahiMenuView(Surface surface = Surface::kBrowser);
+  struct ButtonStatus {
+    SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
+  };
+
+  explicit MahiMenuView(ButtonStatus button_status,
+                        Surface surface = Surface::kBrowser);
   MahiMenuView(const MahiMenuView&) = delete;
   MahiMenuView& operator=(const MahiMenuView&) = delete;
   ~MahiMenuView() override;
@@ -43,6 +48,7 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
       const gfx::Rect& anchor_view_bounds,
+      const ButtonStatus& button_status,
       const Surface surface = Surface::kBrowser);
 
   // Returns the host widget's name.
@@ -73,7 +79,7 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::LabelButton> summary_button_ = nullptr;
-  raw_ptr<views::LabelButton> outline_button_ = nullptr;
+  raw_ptr<views::LabelButton> elucidation_button_ = nullptr;
   raw_ptr<views::Textfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> submit_question_button_ = nullptr;
 

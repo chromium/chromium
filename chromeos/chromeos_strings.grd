@@ -430,6 +430,24 @@
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT" desc="The text label for the summarize button inside the Mahi menu">
         Summarize
       </message>
+      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP" desc="The tooltip of summary button.">
+        Click to summarize the webpage/PDF file
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_LABEL_TEXT" desc="The text label for the simplify button inside the Mahi menu">
+        Simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_ENABLED" desc="The tooltip of the simplify button when it's enabled">
+        Click to simplify the selected text
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_EMPTY" desc="The tooltip of the simplify button when it's disabled because of no selected text">
+        Select some text to simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_SHORT" desc="The tooltip of the simplify button when it's disabled because the text selection is too short">
+        Too few words to simplify
+      </message>
+      <message name="IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_LONG" desc="The tooltip of the simplify button when it's disabled because the text selection is too long">
+        Too many words to simplify
+      </message>
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
         Ask question, e.g. "What is this page about?"
       </message>

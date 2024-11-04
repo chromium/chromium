@@ -22,6 +22,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -99,6 +100,27 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
       kButtonPadding));
 }
 
+std::u16string GetSimplifyButtonTooltipText(SelectedTextState text_state) {
+  switch (text_state) {
+    case SelectedTextState::kEligible:
+      return l10n_util::GetStringUTF16(
+          IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_ENABLED);
+    case SelectedTextState::kTooShort:
+      return l10n_util::GetStringUTF16(
+          IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_SHORT);
+    case SelectedTextState::kTooLong:
+      return l10n_util::GetStringUTF16(
+          IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_TOO_LONG);
+    case SelectedTextState::kEmpty:
+      return l10n_util::GetStringUTF16(
+          IDS_MAHI_SIMPLIFY_BUTTON_TOOL_TIP_DISABLED_SELECTION_EMPTY);
+    default:
+      break;
+  }
+
+  return std::u16string();
+}
+
 // Custom widget to ensure the MahiMenuView follows the same theme as the
 // browser context menu.
 class MahiMenuWidget : public views::Widget {
@@ -168,7 +190,7 @@ class MahiMenuView::MenuTextfieldController
   base::WeakPtr<MahiMenuView> menu_view_;
 };
 
-MahiMenuView::MahiMenuView(Surface surface)
+MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
     : chromeos::editor_menu::PreTargetHandlerView(
           chromeos::editor_menu::CardType::kMahiDefaultMenu),
       surface_(surface) {
@@ -240,21 +262,36 @@ MahiMenuView::MahiMenuView(Surface surface)
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing)),
               views::Builder<views::LabelButton>()
-                  .SetID(ViewID::kOutlineButton)
-                  .CopyAddressTo(&outline_button_)
+                  .SetID(ViewID::kElucidationButton)
+                  .CopyAddressTo(&elucidation_button_)
                   .SetCallback(base::BindRepeating(
                       &MahiMenuView::OnButtonPressed,
                       weak_ptr_factory_.GetWeakPtr(),
-                      ::chromeos::mahi::ButtonType::kOutline))
+                      ::chromeos::mahi::ButtonType::kElucidation))
                   .SetText(l10n_util::GetStringUTF16(
-                      IDS_MAHI_OUTLINE_BUTTON_LABEL_TEXT))
-                  // TODO(b/330643995): Unhide the outline button once outlines
-                  // are ready to be shown by default.
-                  .SetVisible(false))
+                      IDS_MAHI_SIMPLIFY_BUTTON_LABEL_TEXT))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing))
+                  // kUnknown mean hiding.
+                  .SetVisible(button_status.elucidation_eligiblity !=
+                                  SelectedTextState::kUnknown)
+                  .SetEnabled(button_status.elucidation_eligiblity ==
+                              SelectedTextState::kEligible))
           .Build());
 
+  std::u16string elucidation_button_tooltip =
+      GetSimplifyButtonTooltipText(button_status.elucidation_eligiblity);
+  if (elucidation_button_->GetVisible()) {
+    CHECK(!elucidation_button_tooltip.empty());
+    elucidation_button_->SetTooltipText(elucidation_button_tooltip);
+  }
+
+  summary_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
+
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
-  StyleMenuButton(outline_button_, chromeos::kMahiOutlinesIcon);
+  // TODO(b:374172642): update the icon
+  StyleMenuButton(elucidation_button_, chromeos::kMahiOutlinesIcon);
 
   textfield_controller_ =
       std::make_unique<MenuTextfieldController>(weak_ptr_factory_.GetWeakPtr());
@@ -274,6 +311,7 @@ MahiMenuView::~MahiMenuView() {
 // static
 views::UniqueWidgetPtr MahiMenuView::CreateWidget(
     const gfx::Rect& anchor_view_bounds,
+    const ButtonStatus& button_status,
     Surface surface) {
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
@@ -289,8 +327,8 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
 
   views::UniqueWidgetPtr widget =
       std::make_unique<MahiMenuWidget>(std::move(params));
-  MahiMenuView* mahi_menu_view =
-      widget->SetContentsView(std::make_unique<MahiMenuView>(surface));
+  MahiMenuView* mahi_menu_view = widget->SetContentsView(
+      std::make_unique<MahiMenuView>(button_status, surface));
   mahi_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -336,6 +374,9 @@ void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {
   switch (button_type) {
     case ::chromeos::mahi::ButtonType::kSummary:
       histogram_button_type = MahiMenuButton::kSummaryButton;
+      break;
+    case ::chromeos::mahi::ButtonType::kElucidation:
+      histogram_button_type = MahiMenuButton::kElucidationButton;
       break;
     case ::chromeos::mahi::ButtonType::kOutline:
       // TODO(b/330643995): Remove CHECK_IS_TEST when outlines are

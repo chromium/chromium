@@ -17,6 +17,7 @@ enum ViewID {
   kSettingsButton,
   kTextfield,
   kSubmitQuestionButton,
+  kElucidationButton,
 };
 
 // Metrics
@@ -29,7 +30,8 @@ enum class MahiMenuButton {
   kSubmitQuestionButton = 2,
   kCondensedMenuButton = 3,
   kSettingsButton = 4,
-  kMaxValue = kSettingsButton,
+  kElucidationButton = 5,
+  kMaxValue = kElucidationButton,
 };
 
 inline constexpr char kMahiContextMenuButtonClickHistogram[] =
