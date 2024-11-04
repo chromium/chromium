@@ -13,7 +13,6 @@ import "lens_overlay_text_query.proto";
 
 // Metadata associated with an interaction request.
 message LensOverlayInteractionRequestMetadata {
-  // Type of interaction request.
   enum Type {
     UNKNOWN = 0;
 
@@ -34,6 +33,12 @@ message LensOverlayInteractionRequestMetadata {
 
     // User sent a query in the contextual search box.
     CONTEXTUAL_SEARCH_QUERY = 9;
+
+    // User sent a query about a pdf.
+    PDF_QUERY = 10;
+
+    // User sent a query about a website.
+    WEBPAGE_QUERY = 11;
   }
 
   Type type = 1;
