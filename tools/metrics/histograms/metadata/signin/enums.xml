@@ -340,6 +340,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Gaia cookie is restored, Infobar shown"/>
 </enum>
 
+<!-- LINT.IfChange(GaiaPage) -->
+
+<enum name="GaiaPage">
+  <int value="0" label="Other"/>
+  <int value="1" label="AccountChooser"/>
+  <int value="2" label="SignOutOptions"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/ios/browser/account_consistency_service.mm:GaiaPage) -->
+
 <enum name="GaiaRemoteConsentFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="Window was closed"/>

@@ -1163,6 +1163,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.GaiaPageVisited" enum="GaiaPage"
+    expires_after="2025-10-20">
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded whenever a Gaia page (i.e. https://accounts.google.com/) was
+    visited. The buckets distinguish various well-known pages. Not recorded in
+    Incognito. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.GetAccessTokenFinished" enum="GoogleServiceAuthError"
     expires_after="2025-03-09">
   <owner>droger@chromium.org</owner>

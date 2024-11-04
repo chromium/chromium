@@ -46,6 +46,37 @@ const char* kGoogleUrl = "https://google.com";
 const char* kYoutubeUrl = "https://youtube.com";
 const char* kGaiaDomain = "accounts.google.com";
 
+// Various well-known Gaia (accounts.google.com) subpages, for metrics purposes.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GaiaPage)
+enum class GaiaPageForMetrics {
+  // Any page that's not explicitly listed below.
+  kOther = 0,
+  // "/AccountChooser" aka the account picker.
+  kAccountChooser = 1,
+  // "/SignOutOptions" aka the "signout u-turn" page.
+  kSignOutOptions = 2,
+  kMaxValue = kSignOutOptions
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:GaiaPage)
+
+// Determines whether the given `path` corresponds to any well-known Gaia
+// (accounts.google.com) subpage. Only meaningful if the path was taken from a
+// Gaia URL.
+GaiaPageForMetrics DetermineGaiaPageForMetrics(std::string_view path) {
+  if (base::StartsWith(path, "/AccountChooser",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return GaiaPageForMetrics::kAccountChooser;
+  }
+  if (base::StartsWith(path, "/SignOutOptions",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return GaiaPageForMetrics::kSignOutOptions;
+  }
+  return GaiaPageForMetrics::kOther;
+}
+
 // Returns the registered, organization-identifying host, but no subdomains,
 // from the given GURL. Returns an empty string if the GURL is invalid.
 static std::string GetDomainFromUrl(const GURL& url) {
@@ -308,8 +339,14 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
     return;
   }
 
-  if (delegate_ && show_consistency_web_signin_ &&
-      gaia::HasGaiaSchemeHostPort(url)) {
+  const bool is_gaia = gaia::HasGaiaSchemeHostPort(url);
+  if (is_gaia) {
+    base::UmaHistogramEnumeration(
+        "Signin.GaiaPageVisited",
+        DetermineGaiaPageForMetrics(url.path_piece()));
+  }
+
+  if (delegate_ && show_consistency_web_signin_ && is_gaia) {
     delegate_->OnShowConsistencyPromo(url, web_state);
   }
   show_consistency_web_signin_ = false;
