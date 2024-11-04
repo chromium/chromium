@@ -52,6 +52,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenSafetyCheckFromWhatsNew,
     Command::kOpenPaymentsSettings,
     Command::KOpenHistorySearchSettings,
+    Command::kShowCustomizeChromeToolbar,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -89,6 +90,11 @@ class TestCommandHandler : public BrowserCommandHandler {
     // cannot be executed in a unittest.
   }
 
+  void ShowCustomizeChromeToolbar() override {
+    // The functionality of opening the AI settings is removed, as it
+    // cannot be executed in a unittest.
+  }
+
   bool TutorialServiceExists() override { return tutorial_service_exists_; }
 
   CommandUpdater* GetCommandUpdater() override {
@@ -120,6 +126,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     saved_tab_groups_feature_supported_ = is_supported;
   }
 
+  void SetActiveTabSupportsCustomizeChrome(bool is_supported) {
+    customize_chrome_supported_ = is_supported;
+  }
+
  protected:
   bool BrowserSupportsTabGroups() override {
     return tab_groups_feature_supported_;
@@ -133,6 +143,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     return saved_tab_groups_feature_supported_;
   }
 
+  bool ActiveTabSupportsCustomizeChrome() override {
+    return customize_chrome_supported_;
+  }
+
  private:
   bool tutorial_service_exists_;
   std::unique_ptr<CommandUpdater> command_updater_;
@@ -140,6 +154,7 @@ class TestCommandHandler : public BrowserCommandHandler {
   bool tab_groups_feature_supported_ = true;
   bool default_search_provider_is_google_ = true;
   bool saved_tab_groups_feature_supported_ = true;
+  bool customize_chrome_supported_ = true;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -210,6 +225,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenPasswordManager, ());
 
   MOCK_METHOD(void, OpenAISettings, ());
+
+  MOCK_METHOD(void, ShowCustomizeChromeToolbar, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -725,4 +742,21 @@ TEST_F(BrowserCommandHandlerTest, OpenHistorySearchSettingsCommand) {
                     DispositionFromClick(*info)));
   EXPECT_TRUE(
       ExecuteCommand(Command::KOpenHistorySearchSettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, ShowCustomizeChromeToolbarCommand) {
+  // If the active tab does not support customize chrome, dont run the command.
+  command_handler_->SetActiveTabSupportsCustomizeChrome(false);
+  EXPECT_FALSE(CanExecuteCommand(Command::kShowCustomizeChromeToolbar));
+
+  // If the active tab supports customize chrome it should
+  // allow running commands.
+  command_handler_->SetActiveTabSupportsCustomizeChrome(true);
+  EXPECT_TRUE(CanExecuteCommand(Command::kShowCustomizeChromeToolbar));
+
+  // Show customize chrome toolbar command calls show customize chrome toolbar.
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(*command_handler_, ShowCustomizeChromeToolbar());
+  EXPECT_TRUE(
+      ExecuteCommand(Command::kShowCustomizeChromeToolbar, std::move(info)));
 }

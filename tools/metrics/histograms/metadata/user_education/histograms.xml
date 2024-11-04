@@ -91,6 +91,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TestDefaultModule"
       summary="the default module used for testing only"/>
   <variant name="TestModule" summary="the module used for testing only"/>
+  <variant name="ToolbarPinning" summary="the module for toolbar pinning"/>
   <variant name="TranslationSettings"
       summary="the module for Translation Settings"/>
 </variants>

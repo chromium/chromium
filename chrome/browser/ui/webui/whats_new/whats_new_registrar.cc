@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
@@ -41,6 +42,10 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(WhatsNewModule(chrome_pdf::features::kPdfSearchify,
                                           "rhalavati@chromium.org"));
 #endif
+
+  registry->RegisterModule(
+      WhatsNewModule(::features::kToolbarPinning, "corising@google.com",
+                     BrowserCommand::kShowCustomizeChromeToolbar));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
