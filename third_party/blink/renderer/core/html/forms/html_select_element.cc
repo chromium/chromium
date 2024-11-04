@@ -1067,11 +1067,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
     SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
   }
 
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    for (HTMLSelectedOptionElement* selectedoption : TargetSelectedOptions()) {
-      selectedoption->CloneContentsFromOptionElement(element);
-    }
-  }
+  UpdateAllSelectedoptions();
 }
 
 bool HTMLSelectElement::DispatchFocusEvent(
@@ -1208,6 +1204,7 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
     }
   }
 
+  UpdateAllSelectedoptions();
   SetNeedsValidityCheck();
   select_type_->UpdateTextStyleAndContent();
 }
@@ -1913,14 +1910,20 @@ void HTMLSelectElement::setSelectedOptionElement(
   }
 }
 
-HeapHashSet<Member<HTMLSelectedOptionElement>>
-HTMLSelectElement::TargetSelectedOptions() const {
-  HeapHashSet<Member<HTMLSelectedOptionElement>> selectedoptions =
-      descendant_selectedoptions_;
-  if (auto* attr_selectedoption = selectedOptionElement()) {
-    selectedoptions.insert(attr_selectedoption);
+void HTMLSelectElement::UpdateAllSelectedoptions() {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    return;
   }
-  return selectedoptions;
+  auto* option = SelectedOption();
+  // Create a copy of descendant_selectedoptions_ because it may be modified
+  // while iterating.
+  for (auto& selectedoption :
+       VectorOf<HTMLSelectedOptionElement>(descendant_selectedoptions_)) {
+    selectedoption->CloneContentsFromOptionElement(option);
+  }
+  if (auto* attr_selectedoption = selectedOptionElement()) {
+    attr_selectedoption->CloneContentsFromOptionElement(option);
+  }
 }
 
 }  // namespace blink
