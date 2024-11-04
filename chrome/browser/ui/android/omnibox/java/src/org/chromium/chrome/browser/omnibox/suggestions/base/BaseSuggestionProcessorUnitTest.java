@@ -329,14 +329,31 @@ public class BaseSuggestionProcessorUnitTest {
         // When the ANDROID_HUB PageClassification is seen, the switch to tab refine icon is
         // intentionally skipped.
         mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
-        createSuggestion(
-                OmniboxSuggestionType.OPEN_TAB,
-                /* isSearch= */ false,
-                /* hasTabMatch= */ true,
-                TEST_URL);
-        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
 
-        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-        Assert.assertEquals(null, actions);
+        {
+            // With explicit tab match
+            createSuggestion(
+                    OmniboxSuggestionType.OPEN_TAB,
+                    /* isSearch= */ false,
+                    /* hasTabMatch= */ true,
+                    TEST_URL);
+            mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+            Assert.assertEquals(null, actions);
+        }
+
+        {
+            // Without explicit tab match
+            createSuggestion(
+                    OmniboxSuggestionType.OPEN_TAB,
+                    /* isSearch= */ false,
+                    /* hasTabMatch= */ false,
+                    TEST_URL);
+            mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
+
+            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+            Assert.assertEquals(null, actions);
+        }
     }
 }
