@@ -607,8 +607,7 @@ const ProvidedFileSystemInfo& FakeProvidedFileSystem::GetFileSystemInfo()
 }
 
 OperationRequestManager* FakeProvidedFileSystem::GetRequestManager() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 Watchers* FakeProvidedFileSystem::GetWatchers() {
@@ -667,8 +666,7 @@ void FakeProvidedFileSystem::Notify(
 
 void FakeProvidedFileSystem::Configure(
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
+  NOTREACHED();
 }
 
 base::WeakPtr<ProvidedFileSystemInterface>

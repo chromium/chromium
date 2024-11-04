@@ -121,8 +121,7 @@ user_manager::UserImage::ImageFormat ChooseImageFormatFromCodec(
       // image format of the bytes representation is unknown.
       return user_manager::UserImage::FORMAT_UNKNOWN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return user_manager::UserImage::FORMAT_UNKNOWN;
+  NOTREACHED();
 }
 
 // Handles the decoded image returned from ImageDecoder through the

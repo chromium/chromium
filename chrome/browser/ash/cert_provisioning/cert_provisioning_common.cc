@@ -58,7 +58,7 @@ std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // This function implements `DeleteVaKey()` and `DeleteVaKeysByPrefix()`, both

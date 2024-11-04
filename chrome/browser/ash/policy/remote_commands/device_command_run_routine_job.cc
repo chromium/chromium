@@ -131,8 +131,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
 
   switch (routine_enum_) {
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
-      NOTREACHED_IN_MIGRATION() << "This default value should not be used.";
-      break;
+      NOTREACHED() << "This default value should not be used.";
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity: {
       diagnostics_service->RunBatteryCapacityRoutine(base::BindOnce(

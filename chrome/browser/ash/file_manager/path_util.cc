@@ -1286,8 +1286,7 @@ std::optional<FilePath> GetDisplayablePath(Profile* profile, FilePath path) {
     case VOLUME_TYPE_SYSTEM_INTERNAL:
       return std::nullopt;
     case NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
   while (cur_component != path_components.end()) {
     result = result.Append(*cur_component);

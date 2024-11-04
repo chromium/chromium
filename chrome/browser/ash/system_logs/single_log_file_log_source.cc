@@ -61,8 +61,7 @@ base::FilePath::StringType GetLogFileSourceRelativeFilePathValue(
     case SupportedSource::kPowerdPrevious:
       return "power_manager/powerd.PREVIOUS";
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::FilePath::StringType();
+  NOTREACHED();
 }
 
 // Returns the inode value of file at |path|, or 0 if it doesn't exist or is

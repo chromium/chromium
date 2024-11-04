@@ -268,8 +268,7 @@ void LogOneDriveMetricsAfterFallback(
     case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
     case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
     case ash::office_fallback::FallbackReason::kWaitingForUpload:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   cloud_open_metrics->LogTaskResult(task_result);
 }
@@ -316,7 +315,7 @@ void LogGoogleDriveMetricsAfterFallback(
     case ash::office_fallback::FallbackReason::kWaitingForUpload:
     case ash::office_fallback::FallbackReason::
         kAndroidOneDriveUnsupportedLocation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   cloud_open_metrics->LogTaskResult(task_result);
 }

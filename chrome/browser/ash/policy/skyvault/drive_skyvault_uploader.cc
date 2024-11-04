@@ -153,7 +153,7 @@ void DriveSkyvaultUploader::CreateCopyIOTask(
     const base::FilePath& destination_folder_path,
     bool created) {
   if (observed_copy_task_id_) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "The Copy IOTask was already triggered. Case should not be reached.";
   }
 
@@ -221,8 +221,8 @@ void DriveSkyvaultUploader::OnEndCopy(
   }
 
   if (observed_delete_task_id_) {
-    NOTREACHED_IN_MIGRATION() << "The delete IOTask was already triggered. "
-                                 "Case should not be reached.";
+    NOTREACHED() << "The delete IOTask was already triggered. Case should not "
+                    "be reached.";
   }
 
   std::vector<FileSystemURL> file_urls;
@@ -304,10 +304,8 @@ void DriveSkyvaultUploader::OnCopyStatus(
       ProcessCopyError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
-      NOTREACHED_IN_MIGRATION()
-          << "Encrypted file should not need password to be copied or "
-             "moved. Case should not be reached.";
-      return;
+      NOTREACHED() << "Encrypted file should not need password to be copied or "
+                      "moved. Case should not be reached.";
   }
 }
 
@@ -401,8 +399,7 @@ void DriveSkyvaultUploader::OnSyncingStatusUpdate(
         OnEndCopy(MigrationUploadError::kSyncFailed);
         return;
       case drivefs::mojom::ItemEvent::State::kCancelledAndDeleted:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case drivefs::mojom::ItemEvent::State::kCancelledAndTrashed:
         LOG(ERROR) << "Drive sync error: cancelled and trashed";
         OnEndCopy(MigrationUploadError::kSyncFailed);

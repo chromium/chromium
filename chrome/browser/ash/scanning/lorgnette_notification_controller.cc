@@ -94,8 +94,7 @@ void LorgnetteNotificationController::OnDlcStateChanged(
                          << dlc_state.last_error_code();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   std::unique_ptr<message_center::Notification> notification =
       CreateNotification(dlc_state.id());
@@ -121,7 +120,7 @@ LorgnetteNotificationController::CreateNotification(const std::string& dlc_id) {
     case DlcState::kIdle:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LorgnetteNotificationController::DisplayNotification(

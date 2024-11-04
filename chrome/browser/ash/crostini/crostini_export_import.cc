@@ -395,9 +395,7 @@ void CrostiniExportImport::AfterDiskImageOperation(
     CrostiniResult result) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << container_id << " has no status_tracker to update";
-    return;
+    NOTREACHED() << container_id << " has no status_tracker to update";
   }
 
   if (result == CrostiniResult::SUCCESS) {
@@ -416,7 +414,7 @@ void CrostiniExportImport::AfterDiskImageOperation(
         RemoveTracker(it)->SetStatusDone();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (result == CrostiniResult::DISK_IMAGE_CANCELLED) {
     switch (it->second->status()) {
@@ -431,7 +429,7 @@ void CrostiniExportImport::AfterDiskImageOperation(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     LOG(ERROR) << "Error exporting " << int(result);
@@ -500,8 +498,7 @@ void CrostiniExportImport::ExportAfterSharing(
     if (it != status_trackers_.end()) {
       RemoveTracker(it)->SetStatusFailed();
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
     return;
   }
@@ -521,9 +518,7 @@ void CrostiniExportImport::OnExportComplete(
     uint64_t compressed_size) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << container_id << " has no status_tracker to update";
-    return;
+    NOTREACHED() << container_id << " has no status_tracker to update";
   }
 
   ExportContainerResult enum_hist_result = ExportContainerResult::kSuccess;
@@ -557,7 +552,7 @@ void CrostiniExportImport::OnExportComplete(
         RemoveTracker(it)->SetStatusDone();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (result == CrostiniResult::CONTAINER_EXPORT_IMPORT_CANCELLED) {
     switch (it->second->status()) {
@@ -572,7 +567,7 @@ void CrostiniExportImport::OnExportComplete(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     LOG(ERROR) << "Error exporting " << int(result);
@@ -638,8 +633,7 @@ void CrostiniExportImport::ImportAfterSharing(
     if (it != status_trackers_.end()) {
       RemoveTracker(it)->SetStatusFailed();
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
     return;
   }
@@ -674,11 +668,10 @@ void CrostiniExportImport::OnImportComplete(
           RemoveTracker(it)->SetStatusDone();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
   } else if (result ==
              crostini::CrostiniResult::CONTAINER_EXPORT_IMPORT_CANCELLED) {
@@ -688,11 +681,10 @@ void CrostiniExportImport::OnImportComplete(
           RemoveTracker(it)->SetStatusCancelled();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
   } else {
     LOG(ERROR) << "Error importing " << int(result);
@@ -724,8 +716,7 @@ void CrostiniExportImport::OnImportComplete(
                CrostiniExportImportStatusTracker::Status::RUNNING);
         RemoveTracker(it)->SetStatusFailed();
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << container_id << " has no status_tracker to update";
+        NOTREACHED() << container_id << " has no status_tracker to update";
       }
     } else {
       DCHECK(it == status_trackers_.end())
@@ -826,9 +817,7 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
                                            guest_os::GuestId container_id) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << container_id << " has no status_tracker to cancel";
-    return;
+    NOTREACHED() << container_id << " has no status_tracker to cancel";
   }
 
   it->second->SetStatusCancelling();
@@ -847,7 +836,7 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
       manager.CancelDiskImageOp(std::move(container_id));
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

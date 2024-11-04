@@ -115,8 +115,7 @@ const char* ChooseExtensionFromImageFormat(
     case user_manager::UserImage::FORMAT_WEBP:
       return ".webp";
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid format: " << image_format;
-      return ".jpg";
+      NOTREACHED() << "Invalid format: " << image_format;
   }
 }
 
@@ -315,8 +314,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
         base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
                        false));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    NotifyJobDone();
+    NOTREACHED();
   }
 }
 
@@ -581,8 +579,7 @@ void UserImageManagerImpl::LoadUserImage() {
   int image_index = image_properties->FindInt(kImageIndexNodeName)
                         .value_or(user_manager::UserImage::Type::kInvalid);
   if (image_index == user_manager::UserImage::Type::kInvalid) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   const std::string* image_url_string =
@@ -995,7 +992,7 @@ void UserImageManagerImpl::OnJobDone() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, job_.release());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

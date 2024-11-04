@@ -262,14 +262,11 @@ bool CustomizationDocument::LoadManifestFromString(
       manifest,
       base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
-    LOG(ERROR) << parsed_json.error().message;
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED() << parsed_json.error().message;
   }
 
   if (!parsed_json->is_dict()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   root_ =
@@ -544,8 +541,7 @@ base::FilePath
 ServicesCustomizationDocument::GetCustomizedWallpaperDownloadedFileName() {
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   if (dir.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return dir;
+    NOTREACHED();
   }
   return dir.Append(kCustomizationDefaultWallpaperDownloadedFile);
 }
@@ -859,9 +855,7 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   const base::FilePath file = GetCustomizedWallpaperDownloadedFileName();
   if (dir.empty() || file.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    applying->Finished(false);
-    return;
+    NOTREACHED();
   }
 
   wallpaper_downloader_ = std::make_unique<CustomizationWallpaperDownloader>(

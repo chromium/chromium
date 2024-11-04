@@ -436,7 +436,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, QueryLengthExceeded) {
       base::BindLambdaForTesting(
           [](std::optional<std::vector<
                  ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
-             manta::MantaStatusCode) { NOTREACHED_IN_MIGRATION(); }));
+             manta::MantaStatusCode) { NOTREACHED(); }));
 
   EXPECT_EQ("GetSeaPenThumbnails exceeded maximum text length",
             bad_message_observer.WaitForBadMessage())

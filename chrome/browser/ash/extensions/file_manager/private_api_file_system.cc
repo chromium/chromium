@@ -185,9 +185,8 @@ ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
     case api::file_manager_private::FormatFileSystemType::kNtfs:
       return ash::disks::FormatFileSystemType::kNtfs;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown format filesystem " << base::to_underlying(filesystem);
-  return ash::disks::FormatFileSystemType::kUnknown;
+  NOTREACHED() << "Unknown format filesystem "
+               << base::to_underlying(filesystem);
 }
 
 std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
@@ -214,9 +213,7 @@ std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
     case api::file_manager_private::IoTaskType::kNone:
       return {};
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown I/O task type " << base::to_underlying(type);
-  return {};
+  NOTREACHED() << "Unknown I/O task type " << base::to_underlying(type);
 }
 
 extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
@@ -232,11 +229,9 @@ extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
     case policy::DlpRulesManager::Level::kReport:
       return DlpLevel::kReport;
     case policy::DlpRulesManager::Level::kNotSet:
-      NOTREACHED_IN_MIGRATION() << "DLP level not set.";
-      return DlpLevel::kNone;
+      NOTREACHED() << "DLP level not set.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown DLP level.";
-  return {};
+  NOTREACHED() << "Unknown DLP level.";
 }
 
 extensions::api::file_manager_private::VolumeType
@@ -257,11 +252,9 @@ DlpRulesManagerComponentToApiEnum(data_controls::Component component) {
     case Component::kOneDrive:
       return VolumeType::kProvided;
     case Component::kUnknownComponent:
-      NOTREACHED_IN_MIGRATION() << "DLP component not set.";
-      return {};
+      NOTREACHED() << "DLP component not set.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown component type.";
-  return {};
+  NOTREACHED() << "Unknown component type.";
 }
 
 policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
@@ -274,9 +267,7 @@ policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
     case api::file_manager_private::PolicyDialogType::kError:
       return policy::FilesDialogType::kError;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown policy dialog type " << base::to_underlying(type);
-  return policy::FilesDialogType::kUnknown;
+  NOTREACHED() << "Unknown policy dialog type " << base::to_underlying(type);
 }
 
 std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
@@ -289,12 +280,9 @@ std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     case api::file_manager_private::PolicyErrorType::kNone:
       return std::nullopt;
     case api::file_manager_private::PolicyErrorType::kDlpWarningTimeout:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected policy type " << base::to_underlying(type);
+      NOTREACHED() << "Unexpected policy type " << base::to_underlying(type);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown policy error type " << base::to_underlying(type);
-  return std::nullopt;
+  NOTREACHED() << "Unknown policy error type " << base::to_underlying(type);
 }
 
 // Handles a callback from the LocalImageSearchService. The job of this function

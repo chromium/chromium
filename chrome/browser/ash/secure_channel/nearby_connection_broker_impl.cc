@@ -145,8 +145,7 @@ mojom::NearbyConnectionStepResult ConvertStatusToStepResult(Status status) {
     case Status::kSuccess:
       return mojom::NearbyConnectionStepResult::kSuccess;
     case Status::kNextValue:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::NearbyConnectionStepResult::kMaxValue;
+      NOTREACHED();
   }
 }
 
@@ -478,11 +477,8 @@ void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
           kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected timeout with connection status " << connection_status_;
-      reason = util::NearbyDisconnectionReason::kConnectionLost;
-      connection_step = mojom::NearbyConnectionStep::kDisconnectionFinished;
-      break;
+      NOTREACHED() << "Unexpected timeout with connection status "
+                   << connection_status_;
   }
   NotifyConnectionStateChanged(
       connection_step,
@@ -678,10 +674,8 @@ void NearbyConnectionBrokerImpl::OnConnectionRejected(
           kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected connection status when connection rejected"
-          << connection_status_;
-      connection_step = mojom::NearbyConnectionStep::kDiscoveringEndpointEnded;
+      NOTREACHED() << "Unexpected connection status when connection rejected"
+                   << connection_status_;
   }
   NotifyConnectionStateChanged(
       connection_step, mojom::NearbyConnectionStepResult::kConnectionRejected);

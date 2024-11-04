@@ -136,8 +136,7 @@ FromMojomResponseToAutomationResponse(
     case MojomResponse::NEED_DEPRECATION_CONFIRMATION:
       return SetNativeChromeVoxResponse::kNeedDeprecationConfirmation;
     case MojomResponse::INVALID_ENUM_VALUE:
-      NOTREACHED_IN_MIGRATION();
-      return SetNativeChromeVoxResponse::kFailure;
+      NOTREACHED();
   }
 }
 
@@ -736,8 +735,7 @@ void ArcAccessibilityTreeTracker::OnNotificationStateChanged(
                                         ui::AXTreeIDUnknown());
       break;
     case AccessibilityNotificationStateType::INVALID_ENUM_VALUE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

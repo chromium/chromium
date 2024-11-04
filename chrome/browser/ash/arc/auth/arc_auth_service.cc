@@ -185,8 +185,7 @@ std::string GetAccountName(Profile* profile) {
     case mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT:
       return std::string();
     case mojom::ChromeAccountType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -330,8 +329,7 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
 
   // Re-auth shouldn't be triggered for non-Gaia device local accounts.
   if (!user_manager::UserManager::Get()->IsLoggedInAsUserWithGaiaAccount()) {
-    NOTREACHED_IN_MIGRATION() << "Shouldn't re-auth for non-Gaia accounts";
-    return;
+    NOTREACHED() << "Shouldn't re-auth for non-Gaia accounts";
   }
 
   const ProvisioningStatus status = GetProvisioningStatus(provisioning_result);
@@ -405,8 +403,7 @@ void ArcAuthService::ReportManagementChangeStatus(
                                    weak_ptr_factory_.GetWeakPtr()));
       break;
     case mojom::ManagementChangeStatus::INVALID_MANAGEMENT_STATE:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid status of management transition: " << status;
+      NOTREACHED() << "Invalid status of management transition: " << status;
   }
 }
 
@@ -752,7 +749,7 @@ void ArcAuthService::DeletePendingTokenRequest(ArcFetcherBase* fetcher) {
 
   // We should not have received a call to delete a |fetcher| that was not in
   // |pending_token_requests_|.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ArcAuthService::SetURLLoaderFactoryForTesting(

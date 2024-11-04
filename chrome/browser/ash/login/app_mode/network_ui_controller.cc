@@ -127,7 +127,7 @@ void NetworkUiController::InitializeNetwork() {
 void NetworkUiController::OnConfigureNetwork() {
   // TODO(b/256596599): Remove this consumer-kiosk only method and all its
   // references.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NetworkUiController::OnNetworkConfigFinished() {

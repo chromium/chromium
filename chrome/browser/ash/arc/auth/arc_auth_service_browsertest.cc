@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
                                                    GetFakeAuthTokenResponse());
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         requests_count++;
       }));

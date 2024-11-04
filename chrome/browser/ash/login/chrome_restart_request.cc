@@ -411,7 +411,7 @@ void RestartChrome(const base::CommandLine& command_line,
 
   static bool restart_requested = false;
   if (restart_requested) {
-    NOTREACHED_IN_MIGRATION() << "Request chrome restart for more than once.";
+    NOTREACHED() << "Request chrome restart for more than once.";
   }
   restart_requested = true;
 

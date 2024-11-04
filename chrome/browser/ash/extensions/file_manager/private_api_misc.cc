@@ -210,8 +210,7 @@ bool IsAllowedSource(storage::FileSystemType type,
                      fmp::SourceRestriction restriction) {
   switch (restriction) {
     case fmp::SourceRestriction::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
 
     case fmp::SourceRestriction::kAnySource:
       return true;
@@ -385,8 +384,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
       zoom_type = content::PAGE_ZOOM_RESET;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return RespondNow(Error(kUnknownErrorDoNotUse));
+      NOTREACHED();
   }
   zoom::PageZoom::Zoom(GetSenderWebContents(), zoom_type);
   return RespondNow(NoArguments());
@@ -454,10 +452,7 @@ FileManagerPrivateOpenInspectorFunction::Run() {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return RespondNow(Error(
-          base::StringPrintf("Unexpected inspection type(%d) is specified.",
-                             static_cast<int>(params->type))));
+      NOTREACHED();
   }
   return RespondNow(NoArguments());
 }
@@ -942,7 +937,7 @@ void FileManagerPrivateInternalInstallLinuxPackageFunction::
       response = fmp::InstallLinuxPackageStatus::kInstallAlreadyActive;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   Respond(ArgumentList(fmpi::InstallLinuxPackage::Results::Create(response)));
 }

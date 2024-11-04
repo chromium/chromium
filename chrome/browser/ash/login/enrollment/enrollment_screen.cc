@@ -369,8 +369,7 @@ void EnrollmentScreen::ShowImpl() {
       AuthenticateUsingEnrollmentToken();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -413,7 +412,7 @@ void EnrollmentScreen::OnTpmStatusResponse(
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -455,7 +454,7 @@ void EnrollmentScreen::CheckInstallAttributesState() {
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

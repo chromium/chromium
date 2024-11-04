@@ -445,7 +445,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     if (!component_ime.path.IsAbsolute()) {
       base::FilePath resources_path;
       if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
       component_ime.path = resources_path.Append(component_ime.path);
     }

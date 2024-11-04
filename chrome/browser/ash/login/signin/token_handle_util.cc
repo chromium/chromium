@@ -54,8 +54,7 @@ bool MaybeReturnCachedStatus(
     return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsReauthRequired(const TokenHandleUtil::Status& status,
@@ -71,8 +70,7 @@ bool IsReauthRequired(const TokenHandleUtil::Status& status,
       // only if the user is using their Gaia password for logging in.
       return user_has_gaia_password;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,

@@ -129,8 +129,7 @@ std::optional<PolicyLevel> GetPolicyLevel(
     case em::PolicyOptions::UNSET:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void SetJsonDevicePolicy(const std::string& policy_name,

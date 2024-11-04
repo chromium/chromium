@@ -1792,9 +1792,7 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
     case CryptohomeRecoveryScreen::Result::kAuthenticated: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED_IN_MIGRATION()
-              << "Recovery can not be used during initial setup.";
-          return;
+          NOTREACHED() << "Recovery can not be used during initial setup.";
         case WizardContext::AuthChangeFlow::kRecovery:
           ShowPasswordSelectionScreen();
           return;
@@ -1817,9 +1815,7 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
     case CryptohomeRecoveryScreen::Result::kFallbackLocal: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED_IN_MIGRATION()
-              << "Recovery is not used during initial setup";
-          return;
+          NOTREACHED() << "Recovery is not used during initial setup";
         case WizardContext::AuthChangeFlow::kReauthentication:
           AttemptLocalAuthenticationWithContext(
               std::move(wizard_context_->user_context));
@@ -1882,9 +1878,7 @@ void WizardController::OnEnterOldPasswordScreenExit(
     case EnterOldPasswordScreen::Result::kAuthenticated: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED_IN_MIGRATION()
-              << "Old password is not used during initial setup";
-          break;
+          NOTREACHED() << "Old password is not used during initial setup";
         case WizardContext::AuthChangeFlow::kRecovery:
         case WizardContext::AuthChangeFlow::kReauthentication:
           ShowApplyOnlinePasswordScreen();
@@ -2143,8 +2137,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
         ShowWelcomeScreen();
         break;
       case NetworkScreen::Result::QUICK_START:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return;
   }
@@ -2162,8 +2155,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
         ShowOsTrialScreen();
         break;
       case NetworkScreen::Result::QUICK_START:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return;
   }
@@ -2517,9 +2509,8 @@ void WizardController::OnApplyOnlinePasswordScreenExit(
           ShowFactorSetupSuccessScreen();
           return;
         case WizardContext::AuthChangeFlow::kReauthentication:
-          NOTREACHED_IN_MIGRATION()
-              << "Reauthentication should have been switched to "
-                 "Recovery if there was password update";
+          NOTREACHED() << "Reauthentication should have been switched to "
+                          "Recovery if there was password update";
       }
     }
       return;
@@ -2537,9 +2528,7 @@ void WizardController::OnOSAuthErrorScreenExit(
     case OSAuthErrorScreen::Result::kFallbackLocal: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED_IN_MIGRATION()
-              << "Recovery is not used during initial setup";
-          return;
+          NOTREACHED() << "Recovery is not used during initial setup";
         case WizardContext::AuthChangeFlow::kReauthentication:
           AttemptLocalAuthenticationWithContext(
               std::move(wizard_context_->user_context));
@@ -3309,7 +3298,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == QuickStartView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

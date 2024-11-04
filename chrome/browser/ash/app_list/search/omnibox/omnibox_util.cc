@@ -113,9 +113,8 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
       break;
   }
   // https://abseil.io/tips/147: Handle non-enumerator values.
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected AutocompleteMatchType value: " << static_cast<int>(type);
-  return SearchResult::OmniboxType::kDomain;
+  NOTREACHED() << "Unexpected AutocompleteMatchType value: "
+               << static_cast<int>(type);
 }
 
 SearchResult::MetricsType MatchTypeToMetricsType(
@@ -276,8 +275,7 @@ ui::PageTransition PageTransitionToUiPageTransition(
     case SearchResult::PageTransition::kGenerated:
       return ui::PAGE_TRANSITION_GENERATED;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::PAGE_TRANSITION_FIRST;
+      NOTREACHED();
   }
 }
 

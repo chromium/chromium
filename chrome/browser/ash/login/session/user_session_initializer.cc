@@ -178,9 +178,7 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     // TODO(https://crbug.com/1208416): Investigate why OnUserProfileLoaded
     // is called more than once.
     if (primary_profile_ != nullptr) {
-      NOTREACHED_IN_MIGRATION();
-      CHECK_EQ(primary_profile_, profile);
-      return;
+      NOTREACHED();
     }
     primary_profile_ = profile;
 

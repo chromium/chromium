@@ -61,8 +61,7 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
+  NOTREACHED();
 }
 
 LoginFailureReason GetLoginFailureReasonForReport(
@@ -236,8 +235,7 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   const auto* pref =
       GetLocalState()->FindPreference(kLoginLogoutReporterDictionary);
   if (!pref) {
-    NOTREACHED_IN_MIGRATION() << "Cannot find pref.";
-    return;
+    NOTREACHED() << "Cannot find pref.";
   }
 
   std::optional<int> last_kiosk_login_failure_timestamp =

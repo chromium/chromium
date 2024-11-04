@@ -981,8 +981,7 @@ void ArcSessionManager::CancelAuthCode() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (state_ == State::NOT_INITIALIZED) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // If ARC failed to boot normally, stop ARC. Otherwise, ARC is booting
@@ -2091,10 +2090,7 @@ std::ostream& operator<<(std::ostream& os,
 
 #undef MAP_STATE
 
-  // Some compilers report an error even if all values of an enum-class are
-  // covered exhaustively in a switch statement.
-  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "Invalid value " << static_cast<int>(state);
 }
 
 }  // namespace arc

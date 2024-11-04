@@ -174,8 +174,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       else
         return observer.get();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   ash::ThrottleObserver* GetArcBootPhaseThrottleObserver() {
@@ -185,8 +184,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       if (observer->name() == kArcBootPhaseThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   ash::ThrottleObserver* GetArcPowerThrottleObserver() {
@@ -196,8 +194,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   ArcInstanceThrottle* CreateArcInstanceThrottle() {
@@ -528,8 +525,7 @@ class ArcInstanceThrottleVMTest : public testing::Test {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   base::RunLoop* run_loop() { return run_loop_.get(); }

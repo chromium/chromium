@@ -44,8 +44,7 @@ void PopulateFeatureRestrictionsToConfig(
         config->voice_input = enabled;
         break;
       case VirtualKeyboardFeature::NONE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

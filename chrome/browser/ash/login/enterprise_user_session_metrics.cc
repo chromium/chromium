@@ -108,8 +108,7 @@ void RecordStoredSessionLength() {
   } else {
     // NOTREACHED() since session length for other session types should not
     // be recorded.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Report session duration for the first 24 hours, split into 144 buckets

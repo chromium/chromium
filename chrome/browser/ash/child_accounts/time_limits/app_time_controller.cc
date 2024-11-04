@@ -101,8 +101,7 @@ std::u16string GetNotificationTitleFor(const std::u16string& app_name,
       return l10n_util::GetStringUTF16(
           IDS_APP_TIME_LIMIT_APP_TIME_LIMIT_SET_SYSTEM_NOTIFICATION_TITLE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -136,8 +135,7 @@ std::u16string GetNotificationMessageFor(
       return l10n_util::GetStringFUTF16(
           IDS_APP_TIME_LIMIT_APP_AVAILABLE_NOTIFICATION_MESSAGE, app_name);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -155,9 +153,7 @@ std::string GetNotificationIdFor(const std::string& app_name,
       notification_id = kAppTimeLimitUpdateNotificationId;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      notification_id = "";
-      break;
+      NOTREACHED();
   }
   return base::StrCat({notification_id, app_name});
 }

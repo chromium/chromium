@@ -252,9 +252,7 @@ bool IsTimezonePrefsManaged(const std::string& pref_name) {
       return true;
   }
   // Default for unknown policy value.
-  NOTREACHED_IN_MIGRATION()
-      << "Unrecognized policy value: " << resolve_policy_value;
-  return true;
+  NOTREACHED() << "Unrecognized policy value: " << resolve_policy_value;
 }
 
 void ApplyTimeZone(const TimeZoneResponseData* timezone) {
@@ -350,8 +348,7 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
 
       // No default case means the compiler makes sure we handle new types.
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SetSystemTimezone(const user_manager::User* user,
@@ -410,7 +407,7 @@ void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
   }
 
   // Time zone UI should be blocked for non-primary users.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FineGrainedTimeZoneDetectionEnabled() {

@@ -142,7 +142,7 @@ class ActionLabelTap : public ActionLabel {
                                                touch_point_size_.height() / 2));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -275,8 +275,7 @@ std::vector<raw_ptr<ActionLabel, VectorExperimental>> ActionLabel::Show(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   for (arc::input_overlay::ActionLabel* label : labels) {
@@ -352,8 +351,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       SetToEditDefault();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

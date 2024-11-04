@@ -245,7 +245,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
         ASSERT_NO_FATAL_FAILURE(LaunchMGS());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

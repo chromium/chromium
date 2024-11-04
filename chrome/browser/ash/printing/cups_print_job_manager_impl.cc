@@ -135,13 +135,11 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
   }
 
   bool SuspendPrintJob(CupsPrintJob* job) override {
-    NOTREACHED_IN_MIGRATION() << "Pause printer is not implemented";
-    return false;
+    NOTREACHED() << "Pause printer is not implemented";
   }
 
   bool ResumePrintJob(CupsPrintJob* job) override {
-    NOTREACHED_IN_MIGRATION() << "Resume printer is not implemented";
-    return false;
+    NOTREACHED() << "Resume printer is not implemented";
   }
 
   void OnDocDone(::printing::PrintJob* job,

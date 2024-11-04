@@ -134,8 +134,7 @@ bool UnpackSigningScheme(
       *hash_algorithm = HashAlgorithm::HASH_ALGORITHM_SHA512;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace

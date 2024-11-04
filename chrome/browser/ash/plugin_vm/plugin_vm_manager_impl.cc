@@ -87,9 +87,6 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
   std::u16string title;
   int message_id;
   switch (result) {
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case PluginVmLaunchResult::kError:
       title = l10n_util::GetStringFUTF16(IDS_PLUGIN_VM_START_VM_ERROR_TITLE,
                                          app_name);
@@ -115,6 +112,8 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
                                          app_name);
       message_id = IDS_PLUGIN_VM_START_VM_INSUFFICIENT_DISK_SPACE_ERROR_MESSAGE;
       break;
+    default:
+      NOTREACHED();
   }
 
   chrome::ShowWarningMessageBox(nullptr, std::move(title),

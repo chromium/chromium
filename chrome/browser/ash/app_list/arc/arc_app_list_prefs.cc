@@ -1170,8 +1170,7 @@ void ArcAppListPrefs::SetLaunchRequestTimeForTesting(const std::string& app_id,
 }
 void ArcAppListPrefs::SetLastLaunchTime(const std::string& app_id) {
   if (!IsRegistered(app_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   launch_request_times_[app_id] = base::Time::Now();
@@ -1233,8 +1232,7 @@ void ArcAppListPrefs::NotifyRegisteredApps() {
   for (const auto& app_id : app_ids) {
     std::unique_ptr<AppInfo> app_info = GetApp(app_id);
     if (!app_info) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     // Default apps are reported earlier.
@@ -2324,8 +2322,7 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
       continue;
 
     if (!app.second.is_dict()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     const std::string* app_package =
@@ -2452,8 +2449,7 @@ void ArcAppListPrefs::OnNotificationsEnabledChanged(
   const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   for (const auto app : apps) {
     if (!app.second.is_dict()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     const std::string* app_package_name =
         app.second.GetDict().FindString(kPackageName);
@@ -2558,8 +2554,7 @@ std::vector<std::string> ArcAppListPrefs::GetPackagesFromPrefs(
       prefs_->GetDict(arc::prefs::kArcPackages);
   for (const auto package : package_prefs) {
     if (!package.second.is_dict()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     const bool uninstalled =

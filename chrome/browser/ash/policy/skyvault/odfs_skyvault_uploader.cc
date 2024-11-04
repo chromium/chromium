@@ -270,10 +270,8 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
       ProcessError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
-      NOTREACHED_IN_MIGRATION()
-          << "Encrypted file should not need password to be copied or "
-             "moved. Case should not be reached.";
-      return;
+      NOTREACHED() << "Encrypted file should not need password to be copied or "
+                      "moved. Case should not be reached.";
   }
 }
 
@@ -330,9 +328,8 @@ void OdfsSkyvaultUploader::OnMountResponse(base::File::Error result) {
 
 void OdfsSkyvaultUploader::StartIOTask() {
   if (observed_task_id_.has_value()) {
-    NOTREACHED_IN_MIGRATION()
-        << "The IOTask was already triggered. Case should not be "
-           "reached.";
+    NOTREACHED()
+        << "The IOTask was already triggered. Case should not be reached.";
   }
 
   if (cancelled_) {

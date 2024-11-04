@@ -131,7 +131,7 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
       return;
     default:
       if (requested_state != window_state->GetStateType()) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
   }
 

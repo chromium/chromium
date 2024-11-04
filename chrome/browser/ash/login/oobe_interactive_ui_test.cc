@@ -493,7 +493,7 @@ class FakeRecommendAppsFetcher : public apps::RecommendAppsFetcher {
     delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
   }
 
-  void Retry() override { NOTREACHED_IN_MIGRATION(); }
+  void Retry() override { NOTREACHED(); }
 
  private:
   const raw_ptr<apps::RecommendAppsFetcherDelegate> delegate_;

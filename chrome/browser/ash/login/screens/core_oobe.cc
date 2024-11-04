@@ -218,8 +218,7 @@ void CoreOobe::OnOobeConfigurationChanged() {
 void CoreOobe::UpdateUiInitState(CoreOobeView::UiState state) {
   switch (state) {
     case CoreOobeView::UiState::kUninitialized:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case CoreOobeView::UiState::kCoreHandlerInitialized:
       // JavaScript is now allowed in the handler.
       CHECK(ui_init_state_ == CoreOobeView::UiState::kUninitialized);

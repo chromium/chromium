@@ -131,9 +131,7 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
     for (const auto& locale_entry :
          entry->value(base::Value::Type::LIST)->GetList()) {
       if (!locale_entry.is_string()) {
-        NOTREACHED_IN_MIGRATION();
-        new_recommended_locales.clear();
-        break;
+        NOTREACHED();
       }
       new_recommended_locales.push_back(locale_entry.GetString());
     }

@@ -79,7 +79,7 @@ void UserInputImpl::SendSyntheticMouseEvent(
           flags |= ui::EF_FORWARD_MOUSE_BUTTON;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
       // If no mouse button is provided, use kLeft.

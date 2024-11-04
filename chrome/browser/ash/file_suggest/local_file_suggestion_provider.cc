@@ -160,7 +160,7 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
 
 void LocalFileSuggestionProvider::MaybeUpdateItemSuggestCache(
     base::PassKey<FileSuggestKeyedService>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LocalFileSuggestionProvider::OnFilesOpened(

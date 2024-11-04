@@ -281,7 +281,7 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
 }
 
 void FakeChromeUserManager::SwitchToLastActiveUser() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeChromeUserManager::IsKnownUser(const AccountId& account_id) const {
@@ -335,7 +335,7 @@ const user_manager::User* FakeChromeUserManager::GetPrimaryUser() const {
 void FakeChromeUserManager::SaveUserOAuthStatus(
     const AccountId& account_id,
     user_manager::User::OAuthTokenStatus oauth_token_status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeChromeUserManager::SaveForceOnlineSignin(const AccountId& account_id,
@@ -375,7 +375,7 @@ void FakeChromeUserManager::SaveUserDisplayEmail(
 }
 
 void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {

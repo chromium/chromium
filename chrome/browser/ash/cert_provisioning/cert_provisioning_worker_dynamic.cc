@@ -51,7 +51,7 @@
 // a final state afterwards.
 #define FINAL_STATE_EXPECTED(UpdateStateStatement)                \
   if ((UpdateStateStatement) != UpdateStateResult::kFinalState) { \
-    NOTREACHED_IN_MIGRATION();                                    \
+    NOTREACHED();                                                 \
   }
 
 namespace em = enterprise_management;
@@ -328,7 +328,7 @@ void CertProvisioningWorkerDynamic::DoStep() {
       CHECK(false);
       return;
   }
-  NOTREACHED_IN_MIGRATION() << " " << static_cast<uint>(state_);
+  NOTREACHED() << " " << static_cast<uint>(state_);
 }
 
 void CertProvisioningWorkerDynamic::MarkWorkerForReset() {
@@ -550,7 +550,7 @@ void CertProvisioningWorkerDynamic::OnGetNextInstructionResponse(
   }
   // CertProvisioningClient ensures that at least one of the instructions was
   // filled.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CertProvisioningWorkerDynamic::OnAuthorizeInstructionReceived(

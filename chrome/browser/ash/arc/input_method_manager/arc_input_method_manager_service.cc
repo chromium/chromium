@@ -81,7 +81,7 @@ void SwitchImeToCallback(const std::string& ime_id,
       }
     }
   }
-  NOTREACHED_IN_MIGRATION() << "There is no enabled non-ARC IME.";
+  NOTREACHED() << "There is no enabled non-ARC IME.";
 }
 
 void SetKeyboardDisabled(bool disabled) {

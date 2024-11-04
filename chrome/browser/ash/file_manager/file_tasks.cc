@@ -510,8 +510,7 @@ std::string TaskTypeToString(TaskType task_type) {
     case NUM_TASK_TYPE:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string ParseFilesAppActionId(const std::string& action_id) {
@@ -888,8 +887,7 @@ bool ExecuteFileTask(Profile* profile,
         extension_task_profile, extension, task.action_id, file_urls,
         std::move(done));
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void GetDebugJSONForKeyForExecuteFileTask(

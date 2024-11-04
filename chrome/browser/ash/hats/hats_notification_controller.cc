@@ -89,8 +89,7 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
     case DeviceInfoKey::LOCALE:
       return "locale";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

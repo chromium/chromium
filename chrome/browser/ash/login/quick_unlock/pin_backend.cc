@@ -185,9 +185,7 @@ void PinBackend::IsSet(const AccountId& account_id, BoolCallback result) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
-      std::move(result).Run(false);
-      return;
+      NOTREACHED() << "IsSet called with invalid user";
     }
     auto user_context = std::make_unique<UserContext>(*user);
     cryptohome_backend_->IsPinSetInCryptohome(std::move(user_context),
@@ -281,9 +279,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
-    std::move(did_set).Run(false);
-    return;
+    NOTREACHED() << "IsSet called with invalid user";
   }
   auto user_context = std::make_unique<UserContext>(*user);
   user_context->SetIsUsingPin(true);
@@ -350,9 +346,7 @@ void PinBackend::CanAuthenticate(const AccountId& account_id,
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED_IN_MIGRATION() << "CanAuthenticate called with invalid user";
-      std::move(result_callback).Run(false, std::nullopt);
-      return;
+      NOTREACHED() << "CanAuthenticate called with invalid user";
     }
     auto user_context = std::make_unique<UserContext>(*user);
     cryptohome_backend_->CanAuthenticate(std::move(user_context), purpose,

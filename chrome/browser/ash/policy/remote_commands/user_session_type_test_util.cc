@@ -57,7 +57,7 @@ const user_manager::User* CreateUserOfType(
       return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

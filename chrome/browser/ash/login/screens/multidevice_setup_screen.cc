@@ -163,7 +163,7 @@ void MultiDeviceSetupScreen::OnUserAction(const base::Value::List& args) {
     exit_callback_.Run(Result::NEXT);
   } else {
     BaseScreen::OnUserAction(args);
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

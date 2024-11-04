@@ -318,8 +318,7 @@ bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
       return true;
     case CheckType::kUnknownDueToMissingSystemClockSync:
     case CheckType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

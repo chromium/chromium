@@ -195,11 +195,7 @@ void BrowserLoader::LoadNow(LoadCompletionCallback callback) {
                              LacrosSelectionSource::kForced);
         return;
       case ash::standalone_browser::LacrosSelection::kDeployedLocally:
-        NOTREACHED_IN_MIGRATION();
-        std::move(callback).Run(base::FilePath(),
-                                LacrosSelection::kDeployedLocally,
-                                base::Version());
-        return;
+        NOTREACHED();
     }
   }
 
@@ -295,10 +291,7 @@ void BrowserLoader::OnLoadVersions(
       break;
     }
     case LacrosSelection::kDeployedLocally: {
-      NOTREACHED_IN_MIGRATION();
-      std::move(callback).Run(
-          base::FilePath(), LacrosSelection::kDeployedLocally, base::Version());
-      return;
+      NOTREACHED();
     }
   }
 }
@@ -334,8 +327,7 @@ void BrowserLoader::OnUnloadCompleted(LacrosSelection selection) {
       stateful_lacros_loader_.reset();
       break;
     case LacrosSelection::kDeployedLocally:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // If either of rootfs or stateful lacros loader is still in the process of

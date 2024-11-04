@@ -328,9 +328,8 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
     case storage::kFileSystemTypeSmbFs:
       return smbfs_delegate_->GetAsyncFileUtil(type);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 storage::WatcherManager* FileSystemBackend::GetWatcherManager(
@@ -424,9 +423,8 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     case storage::kFileSystemTypeFuseBox:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return true;
 }
 
 std::unique_ptr<storage::FileStreamReader>
@@ -475,9 +473,8 @@ FileSystemBackend::CreateFileStreamReader(
       return arc_documents_provider_delegate_->CreateFileStreamReader(
           url, offset, max_bytes_to_read, expected_modification_time, context);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 std::unique_ptr<storage::FileStreamWriter>
@@ -514,9 +511,8 @@ FileSystemBackend::CreateFileStreamWriter(
     case storage::kFileSystemTypeArcContent:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool FileSystemBackend::GetVirtualPath(const base::FilePath& filesystem_path,

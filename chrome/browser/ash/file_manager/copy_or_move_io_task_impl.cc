@@ -788,8 +788,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
         log_progress();
         return;
       default:
-        NOTREACHED_IN_MIGRATION() << "Unknown ProgressType: " << int(type);
-        return;
+        NOTREACHED() << "Unknown ProgressType: " << int(type);
     }
   }
 

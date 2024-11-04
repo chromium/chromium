@@ -94,8 +94,7 @@ PluginVmSetupResult BucketForCancelledInstall(
     PluginVmInstaller::InstallingState installing_state) {
   switch (installing_state) {
     case PluginVmInstaller::InstallingState::kInactive:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case PluginVmInstaller::InstallingState::kCheckingLicense:
       return PluginVmSetupResult::kUserCancelledValidatingLicense;
     case PluginVmInstaller::InstallingState::kCheckingDiskSpace:
@@ -193,7 +192,7 @@ void PluginVmInstaller::Cancel() {
       CancelImport();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -848,7 +847,7 @@ void PluginVmInstaller::UpdateProgress(double state_progress) {
     default:
       // Other states take a negligible amount of time so we don't send progress
       // updates.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   double new_progress =

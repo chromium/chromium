@@ -101,7 +101,7 @@ class ScopedLogIn {
         LogInAsPublicAccount();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

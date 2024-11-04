@@ -32,13 +32,11 @@ mojom::CaptivePortalProblem GetProblemFromPortalState(
     case network_config::mojom::PortalState::kPortal:
       return mojom::CaptivePortalProblem::kPortal;
     case network_config::mojom::PortalState::kDeprecatedProxyAuthRequired:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::CaptivePortalProblem::kProxyAuthRequired;
+      NOTREACHED();
     case network_config::mojom::PortalState::kNoInternet:
       return mojom::CaptivePortalProblem::kNoInternet;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::CaptivePortalProblem::kUnknownPortalState;
+  NOTREACHED();
 }
 
 }  // namespace

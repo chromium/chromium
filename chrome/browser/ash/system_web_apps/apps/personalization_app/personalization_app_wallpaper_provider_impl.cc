@@ -1133,7 +1133,7 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
     } else if (info.type == WallpaperType::kDailyGooglePhotos) {
       UpdateDailyRefreshWallpaper(/*callback=*/base::DoNothing());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return;
   }

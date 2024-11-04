@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceSystemWebAppItemBrowserTest, Activate) {
   // Verify that a launch no longer occurs.
   web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
-          [](apps::AppLaunchParams params) { NOTREACHED_IN_MIGRATION(); }));
+          [](apps::AppLaunchParams params) { NOTREACHED(); }));
 
   app_item.PerformActivate(ui::EF_NONE);
 }

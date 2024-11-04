@@ -202,8 +202,8 @@ void StartupAppLauncher::OnInstallSuccess() {
 
 void StartupAppLauncher::LaunchApp() {
   if (state_ != LaunchState::kReadyToLaunch) {
-    NOTREACHED_IN_MIGRATION();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
+    NOTREACHED();
   }
 
   launcher_ = std::make_unique<ChromeKioskAppLauncher>(

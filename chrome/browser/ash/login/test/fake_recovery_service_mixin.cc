@@ -86,8 +86,7 @@ std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
     return std::move(http_response);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace ash

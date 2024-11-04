@@ -530,7 +530,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -579,7 +579,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -845,7 +845,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
       }
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

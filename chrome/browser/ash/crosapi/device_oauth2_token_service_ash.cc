@@ -63,8 +63,7 @@ void DeviceOAuth2TokenServiceAsh::OnTokenFetchComplete(
     mojom::AccessTokenResultPtr result) {
   auto it = access_token_requests_.find(request);
   if (it == access_token_requests_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   // To avoid UaF, the item should be removed from the map before calling the
   // callback. This requires keeping the callback in a temporary variable.

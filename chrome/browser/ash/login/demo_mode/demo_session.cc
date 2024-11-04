@@ -299,8 +299,7 @@ std::string DemoSession::DemoConfigToString(
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
       return "offlineDeprecated";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown demo mode configuration";
-  return std::string();
+  NOTREACHED() << "Unknown demo mode configuration";
 }
 
 // static

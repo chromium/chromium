@@ -340,8 +340,7 @@ size_t CloudExternalDataManagerBase::Backend::GetMaxExternalDataSize(
   const PolicyDetails* details = get_policy_details_.Run(key.policy);
   if (details)
     return details->max_external_data_size;
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void CloudExternalDataManagerBase::Backend::RunCallback(

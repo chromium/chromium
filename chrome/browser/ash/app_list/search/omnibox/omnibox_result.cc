@@ -62,8 +62,7 @@ const gfx::VectorIcon& TypeToVectorIcon(CrosApiSearchResult::OmniboxType type) {
     case CrosApiSearchResult::OmniboxType::kHistory:
       return ash::kHistoryIcon;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ash::kOmniboxGenericIcon;
+      NOTREACHED();
   }
 }
 

@@ -56,8 +56,7 @@ enum class TestCase {
 std::string GetTestFeatureParamString(TestCase test_case) {
   switch (test_case) {
     case TestCase::kIncentivesDisabled:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     case TestCase::kIncentivesWithoutOffer:
       return "no_offer";
     case TestCase::kIncentivesWithOffer:

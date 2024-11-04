@@ -59,7 +59,7 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
     case mojom::AndroidSetting::kUnknown:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown Android Setting: " << setting;
+  NOTREACHED() << "Unknown Android Setting: " << setting;
 }
 
 void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {

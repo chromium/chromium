@@ -989,9 +989,6 @@ void CrostiniManager::CrostiniRestarter::LogRestarterResult(
   // install, only log for the first request. The Crostini installer also has
   // separate histograms in Crostini.SetupResult.
   switch (request.options.restart_source) {
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case RestartSource::kOther:
       if (is_initial_install_) {
         return;
@@ -1014,6 +1011,8 @@ void CrostiniManager::CrostiniRestarter::LogRestarterResult(
       base::UmaHistogramEnumeration(
           "Crostini.RestarterResult.MultiContainerCreation", result);
       return;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -3023,7 +3022,7 @@ void CrostiniManager::OnInstallLinuxPackageProgress(
       status = InstallLinuxPackageProgressStatus::INSTALLING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
@@ -3059,7 +3058,7 @@ void CrostiniManager::OnUninstallPackageProgress(
       status = UninstallPackageProgressStatus::UNINSTALLING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
@@ -3101,7 +3100,7 @@ void CrostiniManager::OnUpgradeContainerProgress(
       status = UpgradeContainerProgressStatus::UPGRADING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::vector<std::string> progress_messages;
@@ -3258,8 +3257,7 @@ void CrostiniManager::OnStartLxdContainer(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (response->has_os_release()) {
     SetContainerOsRelease(container_id, response->os_release());
@@ -3302,8 +3300,7 @@ void CrostiniManager::OnStopLxdContainer(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -3360,7 +3357,7 @@ void CrostiniManager::OnSetUpLxdContainerUser(
       std::move(callback).Run(/*success=*/false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

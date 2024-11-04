@@ -91,8 +91,7 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
                                sample);
       break;
     case policy::EnrollmentConfig::MODE_NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

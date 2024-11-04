@@ -50,7 +50,7 @@ bool ChromeLoginPerformer::RunTrustedCheck(base::OnceClosure callback) {
     if (delegate_) {
       delegate_->PolicyLoadFailed();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return true;  // Some callback was called.
   } else if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED) {
@@ -77,7 +77,7 @@ void ChromeLoginPerformer::DidRunTrustedCheck(base::OnceClosure* callback) {
     if (delegate_) {
       delegate_->PolicyLoadFailed();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED) {
     // Value of AllowNewUser setting is still not verified.
@@ -111,10 +111,7 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
           account_id.GetUserEmail())) {
     wildcard_login_checker_ = std::make_unique<policy::WildcardLoginChecker>();
     if (refresh_token.empty()) {
-      NOTREACHED_IN_MIGRATION() << "Refresh token must be present.";
-      OnlineWildcardLoginCheckCompleted(
-          std::move(success_callback), std::move(failure_callback),
-          policy::WildcardLoginChecker::RESULT_FAILED);
+      NOTREACHED() << "Refresh token must be present.";
     } else {
       wildcard_login_checker_->StartWithRefreshToken(
           refresh_token,

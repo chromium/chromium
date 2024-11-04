@@ -34,32 +34,32 @@ void FakeUdpSocket::Connect(const net::IPEndPoint& remote_addr,
 void FakeUdpSocket::Bind(const net::IPEndPoint& local_addr,
                          network::mojom::UDPSocketOptionsPtr options,
                          BindCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::SetBroadcast(bool broadcast,
                                  SetBroadcastCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::SetSendBufferSize(int32_t send_buffer_size,
                                       SetSendBufferSizeCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::SetReceiveBufferSize(int32_t receive_buffer_size,
                                          SetSendBufferSizeCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::JoinGroup(const net::IPAddress& group_address,
                               JoinGroupCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::LeaveGroup(const net::IPAddress& group_address,
                                LeaveGroupCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::ReceiveMore(uint32_t num_additional_datagrams) {
@@ -78,7 +78,7 @@ void FakeUdpSocket::ReceiveMore(uint32_t num_additional_datagrams) {
 
 void FakeUdpSocket::ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
                                               uint32_t buffer_size) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::SendTo(
@@ -86,7 +86,7 @@ void FakeUdpSocket::SendTo(
     base::span<const uint8_t> data,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     SendToCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::Send(
@@ -104,7 +104,7 @@ void FakeUdpSocket::Send(
 }
 
 void FakeUdpSocket::Close() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeUdpSocket::BindReceiver(

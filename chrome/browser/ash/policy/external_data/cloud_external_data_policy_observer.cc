@@ -162,14 +162,12 @@ void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   if (base::Contains(logged_in_user_observers_, user_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ProfilePolicyConnector* policy_connector =
@@ -300,7 +298,7 @@ void CloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
         base::BindOnce(&CloudExternalDataPolicyObserver::OnExternalDataFetched,
                        weak_ptr_factory->GetWeakPtr(), user_id));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

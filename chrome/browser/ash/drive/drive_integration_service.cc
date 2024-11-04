@@ -324,7 +324,7 @@ DriveMountStatus ConvertMountFailure(
     case drivefs::DriveFsHost::MountObserver::MountFailure::kUnknown:
       return DriveMountStatus::kUnknownFailure;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UmaEmitMountStatus(DriveMountStatus status) {
@@ -423,7 +423,7 @@ std::optional<PersistedMessage> ConvertNotificationToMessage(
       LOG(ERROR) << "unknown notification received";
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<PersistedMessage> ConvertSyncErrorToMessage(
@@ -785,7 +785,7 @@ void DriveIntegrationService::SetEnabled(bool enabled) {
         AddDriveMountPoint();
         return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   } else {
     RemoveDriveMountPoint();
     enabled_ = false;

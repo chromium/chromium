@@ -35,8 +35,7 @@ mojom::PrintJobCompletionStatus PrintJobStatusProtoToMojom(
         PrintJobInfo_PrintJobStatus_PrintJobInfo_PrintJobStatus_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
         PrintJobInfo_PrintJobStatus_PrintJobInfo_PrintJobStatus_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::PrintJobCompletionStatus::kFailed;
+      NOTREACHED();
   }
   return mojom::PrintJobCompletionStatus::kFailed;
 }
@@ -57,8 +56,7 @@ mojom::ActivePrintJobState CupsPrintJobActiveStateToMojom(
     case CupsPrintJob::State::STATE_ERROR:
       return mojom::ActivePrintJobState::kDocumentDone;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::ActivePrintJobState::kDocumentDone;
+  NOTREACHED();
 }
 
 mojom::PrinterErrorCode PrinterErrorCodeProtoToMojom(
@@ -94,8 +92,7 @@ mojom::PrinterErrorCode PrinterErrorCodeProtoToMojom(
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::PrinterErrorCode::kUnknownError;
+      NOTREACHED();
   }
   return mojom::PrinterErrorCode::kUnknownError;
 }

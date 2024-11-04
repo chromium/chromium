@@ -250,8 +250,7 @@ std::string AccessibilityPrivateEnumForAction(SelectToSpeakPanelAction action) {
           extensions::api::accessibility_private::SelectToSpeakPanelAction::
               kExit);
     case SelectToSpeakPanelAction::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -527,8 +526,10 @@ AccessibilityManager::AccessibilityManager() {
   }
 
   base::FilePath resources_path;
-  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
-    NOTREACHED_IN_MIGRATION();
+  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
+    NOTREACHED();
+  }
+
   const bool enable_v3_manifest =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnableExperimentalAccessibilityManifestV3);
@@ -2269,8 +2270,9 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
     return;
 
   base::FilePath resources_path;
-  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
-    NOTREACHED_IN_MIGRATION();
+  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
+    NOTREACHED();
+  }
 
   const bool enable_v3_manifest =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -3104,7 +3106,7 @@ void AccessibilityManager::GetTtsDlcContentsOnPackState(
       file_name = kTtsStandardFileName;
       break;
     case TtsVariant::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::FilePath path;

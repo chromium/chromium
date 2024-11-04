@@ -262,8 +262,7 @@ void ArcVmDataMigrationScreen::ShowImpl() {
       resuming_ = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   view_->Show();
@@ -309,8 +308,7 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
       CheckBatteryState();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -621,8 +619,7 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
       RemoveArcDataAndShowFailureScreen();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

@@ -92,9 +92,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
   if (type.Equals(ash::NetworkTypePattern::WiFi())) {
     return NetworkType::WIFI;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported network type: " << type.ToDebugString();
-  return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
+  NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
 }
 
 }  // namespace

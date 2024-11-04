@@ -166,9 +166,7 @@ void HeartbeatRegistrationHelper::OnRegisterAttemptComplete(
     case gcm::GCMClient::ASYNC_OPERATION_PENDING:
     case gcm::GCMClient::TTL_EXCEEDED:
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected GCMDriver::Register() result: " << result;
-      break;
+      NOTREACHED() << "Unexpected GCMDriver::Register() result: " << result;
   }
 }
 
@@ -419,8 +417,7 @@ void HeartbeatScheduler::ShutdownHandler() {
   // before the GCMDriver. Our goal is to make sure that this object is always
   // shutdown before GCMDriver is shut down, rather than trying to handle the
   // case when GCMDriver goes away.
-  NOTREACHED_IN_MIGRATION()
-      << "HeartbeatScheduler should be destroyed before GCMDriver";
+  NOTREACHED() << "HeartbeatScheduler should be destroyed before GCMDriver";
 }
 
 void HeartbeatScheduler::OnStoreReset() {
@@ -436,7 +433,7 @@ void HeartbeatScheduler::OnMessage(const std::string& app_id,
                                    const gcm::IncomingMessage& message) {
   // Should never be called because we don't get any incoming messages
   // for our app ID.
-  NOTREACHED_IN_MIGRATION() << "Received incoming message for " << app_id;
+  NOTREACHED() << "Received incoming message for " << app_id;
 }
 
 void HeartbeatScheduler::OnMessagesDeleted(const std::string& app_id) {}

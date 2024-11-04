@@ -801,7 +801,7 @@ class ConsolidatedConsentScreenManagedUserTest
               ->clear_googlelocationservicesenabled();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
       // Legacy handling.

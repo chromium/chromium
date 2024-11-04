@@ -455,7 +455,7 @@ void UpdateScreen::UpdateInfoChanged(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   UpdateBatteryWarningVisibility();
 }

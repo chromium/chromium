@@ -421,11 +421,10 @@ bool IsArcAllowedForProfile(const Profile* profile) {
 
   // This is next check. We should be persistent and report the same result.
   if (result != it->second) {
-    NOTREACHED_IN_MIGRATION()
-        << "ARC allowed was changed for the current user session "
-        << "and profile " << profile->GetPath().MaybeAsASCII()
-        << ". This may lead to unexpected behavior. ARC allowed is"
-        << " forced to " << it->second;
+    NOTREACHED() << "ARC allowed was changed for the current user session "
+                 << "and profile " << profile->GetPath().MaybeAsASCII()
+                 << ". This may lead to unexpected behavior. ARC allowed is"
+                 << " forced to " << it->second;
   }
   return it->second;
 }

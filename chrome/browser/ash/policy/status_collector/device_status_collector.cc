@@ -226,8 +226,7 @@ std::string ReadCPUStatistics() {
       }
     }
     // First line should always start with "cpu ".
-    NOTREACHED_IN_MIGRATION()
-        << "Could not parse /proc/stat contents: " << contents;
+    NOTREACHED() << "Could not parse /proc/stat contents: " << contents;
   }
   LOG(WARNING) << "Unable to read CPU statistics from " << kProcStat;
   return std::string();
@@ -602,7 +601,7 @@ em::CrashReportInfo::CrashReportUploadStatus GetCrashReportUploadStatus(
       return em::CrashReportInfo::UPLOAD_STATUS_UNKNOWN;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Filter the loaded crash reports.
@@ -667,11 +666,10 @@ em::ActiveTimePeriod::SessionType GetSessionType(
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return em::ActiveTimePeriod::SESSION_UNKNOWN;
+  NOTREACHED();
 }
 
 // Remap GscVersion using switch-case even though the values match
@@ -687,8 +685,7 @@ em::TpmVersionInfo_GscVersion ConvertTpmGscDevice(
       return em::TpmVersionInfo::GSC_VERSION_TI50;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return em::TpmVersionInfo::GSC_VERSION_UNSPECIFIED;
+  NOTREACHED();
 }
 
 // Do not report session type and email for deprecated user types.
@@ -2731,7 +2728,7 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }
@@ -3023,7 +3020,7 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return true;

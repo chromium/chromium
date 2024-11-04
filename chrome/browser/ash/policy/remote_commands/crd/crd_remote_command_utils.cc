@@ -48,8 +48,7 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
 
   // This method should only be invoked when we know we're in a kiosk
   // environment, so one of these app managers must exist.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool IsRunningAutoLaunchedKiosk(const user_manager::UserManager& user_manager) {

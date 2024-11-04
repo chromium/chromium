@@ -359,7 +359,7 @@ PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
       return EXPIRY_STATUS_INVALID_X509;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown certificate status";
+  NOTREACHED() << "Unknown certificate status";
 }
 
 void PlatformVerificationFlow::RenewCertificateCallback(

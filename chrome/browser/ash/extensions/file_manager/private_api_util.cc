@@ -87,8 +87,7 @@ void GetFileNativeLocalPathForSaving(Profile* profile,
                                      const base::FilePath& path,
                                      LocalPathCallback callback) {
   // TODO(kinaba): For now, there are no writable non-local volumes.
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::FilePath());
+  NOTREACHED();
 }
 
 // Forward declarations of helper functions for GetSelectedFileInfo().
@@ -248,8 +247,7 @@ fmp::VmType VmTypeToJs(guest_os::VmType vm_type) {
     case guest_os::VmType::UNKNOWN:
     case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::VmType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -280,8 +278,7 @@ fmp::BulkPinStage DrivefsPinStageToJs(drivefs::pinning::Stage stage) {
       return fmp::BulkPinStage::kCannotEnableDocsOffline;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return fmp::BulkPinStage::kNone;
+  NOTREACHED();
 }
 
 bool IsBulkPinningEnabledForProfile(Profile* profile) {
@@ -673,8 +670,7 @@ void VolumeToVolumeMetadata(Profile* profile,
       volume_metadata->volume_type = fmp::VolumeType::kGuestOs;
       break;
     case NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Fill device_type iff the volume is removable partition.
@@ -827,8 +823,7 @@ bool ToRecentSourceFileType(fmp::FileCategory input_category,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 fmp::BulkPinProgress BulkPinProgressToJs(

@@ -93,7 +93,7 @@ void UsbPrinterNotification::Click(const std::optional<int>& button_index,
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UsbPrinterNotification::ShowNotification() {
@@ -122,7 +122,7 @@ void UsbPrinterNotification::UpdateContents() {
           base::UTF8ToUTF16(printer_.display_name())));
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ash

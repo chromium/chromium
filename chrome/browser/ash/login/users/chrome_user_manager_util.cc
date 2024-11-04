@@ -64,8 +64,7 @@ std::optional<user_manager::UserType> DeviceLocalAccountTypeToUserType(
       return user_manager::UserType::kPublicAccount;
     case policy::DeviceLocalAccountType::kSamlPublicSession:
       // TODO(b/345700258): Unused in the production. Remove the case.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
     case policy::DeviceLocalAccountType::kKioskApp:
       return user_manager::UserType::kKioskApp;
     case policy::DeviceLocalAccountType::kWebKioskApp:

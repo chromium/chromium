@@ -31,7 +31,7 @@ PackageOperationStatus InstallStatusToOperationStatus(
     case InstallLinuxPackageProgressStatus::INSTALLING:
       return PackageOperationStatus::RUNNING;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -45,7 +45,7 @@ PackageOperationStatus UninstallStatusToOperationStatus(
     case UninstallPackageProgressStatus::UNINSTALLING:
       return PackageOperationStatus::RUNNING;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -122,7 +122,7 @@ void CrostiniPackageService::NotificationCompleted(
     }
   }
   // Notifications should never delete themselves while queued or running.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CrostiniPackageService::GetLinuxPackageInfo(
@@ -560,7 +560,7 @@ void CrostiniPackageService::StartQueuedOperation(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string CrostiniPackageService::GetUniqueNotificationId() {

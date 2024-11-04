@@ -24,9 +24,8 @@ idl::ColorMode ColorModeProtoToIdl(proto::PrintSettings_ColorMode color_proto) {
     case proto::PrintSettings_ColorMode_COLOR:
       return idl::ColorMode::kColor;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return idl::ColorMode::kBlackAndWhite;
 }
 
 idl::DuplexMode DuplexModeProtoToIdl(
@@ -39,9 +38,8 @@ idl::DuplexMode DuplexModeProtoToIdl(
     case proto::PrintSettings_DuplexMode_TWO_SIDED_SHORT_EDGE:
       return idl::DuplexMode::kTwoSidedShortEdge;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return idl::DuplexMode::kOneSided;
 }
 
 idl::MediaSize MediaSizeProtoToIdl(const proto::MediaSize& media_size_proto) {
@@ -75,9 +73,8 @@ idl::PrintJobSource PrintJobSourceProtoToIdl(
     case proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP:
       return idl::PrintJobSource::kIsolatedWebApp;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return idl::PrintJobSource::kPrintPreview;
 }
 
 idl::PrintJobStatus PrintJobStatusProtoToIdl(
@@ -90,9 +87,8 @@ idl::PrintJobStatus PrintJobStatusProtoToIdl(
     case proto::PrintJobInfo_PrintJobStatus_PRINTED:
       return idl::PrintJobStatus::kPrinted;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return idl::PrintJobStatus::kFailed;
 }
 
 idl::PrinterSource PrinterSourceProtoToIdl(
@@ -103,9 +99,8 @@ idl::PrinterSource PrinterSourceProtoToIdl(
     case proto::Printer_PrinterSource_POLICY:
       return idl::PrinterSource::kPolicy;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return idl::PrinterSource::kUser;
 }
 
 idl::Printer PrinterProtoToIdl(const proto::Printer& printer_proto) {
@@ -147,10 +142,8 @@ api::printing::PrinterStatus PrinterErrorCodeToIdl(
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return api::printing::PrinterStatus::kGenericIssue;
+      NOTREACHED();
   }
-  return api::printing::PrinterStatus::kGenericIssue;
 }
 
 }  // namespace

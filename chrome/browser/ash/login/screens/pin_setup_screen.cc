@@ -70,7 +70,7 @@ void RecordUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
+  NOTREACHED() << "Unexpected action id: " << action_id;
 }
 
 // Utility to check if the screen is operating in the given mode. WizardContext

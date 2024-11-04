@@ -1883,8 +1883,7 @@ class ArcSessionManagerPolicyTest
       case 2:
         return base::Value(true);
     }
-    NOTREACHED_IN_MIGRATION();
-    return base::Value();
+    NOTREACHED();
   }
 
   base::Value location_service_pref_value() const {
@@ -1896,8 +1895,7 @@ class ArcSessionManagerPolicyTest
       case 2:
         return base::Value(true);
     }
-    NOTREACHED_IN_MIGRATION();
-    return base::Value();
+    NOTREACHED();
   }
 
  private:
