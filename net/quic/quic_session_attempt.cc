@@ -179,7 +179,7 @@ int QuicSessionAttempt::DoCreateSession() {
                        weak_ptr_factory_.GetWeakPtr()),
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         std::move(local_endpoint_), std::move(ip_endpoint_),
-        std::move(proxy_stream_), user_agent, net_log(), network_);
+        std::move(proxy_stream_), std::move(user_agent), net_log(), network_);
   } else {
     if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
       return pool()->CreateSessionAsync(

@@ -75,8 +75,7 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
   config.set_max_idle_time_before_crypto_handshake(
       quic::QuicTime::Delta::FromMicroseconds(
           params.max_idle_time_before_crypto_handshake.InMicroseconds()));
-  quic::QuicTagVector copt_to_send = params.connection_options;
-  config.SetConnectionOptionsToSend(copt_to_send);
+  config.SetConnectionOptionsToSend(params.connection_options);
   config.SetClientConnectionOptions(params.client_connection_options);
   config.set_max_undecryptable_packets(kMaxUndecryptablePackets);
   config.SetInitialSessionFlowControlWindowToSend(

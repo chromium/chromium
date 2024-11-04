@@ -29,7 +29,7 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn);
-  QuicSessionKey(const std::string& host,
+  QuicSessionKey(std::string host,
                  uint16_t port,
                  PrivacyMode privacy_mode,
                  const ProxyChain& proxy_chain,

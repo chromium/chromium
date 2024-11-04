@@ -370,7 +370,7 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
   int port = url_.IntPort();
   std::string host_and_port =
       url_.has_port() ? base::StrCat({host, ":", base::NumberToString(port)})
-                      : host;
+                      : std::move(host);
   request_.extra_headers.SetHeader(HttpRequestHeaders::kHost, host_and_port);
 
   HttpRequestHeaders authorization_headers;
