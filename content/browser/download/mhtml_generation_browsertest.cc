@@ -1014,6 +1014,16 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Fonts) {
   EXPECT_EQ(result.original_info, result.saved_info);
 }
 
+IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Elements) {
+  CompareResult result = TestOriginalVsSavedPage(
+      embedded_test_server()->GetURL("/mhtml/elements.html"), {});
+
+  EXPECT_EQ(result.original_info, result.saved_info);
+  EXPECT_THAT(result.file.ContentLocations(),
+              AllOf(Contains(EndsWith("/image-inline.png?img")),
+                    Contains(EndsWith("/image-inline.png?svg"))));
+}
+
 // We instantiate the MHTML Generation Tests both using and not using the
 // GenerateMHTMLWithResults callback.
 INSTANTIATE_TEST_SUITE_P(MHTMLGenerationTest,
