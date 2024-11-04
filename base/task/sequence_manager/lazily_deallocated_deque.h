@@ -237,8 +237,13 @@ class LazilyDeallocatedDeque {
 
   struct Ring {
     explicit Ring(size_t capacity)
-        : backing_store_(std::make_unique<char[]>(sizeof(T) * capacity)),
-          data_(reinterpret_cast<T*>(backing_store_.get()), capacity) {
+        : backing_store_(std::make_unique<char[]>(sizeof(T) * capacity)) {
+      // SAFETY: There is no other option to create a raw_span backed by an
+      // array on the heap. Allocation of sizeof(T) * capacity bytes starting
+      // at the address pointed by backing_store_ is done in the member
+      // initializer list.
+      data_ = UNSAFE_BUFFERS(base::raw_span<T>(
+          reinterpret_cast<T*>(backing_store_.get()), capacity));
       DCHECK_GE(capacity, kMinimumRingSize);
       CHECK_LT(capacity, std::numeric_limits<size_t>::max() / sizeof(T));
     }
