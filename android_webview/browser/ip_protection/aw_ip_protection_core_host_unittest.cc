@@ -337,8 +337,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
 }
 
 // TryGetAuthTokens() fails because IP Protection is disabled.
-TEST_F(AwIpProtectionCoreHostTest,
-       TryGetAuthTokens_IpProtectionDisabled) {
+TEST_F(AwIpProtectionCoreHostTest, TryGetAuthTokensIpProtectionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       net::features::kEnableIpProtectionProxy);
 
@@ -406,7 +405,7 @@ TEST_F(AwIpProtectionCoreHostTest, GetProxyConfigFailure) {
   EXPECT_FALSE(geo_hint.has_value());
 }
 
-TEST_F(AwIpProtectionCoreHostTest, GetProxyConfig_IpProtectionDisabled) {
+TEST_F(AwIpProtectionCoreHostTest, GetProxyConfigIpProtectionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       net::features::kEnableIpProtectionProxy);
 
