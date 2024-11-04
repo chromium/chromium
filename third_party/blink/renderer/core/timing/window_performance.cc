@@ -1225,10 +1225,8 @@ void WindowPerformance::NotifyPotentialDrag(PointerId pointer_id) {
 }
 
 void WindowPerformance::OnPageScroll() {
-  if (Page* page = DomWindow()->GetFrame()->GetPage()) {
-    autoscroll_active_ =
-        page->GetAutoscrollController().SelectionAutoscrollInProgress();
-  }
+  autoscroll_active_ =
+      GetPage()->GetAutoscrollController().SelectionAutoscrollInProgress();
 }
 
 bool WindowPerformance::IsAutoscrollActive() {
