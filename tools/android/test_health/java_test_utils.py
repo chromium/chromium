@@ -28,13 +28,15 @@ if str(_JAVALANG_SRC_PATH) not in sys.path:
     sys.path.insert(1, str(_JAVALANG_SRC_PATH))
 import javalang
 from javalang.tree import (Annotation, ClassDeclaration, CompilationUnit,
-                           MethodDeclaration, PackageDeclaration)
+                           Import, MethodDeclaration, PackageDeclaration)
 
 _TEST_ANNOTATION = 'Test'
 _DISABLED_TEST_ANNOTATION = 'DisabledTest'
 _DISABLE_IF_TEST_ANNOTATION = 'DisableIf'
 
 _DISABLE_IF_TEST_PATTERN = re.compile(_DISABLE_IF_TEST_ANNOTATION + r'\.\w+')
+
+_TAG_PUBLIC_TRANSIT = 'tagPublicTransit'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -49,7 +51,11 @@ class JavaTestHealth:
     tests_count: int
     """The total number of test cases."""
     disabled_tests: List[str]
+    """List of all test cases annotated with @DisabledTest"""
     disable_if_tests: List[str]
+    """List of all test cases annotated with @DisableIf"""
+    tags: List[str]
+    """Tags to classify the test class."""
 
 
 def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
@@ -104,6 +110,12 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     disabled_test_list = []
     disable_if_test_list = []
 
+    tags = set()
+    for i in java_ast.imports:
+        if '.chrome.test.transit.' in i.path:
+            tags.add(_TAG_PUBLIC_TRANSIT)
+            break
+
     java_classes: List[ClassDeclaration] = java_ast.types
     for java_class in java_classes:
         if any(annotation.name == _DISABLED_TEST_ANNOTATION
@@ -155,6 +167,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION],
         tests_count=annotation_counter[_TEST_ANNOTATION],
         disable_if_tests=disable_if_test_list,
+        tags=sorted(tags),
     )
 
 
