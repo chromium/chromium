@@ -128,8 +128,7 @@ void BaseCheckableInputType::HandleBlurEvent() {
   // that is in :active state. In that case the control should
   // remain :active to avoid crbug.com/40934455.
   HTMLInputElement& element = GetElement();
-  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
-      !element.HasActiveLabel()) {
+  if (!element.HasActiveLabel()) {
     element.SetActive(false);
   }
 }

@@ -384,8 +384,7 @@ void HTMLButtonElement::DispatchBlurEvent(
   // The button might be the control element of a label
   // that is in :active state. In that case the control should
   // remain :active to avoid crbug.com/40934455.
-  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
-      !HasActiveLabel()) {
+  if (!HasActiveLabel()) {
     SetActive(false);
   }
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,

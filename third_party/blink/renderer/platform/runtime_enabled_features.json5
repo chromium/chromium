@@ -2492,12 +2492,6 @@
       origin_trial_feature_name: "JavaScriptCompileHintsMagic",
     },
     {
-      // Fix to crbug.com/40934455.
-      // Should be removed a bit after M129 reaches stable.
-      name: "KeepActiveIfLabelActive",
-      status: "stable",
-    },
-    {
       // Allows :target to match elements even after they are removed and
       // reattached to the document. Enabled in M128, should be safe to remove
       // in M133.
