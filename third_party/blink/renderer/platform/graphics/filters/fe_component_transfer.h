@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_COMPONENT_TRANSFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_COMPONENT_TRANSFER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -77,6 +78,8 @@ struct ComponentTransferFunction {
   Vector<float> table_values;
 };
 
+using ComponentTransferLutType = base::span<uint8_t, 256>;
+
 class PLATFORM_EXPORT FEComponentTransfer final : public FilterEffect {
  public:
   FEComponentTransfer(Filter*,
@@ -93,10 +96,10 @@ class PLATFORM_EXPORT FEComponentTransfer final : public FilterEffect {
 
   bool AffectsTransparentPixels() const override;
 
-  void GetValues(unsigned char r_values[256],
-                 unsigned char g_values[256],
-                 unsigned char b_values[256],
-                 unsigned char a_values[256]);
+  void GetValues(ComponentTransferLutType r_values,
+                 ComponentTransferLutType g_values,
+                 ComponentTransferLutType b_values,
+                 ComponentTransferLutType a_values);
 
   ComponentTransferFunction red_func_;
   ComponentTransferFunction green_func_;

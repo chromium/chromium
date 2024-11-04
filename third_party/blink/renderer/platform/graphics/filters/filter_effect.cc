@@ -21,11 +21,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 
 #include "base/types/optional_util.h"
@@ -96,8 +91,7 @@ FilterEffect* FilterEffect::InputEffect(unsigned number) const {
 }
 
 void FilterEffect::DisposeImageFilters() {
-  for (int i = 0; i < 4; i++)
-    image_filters_[i] = nullptr;
+  std::ranges::fill(image_filters_, nullptr);
 }
 
 void FilterEffect::DisposeImageFiltersRecursive() {
