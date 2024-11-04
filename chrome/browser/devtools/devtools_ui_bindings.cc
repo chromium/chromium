@@ -1767,7 +1767,15 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     response_dict.Set("thirdPartyCookieControls",
                       std::move(third_party_cookie_controls_dict));
   }
-
+  base::Value::Dict origin_bound_cookies_dict;
+  origin_bound_cookies_dict.Set(
+      "portBindingEnabled",
+      base::FeatureList::IsEnabled(net::features::kEnablePortBoundCookies));
+  origin_bound_cookies_dict.Set(
+      "schemeBindingEnabled",
+      base::FeatureList::IsEnabled(net::features::kEnableSchemeBoundCookies));
+  response_dict.Set("devToolsEnableOriginBoundCookies",
+                    std::move(origin_bound_cookies_dict));
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
