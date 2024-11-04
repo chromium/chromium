@@ -27,6 +27,7 @@
 #include "base/process/kill.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/input/render_widget_host_input_event_router.h"
@@ -136,6 +137,7 @@ class JavaScriptDialogManager;
 class MediaSession;
 class MediaWebContentsObserver;
 class NFCHost;
+class PartitionedPopinsController;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderViewHost;
@@ -1498,9 +1500,21 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool IsPartitionedPopin() const override;
 
-  RenderFrameHostImpl* PartitionedPopinOpener() const override;
+  const struct PartitionedPopinOpenerProperties&
+  GetPartitionedPopinOpenerProperties() const override;
 
-  WebContents* OpenedPartitionedPopin() const override;
+  // Returns the opener of this window if this window is a partitioned popin
+  // and the opener still exists. This may return null for if the opener was
+  // already deleted even if this window is a popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  RenderFrameHostImpl* GetPartitionedPopinOpener(
+      base::PassKey<PartitionedPopinsController>) const;
+
+  // Clears `partitioned_popin_opener_` to test what happens if the opener
+  // disappears after the popin is opened.
+  void ClearPartitionedPopinOpenerForTesting();
+
+  WebContents* GetOpenedPartitionedPopin() const override;
 
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
@@ -2590,10 +2604,17 @@ class CONTENT_EXPORT WebContentsImpl
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
 
+  // If this window was opened as a new partitioned popin this will contain the
+  // properties needed to setup partitioning which aligns with the opener.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  std::optional<PartitionedPopinOpenerProperties>
+      partitioned_popin_opener_properties_;
+
   // If this window was opened as a new partitioned popin this will be the
   // frame of the opener. This will only have a value if `is_popup_` is true.
   // If the opener frame is deleted the popin should be closed by
-  // `PartitionedPopinsController`.
+  // `PartitionedPopinsController`. This is not a good indicator of whether this
+  // window is a popin as it may go away before the popin closes.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   base::WeakPtr<RenderFrameHostImpl> partitioned_popin_opener_;
 

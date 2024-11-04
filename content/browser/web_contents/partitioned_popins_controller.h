@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_PARTITIONED_POPINS_CONTROLLER_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_PARTITIONED_POPINS_CONTROLLER_H_
 
+#include "base/types/pass_key.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,6 +21,8 @@ class PartitionedPopinsController
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PartitionedPopinsController> {
  public:
+  using PassKey = base::PassKey<PartitionedPopinsController>;
+
   PartitionedPopinsController(const PartitionedPopinsController&) = delete;
   PartitionedPopinsController& operator=(const PartitionedPopinsController&) =
       delete;

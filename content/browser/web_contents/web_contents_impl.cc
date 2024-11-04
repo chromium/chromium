@@ -873,34 +873,45 @@ bool WebContentsImpl::IsPopup() const {
 
 bool WebContentsImpl::IsPartitionedPopin() const {
   // The feature must be enabled if a popin was opened.
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-         !partitioned_popin_opener_);
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+        (!partitioned_popin_opener_ && !partitioned_popin_opener_properties_));
 
-  // TODO(crbug.com/340606651): Store a boolean telling if `this` is a
-  // partitioned popin, do not imply from the opener. Since the opener's
-  // lifetime is not bound to the popin, it might be gone by the time we're
-  // checking it here.
-  return !!partitioned_popin_opener_;
+  // We must check local data and not `partitioned_popin_opener_` as it could
+  // go away before this popin closes.
+  return !!partitioned_popin_opener_properties_;
 }
 
-RenderFrameHostImpl* WebContentsImpl::PartitionedPopinOpener() const {
+const PartitionedPopinOpenerProperties&
+WebContentsImpl::GetPartitionedPopinOpenerProperties() const {
+  // This function is only usable if we are in a popin.
+  CHECK(IsPartitionedPopin());
+
+  return *partitioned_popin_opener_properties_;
+}
+
+RenderFrameHostImpl* WebContentsImpl::GetPartitionedPopinOpener(
+    base::PassKey<PartitionedPopinsController>) const {
   // A popin cannot open a popin so at most one could be set at a time.
-  DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+  CHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
 
   // The feature must be enabled if the popin opener is set.
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-         !partitioned_popin_opener_);
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+        !partitioned_popin_opener_);
 
   return partitioned_popin_opener_.get();
 }
 
-WebContents* WebContentsImpl::OpenedPartitionedPopin() const {
+void WebContentsImpl::ClearPartitionedPopinOpenerForTesting() {
+  partitioned_popin_opener_.reset();
+}
+
+WebContents* WebContentsImpl::GetOpenedPartitionedPopin() const {
   // A popin cannot open a popin so at most one could be set at a time.
-  DCHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
+  CHECK(!IsPartitionedPopin() || !opened_partitioned_popin_);
 
   // The feature must be enabled if a popin was opened.
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-         !opened_partitioned_popin_);
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
+        !opened_partitioned_popin_);
 
   return opened_partitioned_popin_.get();
 }
@@ -11464,6 +11475,11 @@ void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
   PartitionedPopinsController::CreateForWebContents(
       static_cast<WebContentsImpl*>(opener->delegate()));
   new_window->partitioned_popin_opener_ = opener->GetWeakPtr();
+  new_window->partitioned_popin_opener_properties_ =
+      PartitionedPopinOpenerProperties(
+          opener->GetMainFrame()->GetLastCommittedOrigin(),
+          opener->ComputeSiteForCookies(),
+          opener->GetStorageKey().ancestor_chain_bit());
   opened_partitioned_popin_ = new_window->GetWeakPtr();
 }
 

@@ -608,15 +608,19 @@ bool RenderViewHostImpl::CreateRenderView(
   // We must send access information relative to the popin opener in order for
   // the renderer to properly conduct checks.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
+  // TODO(crbug.com/340606651): Move into a function to share.
   if (!frame_tree_->GetMainFrame()->IsNestedWithinFencedFrame() &&
       frame_tree_->GetMainFrame()->delegate()->IsPartitionedPopin()) {
-    RenderFrameHostImpl* partitioned_popin_opener =
-        frame_tree_->GetMainFrame()->delegate()->PartitionedPopinOpener();
     params->partitioned_popin_params =
         blink::mojom::PartitionedPopinParams::New(
-            partitioned_popin_opener->ComputeTopFrameOrigin(
-                partitioned_popin_opener->GetLastCommittedOrigin()),
-            partitioned_popin_opener->ComputeSiteForCookies());
+            frame_tree_->GetMainFrame()
+                ->delegate()
+                ->GetPartitionedPopinOpenerProperties()
+                .top_frame_origin,
+            frame_tree_->GetMainFrame()
+                ->delegate()
+                ->GetPartitionedPopinOpenerProperties()
+                .site_for_cookies);
   }
 
   // The renderer process's `blink::WebView` is owned by this lifecycle of

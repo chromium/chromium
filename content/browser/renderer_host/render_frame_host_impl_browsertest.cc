@@ -8340,6 +8340,41 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
   // The test passes if the renderer crashes but not the browser.
 }
 
+// Test that a popin doesn't crash the browser if the opener goes away during
+// navigation. This simulates a case where the opening frame gets deleted before
+// the popin is closed by `PartitionedPopinController`.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       PopinNavigationAfterOpenerCleared) {
+  // Navigate to a.test.
+  ASSERT_TRUE(NavigateToURL(web_contents(), embedded_https_test_server().GetURL(
+                                                "a.test", "/empty.html")));
+
+  // Open a popin.
+  WebContentsAddedObserver new_tab_observer;
+  const GURL old_url = embedded_https_test_server().GetURL(
+      "a.test", "/partitioned_popins/wildcard_policy.html");
+  EXPECT_TRUE(content::ExecJs(web_contents(), "window.open('" + old_url.spec() +
+                                                  "', '_blank', 'popin')"));
+  WebContentsImpl* popin_web_contents =
+      static_cast<WebContentsImpl*>(new_tab_observer.GetWebContents());
+  EXPECT_TRUE(popin_web_contents->IsPartitionedPopin());
+  EXPECT_EQ(popin_web_contents->GetPrimaryMainFrame()->GetStorageKey(),
+            blink::StorageKey::CreateFromStringForTesting(old_url.spec()));
+
+  // Clear opener so the popin cannot use it as a source of data.
+  popin_web_contents->ClearPartitionedPopinOpenerForTesting();
+
+  // Navigate the popin and see it work.
+  const GURL new_url = embedded_https_test_server().GetURL(
+      "b.test", "/partitioned_popins/wildcard_policy.html");
+  EXPECT_TRUE(NavigateToURL(popin_web_contents, new_url));
+  EXPECT_TRUE(popin_web_contents->IsPartitionedPopin());
+  EXPECT_EQ(popin_web_contents->GetPrimaryMainFrame()->GetStorageKey(),
+            blink::StorageKey::Create(
+                url::Origin::Create(new_url), net::SchemefulSite(GURL(old_url)),
+                blink::mojom::AncestorChainBit::kCrossSite));
+}
+
 class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:

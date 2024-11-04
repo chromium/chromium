@@ -54,7 +54,7 @@ WebContentsImpl* GetPopin(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   return static_cast<WebContentsImpl*>(
-      web_contents_impl->OpenedPartitionedPopin());
+      web_contents_impl->GetOpenedPartitionedPopin());
 }
 
 }  // namespace
@@ -73,7 +73,8 @@ void PartitionedPopinsController::RenderFrameDeleted(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContentsImpl* popin = GetPopin(web_contents());
-  if (popin && render_frame_host == popin->PartitionedPopinOpener()) {
+  if (popin &&
+      render_frame_host == popin->GetPartitionedPopinOpener(PassKey())) {
     SchedulePopinClose(popin);
   }
 }
@@ -85,7 +86,7 @@ void PartitionedPopinsController::RenderFrameHostChanged(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContentsImpl* popin = GetPopin(web_contents());
-  if (popin && old_host == popin->PartitionedPopinOpener()) {
+  if (popin && old_host == popin->GetPartitionedPopinOpener(PassKey())) {
     SchedulePopinClose(popin);
   }
 }
@@ -96,7 +97,7 @@ void PartitionedPopinsController::FrameDeleted(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContentsImpl* popin = GetPopin(web_contents());
-  if (popin && popin->PartitionedPopinOpener() ==
+  if (popin && popin->GetPartitionedPopinOpener(PassKey()) ==
                    web_contents()->UnsafeFindFrameByFrameTreeNodeId(
                        frame_tree_node_id)) {
     SchedulePopinClose(popin);
@@ -121,7 +122,7 @@ void PartitionedPopinsController::DidFinishNavigation(
       // do a same-document navigation – e.g. a single-page application updates
       // the history – that is not handled by the `FrameDeleted` listener.
       IsOpenerDescendantOfRenderFrameHost(
-          popin->PartitionedPopinOpener(),
+          popin->GetPartitionedPopinOpener(PassKey()),
           navigation_handle->GetRenderFrameHost())) {
     SchedulePopinClose(popin);
   }

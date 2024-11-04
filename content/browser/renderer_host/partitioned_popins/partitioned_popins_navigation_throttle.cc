@@ -104,9 +104,8 @@ bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
     return false;
   }
   for (const url::Origin& policy_origin : policy.origins) {
-    if (policy_origin == web_contents->PartitionedPopinOpener()
-                             ->GetMainFrame()
-                             ->GetLastCommittedOrigin()) {
+    if (policy_origin ==
+        web_contents->GetPartitionedPopinOpenerProperties().top_frame_origin) {
       return false;
     }
   }

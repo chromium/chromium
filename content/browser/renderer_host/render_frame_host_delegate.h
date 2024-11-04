@@ -118,6 +118,17 @@ namespace mojom {
 class CreateNewWindowParams;
 }
 
+// When calculating storage access for a partitioned popin the
+// `top_frame_origin` and `ancestor_chain_bit` are needed to calculate the
+// storage key and the `site_for_cookies` is needed to properly filter cookie
+// access.
+// https://explainers-by-googlers.github.io/partitioned-popins/
+struct PartitionedPopinOpenerProperties {
+  url::Origin top_frame_origin;
+  net::SiteForCookies site_for_cookies;
+  blink::mojom::AncestorChainBit ancestor_chain_bit;
+};
+
 // An interface implemented by an object interested in knowing about the state
 // of the RenderFrameHost.
 //
@@ -721,19 +732,23 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool IsPopup() const;
 
   // If the containing window was opened as a new partitioned popin.
+  // If this returns true, IsPopup must also return true as all
+  // popins are considered popups for UX purposes.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
+  // TODO(crbug.com/340606651): Integrate Fenced Frame check into this function.
   virtual bool IsPartitionedPopin() const;
 
-  // If this window was opened as a new partitioned popin this will be the
-  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // If this window is a partitioned popin then this returns the properties
+  // struct, otherwise this function CHECKs.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual RenderFrameHostImpl* PartitionedPopinOpener() const;
+  virtual const PartitionedPopinOpenerProperties&
+  GetPartitionedPopinOpenerProperties() const;
 
   // Each window can have at most one open partitioned popin, and this will be a
-  // pointer to it. If this is set `PartitionedPopinOpener` must return null as
+  // pointer to it. If this is set `IsPartitionedPopin` must return false as
   // no popin can open a popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual WebContents* OpenedPartitionedPopin() const;
+  virtual WebContents* GetOpenedPartitionedPopin() const;
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

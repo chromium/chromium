@@ -198,11 +198,12 @@ bool RenderFrameHostDelegate::IsPartitionedPopin() const {
   return false;
 }
 
-RenderFrameHostImpl* RenderFrameHostDelegate::PartitionedPopinOpener() const {
-  return nullptr;
+const PartitionedPopinOpenerProperties&
+RenderFrameHostDelegate::GetPartitionedPopinOpenerProperties() const {
+  NOTREACHED();
 }
 
-WebContents* RenderFrameHostDelegate::OpenedPartitionedPopin() const {
+WebContents* RenderFrameHostDelegate::GetOpenedPartitionedPopin() const {
   return nullptr;
 }
 
