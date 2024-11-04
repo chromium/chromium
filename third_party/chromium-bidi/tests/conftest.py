@@ -410,10 +410,13 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
-def html(local_server_http):
+def html(local_server_http, local_server_http_another_host):
     """Return a factory for URL with the given content."""
-    def html(content=""):
-        return local_server_http.url_200(content=content)
+    def html(content="", same_origin=True):
+        if same_origin:
+            return local_server_http.url_200(content=content)
+        else:
+            return local_server_http_another_host.url_200(content=content)
 
     return html
 

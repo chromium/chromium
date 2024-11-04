@@ -477,6 +477,34 @@ export class ActionDispatcher {
     } while (!last);
   }
 
+  async #getFrameOffset(): Promise<{x: number; y: number}> {
+    // https://github.com/w3c/webdriver/pull/1847 proposes dispatching events from
+    // the top-level browsing context. This implementation dispatches it on the top-most
+    // same-target frame, which is not top-level one in case of OOPiF.
+    // TODO: switch to the top-level browsing context.
+    try {
+      const {backendNodeId} =
+        await this.#context.cdpTarget.cdpClient.sendCommand(
+          'DOM.getFrameOwner',
+          {frameId: this.#context.id},
+        );
+      const {model: frameBoxModel} =
+        await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getBoxModel', {
+          backendNodeId,
+        });
+      return {x: frameBoxModel.content[0]!, y: frameBoxModel.content[1]!};
+    } catch (e: any) {
+      if (
+        e.code === -32000 &&
+        e.message === 'Frame with the given id does not belong to the target.'
+      ) {
+        // Heuristic to determine if the browsing context is top-level in the target session.
+        return {x: 0, y: 0};
+      }
+      throw e;
+    }
+  }
+
   async #getCoordinateFromOrigin(
     origin: Input.Origin,
     offsetX: number,
@@ -486,14 +514,15 @@ export class ActionDispatcher {
   ) {
     let targetX: number;
     let targetY: number;
+    const frameOffset = await this.#getFrameOffset();
     switch (origin) {
       case 'viewport':
-        targetX = offsetX;
-        targetY = offsetY;
+        targetX = offsetX + frameOffset.x;
+        targetY = offsetY + frameOffset.y;
         break;
       case 'pointer':
-        targetX = startX + offsetX;
-        targetY = startY + offsetY;
+        targetX = startX + offsetX + frameOffset.x;
+        targetY = startY + offsetY + frameOffset.y;
         break;
       default: {
         const {x: posX, y: posY} = await getElementCenter(
@@ -501,8 +530,8 @@ export class ActionDispatcher {
           origin.element,
         );
         // SAFETY: These can never be special numbers.
-        targetX = posX + offsetX;
-        targetY = posY + offsetY;
+        targetX = posX + offsetX + frameOffset.x;
+        targetY = posY + offsetY + frameOffset.y;
         break;
       }
     }

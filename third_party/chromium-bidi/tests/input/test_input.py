@@ -15,7 +15,8 @@
 
 import pytest
 from syrupy.filters import props
-from test_helpers import execute_command, goto_url
+from test_helpers import (AnyExtending, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
 
 SET_FILES_HTML = """
 <input id=input type=file>
@@ -524,6 +525,106 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
     result = await get_events(websocket, context_id)
 
     assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.parametrize("same_origin", [True, False])
+@pytest.mark.asyncio
+async def test_click_iframe_context(websocket, context_id, html, same_origin,
+                                    read_sorted_messages):
+    # TODO: add test for double-nested iframes.
+    await subscribe(websocket, ["log.entryAdded"])
+
+    iframe_url = html(content="""
+        <script>
+            document.addEventListener('mousedown', function(event) {
+                document.body.textContent = `X: ${event.clientX}, Y: ${event.clientY}`;
+                console.log("mousedown event", event.clientX, event.clientY)
+            });
+            console.log("iframe loaded")
+        </script>
+        """,
+                      same_origin=same_origin)
+
+    # Parent page with an iFrame with margins and borders.
+    main_page_url = html(content=f"""
+        <iframe style="border: 10px solid red; margin-top: 20px; margin-left: 30px" src="{iframe_url}" />
+    """)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": main_page_url,
+                "context": context_id,
+                "wait": "none"
+            }
+        })
+
+    # Wait for the iframe to load. It cannot be guaranteed by the "wait"
+    # condition.
+    [_, frame_loaded_console_event] = await read_sorted_messages(2)
+    assert frame_loaded_console_event == AnyExtending({
+        "method": "log.entryAdded",
+        "params": {
+            'args': [{
+                'type': 'string',
+                'value': 'iframe loaded',
+            }, ],
+        }
+    })
+    iframe_id = frame_loaded_console_event["params"]["source"]["context"]
+
+    (X, Y) = (7, 13)
+    # Perform action with iframe as origin.
+    await send_JSON_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": iframe_id,
+                "actions": [{
+                    "type": "pointer",
+                    "id": "main_mouse",
+                    "actions": [{
+                        "origin": "pointer",
+                        "type": "pointerMove",
+                        "x": X,
+                        "y": Y,
+                    }, {
+                        "type": "pointerDown",
+                        "button": 0,
+                    }, {
+                        "type": "pointerUp",
+                        "button": 0,
+                    }, {
+                        "type": "pointerDown",
+                        "button": 1,
+                    }, {
+                        "type": "pointerUp",
+                        "button": 1,
+                    }]
+                }]
+            }
+        })
+
+    await wait_for_event(websocket, "log.entryAdded")
+
+    [mousedown_console_event] = await read_sorted_messages(1)
+    assert mousedown_console_event == AnyExtending({
+        "method": "log.entryAdded",
+        "params": {
+            'args': [
+                {
+                    'value': 'mousedown event',
+                },
+                {
+                    'value': X,
+                },
+                {
+                    'value': Y,
+                },
+            ],
+        }
+    })
 
 
 @pytest.mark.asyncio
