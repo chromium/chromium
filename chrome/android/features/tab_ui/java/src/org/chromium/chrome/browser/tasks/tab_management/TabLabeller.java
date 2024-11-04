@@ -52,7 +52,7 @@ public class TabLabeller extends TabObjectLabeller {
     protected int getTextRes(PersistentMessage message) {
         if (message.collaborationEvent == CollaborationEvent.TAB_ADDED) {
             return org.chromium.chrome.tab_ui.R.string.tab_added_label;
-        } else if (message.collaborationEvent == CollaborationEvent.TAB_NAVIGATED) {
+        } else if (message.collaborationEvent == CollaborationEvent.TAB_UPDATED) {
             return org.chromium.chrome.tab_ui.R.string.tab_changed_label;
         } else {
             return Resources.ID_NULL;

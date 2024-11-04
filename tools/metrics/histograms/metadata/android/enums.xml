@@ -1141,7 +1141,7 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="DefaultBrowserPromo"/>
   <int value="54" label="TabRemovedThroughCollaboration"/>
   <int value="55" label="TabNavigatedThroughCollaboration"/>
-  <int value="56" label="CollaborationUserJoined"/>
+  <int value="56" label="CollaborationMemberAdded"/>
   <int value="57" label="CollaborationRemoved"/>
 </enum>
 

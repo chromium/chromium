@@ -1801,7 +1801,7 @@ public class TabGridDialogMediatorUnitTest {
             messageList.add(makePersistentMessage(CollaborationEvent.TAB_ADDED));
         }
         for (int i = 0; i < navigated; i++) {
-            messageList.add(makePersistentMessage(CollaborationEvent.TAB_NAVIGATED));
+            messageList.add(makePersistentMessage(CollaborationEvent.TAB_UPDATED));
         }
         for (int i = 0; i < removed; i++) {
             messageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));

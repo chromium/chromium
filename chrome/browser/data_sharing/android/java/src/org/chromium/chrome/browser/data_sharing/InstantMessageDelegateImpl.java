@@ -114,11 +114,11 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @CollaborationEvent int collaborationEvent = message.collaborationEvent;
 
             if (message.level == InstantNotificationLevel.SYSTEM) {
-                if (collaborationEvent == CollaborationEvent.COLLABORATION_USER_JOINED) {
+                if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
                     @NonNull
                     DataSharingNotificationManager dataSharingNotificationManager =
                             attachedWindowInfo.dataSharingNotificationManager;
-                    showCollaborationUserJoinedSystemNotification(
+                    showCollaborationMemberAddedSystemNotification(
                             message, context, dataSharingNotificationManager, tabGroupModelFilter);
                 }
                 success = true;
@@ -129,10 +129,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
                 if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
                     showTabRemoved(message, context, messageDispatcher);
-                } else if (collaborationEvent == CollaborationEvent.TAB_NAVIGATED) {
+                } else if (collaborationEvent == CollaborationEvent.TAB_UPDATED) {
                     showTabChange(message, context, messageDispatcher);
-                } else if (collaborationEvent == CollaborationEvent.COLLABORATION_USER_JOINED) {
-                    showCollaborationUserJoined(
+                } else if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
+                    showCollaborationMemberAdded(
                             message, context, messageDispatcher, tabGroupModelFilter);
                 } else if (collaborationEvent == CollaborationEvent.COLLABORATION_REMOVED) {
                     showCollaborationRemoved(
@@ -213,7 +213,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 () -> {});
     }
 
-    private void showCollaborationUserJoined(
+    private void showCollaborationMemberAdded(
             InstantMessage message,
             Context context,
             MessageDispatcher messageDispatcher,
@@ -230,7 +230,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         // TODO(https://crbug.com/369163940): Action should open manage sheet.
         showGenericMessage(
                 messageDispatcher,
-                MessageIdentifier.COLLABORATION_USER_JOINED,
+                MessageIdentifier.COLLABORATION_MEMBER_ADDED,
                 title,
                 buttonText,
                 icon,
@@ -257,7 +257,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 () -> {});
     }
 
-    private void showCollaborationUserJoinedSystemNotification(
+    private void showCollaborationMemberAddedSystemNotification(
             InstantMessage message,
             Context context,
             DataSharingNotificationManager dataSharingNotificationManager,

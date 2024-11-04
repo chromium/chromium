@@ -181,13 +181,13 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         List<ActivityLogItem> logItems = mService.getActivityLog(queryParams);
         Assert.assertEquals(2, logItems.size());
 
-        Assert.assertEquals(CollaborationEvent.TAB_NAVIGATED, logItems.get(0).collaborationEvent);
+        Assert.assertEquals(CollaborationEvent.TAB_UPDATED, logItems.get(0).collaborationEvent);
         Assert.assertEquals("title 1", logItems.get(0).titleText);
         Assert.assertEquals("description 1", logItems.get(0).descriptionText);
         Assert.assertEquals("timestamp 1", logItems.get(0).timestampText);
 
         Assert.assertEquals(
-                CollaborationEvent.COLLABORATION_USER_JOINED, logItems.get(1).collaborationEvent);
+                CollaborationEvent.COLLABORATION_MEMBER_ADDED, logItems.get(1).collaborationEvent);
         Assert.assertEquals("title 2", logItems.get(1).titleText);
         Assert.assertEquals("description 2", logItems.get(1).descriptionText);
         Assert.assertEquals("timestamp 2", logItems.get(1).timestampText);

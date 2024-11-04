@@ -45,7 +45,7 @@ std::vector<PersistentMessage> GetDefaultPersistentMessages() {
   message1.collaboration_event = CollaborationEvent::TAB_ADDED;
   messages.emplace_back(message1);
   PersistentMessage message2;
-  message2.collaboration_event = CollaborationEvent::TAB_NAVIGATED;
+  message2.collaboration_event = CollaborationEvent::TAB_UPDATED;
   messages.emplace_back(message2);
   PersistentMessage message3;
   message3.collaboration_event = CollaborationEvent::TAB_REMOVED;
@@ -450,14 +450,14 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForTab_SyncID) {
 TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   // Create two activity log items.
   ActivityLogItem activity_log_item1;
-  activity_log_item1.collaboration_event = CollaborationEvent::TAB_NAVIGATED;
+  activity_log_item1.collaboration_event = CollaborationEvent::TAB_UPDATED;
   activity_log_item1.title_text = "title 1";
   activity_log_item1.description_text = "description 1";
   activity_log_item1.timestamp_text = "timestamp 1";
 
   ActivityLogItem activity_log_item2;
   activity_log_item2.collaboration_event =
-      CollaborationEvent::COLLABORATION_USER_JOINED;
+      CollaborationEvent::COLLABORATION_MEMBER_ADDED;
   activity_log_item2.title_text = "title 2";
   activity_log_item2.description_text = "description 2";
   activity_log_item2.timestamp_text = "timestamp 2";

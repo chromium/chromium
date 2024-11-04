@@ -27,15 +27,18 @@ enum class CollaborationEvent {
 
   // Source: TabGroupSyncService data.
   TAB_ADDED,
-  // TODO(345856704): How do we get attribution data here?
   TAB_REMOVED,
-  TAB_NAVIGATED,
-  TAB_GROUP_VISUALS_UPDATED,
+  TAB_UPDATED,
+  TAB_GROUP_ADDED,
+  TAB_GROUP_NAME_UPDATED,
+  TAB_GROUP_COLOR_UPDATED,
+  TAB_GROUP_REMOVED,
 
   // Source: DataSharingService data.
-  COLLABORATION_USER_JOINED,
-  COLLABORATION_USER_LEFT,
-  // User left or lost access.
+  COLLABORATION_ADDED,
+  COLLABORATION_MEMBER_ADDED,
+  COLLABORATION_MEMBER_REMOVED,
+  // Current user left or lost access.
   COLLABORATION_REMOVED,
 };
 

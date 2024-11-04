@@ -1322,8 +1322,7 @@ public class TabGridDialogMediator
             collaborationEventCounts.merge(message.collaborationEvent, 1, Integer::sum);
         }
         int tabsAdded = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_ADDED, 0);
-        int tabsChanged =
-                collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_NAVIGATED, 0);
+        int tabsChanged = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_UPDATED, 0);
         int tabsClosed = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_REMOVED, 0);
         if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
             removeCollaborationActivityMessageCard();

@@ -27,16 +27,15 @@ ActivityLogType ConvertCollaborationEvent(
       return ActivityLogType::kTabAdded;
     case collaboration::messaging::CollaborationEvent::TAB_REMOVED:
       return ActivityLogType::kTabRemoved;
-    case collaboration::messaging::CollaborationEvent::TAB_NAVIGATED:
-      return ActivityLogType::kTabNavigated;
-    case collaboration::messaging::CollaborationEvent::
-        TAB_GROUP_VISUALS_UPDATED:
-      // TODO(crbug.com/370897655): Confirm how to know that a user changed a
-      // color or a name of a group. Return kGroupNameChanged if the name is
-      // updated.
+    case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
+      return ActivityLogType::kTabUpdated;
+    case collaboration::messaging::CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+      return ActivityLogType::kGroupNameChanged;
+    case collaboration::messaging::CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
       return ActivityLogType::kGroupColorChanged;
-    case collaboration::messaging::CollaborationEvent::COLLABORATION_USER_LEFT:
-      return ActivityLogType::kUserLeft;
+    case collaboration::messaging::CollaborationEvent::
+        COLLABORATION_MEMBER_REMOVED:
+      return ActivityLogType::kMemberRemoved;
     default:
       return ActivityLogType::kUndefined;
   }

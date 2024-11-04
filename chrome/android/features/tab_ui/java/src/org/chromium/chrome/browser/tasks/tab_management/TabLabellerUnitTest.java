@@ -206,7 +206,7 @@ public class TabLabellerUnitTest {
     @Test
     public void testShowAll_Changed() {
         PersistentMessage message = makeStandardMessage();
-        message.collaborationEvent = CollaborationEvent.TAB_NAVIGATED;
+        message.collaborationEvent = CollaborationEvent.TAB_UPDATED;
         List<PersistentMessage> messageList = List.of(message);
         when(mMessagingBackendService.getMessagesForGroup(any(), any())).thenReturn(messageList);
 

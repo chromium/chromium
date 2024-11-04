@@ -142,7 +142,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testTabNavigated() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.TAB_NAVIGATED), mSuccessCallback);
+                newInstantMessage(CollaborationEvent.TAB_UPDATED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -156,26 +156,26 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     @Test
-    public void testCollaborationUserJoined() {
+    public void testCollaborationMemberAdded() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.COLLABORATION_USER_JOINED), mSuccessCallback);
+                newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
         verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
-        assertEquals(MessageIdentifier.COLLABORATION_USER_JOINED, messageIdentifier);
+        assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
         assertTrue(title.contains(TAB_GROUP_TITLE));
     }
 
     @Test
-    public void testCollaborationUserJoined_FallbackTitle() {
+    public void testCollaborationMemberAdded_FallbackTitle() {
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
-        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_USER_JOINED);
+        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
@@ -184,7 +184,7 @@ public class InstantMessageDelegateImplUnitTest {
         verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
-        assertEquals(MessageIdentifier.COLLABORATION_USER_JOINED, messageIdentifier);
+        assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
         assertTrue(title.contains(Integer.toString(13)));
@@ -225,7 +225,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testSystemNotification() {
-        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_USER_JOINED);
+        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.level = InstantNotificationLevel.SYSTEM;
 
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);

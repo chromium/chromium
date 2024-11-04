@@ -11,8 +11,8 @@
 enum class ActivityLogType : NSUInteger {
   kTabAdded,
   kTabRemoved,
-  kTabNavigated,
-  kUserLeft,
+  kTabUpdated,
+  kMemberRemoved,
   kGroupColorChanged,
   kGroupNameChanged,
   kUndefined,
