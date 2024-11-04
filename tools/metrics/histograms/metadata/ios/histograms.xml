@@ -1733,6 +1733,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Incognito.GridStatus" enum="IOSIncognitoGridStatus"
+    expires_after="2025-03-30">
+  <owner>ddac@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Logged when the incognito tab grid is shown. Logs the grid's enable status
+    along with the user's management status, which can be unmanaged, under
+    parental controls, or subject to enterprise policies.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2025-03-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>

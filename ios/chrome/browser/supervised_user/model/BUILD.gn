@@ -158,6 +158,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

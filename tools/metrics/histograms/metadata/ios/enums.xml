@@ -423,6 +423,15 @@ the generic promo launch. -->
   <int value="1" label="Magic Stack entrypoint"/>
 </enum>
 
+<enum name="IOSIncognitoGridStatus">
+  <int value="0" label="Enabled for unmanaged user"/>
+  <int value="1" label="Enabled for supervised user"/>
+  <int value="2" label="Enabled by enterprise policies"/>
+  <int value="3" label="Disabled for unmanaged user"/>
+  <int value="4" label="Disabled for supervised user"/>
+  <int value="5" label="Disabled by enterprise policies"/>
+</enum>
+
 <enum name="IOSJavascriptContentBlockType">
   <int value="0" label="Cookie"/>
   <int value="1" label="Local Storage"/>

@@ -6,12 +6,14 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -98,12 +100,24 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
 
 // Tests that the disabled incognito tab grid shows a link to Family Link.
 - (void)testTabGridIncognitoDisabled {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   [self signInWithSupervisedAccount];
 
   // Open incognito tab grid.
   [ChromeEarlGrey showTabSwitcher];
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kDisabledForSupervisedUser)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics for supervised user");
 
   // New Incognito Tab button `(+)` should be disabled.
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
@@ -134,10 +148,21 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
                   expectedHostname,
                   @"Did not open the correct Learn more URL with hostname %s",
                   expectedHostname.c_str());
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
 }
 
 // Tests that the incognito tab grid is available after signout.
 - (void)testTabGridIncognitoEnabledOnSignout {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   [self signInWithSupervisedAccount];
   [SigninEarlGrey signOut];
 
@@ -146,16 +171,32 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kEnabledForUnmanagedUser)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics.");
+
   // New Incognito Tab button `(+)` should be re-enabled.
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
 
-  // The disabled incognito tab should not display any messages from the
-  // disabled incognito tab grid.
+  // Messages from the disabled incognito tab grid should not be displayed.
   [[EarlGrey selectElementWithMatcher:ContainsPartialText(
                                           kTestSupervisedIncognitoMessage)]
       assertWithMatcher:grey_nil()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
 }
 
 // Tests that the incognito tab grid is available after signout with restart.
@@ -180,7 +221,14 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
     "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
         [FakeSystemIdentity encodeIdentitiesToBase64:@[ fakeIdentity ]]
   }));
+  config.features_enabled.push_back(
+      supervised_user::
+          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Set up the histogram tester after restarting.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
 
   [SigninEarlGrey signOut];
 
@@ -189,16 +237,32 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kEnabledForUnmanagedUser)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics.");
+
   // New Incognito Tab button `(+)` should be re-enabled.
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
 
-  // The disabled incognito tab should not display any messages from the
-  // disabled incognito tab grid.
+  // Messages from the disabled incognito tab grid should not be displayed.
   [[EarlGrey selectElementWithMatcher:ContainsPartialText(
                                           kTestSupervisedIncognitoMessage)]
       assertWithMatcher:grey_nil()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
 }
 
 // Tests that incognito tabs are destroyed after supervised users sign in.
