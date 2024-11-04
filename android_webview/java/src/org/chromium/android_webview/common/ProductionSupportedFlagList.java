@@ -498,10 +498,6 @@ public final class ProductionSupportedFlagList {
                 "Runs code to update IME state at the end of a lifecycle update "
                         + "rather than the beginning."),
         Flag.baseFeature(
-                CcFeatures.NON_BLOCKING_COMMIT,
-                "Don't block the renderer main thread unconditionally while waiting "
-                        + "for commit to finish on the compositor thread."),
-        Flag.baseFeature(
                 CcFeatures.USE_DMSAA_FOR_TILES,
                 "Switches skia to use DMSAA instead of MSAA for tile raster"),
         Flag.baseFeature(

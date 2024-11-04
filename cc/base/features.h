@@ -53,13 +53,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
 // render surface's owning effect.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
 
-// When enabled, the main thread does not block while commit is running on the
-// impl thread.
-// WARNING: This feature is not yet safe to enable. Work is needed to ensure
-// that main thread cc data structures are not modified on the main thread while
-// commit is running concurrently on the impl thread.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBlockingCommit);
-
 // When enabled, the scheduler will allow deferring impl invalidation frames
 // for N frames (default 1) to reduce contention with main frames, allowing
 // main a chance to commit.

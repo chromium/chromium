@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
-#include "cc/base/features.h"
 #include "cc/base/region.h"
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/debug/layer_tree_debug_state.h"
@@ -392,9 +391,7 @@ void LayerTreeView::WillCommit(const cc::CommitState&) {
   if (!delegate_)
     return;
   delegate_->WillCommitCompositorFrame();
-  if (base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
-    widget_scheduler_->DidCommitFrameToCompositor();
-  }
+  widget_scheduler_->DidCommitFrameToCompositor();
 }
 
 void LayerTreeView::DidCommit(int source_frame_number,
@@ -405,9 +402,6 @@ void LayerTreeView::DidCommit(int source_frame_number,
     return;
   }
   delegate_->DidCommitCompositorFrame(commit_start_time, commit_finish_time);
-  if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
-    widget_scheduler_->DidCommitFrameToCompositor();
-  }
 }
 
 void LayerTreeView::DidCommitAndDrawFrame(int source_frame_number) {

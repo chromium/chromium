@@ -252,8 +252,7 @@ void ProxyMain::BeginMainFrame(
     commit_timeout = true;
   }
 
-  bool blocking = !base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-                  block_on_next_commit_;
+  bool blocking = block_on_next_commit_;
   block_on_next_commit_ = false;
 
   bool scroll_and_viewport_changes_synced = false;
@@ -280,9 +279,9 @@ void ProxyMain::BeginMainFrame(
   // to track animation states such that they are cleaned up properly.
   layer_tree_host_->AnimateLayers(frame_args.frame_time);
 
-  // If NonBlockingCommit is enabled, and the previous BeginMainFrame has not
-  // yet completed commit on the impl thread, then the above call to
-  // AnimateLayers should have blocked until the previous commit finished.
+  // If the previous BeginMainFrame has not yet completed commit on the impl
+  // thread, then the above call to AnimateLayers should have blocked until the
+  // previous commit finished.
   DCHECK(!layer_tree_host_->in_commit());
 
   // Recreates all UI resources if the compositor thread evicted UI resources
@@ -494,8 +493,6 @@ void ProxyMain::BeginMainFrame(
 
 void ProxyMain::DidCompleteCommit(int source_frame_number,
                                   CommitTimestamps commit_timestamps) {
-  if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit))
-    return;
   if (layer_tree_host_)
     layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
 }

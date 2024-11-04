@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "cc/base/features.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -33,8 +32,6 @@ std::unique_ptr<VideoLayerImpl> VideoLayerImpl::Create(
     int id,
     VideoFrameProvider* provider,
     const media::VideoTransformation& video_transform) {
-  DCHECK(tree_impl->task_runner_provider()->IsMainThreadBlocked() ||
-         base::FeatureList::IsEnabled(features::kNonBlockingCommit));
   DCHECK(tree_impl->task_runner_provider()->IsImplThread());
 
   scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl =
@@ -58,13 +55,6 @@ VideoLayerImpl::VideoLayerImpl(
 
 VideoLayerImpl::~VideoLayerImpl() {
   if (!provider_client_impl_->Stopped()) {
-    // In impl side painting, we may have a pending and active layer
-    // associated with the video provider at the same time. Both have a ref
-    // on the VideoFrameProviderClientImpl, but we stop when the first
-    // LayerImpl (the one on the pending tree) is destroyed since we know
-    // the main thread is blocked for this commit.
-    DCHECK(layer_tree_impl()->task_runner_provider()->IsMainThreadBlocked() ||
-           base::FeatureList::IsEnabled(features::kNonBlockingCommit));
     DCHECK(layer_tree_impl()->task_runner_provider()->IsImplThread());
     provider_client_impl_->Stop();
   }

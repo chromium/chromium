@@ -118,8 +118,7 @@ ProxyImpl::ProxyImpl(
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
 
   SchedulerSettings scheduler_settings(settings->ToSchedulerSettings());
-  scheduler_settings.main_frame_before_commit_enabled =
-      base::FeatureList::IsEnabled(features::kNonBlockingCommit);
+  scheduler_settings.main_frame_before_commit_enabled = true;
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history(
       new CompositorTimingHistory(
@@ -363,8 +362,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   DCHECK(!data_for_commit_.get());
   DCHECK(IsImplThread());
-  DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-         IsMainThreadBlocked());
   DCHECK(scheduler_);
   DCHECK(scheduler_->CommitPending());
 
@@ -833,8 +830,6 @@ void ProxyImpl::ScheduledActionCommit() {
             perfetto::protos::pbzero::MainFramePipeline::Step::COMMIT_ON_IMPL);
       });
   DCHECK(IsImplThread());
-  DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-         IsMainThreadBlocked());
   DCHECK(data_for_commit_.get());
   DCHECK(data_for_commit_->IsValid());
 
@@ -1084,9 +1079,7 @@ ProxyImpl::DataForCommit::DataForCommit(
 ProxyImpl::DataForCommit::~DataForCommit() = default;
 
 bool ProxyImpl::DataForCommit::IsValid() const {
-  return commit_completion_event.get() && commit_state.get() && unsafe_state &&
-         (base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-          commit_timestamps);
+  return commit_completion_event.get() && commit_state.get() && unsafe_state;
 }
 
 }  // namespace cc
