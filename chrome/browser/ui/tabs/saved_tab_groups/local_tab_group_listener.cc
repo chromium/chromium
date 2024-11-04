@@ -346,8 +346,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
   // Listen to navigations.
   base::Token token = base::Token::CreateRandom();
   service_->UpdateLocalTabId(local_id_, tab.saved_tab_guid(), token);
-  tab_listener_mapping_.try_emplace(local_tab, service_, token, local_tab,
-                                    navigation_handle);
+  tab_listener_mapping_.try_emplace(local_tab, service_, token, local_tab);
 }
 
 void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {

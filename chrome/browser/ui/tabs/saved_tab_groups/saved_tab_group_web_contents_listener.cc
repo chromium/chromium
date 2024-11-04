@@ -80,8 +80,7 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     TabGroupSyncService* service,
     const LocalTabID& saved_tab_group_tab_id,
-    tabs::TabModel* local_tab,
-    content::NavigationHandle* navigation_handle)
+    tabs::TabModel* local_tab)
     : service_(service),
       saved_tab_group_tab_id_(saved_tab_group_tab_id),
       local_tab_(local_tab) {

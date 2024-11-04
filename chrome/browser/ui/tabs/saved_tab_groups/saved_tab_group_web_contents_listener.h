@@ -32,20 +32,15 @@ class TabGroupSyncService;
 // a sync navigation occurs, updates the local webcontents.
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
-  SavedTabGroupWebContentsListener(
-      TabGroupSyncService* service,
-      const LocalTabID& token,
-      tabs::TabModel* local_tab,
-      content::NavigationHandle* navigation_handle = nullptr);
+  SavedTabGroupWebContentsListener(TabGroupSyncService* service,
+                                   const LocalTabID& token,
+                                   tabs::TabModel* local_tab);
   ~SavedTabGroupWebContentsListener() override;
 
-  // If possible (see implementation for details) performs a naviagation of the
-  // |web_contents_| and then stores the |navigation_handle_|. This method
-  // should only be called when a navigation request comes in via sync, and
-  // since DidFinishNavigation will be called when the navigation completes
-  // created by this method, we save the navigation handle and prevent
-  // DidFinishNavigation from running if it matches the navigation handle in
-  // this method.
+  // Method to be called when a navigation request comes in via sync. Sets the
+  // property `navigation_initiated_from_sync` on the navigation so that when
+  // DidFinishNavigation is invoked we can correctly identify that the
+  // navigation was from sync and prevent it from notifying sync back again.
   void NavigateToUrl(const GURL& url);
 
   // Accessors.
