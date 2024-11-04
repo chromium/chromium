@@ -12,19 +12,15 @@
 namespace webui {
 namespace {
 
-// Responsible for holding the BrowserWindowInterface for the embedded
-// WebContents and notifing downstream clients of context changes.
-class EmbedderContextData
-    : public content::WebContentsUserData<EmbedderContextData> {
+// Tracks changes to the wrapped `browser_window_interface_`, notifying clients
+// of changes as approprirate.
+class EmbeddingBrowserTracker {
  public:
-  EmbedderContextData(const EmbedderContextData&) = delete;
-  EmbedderContextData& operator=(const EmbedderContextData&) = delete;
-  ~EmbedderContextData() override = default;
-
-  static EmbedderContextData* GetOrCreate(content::WebContents* web_contents) {
-    EmbedderContextData::CreateForWebContents(web_contents);
-    return EmbedderContextData::FromWebContents(web_contents);
-  }
+  explicit EmbeddingBrowserTracker(base::RepeatingClosure browser_change_cb)
+      : browser_change_cb_(std::move(browser_change_cb)) {}
+  EmbeddingBrowserTracker(const EmbeddingBrowserTracker&) = delete;
+  EmbeddingBrowserTracker& operator=(const EmbeddingBrowserTracker&) = delete;
+  ~EmbeddingBrowserTracker() = default;
 
   // Updates `browser_window_interface_` and registers/notifies listeners if
   // appropriate.
@@ -39,19 +35,64 @@ class EmbedderContextData
     if (browser_window_interface_) {
       browser_did_close_subscription_ =
           browser_window_interface_->RegisterBrowserDidClose(
-              base::BindRepeating(&EmbedderContextData::OnBrowserDidClose,
+              base::BindRepeating(&EmbeddingBrowserTracker::OnBrowserDidClose,
                                   base::Unretained(this)));
     }
-    context_change_callbacks_.Notify();
+    browser_change_cb_.Run();
   }
 
   BrowserWindowInterface* browser_window_interface() {
     return browser_window_interface_;
   }
 
+ private:
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface) {
+    CHECK_EQ(browser_window_interface_, browser_window_interface);
+    SetBrowserWindowInterface(nullptr);
+  }
+
+  // The browser interface currently embedding the host contents.
+  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+
+  // Notifies this when `browser_window_interface_` has closed.
+  std::optional<base::CallbackListSubscription> browser_did_close_subscription_;
+
+  // Notifies clients of changes to `browser_window_interface_`.
+  base::RepeatingClosure browser_change_cb_;
+};
+
+// Responsible for managing embedding interface changes for the hosted
+// WebContents, notifing downstream clients of embedding context changes.
+class EmbedderContextData
+    : public content::WebContentsUserData<EmbedderContextData> {
+ public:
+  EmbedderContextData(const EmbedderContextData&) = delete;
+  EmbedderContextData& operator=(const EmbedderContextData&) = delete;
+  ~EmbedderContextData() override = default;
+
+  static EmbedderContextData* GetOrCreate(content::WebContents* web_contents) {
+    EmbedderContextData::CreateForWebContents(web_contents);
+    return EmbedderContextData::FromWebContents(web_contents);
+  }
+
+  void SetBrowserWindowInterface(
+      BrowserWindowInterface* browser_window_interface) {
+    if (!browser_tracker_) {
+      browser_tracker_ = std::make_unique<EmbeddingBrowserTracker>(
+          base::BindRepeating(&EmbedderContextData::NotifyBrowserChanged,
+                              base::Unretained(this)));
+    }
+    browser_tracker_->SetBrowserWindowInterface(browser_window_interface);
+  }
+
+  BrowserWindowInterface* GetBrowserWindowInterface() {
+    return browser_tracker_ ? browser_tracker_->browser_window_interface()
+                            : nullptr;
+  }
+
   base::CallbackListSubscription RegisterBrowserWindowInterfaceChanged(
-      base::RepeatingClosure context_changed_cb) {
-    return context_change_callbacks_.Add(std::move(context_changed_cb));
+      base::RepeatingClosure browser_changed_cb) {
+    return browser_change_callbacks_.Add(std::move(browser_changed_cb));
   }
 
  private:
@@ -60,18 +101,14 @@ class EmbedderContextData
   explicit EmbedderContextData(content::WebContents* web_contents)
       : WebContentsUserData<EmbedderContextData>(*web_contents) {}
 
-  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface) {
-    CHECK_EQ(browser_window_interface_, browser_window_interface);
-    SetBrowserWindowInterface(nullptr);
-  }
+  // Notifies clients their embedding browser has changed.
+  void NotifyBrowserChanged() { browser_change_callbacks_.Notify(); }
 
-  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  // Defined only if actively tracking an embedding browser.
+  std::unique_ptr<EmbeddingBrowserTracker> browser_tracker_;
 
-  // Notifies this when `browser_window_interface_` has closed.
-  std::optional<base::CallbackListSubscription> browser_did_close_subscription_;
-
-  // Client registrations for changes to `browser_window_interface_`.
-  base::RepeatingCallbackList<void()> context_change_callbacks_;
+  // Client registrations for changes to the embedding browser.
+  base::RepeatingCallbackList<void()> browser_change_callbacks_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
@@ -103,7 +140,7 @@ void SetBrowserWindowInterface(
 BrowserWindowInterface* GetBrowserWindowInterface(
     content::WebContents* host_contents) {
   return EmbedderContextData::GetOrCreate(host_contents)
-      ->browser_window_interface();
+      ->GetBrowserWindowInterface();
 }
 
 base::CallbackListSubscription RegisterBrowserWindowInterfaceChanged(
