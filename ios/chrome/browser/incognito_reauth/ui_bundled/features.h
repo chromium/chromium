@@ -5,10 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_FEATURES_H_
 #define IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_FEATURES_H_
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/time/time.h"
 
-// Feature for the Incognito Soft Lock.
+// Feature for the Soft Lock.
 BASE_DECLARE_FEATURE(kIOSSoftLock);
+// Parameter for the kIOSSoftLock feature. The time delay needed
+// for Soft Lock to trigger.
+extern const char kIOSSoftLockBackgroundThresholdParam[];
+extern const base::FeatureParam<base::TimeDelta>
+    kIOSSoftLockBackgroundThreshold;
 
 // Whether the Soft Lock feature is enabled.
 bool IsIOSSoftLockEnabled();

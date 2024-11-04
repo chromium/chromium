@@ -20,9 +20,4 @@ enum class IncognitoLockState {
   kSoftLock,
 };
 
-// TODO(crbug.com/370804664): Make this constant configurable via Finch.
-// Time that Chrome should be backgrounded so that the Soft Lock screen is
-// displayed.
-inline base::TimeDelta const kSoftLockBackgroundThreshold = base::Seconds(10);
-
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_CONSTANTS_H_

@@ -598,9 +598,7 @@ const char kIOSSharedHighlightingV2Description[] =
     "or resharing a highlight.";
 
 const char kIOSSoftLockName[] = "Soft Lock on iOS";
-const char kIOSSoftLockDescription[] =
-    "Enables an overlay screen over Incognito tabs, whenever the browser is "
-    "backgrounded for long periods of time.";
+const char kIOSSoftLockDescription[] = "Enables experimental Soft Lock on iOS.";
 
 const char kIOSTipsNotificationsName[] = "Tips Notifications";
 const char kIOSTipsNotificationsDescription[] =

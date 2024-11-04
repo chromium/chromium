@@ -197,7 +197,8 @@
   }
 
   base::TimeDelta duration = base::Time::Now() - self.lastBackgroundedTime;
-  self.backgroundedForEnoughTime = duration >= kSoftLockBackgroundThreshold;
+  self.backgroundedForEnoughTime =
+      duration >= kIOSSoftLockBackgroundThreshold.Get();
 }
 
 - (void)setWindowHadIncognitoContentWhenBackgrounded:(BOOL)hadIncognitoContent {

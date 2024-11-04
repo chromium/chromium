@@ -1074,6 +1074,15 @@ const FeatureEntry::FeatureVariation kSegmentedDefaultBrowserPromoVariations[] =
      {" - Animated Default Browser Promo", kSegmentedDefaultBrowserAnimated,
       std::size(kSegmentedDefaultBrowserAnimated), nullptr}};
 
+// Soft Lock
+const FeatureEntry::FeatureParam kIOSSoftLockNoDelay[] = {
+    {kIOSSoftLockBackgroundThresholdParam, "0m"},
+};
+
+const FeatureEntry::FeatureVariation kIOSSoftLockVariations[] = {
+    {" - No delay", kIOSSoftLockNoDelay, std::size(kIOSSoftLockNoDelay),
+     nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1991,7 +2000,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
     {"ios-soft-lock", flag_descriptions::kIOSSoftLockName,
      flag_descriptions::kIOSSoftLockDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSSoftLock)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSSoftLock,
+                                    kIOSSoftLockVariations,
+                                    "IOSSoftLock")},
     {"separate-profiles-for-managed-accounts",
      flag_descriptions::kSeparateProfilesForManagedAccountsName,
      flag_descriptions::kSeparateProfilesForManagedAccountsDescription,
