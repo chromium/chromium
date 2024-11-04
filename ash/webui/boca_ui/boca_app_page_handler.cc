@@ -174,16 +174,14 @@ BocaAppHandler::BocaAppHandler(
   network_info_provider_ = std::make_unique<NetworkInfoProvider>(
       base::BindRepeating(&BocaAppHandler::OnActiveNetworkStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+  BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
+      /*is_app_opened=*/true);
 }
 
 BocaAppHandler::~BocaAppHandler() {
   BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
-  // Always turn off local caption when app close.
-  ::boca::CaptionsConfig local_caption_config;
-  local_caption_config.set_captions_enabled(false);
-  local_caption_config.set_translations_enabled(false);
-  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
-      std::move(local_caption_config));
+  BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
+      /*is_app_opened=*/false);
 }
 
 void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {

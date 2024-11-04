@@ -150,7 +150,7 @@ class BocaSessionManagerTest : public testing::Test {
         signin::GetTestGaiaIdForEmail(kTestUserEmail), kTestUserEmail);
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl_.get(), account_id, /*is_producer=*/false);
+        session_client_impl_.get(), account_id, /*is_producer=*/true);
     boca_session_manager_->AddObserver(observer_.get());
 
     // Set statistic provider for hardware class tests.
@@ -162,6 +162,8 @@ class BocaSessionManagerTest : public testing::Test {
     ToggleOffline();
     // Trigger network update activity.
     ToggleOnline();
+
+    boca_session_manager_->ToggleAppStatus(/*is_app_opened=*/true);
   }
 
  protected:
@@ -939,6 +941,33 @@ TEST_F(BocaSessionManagerTest, LoadSessionWhenRefreshTokenReady) {
   // MakeAccountAvailable fires a fresh token ready event.
   identity_test_env().MakeAccountAvailable(kTestUserEmail);
   identity_test_env().SetRefreshTokenForAccount(core_account_id());
+}
+
+TEST_F(BocaSessionManagerTest, DoNotDispatchCaptionEventWhenAppNotOpened) {
+  boca_session_manager()->ToggleAppStatus(/*is_app_opened=*/false);
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_id(kInitialSessionId);
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  ::boca::SessionConfig session_config;
+  auto* caption_config_1 = session_config.mutable_captions_config();
+
+  caption_config_1->set_captions_enabled(true);
+  caption_config_1->set_translations_enabled(true);
+  (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+      }));
+
+  EXPECT_CALL(*observer(),
+              OnSessionCaptionConfigUpdated(kMainStudentGroupName, _, _))
+      .Times(0);
+
+  // Have updated 1 sessions.
+  task_environment()->FastForwardBy(
+      BocaSessionManager::kInSessionPollingInterval * 1 + base::Seconds(1));
 }
 
 }  // namespace

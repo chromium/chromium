@@ -203,6 +203,7 @@ class MockSessionManager : public BocaSessionManager {
               (std::unique_ptr<::boca::Session>, bool),
               (override));
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
+  MOCK_METHOD(void, ToggleAppStatus, (bool), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -229,6 +230,8 @@ class BocaAppPageHandlerTest : public testing::Test {
     ON_CALL(*boca_app_client(), GetSessionManager())
         .WillByDefault(Return(session_manager()));
 
+    EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/true))
+        .Times(1);
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         nullptr, remote_.BindNewPipeAndPassReceiver(),
         // TODO(b/359929870):Setting nullptr for other dependencies for now.
@@ -238,7 +241,8 @@ class BocaAppPageHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+    EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/false))
+        .Times(1);
   }
 
  protected:

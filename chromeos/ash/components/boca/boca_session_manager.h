@@ -149,6 +149,8 @@ class BocaSessionManager
 
   virtual void UpdateTabActivity(std::u16string title);
 
+  virtual void ToggleAppStatus(bool is_app_opened);
+
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
 
@@ -172,11 +174,12 @@ class BocaSessionManager
   bool IsSessionActive(::boca::Session* session);
   void NotifySessionUpdate();
   void NotifyOnTaskUpdate();
-  void NotifyCaptionConfigUpdate();
+  void NotifySessionCaptionConfigUpdate();
   void NotifyRosterUpdate();
   void NotifyConsumerActivityUpdate();
 
   const bool is_producer_;
+  bool is_app_opened_ = false;
   base::ObserverList<Observer> observers_;
   // Timer used for periodic session polling within session.
   base::RepeatingTimer in_session_timer_;

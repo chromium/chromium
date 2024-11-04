@@ -171,7 +171,7 @@ void BocaSessionManager::UpdateCurrentSession(
   if (dispatch_event) {
     NotifySessionUpdate();
     NotifyOnTaskUpdate();
-    NotifyCaptionConfigUpdate();
+    NotifySessionCaptionConfigUpdate();
     NotifyRosterUpdate();
     NotifyConsumerActivityUpdate();
   }
@@ -210,6 +210,10 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
                                     ? kHomePageTitle
                                     : base::UTF16ToUTF8(active_tab_title_));
   session_client_impl_->UpdateStudentActivity(std::move(request));
+}
+
+void BocaSessionManager::ToggleAppStatus(bool is_app_opened) {
+  is_app_opened_ = is_app_opened;
 }
 
 void BocaSessionManager::NotifyLocalCaptionEvents(
@@ -326,14 +330,27 @@ void BocaSessionManager::NotifyOnTaskUpdate() {
   }
 }
 
-void BocaSessionManager::NotifyCaptionConfigUpdate() {
+void BocaSessionManager::NotifySessionCaptionConfigUpdate() {
   if (!IsSessionActive(current_session_.get())) {
     return;
   }
-  auto previous_session_caption_config =
-      GetSessionConfigSafe(previous_session_.get()).captions_config();
+
   auto current_session_caption_config =
       GetSessionConfigSafe(current_session_.get()).captions_config();
+
+  // We should never turn on caption for teacher when app is not opened. We
+  // already make sure turn off caption when app load/unload, but in the event
+  // of OS crash, we won't be able to fire update in time, this would cause
+  // server caption config to be still on. This check make sure we don't turn on
+  // it for user before they realize.
+  if (is_producer_ && !is_app_opened_ &&
+      current_session_caption_config.captions_enabled()) {
+    return;
+  }
+
+  auto previous_session_caption_config =
+      GetSessionConfigSafe(previous_session_.get()).captions_config();
+
   if (previous_session_caption_config.SerializeAsString() !=
       current_session_caption_config.SerializeAsString()) {
     for (auto& observer : observers_) {
@@ -345,10 +362,9 @@ void BocaSessionManager::NotifyCaptionConfigUpdate() {
                            : std::string());
     }
     if (is_producer_) {
-      bool is_caption_enabled = is_local_caption_enabled_ ||
-                                GetSessionConfigSafe(current_session_.get())
-                                    .captions_config()
-                                    .captions_enabled();
+      bool is_caption_enabled =
+          is_local_caption_enabled_ ||
+          current_session_caption_config.captions_enabled();
       BocaNotificationHandler::HandleCaptionNotification(
           message_center::MessageCenter::Get(), is_caption_enabled);
     }
