@@ -1416,6 +1416,11 @@ const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
     CapturingState::kDefaultOn, &kNavigationCapturingParams};
 
+const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
+    &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};
+
+const base::FeatureParam<std::string> kForcedOffCapturingAppsUserSetting{
+    &kPwaNavigationCapturing, "user_settings_forced_off_apps", ""};
 namespace {
 enum class VideoCaptureServiceConfiguration {
   kEnabledForOutOfProcess,

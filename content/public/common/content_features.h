@@ -328,6 +328,15 @@ enum class CapturingState {
 CONTENT_EXPORT extern const base::FeatureParam<CapturingState>
     kNavigationCapturingDefaultState;
 
+// Blocks navigation capturing from happening in apps listed here. This will
+// only 'block' the feature for the capturing app of the initial url, and not if
+// it happens after a redirection.
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kForcedOffCapturingAppsOnFirstNavigation;
+
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kForcedOffCapturingAppsUserSetting;
+
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in
 // alphabetical order, or in one of the ifdefs (also in order in each section).
 

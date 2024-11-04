@@ -7,6 +7,7 @@
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -21,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -81,6 +83,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -301,24 +304,19 @@ bool IsNavigationCapturingReimplExperimentEnabled(
   }
   // Enabling the generic flag turns it on for all navigations.
   if (apps::features::IsNavigationCapturingReimplEnabled()) {
-    return true;
-  }
-  if (display_mode.has_value()) {
-    // Explicitly disable link capturing on display modes that aren't supported.
-    // TODO(crbug.com/375504532): Support tabbed mode on desktop.
-    switch (*display_mode) {
-      case blink::mojom::DisplayMode::kUndefined:
-      case blink::mojom::DisplayMode::kTabbed:
-      case blink::mojom::DisplayMode::kPictureInPicture:
-        return false;
-      case blink::mojom::DisplayMode::kBrowser:
-      case blink::mojom::DisplayMode::kFullscreen:
-      case blink::mojom::DisplayMode::kMinimalUi:
-      case blink::mojom::DisplayMode::kWindowControlsOverlay:
-      case blink::mojom::DisplayMode::kBorderless:
-      case blink::mojom::DisplayMode::kStandalone:
-        break;
+    if (!features::kForcedOffCapturingAppsOnFirstNavigation.Get().empty() &&
+        controlling_app_id.has_value()) {
+      std::vector<std::string> forced_capturing_off_app_ids = base::SplitString(
+          features::kForcedOffCapturingAppsOnFirstNavigation.Get(), ",",
+          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      for (const std::string& forced_capturing_off_app_id :
+           forced_capturing_off_app_ids) {
+        if (controlling_app_id == forced_capturing_off_app_id) {
+          return false;
+        }
+      }
     }
+    return true;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

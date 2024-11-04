@@ -25,6 +25,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "build/chromeos_buildflags.h"
@@ -83,6 +84,22 @@ bool IsLinkCapturingDisabledByDefaultBasedOnFlagState() {
              features::CapturingState::kDefaultOff ||
          features::kNavigationCapturingDefaultState.Get() ==
              features::CapturingState::kReimplDefaultOff;
+}
+
+bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
+  if (!features::kForcedOffCapturingAppsUserSetting.Get().empty()) {
+    std::vector<std::string> forced_capturing_off_user_app_ids =
+        base::SplitString(features::kForcedOffCapturingAppsUserSetting.Get(),
+                          ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    for (const std::string& forced_capturing_off_user_app_id :
+         forced_capturing_off_user_app_ids) {
+      if (app_id == forced_capturing_off_user_app_id) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -1109,6 +1126,9 @@ WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
 
 bool WebAppRegistrar::CanCaptureLinksInScope(
     const webapps::AppId& app_id) const {
+  if (IsAppCapturingSettingForcedOff(app_id)) {
+    return false;
+  }
   if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)
 #if BUILDFLAG(IS_CHROMEOS)
       && !ChromeOsWebAppExperiments::
