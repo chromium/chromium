@@ -53,6 +53,9 @@ class OnTaskLockedSessionNavigationThrottle
   // only be blocked if the navigation was user-initiated.
   void MaybeShowBlockedURLToast();
 
+  // Checks to see if the navigation is happening outside of the OnTask window.
+  bool IsOutsideOnTaskAppNavigation();
+
   // `should_redirects_pass` allows url redirects to go through without going
   // through the blocklist checks. This should only be flipped to true after the
   // navigation request is started and the url is allowed to pass. This is used
