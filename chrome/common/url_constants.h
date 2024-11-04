@@ -595,13 +595,6 @@ inline constexpr char kSyncTrustedVaultLearnMoreURL[] =
 inline constexpr char16_t kTrackingProtectionHelpCenterURL[] =
     u"https://support.google.com/chrome?p=tracking_protection";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// The UK CMA's landing page about its investigation into the Privacy Sandbox.
-inline constexpr char16_t kUKCMAPrivacySandboxURL[] =
-    u"https://www.gov.uk/cma-cases/"
-    u"investigation-into-googles-privacy-sandbox-browser-changes";
-#endif
-
 // The URL for the Help Center page about User Bypass.
 inline constexpr char16_t kUserBypassHelpCenterURL[] =
     u"https://support.google.com/chrome?p=pause_protections";
