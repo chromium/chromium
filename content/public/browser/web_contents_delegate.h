@@ -464,7 +464,7 @@ class CONTENT_EXPORT WebContentsDelegate {
                                base::OnceCallback<void()> on_cancel);
 
   // Returns whether the RFH can use Additional Windowing Controls (AWC) APIs.
-  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  // https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md
   virtual bool CanUseWindowingControls(RenderFrameHost* requesting_frame);
 
   // Notifies `BrowserView` about the resizable boolean having been set vith

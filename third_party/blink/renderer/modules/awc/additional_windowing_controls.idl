@@ -4,7 +4,7 @@
 
 // Permission-gated access to Additional Windowing Controls (AWC) APIs.
 // https://w3c.github.io/window-management/
-// https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+// https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md
 
 [
   SecureContext,

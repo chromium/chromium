@@ -4177,7 +4177,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns whether the `RenderFrameHost` can use Additional Windowing Controls
   // APIs.
-  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  // https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md
   bool CanUseWindowingControls(std::string_view js_api_name);
 
   // Notifies when the renderer side Widget instance has been created and mojo
