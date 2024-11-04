@@ -2378,7 +2378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordAccessLossWarningDialog.{AccessLossWarningType}.UserAction"
+    name="PasswordManager.PasswordAccessLossWarningDialog{AccessLossWarningType}.UserAction"
     enum="PasswordAccessLossWarningUserActions" expires_after="2025-03-01">
   <owner>izuzic@google.com</owner>
   <owner>atsvirchkova@google.com</owner>
@@ -2387,6 +2387,7 @@ chromium-metrics-reviews@google.com.
     performed in the password access loss warning dialog. Recorded exactly when
     the action takes place. Android only.
   </summary>
+  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
 </histogram>
 
 <histogram
@@ -2398,18 +2399,7 @@ chromium-metrics-reviews@google.com.
     This histogram logs the last export flow step that the user performed.
     Recorded exactly when the export flow ends. Android only.
   </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.Trigger"
-    enum="PasswordAccessLossWarningTriggers" expires_after="2025-03-01">
-  <owner>izuzic@google.com</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    This histogram logs the UI surface that led to showing the password access
-    loss warning sheet for users {AccessLossWarningType}. Recorded when the
-    warning sheet is shown. Android only.
-  </summary>
+  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
 </histogram>
 
 <histogram
@@ -2422,6 +2412,20 @@ chromium-metrics-reviews@google.com.
     access loss warning sheet. Recorded exactly when the action takes place.
     Android only.
   </summary>
+  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordAccessLossWarningSheet{AccessLossWarningType}Trigger"
+    enum="PasswordAccessLossWarningTriggers" expires_after="2025-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    This histogram logs the UI surface that led to showing the password access
+    loss warning sheet for users {AccessLossWarningType}. Recorded when the
+    warning sheet is shown. Android only.
+  </summary>
+  <token key="AccessLossWarningType" variants="AccessLossWarningType"/>
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.Launch.Success"
