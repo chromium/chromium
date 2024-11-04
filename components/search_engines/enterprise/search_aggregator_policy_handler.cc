@@ -18,6 +18,17 @@ namespace policy {
 
 namespace {
 
+bool IsPolicyEnabled() {
+  // Check that FeatureList is available as a protection against early startup
+  // crashes. Some policy providers are initialized very early even before
+  // base::FeatureList is available, but when policies are finally applied, the
+  // feature stack is fully initialized. The instance check ensures that the
+  // final decision is delayed until all features are initialized, without any
+  // other downstream effect.
+  return base::FeatureList::GetInstance() &&
+         base::FeatureList::IsEnabled(omnibox::kEnableSearchAggregatorPolicy);
+}
+
 bool UrlIsNotHttps(const std::string& policy_name,
                    const std::string& url,
                    PolicyErrorMap* errors) {
@@ -54,7 +65,7 @@ SearchAggregatorPolicyHandler::~SearchAggregatorPolicyHandler() = default;
 bool SearchAggregatorPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
-  if (!policies.Get(policy_name())) {
+  if (!IsPolicyEnabled() || !policies.Get(policy_name())) {
     return true;
   }
 

@@ -3820,6 +3820,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-search-aggregator-policy",
+    "owners": [ "ftirelo@chromium.org", "jdonnelly@chromium.org", "mahmadi@chromium.org", "cbe-magic@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-search-customizable-shortcuts-in-launcher",
     "owners": [ "xiangdongkong@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 140

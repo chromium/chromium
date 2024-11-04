@@ -285,6 +285,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+#include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -2423,6 +2424,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
     BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<SiteSearchPolicyHandler>(chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<SearchAggregatorPolicyHandler>(chrome_schema));
 
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGenAILocalFoundationalModelSettings,

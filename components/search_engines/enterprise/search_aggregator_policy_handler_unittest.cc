@@ -10,6 +10,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -207,7 +209,30 @@ MATCHER_P(HasValidationError,
 
 }  // namespace
 
+TEST(SearchAggregatorPolicyHandlerTest, FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  SearchAggregatorPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  // Invalid format, will not fail validation because feature is disabled.
+  policy::PolicyMap policies;
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+
+  PolicyErrorMap errors;
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_FALSE(errors.HasError(key::kEnterpriseSearchAggregatorSettings));
+}
+
 TEST(SearchAggregatorPolicyHandlerTest, PolicyNotSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -217,6 +242,10 @@ TEST(SearchAggregatorPolicyHandlerTest, PolicyNotSet) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, Valid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -234,6 +263,10 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, InvalidFormat) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -248,6 +281,10 @@ TEST(SearchAggregatorPolicyHandlerTest, InvalidFormat) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, MissingRequiredField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -266,6 +303,10 @@ TEST(SearchAggregatorPolicyHandlerTest, MissingRequiredField) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, EmptyRequiredField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -285,6 +326,10 @@ TEST(SearchAggregatorPolicyHandlerTest, EmptyRequiredField) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, UnknownField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   constexpr char kUnknownFieldName[] = "unknown_field";
 
   SearchAggregatorPolicyHandler handler(
@@ -306,6 +351,10 @@ TEST(SearchAggregatorPolicyHandlerTest, UnknownField) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, ShortcutWithSpace) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -327,6 +376,10 @@ TEST(SearchAggregatorPolicyHandlerTest, ShortcutWithSpace) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, ShortcutStartsWithAt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -348,6 +401,10 @@ TEST(SearchAggregatorPolicyHandlerTest, ShortcutStartsWithAt) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, NonHttpsUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   struct NonHttpsUrlTestCase {
     TestSearchAggregator policy_value;
     const char* invalid_url;
@@ -387,6 +444,10 @@ TEST(SearchAggregatorPolicyHandlerTest, NonHttpsUrl) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, NoStringReplacementInSearchUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -410,6 +471,10 @@ TEST(SearchAggregatorPolicyHandlerTest, NoStringReplacementInSearchUrl) {
 
 TEST(SearchAggregatorPolicyHandlerTest,
      ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -429,6 +494,10 @@ TEST(SearchAggregatorPolicyHandlerTest,
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -451,6 +520,10 @@ TEST(SearchAggregatorPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
   SearchAggregatorPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 

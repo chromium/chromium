@@ -10167,6 +10167,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     kRenderDocumentVariations,
                                     "RenderDocument")},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"enable-search-aggregator-policy",
+     flag_descriptions::kEnableSearchAggregatorPolicyName,
+     flag_descriptions::kEnableSearchAggregatorPolicyDescription,
+     static_cast<unsigned short>(kOsCrOS | kOsLinux | kOsMac | kOsWin),
+     FEATURE_VALUE_TYPE(omnibox::kEnableSearchAggregatorPolicy)},
+#endif
+
     {"site-instance-groups-for-data-urls",
      flag_descriptions::kSiteInstanceGroupsForDataUrlsName,
      flag_descriptions::kSiteInstanceGroupsForDataUrlsDescription, kOsAll,

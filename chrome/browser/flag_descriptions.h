@@ -1238,6 +1238,12 @@ extern const char kContextualPageActionsReaderModeDescription[];
 extern const char kContextualPageActionsShareModelName[];
 extern const char kContextualPageActionsShareModelDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+extern const char kEnableSearchAggregatorPolicyName[];
+extern const char kEnableSearchAggregatorPolicyDescription[];
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kFlexFirmwareUpdateName[];
 extern const char kFlexFirmwareUpdateDescription[];

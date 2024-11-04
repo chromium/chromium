@@ -398,4 +398,12 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 }  // namespace android
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, search aggregators defined by the
+// EnterpriseSearchAggregatorSettings policy are saved into prefs and available
+// in the TemplateURLService, so that they can be accessed from the Omnibox and
+// the Settings page.
+BASE_FEATURE(kEnableSearchAggregatorPolicy,
+             "EnableSearchAggregatorPolicy",
+             DISABLED);
+
 }  // namespace omnibox

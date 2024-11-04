@@ -145,6 +145,9 @@ BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 BASE_DECLARE_FEATURE(kOmniboxDeleteOldShortcuts);
 
+// Enterprise search aggregators features.
+BASE_DECLARE_FEATURE(kEnableSearchAggregatorPolicy);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

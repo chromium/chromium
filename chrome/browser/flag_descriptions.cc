@@ -2225,6 +2225,15 @@ const char kContextualPageActionsShareModelName[] =
 const char kContextualPageActionsShareModelDescription[] =
     "Enables share model data collection.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+const char kEnableSearchAggregatorPolicyName[] =
+    "Enable EnterpriseSearchAggregatorSettings policy";
+const char kEnableSearchAggregatorPolicyDescription[] =
+    "Enable the policy that allows organizations to set a Search Aggregator "
+    "engine that can be used in the Omnibox";
+#endif
+
 const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
 const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "
