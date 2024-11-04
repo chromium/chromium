@@ -188,6 +188,12 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
     return;
   }
 
+  // Detach the listeners right away to make sure they're always
+  // cleaned up to avoid issues with rogue listeners, see the documentation in
+  // ShowPasswordBottomSheet() for more details. Postpone refocus for
+  // later once the bottom sheet is dismissed.
+  DetachPasswordGenerationListenersForAllFrames();
+
   web::WebFrame* frame =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance()
           ->GetWebFramesManager(web_state_)
@@ -320,7 +326,7 @@ void AutofillBottomSheetTabHelper::
   for (auto& registered_renderer_ids :
        registered_password_generation_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
-                            registered_renderer_ids.second, /*refocus=*/true);
+                            registered_renderer_ids.second, /*refocus=*/false);
   }
 }
 

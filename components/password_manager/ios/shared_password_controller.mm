@@ -956,6 +956,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   [self.delegate sharedPasswordController:self
            showGeneratedPotentialPassword:generatedPotentialPassword
                                 proactive:self.proactivePasswordGeneration
+                                    frame:weakFrame
                           decisionHandler:^(BOOL accept) {
                             [weakSelf
                                 onGeneratedPasswordAccepted:

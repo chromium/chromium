@@ -141,6 +141,10 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   // focus on the listened field), so the bottom sheet should show.
   helper_->OnFormMessageReceived(form_message);
 
+  // Attempt to trigger a second time but this should be no op this time
+  // because the listeners were detached on the first trigger.
+  helper_->OnFormMessageReceived(form_message);
+
   // Verify that the bottom sheet is triggered upon receiving the signal from
   // the proactive password generation listeners.
   EXPECT_OCMOCK_VERIFY(generation_provider_mock);

@@ -504,11 +504,13 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)sharedPasswordController:(SharedPasswordController*)controller
     showGeneratedPotentialPassword:(NSString*)generatedPotentialPassword
                          proactive:(BOOL)proactive
+                             frame:(base::WeakPtr<web::WebFrame>)frame
                    decisionHandler:(void (^)(BOOL accept))decisionHandler {
   [self.passwordSuggestionDispatcher
       showPasswordSuggestion:generatedPotentialPassword
                    proactive:proactive
                     webState:_webState
+                       frame:frame
              decisionHandler:decisionHandler];
 }
 

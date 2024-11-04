@@ -722,19 +722,20 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       /*confirmation_field=*/autofill::FieldRendererId(0)};
   [controller_ formEligibleForGenerationFound:form_generation_data];
 
-  OCMExpect([delegate_
-            sharedPasswordController:controller_
-      showGeneratedPotentialPassword:SysUTF16ToNSString(kGeneratedPassword)
-                           proactive:NO
-                     decisionHandler:[OCMArg isNotNil]]);
-  EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
-
   // Set up the frame that hosts the new password form.
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::FakeWebFrame* frame = web_frame.get();
   AddWebFrame(std::move(web_frame));
+
+  OCMExpect([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:SysUTF16ToNSString(kGeneratedPassword)
+                           proactive:NO
+                               frame:frame->AsWeakPtr()
+                     decisionHandler:[OCMArg isNotNil]]);
+  EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   // Emulate completing the extraction.
   id extract_completion_handler_arg =
@@ -815,10 +816,12 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
         decision_handler(/*accept=*/YES);
         return YES;
       }];
-  OCMExpect([delegate_ sharedPasswordController:controller_
-                 showGeneratedPotentialPassword:[OCMArg isNotNil]
-                                      proactive:NO
-                                decisionHandler:decision_handler_arg]);
+  OCMExpect([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:[OCMArg isNotNil]
+                           proactive:NO
+                               frame:frame->AsWeakPtr()
+                     decisionHandler:decision_handler_arg]);
 
   // Emulating completing filling of the generated password in the renderer.
   id fill_completion_handler_arg =
@@ -921,10 +924,12 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword_Empty) {
         decision_handler(/*accept=*/YES);
         return YES;
       }];
-  [[delegate_ expect] sharedPasswordController:controller_
-                showGeneratedPotentialPassword:[OCMArg isNotNil]
-                                     proactive:NO
-                               decisionHandler:decision_handler_arg];
+  OCMExpect([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:[OCMArg isNotNil]
+                           proactive:NO
+                               frame:frame->AsWeakPtr()
+                     decisionHandler:decision_handler_arg]);
 
   // Emulate completing the extraction before generating the password.
   id extract_completion_handler_arg =
@@ -1008,10 +1013,12 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
       didRegisterFormActivity:params
                       inFrame:frame];
 
-  OCMExpect([delegate_ sharedPasswordController:controller_
-                 showGeneratedPotentialPassword:[OCMArg isNotNil]
-                                      proactive:NO
-                                decisionHandler:[OCMArg any]]);
+  OCMExpect([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:[OCMArg isNotNil]
+                           proactive:NO
+                               frame:frame->AsWeakPtr()
+                     decisionHandler:[OCMArg any]]);
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   FormData form_data = test_helpers::MakeSimpleFormData();
@@ -1066,10 +1073,12 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration_Proactively) {
   AddWebFrame(std::move(web_frame));
 
   // Verify that the potential password is shown as the proactive variant.
-  OCMExpect([delegate_ sharedPasswordController:controller_
-                 showGeneratedPotentialPassword:[OCMArg isNotNil]
-                                      proactive:YES
-                                decisionHandler:[OCMArg any]]);
+  OCMExpect([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:[OCMArg isNotNil]
+                           proactive:YES
+                               frame:frame->AsWeakPtr()
+                     decisionHandler:[OCMArg any]]);
 
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
@@ -1130,10 +1139,12 @@ TEST_F(SharedPasswordControllerTest, LastFocusedFieldData) {
       didRegisterFormActivity:params
                       inFrame:web_frame.get()];
 
-  [[delegate_ reject] sharedPasswordController:controller_
-                showGeneratedPotentialPassword:[OCMArg isNotNil]
-                                     proactive:NO
-                               decisionHandler:[OCMArg any]];
+  OCMReject([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:[OCMArg isNotNil]
+                           proactive:NO
+                               frame:web_frame->AsWeakPtr()
+                     decisionHandler:[OCMArg any]]);
 
   [controller_ triggerPasswordGeneration];
 
@@ -1771,10 +1782,12 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
         decision_handler(/*accept=*/NO);
         return YES;
       }];
-  [[delegate_ expect] sharedPasswordController:controller_
-                showGeneratedPotentialPassword:[OCMArg isNotNil]
-                                     proactive:NO
-                               decisionHandler:decision_handler_arg];
+  OCMExpect([[delegate_ ignoringNonObjectArgs]
+            sharedPasswordController:controller_
+      showGeneratedPotentialPassword:[OCMArg isNotNil]
+                           proactive:NO
+                               frame:frame->AsWeakPtr()
+                     decisionHandler:decision_handler_arg]);
 
   OCMStub([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, GeneratePassword)
