@@ -237,6 +237,10 @@ BASE_FEATURE(kEnableLensOverlay,
 // Also update in components/omnibox/browser/autocomplete_result.cc.
 const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;
 
+BASE_FEATURE(kLensOverlayDisablePriceInsights,
+             "LensOverlayDisablePriceInsights",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayForceShowOnboardingScreen,
              "EnableLensOverlayForceShowOnboardingScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);

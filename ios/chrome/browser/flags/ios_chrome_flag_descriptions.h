@@ -551,6 +551,11 @@ extern const char kLensFiltersAblationModeEnabledDescription[];
 extern const char kLensOverlayForceShowOnboardingScreenName[];
 extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 
+// Title and description for the flag to disable price insights because of lens
+// overlay.
+extern const char kLensOverlayDisablePriceInsightsName[];
+extern const char kLensOverlayDisablePriceInsightsDescription[];
+
 // Title and description for the flag to enable the Lens translate toggle mode.
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];

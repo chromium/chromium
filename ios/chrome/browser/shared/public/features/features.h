@@ -299,6 +299,11 @@ BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 BASE_DECLARE_FEATURE(kEnableLensOverlay);
 extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 
+// Feature flag to disable price insights for a lens overlay experiment. As the
+// price insights entrypoint trumps the lens overlay entrypoint. This flag
+// should only be used for experiment.
+BASE_DECLARE_FEATURE(kLensOverlayDisablePriceInsights);
+
 // Feature to enable force showing the lens overlay onboarding screen.
 BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 

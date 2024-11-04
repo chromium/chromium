@@ -2064,7 +2064,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordSuggestionBottomSheetV2Description,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
-         password_manager::features::kIOSPasswordBottomSheetV2)}};
+         password_manager::features::kIOSPasswordBottomSheetV2)},
+    {"lens-overlay-disable-price-insights",
+     flag_descriptions::kLensOverlayDisablePriceInsightsName,
+     flag_descriptions::kLensOverlayDisablePriceInsightsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayDisablePriceInsights)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;
