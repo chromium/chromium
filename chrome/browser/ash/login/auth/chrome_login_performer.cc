@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
@@ -132,10 +131,6 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
 void ChromeLoginPerformer::LoadAndApplyEarlyPrefs(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
-  if (!base::FeatureList::IsEnabled(ash::features::kEnableEarlyPrefs)) {
-    std::move(callback).Run(std::move(context), std::nullopt);
-    return;
-  }
   base::FilePath early_prefs_dir;
   bool success = base::PathService::Get(chrome::DIR_CHROMEOS_HOMEDIR_MOUNT,
                                         &early_prefs_dir);
