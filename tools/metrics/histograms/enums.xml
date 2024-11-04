@@ -11290,6 +11290,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="40" label="DEPRECATED: Snap Groups"/>
   <int value="41" label="DEPRECATED: Birch"/>
   <int value="42" label="Borealis"/>
+  <int value="43" label="Sunfish"/>
 </enum>
 
 <enum name="FetchKeepAliveRequestMetricType">

@@ -63,6 +63,7 @@ class ASH_EXPORT ShellDelegate {
     kGameDashboard,
     kOverview,
     kWindowLayoutMenu,
+    kSunfish,
   };
 
   // The Shell owns the delegate.

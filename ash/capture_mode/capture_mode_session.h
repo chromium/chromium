@@ -427,6 +427,9 @@ class ASH_EXPORT CaptureModeSession
   // mode for an image (including Sunfish/Scanner sessions).
   bool ShouldHideFeedbackWidget(views::Widget* widget) const;
 
+  // Shows the feedback page with preset information for sunfish.
+  void ShowFeedbackPage();
+
   // BaseCaptureModeSession:
   void InitInternal() override;
   void ShutdownInternal() override;

@@ -133,6 +133,8 @@ feedback::FeedbackSource ToChromeFeedbackSource(
       return feedback::FeedbackSource::kFeedbackSourceOverview;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return feedback::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
+    case ash::ShellDelegate::FeedbackSource::kSunfish:
+      return feedback::FeedbackSource::kFeedbackSourceSunfish;
   }
   NOTREACHED() << "Unable to retrieve feedback::FeedbackSource due to "
                   "unknown source type.";

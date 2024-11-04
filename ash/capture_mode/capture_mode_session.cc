@@ -39,6 +39,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
@@ -3173,9 +3174,7 @@ void CaptureModeSession::RemoveAllActionButtons() {
 }
 
 void CaptureModeSession::UpdateFeedbackButtonWidget() {
-  // TODO: crbug.com/374831944 - The feedback button should be created if
-  // either Sunfish or Scanner are enabled.
-  if (!features::IsSunfishFeatureEnabled()) {
+  if (!features::CanStartSunfishSession()) {
     return;
   }
 
@@ -3189,8 +3188,10 @@ void CaptureModeSession::UpdateFeedbackButtonWidget() {
     feedback_button_ =
         feedback_button_widget_->SetContentsView(std::make_unique<PillButton>(
             // TODO(hewer): Add callback to open a feedback page.
-            views::Button::PressedCallback(), u"Send Feedback",
-            PillButton::Type::kDefaultWithIconLeading, &kFeedbackIcon));
+            base::BindRepeating(&CaptureModeSession::ShowFeedbackPage,
+                                base::Unretained(this)),
+            u"Send Feedback", PillButton::Type::kDefaultWithIconLeading,
+            &kFeedbackIcon));
     feedback_button_widget_->ShowInactive();
   }
 
@@ -3227,6 +3228,18 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
   auto* controller = CaptureModeController::Get();
   return controller->type() != CaptureModeType::kImage ||
          controller->source() != CaptureModeSource::kRegion;
+}
+
+void CaptureModeSession::ShowFeedbackPage() {
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      ShellDelegate::FeedbackSource::kSunfish,
+      /*description_template=*/std::string(),
+      /*category_tag=*/"sunfish");
+
+  // The session will still be active when the feedback dialog appears,
+  // preventing the user from interacting with the dialog, so we need to stop
+  // the session. `this` is destroyed here.
+  controller_->Stop();
 }
 
 void CaptureModeSession::InitInternal() {
