@@ -179,6 +179,10 @@ bool IsContentNotificationEnabled(ProfileIOS* profile) {
 
   BOOL user_signed_in = IsProfileSignedIn(profile);
 
+  if (!ios::TemplateURLServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
+
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForProfile(profile)
           ->GetDefaultSearchProvider();
@@ -205,6 +209,10 @@ bool IsContentNotificationRegistered(ProfileIOS* profile) {
   }
 
   BOOL user_signed_in = IsProfileSignedIn(profile);
+
+  if (!ios::TemplateURLServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
 
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForProfile(profile)
