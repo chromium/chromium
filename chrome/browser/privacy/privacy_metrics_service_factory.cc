@@ -40,10 +40,11 @@ PrivacyMetricsServiceFactory::PrivacyMetricsServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-KeyedService* PrivacyMetricsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrivacyMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PrivacyMetricsService(
+  return std::make_unique<PrivacyMetricsService>(
       profile->GetPrefs(),
       HostContentSettingsMapFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),

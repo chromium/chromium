@@ -143,7 +143,8 @@ AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* AccountReconcilorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   signin::IdentityManager* identity_manager =
@@ -151,14 +152,16 @@ KeyedService* AccountReconcilorFactory::BuildServiceInstanceFor(
   SigninClient* signin_client =
       ChromeSigninClientFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_CHROMEOS)
-  AccountReconcilor* reconcilor = new AccountReconcilor(
-      identity_manager, signin_client,
-      ::GetAccountManagerFacade(profile->GetPath().value()),
-      CreateAccountReconcilorDelegate(profile));
+  std::unique_ptr<AccountReconcilor> reconcilor =
+      std::make_unique<AccountReconcilor>(
+          identity_manager, signin_client,
+          ::GetAccountManagerFacade(profile->GetPath().value()),
+          CreateAccountReconcilorDelegate(profile));
 #else
-  AccountReconcilor* reconcilor =
-      new AccountReconcilor(identity_manager, signin_client,
-                            CreateAccountReconcilorDelegate(profile));
+  std::unique_ptr<AccountReconcilor> reconcilor =
+      std::make_unique<AccountReconcilor>(
+          identity_manager, signin_client,
+          CreateAccountReconcilorDelegate(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   reconcilor->Initialize(true /* start_reconcile_if_tokens_available */);
   return reconcilor;

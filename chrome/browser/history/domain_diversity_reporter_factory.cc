@@ -67,9 +67,10 @@ DomainDiversityReporterFactory::DomainDiversityReporterFactory()
 
 DomainDiversityReporterFactory::~DomainDiversityReporterFactory() = default;
 
-KeyedService* DomainDiversityReporterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DomainDiversityReporterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return BuildInstanceFor(static_cast<Profile*>(profile)).release();
+  return BuildInstanceFor(static_cast<Profile*>(profile));
 }
 
 void DomainDiversityReporterFactory::RegisterProfilePrefs(

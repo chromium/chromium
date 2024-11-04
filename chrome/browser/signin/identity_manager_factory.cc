@@ -131,7 +131,8 @@ void IdentityManagerFactory::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -202,5 +203,5 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   for (Observer& observer : observer_list_)
     observer.IdentityManagerCreated(identity_manager.get());
 
-  return identity_manager.release();
+  return identity_manager;
 }

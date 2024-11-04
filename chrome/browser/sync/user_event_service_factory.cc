@@ -55,10 +55,11 @@ UserEventServiceFactory::UserEventServiceFactory()
 
 UserEventServiceFactory::~UserEventServiceFactory() = default;
 
-KeyedService* UserEventServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UserEventServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord()) {
-    return new syncer::NoOpUserEventService();
+    return std::make_unique<syncer::NoOpUserEventService>();
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
@@ -73,7 +74,7 @@ KeyedService* UserEventServiceFactory::BuildServiceInstanceFor(
   auto bridge = std::make_unique<syncer::UserEventSyncBridge>(
       std::move(store_factory), std::move(change_processor),
       SessionSyncServiceFactory::GetForProfile(profile)->GetGlobalIdMapper());
-  return new syncer::UserEventServiceImpl(std::move(bridge));
+  return std::make_unique<syncer::UserEventServiceImpl>(std::move(bridge));
 }
 
 }  // namespace browser_sync
