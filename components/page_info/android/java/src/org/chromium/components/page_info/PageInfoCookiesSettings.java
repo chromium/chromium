@@ -338,7 +338,9 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 days == 0
                         ? getString(R.string.page_info_cookies_blocking_restart_today_title)
                         : getQuantityString(
-                                R.plurals.page_info_cookies_blocking_restart_title, days));
+                                R.plurals
+                                        .page_info_cookies_blocking_restart_tracking_protection_title,
+                                days));
     }
 
     private boolean willCreatePermanentException() {
