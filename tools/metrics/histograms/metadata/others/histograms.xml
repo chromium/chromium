@@ -1138,6 +1138,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.Auction.PostSignalsReceivedResumeGenerateBidTime"
+    units="ms" expires_after="2025-03-02">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time between downloading trusted bidding signals on the bidder
+    worklet and receiving the mojo message from the browser process to resume a
+    generateBid task. This time includes prioritization of interest groups and
+    sending mojo messages between the worklet and browser process.
+    Prioritization of interest groups includes waiting for all trusted bidding
+    signals to have returned for all other interest groups of this buyer.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.ProcessLaunchTime" units="ms"
     expires_after="2025-03-02">
   <owner>pauljensen@chromium.org</owner>

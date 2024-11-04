@@ -272,6 +272,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::TimeDelta wait_direct_from_seller_signals;
     base::TimeDelta wait_promises;
 
+    // Time the BidderWorklet finished waiting for trusted bidding signals,
+    // used to compute UMA for the time it takes to resume generating bids
+    // after downloading signals.
+    base::TimeTicks trusted_bidding_signals_download_complete_time;
+
     // Time where the BidderWorklet finished waiting for GenerateBid
     // dependencies, used to compute start and end times for latency phase UKMs.
     base::TimeTicks generate_bid_start_time;

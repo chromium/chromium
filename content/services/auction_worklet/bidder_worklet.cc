@@ -2167,6 +2167,8 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
+  task->trusted_bidding_signals_download_complete_time = base::TimeTicks::Now();
+
   const TrustedSignals::Result::PerGroupData* per_group_data = nullptr;
   if (result) {
     per_group_data =
@@ -2227,6 +2229,10 @@ void BidderWorklet::SignalsReceivedCallback(
   task->signals_received_callback_invoked = true;
   task->wait_trusted_signals =
       base::TimeTicks::Now() - task->trace_wait_deps_start;
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.Auction.PostSignalsReceivedResumeGenerateBidTime",
+      base::TimeTicks::Now() -
+          task->trusted_bidding_signals_download_complete_time);
   GenerateBidIfReady(task);
 }
 
