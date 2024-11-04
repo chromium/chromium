@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "media/base/media_export.h"
 
@@ -85,7 +86,7 @@ class MEDIA_EXPORT VmoBuffer {
 
   zx::vmo vmo_;
 
-  uint8_t* base_address_ = nullptr;
+  raw_ptr<uint8_t, AllowPtrArithmetic> base_address_ = nullptr;
 
   bool writable_ = false;
   size_t offset_ = 0;

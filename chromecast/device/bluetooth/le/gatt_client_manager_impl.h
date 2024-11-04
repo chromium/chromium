@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -137,7 +138,7 @@ class GattClientManagerImpl
 
   void FinalizeOnIoThread();
 
-  bluetooth_v2_shlib::GattClient* const gatt_client_;
+  const raw_ptr<bluetooth_v2_shlib::GattClient> gatt_client_;
 
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
 

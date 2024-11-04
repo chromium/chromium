@@ -103,7 +103,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   // Specifies whether system virtual keyboard support is enabled.
   bool enable_virtual_keyboard = false;
 
-  ScenicWindowDelegate* scenic_window_delegate = nullptr;
+  raw_ptr<ScenicWindowDelegate> scenic_window_delegate = nullptr;
 #endif
 
   // See Widget::InitParams for details.

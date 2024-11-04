@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -128,8 +129,8 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
   std::unique_ptr<::metrics::ClientInfo> LoadClientInfo();
   void StoreClientInfo(const ::metrics::ClientInfo& client_info);
 
-  CastMetricsServiceDelegate* const delegate_;
-  PrefService* const pref_service_;
+  const raw_ptr<CastMetricsServiceDelegate> delegate_;
+  const raw_ptr<PrefService> pref_service_;
   std::string client_id_;
   std::string force_client_id_;
   bool client_info_loaded_;

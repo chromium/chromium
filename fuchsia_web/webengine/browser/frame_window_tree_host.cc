@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/browser/frame_window_tree_host.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia_web/webengine/features.h"
@@ -62,7 +63,7 @@ class FrameWindowTreeHost::WindowParentingClientImpl
   }
 
  private:
-  aura::Window* root_window_;
+  raw_ptr<aura::Window> root_window_;
 };
 
 FrameWindowTreeHost::FrameWindowTreeHost(

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -40,7 +42,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
       }
 
       zx_status_t status = zx::vmar::root_self()->unmap(
-          reinterpret_cast<uintptr_t>(mapping_), mapping_size_);
+          reinterpret_cast<uintptr_t>(mapping_.get()), mapping_size_);
       ZX_DCHECK(status == ZX_OK, status) << "zx_vmar_unmap";
     }
   }
@@ -207,7 +209,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
 
   SEQUENCE_CHECKER(sequence_checker_);
   bool logically_mapped_ = false;
-  uint8_t* mapping_ = nullptr;
+  raw_ptr<uint8_t, AllowPtrArithmetic> mapping_ = nullptr;
   size_t mapping_size_ = 0;
 };
 

@@ -11,6 +11,7 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -151,7 +152,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
   std::optional<base::TestComponentContextForProcess> test_context_;
 
   FrameForTest frame_;
-  FrameImpl* frame_impl_;
+  raw_ptr<FrameImpl> frame_impl_;
   FakeSemanticsManager semantics_manager_;
 
   // Binding to the fake semantics manager.

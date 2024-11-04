@@ -20,6 +20,7 @@
 
 #include "base/base_export.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -52,7 +53,7 @@ class BASE_EXPORT ScopedServicePublisher {
   ~ScopedServicePublisher() { pseudo_dir_->RemoveEntry(name_); }
 
  private:
-  vfs::PseudoDir* const pseudo_dir_ = nullptr;
+  const raw_ptr<vfs::PseudoDir> pseudo_dir_ = nullptr;
   std::string name_;
 };
 
@@ -95,7 +96,7 @@ class BASE_EXPORT ScopedNaturalServicePublisher {
   ~ScopedNaturalServicePublisher() { pseudo_dir_->RemoveEntry(name_); }
 
  private:
-  vfs::PseudoDir* const pseudo_dir_ = nullptr;
+  const raw_ptr<vfs::PseudoDir> pseudo_dir_ = nullptr;
   std::string name_;
 };
 

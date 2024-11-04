@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
 
@@ -71,7 +72,7 @@ class MEDIA_EXPORT SysmemCollectionClient {
           wait_result);
   void OnError(zx_status_t status);
 
-  fuchsia::sysmem2::Allocator* const allocator_;
+  const raw_ptr<fuchsia::sysmem2::Allocator> allocator_;
   fuchsia::sysmem2::BufferCollectionTokenPtr collection_token_;
   fuchsia::sysmem2::BufferCollectionPtr collection_;
 

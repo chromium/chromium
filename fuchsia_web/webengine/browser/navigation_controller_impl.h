@@ -8,6 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -83,7 +84,7 @@ class NavigationControllerImpl final
                         const gfx::Image& image) override;
 
   const raw_ptr<void> parent_for_trace_flow_;
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   // NavigationController client bindings.
   fidl::BindingSet<fuchsia::web::NavigationController> controller_bindings_;
@@ -97,7 +98,7 @@ class NavigationControllerImpl final
   // True once the main document finishes loading and there are no outstanding
   // navigations.
   bool is_main_document_loaded_ = false;
-  content::NavigationHandle* active_navigation_ = nullptr;
+  raw_ptr<content::NavigationHandle> active_navigation_ = nullptr;
 
   // True if navigation failed due to an error during page load.
   bool uncommitted_load_error_ = false;

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 class GURL;
 
@@ -108,7 +109,7 @@ class TestNavigationListener final
   fuchsia::web::NavigationState last_changes_;
 
   // Set for the duration of a call to RunUntilNavigationStateMatches().
-  const fuchsia::web::NavigationState* expected_state_ = nullptr;
+  raw_ptr<const fuchsia::web::NavigationState> expected_state_ = nullptr;
 
   BeforeAckCallback before_ack_;
 };

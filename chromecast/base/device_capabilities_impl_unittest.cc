@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -128,7 +129,7 @@ class FakeCapabilitiesObserver : public DeviceCapabilities::Observer {
   }
 
  private:
-  DeviceCapabilities* const capabilities_;
+  const raw_ptr<DeviceCapabilities> capabilities_;
   bool removed_as_observer;
 };
 

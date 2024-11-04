@@ -53,7 +53,7 @@ class SessionWrapper final : public mojom::Session {
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
   void GetSizeInTokensDeprecated(const std::string& text,
-                       GetSizeInTokensCallback callback) override;
+                                 GetSizeInTokensCallback callback) override;
   void Score(const std::string& text, ScoreCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Session> session) override;
 
@@ -310,8 +310,9 @@ void SessionWrapper::GetSizeInTokens(mojom::InputPtr input,
                                weak_ptr_factory_.GetWeakPtr());
 }
 
-void SessionWrapper::GetSizeInTokensDeprecated(const std::string& text,
-                                     GetSizeInTokensCallback callback) {
+void SessionWrapper::GetSizeInTokensDeprecated(
+    const std::string& text,
+    GetSizeInTokensCallback callback) {
   auto input = mojom::Input::New();
   input->pieces.push_back(text);
   GetSizeInTokens(std::move(input), std::move(callback));

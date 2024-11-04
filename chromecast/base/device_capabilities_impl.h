@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -68,7 +69,7 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
     }
 
    private:
-    Validator* const validator_;
+    const raw_ptr<Validator> validator_;
     // TaskRunner of thread that validator_ was registered on
     const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -332,7 +334,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   size_t num_output_frames_ = 0;
 
   DecoderStatus last_decode_status_;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   // Number of frames that OnVideoFrame() should keep in |output_frames_|.
   size_t frames_to_keep_ = 2;

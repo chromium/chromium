@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/ozone/public/overlay_plane.h"
@@ -59,8 +60,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
     std::vector<ui::OverlayPlane> overlays;
   };
 
-  ui::PlatformWindowSurface* const window_surface_;
-  SkiaOutputSurfaceDependency* const dependency_;
+  const raw_ptr<ui::PlatformWindowSurface> window_surface_;
+  const raw_ptr<SkiaOutputSurfaceDependency> dependency_;
 
   // The next frame to be submitted by SwapBuffers().
   std::optional<PendingFrame> next_frame_;

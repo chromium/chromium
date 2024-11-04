@@ -7,6 +7,7 @@
 
 #include <fuchsia/media/cpp/fidl.h>
 
+#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -43,7 +44,7 @@ class MEDIA_EXPORT AudioInputStreamFuchsia : public AudioInputStream {
   // Reports an error to |callback_| and disconnects |capturer_|.
   void ReportError();
 
-  AudioManagerFuchsia* const manager_;
+  const raw_ptr<AudioManagerFuchsia> manager_;
   AudioParameters parameters_;
   std::string device_id_;
 
@@ -58,7 +59,7 @@ class MEDIA_EXPORT AudioInputStreamFuchsia : public AudioInputStream {
 
   std::unique_ptr<AudioBus> audio_bus_;
 
-  AudioInputCallback* callback_ = nullptr;
+  raw_ptr<AudioInputCallback> callback_ = nullptr;
 };
 
 }  // namespace media

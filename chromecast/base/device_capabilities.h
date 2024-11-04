@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 
@@ -102,7 +103,7 @@ class DeviceCapabilities {
                                   base::Value new_value) const;
 
    private:
-    DeviceCapabilities* const capabilities_;
+    const raw_ptr<DeviceCapabilities> capabilities_;
   };
 
   // Class used to store/own capabilities-related data. It is immutable and

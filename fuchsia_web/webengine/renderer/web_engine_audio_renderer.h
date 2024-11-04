@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -187,12 +188,12 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
 
   double playback_rate_ = 1.0;
 
-  media::CdmContext* cdm_context_ = nullptr;
-  media::DemuxerStream* demuxer_stream_ = nullptr;
+  raw_ptr<media::CdmContext> cdm_context_ = nullptr;
+  raw_ptr<media::DemuxerStream> demuxer_stream_ = nullptr;
   bool is_demuxer_read_pending_ = false;
   bool drop_next_demuxer_read_result_ = false;
 
-  media::RendererClient* client_ = nullptr;
+  raw_ptr<media::RendererClient> client_ = nullptr;
 
   // Initialize() completion callback.
   media::PipelineStatusCallback init_cb_;

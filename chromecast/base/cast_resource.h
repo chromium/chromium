@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_BASE_CAST_RESOURCE_H_
 #define CHROMECAST_BASE_CAST_RESOURCE_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace chromecast {
 
 // A CastResource is a user of 1 or more Resources (primary screen, audio,
@@ -95,7 +97,7 @@ class CastResource {
   void NotifyResourceReleased(Resource remain);
 
  private:
-  Client* client_;
+  raw_ptr<Client> client_;
 };
 
 }  // namespace chromecast

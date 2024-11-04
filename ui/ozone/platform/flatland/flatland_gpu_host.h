@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -58,7 +59,7 @@ class FlatlandGpuHost : public mojom::ScenicGpuHost,
   void UpdateReceiver(uint32_t service_launch_count,
                       mojo::PendingReceiver<mojom::ScenicGpuHost> receiver);
 
-  FlatlandWindowManager* const flatland_window_manager_;
+  const raw_ptr<FlatlandWindowManager> flatland_window_manager_;
   mojo::Receiver<mojom::ScenicGpuHost> host_receiver_{this};
   mojo::Receiver<mojom::ScenicGpuHost> gpu_receiver_{this};
 

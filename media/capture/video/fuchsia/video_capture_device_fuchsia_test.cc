@@ -5,6 +5,7 @@
 #include "media/capture/video/fuchsia/video_capture_device_fuchsia.h"
 
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -55,7 +56,7 @@ class HeapBufferHandle : public VideoCaptureBufferHandle {
 
  private:
   const size_t size_;
-  uint8_t* const data_;
+  const raw_ptr<uint8_t> data_;
 };
 
 // VideoCaptureDevice::Client::Buffer::HandleProvider implementation that
@@ -274,7 +275,7 @@ class VideoCaptureDeviceFuchsiaTest : public testing::Test {
 
   VideoCaptureDeviceFactoryFuchsia device_factory_;
   std::unique_ptr<VideoCaptureDevice> device_;
-  TestVideoCaptureClient* client_ = nullptr;
+  raw_ptr<TestVideoCaptureClient> client_ = nullptr;
 };
 
 TEST_F(VideoCaptureDeviceFuchsiaTest, Initialize) {

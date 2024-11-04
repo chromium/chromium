@@ -10,6 +10,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"
@@ -265,7 +266,7 @@ class FuchsiaCdm::CdmSession {
                  : std::nullopt);
   }
 
-  const SessionCallbacks* const session_callbacks_;
+  const raw_ptr<const SessionCallbacks> session_callbacks_;
   base::RepeatingClosure on_new_key_;
 
   fuchsia::media::drm::LicenseSessionPtr session_;

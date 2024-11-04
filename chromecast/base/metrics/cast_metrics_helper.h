@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -168,7 +169,7 @@ class CastMetricsHelper {
   base::TimeTicks Now();
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Start times for loading the next apps.
   base::flat_map<std::string /* app_id */, base::TimeTicks>
@@ -182,7 +183,7 @@ class CastMetricsHelper {
   std::string session_id_;
   std::string sdk_version_;
 
-  MetricsSink* metrics_sink_;
+  raw_ptr<MetricsSink> metrics_sink_;
 
   bool logged_first_audio_;
 

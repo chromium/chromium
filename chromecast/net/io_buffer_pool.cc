@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 
 namespace chromecast {
@@ -45,12 +46,12 @@ class IOBufferPool::Internal {
   Internal& operator=(const Internal&) = delete;
 
   size_t num_allocated() const {
-    base::AutoLockMaybe lock(lock_ptr_);
+    base::AutoLockMaybe lock(lock_ptr_.get());
     return num_allocated_;
   }
 
   size_t num_free() const {
-    base::AutoLockMaybe lock(lock_ptr_);
+    base::AutoLockMaybe lock(lock_ptr_.get());
     return num_free_;
   }
 
@@ -78,9 +79,9 @@ class IOBufferPool::Internal {
   const size_t max_buffers_;
 
   mutable base::Lock lock_;
-  base::Lock* const lock_ptr_;
+  const raw_ptr<base::Lock> lock_ptr_;
 
-  Storage* free_buffers_;
+  raw_ptr<Storage> free_buffers_;
   size_t num_allocated_;
   size_t num_free_;
 
@@ -146,7 +147,7 @@ IOBufferPool::Internal::Internal(size_t data_area_size,
 
 IOBufferPool::Internal::~Internal() {
   while (free_buffers_) {
-    char* data = reinterpret_cast<char*>(free_buffers_);
+    char* data = reinterpret_cast<char*>(free_buffers_.get());
     free_buffers_ = free_buffers_->next;
     base::AlignedFree(data);
   }
@@ -173,7 +174,7 @@ char* IOBufferPool::Internal::DataAreaFromStorageUnion(
 void IOBufferPool::Internal::Preallocate(size_t num_buffers) {
   // We assume that this is uncontended in normal usage, so just lock for the
   // entire method.
-  base::AutoLockMaybe lock(lock_ptr_);
+  base::AutoLockMaybe lock(lock_ptr_.get());
   if (num_buffers > max_buffers_) {
     num_buffers = max_buffers_;
   }
@@ -196,7 +197,7 @@ void IOBufferPool::Internal::Preallocate(size_t num_buffers) {
 void IOBufferPool::Internal::OwnerDestroyed() {
   bool deletable;
   {
-    base::AutoLockMaybe lock(lock_ptr_);
+    base::AutoLockMaybe lock(lock_ptr_.get());
     --refs_;  // Remove the owner's ref.
     deletable = (refs_ == 0);
   }
@@ -210,7 +211,7 @@ scoped_refptr<net::IOBuffer> IOBufferPool::Internal::GetBuffer() {
   Storage* ptr = nullptr;
 
   {
-    base::AutoLockMaybe lock(lock_ptr_);
+    base::AutoLockMaybe lock(lock_ptr_.get());
     if (free_buffers_) {
       ptr = free_buffers_;
       free_buffers_ = free_buffers_->next;
@@ -237,7 +238,7 @@ void IOBufferPool::Internal::Reclaim(Wrapper* wrapper) {
   Storage* storage = reinterpret_cast<Storage*>(wrapper);
   bool deletable;
   {
-    base::AutoLockMaybe lock(lock_ptr_);
+    base::AutoLockMaybe lock(lock_ptr_.get());
     storage->next = free_buffers_;
     free_buffers_ = storage;
     ++num_free_;
