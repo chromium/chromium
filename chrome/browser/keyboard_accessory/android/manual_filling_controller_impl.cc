@@ -353,8 +353,9 @@ void ManualFillingControllerImpl::UpdateVisibility() {
         continue;  // Most-likely, the controller was cleaned up already.
       }
       std::optional<AccessorySheetData> sheet = controller->GetSheetData();
-      if (sheet.has_value())
+      if (sheet.has_value()) {
         view_->OnItemsAvailable(std::move(sheet.value()));
+      }
     }
     if (plus_profiles_cache_) {
       plus_profiles_cache_->FetchAffiliatedPlusProfiles();
@@ -393,7 +394,9 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
   bool show_filling_source = sheet.has_value() && is_source_available;
   // TODO(crbug.com/40165275): Remove once all sheets pull this information
   // instead of waiting to get it pushed.
-  view_->OnItemsAvailable(std::move(sheet.value()));
+  if (sheet.has_value()) {
+    view_->OnItemsAvailable(std::move(sheet.value()));
+  }
   UpdateSourceAvailability(source, show_filling_source);
 }
 
