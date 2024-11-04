@@ -733,17 +733,15 @@ bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     FlushReason reason) {
-  if (!IsPaintable())
+  CanvasHibernationHandler* hibernation_handler =
+      canvas()->GetHibernationHandler();
+  if (!hibernation_handler) {
     return nullptr;
+  }
 
-  Canvas2DLayerBridge* bridge = canvas()->GetCanvas2DLayerBridge();
-
-  CanvasHibernationHandler& hibernation_handler =
-      bridge->GetHibernationHandler();
-
-  if (hibernation_handler.IsHibernating()) {
+  if (hibernation_handler->IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
-        hibernation_handler.GetImage());
+        hibernation_handler->GetImage());
   }
 
   if (!Host()->IsResourceValid()) {
