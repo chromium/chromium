@@ -8,7 +8,10 @@
 
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace content {
 
@@ -37,7 +40,7 @@ storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 TestStoragePartition::GetURLLoaderFactoryForBrowserProcess() {
-  return nullptr;
+  return test_url_loader_factory_->GetSafeWeakWrapper();
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>

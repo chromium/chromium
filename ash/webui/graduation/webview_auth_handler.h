@@ -10,11 +10,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "net/base/backoff_entry.h"
 
+namespace base {
+class OneShotTimer;
+}  // namespace base
 namespace content {
 class BrowserContext;
 class StoragePartition;
@@ -76,6 +81,8 @@ class WebviewAuthHandler
   // Handles the webview authentication result.
   void OnAuthFinished(OnWebviewAuth callback,
                       signin::SetAccountsInCookieResult cookie_result);
+  void CompleteAuth(OnWebviewAuth callback, bool is_success);
+  void RetryAuth(OnWebviewAuth callback);
 
   // Returns storage partition for this authentication request.
   content::StoragePartition* GetStoragePartition();
@@ -84,6 +91,12 @@ class WebviewAuthHandler
   content::StoragePartitionConfig storage_partition_config_;
 
   const raw_ptr<content::BrowserContext> context_;
+
+  // Timer that measures time to the next auth fetch retry.
+  // Not initialized if retry is not scheduled.
+  base::OneShotTimer retry_auth_timer_;
+  // Backoff for auth retry attempts.
+  net::BackoffEntry retry_auth_backoff_;
 
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>
       cookie_loader_;

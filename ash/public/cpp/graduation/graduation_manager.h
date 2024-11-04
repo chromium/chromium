@@ -17,6 +17,8 @@ class TickClock;
 
 namespace content {
 class BrowserContext;
+class StoragePartition;
+class StoragePartitionConfig;
 }  // namespace content
 
 namespace signin {
@@ -52,6 +54,12 @@ class ASH_PUBLIC_EXPORT GraduationManager {
   // Needed to avoid ash/chrome dependency.
   virtual signin::IdentityManager* GetIdentityManager(
       content::BrowserContext* context) = 0;
+
+  //  Returns storage partition for a given `context` and
+  //  `storage_partition_config`.
+  virtual content::StoragePartition* GetStoragePartition(
+      content::BrowserContext* context,
+      const content::StoragePartitionConfig& storage_partition_config) = 0;
 
   // Adds the specified observer to be notified of updates to the Graduation
   // app.

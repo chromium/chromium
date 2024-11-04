@@ -8,4 +8,9 @@ specific_include_rules = {
     "+components/signin/public/identity_manager",
     "+google_apis/gaia",
   ],
+   "webview_auth_handler_unittest.cc": [
+    "+components/signin/public/base",
+    "+components/signin/public/identity_manager",
+    "+google_apis/gaia",
+  ],
 }

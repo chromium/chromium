@@ -30,6 +30,8 @@
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace ash::graduation {
 
@@ -68,6 +70,14 @@ signin::IdentityManager* GraduationManagerImpl::GetIdentityManager(
           Profile::FromBrowserContext(context));
   CHECK(identity_manager);
   return identity_manager;
+}
+
+content::StoragePartition* GraduationManagerImpl::GetStoragePartition(
+    content::BrowserContext* context,
+    const content::StoragePartitionConfig& storage_partition_config) {
+  CHECK(context) << "Graduation requested identity manager before user session "
+                    "start.";
+  return context->GetStoragePartition(storage_partition_config);
 }
 
 void GraduationManagerImpl::AddObserver(GraduationManagerObserver* observer) {

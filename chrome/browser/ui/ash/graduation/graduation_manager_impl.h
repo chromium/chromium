@@ -43,6 +43,9 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
 
   signin::IdentityManager* GetIdentityManager(
       content::BrowserContext* context) override;
+  content::StoragePartition* GetStoragePartition(
+      content::BrowserContext* context,
+      const content::StoragePartitionConfig& storage_partition_config) override;
 
   void AddObserver(GraduationManagerObserver* observer) override;
   void RemoveObserver(GraduationManagerObserver* observer) override;

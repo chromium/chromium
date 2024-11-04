@@ -12,8 +12,10 @@
 #include "ash/public/cpp/graduation/graduation_manager.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/timer.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -23,11 +25,23 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "net/base/backoff_entry.h"
 #include "url/gurl.h"
 
 namespace ash::graduation {
 
 namespace {
+
+constexpr int kMaxRetries = 3;
+constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
+    0,          // Number of initial errors to ignore.
+    500,        // Initial delay in ms.
+    2.0,        // Waiting time multiplier.
+    0.1,        // Fuzzing percentage.
+    60 * 1000,  // Maximum delay in ms.
+    -1,         // Never discard the entry.
+    true,       // Use initial delay.
+};
 
 WebviewAuthHandler::AuthResult GetAuthResultHistogramBucket(
     signin::SetAccountsInCookieResult result) {
@@ -40,11 +54,12 @@ WebviewAuthHandler::AuthResult GetAuthResultHistogramBucket(
       return WebviewAuthHandler::AuthResult::kPersistentFailure;
   }
 }
+
 }  // namespace
 
 WebviewAuthHandler::WebviewAuthHandler(content::BrowserContext* context,
                                        const std::string& webview_host_name)
-    : context_(context) {
+    : context_(context), retry_auth_backoff_(&kRetryBackoffPolicy) {
   CHECK(context_);
   storage_partition_config_ = content::StoragePartitionConfig::Create(
       context_, webview_host_name,
@@ -68,9 +83,12 @@ WebviewAuthHandler::GetCookieManagerForPartition() {
 }
 
 void WebviewAuthHandler::AuthenticateWebview(OnWebviewAuth callback) {
+  VLOG(1) << "graduation: webview auth started";
+
   if (cookie_loader_) {
     cookie_loader_.reset();
   }
+  retry_auth_timer_.Stop();
 
   signin::IdentityManager* identity_manager =
       GraduationManager::Get()->GetIdentityManager(context_);
@@ -100,24 +118,45 @@ void WebviewAuthHandler::OnAuthFinished(
   switch (cookie_result) {
     case signin::SetAccountsInCookieResult::kSuccess:
       VLOG(1) << "graduation: webview auth successful";
+      CompleteAuth(std::move(callback), /*is_success=*/true);
       break;
     case signin::SetAccountsInCookieResult::kTransientError:
+      retry_auth_backoff_.InformOfRequest(/*succeeded=*/false);
       LOG(WARNING) << "graduation: transient failure in webview auth";
-      // TODO(b.corp.google.com/374824692): Retry webview auth on transient
-      // failure.
+      if (retry_auth_backoff_.failure_count() < kMaxRetries) {
+        RetryAuth(std::move(callback));
+      } else {
+        LOG(ERROR) << "graduation: max retries reached on transient failure";
+        CompleteAuth(std::move(callback), /*is_success=*/false);
+      }
       break;
     case signin::SetAccountsInCookieResult::kPersistentError:
       LOG(ERROR) << "graduation: persistent failure in webview auth";
+      CompleteAuth(std::move(callback), /*is_success=*/false);
       break;
   }
+}
+
+void WebviewAuthHandler::CompleteAuth(OnWebviewAuth callback, bool is_success) {
   cookie_loader_.reset();
-  std::move(callback).Run(cookie_result ==
-                          signin::SetAccountsInCookieResult::kSuccess);
+  retry_auth_backoff_.Reset();
+  std::move(callback).Run(is_success);
+}
+
+void WebviewAuthHandler::RetryAuth(OnWebviewAuth callback) {
+  base::TimeDelta backoff_delay = retry_auth_backoff_.GetTimeUntilRelease();
+  VLOG(1) << "graduation: webview auth retry in: "
+          << backoff_delay.InMilliseconds() << " ms";
+  retry_auth_timer_.Start(
+      FROM_HERE, backoff_delay,
+      base::BindOnce(&WebviewAuthHandler::AuthenticateWebview,
+                     base::Unretained(this), std::move(callback)));
 }
 
 content::StoragePartition* WebviewAuthHandler::GetStoragePartition() {
   content::StoragePartition* partition =
-      context_->GetStoragePartition(storage_partition_config_);
+      GraduationManager::Get()->GetStoragePartition(context_,
+                                                    storage_partition_config_);
   CHECK(partition) << "graduation: invalid storage partition";
   return partition;
 }
