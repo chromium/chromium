@@ -9,8 +9,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -20,6 +22,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/url_constants.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -41,6 +44,13 @@ history::ClusterVisit CreateVisit(
   visit.score = score;
   visit.normalized_url = GURL{url};
   return visit;
+}
+
+bool IsOpenInIncognitoEnabled(ui::MenuModel* menu) {
+  size_t index = 0;
+  return ui::MenuModel::GetModelAndIndexForCommandId(
+             IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, &menu, &index) &&
+         menu->IsEnabledAt(index);
 }
 
 }  // namespace
@@ -296,6 +306,42 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   // Verify the history entry is no longer there.
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
   EXPECT_EQ(0u, enumerator.urls().size());
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       OpenInIncognitoRespectsIncognitoModePolicy) {
+  // Disable incognito mode, the menu option should not appear.
+  const GURL test_url("https://www.foo.com/");
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kDisabled);
+  auto menu_model =
+      handler_->CreateHistoryClustersSidePanelContextMenuForTesting(browser(),
+                                                                    test_url);
+  EXPECT_FALSE(IsOpenInIncognitoEnabled(menu_model.get()));
+
+  // Enable incognito mode, the menu option should appear as expected.
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kEnabled);
+  menu_model = handler_->CreateHistoryClustersSidePanelContextMenuForTesting(
+      browser(), test_url);
+  EXPECT_TRUE(IsOpenInIncognitoEnabled(menu_model.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       OpenInIncognitoRespectsDisabledForIncognitoBrowsers) {
+  // Assert the option is enabled for regular browsers.
+  const GURL test_url("https://www.foo.com/");
+  auto menu_model =
+      handler_->CreateHistoryClustersSidePanelContextMenuForTesting(browser(),
+                                                                    test_url);
+  EXPECT_TRUE(IsOpenInIncognitoEnabled(menu_model.get()));
+
+  // Assert the option is disabled for incognito browsers.
+  menu_model = handler_->CreateHistoryClustersSidePanelContextMenuForTesting(
+      CreateIncognitoBrowser(), test_url);
+  EXPECT_FALSE(IsOpenInIncognitoEnabled(menu_model.get()));
 }
 
 }  // namespace history_clusters

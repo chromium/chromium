@@ -99,6 +99,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -1585,7 +1586,7 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
     base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
                                   OpenLinkAs::kOpenLinkAsProfileDisplayed);
   } else if (id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD &&
-             IsOpenLinkOTREnabled()) {
+             IsOpenLinkOTREnabled(GetProfile(), params_.link_url)) {
     base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
                                   OpenLinkAs::kOpenLinkAsIncognitoDisplayed);
   }
@@ -3027,7 +3028,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !!(params_.edit_flags & ContextMenuDataEditFlags::kCanSelectAll);
 
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
-      return navigation_allowed && IsOpenLinkOTREnabled();
+      return navigation_allowed &&
+             IsOpenLinkOTREnabled(GetProfile(), params_.link_url);
 
     case IDC_PRINT:
       return IsPrintPreviewEnabled();
@@ -4073,20 +4075,6 @@ bool RenderViewContextMenu::IsRouteMediaEnabled() const {
   const web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
   return !manager || !manager->IsDialogActive();
-}
-
-bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
-  if (browser_context_->IsOffTheRecord() || !params_.link_url.is_valid()) {
-    return false;
-  }
-
-  if (!IsURLAllowedInIncognito(params_.link_url)) {
-    return false;
-  }
-
-  policy::IncognitoModeAvailability incognito_avail =
-      IncognitoModePrefs::GetAvailability(GetPrefs(browser_context_));
-  return incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {

@@ -35,6 +35,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class SimpleMenuModel;
+}  // namespace ui
+
 namespace history_clusters {
 
 class QueryClustersState;
@@ -135,6 +139,11 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void OnRemoveVisitsFailed() override;
   void HistoryDeleted() override;
   Profile* GetProfile() override;
+
+  std::unique_ptr<ui::SimpleMenuModel>
+  CreateHistoryClustersSidePanelContextMenuForTesting(
+      ContextInterface interface,
+      GURL url);
 
  private:
   // Common initialization code shared by constructors.
