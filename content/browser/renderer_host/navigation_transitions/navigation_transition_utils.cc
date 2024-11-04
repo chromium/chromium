@@ -274,11 +274,6 @@ bool NavigationTransitionUtils::
   // `NavigationRequest::GetRenderFrameHost()`, so for now we should only get
   // here after the `RenderFrameHost` has been selected for a successful
   // navigation.
-  //
-  // TODO(crbug.com/40278956): This CHECK won't hold for early-swap. For
-  // early-swap, we don't have the network response when we swap the RFHs, thus
-  // no RFH on the navigation request. See the comment above
-  // `is_same_rfh_or_early_commit`.
   CHECK(navigation_request.HasRenderFrameHost());
 
   NavigationControllerImpl& navigation_controller =

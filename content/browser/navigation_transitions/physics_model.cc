@@ -481,7 +481,6 @@ float PhysicsModel::CalculateVelocity() {
   const float sign = velocity >= 0.f ? 1.f : -1.f;
   velocity = std::abs(velocity);
 
-  // TODO(liuwilliam): Shall we let the UX team to fine-tune these?
   velocity = std::max(velocity, 1.0f);
   velocity = std::min(velocity, 2.5f);
   velocity = std::max(velocity, 0.3f);

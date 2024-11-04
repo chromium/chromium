@@ -381,9 +381,6 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
 
-  // TODO(crbug.com/40283503): If there is the old visual state hovering
-  // above the RWHV layer, we need to remove that as well.
-
   if (screenshot_layer_) {
     screenshot_scrim_->RemoveFromParent();
     screenshot_scrim_.reset();
@@ -855,8 +852,6 @@ void BackForwardTransitionAnimator::DidFinishNavigation(
     old_surface_clone_->RemoveFromParent();
     old_surface_clone_.reset();
   }
-  // TODO(crbug.com/41482488): We might need a better UX than
-  // just display the cancel animation.
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }
 
@@ -1797,10 +1792,6 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
       ->SetTransform(live_page_transform);
 
   if (old_surface_clone_) {
-    // TODO(https://crbug.com/371043197): Remove once it's fixed.
-    SCOPED_CRASH_KEY_STRING64("PredBack", "nav_state",
-                              NavigationStateToString(navigation_state_));
-    SCOPED_CRASH_KEY_STRING64("PredBack", "state", StateToString(state_));
     CHECK(navigation_state_ == NavigationState::kCommitted ||
           navigation_state_ == NavigationState::kStarted)
         << NavigationStateToString(navigation_state_);

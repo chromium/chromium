@@ -18,7 +18,7 @@ namespace content {
 
 namespace {
 
-// TODO(crbug/353766658): Move these shorthands to a proper header file.
+// TODO(crbug.com/353766658): Move these shorthands to a proper header file.
 using NavigationDirection =
     BackForwardTransitionAnimationManager::NavigationDirection;
 
@@ -80,10 +80,6 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     DestroyAnimator();
   }
 
-  // Handle the case where the screenshot's dimension does not match the
-  // physical viewport:
-  // - TODO(https://crbug.com/346979589): Screenshot is captured in a landscape
-  // / portrait mode but used for transition in the different mode.
   if (!ShouldAnimateNavigationTransition(navigation_direction, edge)) {
     TRACE_EVENT(
         "browser,navigation",
