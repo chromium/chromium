@@ -4,7 +4,9 @@
 
 self.addEventListener('notificationclick', (e) => {
   console.assert('url' in e.notification.data);
-  clients.openWindow(e.notification.data.url);
+  let url = e.notification.data.url;
+  console.log('Received notification to open ' + url);
+  clients.openWindow(url);
   e.notification.close();
 });
 

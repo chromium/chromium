@@ -94,6 +94,7 @@ constexpr char kValueScopeA2B[] = "A_TO_B";
 constexpr char kValueScopeA2X[] = "A_TO_X";
 constexpr char kValueLink[] = "LINK";
 constexpr char kValueButton[] = "BTN";
+constexpr char kValueFormButton[] = "FORM_BTN";
 constexpr char kValueServiceWorkerButton[] = "BTN_SW";
 constexpr char kValueOpener[] = "OPENER";
 constexpr char kValueNoOpener[] = "NO_OPENER";
@@ -224,6 +225,7 @@ std::string_view ToParamString(RedirectType redirect) {
 enum class NavigationElement {
   kElementLink,
   kElementButton,
+  kElementFormPost,
   kElementServiceWorkerButton,
   kElementIntentPicker,
 };
@@ -234,6 +236,8 @@ std::string ToIdString(NavigationElement element) {
       return kValueLink;
     case NavigationElement::kElementButton:
       return kValueButton;
+    case NavigationElement::kElementFormPost:
+      return kValueFormButton;
     case NavigationElement::kElementServiceWorkerButton:
       return kValueServiceWorkerButton;
     case NavigationElement::kElementIntentPicker:
@@ -253,6 +257,8 @@ std::string_view ToParamString(NavigationElement element) {
       return "ViaServiceWorkerButton";
     case NavigationElement::kElementIntentPicker:
       return "ViaIntentPicker";
+    case NavigationElement::kElementFormPost:
+      return "ViaFormPost";
   }
 }
 
@@ -646,6 +652,13 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 
   base::WeakPtr<content::WebContents> last_seen_web_contents_;
 };
+
+bool IsElementInPage(content::RenderFrameHost* host,
+                     const std::string& element_id) {
+  return content::EvalJs(host, base::StrCat({"document.getElementById('",
+                                             element_id, "') != undefined"}))
+      .ExtractBool();
+}
 
 // IMPORTANT NOTE TO GARDENERS:
 //
@@ -1199,7 +1212,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // The test page contains elements (links and buttons) that are configured
   // for each combination. This function obtains the right element id to use
   // in the navigation click.
-  std::string GetElementId() {
+  std::string GetElementId() const {
     return base::JoinString(
         {"id", ToIdString(GetNavigationElement()),
          ToIdString(GetRedirectType(), GetDestination()),
@@ -1443,6 +1456,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
                                    : Browser::Type::TYPE_NORMAL,
                 browser_a->type());
     }
+    // Ensure that all `WebContents` has finished loading.
+    test::CompletePageLoadForAllWebContents();
 
     DLOG(INFO) << "Performing action.";
 
@@ -1462,8 +1477,12 @@ class WebAppLinkCapturingParameterizedBrowserTest
         // (and kFocusExisting) is tested in a separate test suite.
         expect_navigation = false;
       } else if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
+        ASSERT_TRUE(
+            IsElementInPage(contents_a->GetPrimaryMainFrame(), GetElementId()));
         test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
       } else {
+        ASSERT_TRUE(
+            IsElementInPage(contents_a->GetPrimaryMainFrame(), GetElementId()));
         SimulateRightClickOnElementAndLaunchApp(contents_a, GetElementId());
       }
 
@@ -2004,6 +2023,25 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(NavigationElement::kElementLink),
                      testing::Values(test::ClickMethod::kRightClickLaunchApp),
                      testing::Values(OpenerMode::kNoOpener),
+                     testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Tests that verify FORM POST navigations.
+INSTANTIATE_TEST_SUITE_P(
+    FormPostSubmissions,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(testing::Values(ClientModeCombination::kAuto),
+                     testing::Values(mojom::UserDisplayMode::kStandalone),
+                     testing::Values(LinkCapturing::kEnabled),
+                     testing::Values(StartingPoint::kTab),
+                     testing::Values(Destination::kScopeA2A,
+                                     Destination::kScopeA2B,
+                                     Destination::kScopeA2X),
+                     testing::Values(RedirectType::kNone),
+                     testing::Values(NavigationElement::kElementFormPost),
+                     testing::Values(test::ClickMethod::kLeftClick),
+                     testing::Values(OpenerMode::kOpener,
+                                     OpenerMode::kNoOpener),
                      testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
