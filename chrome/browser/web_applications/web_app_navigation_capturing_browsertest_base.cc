@@ -102,9 +102,10 @@ void WebAppNavigationCapturingBrowserTestBase::WaitForLaunchParams(
     int min_launch_params_to_wait_for) {
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(base::test::RunUntil([&] {
-    return content::EvalJs(contents, "launchParamsTargetUrls.length >= " +
-                                         base::NumberToString(
-                                             min_launch_params_to_wait_for))
+    return content::EvalJs(
+               contents,
+               "launchParamsTargetUrls && launchParamsTargetUrls.length >= " +
+                   base::NumberToString(min_launch_params_to_wait_for))
         .ExtractBool();
   }));
 }
