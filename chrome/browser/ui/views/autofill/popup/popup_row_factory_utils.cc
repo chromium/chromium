@@ -522,19 +522,18 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
     int line_number) {
   auto view = std::make_unique<PopupRowContentView>();
 
-  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
+  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
-  FormatLabel(*main_text_label, kSuggestion.main_text,
+      CreateMainTextLabel(suggestion, /*show_new_badge=*/std::nullopt);
+  FormatLabel(*main_text_label, suggestion.main_text,
               FillingProduct::kAutocomplete,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  kSuggestion.type, kSuggestion.IsAcceptable())));
+                  suggestion.type, suggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      CreateMinorTextLabel(kSuggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, kSuggestion, FillingProduct::kAutocomplete),
-      popup_cell_utils::GetIconImageView(kSuggestion), *view);
+      CreateSubtextViews(*view, suggestion, FillingProduct::kAutocomplete),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
 
   // The closure that actually attempts to delete an entry and record metrics
   // for it.
@@ -583,22 +582,21 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
     std::optional<user_education::DisplayNewBadge> show_new_badge) {
   auto view = std::make_unique<PopupRowContentView>();
 
-  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
+  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion, show_new_badge);
-  FormatLabel(*main_text_label, kSuggestion.main_text,
+      CreateMainTextLabel(suggestion, show_new_badge);
+  FormatLabel(*main_text_label, suggestion.main_text,
               FillingProduct::kPlusAddresses,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  kSuggestion.type, kSuggestion.IsAcceptable())));
+                  suggestion.type, suggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      CreateMinorTextLabel(kSuggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, kSuggestion, FillingProduct::kPlusAddresses),
-      popup_cell_utils::GetIconImageView(kSuggestion), *view);
+      CreateSubtextViews(*view, suggestion, FillingProduct::kPlusAddresses),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
 
   // If no refresh is offered, we can just use a "normal" `PopupRowView`.
-  if (!kSuggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
+  if (!suggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
     return std::make_unique<PopupRowView>(a11y_selection_delegate,
                                           selection_delegate, controller,
                                           line_number, std::move(view));

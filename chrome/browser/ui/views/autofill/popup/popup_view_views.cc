@@ -580,12 +580,12 @@ void PopupViewViews::SelectPreviousRow() {
   // `kControl` is used to show a sub-popup with child suggestions. It can
   // only be selected on a new row if the corresponding suggestion has
   // children.
-  const PopupRowView::CellType kNewCellType =
+  const PopupRowView::CellType new_cell_type =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
        GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
-  SetSelectedCell(CellIndex{new_row, kNewCellType},
+  SetSelectedCell(CellIndex{new_row, new_cell_type},
                   PopupCellSelectionSource::kKeyboard);
 }
 
@@ -605,12 +605,12 @@ void PopupViewViews::SelectNextRow(PopupCellSelectionSource source) {
   // `kControl` is used to show a sub-popup with child suggestions. It can
   // only be selected on a new row if the corresponding suggestion has
   // children.
-  const PopupRowView::CellType kNewCellType =
+  const PopupRowView::CellType new_cell_type =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
        GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
-  SetSelectedCell(CellIndex{new_row, kNewCellType}, source);
+  SetSelectedCell(CellIndex{new_row, new_cell_type}, source);
 }
 
 bool PopupViewViews::SelectNextHorizontalCell() {
@@ -966,19 +966,19 @@ void PopupViewViews::CreateSuggestionViews() {
   suggestions_container_->RemoveAllChildViews();
 
   const int kInterItemsPadding = GetContentsVerticalPadding();
-  const std::vector<Suggestion> kSuggestions = controller_->GetSuggestions();
+  const std::vector<Suggestion> suggestions = controller_->GetSuggestions();
 
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
 
-  rows_.reserve(kSuggestions.size());
+  rows_.reserve(suggestions.size());
   size_t current_line_number = 0u;
 
   // No suggestions (or only footer ones, which are not filterable) with
   // a non-empty filter query means that there are no results matching
   // the query. Show a corresponding message.
-  if ((kSuggestions.empty() ||
-       std::ranges::all_of(kSuggestions,
+  if ((suggestions.empty() ||
+       std::ranges::all_of(suggestions,
                            [](const Suggestion& suggestion) {
                              return suggestion.filtration_policy ==
                                     Suggestion::FiltrationPolicy::kStatic;
@@ -990,7 +990,7 @@ void PopupViewViews::CreateSuggestionViews() {
   }
 
   // Add the body rows, if there are any.
-  if (!kSuggestions.empty() && !IsFooterItem(kSuggestions, 0u)) {
+  if (!suggestions.empty() && !IsFooterItem(suggestions, 0u)) {
     // Create a container to wrap the "regular" (non-footer) rows.
     std::unique_ptr<views::BoxLayoutView> body_container =
         views::Builder<views::BoxLayoutView>()
@@ -998,10 +998,10 @@ void PopupViewViews::CreateSuggestionViews() {
             .SetInsideBorderInsets(gfx::Insets::VH(kInterItemsPadding, 0))
             .Build();
 
-    for (; current_line_number < kSuggestions.size() &&
-           !IsFooterItem(kSuggestions, current_line_number);
+    for (; current_line_number < suggestions.size() &&
+           !IsFooterItem(suggestions, current_line_number);
          ++current_line_number) {
-      switch (kSuggestions[current_line_number].type) {
+      switch (suggestions[current_line_number].type) {
         case SuggestionType::kSeparator:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
@@ -1010,21 +1010,21 @@ void PopupViewViews::CreateSuggestionViews() {
         case SuggestionType::kTitle:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupTitleView>(
-                  kSuggestions[current_line_number].main_text.value)));
+                  suggestions[current_line_number].main_text.value)));
           break;
 
         case SuggestionType::kMixedFormMessage:
         case SuggestionType::kInsecureContextPaymentDisabledMessage:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupWarningView>(
-                  kSuggestions[current_line_number])));
+                  suggestions[current_line_number])));
           break;
 
         case SuggestionType::kPredictionImprovementsLoadingState:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<autofill_prediction_improvements::
                                    PredictionImprovementsLoadingStateView>(
-                  kSuggestions[current_line_number])));
+                  suggestions[current_line_number])));
           break;
 
         // The default section contains all selectable rows and includes
@@ -1044,16 +1044,16 @@ void PopupViewViews::CreateSuggestionViews() {
           rows_.push_back(row_view);
 
           // Set element identifiers for tests.
-          if (kSuggestions[current_line_number].type ==
+          if (suggestions[current_line_number].type ==
               SuggestionType::kRetrievePredictionImprovements) {
             row_view->SetProperty(
                 views::kElementIdentifierKey,
                 kAutofillPredictionImprovementsTriggerElementId);
-          } else if (kSuggestions[current_line_number].type ==
+          } else if (suggestions[current_line_number].type ==
                      SuggestionType::kFillPredictionImprovements) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillPredictionImprovementsFillElementId);
-          } else if (kSuggestions[current_line_number].type ==
+          } else if (suggestions[current_line_number].type ==
                      SuggestionType::kPredictionImprovementsError) {
             row_view->SetProperty(
                 views::kElementIdentifierKey,
@@ -1061,7 +1061,7 @@ void PopupViewViews::CreateSuggestionViews() {
           }
 
           const base::Feature* const feature_for_iph =
-              kSuggestions[current_line_number].feature_for_iph;
+              suggestions[current_line_number].feature_for_iph;
 
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
@@ -1121,7 +1121,7 @@ void PopupViewViews::CreateSuggestionViews() {
     suggestions_container_->SetFlexForView(scroll_view_.get(), 1);
   }
 
-  if (current_line_number >= kSuggestions.size()) {
+  if (current_line_number >= suggestions.size()) {
     return;
   }
 
@@ -1138,7 +1138,7 @@ void PopupViewViews::CreateSuggestionViews() {
   } else {
     // Add a separator between the main list of suggestions and the footer with
     // no vertical padding as these elements have their own top/bottom paddings.
-    if (kSuggestions[current_line_number].type == SuggestionType::kSeparator) {
+    if (suggestions[current_line_number].type == SuggestionType::kSeparator) {
       rows_.push_back(suggestions_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0)));
       ++current_line_number;
@@ -1151,10 +1151,10 @@ void PopupViewViews::CreateSuggestionViews() {
     suggestions_container_->SetFlexForView(footer_container_, 0);
   }
 
-  for (; current_line_number < kSuggestions.size(); ++current_line_number) {
-    DCHECK(IsFooterItem(kSuggestions, current_line_number));
+  for (; current_line_number < suggestions.size(); ++current_line_number) {
+    DCHECK(IsFooterItem(suggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
-    if (kSuggestions[current_line_number].type == SuggestionType::kSeparator) {
+    if (suggestions[current_line_number].type == SuggestionType::kSeparator) {
       rows_.push_back(footer_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
     } else {
