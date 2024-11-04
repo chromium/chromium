@@ -133,11 +133,6 @@ const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
 BASE_FEATURE(kBorealis, "Borealis", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables change picture video mode.
-BASE_FEATURE(kChangePictureVideoMode,
-             "ChangePictureVideoMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableCertManagementUIV2,
              "EnableCertManagementUIV2",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

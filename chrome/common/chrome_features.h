@@ -94,8 +94,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kBrowserAppInstanceTracking);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kChangePictureVideoMode);
-
 // Enable the Certificate Management UI v2.
 //
 // TODO(crbug.com/40928765) Remove this flag when UI is complete.

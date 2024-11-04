@@ -868,10 +868,6 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
                                   ->ForceKeyboardDrivenUINavigation();
   localized_strings.Set("highlightStrength",
                         keyboard_driven_oobe ? "strong" : "normal");
-
-  localized_strings.Set(
-      "changePictureVideoModeEnabled",
-      base::FeatureList::IsEnabled(::features::kChangePictureVideoMode));
   return localized_strings;
 }
 
