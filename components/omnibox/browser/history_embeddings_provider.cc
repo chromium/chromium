@@ -184,6 +184,9 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
 
   switch (answerer_result.status) {
     case history_embeddings::ComputeAnswerStatus::kUnspecified:
+    case history_embeddings::ComputeAnswerStatus::kUnanswerable:
+    case history_embeddings::ComputeAnswerStatus::kFiltered:
+    case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
       return std::nullopt;
 
     case history_embeddings::ComputeAnswerStatus::kLoading: {
@@ -213,24 +216,19 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
       return answer_match;
     }
 
-    case history_embeddings::ComputeAnswerStatus::kUnanswerable:
-    case history_embeddings::ComputeAnswerStatus::kFiltered:
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
       return CreateAnswerMatchHelper(
           score,
           l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
           l10n_util::GetStringUTF16(
-              IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE));
+              IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE));
 
-    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
     case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
       return CreateAnswerMatchHelper(
           score,
           l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
           l10n_util::GetStringUTF16(
               IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN));
-
-    case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
-      return std::nullopt;
   }
 }
 

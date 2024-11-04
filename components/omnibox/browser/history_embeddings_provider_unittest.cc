@@ -541,16 +541,18 @@ TEST_F(HistoryEmbeddingsProviderTest,
                       u"https://url2.com/  •  Visited Mar 23, 2025"))));
 
   // Test error cases.
-  std::u16string temporary_error =
+  std::u16string model_error =
+      u"Preparing AI-powered summary...check back in a few minutes.";
+  std::u16string execution_error =
       u"Something went wrong. Please try again later.";
   std::u16string non_temporary_error = u"Sorry, I can't help you with that.";
   for (const auto& [status, expected_answer_text] : std::vector<
            std::pair<history_embeddings::ComputeAnswerStatus, std::u16string>>{
-           {kUnanswerable, non_temporary_error},
-           {kModelUnavailable, temporary_error},
-           {kExecutionFailure, temporary_error},
+           {kUnanswerable, u""},
+           {kModelUnavailable, model_error},
+           {kExecutionFailure, execution_error},
            {kExecutionCancelled, u""},
-           {kFiltered, non_temporary_error}}) {
+           {kFiltered, u""}}) {
     SCOPED_TRACE("Testing status: " +
                  base::NumberToString(static_cast<int>(status)));
     auto result_error = result.Clone();
