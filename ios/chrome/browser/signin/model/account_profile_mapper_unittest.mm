@@ -260,7 +260,20 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest, NoIdentity) {
   account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
 
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       OnlyAvailableOnIos17Plus) {
+  if (@available(iOS 17, *)) {
+    EXPECT_TRUE(AreSeparateProfilesForManagedAccountsEnabled());
+  } else {
+    EXPECT_FALSE(AreSeparateProfilesForManagedAccountsEnabled());
+  }
+}
+
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer;
@@ -333,6 +346,10 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
 // Tests that 2 non-managed identities are added to the personal profile.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        NonManagedIdentitiesAreAssignedToPersonalProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -358,6 +375,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 // and the managed identity is added to a newly-created separate profile.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        ManagedIdentityIsAssignedToSeparateProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -412,6 +433,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 // profile.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        TwoManagedIdentitiesAreAssignedToTwoSeparateProfiles) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer_personal;
@@ -479,6 +504,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 // profile, and a managed identity is removed correctly from its profile.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        IdentitiesAreRemovedFromCorrectProfile) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
   testing::StrictMock<MockObserver> mock_observer_personal;
@@ -564,6 +593,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 // Tests that only a single profile is created for a managed identity.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        OnlyOneProfilePerIdentity) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
@@ -592,6 +625,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 // SystemIdentityManager.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        IdentitiesAreAssignedOnStartup) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
   ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
 
   // Some identities already exist before the AccountProfileMapper is created.
