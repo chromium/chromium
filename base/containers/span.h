@@ -86,20 +86,31 @@ template <typename T, typename It>
 concept CompatibleIter = std::contiguous_iterator<It> &&
                          LegalDataConversion<std::iter_reference_t<It>, T>;
 
+// Disallow general-purpose range construction from types that have dedicated
+// constructors.
+// Arrays should go through the array constructors.
+template <typename T>
+inline constexpr bool kCompatibleRangeType = !std::is_array_v<T>;
+// `span`s should go through the copy constructor.
+template <typename T, size_t N, typename P>
+inline constexpr bool kCompatibleRangeType<span<T, N, P>> = false;
+
 template <typename T, typename R>
 concept CompatibleRange =
     std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
-    LegalDataConversion<std::ranges::range_reference_t<R>, T> &&
-    (std::ranges::borrowed_range<R> || std::is_const_v<T>);
+    (std::ranges::borrowed_range<R> ||
+     std::is_const_v<T>)&&kCompatibleRangeType<std::remove_cvref_t<R>> &&
+    LegalDataConversion<std::ranges::range_reference_t<R>, T>;
 
 template <typename T>
 concept LegacyRangeDataIsPointer = std::is_pointer_v<T>;
 
 template <typename R>
-concept LegacyRange = requires(R& r) {
-  { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
-  { std::ranges::size(r) } -> std::convertible_to<size_t>;
-};
+concept LegacyRange =
+    kCompatibleRangeType<std::remove_cvref_t<R>> && requires(R& r) {
+      { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
+      { std::ranges::size(r) } -> std::convertible_to<size_t>;
+    };
 
 // NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
 // code that was written prior to C++20 being standardized and assumes providing
@@ -411,6 +422,18 @@ class GSL_POINTER span {
       // requirement of span.
       : UNSAFE_BUFFERS(
             span(std::ranges::data(range), std::ranges::size(range))) {}
+
+  constexpr span(const span& other) noexcept = default;
+  template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
+    requires((OtherN == dynamic_extent || N == OtherN) &&
+             internal::LegalDataConversion<OtherT, T>)
+  constexpr explicit(OtherN == dynamic_extent)
+      span(const span<OtherT, OtherN, OtherInternalPtrType>& s) noexcept
+      // SAFETY: `size()` is the number of elements that can be safely accessed
+      // at `data()`.
+      : UNSAFE_BUFFERS(span(s.data(), s.size())) {}
+
+  constexpr span& operator=(const span& other) noexcept = default;
 
   // [span.sub], span subviews
   template <size_t Count>
@@ -781,22 +804,6 @@ class GSL_POINTER span {
     }
   }
 
-  // Implicit conversion from std::span<T, N> to base::span<T, N>.
-  //
-  // We get other conversions for free from std::span's constructors, but it
-  // does not deduce N on its range constructor.
-  span(std::span<std::remove_const_t<T>, N> other)
-      :  // SAFETY: std::span contains a valid data pointer and size such
-         // that pointer+size remains valid.
-        UNSAFE_BUFFERS(
-            span(std::ranges::data(other), std::ranges::size(other))) {}
-  span(std::span<T, N> other)
-    requires(std::is_const_v<T>)
-      :  // SAFETY: std::span contains a valid data pointer and size such
-         // that pointer+size remains valid.
-        UNSAFE_BUFFERS(
-            span(std::ranges::data(other), std::ranges::size(other))) {}
-
   // Implicit conversion from base::span<T, N> to std::span<T, N>.
   //
   // We get other conversions for free from std::span's constructors, but it
@@ -974,6 +981,15 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       // requirement of span.
       : UNSAFE_BUFFERS(
             span(std::ranges::data(range), std::ranges::size(range))) {}
+
+  constexpr span(const span& other) noexcept = default;
+  template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
+    requires(internal::LegalDataConversion<OtherT, T>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr span(const span<OtherT, OtherN, OtherInternalPtrType>& s) noexcept
+      : data_(s.data()), size_(s.size()) {}
+
+  constexpr span& operator=(const span& other) noexcept = default;
 
   // [span.sub], span subviews
   template <size_t Count>
