@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
 #import "base/check_is_test.h"
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
@@ -30,7 +29,7 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
     const ProfileAttributesStorageIOS* profile_attributes_storage) {
   ProfileNameToGaiaIds result;
 
-  if (!base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     system_identity_manager->IterateOverIdentities(base::BindRepeating(
         [](std::map<std::string, std::set<std::string, std::less<>>,
                     std::less<>>& result,
@@ -258,7 +257,7 @@ void AccountProfileMapper::Assigner::OnIdentityListChanged() {
       std::ref(processed_gaia_ids)));
 
   // Check if any of the previously-assigned Gaia IDs have been removed.
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
       for (const std::string& gaia_id : gaia_ids) {
         if (!processed_gaia_ids.contains(gaia_id)) {
@@ -321,7 +320,7 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     id<SystemIdentity> identity) {
   processed_gaia_ids.insert(base::SysNSStringToUTF8(identity.gaiaID));
 
-  if (!base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // With the feature flag disabled, no actual assignment is necessary.
     return SystemIdentityManager::IteratorResult::kContinueIteration;
   }
@@ -348,7 +347,7 @@ void AccountProfileMapper::Assigner::HostedDomainedFetched(
     id<SystemIdentity> identity,
     NSString* hosted_domain,
     NSError* error) {
-  CHECK(base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts));
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
   if (error) {
     // TODO(crbug.com/331783685): Need to retry.
@@ -367,7 +366,7 @@ void AccountProfileMapper::Assigner::HostedDomainedFetched(
 void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     id<SystemIdentity> identity,
     bool is_managed_account) {
-  CHECK(base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts));
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
   const std::string gaia_id = base::SysNSStringToUTF8(identity.gaiaID);
 
@@ -548,7 +547,7 @@ AccountProfileMapper::FilterIdentitiesForProfile(
   // by enterprise policy, and remove that filter done by
   // ChromeAccountManagerService.
 
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     ProfileAttributesIOS attr =
         profile_manager_->GetProfileAttributesStorage()
             ->GetAttributesForProfileWithName(profile_name);
@@ -573,7 +572,7 @@ void AccountProfileMapper::MappingUpdated(
   std::set<std::string> profiles_to_notify;
   // Note: If the feature flag is disabled, all profiles are notified, so no
   // need to find the affected profiles.
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     std::set<std::string> all_profiles;
     for (const auto& [name, gaia_ids] : old_mapping) {
       all_profiles.insert(name);
@@ -597,7 +596,7 @@ void AccountProfileMapper::MappingUpdated(
 void AccountProfileMapper::NotifyIdentityListChanged(
     const std::set<std::string>& profile_names_to_notify) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     for (const std::string& profile_name : profile_names_to_notify) {
       auto it = observer_lists_per_profile_name_.find(profile_name);
       if (it == observer_lists_per_profile_name_.end()) {
@@ -621,7 +620,7 @@ void AccountProfileMapper::NotifyIdentityUpdated(
     id<SystemIdentity> identity,
     std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (profile_name.empty()) {
       return;
     }
@@ -647,7 +646,7 @@ void AccountProfileMapper::NotifyAccessTokenRefreshFailed(
     id<RefreshAccessTokenError> error,
     std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (profile_name.empty()) {
       return;
     }
