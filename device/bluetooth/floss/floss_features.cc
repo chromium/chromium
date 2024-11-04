@@ -48,6 +48,10 @@ const char* kNotLaunchedBoards[] = {
 
 static bool IsDeviceLaunchedFloss() {
   std::string board = base::SysInfo::HardwareModelName();
+  // Ignore the parts after the first dash, i.e., treat variant boards the same.
+  if (auto pos = board.find('-'); pos != std::string::npos) {
+    board.erase(pos);
+  }
   for (auto* b : kNotLaunchedBoards) {
     if (board.compare(b) == 0) {
       return false;
