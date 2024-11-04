@@ -34,9 +34,11 @@ export function getHtml(this: DataSectionElement) {
                 @change="${this.onCheckedChanged_}">
             </cr-checkbox>
             <div class="data-item-content">
-              <img class="item-icon"
-                  ?hidden="${this.isStrEmpty_(item.iconUrl)}"
-                  alt="Item icon" src="${this.getFaviconUrl_(item.iconUrl)}">
+              <div class="item-icon-container"
+                  ?hidden="${this.isStrEmpty_(item.iconUrl)}">
+                <img class="item-icon"
+                    alt="Item icon" src="${this.getFaviconUrl_(item.iconUrl)}">
+              </div>
               <div class="item-info">
                 <div class="item-title text-elide">
                   ${item.title}

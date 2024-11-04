@@ -69,8 +69,25 @@
   column-gap: 8px;
 }
 
+.item-checkbox {
+  padding-inline-end: 12px;
+  width: 16px;
+}
+
+.item-icon-container {
+  --item-icon-container-size: 24px;
+  align-items: center;
+  display: flex;
+  background-color: white;
+  border-radius: 25%;
+  flex-wrap: wrap;
+  height: var(--item-icon-container-size);
+  justify-content: center;
+  width: var(--item-icon-container-size);
+}
+
 .item-icon {
-  --item-icon-size: 20px;
+  --item-icon-size: 16px;
   height: var(--item-icon-size);
   width: var(--item-icon-size);
 }
