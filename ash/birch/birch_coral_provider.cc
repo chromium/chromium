@@ -173,10 +173,8 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
   // enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFakeCoralGroup)) {
-    auto fake_response = std::make_unique<CoralResponse>();
-    // TODO(owenzhang): Remove placeholder page_urls.
     auto fake_group = coral::mojom::Group::New();
-    fake_group->title = "Coral Group";
+    fake_group->id = base::Token(7, 1);
     fake_group->entities.push_back(coral::mojom::Entity::NewTab(
         coral::mojom::Tab::New("Reddit", GURL("https://www.reddit.com/"))));
     fake_group->entities.push_back(coral::mojom::Entity::NewTab(
@@ -193,6 +191,8 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
 
     std::vector<coral::mojom::GroupPtr> fake_groups;
     fake_groups.push_back(std::move(fake_group));
+
+    auto fake_response = std::make_unique<CoralResponse>();
     fake_response->set_groups(std::move(fake_groups));
     OverrideCoralResponseForTest(std::move(fake_response));
   } else {
@@ -273,7 +273,20 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     std::vector<coral::mojom::GroupPtr> groups;
     // Copy groups.
     for (const auto& group : fake_response_->groups()) {
-      groups.push_back(group->Clone());
+      // Simulate title change so we can test skottie animation and dynamic
+      // title changes.
+      coral::mojom::GroupPtr new_group = group->Clone();
+      if (new_group->id == base::Token(7, 1)) {
+        new_group->title = std::nullopt;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce([]() {
+              if (auto* coral_provider = BirchCoralProvider::Get()) {
+                coral_provider->TitleUpdated(base::Token(7, 1), "Coral group");
+              }
+            }),
+            base::Seconds(5));
+      }
+      groups.push_back(std::move(new_group));
     }
     fake_response_copy->set_source(HasValidPostLoginData()
                                        ? CoralSource::kPostLogin
