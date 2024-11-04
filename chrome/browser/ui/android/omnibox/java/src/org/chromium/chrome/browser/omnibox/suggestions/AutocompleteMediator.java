@@ -1450,6 +1450,13 @@ class AutocompleteMediator
         // Note: onPause and onUserLeaveHint happen much too late.
         if (focused || !OmniboxFeatures.isJumpStartOmniboxEnabled()) return;
 
+        // Avoid caching already known information.
+        var currentContext = CachedZeroSuggestionsManager.readJumpStartContext();
+        if (currentContext.pageClass == mDataProvider.getPageClassification(false)
+                && currentContext.url.equals(mDataProvider.getCurrentGurl())) {
+            return;
+        }
+
         // Retrieve suggestions related to the most recently visited page.
         // This is a best-effort action and may not always work (e.g. if Chrome gets killed or
         // swiped away before we manage to retrieve and persist the information).

@@ -17,7 +17,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -109,7 +108,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
 
     @Override
     public void onTemplateURLServiceChanged() {
-        CachedZeroSuggestionsManager.eraseCachedData();
         mDoesDefaultSearchEngineHaveLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
 
         if (mTemplateUrlService.isDefaultSearchEngineGoogle()) {
