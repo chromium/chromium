@@ -66,6 +66,10 @@ bool TestMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
   return should_execute_command_without_closing_menu_;
 }
 
+bool TestMenuDelegate::ShouldCloseOnDragComplete() {
+  return should_close_on_drag_complete_;
+}
+
 void TestMenuDelegate::PerformDrop(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,

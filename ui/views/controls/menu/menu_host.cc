@@ -337,21 +337,13 @@ void MenuHost::OnDragComplete() {
   if (!menu_controller)
     return;
 
-  bool should_close = true;
-  // If the view came from outside menu code (i.e., not a MenuItemView), we
-  // should consult the MenuDelegate to determine whether or not to close on
-  // exit.
-  if (!menu_controller->did_initiate_drag()) {
-    MenuDelegate* menu_delegate = submenu_->GetMenuItem()->GetDelegate();
-    should_close = menu_delegate ? menu_delegate->ShouldCloseOnDragComplete()
-                                 : should_close;
+  bool should_close =
+      menu_controller->exit_type() != MenuController::ExitType::kNone;
+  if (auto* const delegate = submenu_->GetMenuItem()->GetDelegate()) {
+    should_close |= delegate->ShouldCloseOnDragComplete();
   }
-  menu_controller->OnDragComplete(should_close);
 
-  // We may have lost capture in the drag and drop, but are remaining open.
-  // Return capture so we get MouseCaptureLost events.
-  if (!should_close)
-    native_widget_private()->SetCapture();
+  menu_controller->OnDragComplete(should_close);
 }
 
 Widget* MenuHost::GetPrimaryWindowWidget() {

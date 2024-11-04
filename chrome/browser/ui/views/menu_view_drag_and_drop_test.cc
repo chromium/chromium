@@ -378,12 +378,10 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragWillStart(
 void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragComplete(
     views::Widget* widget) {
   // We should have performed an in-menu drop, and the nested view should not
-  // have had a drag and drop. Since the drag happened in menu code, the
-  // delegate should not have been asked whether or not to close, and the menu
-  // should simply be closed.
+  // have had a drag and drop.
   EXPECT_TRUE(performed_in_menu_drop());
   EXPECT_FALSE(target_view()->dropped());
-  EXPECT_FALSE(asked_to_close());
+  EXPECT_TRUE(asked_to_close());
   EXPECT_FALSE(menu()->GetSubmenu()->IsShowing());
 
   Done();
@@ -414,9 +412,7 @@ void MenuViewDragAndDropTestTestInMenuDrag::StartDrag() {
                                          current_position.y()));
 }
 
-// Test that an in-menu (i.e., entirely implemented in the menu code) closes the
-// menu automatically once the drag is complete, and does not ask the delegate
-// to stay open.
+// Test that an in-menu drag asks the delegate to stay open.
 // TODO(pkasting): https://crbug.com/939621 Fails on Mac.
 // TODO(crbug.com/40911016): Re-enable this test for linux.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -425,6 +421,94 @@ void MenuViewDragAndDropTestTestInMenuDrag::StartDrag() {
 #define MAYBE_TestInMenuDrag TestInMenuDrag
 #endif
 VIEW_TEST(MenuViewDragAndDropTestTestInMenuDrag, MAYBE_TestInMenuDrag)
+
+class MenuViewDragAndDropTestTestInMenuDragNoDrop
+    : public MenuViewDragAndDropTest {
+ public:
+  MenuViewDragAndDropTestTestInMenuDragNoDrop() = default;
+  ~MenuViewDragAndDropTestTestInMenuDragNoDrop() override = default;
+
+  // MenuViewDragAndDropTest:
+  void OnWidgetDragWillStart(views::Widget* widget) override;
+  void OnWidgetDragComplete(views::Widget* widget) override;
+
+ protected:
+  // MenuViewDragAndDropTest:
+  void DoTestWithMenuOpen() override;
+
+ private:
+  void StartDrag();
+
+  bool CanDrop(views::MenuItemView* menu,
+               const ui::OSExchangeData& data) override;
+};
+
+bool MenuViewDragAndDropTestTestInMenuDragNoDrop::CanDrop(
+    views::MenuItemView* menu,
+    const ui::OSExchangeData& data) {
+  return false;
+}
+
+void MenuViewDragAndDropTestTestInMenuDragNoDrop::OnWidgetDragWillStart(
+    views::Widget* widget) {
+  // Sending the mouse-up event will end the drag and result in calling
+  // OnWidgetDragComplete().
+  GetDragTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
+                     ui_controls::LEFT, ui_controls::UP,
+                     ui_controls::kNoAccelerator, ui_controls::kNoWindowHint));
+}
+
+void MenuViewDragAndDropTestTestInMenuDragNoDrop::OnWidgetDragComplete(
+    views::Widget* widget) {
+  // We should have performed an in-menu drop, and the nested view should not
+  // have had a drag and drop. Since the drag happened in menu code, the
+  // delegate should not have been asked whether or not to close, and the menu
+  // should simply be closed.
+  EXPECT_FALSE(performed_in_menu_drop());
+  EXPECT_FALSE(target_view()->dropped());
+  EXPECT_TRUE(asked_to_close());
+  EXPECT_TRUE(menu()->GetSubmenu()->IsShowing());
+
+  Done();
+}
+
+void MenuViewDragAndDropTestTestInMenuDragNoDrop::DoTestWithMenuOpen() {
+  MenuViewDragAndDropTest::DoTestWithMenuOpen();
+
+  // We're going to drag the second menu element.
+  views::SubmenuView* submenu = menu()->GetSubmenu();
+  views::MenuItemView* drag_view = submenu->GetMenuItemAt(1);
+  ASSERT_NE(nullptr, drag_view);
+  ui_test_utils::MoveMouseToCenterAndClick(
+      drag_view, ui_controls::LEFT, ui_controls::DOWN,
+      CreateEventTask(this,
+                      &MenuViewDragAndDropTestTestInMenuDragNoDrop::StartDrag));
+}
+
+void MenuViewDragAndDropTestTestInMenuDragNoDrop::StartDrag() {
+  // Begin dragging the second menu element, which should result in calling
+  // OnWidgetDragWillStart().
+  const views::View* drag_view = menu()->GetSubmenu()->GetMenuItemAt(1);
+  const gfx::Point current_position =
+      ui_test_utils::GetCenterInScreenCoordinates(drag_view);
+  EXPECT_TRUE(ui_controls::SendMouseMove(current_position.x() + 10,
+                                         current_position.y()));
+}
+
+// TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
+// because the native widget's state is not properly updated.
+#if BUILDFLAG(IS_OZONE_X11)
+#define MAYBE_TestInMenuDragNoDrop DISABLED_TestInMenuDragNoDrop
+#else
+#define MAYBE_TestInMenuDragNoDrop TestInMenuDragNoDrop
+#endif
+
+// Test that an in-menu (i.e., entirely implemented in the menu code) does not
+// close the menu when the drag is complete but there is no drop.
+VIEW_TEST(MenuViewDragAndDropTestTestInMenuDragNoDrop,
+          MAYBE_TestInMenuDragNoDrop)
 
 class MenuViewDragAndDropTestNestedDrag : public MenuViewDragAndDropTest {
  public:
@@ -468,7 +552,13 @@ void MenuViewDragAndDropTestNestedDrag::OnWidgetDragComplete(
   EXPECT_FALSE(performed_in_menu_drop());
   EXPECT_TRUE(asked_to_close());
   views::SubmenuView* submenu = menu()->GetSubmenu();
-  EXPECT_TRUE(submenu->IsShowing());
+
+  // TODO(crbug.com/375959961): On X11, the native widget's mouse button state
+  // is not updated when the mouse button is released to end a drag. Therefore,
+  // all subsequent mouse movements will be delivered as "MouseDragged" events
+  // to MenuController.
+  // Until this is fixed, the menu closes at the end of drags.
+  EXPECT_NE(submenu->IsShowing(), BUILDFLAG(IS_OZONE_X11));
 
   // Clean up.
   submenu->Close();

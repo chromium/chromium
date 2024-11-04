@@ -1817,8 +1817,9 @@ void Widget::OnKeyEvent(ui::KeyEvent* event) {
 //                   RootView from anywhere in Widget. Use
 //                   SendEventToSink() instead. See crbug.com/348087.
 void Widget::OnMouseEvent(ui::MouseEvent* event) {
-  if (!native_widget_)
+  if (!native_widget_) {
     return;
+  }
 
   TRACE_EVENT0("ui", "Widget::OnMouseEvent");
 

@@ -147,10 +147,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Whether or not drag operation is in progress.
   bool drag_in_progress() const { return drag_in_progress_; }
 
-  // Whether the MenuController initiated the drag in progress. False if there
-  // is no drag in progress.
-  bool did_initiate_drag() const { return did_initiate_drag_; }
-
   bool send_gesture_events_to_owner() const {
     return send_gesture_events_to_owner_;
   }
@@ -747,11 +743,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   // True when drag operation is in progress.
   bool drag_in_progress_ = false;
-
-  // True when the drag operation in progress was initiated by the
-  // MenuController for a child MenuItemView (as opposed to initiated separately
-  // by a child View).
-  bool did_initiate_drag_ = false;
 
   // Location the mouse was pressed at. Used to detect d&d.
   gfx::Point press_pt_;
