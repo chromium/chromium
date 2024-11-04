@@ -2693,6 +2693,37 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
       GetFrame()));
 }
 
+// Validate that if third-party cookies are allowed but the permission is
+// denied, requestStorageAccess does grant local storage access.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+                       BeyondCookies_LocalStorageWith3PCAndNoPermission) {
+  // Allow 3PC and deny storage access requests.
+  SetBlockThirdPartyCookies(false);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  // Set first-party local storage on site b.
+  NavigateToPageWithFrame(kHostB);
+  EXPECT_TRUE(content::ExecJs(GetPrimaryMainFrame(),
+                              "window.localStorage.setItem('test', 'a');"
+                              "window.sessionStorage.setItem('test', 'b');"));
+
+  // Test if first-party data is available on site a.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+  EXPECT_EQ(true, content::EvalJs(
+                      GetFrame(),
+                      "document.requestStorageAccess("
+                      "  {localStorage: true, sessionStorage: true}"
+                      ").then("
+                      "  (handle) => {"
+                      "    return handle.localStorage.getItem('test') == 'a' &&"
+                      "           handle.sessionStorage.getItem('test') == 'b';"
+                      "  },"
+                      "  () => false"
+                      ");"));
+}
+
 class StorageAccessAPIAutograntsWithFedCMBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:

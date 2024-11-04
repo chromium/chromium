@@ -28,6 +28,7 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -305,17 +306,11 @@ bool DOMStorageContextWrapper::IsRequestValid(
     // and the request was for a first-party storage key on the same origin as
     // the frame's storage key, we can allow the request to proceed. See:
     // third_party/blink/renderer/modules/storage_access/README.md
-    if (host_storage_key_did_not_match) {
-      auto* permission_controller =
-          host->GetBrowserContext()->GetPermissionController();
-      blink::mojom::PermissionStatus status =
-          permission_controller->GetPermissionStatusForCurrentDocument(
-              blink::PermissionType::STORAGE_ACCESS_GRANT, host);
-      if (status == blink::mojom::PermissionStatus::GRANTED) {
-        host_storage_key_did_not_match =
-            blink::StorageKey::CreateFirstParty(
-                host->GetStorageKey().origin()) != storage_key;
-      }
+    if (host_storage_key_did_not_match &&
+        StorageAccessHandle::DoesFrameHaveStorageAccess(host)) {
+      host_storage_key_did_not_match =
+          blink::StorageKey::CreateFirstParty(host->GetStorageKey().origin()) !=
+          storage_key;
     }
   }
   if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
