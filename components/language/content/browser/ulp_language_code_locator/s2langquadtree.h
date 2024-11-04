@@ -63,7 +63,10 @@ class BitsetSerializedLanguageTree : public SerializedLanguageTree {
 class S2LangQuadTreeNode {
  public:
   S2LangQuadTreeNode();
-  S2LangQuadTreeNode(const S2LangQuadTreeNode& other);
+  S2LangQuadTreeNode(const S2LangQuadTreeNode& other) = delete;
+  S2LangQuadTreeNode(S2LangQuadTreeNode&& other);
+  S2LangQuadTreeNode& operator=(const S2LangQuadTreeNode& other) = delete;
+  S2LangQuadTreeNode& operator=(S2LangQuadTreeNode&& other);
   ~S2LangQuadTreeNode();
 
   // Return language of the leaf containing the given |cell|.
