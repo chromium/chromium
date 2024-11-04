@@ -751,6 +751,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
     const ui::ImageModel& button_image,
     const base::RepeatingClosure& action) {
   identity_info_container_->RemoveAllChildViews();
+  title_label_ = nullptr;
+  subtitle_label_ = nullptr;
 
   // View structure (with button):
   // Vertical box layout, with elements centered horizontally.
@@ -769,10 +771,10 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   //  MBH                     /-------\                      HBM
   //  MBH                     | Title |                      HBM
   //  MBH                     \-------/                      HBM
-  //  MBH                 kSubtitleTopMargin                 HBM
-  //  MBH              /----------------------\              HBM
-  //  MBH              | Subtitle (multiline) |              HBM
-  //  MBH              \----------------------/              HBM
+  //  MBH                 kTitleBottomMargin                 HBM
+  //  MBH         /--------------------------------\         HBM
+  //  MBH         | Subtitle (multiline, optional) |         HBM
+  //  MBH         \--------------------------------/         HBM
   //  MBH          kSubtitleBottomMarginWithButton           HBM
   //  MBH               /-------------------\                HBM
   //  MBH               | Button (optional) |                HBM
@@ -785,13 +787,13 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
-  constexpr int kSubtitleTopMargin = 4;
-  constexpr int kSubtitleBottomMarginWhenNoButton = 24;
+  constexpr int kTitleBottomMargin = 4;
+  constexpr int kBottomMarginWhenNoButton = 24;
   constexpr int kSubtitleBottomMarginWithButton = 12;
   constexpr int kButtonBottomMargin = 28;
 
   static_assert(kIdentityContainerBorder < kAvatarTopMargin);
-  static_assert(kIdentityContainerBorder < kSubtitleBottomMarginWhenNoButton);
+  static_assert(kIdentityContainerBorder < kBottomMarginWhenNoButton);
   static_assert(kIdentityContainerBorder < kButtonBottomMargin);
   static_assert(kIdentityContainerBorder < kIdentityContainerHorizontalPadding);
 
@@ -821,6 +823,11 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                                              kIdentityContainerBorder))
           .Build());
   // Title.
+  const bool has_subtitle = !subtitle.empty();
+  const bool has_button = !button_text.empty();
+  const int title_bottom_margin =
+      has_subtitle ? kTitleBottomMargin
+                   : kBottomMarginWhenNoButton - kIdentityContainerBorder;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(title)
@@ -829,13 +836,18 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
           .SetElideBehavior(gfx::ELIDE_TAIL)
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_top(kTitleTopMargin))
+                       gfx::Insets().set_top_bottom(kTitleTopMargin,
+                                                    title_bottom_margin))
           .Build());
+  if (!has_subtitle) {
+    CHECK(!has_button);
+    return;
+  }
+
   // Subtitle.
-  const bool has_button = !button_text.empty();
   const int subtitle_bottom_margin =
       has_button ? kSubtitleBottomMarginWithButton
-                 : kSubtitleBottomMarginWhenNoButton - kIdentityContainerBorder;
+                 : kBottomMarginWhenNoButton - kIdentityContainerBorder;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(subtitle)
@@ -845,8 +857,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .SetMultiLine(true)
           .SetHandlesTooltips(false)
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_top_bottom(kSubtitleTopMargin,
-                                                    subtitle_bottom_margin))
+                       gfx::Insets().set_bottom(subtitle_bottom_margin))
           .Build());
 
   if (!has_button) {
@@ -1336,8 +1347,10 @@ void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
         gfx::Insets(kIdentityContainerBorder)));
     title_label_->SetEnabledColor(
         color_provider->GetColor(kColorProfileMenuIdentityInfoTitle));
-    subtitle_label_->SetEnabledColor(
-        color_provider->GetColor(kColorProfileMenuIdentityInfoSubtitle));
+    if (subtitle_label_) {
+      subtitle_label_->SetEnabledColor(
+          color_provider->GetColor(kColorProfileMenuIdentityInfoSubtitle));
+    }
     return;
   }
 
