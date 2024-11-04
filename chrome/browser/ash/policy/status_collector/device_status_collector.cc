@@ -676,14 +676,14 @@ em::ActiveTimePeriod::SessionType GetSessionType(
 
 // Remap GscVersion using switch-case even though the values match
 // to ensure that the compiler complains if a new value has been added.
-em::TpmVersionInfo_GscVersion ConvertTpmGscVersion(
-    tpm_manager::GscVersion gsc_version) {
-  switch (gsc_version) {
-    case tpm_manager::GscVersion::GSC_VERSION_NOT_GSC:
+em::TpmVersionInfo_GscVersion ConvertTpmGscDevice(
+    tpm_manager::GscDevice gsc_device) {
+  switch (gsc_device) {
+    case tpm_manager::GscDevice::GSC_DEVICE_NOT_GSC:
       return em::TpmVersionInfo::GSC_VERSION_NOT_GSC;
-    case tpm_manager::GscVersion::GSC_VERSION_CR50:
+    case tpm_manager::GscDevice::GSC_DEVICE_H1:
       return em::TpmVersionInfo::GSC_VERSION_CR50;
-    case tpm_manager::GscVersion::GSC_VERSION_TI50:
+    case tpm_manager::GscDevice::GSC_DEVICE_DT:
       return em::TpmVersionInfo::GSC_VERSION_TI50;
   }
 
@@ -2350,7 +2350,7 @@ bool DeviceStatusCollector::GetVersionInfo(
   tpm_version_info->set_firmware_version(tpm_version_reply_.firmware_version());
   tpm_version_info->set_vendor_specific(tpm_version_reply_.vendor_specific());
   tpm_version_info->set_gsc_version(
-      ConvertTpmGscVersion(tpm_version_reply_.gsc_version()));
+      ConvertTpmGscDevice(tpm_version_reply_.gsc_device()));
   return true;
 }
 
