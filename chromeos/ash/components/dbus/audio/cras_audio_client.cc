@@ -199,6 +199,15 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor the D-Bus signal for audio effect ui appearance.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, "AudioEffectUIAppearanceChanged",
+        base::BindRepeating(
+            &CrasAudioClientImpl::AudioEffectUIAppearanceChangedReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
@@ -1090,6 +1099,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
   }
 
+  void AudioEffectUIAppearanceChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    VoiceIsolationUIAppearance appearance;
+    if (!ReadVoiceIsolationUIAppearanceFromDBus(signal, appearance)) {
+      return;
+    }
+    for (auto& observer : observers_) {
+      observer.AudioEffectUIAppearanceChanged(appearance);
+    }
+  }
+
   void OnGetDefaultOutputBufferSize(chromeos::DBusMethodCallback<int> callback,
                                     dbus::Response* response) {
     if (!response) {
@@ -1384,6 +1404,25 @@ class CrasAudioClientImpl : public CrasAudioClient {
             << audio_effect_dlcs;
   }
 
+  bool ReadVoiceIsolationUIAppearanceFromDBus(
+      dbus::Message* message,
+      VoiceIsolationUIAppearance& appearance) {
+    uint32_t toggle_type = 0;
+    uint32_t effect_mode_options = 0;
+    bool show_effect_fallback_message = false;
+    dbus::MessageReader reader(message);
+    if (!reader.PopUint32(&toggle_type) ||
+        !reader.PopUint32(&effect_mode_options) ||
+        !reader.PopBool(&show_effect_fallback_message)) {
+      LOG(ERROR) << "Error reading message from cras: " << message->ToString();
+      return false;
+    }
+    appearance.toggle_type = static_cast<cras::AudioEffectType>(toggle_type);
+    appearance.effect_mode_options = effect_mode_options;
+    appearance.show_effect_fallback_message = show_effect_fallback_message;
+    return true;
+  }
+
   void OnGetVoiceIsolationUIAppearance(
       chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback,
       dbus::Response* response) {
@@ -1393,21 +1432,12 @@ class CrasAudioClientImpl : public CrasAudioClient {
       return;
     }
 
-    uint32_t toggle_type = 0;
-    uint32_t effect_mode_options = 0;
-    bool show_effect_fallback_message = false;
-    dbus::MessageReader reader(response);
-    if (!reader.PopUint32(&toggle_type) ||
-        !reader.PopUint32(&effect_mode_options) ||
-        !reader.PopBool(&show_effect_fallback_message)) {
-      LOG(ERROR) << "Error reading response from cras: "
-                 << response->ToString();
+    VoiceIsolationUIAppearance appearance;
+    if (!ReadVoiceIsolationUIAppearanceFromDBus(response, appearance)) {
       std::move(callback).Run(std::nullopt);
       return;
     }
-    VoiceIsolationUIAppearance appearance(
-        static_cast<cras::AudioEffectType>(toggle_type), effect_mode_options,
-        show_effect_fallback_message);
+
     VLOG(1) << "cras_audio_client: Retrieved voice isolation appearance: "
             << appearance.ToString();
     std::move(callback).Run(std::move(appearance));
@@ -1677,6 +1707,9 @@ void CrasAudioClient::Observer::NumStreamIgnoreUiGains(int32_t num) {}
 void CrasAudioClient::Observer::NumberOfArcStreamsChanged() {}
 
 void CrasAudioClient::Observer::SidetoneSupportedChanged(bool supported) {}
+
+void CrasAudioClient::Observer::AudioEffectUIAppearanceChanged(
+    VoiceIsolationUIAppearance appearance) {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

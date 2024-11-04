@@ -95,6 +95,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // supported.
     virtual void SidetoneSupportedChanged(bool supported);
 
+    // Called when there is a new audio effect ui appearance to render.
+    virtual void AudioEffectUIAppearanceChanged(
+        VoiceIsolationUIAppearance appearance);
+
    protected:
     virtual ~Observer();
   };

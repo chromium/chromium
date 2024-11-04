@@ -813,6 +813,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void NumStreamIgnoreUiGains(int32_t num) override;
   void NumberOfArcStreamsChanged() override;
   void SidetoneSupportedChanged(bool supported) override;
+  void AudioEffectUIAppearanceChanged(
+      VoiceIsolationUIAppearance appearance) override;
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;

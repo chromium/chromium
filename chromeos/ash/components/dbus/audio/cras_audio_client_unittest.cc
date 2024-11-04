@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -155,6 +156,8 @@ class MockObserver : public CrasAudioClient::Observer {
   MOCK_METHOD1(NumStreamIgnoreUiGains, void(int32_t num));
   MOCK_METHOD0(NumberOfArcStreamsChanged, void());
   MOCK_METHOD1(SidetoneSupportedChanged, void(bool supported));
+  MOCK_METHOD1(AudioEffectUIAppearanceChanged,
+               void(VoiceIsolationUIAppearance appearance));
 };
 
 // Expect the reader to be empty.
@@ -570,6 +573,15 @@ class CrasAudioClientTest : public testing::Test {
         .WillRepeatedly(
             Invoke(this, &CrasAudioClientTest::OnSidetoneSupportedChanged));
 
+    // Set an expectation so mock_cras_proxy's monitoring
+    // AudioEffectUIAppearance ConnectToSignal will use
+    // OnAudioEffectUIAppearanceChanged() to run the callback.
+    EXPECT_CALL(*mock_cras_proxy_.get(),
+                DoConnectToSignal(interface_name_,
+                                  "AudioEffectUIAppearanceChanged", _, _))
+        .WillRepeatedly(Invoke(
+            this, &CrasAudioClientTest::OnAudioEffectUIAppearanceChanged));
+
     // Set an expectation so mock_bus's GetObjectProxy() for the given
     // service name and the object path will return mock_cras_proxy_.
     EXPECT_CALL(*mock_bus_.get(),
@@ -716,6 +728,11 @@ class CrasAudioClientTest : public testing::Test {
     sidetone_supported_changed_handler_.Run(signal);
   }
 
+  void SendAudioEffectUIAppearanceChangedSignal(dbus::Signal* signal) {
+    ASSERT_FALSE(audio_effect_ui_appearance_changed_handler_.is_null());
+    audio_effect_ui_appearance_changed_handler_.Run(signal);
+  }
+
   CrasAudioClient* client() { return CrasAudioClient::Get(); }
 
   // The interface name.
@@ -768,6 +785,9 @@ class CrasAudioClientTest : public testing::Test {
   dbus::ObjectProxy::SignalCallback number_of_arc_streams_changed_handler_;
   // The SidetoneSupportedChanged signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback sidetone_supported_changed_handler_;
+  // The AudioEffectUIAppearanceChanged signal handler given by the tested
+  // client.
+  dbus::ObjectProxy::SignalCallback audio_effect_ui_appearance_changed_handler_;
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
@@ -1017,6 +1037,20 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     sidetone_supported_changed_handler_ = signal_callback;
+    constexpr bool success = true;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                                  interface_name, signal_name, success));
+  }
+
+  // Checks the requested interface name and signal name.
+  // Used to implement the mock cras proxy.
+  void OnAudioEffectUIAppearanceChanged(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      const dbus::ObjectProxy::SignalCallback& signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    audio_effect_ui_appearance_changed_handler_ = signal_callback;
     constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
@@ -1368,6 +1402,34 @@ TEST_F(CrasAudioClientTest, SidetoneSupportedChanged) {
   EXPECT_CALL(observer, SidetoneSupportedChanged(kSupported)).Times(0);
   // Run the signal callback again and make sure the observer isn't called.
   SendSidetoneSupportedChangedSignal(&signal);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, AudioEffectUIAppearanceChanged) {
+  const VoiceIsolationUIAppearance expected_appearance(
+      /* toggle_type */ static_cast<cras::AudioEffectType>(1 << 2),
+      /* effect_mode_options */ 1 << 0,
+      /* show_effect_fallback_message */ true);
+
+  dbus::Signal signal(cras::kCrasControlInterface,
+                      "AudioEffectUIAppearanceChanged");
+  dbus::MessageWriter writer(&signal);
+  writer.AppendUint32(static_cast<uint32_t>(expected_appearance.toggle_type));
+  writer.AppendUint32(expected_appearance.effect_mode_options);
+  writer.AppendBool(expected_appearance.show_effect_fallback_message);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, AudioEffectUIAppearanceChanged(expected_appearance))
+      .Times(1);
+  client()->AddObserver(&observer);
+  SendAudioEffectUIAppearanceChangedSignal(&signal);
+  client()->RemoveObserver(&observer);
+
+  EXPECT_CALL(observer, AudioEffectUIAppearanceChanged(expected_appearance))
+      .Times(0);
+  // Run the signal callback again and make sure the observer isn't called.
+  SendAudioEffectUIAppearanceChangedSignal(&signal);
 
   base::RunLoop().RunUntilIdle();
 }

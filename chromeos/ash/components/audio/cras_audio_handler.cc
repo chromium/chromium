@@ -1761,6 +1761,11 @@ void CrasAudioHandler::SidetoneSupportedChanged(bool supported) {
   sidetone_supported_ = supported;
 }
 
+void CrasAudioHandler::AudioEffectUIAppearanceChanged(
+    VoiceIsolationUIAppearance appearance) {
+  HandleGetVoiceIsolationUIAppearance(appearance);
+}
+
 void CrasAudioHandler::ResendBluetoothBattery() {
   CrasAudioClient::Get()->ResendBluetoothBattery();
 }
