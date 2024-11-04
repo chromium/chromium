@@ -101,7 +101,8 @@ void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
   //   controller that they expect a slow response and the controller to
   //   accommodate it by updating its stop, debounce, and cache timers'
   //   behaviors.
-  // done_ = true;
+  if (!due_to_user_inactivity)
+    done_ = true;
 
   // TODO(b/333770460): Once `HistoryEmbeddingsService` has a stop API, we
   //   should call it here.

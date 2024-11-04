@@ -346,17 +346,19 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_Stop_SearchCompletesAfterStop) {
 
   // Results returned after `Stop()` should be discarded.
   std::move(search_callbacks_[0]).Run("1 1 1", u"1");
-  // TODO(crbug.com/364303536) Temporarily allow history embeddings provider to
-  //   ignore `Stop()`.
-  EXPECT_FALSE(last_update_matches_.empty());
+  EXPECT_TRUE(last_update_matches_.empty());
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Stop) {
   history_embeddings_provider_->done_ = false;
-  history_embeddings_provider_->Stop(false, false);
+
   // TODO(crbug.com/364303536) Temporarily allow history embeddings provider to
   //   ignore `Stop()`.
+  history_embeddings_provider_->Stop(false, true);
   EXPECT_FALSE(history_embeddings_provider_->done_);
+
+  history_embeddings_provider_->Stop(false, false);
+  EXPECT_TRUE(history_embeddings_provider_->done_);
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, DeleteMatch) {
