@@ -1110,6 +1110,9 @@
     <message name="IDS_AUTOFILL_CREATE_CREDIT_CARD" desc="Button that allows the user to add a new card that will be automatically filled into web page forms. This can be either credit, debit, or prepaid card. [CHAR_LIMIT=32]" formatter_data="android_java">
       Add card
     </message>
+    <message name="IDS_AUTOFILL_SCAN_CREDIT_CARD_BUTTON" desc="Button that allows the user to scan a card using the camera on the device that will be filled into a card editor to be saved." formatter_data="android_java">
+      Scan card
+    </message>
   </if>
 
   <!-- Autofill IBAN preferences -->

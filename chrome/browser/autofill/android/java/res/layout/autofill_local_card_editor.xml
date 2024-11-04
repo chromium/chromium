@@ -10,6 +10,18 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Scan card -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/scan_card_button"
+        style="@style/Widget.Material3.Button.TonalButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/autofill_scan_credit_card_button"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small"
+        app:icon="@drawable/ic_photo_camera"
+        app:iconGravity="textStart"
+        android:visibility="gone"/>
+
     <!-- Credit card number -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_number_label"
