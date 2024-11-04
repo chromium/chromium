@@ -1274,12 +1274,6 @@ BASE_FEATURE(kSkyVaultV2, "SkyVaultV2", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSmartDim, "SmartDim", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enables or disables the ability to use the sound content setting to mute a
-// website.
-BASE_FEATURE(kSoundContentSetting,
-             "SoundContentSetting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables chrome://sys-internals.
 BASE_FEATURE(kSysInternals, "SysInternals", base::FEATURE_DISABLED_BY_DEFAULT);
