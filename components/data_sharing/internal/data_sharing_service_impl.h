@@ -113,6 +113,8 @@ class DataSharingServiceImpl : public DataSharingService,
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
+  void SetSDKDelegate(
+      std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUIDelegate() override;
@@ -161,6 +163,10 @@ class DataSharingServiceImpl : public DataSharingService,
       const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&
           result);
 
+  // Called when the SDK delegate has been updated, allowing the group data
+  // model to be updated too.
+  void OnSDKDelegateUpdated();
+
   ServiceStatus current_status_;
   // It must be destroyed after the `sdk_delegate_` member because
   // `sdk_delegate` needs the `data_sharing_network_loader_`.
@@ -172,6 +178,8 @@ class DataSharingServiceImpl : public DataSharingService,
   std::unique_ptr<DataSharingUIDelegate> ui_delegate_;
   // Nullable when `sdk_delegate_` is null.
   std::unique_ptr<GroupDataModel> group_data_model_;
+
+  base::FilePath profile_dir_;
 
   base::ObserverList<DataSharingService::Observer> observers_;
   std::unique_ptr<PreviewServerProxy> preview_server_proxy_;

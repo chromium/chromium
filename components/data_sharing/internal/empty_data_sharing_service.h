@@ -72,6 +72,8 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
+  void SetSDKDelegate(
+      std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUIDelegate() override;

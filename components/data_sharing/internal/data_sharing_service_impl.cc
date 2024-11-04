@@ -98,6 +98,7 @@ DataSharingServiceImpl::DataSharingServiceImpl(
                                                          identity_manager)),
       sdk_delegate_(std::move(sdk_delegate)),
       ui_delegate_(std::move(ui_delegate)),
+      profile_dir_(profile_dir),
       preview_server_proxy_(
           std::make_unique<PreviewServerProxy>(identity_manager,
                                                url_loader_factory)) {
@@ -109,15 +110,7 @@ DataSharingServiceImpl::DataSharingServiceImpl(
       std::make_unique<CollaborationGroupSyncBridge>(
           std::move(change_processor), std::move(data_type_store_factory));
 
-  if (sdk_delegate_) {
-    sdk_delegate_->Initialize(data_sharing_network_loader_.get());
-
-    const base::FilePath data_sharing_dir = profile_dir.Append(kDataSharingDir);
-    group_data_model_ = std::make_unique<GroupDataModel>(
-        data_sharing_dir, collaboration_group_sync_bridge_.get(),
-        sdk_delegate_.get());
-    group_data_model_->AddObserver(this);
-  }
+  OnSDKDelegateUpdated();
 
   // Initialize ServiceStatus.
   current_status_.collaboration_status = CollaborationStatus::kDisabled;
@@ -580,6 +573,16 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
   preview_server_proxy_->GetSharedDataPreview(group_token, std::move(callback));
 }
 
+void DataSharingServiceImpl::SetSDKDelegate(
+    std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {
+  CHECK(sdk_delegate);
+  CHECK(!sdk_delegate_);
+
+  sdk_delegate_ = std::move(sdk_delegate);
+
+  OnSDKDelegateUpdated();
+}
+
 void DataSharingServiceImpl::SetUIDelegate(
     std::unique_ptr<DataSharingUIDelegate> ui_delegate) {
   ui_delegate_ = std::move(ui_delegate);
@@ -604,6 +607,24 @@ void DataSharingServiceImpl::OnAccessTokenAdded(
 
   std::move(callback).Run(
       base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
+}
+
+void DataSharingServiceImpl::OnSDKDelegateUpdated() {
+  if (group_data_model_) {
+    group_data_model_->RemoveObserver(this);
+    group_data_model_.reset();
+  }
+
+  if (sdk_delegate_) {
+    sdk_delegate_->Initialize(data_sharing_network_loader_.get());
+
+    const base::FilePath data_sharing_dir =
+        profile_dir_.Append(kDataSharingDir);
+    group_data_model_ = std::make_unique<GroupDataModel>(
+        data_sharing_dir, collaboration_group_sync_bridge_.get(),
+        sdk_delegate_.get());
+    group_data_model_->AddObserver(this);
+  }
 }
 
 }  // namespace data_sharing

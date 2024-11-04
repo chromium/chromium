@@ -26,6 +26,7 @@
 
 namespace data_sharing {
 class DataSharingNetworkLoader;
+class DataSharingSDKDelegate;
 
 // The core class for managing data sharing.
 class DataSharingService : public KeyedService, public base::SupportsUserData {
@@ -220,7 +221,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) = 0;
 
-  // Get the current DataSharingUIDelegate instance.
+  // Sets the current DataSharingSDKDelegate instance.
+  virtual void SetSDKDelegate(
+      std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) = 0;
+
+  // Sets the current DataSharingUIDelegate instance.
   virtual void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) = 0;
 

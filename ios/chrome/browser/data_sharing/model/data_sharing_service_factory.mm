@@ -15,7 +15,6 @@
 #import "components/keyed_service/core/keyed_service_export.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/model/data_type_store_service.h"
-#import "ios/chrome/browser/data_sharing/model/data_sharing_sdk_delegate_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -44,14 +43,12 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   DCHECK(profile);
 
-  std::unique_ptr<DataSharingSDKDelegate> sdk_delegate =
-      std::make_unique<DataSharingSDKDelegateIOS>();
-
   return std::make_unique<DataSharingServiceImpl>(
       browser_state->GetStatePath(), browser_state->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
-      ::GetChannel(), std::move(sdk_delegate), /* ui_delegate = */ nullptr);
+      ::GetChannel(), /* sdk_delegate = */ nullptr,
+      /* ui_delegate = */ nullptr);
 }
 
 }  // namespace

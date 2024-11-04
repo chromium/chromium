@@ -9,7 +9,9 @@
 
 namespace data_sharing {
 
-DataSharingSDKDelegateIOS::DataSharingSDKDelegateIOS() = default;
+DataSharingSDKDelegateIOS::DataSharingSDKDelegateIOS(
+    ShareKitService* share_kit_service)
+    : share_kit_service_(share_kit_service) {}
 DataSharingSDKDelegateIOS::~DataSharingSDKDelegateIOS() = default;
 
 void DataSharingSDKDelegateIOS::Initialize(

@@ -5,6 +5,7 @@
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
 
 #include "base/functional/callback.h"
+#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 
 namespace data_sharing {
 
@@ -104,6 +105,9 @@ void EmptyDataSharingService::GetSharedEntitiesPreview(
     const GroupToken& group_token,
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {}
+
+void EmptyDataSharingService::SetSDKDelegate(
+    std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {}
 
 void EmptyDataSharingService::SetUIDelegate(
     std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
