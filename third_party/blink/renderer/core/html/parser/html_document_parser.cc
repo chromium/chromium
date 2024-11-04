@@ -567,7 +567,9 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   AttemptToRunDeferredScriptsAndEnd();
 
   base::TimeDelta elapsed_time = timer.Elapsed();
-  base::UmaHistogramTimes("Blink.PrepareToStopParsingTime", elapsed_time);
+  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+    base::UmaHistogramTimes("Blink.PrepareToStopParsingTime", elapsed_time);
+  }
   if (metrics_reporter_) {
     metrics_reporter_->AddPrepareToStopParsingTime(
         elapsed_time.InMicroseconds());
@@ -823,8 +825,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
   }
 
   base::TimeDelta pump_tokenizer_elapsed_time = pump_tokenizer_timer.Elapsed();
-  base::UmaHistogramTimes("Blink.PumpTokenizerTime",
-                          pump_tokenizer_elapsed_time);
+  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+    base::UmaHistogramTimes("Blink.PumpTokenizerTime",
+                            pump_tokenizer_elapsed_time);
+  }
   if (metrics_reporter_) {
     metrics_reporter_->AddPumpTokenizerTime(
         pump_tokenizer_elapsed_time.InMicroseconds());
