@@ -66,8 +66,6 @@ public class CustomTabObserver extends EmptyTabObserver {
     // Lets Long press on links select the link text instead of triggering context menu.
     private boolean mLongPressLinkSelectText;
 
-    private boolean mIsHidden;
-
     @IntDef({State.RESET, State.WAITING_LOAD_START, State.WAITING_LOAD_FINISH})
     @Retention(RetentionPolicy.SOURCE)
     @interface State {
@@ -95,12 +93,10 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public CustomTabObserver(
-            boolean openedByChrome, CustomTabsSessionToken token, boolean isHidden) {
+    public CustomTabObserver(boolean openedByChrome, CustomTabsSessionToken token) {
         mOpenedByChrome = openedByChrome;
         mCustomTabsConnection = mOpenedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
-        mIsHidden = isHidden;
         resetPageLoadTracking();
     }
 
@@ -129,7 +125,9 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     public void trackNextPageLoadForHiddenTab(
             boolean usedSpeculation, boolean hasCommitted, Intent sourceIntent) {
-        mIsHidden = false;
+        // If page load is already being tracked, it must have been an early nav - nothing to do
+        // here.
+        if (mIntentReceivedRealtimeMillis != 0) return;
         mUsedHiddenTabSpeculation = usedSpeculation;
         mLaunchedForSpeculationRealtimeMillis =
                 BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
@@ -283,7 +281,6 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     private void recordFirstCommitNavigation() {
-        if (mIsHidden) return;
         if (mCustomTabsConnection == null) return;
         String histogram = null;
         long duration = 0;

@@ -180,7 +180,7 @@ public class HiddenTabHolder {
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(/* openedByChrome= */ false, session, /* isHidden= */ true);
+                new CustomTabObserver(/* openedByChrome= */ false, session);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(session, /* forPrerender= */ true);
         CustomTabActivityTabController.addTabNavigationObservers(
@@ -290,11 +290,15 @@ public class HiddenTabHolder {
         TabObserverRegistrar registrar = new TabObserverRegistrar();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(/* openedByChrome= */ false, token, /* isHidden= */ true);
+                new CustomTabObserver(/* openedByChrome= */ false, token);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(token, /* forPrerender= */ false);
         CustomTabActivityTabController.addTabNavigationObservers(
                 registrar, customTabObserver, customTabNavigationEventObserver, tab, token);
+
+        // Unlike a prerender, this isn't a speculative load, so we can record metrics for it
+        // unconditionally.
+        customTabObserver.trackNextPageLoadForLaunch(tab, intent);
 
         if (isTrustedWebActivity) {
             TwaOfflineDataProvider.createFor(

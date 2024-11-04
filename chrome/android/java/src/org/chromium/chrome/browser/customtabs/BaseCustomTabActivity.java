@@ -448,8 +448,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             mCustomTabObserver =
                     new CustomTabObserver(
                             mIntentDataProvider.isOpenedByChrome(),
-                            mIntentDataProvider.getSession(),
-                            /* isHidden= */ false);
+                            mIntentDataProvider.getSession());
             mCustomTabNavigationEventObserver =
                     new CustomTabNavigationEventObserver(
                             mIntentDataProvider.getSession(), /* forPrerender= */ false);
