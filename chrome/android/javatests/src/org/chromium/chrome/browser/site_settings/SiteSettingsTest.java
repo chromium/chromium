@@ -86,6 +86,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -1618,6 +1619,57 @@ public class SiteSettingsTest {
                 });
 
         settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockAllThirdPartyCookiesSnackbarDisplayedWhenTopicsEnabled() {
+        var userActionTester = new UserActionTester();
+        // Enable Topics API.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = UserPrefs.get(getBrowserContextHandle());
+                    prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, true);
+                });
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        // Select the block all 3PC option.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    clickButtonAndVerifyItsChecked(
+                            getTriStateToggle(settingsActivity),
+                            CookieControlsMode.BLOCK_THIRD_PARTY);
+                });
+        // The snackbar should be displayed.
+        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(matches(isDisplayed()));
+        Assert.assertTrue(
+                "User action is not recorded",
+                userActionTester.getActions().contains("Settings.PrivacySandbox.Block3PCookies"));
+        // Click a different button, check that the snackbar was dismissed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    clickButtonAndVerifyItsChecked(
+                            getTriStateToggle(settingsActivity), CookieControlsMode.INCOGNITO_ONLY);
+                });
+        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(doesNotExist());
+        // Click back, click on the more button to test that the settings fragment was open.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    clickButtonAndVerifyItsChecked(
+                            getTriStateToggle(settingsActivity),
+                            CookieControlsMode.BLOCK_THIRD_PARTY);
+                });
+        onView(withText(R.string.privacy_sandbox_snackbar_message)).check(matches(isDisplayed()));
+        onView(withText(R.string.more)).perform(click());
+        onViewWaiting(withText(R.string.ad_privacy_page_title)).check(matches(isDisplayed()));
+    }
+
+    private TriStateCookieSettingsPreference getTriStateToggle(SettingsActivity settingsActivity) {
+        SingleCategorySettings preferences =
+                (SingleCategorySettings) settingsActivity.getMainFragment();
+        return preferences.findPreference(SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
     }
 
     private void clickButtonAndVerifyItsChecked(
