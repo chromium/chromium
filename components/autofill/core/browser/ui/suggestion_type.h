@@ -109,6 +109,7 @@ enum class SuggestionType {
   kVirtualCreditCardEntry = 36,
   kCreditCardFieldByFieldFilling = 37,
   kIbanEntry = 38,
+  kBnplEntry = 61,
 
   // Plus address suggestions.
   kCreateNewPlusAddress = 39,
@@ -159,7 +160,7 @@ enum class SuggestionType {
   // Suggestion displayed when there is an error with prediction improvements.
   kEditPredictionImprovementsInformation = 60,
 
-  kMaxValue = kEditPredictionImprovementsInformation
+  kMaxValue = kBnplEntry
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

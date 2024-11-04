@@ -290,6 +290,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
+    case SuggestionType::kBnplEntry:
       return false;
   }
 }
@@ -755,6 +756,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kShowAccountCards:
+    case SuggestionType::kBnplEntry:
       break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
@@ -803,6 +805,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kScanCreditCard:
+    case SuggestionType::kBnplEntry:
       DidAcceptPaymentsSuggestion(suggestion, metadata);
       break;
     case SuggestionType::kShowAccountCards:
@@ -1036,6 +1039,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
@@ -1706,6 +1710,10 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
                          GetWeakPtr(),
                          AutofillTriggerSource::kKeyboardAccessory));
+      break;
+    case SuggestionType::kBnplEntry:
+      // TODO(crbug.com/365774376): Wire up BNPL suggestion to
+      // SelectBnplIssuerDialog.
       break;
     default:
       NOTREACHED();  // Should be handled elsewhere

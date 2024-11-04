@@ -311,6 +311,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:
@@ -556,6 +557,7 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kVirtualCreditCardEntry:

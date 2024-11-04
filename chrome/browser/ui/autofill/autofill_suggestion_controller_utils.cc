@@ -105,6 +105,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kBnplEntry:
       return false;
   }
 }

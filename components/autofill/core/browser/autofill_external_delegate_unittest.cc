@@ -569,6 +569,13 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kCreditCard);
 
+  // Show BNPL suggestion in the popup.
+  OnSuggestionsReturned(queried_field().global_id(),
+                        {test::CreateAutofillSuggestion(
+                            SuggestionType::kBnplEntry, u"BNPL suggestion")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kCreditCard);
+
   // Show merchant promo code suggestion in the popup.
   OnSuggestionsReturned(
       queried_field().global_id(),

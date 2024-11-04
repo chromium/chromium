@@ -487,6 +487,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kMixedFormMessage:
