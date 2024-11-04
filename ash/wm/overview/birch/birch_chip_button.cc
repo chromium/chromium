@@ -500,7 +500,6 @@ void BirchChipButton::OnCoralAddonClicked() {
 void BirchChipButton::BuildTitleLoadingAnimation() {
   // Build `title_loading_animated_image_` and insert into the
   // front of `titles_container_`.
-  // TODO(yulunwu) update animation file when available.
   std::unique_ptr<views::AnimatedImageView> title_loading_animated_image =
       views::Builder<views::AnimatedImageView>()
           .SetAnimatedImage(birch_animation_utils::GetLottieAnimationData(

@@ -81,7 +81,7 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
       return;
     }
     case ash::BirchItemType::kCoral: {
-      // TODO(yulunwu): implement coral birch item removal once defined.
+      // Coral item remover is handled by `CoralItemRemover`.
       return;
     }
     case ash::BirchItemType::kReleaseNotes:

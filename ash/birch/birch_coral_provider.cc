@@ -102,7 +102,7 @@ bool ShouldCreateEmbedding(TabClusterUIItem* tab) {
 // Gets the data of the tabs opening on the active desk. Unordered set is used
 // because we need to dedup identical tabs, but we don't need to sort them.
 std::unordered_set<coral::mojom::TabPtr> GetInSessionTabData() {
-  // TODO(yulunwu, zxdan) add more tab metadata, app data,
+  // TODO(zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
   std::unordered_set<coral::mojom::TabPtr> tab_data;
   if (!Shell::Get()->tab_cluster_ui_controller()) {
@@ -296,7 +296,6 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     return;
   }
 
-  // TODO(yulunwu) make appropriate data request, send data to backend.
   if (HasValidPostLoginData()) {
     HandlePostLoginDataRequest();
   } else {
@@ -381,7 +380,7 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
 }
 
 void BirchCoralProvider::HandleInSessionDataRequest() {
-  // TODO(yulunwu, zxdan) add more tab metadata, app data,
+  // TODO(zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
   std::vector<CoralRequest::ContentItem> active_tab_app_data;
   std::unordered_set<coral::mojom::TabPtr> tabs = GetInSessionTabData();
@@ -499,7 +498,7 @@ void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
 }
 
 void BirchCoralProvider::HandleEmbeddingResult(bool success) {
-  // TODO(yulunwu) Add metrics.
+  // TODO(conniekxu) Add metrics.
 }
 
 }  // namespace ash
