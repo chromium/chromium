@@ -309,7 +309,9 @@ bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
          prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled) ||
-         prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled);
+         prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled) ||
+         prefs->GetString(
+             ash::prefs::kClassManagementToolsAvailabilitySetting) == "teacher";
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 #endif

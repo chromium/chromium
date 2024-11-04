@@ -51,6 +51,8 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
         ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale);
     pref_service_->registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
+    pref_service_->registry()->RegisterStringPref(
+        ash::prefs::kClassManagementToolsAvailabilitySetting, std::string());
   }
 
   void TearDown() override {
