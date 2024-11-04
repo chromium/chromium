@@ -318,6 +318,7 @@ chromium-metrics-reviews@google.com.
   <int value="75" label="ShowGoogleLensShortcut"/>
   <int value="76" label="SharingVapidKey"/>
   <int value="77" label="FirstPlusAddressCreationTime"/>
+  <int value="78" label="LastPlusAddressFillingTime"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

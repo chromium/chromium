@@ -97,6 +97,8 @@ void FakePlusAddressService::OnPlusAddressSuggestionShown(
   NOTIMPLEMENTED();
 }
 
+void FakePlusAddressService::DidFillPlusAddress() {}
+
 void FakePlusAddressService::OnClickedRefreshInlineSuggestion(
     const url::Origin& last_committed_primary_main_frame_origin,
     base::span<const autofill::Suggestion> current_suggestions,

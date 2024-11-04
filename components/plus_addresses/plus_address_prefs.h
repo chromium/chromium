@@ -28,6 +28,10 @@ inline constexpr std::string_view kPreallocatedAddressesNext =
 inline constexpr std::string_view kFirstPlusAddressCreationTime =
     "plus_addresses.creation.first.time";
 
+// The last time the user filled a plus address in Chrome.
+inline constexpr std::string_view kLastPlusAddressFillingTime =
+    "plus_addresses.last.filling.time";
+
 // Registers the plus address profile prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

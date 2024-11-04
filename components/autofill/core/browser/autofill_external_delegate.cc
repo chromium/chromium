@@ -845,6 +845,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         plus_address_delegate->RecordAutofillSuggestionEvent(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kExistingPlusAddressChosen);
+        plus_address_delegate->DidFillPlusAddress();
       }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,

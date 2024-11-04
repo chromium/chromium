@@ -1685,6 +1685,13 @@ TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
                                Suggestion::Icon::kGoogleMonochrome));
 }
 
+// Tests that the last plus address usage time is recorded correctly.
+TEST_F(PlusAddressSuggestionsTest, DidFillPlusAddress) {
+  service().DidFillPlusAddress();
+  EXPECT_EQ(pref_service().GetTime(prefs::kLastPlusAddressFillingTime),
+            base::Time::Now());
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{

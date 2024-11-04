@@ -16,6 +16,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
   registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time(),
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(kLastPlusAddressFillingTime, base::Time(),
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 }  // namespace plus_addresses::prefs

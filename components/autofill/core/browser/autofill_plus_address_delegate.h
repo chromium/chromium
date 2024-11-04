@@ -138,6 +138,9 @@ class AutofillPlusAddressDelegate {
       PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
 
+  // Called when a plus address was filled into a web input field.
+  virtual void DidFillPlusAddress() = 0;
+
   using UpdateSuggestionsCallback =
       base::OnceCallback<void(std::vector<Suggestion>,
                               AutofillSuggestionTriggerSource)>;

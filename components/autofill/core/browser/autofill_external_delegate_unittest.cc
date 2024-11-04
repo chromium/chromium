@@ -2264,6 +2264,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
               RecordAutofillSuggestionEvent(
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen));
+  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -2302,6 +2303,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
               RecordAutofillSuggestionEvent(
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kCreateNewPlusAddressChosen));
+  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress).Times(0);
 
   // Mock out the plus address creation logic to ensure it is deterministic and
   // independent of the client implementations in //chrome or //ios.

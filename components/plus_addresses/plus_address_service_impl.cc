@@ -34,6 +34,7 @@
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
 #include "components/plus_addresses/plus_address_preallocator.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/plus_address_ui_utils.h"
@@ -545,6 +546,10 @@ void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
   submission_logger_.OnPlusAddressSuggestionShown(
       manager, form, field, suggestion_context, form_type, suggestion_type,
       /*plus_address_count=*/plus_address_cache_.Size());
+}
+
+void PlusAddressServiceImpl::DidFillPlusAddress() {
+  pref_service_->SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
 }
 
 void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(

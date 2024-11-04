@@ -121,6 +121,7 @@ enum {
   kShowGoogleLensShortcut = 75,
   kSharingVapidKey = 76,
   kFirstPlusAddressCreationTime = 77,
+  kLastPlusAddressFillingTime = 78,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -308,6 +309,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {plus_addresses::prefs::kFirstPlusAddressCreationTime,
          {syncable_prefs_ids::kFirstPlusAddressCreationTime,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {plus_addresses::prefs::kLastPlusAddressFillingTime,
+         {syncable_prefs_ids::kLastPlusAddressFillingTime, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
 #if BUILDFLAG(IS_ANDROID)
         {autofill::prefs::kFacilitatedPaymentsPix,
          {syncable_prefs_ids::kFacilitatedPaymentsPix, syncer::PREFERENCES,
