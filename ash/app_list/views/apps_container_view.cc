@@ -35,6 +35,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -643,8 +644,10 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
 }
 
 void AppsContainerView::MaybeCreateGradientMask() {
-  if (!features::IsBackgroundBlurEnabled())
+  if (!features::IsBackgroundBlurEnabled() ||
+      !chromeos::features::IsSystemBlurEnabled()) {
     return;
+  }
 
   if (!scrollable_container_->layer()->HasGradientMask())
     UpdateGradientMaskBounds();

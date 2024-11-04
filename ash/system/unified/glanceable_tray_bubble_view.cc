@@ -31,6 +31,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
@@ -83,8 +84,11 @@ class TimeManagementContainer : public views::FlexLayoutView {
  public:
   TimeManagementContainer() {
     SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetFillsBoundsOpaquely(false);
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    }
+
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kGlanceablesContainerCornerRadius));
     SetOrientation(views::LayoutOrientation::kVertical);
@@ -94,8 +98,11 @@ class TimeManagementContainer : public views::FlexLayoutView {
     SetCollapseMargins(true);
     SetDefault(views::kMarginsKey, gfx::Insets::VH(8, 0));
 
-    SetBackground(views::CreateThemedSolidBackground(
-        cros_tokens::kCrosSysSystemBaseElevated));
+    const ui::ColorId background_color_id =
+        chromeos::features::IsSystemBlurEnabled()
+            ? cros_tokens::kCrosSysSystemBaseElevated
+            : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+    SetBackground(views::CreateThemedSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kGlanceablesContainerCornerRadius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));

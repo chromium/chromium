@@ -669,8 +669,10 @@ void HotseatWidget::DelegateView::SetTranslucentBackground(
 }
 
 void HotseatWidget::DelegateView::SetBackgroundBlur(bool enable_blur) {
-  if (!features::IsBackgroundBlurEnabled() || blur_lock_ > 0)
+  if (!features::IsBackgroundBlurEnabled() ||
+      !chromeos::features::IsSystemBlurEnabled() || blur_lock_ > 0) {
     return;
+  }
 
   const int blur_radius =
       enable_blur ? ShelfConfig::Get()->shelf_blur_radius() : 0;

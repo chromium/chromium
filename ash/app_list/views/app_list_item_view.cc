@@ -1694,7 +1694,7 @@ void AppListItemView::OnDraggedViewExit() {
 
 void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
   DCHECK(is_folder_);
-  if (!enabled) {
+  if (!enabled || !chromeos::features::IsSystemBlurEnabled()) {
     if (GetIconBackgroundLayer()) {
       GetIconBackgroundLayer()->SetBackgroundBlur(0);
     }

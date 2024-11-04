@@ -298,7 +298,7 @@ TrayBackgroundView::TrayBackgroundView(
   // Use layer color to provide background color. Note that children views
   // need to have their own layers to be visible.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetFillsBoundsOpaquely(!chromeos::features::IsSystemBlurEnabled());
 
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
@@ -661,9 +661,12 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 void TrayBackgroundView::UpdateBackground() {
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(
-      ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(
+        ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
   layer()->SetClipRect(GetBackgroundBounds());
 
   const views::Widget* widget = GetWidget();
@@ -1050,7 +1053,8 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
   // shelf is in the regular logged in page (not session blocked).
   bool is_shelf_opaque =
       (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
-      !Shell::Get()->session_controller()->IsUserSessionBlocked();
+      !Shell::Get()->session_controller()->IsUserSessionBlocked() &&
+      chromeos::features::IsSystemBlurEnabled();
   ui::ColorId non_active_color_id =
       is_shelf_opaque ? cros_tokens::kCrosSysSystemOnBase
                       : cros_tokens::kCrosSysSystemBaseElevated;

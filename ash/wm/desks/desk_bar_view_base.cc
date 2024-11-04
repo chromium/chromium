@@ -126,7 +126,8 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
     return;
   }
 
-  if (features::IsBackgroundBlurEnabled()) {
+  if (features::IsBackgroundBlurEnabled() &&
+      chromeos::features::IsSystemBlurEnabled()) {
     layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
@@ -137,8 +138,12 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   view->SetBorder(std::make_unique<views::HighlightBorder>(
       corner_radius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
   layer->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
-  view->SetBackground(
-      views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  view->SetBackground(views::CreateThemedSolidBackground(background_color_id));
 }
 
 }  // namespace

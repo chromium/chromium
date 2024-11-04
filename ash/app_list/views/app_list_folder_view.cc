@@ -662,28 +662,39 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   // such changes.
   background_view_ = AddChildView(std::make_unique<views::View>());
   background_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  background_view_->layer()->SetFillsBoundsOpaquely(false);
-  background_view_->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  background_view_->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    background_view_->layer()->SetFillsBoundsOpaquely(false);
+    background_view_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    background_view_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+  }
+
   background_view_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kFolderBackgroundRadius));
   background_view_->layer()->SetIsFastRoundedCorner(true);
   background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kFolderBackgroundRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  background_view_->SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  background_view_->SetBackground(
+      views::CreateThemedSolidBackground(background_color_id));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());
   animating_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  animating_background_->layer()->SetBackgroundBlur(
-      ColorProvider::kBackgroundBlurSigma);
-  animating_background_->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
-  animating_background_->layer()->SetFillsBoundsOpaquely(false);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    animating_background_->layer()->SetBackgroundBlur(
+        ColorProvider::kBackgroundBlurSigma);
+    animating_background_->layer()->SetBackdropFilterQuality(
+        ColorProvider::kBackgroundBlurQuality);
+    animating_background_->layer()->SetFillsBoundsOpaquely(false);
+  }
+
   animating_background_->SetVisible(false);
 
   contents_container_ = AddChildView(std::make_unique<views::View>());

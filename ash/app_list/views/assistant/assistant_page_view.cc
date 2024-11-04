@@ -26,11 +26,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -411,7 +413,7 @@ void AssistantPageView::OnThemeChanged() {
 void AssistantPageView::InitLayout() {
   // Use a solid color layer. The color is set in OnThemeChanged().
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetFillsBoundsOpaquely(!chromeos::features::IsSystemBlurEnabled());
 
   view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
@@ -429,17 +431,23 @@ void AssistantPageView::InitLayout() {
 
 void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   // Blur
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   // Color
   const auto* color_provider =
       GetWidget() ? GetWidget()->GetColorProvider() : nullptr;
 
+  const ui::ColorId layer_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   // ColorProvide might be nullptr in tests or this function is triggered before
   // `this` is added to the view hierarchy.
   if (color_provider)
-    layer()->SetColor(color_provider->GetColor(kColorAshShieldAndBase80));
+    layer()->SetColor(color_provider->GetColor(layer_color_id));
   else
     layer()->SetColor(SK_ColorWHITE);
 }

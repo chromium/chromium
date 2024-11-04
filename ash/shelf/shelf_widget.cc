@@ -447,7 +447,8 @@ void ShelfWidget::DelegateView::UpdateBackgroundBlur() {
   // Blur only if the background is visible.
   const bool should_blur_background =
       opaque_background_layer()->visible() &&
-      shelf_widget_->shelf_layout_manager()->ShouldBlurShelfBackground();
+      shelf_widget_->shelf_layout_manager()->ShouldBlurShelfBackground() &&
+      chromeos::features::IsSystemBlurEnabled();
   if (should_blur_background == background_is_currently_blurred_)
     return;
 

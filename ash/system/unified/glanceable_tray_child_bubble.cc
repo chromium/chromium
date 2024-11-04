@@ -31,17 +31,22 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
     GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
     SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
-    // TODO(b:286941809): Setting blur here, can break the rounded corners
-    // applied to the parent scroll view.
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      // TODO(b:286941809): Setting blur here, can break the rounded corners
+      // applied to the parent scroll view.
+      layer()->SetFillsBoundsOpaquely(false);
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
 
-    SetBackground(views::CreateThemedSolidBackground(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)));
+    const ui::ColorId background_color_id =
+        chromeos::features::IsSystemBlurEnabled()
+            ? cros_tokens::kCrosSysSystemBaseElevated
+            : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+    SetBackground(views::CreateThemedSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kBubbleCornerRadius,
         chromeos::features::IsJellyrollEnabled()
