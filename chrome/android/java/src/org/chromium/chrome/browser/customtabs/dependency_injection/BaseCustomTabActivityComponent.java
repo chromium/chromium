@@ -9,7 +9,6 @@ import dagger.Subcomponent;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityClientConnectionKeeper;
@@ -78,8 +77,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
 
     TwaFinishHandler resolveTwaFinishHandler();
-
-    Verifier resolveVerifier();
 
     CustomTabMinimizationManagerHolder resolveCustomTabMinimizationManagerHolder();
 

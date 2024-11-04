@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_FIRST_TIME;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /** Tests for {@link TrustedWebActivityDisclosureController}. */
@@ -51,6 +53,7 @@ public class TrustedWebActivityDisclosureControllerTest {
     @Mock public CurrentPageVerifier mCurrentPageVerifier;
     @Mock public TrustedWebActivityUmaRecorder mRecorder;
     @Mock public ClientPackageNameProvider mClientPackageNameProvider;
+    @Mock public BaseCustomTabActivity mActivity;
 
     @Captor public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 
@@ -66,6 +69,7 @@ public class TrustedWebActivityDisclosureControllerTest {
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
         doReturn(false).when(mStore).hasUserAcceptedTwaDisclosureForPackage(anyString());
+        when(mActivity.getClientPackageNameProvider()).thenReturn(mClientPackageNameProvider);
 
         mController =
                 new TrustedWebActivityDisclosureController(
@@ -74,7 +78,7 @@ public class TrustedWebActivityDisclosureControllerTest {
                         mLifecycleDispatcher,
                         mCurrentPageVerifier,
                         mRecorder,
-                        mClientPackageNameProvider);
+                        mActivity);
     }
 
     @Test

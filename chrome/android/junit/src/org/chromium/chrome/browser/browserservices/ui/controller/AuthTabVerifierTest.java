@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -64,7 +63,6 @@ public class AuthTabVerifierTest {
 
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock AuthTabIntentDataProvider mIntentDataProvider;
-    @Mock ChromeOriginVerifierFactory mOriginVerifierFactory;
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
     @Mock ExternalAuthUtils mExternalAuthUtils;
@@ -80,17 +78,12 @@ public class AuthTabVerifierTest {
         when(mIntentDataProvider.getAuthRedirectHost()).thenReturn(REDIRECT_HOST);
         when(mIntentDataProvider.getAuthRedirectPath()).thenReturn(REDIRECT_PATH);
         when(mIntentDataProvider.getClientPackageName()).thenReturn("org.chromium.authtab");
-        when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any()))
-                .thenReturn(mOriginVerifier);
+        ChromeOriginVerifierFactory.setInstanceForTesting(mOriginVerifier);
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mActivityTabProvider);
 
         mDelegate =
                 new AuthTabVerifier(
-                        mLifecycleDispatcher,
-                        mIntentDataProvider,
-                        mOriginVerifierFactory,
-                        mActivity,
-                        mExternalAuthUtils);
+                        mLifecycleDispatcher, mIntentDataProvider, mActivity, mExternalAuthUtils);
     }
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {

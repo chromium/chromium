@@ -12,13 +12,6 @@ import dagger.Reusable;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
-import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHomescreenVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
@@ -30,7 +23,6 @@ import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHand
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
 
 /** Module for bindings shared between custom tabs and webapps. */
 @Module
@@ -84,20 +76,6 @@ public class BaseCustomTabActivityModule {
     }
 
     @Provides
-    public Verifier provideVerifier(
-            Lazy<WebApkVerifier> webApkVerifier,
-            Lazy<AddToHomescreenVerifier> addToHomescreenVerifier,
-            Lazy<TwaVerifier> twaVerifier,
-            Lazy<EmptyVerifier> emptyVerifier) {
-        return switch (mActivityType) {
-            case ActivityType.WEB_APK -> webApkVerifier.get();
-            case ActivityType.WEBAPP -> addToHomescreenVerifier.get();
-            case ActivityType.TRUSTED_WEB_ACTIVITY -> twaVerifier.get();
-            default -> emptyVerifier.get();
-        };
-    }
-
-    @Provides
     public IntentIgnoringCriterion provideIntentIgnoringCriterion() {
         return mIntentIgnoringCriterion;
     }
@@ -113,20 +91,8 @@ public class BaseCustomTabActivityModule {
     }
 
     @Provides
-    @Reusable
-    public WebApkPostShareTargetNavigator providePostShareTargetNavigator() {
-        return new WebApkPostShareTargetNavigator();
-    }
-
-    @Provides
     public InstalledWebappDataRegister provideInstalledWebappDataRegister() {
         return new InstalledWebappDataRegister();
-    }
-
-    @Provides
-    @Reusable
-    public ChromeOriginVerifierFactory providesOriginVerifierFactory() {
-        return new ChromeOriginVerifierFactoryImpl();
     }
 
     @Provides

@@ -88,7 +88,6 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     public AuthTabVerifier(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            ChromeOriginVerifierFactory originVerifierFactory,
             BaseCustomTabActivity activity,
             ExternalAuthUtils externalAuthUtils) {
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -110,7 +109,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
             WebContents webContents =
                     tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
             mOriginVerifier =
-                    originVerifierFactory.create(
+                    ChromeOriginVerifierFactory.create(
                             intentDataProvider.getClientPackageName(),
                             CustomTabsService.RELATION_HANDLE_ALL_URLS,
                             webContents,

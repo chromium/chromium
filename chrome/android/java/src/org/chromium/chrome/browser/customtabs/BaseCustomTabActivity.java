@@ -41,7 +41,12 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHomescreenVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
@@ -113,7 +118,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     protected @Nullable AuthTabVerifier mAuthTabVerifier;
-    protected Verifier mVerifier;
+    private Verifier mVerifier;
     protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
@@ -121,6 +126,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private TabObserverRegistrar mTabObserverRegistrar;
     private CustomTabObserver mCustomTabObserver;
     private CustomTabNavigationEventObserver mCustomTabNavigationEventObserver;
+    private ClientPackageNameProvider mClientPackageNameProvider;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -340,7 +346,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         mStatusBarColorProvider = component.resolveCustomTabStatusBarColorProvider();
         mTabFactory = component.resolveTabFactory();
         mCustomTabIntentHandler = component.resolveIntentHandler();
-        mVerifier = component.resolveVerifier();
 
         component.resolveCompositorContentInitializer();
         component.resolveTaskDescriptionHelper();
@@ -420,6 +425,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             this.finishAndRemoveTask();
             return;
         }
+
+        mClientPackageNameProvider =
+                new ClientPackageNameProvider(
+                        getLifecycleDispatcher(), mIntentDataProvider, getSavedInstanceState());
 
         // Hidden tabs shouldn't be used in incognito/ephemeral CCT, since they are always
         // created with regular profile.
@@ -616,7 +625,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getToolbarManager(),
                 getWindow().getDecorView(),
                 mBookmarkModelSupplier,
-                mVerifier,
+                getVerifier(),
                 mIntentDataProvider.getUiType(),
                 mIntentDataProvider.getMenuTitles(),
                 mIntentDataProvider.isOpenedByChrome(),
@@ -891,5 +900,27 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabNavigationEventObserver getCustomTabNavigationEventObserver() {
         return mCustomTabNavigationEventObserver;
+    }
+
+    private Verifier createVerifier() {
+        return switch (getActivityType()) {
+            case ActivityType.WEB_APK -> new WebApkVerifier(mIntentDataProvider);
+            case ActivityType.WEBAPP -> new AddToHomescreenVerifier(mIntentDataProvider);
+            case ActivityType.TRUSTED_WEB_ACTIVITY -> new TwaVerifier(
+                    getLifecycleDispatcher(),
+                    mIntentDataProvider,
+                    getClientPackageNameProvider(),
+                    getCustomTabActivityTabProvider());
+            default -> new EmptyVerifier();
+        };
+    }
+
+    public Verifier getVerifier() {
+        if (mVerifier == null) mVerifier = createVerifier();
+        return mVerifier;
+    }
+
+    public ClientPackageNameProvider getClientPackageNameProvider() {
+        return mClientPackageNameProvider;
     }
 }

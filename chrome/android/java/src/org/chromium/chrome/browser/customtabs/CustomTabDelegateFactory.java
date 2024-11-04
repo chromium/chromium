@@ -404,11 +404,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     @Inject
     public CustomTabDelegateFactory(
-            Activity activity,
+            BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabBrowserControlsVisibilityDelegate visibilityDelegate,
             ExternalAuthUtils authUtils,
-            Verifier verifier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager,
@@ -432,7 +431,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(),
                 visibilityDelegate,
                 authUtils,
-                verifier,
+                activity.getVerifier(),
                 chromeActivityNativeDelegate,
                 browserControlsStateProvider,
                 fullscreenManager,

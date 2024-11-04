@@ -84,11 +84,10 @@ public class CurrentPageVerifier implements NativeInitObserver {
     public CurrentPageVerifier(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BaseCustomTabActivity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            Verifier delegate) {
+            BrowserServicesIntentDataProvider intentDataProvider) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
-        mDelegate = delegate;
+        mDelegate = activity.getVerifier();
 
         activity.getTabObserverRegistrar().registerActivityTabObserver(mVerifyOnPageLoadObserver);
         lifecycleDispatcher.register(this);

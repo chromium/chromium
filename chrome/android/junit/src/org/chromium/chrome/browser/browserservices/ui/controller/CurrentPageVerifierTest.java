@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -56,7 +55,6 @@ public class CurrentPageVerifierTest {
     @Mock CustomTabActivityTabProvider mTabProvider;
     @Mock CustomTabIntentDataProvider mIntentDataProvider;
     @Mock Tab mTab;
-    @Mock ClientPackageNameProvider mClientPackageNameProvider;
     @Captor ArgumentCaptor<CustomTabTabObserver> mTabObserverCaptor;
     @Mock public BaseCustomTabActivity mActivity;
 
@@ -68,7 +66,6 @@ public class CurrentPageVerifierTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mTabProvider.getTab()).thenReturn(mTab);
-        when(mClientPackageNameProvider.get()).thenReturn(PACKAGE_NAME);
         doNothing()
                 .when(mTabObserverRegistrar)
                 .registerActivityTabObserver(mTabObserverCaptor.capture());
@@ -76,9 +73,9 @@ public class CurrentPageVerifierTest {
                 .thenReturn(Collections.singletonList("https://www.origin2.com/"));
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
+        when(mActivity.getVerifier()).thenReturn(mVerifierDelegate);
         mCurrentPageVerifier =
-                new CurrentPageVerifier(
-                        mLifecycleDispatcher, mActivity, mIntentDataProvider, mVerifierDelegate);
+                new CurrentPageVerifier(mLifecycleDispatcher, mActivity, mIntentDataProvider);
         // TODO(peconn): Add check on permission updated being updated.
     }
 

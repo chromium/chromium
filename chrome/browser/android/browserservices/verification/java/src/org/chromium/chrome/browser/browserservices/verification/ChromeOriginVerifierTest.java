@@ -49,8 +49,6 @@ public class ChromeOriginVerifierTest {
     private static final String PACKAGE_NAME =
             ContextUtils.getApplicationContext().getPackageName();
 
-    private final ChromeOriginVerifierFactory mFactory = new ChromeOriginVerifierFactoryImpl();
-
     private Origin mHttpsOrigin;
     private Origin mHttpOrigin;
     private TestExternalAuthUtils mExternalAuthUtils;
@@ -94,13 +92,13 @@ public class ChromeOriginVerifierTest {
         mHttpOrigin = Origin.create("http://www.android.com");
 
         mHandleAllUrlsVerifier =
-                mFactory.create(
+                ChromeOriginVerifierFactory.create(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
                         new MockWebContents(),
                         null);
         mUseAsOriginVerifier =
-                mFactory.create(
+                ChromeOriginVerifierFactory.create(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_USE_AS_ORIGIN,
                         /* webContents= */ null,
@@ -168,7 +166,7 @@ public class ChromeOriginVerifierTest {
     @SmallTest
     public void testVerificationBypass() throws InterruptedException {
         ChromeOriginVerifier verifier =
-                mFactory.create(
+                ChromeOriginVerifierFactory.create(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
                         null,
@@ -209,7 +207,7 @@ public class ChromeOriginVerifierTest {
     @SmallTest
     public void testIsAllowlisted() throws InterruptedException {
         ChromeOriginVerifier verifier =
-                mFactory.create(
+                ChromeOriginVerifierFactory.create(
                         PACKAGE_NAME,
                         CustomTabsService.RELATION_HANDLE_ALL_URLS,
                         null,
@@ -228,7 +226,7 @@ public class ChromeOriginVerifierTest {
                         PACKAGE_NAME, mHttpsOrigin, "delegate_permission/common.handle_all_urls"));
 
         ChromeOriginVerifier verifierNoAuth =
-                mFactory.create(
+                ChromeOriginVerifierFactory.create(
                         PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, null);
         Assert.assertFalse(
                 verifierNoAuth.isAllowlisted(

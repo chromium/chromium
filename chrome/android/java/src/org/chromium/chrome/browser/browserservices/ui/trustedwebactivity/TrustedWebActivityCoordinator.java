@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactiv
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityOpenTimeRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -43,13 +44,13 @@ public class TrustedWebActivityCoordinator {
             BrowserServicesIntentDataProvider intentDataProvider,
             TrustedWebActivityUmaRecorder umaRecorder,
             InstalledWebappRegistrar installedWebappRegistrar,
-            ClientPackageNameProvider clientPackageNameProvider) {
+            BaseCustomTabActivity activity) {
         // We don't need to do anything with the unused_ classes above, we just need to resolve them
         // so they start working.
         mSharedActivityCoordinator = sharedActivityCoordinator;
         mCurrentPageVerifier = currentPageVerifier;
         mInstalledWebappRegistrar = installedWebappRegistrar;
-        mClientPackageNameProvider = clientPackageNameProvider;
+        mClientPackageNameProvider = activity.getClientPackageNameProvider();
 
         initSplashScreen(splashController, intentDataProvider, umaRecorder);
 

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
@@ -352,7 +351,6 @@ class ClientManager {
         }
     }
 
-    private final ChromeOriginVerifierFactory mOriginVerifierFactory;
     private final InstalledAppProviderWrapper mInstalledAppProviderWrapper;
     private final ChromeBrowserInitializer mChromeBrowserInitializer;
 
@@ -362,17 +360,12 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
-        this(
-                new ChromeOriginVerifierFactoryImpl(),
-                new ProdInstalledAppProviderWrapper(),
-                ChromeBrowserInitializer.getInstance());
+        this(new ProdInstalledAppProviderWrapper(), ChromeBrowserInitializer.getInstance());
     }
 
     public ClientManager(
-            ChromeOriginVerifierFactory originVerifierFactory,
             InstalledAppProviderWrapper installedAppProviderWrapper,
             ChromeBrowserInitializer chromeBrowserInitializer) {
-        mOriginVerifierFactory = originVerifierFactory;
         mInstalledAppProviderWrapper = installedAppProviderWrapper;
         mChromeBrowserInitializer = chromeBrowserInitializer;
         RequestThrottler.loadInBackground();
@@ -629,7 +622,7 @@ class ClientManager {
                 };
 
         params.originVerifier =
-                mOriginVerifierFactory.create(
+                ChromeOriginVerifierFactory.create(
                         params.getPackageName(),
                         relation,
                         /* webContents= */ null,

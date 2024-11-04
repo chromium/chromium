@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import javax.inject.Inject;
@@ -29,11 +30,15 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
             TrustedWebActivityUmaRecorder recorder,
-            ClientPackageNameProvider clientPackageNameProvider) {
-        super(model, lifecycleDispatcher, currentPageVerifier, clientPackageNameProvider.get());
+            BaseCustomTabActivity activity) {
+        super(
+                model,
+                lifecycleDispatcher,
+                currentPageVerifier,
+                activity.getClientPackageNameProvider().get());
         mBrowserServicesStore = browserServicesStore;
         mRecorder = recorder;
-        mClientPackageNameProvider = clientPackageNameProvider;
+        mClientPackageNameProvider = activity.getClientPackageNameProvider();
     }
 
     @Override

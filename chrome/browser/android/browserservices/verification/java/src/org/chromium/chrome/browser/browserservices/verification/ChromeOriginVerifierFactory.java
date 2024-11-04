@@ -7,20 +7,30 @@ package org.chromium.chrome.browser.browserservices.verification;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * A factory that creates instances of {@link ChromeOriginVerifier}.
- *
- * Most classes that are Activity scoped should take an ChromeOriginVerifierFactory and create
- * OriginVerifiers as needed.
- */
-public interface ChromeOriginVerifierFactory {
-    /** Creates an {@link OriginVerifier}. */
-    ChromeOriginVerifier create(
+/** A factory that creates instances of {@link ChromeOriginVerifier}. */
+public class ChromeOriginVerifierFactory {
+    private static ChromeOriginVerifier sInstanceForTests;
+
+    public static void setInstanceForTesting(ChromeOriginVerifier verifier) {
+        sInstanceForTests = verifier;
+        ResettersForTesting.register(() -> sInstanceForTests = null);
+    }
+
+    public static ChromeOriginVerifier create(
             String packageName,
             @CustomTabsService.Relation int relation,
             @Nullable WebContents webContents,
-            @Nullable ExternalAuthUtils externalAuthUtils);
+            @Nullable ExternalAuthUtils externalAuthUtils) {
+        if (sInstanceForTests != null) return sInstanceForTests;
+        return new ChromeOriginVerifier(
+                packageName,
+                relation,
+                webContents,
+                externalAuthUtils,
+                ChromeVerificationResultStore.getInstance());
+    }
 }

@@ -39,21 +39,17 @@ import javax.inject.Inject;
 public class TwaSharingController {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
-    private final WebApkPostShareTargetNavigator mPostNavigator;
     private final Verifier mVerifierDelegate;
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
     public TwaSharingController(
             CustomTabActivityNavigationController navigationController,
-            WebApkPostShareTargetNavigator postNavigator,
-            Verifier verifierDelegate,
             TrustedWebActivityUmaRecorder umaRecorder,
             BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mNavigationController = navigationController;
-        mPostNavigator = postNavigator;
-        mVerifierDelegate = verifierDelegate;
+        mVerifierDelegate = activity.getVerifier();
         mUmaRecorder = umaRecorder;
     }
 
@@ -141,7 +137,7 @@ public class TwaSharingController {
             assert false : "Null tab when sharing";
             return false;
         }
-        return mPostNavigator.navigateIfPostShareTarget(
+        return WebApkPostShareTargetNavigator.navigateIfPostShareTarget(
                 target.getAction(), target, shareData, tab.getWebContents());
     }
 
