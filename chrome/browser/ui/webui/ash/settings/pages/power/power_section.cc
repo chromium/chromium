@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/power/power_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,8 +29,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -52,11 +54,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithBatterySearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithBatterySearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_SOURCE,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -66,11 +68,11 @@ const std::vector<SearchConcept>& GetPowerWithBatterySearchConcepts() {
        {IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT1,
         IDS_OS_SETTINGS_TAG_POWER_SOURCE_ALT2, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithLaptopLidSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -81,11 +83,11 @@ const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
         IDS_OS_SETTINGS_TAG_POWER_SLEEP_COVER_CLOSED_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithAdaptiveChargingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_ADAPTIVE_CHARGING,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -93,11 +95,11 @@ const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAdaptiveCharging}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPowerWithBatterySaverModeSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_POWER_BATTERY_SAVER,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -105,7 +107,7 @@ const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kBatterySaver}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace
