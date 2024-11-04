@@ -199,6 +199,9 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.handler manageTabGroup:tabGroup];
                    }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf.handler showRecentActivityForTabGroup:tabGroup];
+                   }]];
   } else if (IsSharedTabGroupsCreateEnabled(_profile)) {
     [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
                      [weakSelf.handler shareTabGroup:tabGroup];

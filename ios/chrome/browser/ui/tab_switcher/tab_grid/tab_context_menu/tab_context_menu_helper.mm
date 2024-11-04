@@ -332,6 +332,10 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
                    }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf.contextMenuDelegate
+                         showRecentActivityForTabGroup:weakGroup];
+                   }]];
   } else if (IsSharedTabGroupsCreateEnabled(_profile)) {
     [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];

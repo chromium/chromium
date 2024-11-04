@@ -181,6 +181,9 @@
     [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                      [weakSelf.mutator manageGroup];
                    }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf.mutator showRecentActivity];
+                   }]];
   } else if (_shareAvailable) {
     [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
                      [weakSelf.mutator shareGroup];

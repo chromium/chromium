@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
@@ -91,6 +92,12 @@
                                        tabGroup:tabGroup.get()];
   _createTabGroupCoordinator.delegate = self;
   [_createTabGroupCoordinator start];
+}
+
+- (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
 - (void)showTabGroupIndicatorConfirmationForAction:

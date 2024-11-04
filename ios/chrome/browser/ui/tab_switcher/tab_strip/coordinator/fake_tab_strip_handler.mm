@@ -46,4 +46,7 @@
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
 }
 
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+}
+
 @end

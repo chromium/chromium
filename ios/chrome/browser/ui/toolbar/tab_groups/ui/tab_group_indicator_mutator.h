@@ -14,6 +14,9 @@
 // Starts managing the shared group.
 - (void)manageGroup;
 
+// Shows the recent activity for the shared group.
+- (void)showRecentActivity;
+
 // Shows the tab group edit view.
 - (void)showTabGroupEdition;
 

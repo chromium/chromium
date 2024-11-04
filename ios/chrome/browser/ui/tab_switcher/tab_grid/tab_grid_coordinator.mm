@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -1601,6 +1602,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   config.applicationHandler = HandlerForProtocol(
       self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
   shareKitService->ShareGroup(config);
+}
+
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.regularBrowser->GetCommandDispatcher(), TabGroupsCommands);
+  [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
 - (void)selectTabs {

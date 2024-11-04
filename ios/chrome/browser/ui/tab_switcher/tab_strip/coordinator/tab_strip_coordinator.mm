@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -338,6 +339,12 @@
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   shareKitService->ShareGroup(config);
+}
+
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

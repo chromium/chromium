@@ -100,6 +100,9 @@ class WebStateID;
 // Tells the delegate to share the local group.
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group;
 
+// Tells the delegate to show the recent activity for the shared group.
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_TAB_CONTEXT_MENU_DELEGATE_H_
