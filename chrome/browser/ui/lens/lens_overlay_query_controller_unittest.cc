@@ -424,6 +424,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
          {"use-optimized-request-flow", "true"},
          {"use-pdf-vit-param", "true"},
          {"use-webpage-vit-param", "true"},
+         {"use-pdf-interaction-type", "true"},
+         {"use-webpage-interaction-type", "true"},
          {"send-lens-inputs-for-contextual-suggest", "true"},
          {"send-lens-inputs-for-lens-suggest", "true"},
          {"send-lens-visual-interaction-data-for-lens-suggest", "true"}});
@@ -1196,9 +1198,8 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
-  ASSERT_EQ(
-      sent_interaction_request.interaction_request_metadata().type(),
-      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .query_metadata()
                 .text_query()
@@ -1310,9 +1311,8 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
-  ASSERT_EQ(
-      sent_interaction_request.interaction_request_metadata().type(),
-      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .query_metadata()
                 .text_query()
@@ -1424,9 +1424,8 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
-  ASSERT_EQ(
-      sent_interaction_request.interaction_request_metadata().type(),
-      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
+            lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .query_metadata()
                 .text_query()
