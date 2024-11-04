@@ -2764,14 +2764,6 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
 // synchronization behavior. Of course, for the latter case, a _valid_ selector
 // would get the same skipping behavior.)
 //
-// So as the spec stands, we can unify these cases; we use
-// parent_rule_for_nesting as a marker for which case we are in (see [1]).
-// If it's nullptr, we're parsing a declaration list and not a style block,
-// so non-idents should not begin consuming qualified rules. See also
-// AbortsNestedSelectorParsing(), which uses parent_rule_for_nesting to check
-// whether semicolons should abort parsing (the prelude of) qualified rules;
-// if semicolons always aborted such parsing, we wouldn't need this distinction.
-//
 // The `nested_declarations_start_index` parameter controls how this function
 // emits "nested declaration" rules for the leading block of declarations.
 // For regular style rules (which can hold declarations directly), this should
@@ -2857,7 +2849,7 @@ void CSSParserImpl::ConsumeDeclarationList(
         [[fallthrough]];
       }
       default:
-        if (parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
+        if (nesting_type != CSSNestingType::kNone) {
           bool invalid_rule_error = false;
           StyleRuleBase* child =
               ConsumeNestedRule(std::nullopt, rule_type, stream, nesting_type,

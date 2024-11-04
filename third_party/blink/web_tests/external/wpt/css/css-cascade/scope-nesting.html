@@ -576,3 +576,25 @@ test((t) => {
   assert_equals(getComputedStyle(child).zIndex, '1');
 }, 'Scoped nested within another scope');
 </script>
+
+<template id=test_implicit_scope_nested_group_rule>
+  <div class=nest>
+    <style>
+      .nest {
+        @scope {
+          #child {
+            color: green;
+          }
+        }
+      }
+    </style>
+    <div id=child>Foo</div>
+</div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_implicit_scope_nested_group_rule.content.cloneNode(true));
+  assert_equals(getComputedStyle(child).color, 'rgb(0, 128, 0)');
+}, 'Implicit (prelude-less) @scope as a nested group rule');
+</script>
