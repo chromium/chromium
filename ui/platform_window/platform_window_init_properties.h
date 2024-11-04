@@ -139,13 +139,6 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   // manager to match the desktop entry and group windows.
   std::string wayland_app_id;
 
-  // Specifies the unique session id and the restore window id.
-  int32_t restore_session_id;
-  std::optional<int32_t> restore_window_id;
-
-  // Specifies the source to get `restore_window_id` from.
-  std::optional<std::string> restore_window_id_source;
-
   // Specifies whether the associated window is persistable.
   bool persistable = true;
 

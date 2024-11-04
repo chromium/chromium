@@ -651,27 +651,6 @@ void XDGToplevelWrapperImpl::SetScaleFactor(float scale_factor) {
   }
 }
 
-void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,
-                                            int32_t restore_window_id) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_RESTORE_INFO_SINCE_VERSION) {
-    zaura_toplevel_set_restore_info(aura_toplevel_.get(), restore_session_id,
-                                    restore_window_id);
-  }
-}
-
-void XDGToplevelWrapperImpl::SetRestoreInfoWithWindowIdSource(
-    int32_t restore_session_id,
-    const std::string& restore_window_id_source) {
-  if (aura_toplevel_ &&
-      zaura_toplevel_get_version(aura_toplevel_.get()) >=
-          ZAURA_TOPLEVEL_SET_RESTORE_INFO_WITH_WINDOW_ID_SOURCE_SINCE_VERSION) {
-    zaura_toplevel_set_restore_info_with_window_id_source(
-        aura_toplevel_.get(), restore_session_id,
-        restore_window_id_source.c_str());
-  }
-}
-
 void XDGToplevelWrapperImpl::SetFloatToLocation(
     WaylandFloatStartLocation float_start_location) {
   if (!aura_toplevel_) {

@@ -447,19 +447,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     std::optional<bool> use_accelerated_widget_override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1327490): Rename restore info variables.
-    // Only used by Wayland. Specifies the session id window key, the restore
-    // window id, and the app id, respectively, respectively, used by the
-    // compositor to restore window state upon creation. Only one of
-    // `restore_window_id` and `restore_window_id_source` should be set, as
-    // `restore_window_id_source` is used for widgets without inherent restore
-    // window ids, e.g. Chrome apps.
-    int32_t restore_session_id = 0;
-    std::optional<int32_t> restore_window_id;
-    std::optional<std::string> restore_window_id_source;
-#endif
-
     // Contains any properties with which the native widget should be
     // initialized prior to adding it to the window hierarchy. All the
     // properties in |init_properties_container| will be moved to the native

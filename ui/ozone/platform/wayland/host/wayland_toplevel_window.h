@@ -304,12 +304,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::optional<std::vector<gfx::Rect>> opaque_region_px_;
   std::optional<std::vector<gfx::Rect>> input_region_px_;
 
-  // Information used by the compositor to restore the window state upon
-  // creation.
-  int32_t restore_session_id_ = 0;
-  std::optional<int32_t> restore_window_id_ = 0;
-  std::optional<std::string> restore_window_id_source_;
-
   // Information pertaining to a window's persistability.
   bool persistable_ = true;
 

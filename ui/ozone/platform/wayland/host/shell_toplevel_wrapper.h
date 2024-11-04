@@ -142,14 +142,6 @@ class ShellToplevelWrapper {
   // with this top level window.
   virtual void SetDecoration(DecorationMode decoration) = 0;
 
-  // Set session id and restore id for the top level.
-  virtual void SetRestoreInfo(int32_t restore_session_id,
-                              int32_t restore_window_id) = 0;
-
-  virtual void SetRestoreInfoWithWindowIdSource(
-      int32_t restore_session_id,
-      const std::string& restore_window_id_source) = 0;
-
   // Request that the server set the orientation lock to the provided lock type.
   // This is only accepted if the requesting window is running in immersive
   // fullscreen mode and in a tablet configuration.

@@ -765,9 +765,6 @@ bool WaylandToplevelWindow::OnInitialize(
   } else if (properties.visible_on_all_workspaces) {
     workspace_ = kVisibleOnAllWorkspaces;
   }
-  restore_session_id_ = properties.restore_session_id;
-  restore_window_id_ = properties.restore_window_id;
-  restore_window_id_source_ = properties.restore_window_id_source;
   persistable_ = properties.persistable;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (properties.display_id.has_value()) {
@@ -1094,11 +1091,7 @@ void WaylandToplevelWindow::DumpState(std::ostream& out) const {
   WaylandWindow::DumpState(out);
   out << ", title=" << window_title_
       << ", is_active=" << ToBoolString(is_active_)
-      << ", restore_session_id=" << restore_session_id_;
-  if (restore_window_id_source_) {
-    out << ", source=" << *restore_window_id_source_;
-  }
-  out << ", persistable=" << ToBoolString(persistable_)
+      << ", persistable=" << ToBoolString(persistable_)
       << ", system_modal=" << ToBoolString(system_modal_);
 }
 
@@ -1287,14 +1280,6 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     // set the initial z order of the window.
     SetZOrderLevel(z_order_);
     SetInitialWorkspace();
-    if (restore_window_id_) {
-      DCHECK(!restore_window_id_source_);
-      shell_toplevel_->SetRestoreInfo(restore_session_id_,
-                                      restore_window_id_.value());
-    } else if (restore_window_id_source_) {
-      shell_toplevel_->SetRestoreInfoWithWindowIdSource(
-          restore_session_id_, restore_window_id_source_.value());
-    }
     UpdateSystemModal();
   }
 
