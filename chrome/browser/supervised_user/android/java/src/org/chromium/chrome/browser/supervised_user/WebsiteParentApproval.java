@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -106,6 +107,7 @@ class WebsiteParentApproval {
                         url,
                         FAVICON_MIN_SOURCE_SIZE_PIXEL,
                         desiredFaviconWidthPx,
+                        profile,
                         (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
         faviconHelper.setFallbackIcon(
                 createFaviconFallback(windowAndroid.getContext().get().getResources(), url));
@@ -168,6 +170,7 @@ class WebsiteParentApproval {
                 GURL url,
                 int minSourceSizePixel,
                 int desiredSizePixel,
+                @JniType("Profile*") Profile profile,
                 Callback<Bitmap> onFaviconFetched);
     }
 }
