@@ -1178,6 +1178,11 @@ bool Flex::ParseShorthand(bool important,
                 CSSValueID::kFitContent>(stream.Peek().Id())) {
           flex_basis = css_parsing_utils::ConsumeIdent(stream);
         }
+        if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
+            CSSValueID::kStretch == stream.Peek().Id()) {
+          flex_basis = css_parsing_utils::ConsumeIdent(stream);
+        }
+
         if (!flex_basis) {
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
               stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);

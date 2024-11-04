@@ -3722,7 +3722,7 @@ class CSSMathExpressionNodeParser {
           !css_parsing_utils::IdentMatches<
               CSSValueID::kAny, CSSValueID::kAuto, CSSValueID::kContent,
               CSSValueID::kMinContent, CSSValueID::kMaxContent,
-              CSSValueID::kFitContent>(id)) {
+              CSSValueID::kFitContent, CSSValueID::kStretch>(id)) {
         return nullptr;
       }
 
