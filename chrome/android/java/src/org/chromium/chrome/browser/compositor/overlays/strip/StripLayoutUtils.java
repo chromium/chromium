@@ -14,15 +14,20 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 
 public class StripLayoutUtils {
+    // Position Constants.
     // The bottom indicator should align with the contents of the last tab in group. This value is
     // calculated as:
     // closeButtonEndPadding(10) + tabContainerEndPadding(16) + groupTitleStartMargin(13)
     //         - overlap(28-16) =
     @VisibleForTesting static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
+    static final float MIN_TAB_WIDTH_DP = 108.f;
+    static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+    static final float TAB_OVERLAP_WIDTH_DP = 28.f;
 
-    // Animation Constants
+    // Animation Constants.
     static final int ANIM_TAB_MOVE_MS = 125;
     static final int ANIM_TAB_SLIDE_OUT_MS = 250;
 

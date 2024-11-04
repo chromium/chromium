@@ -42,6 +42,7 @@ public abstract class StripStacker {
             float stripRightMargin,
             float stripWidth,
             float buttonWidth) {
+        // TODO(crbug.com/376525967): Pull overlap width from utils constant instead of passing in.
         return LocalizationUtils.isLayoutRtl()
                 ? computeNewTabButtonOffsetRtl(
                         indexOrderedTabs,

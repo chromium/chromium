@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -87,7 +91,6 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -130,7 +133,6 @@ public class StripLayoutHelper
     private static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
 
     // Visibility Constants
-    private static final float TAB_OVERLAP_WIDTH_LARGE_DP = 28.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
     private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
     private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
@@ -150,7 +152,6 @@ public class StripLayoutHelper
     static final float TAB_OPACITY_HIDDEN = 0.f;
     static final float TAB_OPACITY_VISIBLE = 1.f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
-    private static final float TAB_STRIP_TAB_WIDTH = 108.f;
     private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
 
     private static final int MESSAGE_RESIZE = 1;
@@ -349,20 +350,21 @@ public class StripLayoutHelper
     @Nullable private final CompositorButton mModelSelectorButton;
 
     // Layout Constants
-    private final float mTabOverlapWidth;
     private final float mNewTabButtonWidth;
-    private final float mMinTabWidth;
-    private final float mMaxTabWidth;
     private final ListPopupWindow mTabMenu;
 
-    // All views are overlapped by mTabOverlapWidth. Group titles do not need to be overlapped by
-    // this much, so we offset the drawX.
+    // All views are overlapped by TAB_OVERLAP_WIDTH_DP. Group titles do not need to be overlapped
+    // by this much, so we offset the drawX.
     private final float mGroupTitleDrawXOffset;
     // The effective overlap width for group titles. This is the "true" overlap width, but adjusted
     // to account for the start offset above.
     private final float mGroupTitleOverlapWidth;
 
     // Strip State
+    /**
+     * The width of a tab based on the number of tabs and the available space on the tab strip.
+     * Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
+     */
     private float mCachedTabWidth;
 
     // Reorder State
@@ -492,9 +494,8 @@ public class StripLayoutHelper
             DataSharingTabManager dataSharingTabManager,
             int tabStripHeight,
             Supplier<Boolean> tabStripVisibleSupplier) {
-        mTabOverlapWidth = TAB_OVERLAP_WIDTH_LARGE_DP;
-        mGroupTitleDrawXOffset = mTabOverlapWidth - StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
-        mGroupTitleOverlapWidth = StripLayoutTab.FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
+        mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
+        mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP;
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
@@ -513,9 +514,6 @@ public class StripLayoutHelper
         mReservedEndMargin = mFixedEndPadding + mNewTabButtonWidth;
         updateMargins(false);
 
-        mMinTabWidth = TAB_STRIP_TAB_WIDTH;
-
-        mMaxTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
         mManagerHost = managerHost;
         mUpdateHost = updateHost;
         mRenderHost = renderHost;
@@ -706,6 +704,13 @@ public class StripLayoutHelper
     }
 
     /**
+     * @return The effective width of a tab (accounting for overlap).
+     */
+    private float getEffectiveTabWidth() {
+        return mCachedTabWidth - TAB_OVERLAP_WIDTH_DP;
+    }
+
+    /**
      * @return The visual offset to be applied to the new tab button.
      */
     protected float getNewTabButtonVisualOffset() {
@@ -726,7 +731,7 @@ public class StripLayoutHelper
      * @return Whether the tab strip is full.
      */
     private boolean isTabStripFull() {
-        return mCachedTabWidth < TabUiThemeUtil.getMaxTabStripTabWidthDp();
+        return mCachedTabWidth < MAX_TAB_WIDTH_DP;
     }
 
     /**
@@ -1653,13 +1658,13 @@ public class StripLayoutHelper
         if (LocalizationUtils.isLayoutRtl()) {
             if (isLastTab) {
                 tabStartHidden =
-                        tab.getDrawX() + mTabOverlapWidth
+                        tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
                                 < getVisibleLeftBound()
                                         + mNewTabButton.getDrawX()
                                         + mNewTabButton.getWidth();
             } else {
                 tabStartHidden =
-                        tab.getDrawX() + mTabOverlapWidth
+                        tab.getDrawX() + TAB_OVERLAP_WIDTH_DP
                                 < getVisibleLeftBound() + getCloseBtnVisibilityThreshold(false);
             }
             tabEndHidden =
@@ -1670,11 +1675,11 @@ public class StripLayoutHelper
                             < getVisibleLeftBound() + getCloseBtnVisibilityThreshold(true);
             if (isLastTab) {
                 tabEndHidden =
-                        tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
+                        tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
                                 > getVisibleLeftBound() + mNewTabButton.getDrawX();
             } else {
                 tabEndHidden =
-                        (tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
+                        (tab.getDrawX() + tab.getWidth() - TAB_OVERLAP_WIDTH_DP
                                 > getVisibleRightBound() - getCloseBtnVisibilityThreshold(false));
             }
         }
@@ -2157,10 +2162,10 @@ public class StripLayoutHelper
         //               |                                |
         //       pinned tab width               standard tab width
 
-        tabWidth = MathUtils.clamp(tabWidth, mMinTabWidth, mMaxTabWidth);
+        tabWidth = MathUtils.clamp(tabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP);
         double logarithmicFraction =
-                Math.log(tabWidth - mMinTabWidth + 1.f)
-                        / Math.log(mMaxTabWidth - mMinTabWidth + 1.f);
+                Math.log(tabWidth - MIN_TAB_WIDTH_DP + 1.f)
+                        / Math.log(MAX_TAB_WIDTH_DP - MIN_TAB_WIDTH_DP + 1.f);
         int scalingFactor = MAX_HOVER_CARD_DELAY_MS - MIN_HOVER_CARD_DELAY_MS;
         int delay = (int) (logarithmicFraction * scalingFactor) + MIN_HOVER_CARD_DELAY_MS;
 
@@ -2565,7 +2570,7 @@ public class StripLayoutHelper
                 mLeftMargin,
                 mRightMargin,
                 mCachedTabWidth,
-                mTabOverlapWidth,
+                TAB_OVERLAP_WIDTH_DP,
                 mGroupTitleOverlapWidth);
     }
 
@@ -2694,7 +2699,7 @@ public class StripLayoutHelper
         // animate to 0, the following tabs will unexpectedly be shifted as this tab takes up
         // "negative" space.
         if (!animate) {
-            tab.setWidth(mTabOverlapWidth);
+            tab.setWidth(TAB_OVERLAP_WIDTH_DP);
             return null;
         }
 
@@ -2703,7 +2708,7 @@ public class StripLayoutHelper
                 tab,
                 StripLayoutTab.WIDTH,
                 tab.getWidth(),
-                mTabOverlapWidth,
+                TAB_OVERLAP_WIDTH_DP,
                 ANIM_TAB_RESIZE_MS);
     }
 
@@ -2978,7 +2983,7 @@ public class StripLayoutHelper
                     StripLayoutUtils.calculateBottomIndicatorWidth(
                             groupTitle,
                             StripLayoutUtils.getNumOfTabsInGroup(mTabGroupModelFilter, groupTitle),
-                            /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth);
+                            getEffectiveTabWidth());
 
             // Update the bottom indicator width.
             if (groupTitle.getBottomIndicatorWidth() != bottomIndicatorWidth) {
@@ -3194,13 +3199,13 @@ public class StripLayoutHelper
         }
 
         // 2. Compute additional width we gain from overlapping the tabs.
-        float overlapWidth = mTabOverlapWidth * (numTabs - 1);
+        float overlapWidth = TAB_OVERLAP_WIDTH_DP * (numTabs - 1);
 
         // 3. Calculate the optimal tab width.
         float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
 
         // 4. Calculate the realistic tab width.
-        mCachedTabWidth = MathUtils.clamp(optimalTabWidth, mMinTabWidth, mMaxTabWidth);
+        mCachedTabWidth = MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP);
 
         // 5. Prepare animations and propagate width to all tabs.
         finishAnimationsAndPushTabUpdates();
@@ -3209,7 +3214,7 @@ public class StripLayoutHelper
 
         for (int i = 0; i < mStripTabs.length; i++) {
             StripLayoutTab tab = mStripTabs[i];
-            if (tab.isClosed()) tab.setWidth(mTabOverlapWidth);
+            if (tab.isClosed()) tab.setWidth(TAB_OVERLAP_WIDTH_DP);
             if (tab.isDying() || tab.isCollapsed()) continue;
             if (resizeAnimationList != null) {
                 if (mCachedTabWidth > 0f && tab.getWidth() == mCachedTabWidth) {
@@ -3258,14 +3263,14 @@ public class StripLayoutHelper
                                 StripLayoutUtils.getNumOfTabsInGroup(
                                                 mTabGroupModelFilter, groupTitle)
                                         - 1,
-                                /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth);
+                                getEffectiveTabWidth());
             } else {
                 bottomIndicatorEndWidth =
                         StripLayoutUtils.calculateBottomIndicatorWidth(
                                 groupTitle,
                                 StripLayoutUtils.getNumOfTabsInGroup(
                                         mTabGroupModelFilter, groupTitle),
-                                /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth);
+                                getEffectiveTabWidth());
             }
 
             if (bottomIndicatorEndWidth > 0f
@@ -3373,8 +3378,8 @@ public class StripLayoutHelper
                 view.setIdealX(tabPosition);
                 delta =
                         tab.isDying()
-                                ? mCachedTabWidth - mTabOverlapWidth
-                                : (tab.getWidth() - mTabOverlapWidth) * tab.getWidthWeight();
+                                ? getEffectiveTabWidth()
+                                : (tab.getWidth() - TAB_OVERLAP_WIDTH_DP) * tab.getWidthWeight();
                 // Trailing margins will only be nonzero during reorder mode.
                 delta += tab.getTrailingMargin();
             } else {
@@ -3440,8 +3445,7 @@ public class StripLayoutHelper
 
     private CompositorAnimator getLastTabClosedNtbAnimator() {
         // TODO(crbug.com/338332428): Unify with the stacker methods.
-        float viewsWidth =
-                getNumLiveTabs() * (mCachedTabWidth - mTabOverlapWidth) + mTabOverlapWidth;
+        float viewsWidth = (getNumLiveTabs() * getEffectiveTabWidth()) + TAB_OVERLAP_WIDTH_DP;
         for (int i = 0; i < mStripViews.length; ++i) {
             final StripLayoutView view = mStripViews[i];
             if (!(view instanceof StripLayoutTab)) viewsWidth += view.getWidth();
@@ -3477,7 +3481,7 @@ public class StripLayoutHelper
         float offset =
                 mStripStacker.computeNewTabButtonOffset(
                         mStripTabs,
-                        mTabOverlapWidth,
+                        TAB_OVERLAP_WIDTH_DP,
                         mLeftMargin,
                         mRightMargin,
                         mWidth,
@@ -3592,7 +3596,7 @@ public class StripLayoutHelper
                     mUpdateHost.getAnimationHandler(),
                     mTabGroupModelFilter,
                     groupTitle,
-                    /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                    getEffectiveTabWidth(),
                     /* isMovingOutOfGroup= */ false,
                     /* throughGroupTitle= */ false,
                     animators);
@@ -3672,11 +3676,7 @@ public class StripLayoutHelper
             }
 
             setCompositorButtonsVisible(false);
-            mReorderDelegate.startReorderTab(
-                    mStripTabs,
-                    interactingTab,
-                    /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                    x);
+            mReorderDelegate.startReorderTab(mStripTabs, interactingTab, getEffectiveTabWidth(), x);
         }
 
         // TODO(crbug.com/354707060): Support reordering tab groups.
@@ -3696,8 +3696,7 @@ public class StripLayoutHelper
         // 3. Set initial state.
         mReorderDelegate.setInReorderMode(true);
         mReorderDelegate.setReorderingForTabDrop(true);
-        mReorderDelegate.prepareStripForReorder(
-                mStripTabs, /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth, startX);
+        mReorderDelegate.prepareStripForReorder(mStripTabs, getEffectiveTabWidth(), startX);
         if (mReorderDelegate.getInReorderMode()) setCompositorButtonsVisible(false);
 
         // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
@@ -3770,11 +3769,7 @@ public class StripLayoutHelper
             @Nullable List<Animator> animationList) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
         return mReorderDelegate.setTrailingMarginForTab(
-                tab,
-                groupTitle,
-                /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                shouldHaveTrailingMargin,
-                animationList);
+                tab, groupTitle, getEffectiveTabWidth(), shouldHaveTrailingMargin, animationList);
     }
 
     private void resetReorderMargins(@Nullable ArrayList<Animator> animationList) {
@@ -3866,10 +3861,7 @@ public class StripLayoutHelper
 
         // Animate the group indicator after updating the tab model.
         mReorderDelegate.animateGroupIndicatorForTabReorder(
-                groupTitle,
-                /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                /* isMovingOutOfGroup= */ false,
-                towardEnd);
+                groupTitle, getEffectiveTabWidth(), /* isMovingOutOfGroup= */ false, towardEnd);
     }
 
     /**
@@ -3887,9 +3879,9 @@ public class StripLayoutHelper
         if (Math.abs(offset) > threshold) {
             int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
 
-            final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
             final float startOffset =
-                    MathUtils.flipSignIf(tabWidth, !towardEnd ^ LocalizationUtils.isLayoutRtl());
+                    MathUtils.flipSignIf(
+                            getEffectiveTabWidth(), !towardEnd ^ LocalizationUtils.isLayoutRtl());
             // TODO(crbug.com/338130577): We intentionally start this outside of the
             //  "RunningAnimator" pattern so it doesn't finish early due to the subsequent
             //  #didMoveTab event. Fix this when we update #reorderTab to handle non-tab views.
@@ -3960,7 +3952,6 @@ public class StripLayoutHelper
         if (curIndex == TabModel.INVALID_TAB_INDEX) return;
 
         // 1. Compute drag position.
-        final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
         float offset = interactingTab.getOffsetX() + deltaX;
         boolean towardEnd = (offset >= 0) ^ isRtl;
 
@@ -3989,9 +3980,7 @@ public class StripLayoutHelper
                 if (Math.abs(offset)
                         > mReorderDelegate.getDragOutThreshold(interactingGroupTitle, towardEnd)) {
                     moveInteractingTabOutOfGroup(
-                            interactingGroupTitle.getRootId(),
-                            /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                            towardEnd);
+                            interactingGroupTitle.getRootId(), getEffectiveTabWidth(), towardEnd);
                     // TODO(crbug.com/372546700): Currently, we return a destIndex equal to the
                     //  starting index to mark that a tab move out or merge was successful. This is
                     //  not immediately clear, so track this state more directly.
@@ -4020,7 +4009,7 @@ public class StripLayoutHelper
             }
         } else {
             // 3.d. Tab is not interacting with tab groups. Reorder as normal.
-            final float moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * tabWidth;
+            final float moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * getEffectiveTabWidth();
             boolean pastLeftThreshold = offset < -moveThreshold;
             boolean pastRightThreshold = offset > moveThreshold;
             boolean isNotRightMost = curIndex < mStripTabs.length - 1;
@@ -4084,7 +4073,7 @@ public class StripLayoutHelper
                                     (mScrollDelegate.getScrollOffset() - oldOffset), isRtl);
                 }
             } else {
-                offset += MathUtils.flipSignIf(tabWidth, shouldFlip);
+                offset += MathUtils.flipSignIf(getEffectiveTabWidth(), shouldFlip);
             }
 
             // 4.e. Update our curIndex as we have just moved the tab.
@@ -4182,10 +4171,10 @@ public class StripLayoutHelper
         // 3. Animate if necessary.
         if (animate && !mAnimationsDisabledForTesting) {
             final boolean towardEnd = oldIndex <= newIndex;
-            final float flipWidth = mCachedTabWidth - mTabOverlapWidth;
             final int direction = towardEnd ? 1 : -1;
             final float animationLength =
-                    MathUtils.flipSignIf(direction * flipWidth, LocalizationUtils.isLayoutRtl());
+                    MathUtils.flipSignIf(
+                            direction * getEffectiveTabWidth(), LocalizationUtils.isLayoutRtl());
 
             finishAnimationsAndPushTabUpdates();
             ArrayList<Animator> slideAnimationList = new ArrayList<>();
@@ -4361,10 +4350,6 @@ public class StripLayoutHelper
         updateStrip();
     }
 
-    float getMinTabWidthForTesting() {
-        return mMinTabWidth;
-    }
-
     /**
      * Displays the tab menu below the anchor tab.
      *
@@ -4533,13 +4518,6 @@ public class StripLayoutHelper
      */
     StripLayoutView[] getStripLayoutViewsForTesting() {
         return mStripViews;
-    }
-
-    /**
-     * @return The amount tabs overlap.
-     */
-    float getTabOverlapWidthForTesting() {
-        return mTabOverlapWidth;
     }
 
     /**

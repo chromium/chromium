@@ -109,6 +109,7 @@ public class ScrollDelegate {
             float cachedTabWidth,
             float tabOverlapWidth,
             float groupTitleOverlapWidth) {
+        // TODO(crbug.com/376525967): Pull overlap width from utils constant instead of passing in.
         // 1. Compute the width of the available space for all tabs.
         float stripWidth = width - leftMargin - rightMargin;
 

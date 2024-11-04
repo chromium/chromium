@@ -26,6 +26,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
@@ -96,7 +101,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
@@ -165,7 +169,6 @@ public class StripLayoutHelperTest {
     private static final float SCREEN_HEIGHT = 40.f;
     private static final float TAB_WIDTH_1 = 140.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
-    private static final float TAB_OVERLAP_WIDTH = 28.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
     private static final long TIMESTAMP = 5000;
     private static final float NEW_TAB_BTN_X_RTL = 100.f;
@@ -509,7 +512,7 @@ public class StripLayoutHelperTest {
 
         assertEquals(
                 "Tabs should be at minimum width for this test to be valid",
-                mStripLayoutHelper.getMinTabWidthForTesting(),
+                MIN_TAB_WIDTH_DP,
                 mStripLayoutHelper.getCachedTabWidthForTesting(),
                 EPSILON);
 
@@ -1475,7 +1478,7 @@ public class StripLayoutHelperTest {
         // Assert: StripStartMargin is about 1/4 tab width to create space for dragging first tab
         // out of group on strip.
         float expectedMargin =
-                ((mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH) / 2)
+                ((mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH_DP) / 2)
                         * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "StripStartMargin is incorrect",
@@ -1513,7 +1516,7 @@ public class StripLayoutHelperTest {
         // Assert: Last tab's trailingMargin should be about 1/4 tab width to create space for
         // dragging last tab out of group on strip.
         float expectedMargin =
-                ((mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH) / 2)
+                ((mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH_DP) / 2)
                         * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "Strip end margin is incorrect", expectedMargin, tabs[4].getTrailingMargin(), 0.1f);
@@ -2470,7 +2473,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
-            float expectedWidth = stripTab.isClosed() ? TAB_OVERLAP_WIDTH : openTabWidth;
+            float expectedWidth = stripTab.isClosed() ? TAB_OVERLAP_WIDTH_DP : openTabWidth;
             assertEquals(
                     "Unexpected tab width after resize.", expectedWidth, stripTab.getWidth(), 0.1f);
         }
@@ -2595,7 +2598,7 @@ public class StripLayoutHelperTest {
 
         float expectedEndWidth =
                 expectedStartWidth
-                        + (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH)
+                        + (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH_DP)
                                 / 2;
         assertEquals(
                 "Unexpected bottom indicator width after tab hover.",
@@ -2624,9 +2627,9 @@ public class StripLayoutHelperTest {
             float tabWidth, float tabCount, StripLayoutGroupTitle groupTitle) {
         // (tabWidth - tabOverlap(28.f)) * tabCount + groupTitleWidth -
         //      bottomIndicatorWidthOffset(27.f).
-        return (tabWidth - TAB_OVERLAP_WIDTH) * tabCount
+        return (tabWidth - TAB_OVERLAP_WIDTH_DP) * tabCount
                 + groupTitle.getWidth()
-                - StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+                - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
     }
 
     @Test
@@ -2924,7 +2927,7 @@ public class StripLayoutHelperTest {
             mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
         } else {
             float dragDistance =
-                    ((tabs[0].getWidth() - TAB_OVERLAP_WIDTH) / 2)
+                    ((tabs[0].getWidth() - TAB_OVERLAP_WIDTH_DP) / 2)
                             * REORDER_OVERLAP_SWITCH_PERCENTAGE;
             startDragTabOutOfTabGroup(tabIndexToDrag, dragDistance + 1);
         }
@@ -3011,7 +3014,7 @@ public class StripLayoutHelperTest {
             StripLayoutTab stripTab = updatedTabs[i];
             assertEquals("Unexpected tab width after resize.", 108.f, stripTab.getWidth(), 0);
             assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0);
-            expectedDrawX -= TAB_WIDTH_SMALL - TAB_OVERLAP_WIDTH;
+            expectedDrawX -= TAB_WIDTH_SMALL - TAB_OVERLAP_WIDTH_DP;
         }
         assertFalse(
                 "MultiStepAnimations should have stopped running.",
@@ -3068,7 +3071,7 @@ public class StripLayoutHelperTest {
                     stripTab.getWidth(),
                     0.1f);
             assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.1f);
-            expectedDrawX += (expectedWidthAfterResize - TAB_OVERLAP_WIDTH);
+            expectedDrawX += (expectedWidthAfterResize - TAB_OVERLAP_WIDTH_DP);
         }
         assertFalse(
                 "MultiStepAnimations should have ended.",
@@ -3564,7 +3567,7 @@ public class StripLayoutHelperTest {
     private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth, float drawX, int numTabs) {
         StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
 
-        final float delta = tabWidth - mStripLayoutHelper.getTabOverlapWidthForTesting();
+        final float delta = tabWidth - TAB_OVERLAP_WIDTH_DP;
         for (int i = 0; i < numTabs; i++) {
             final StripLayoutTab tab = mockStripTab(i, tabWidth, drawX + i * delta);
             tabs[i] = tab;
@@ -4032,6 +4035,8 @@ public class StripLayoutHelperTest {
     public void testRebuildNonTabViews() {
         // Initialize with 10 tabs. Group tabs 2 through 3. Group tabs 5 through 8.
         initializeTest(false, false, true, 0, 10);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         groupTabs(1, 3);
         groupTabs(4, 8);
 
@@ -4052,15 +4057,11 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TAB, views[11] instanceof StripLayoutTab);
 
         // verify bottom indicator width.
-        float tabWidth = views[0].getWidth() - TAB_OVERLAP_WIDTH;
+        float tabWidth = views[0].getWidth() - TAB_OVERLAP_WIDTH_DP;
         float expectedWidth1 =
-                views[1].getWidth()
-                        + tabWidth * 2
-                        - StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+                views[1].getWidth() + tabWidth * 2 - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         float expectedWidth2 =
-                views[5].getWidth()
-                        + tabWidth * 4
-                        - StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+                views[5].getWidth() + tabWidth * 4 - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         assertEquals(
                 expectedWidth1, ((StripLayoutGroupTitle) views[1]).getBottomIndicatorWidth(), 0.f);
         assertEquals(
@@ -4136,8 +4137,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify final dimensions.
-        float collapsedWidth = TAB_OVERLAP_WIDTH;
-        float endTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+        float collapsedWidth = TAB_OVERLAP_WIDTH_DP;
+        float endTabWidth = MAX_TAB_WIDTH_DP;
         assertEquals("Tab width is incorrect.", collapsedWidth, views[1].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", collapsedWidth, views[2].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", collapsedWidth, views[3].getWidth(), EPSILON);
@@ -4158,8 +4159,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify initial dimensions.
-        float collapsedWidth = TAB_OVERLAP_WIDTH;
-        float initialTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+        float collapsedWidth = TAB_OVERLAP_WIDTH_DP;
+        float initialTabWidth = MAX_TAB_WIDTH_DP;
         assertEquals("Tab width is incorrect.", collapsedWidth, views[1].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", collapsedWidth, views[2].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", collapsedWidth, views[3].getWidth(), EPSILON);
@@ -4538,7 +4539,7 @@ public class StripLayoutHelperTest {
                 684);
         assertEquals(
                 "Hover card delay for max tab is incorrect.",
-                mStripLayoutHelper.getHoverCardDelay(TabUiThemeUtil.getMaxTabStripTabWidthDp()),
+                mStripLayoutHelper.getHoverCardDelay(MAX_TAB_WIDTH_DP),
                 StripLayoutHelper.MAX_HOVER_CARD_DELAY_MS);
     }
 }

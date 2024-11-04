@@ -878,7 +878,7 @@ public class TabStripTest {
         StripLayoutHelper strip =
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity());
         StripLayoutTab[] tabs = strip.getStripLayoutTabsForTesting();
-        float tabDrawWidth = tabs[0].getWidth() - strip.getTabOverlapWidthForTesting();
+        float tabDrawWidth = tabs[0].getWidth() - StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
         // Disable animations. The animation that normally runs when scrolling the tab strip makes
         // this test flaky.
