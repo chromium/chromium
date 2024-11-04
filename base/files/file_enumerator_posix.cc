@@ -146,7 +146,6 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
 #if BUILDFLAG(IS_ANDROID)
   // Content-URIs have limited support.
   if (root_path.IsContentUri()) {
-    CHECK(!recursive);
     CHECK_EQ(file_type_, FileType::FILES | FileType::DIRECTORIES);
   }
 #endif
@@ -188,7 +187,14 @@ FilePath FileEnumerator::Next() {
       directory_entries_ = internal::ListContentUriDirectory(root_path_);
       current_directory_entry_ = 0;
       if (directory_entries_.empty()) {
-        return base::FilePath();
+        continue;
+      }
+      if (recursive_) {
+        for (const auto& info : directory_entries_) {
+          if (info.IsDirectory()) {
+            pending_paths_.push(info.content_uri_);
+          }
+        }
       }
       break;
     }

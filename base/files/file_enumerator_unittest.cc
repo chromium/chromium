@@ -17,6 +17,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#include "base/test/android/content_uri_test_utils.h"
+#endif
+
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
@@ -458,8 +463,15 @@ TEST(FileEnumerator, GetInfo) {
       TestFile(FILE_PATH_LITERAL("file3"), "Third-third-third")};
   SetUpTestFiles(temp_dir, files);
 
-  FileEnumerator file_enumerator(temp_dir.GetPath(), false,
-                                 FileEnumerator::FILES);
+#if BUILDFLAG(IS_ANDROID)
+  FilePath root_dir =
+      *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          temp_dir.GetPath());
+#else
+  FilePath root_dir = temp_dir.GetPath();
+#endif
+  FileEnumerator file_enumerator(
+      root_dir, false, FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
   while (!file_enumerator.Next().empty()) {
     auto info = file_enumerator.GetInfo();
     bool found = false;
@@ -487,9 +499,9 @@ TEST(FileEnumerator, GetInfoRecursive) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   TestDirectory directories[] = {TestDirectory(FILE_PATH_LITERAL("dir1")),
-                                 TestDirectory(FILE_PATH_LITERAL("dir2")),
+                                 TestDirectory(FILE_PATH_LITERAL("dir2-empty")),
                                  TestDirectory(FILE_PATH_LITERAL("dir3")),
-                                 TestDirectory(FILE_PATH_LITERAL("dirempty"))};
+                                 TestDirectory(FILE_PATH_LITERAL("dir4"))};
 
   for (const TestDirectory& dir : directories) {
     const FilePath dir_path = temp_dir.GetPath().Append(dir.name);
@@ -499,9 +511,9 @@ TEST(FileEnumerator, GetInfoRecursive) {
   std::vector<TestFile> files = {
       TestFile(FILE_PATH_LITERAL("dir1"), FILE_PATH_LITERAL("file1"), "First"),
       TestFile(FILE_PATH_LITERAL("dir1"), FILE_PATH_LITERAL("file2"), "Second"),
-      TestFile(FILE_PATH_LITERAL("dir2"), FILE_PATH_LITERAL("fileA"),
+      TestFile(FILE_PATH_LITERAL("dir3"), FILE_PATH_LITERAL("fileA"),
                "Third-third-3"),
-      TestFile(FILE_PATH_LITERAL("dir3"), FILE_PATH_LITERAL(".file"), "Dot")};
+      TestFile(FILE_PATH_LITERAL("dir4"), FILE_PATH_LITERAL(".file"), "Dot")};
   SetUpTestFiles(temp_dir, files);
 
   // Get last-modification times for directories. Must be done after we create
@@ -511,9 +523,15 @@ TEST(FileEnumerator, GetInfoRecursive) {
     ASSERT_TRUE(GetFileInfo(dir_path, dir.info));
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  FilePath root_dir =
+      *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          temp_dir.GetPath());
+#else
+  FilePath root_dir = temp_dir.GetPath();
+#endif
   FileEnumerator file_enumerator(
-      temp_dir.GetPath(), true,
-      FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+      root_dir, true, FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
   while (!file_enumerator.Next().empty()) {
     auto info = file_enumerator.GetInfo();
     bool found = false;
