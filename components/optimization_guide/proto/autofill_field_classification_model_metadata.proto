@@ -59,6 +59,21 @@ message AutofillFieldClassificationEncodingParameters {
   string remove_chars = 7;
 }
 
+message AutofillFieldClassificationPostprocessingParameters {
+  // If set, types are only assigned to fields that have predictions
+  // with at least the specified minimum confidence.
+  optional float confidence_threshold_per_field = 1;
+
+  // If set, the model returns predictions only if *all* fields have predictions
+  // with at least the specified minimum confidence.
+  optional float confidence_threshold_to_disable_all_predictions = 2;
+
+  // If true, the model is not allowed to return the same prediction for
+  // multiple fields in the form.
+  // TODO(crbug.com/371933424): Implement handling this.
+  optional bool disallow_same_type_predictions = 3;
+}
+
 // Metadata for OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION.
 message AutofillFieldClassificationModelMetadata {
   // The dictionary used for vectorization of the input labels. The strings
@@ -71,12 +86,8 @@ message AutofillFieldClassificationModelMetadata {
   // corresponding `autofill::FieldType`.
   repeated fixed32 output_type = 2;
 
-  // For every field, the model outputs a list of confidences for every
-  // `output_type`. If no `confidence_threshold` is specified, the final type
-  // prediction is simply the one with the highest confidence. If a threshold
-  // is specified and the highest confidence is below it, the prediction becomes
-  // UNKNOWN_TYPE instead.
-  optional float confidence_threshold = 3;
+  // Deprecated in M132.
+  reserved 3;
 
   // The version of the input, based on which the relevant model
   // version will be used from server.
@@ -84,4 +95,8 @@ message AutofillFieldClassificationModelMetadata {
 
   // Encoding parameters, used for input versions >= 3.
   AutofillFieldClassificationEncodingParameters encoding_parameters = 5;
+
+  // Output processing parameters.
+  AutofillFieldClassificationPostprocessingParameters
+      postprocessing_parameters = 6;
 }

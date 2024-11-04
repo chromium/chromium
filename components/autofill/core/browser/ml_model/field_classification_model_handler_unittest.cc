@@ -32,6 +32,9 @@ namespace autofill {
 namespace {
 
 using ::optimization_guide::AnyWrapProto;
+using optimization_guide::proto::AutofillFieldClassificationModelMetadata;
+using optimization_guide::proto::
+    AutofillFieldClassificationPostprocessingParameters;
 
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
 // and FieldType respectively.
@@ -56,6 +59,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
         model_provider_.get(),
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
+    model_metadata_ = ReadModelMetadata();
     task_environment_.RunUntilIdle();
   }
 
@@ -65,6 +69,9 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   }
 
   FieldClassificationModelHandler& model_handler() { return *model_handler_; }
+  AutofillFieldClassificationModelMetadata& model_metadata() {
+    return model_metadata_;
+  }
 
   // The overfitted model is overtrained on this form. Which is the only form
   // that can be used for unittests. The model that is
@@ -89,20 +96,14 @@ class FieldClassificationModelHandlerTest : public testing::Test {
             ADDRESS_HOME_ZIP};
   }
 
-  // Simulates receiving the model from the server, with metadata attached.
-  // An optional `confidence_threshold` for the metadata can be provided.
-  void SimulateRetrieveModelFromServer(
-      std::optional<float> confidence_threshold = std::nullopt) {
-    optimization_guide::proto::AutofillFieldClassificationModelMetadata
-        model_metadata = ReadModelMetadata();
-    if (confidence_threshold) {
-      model_metadata.set_confidence_threshold(*confidence_threshold);
-    }
+  // Simulates receiving the model from the server, with `model_metadata_`
+  // attached.
+  void SimulateRetrieveModelFromServer() {
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(
                 test_data_dir_.AppendASCII("autofill_model-fold-one.tflite"))
-            .SetModelMetadata(AnyWrapProto(model_metadata))
+            .SetModelMetadata(AnyWrapProto(model_metadata_))
             .Build();
     model_handler_->OnModelUpdated(
         optimization_guide::proto::
@@ -147,6 +148,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_environment_;
   base::FilePath test_data_dir_;
+  AutofillFieldClassificationModelMetadata model_metadata_;
 };
 
 TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
@@ -160,19 +162,22 @@ TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
 }
 
 // Tests that predictions with a confidence below the threshold are reported as
-// UNKNOWN_TYPE.
+// NO_SERVER_DATA.
 TEST_F(FieldClassificationModelHandlerTest,
        GetModelPredictionsForForm_Threshold) {
   // Set a really high threshold and expect that all predictions are suppressed.
-  SimulateRetrieveModelFromServer(/*confidence_threshold=*/100);
+  model_metadata()
+      .mutable_postprocessing_parameters()
+      ->set_confidence_threshold_per_field(/*confidence_threshold=*/100);
+  SimulateRetrieveModelFromServer();
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler().GetModelPredictionsForForm(std::move(form_structure),
                                              future.GetCallback());
   EXPECT_THAT(future.Get()->fields(),
-              testing::Pointwise(
-                  MlTypeEq(), std::vector<FieldType>(
-                                  future.Get()->field_count(), UNKNOWN_TYPE)));
+              testing::Pointwise(MlTypeEq(), std::vector<FieldType>(
+                                                 future.Get()->field_count(),
+                                                 NO_SERVER_DATA)));
 }
 
 TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
@@ -187,6 +192,49 @@ TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
   EXPECT_THAT(future.Get()[0]->fields(),
               testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
   EXPECT_THAT(future.Get()[1]->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+}
+
+// Tests that if the form metadata allows returning empty predictions, and model
+// outputs do not reach the desired confidence level, empty predictions will be
+// emitted.
+TEST_F(FieldClassificationModelHandlerTest,
+       GetModelPredictionsForForm_NoPredictionsEmitted) {
+  // Set min required confidence to be very high, even for the overfitted model.
+  model_metadata()
+      .mutable_postprocessing_parameters()
+      ->set_confidence_threshold_to_disable_all_predictions(0.999);
+  SimulateRetrieveModelFromServer();
+
+  std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+  model_handler().GetModelPredictionsForForm(std::move(form_structure),
+                                             future.GetCallback());
+
+  // `NO_SERVER_DATA` means the type could not be set.
+  EXPECT_THAT(future.Get()->fields(),
+              testing::Pointwise(MlTypeEq(), std::vector<FieldType>(
+                                                 future.Get()->field_count(),
+                                                 NO_SERVER_DATA)));
+}
+
+// Tests that if the form metadata allows returning empty predictions, non-empty
+// predictions will still be emitted for predictions with high confidence.
+TEST_F(FieldClassificationModelHandlerTest,
+       GetModelPredictionsForForm_PredictionsEmittedWithMinConfidence) {
+  model_metadata()
+      .mutable_postprocessing_parameters()
+      ->set_confidence_threshold_to_disable_all_predictions(0.5);
+  SimulateRetrieveModelFromServer();
+
+  std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+  model_handler().GetModelPredictionsForForm(std::move(form_structure),
+                                             future.GetCallback());
+
+  // An overfitted model is very confident in its predictions, so non-empty
+  // predictions should be emitted.
+  EXPECT_THAT(future.Get()->fields(),
               testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
 }
 

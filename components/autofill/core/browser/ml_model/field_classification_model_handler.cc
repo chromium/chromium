@@ -40,6 +40,20 @@ std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
   return any_metadata;
 }
 
+// Returns true if all fields can be predicted at confidence >=
+// `confidence_threshold`.
+bool AllFieldsClassifiedWithConfidence(
+    const FieldClassificationModelEncoder::ModelOutput& output,
+    size_t num_fields,
+    float confidence_threshold) {
+  for (size_t i = 0; i < num_fields; i++) {
+    if (base::ranges::max(output[i]) < confidence_threshold) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // anonymous namespace
 
 FieldClassificationModelHandler::FieldClassificationModelHandler(
@@ -82,7 +96,8 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
              const std::optional<FieldClassificationModelEncoder::ModelOutput>&
                  output) {
-            if (self && output) {
+            if (self && output &&
+                self->ShouldEmitPredictions(form_structure.get(), *output)) {
               self->AssignMostLikelyTypes(*form_structure, *output);
             }
             std::move(callback).Run(std::move(form_structure));
@@ -148,12 +163,25 @@ FieldType FieldClassificationModelHandler::GetMostLikelyType(
   int max_index =
       base::ranges::max_element(model_output) - model_output.begin();
   CHECK_LT(max_index, state_->metadata.output_type_size());
-  if (!state_->metadata.has_confidence_threshold() ||
-      model_output[max_index] >= state_->metadata.confidence_threshold()) {
+  if (!state_->metadata.postprocessing_parameters()
+           .has_confidence_threshold_per_field() ||
+      model_output[max_index] >= state_->metadata.postprocessing_parameters()
+                                     .confidence_threshold_per_field()) {
     return ToSafeFieldType(state_->metadata.output_type(max_index),
                            UNKNOWN_TYPE);
   }
-  return UNKNOWN_TYPE;
+  return NO_SERVER_DATA;
+}
+
+bool FieldClassificationModelHandler::ShouldEmitPredictions(
+    const FormStructure* form,
+    const FieldClassificationModelEncoder::ModelOutput& output) {
+  return !state_->metadata.postprocessing_parameters()
+              .has_confidence_threshold_to_disable_all_predictions() ||
+         AllFieldsClassifiedWithConfidence(
+             output, std::min(form->field_count(), output.size()),
+             state_->metadata.postprocessing_parameters()
+                 .confidence_threshold_to_disable_all_predictions());
 }
 
 }  // namespace autofill

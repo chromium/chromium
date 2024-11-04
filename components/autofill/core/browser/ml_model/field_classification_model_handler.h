@@ -77,6 +77,11 @@ class FieldClassificationModelHandler
   // corresponding FieldType.
   FieldType GetMostLikelyType(const std::vector<float>& model_output) const;
 
+  // Returns true if the `output` allows to return predictions for `form`.
+  bool ShouldEmitPredictions(
+      const FormStructure* form,
+      const FieldClassificationModelEncoder::ModelOutput& output);
+
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
