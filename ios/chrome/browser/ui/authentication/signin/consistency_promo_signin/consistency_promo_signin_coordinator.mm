@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -320,6 +321,8 @@
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
+  // This DCHECK is to help to understand crbug.com/372272374.
+  DCHECK(!self.alertCoordinator) << base::SysNSStringToUTF8([self description]);
   ProfileIOS* profile = self.browser->GetProfile();
   PrefService* userPrefService = profile->GetPrefs();
   if (self.accessPoint ==
