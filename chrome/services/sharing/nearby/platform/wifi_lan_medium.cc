@@ -122,6 +122,7 @@ WifiLanMedium::WifiLanMedium(
 }
 
 WifiLanMedium::~WifiLanMedium() {
+  mdns_observer_.reset();
   // For thread safety, shut down on the |task_runner_|.
   base::WaitableEvent shutdown_waitable_event;
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&WifiLanMedium::Shutdown,
@@ -654,6 +655,7 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   cros_network_config_.reset();
   firewall_hole_factory_.reset();
   discovery_callbacks_.clear();
+  mdns_manager_.reset();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
   // changes to the pending-event sets are sequenced. Make a copy of the events
