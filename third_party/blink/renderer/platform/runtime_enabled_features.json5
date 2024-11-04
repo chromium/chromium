@@ -3602,6 +3602,10 @@
       status: "experimental",
     },
     {
+      name: "ResourceTimingFinalResponseHeadersStart",
+      status: "experimental",
+    },
+    {
       name: "ResourceTimingUseCORSForBodySizes",
       status: "test",
     },

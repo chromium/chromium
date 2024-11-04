@@ -77,6 +77,8 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [RuntimeEnabled=ResourceTimingContentType]
         readonly attribute DOMString contentType;
 
+    [RuntimeEnabled=ResourceTimingFinalResponseHeadersStart]
+    readonly attribute DOMHighResTimeStamp finalResponseHeadersStart;
     readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();

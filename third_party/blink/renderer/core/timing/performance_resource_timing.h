@@ -87,6 +87,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp requestStart() const;
   DOMHighResTimeStamp responseStart() const;
   DOMHighResTimeStamp firstInterimResponseStart() const;
+  DOMHighResTimeStamp finalResponseHeadersStart() const;
   virtual DOMHighResTimeStamp responseEnd() const;
   uint64_t transferSize() const;
   virtual uint64_t encodedBodySize() const;
