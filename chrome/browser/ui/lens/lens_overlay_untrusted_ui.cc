@@ -181,6 +181,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableOverlayContextualSearchbox",
       lens::features::IsLensOverlayContextualSearchboxEnabled());
+  html_source->AddBoolean("showContextualSearchboxGhostLoader",
+                          lens::features::ShowContextualSearchboxGhostLoader());
 
   // Controller doesn't exist in unsupported context but WebUI should still
   // load.

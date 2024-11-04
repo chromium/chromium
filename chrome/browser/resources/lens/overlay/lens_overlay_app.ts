@@ -127,6 +127,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      isGhostLoaderEnabled: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('showContextualSearchboxGhostLoader'),
+      },
       areLanguagePickersOpen: Boolean,
       toastMessage: String,
     };

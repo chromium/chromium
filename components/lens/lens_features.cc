@@ -301,6 +301,10 @@ constexpr base::FeatureParam<bool> kLensOverlaySendLensInputsForLensSuggest{
     &kLensOverlayContextualSearchbox, "send-lens-inputs-for-lens-suggest",
     false};
 
+constexpr base::FeatureParam<bool> kShowContextualSearchboxGhostLoader{
+    &kLensOverlayContextualSearchbox, "show-contextual-searchbox-ghost-loader",
+    false};
+
 constexpr base::FeatureParam<bool>
     kLensOverlaySendLensVisualInteractionDataForLensSuggest{
         &kLensOverlayContextualSearchbox,
@@ -794,6 +798,10 @@ base::TimeDelta GetLensOverlaySurveyResultsTime() {
 
 std::string GetLensOverlayTranslateEndpointURL() {
   return kTranslateEndpointUrl.Get();
+}
+
+bool ShowContextualSearchboxGhostLoader() {
+  return kShowContextualSearchboxGhostLoader.Get();
 }
 
 }  // namespace lens::features

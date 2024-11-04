@@ -287,7 +287,9 @@
       <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
           on-blur="handleSearchboxBlurred">
       </cr-searchbox>
-      <cr-searchbox-ghost-loader></cr-searchbox-ghost-loader>
+      <template is="dom-if" if="[[isGhostLoaderEnabled]]">
+        <cr-searchbox-ghost-loader></cr-searchbox-ghost-loader>
+      </template>
     </div>
   </template>
   <div id="translateButtonContainer" class="button-container">
