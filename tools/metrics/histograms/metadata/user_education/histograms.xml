@@ -80,6 +80,8 @@ chromium-metrics-reviews@google.com.
   <variant name="HistoryEmbeddings"
       summary="the module for History Embeddings Search"/>
   <variant name="Passkeys" summary="the module for Passkeys"/>
+  <variant name="PdfSearchify"
+      summary="the module for making PDFs interactable"/>
   <variant name="SafetyCheck" summary="the module for Safety Check"/>
   <variant name="SaveTabGroups" summary="the module for Saved Tab Groups"/>
   <variant name="SearchBoxSuggestions"
