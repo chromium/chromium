@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 #include "base/notreached.h"
@@ -37,45 +32,38 @@
 
 namespace blink {
 
-// TODO(vmpstr): Move these closer to canvas, along with the parsing code.
-static const char* const kCanvasCompositeOperatorNames[] = {"clear",
-                                                            "copy",
-                                                            "source-over",
-                                                            "source-in",
-                                                            "source-out",
-                                                            "source-atop",
-                                                            "destination-over",
-                                                            "destination-in",
-                                                            "destination-out",
-                                                            "destination-atop",
-                                                            "xor",
-                                                            "lighter"};
+namespace {
 
-static const char* const kCanvasBlendModeNames[] = {
-    "normal",     "multiply",   "screen",      "overlay",
-    "darken",     "lighten",    "color-dodge", "color-burn",
-    "hard-light", "soft-light", "difference",  "exclusion",
-    "hue",        "saturation", "color",       "luminosity"};
-const int kNumCompositeOperatorNames = std::size(kCanvasCompositeOperatorNames);
-const int kNumBlendModeNames = std::size(kCanvasBlendModeNames);
+// TODO(vmpstr): Move these closer to canvas, along with the parsing code.
+constexpr auto kCanvasCompositeOperatorNames = std::to_array<const char* const>(
+    {"clear", "copy", "source-over", "source-in", "source-out", "source-atop",
+     "destination-over", "destination-in", "destination-out",
+     "destination-atop", "xor", "lighter"});
+
+constexpr auto kCanvasBlendModeNames = std::to_array<const char* const>(
+    {"normal", "multiply", "screen", "overlay", "darken", "lighten",
+     "color-dodge", "color-burn", "hard-light", "soft-light", "difference",
+     "exclusion", "hue", "saturation", "color", "luminosity"});
+
+}  // namespace
 
 bool ParseCanvasCompositeAndBlendMode(const String& s,
                                       CompositeOperator& op,
                                       BlendMode& blend_op) {
-  for (int i = 0; i < kNumCompositeOperatorNames; i++) {
-    if (s == kCanvasCompositeOperatorNames[i]) {
-      op = static_cast<CompositeOperator>(i);
-      blend_op = BlendMode::kNormal;
-      return true;
-    }
+  if (auto it = std::ranges::find(kCanvasCompositeOperatorNames, s);
+      it != kCanvasCompositeOperatorNames.end()) {
+    op = static_cast<CompositeOperator>(
+        std::distance(kCanvasCompositeOperatorNames.begin(), it));
+    blend_op = BlendMode::kNormal;
+    return true;
   }
 
-  for (int i = 0; i < kNumBlendModeNames; i++) {
-    if (s == kCanvasBlendModeNames[i]) {
-      blend_op = static_cast<BlendMode>(i);
-      op = kCompositeSourceOver;
-      return true;
-    }
+  if (auto it = std::ranges::find(kCanvasBlendModeNames, s);
+      it != kCanvasBlendModeNames.end()) {
+    blend_op = static_cast<BlendMode>(
+        std::distance(kCanvasBlendModeNames.begin(), it));
+    op = kCompositeSourceOver;
+    return true;
   }
 
   return false;
@@ -83,9 +71,9 @@ bool ParseCanvasCompositeAndBlendMode(const String& s,
 
 String CanvasCompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
   DCHECK_GE(op, 0);
-  DCHECK_LT(op, kNumCompositeOperatorNames);
+  DCHECK_LT(op, kCanvasCompositeOperatorNames.size());
   DCHECK_GE(static_cast<int>(blend_op), 0);
-  DCHECK_LT(static_cast<int>(blend_op), kNumBlendModeNames);
+  DCHECK_LT(static_cast<size_t>(blend_op), kCanvasBlendModeNames.size());
   if (blend_op != BlendMode::kNormal)
     return kCanvasBlendModeNames[static_cast<unsigned>(blend_op)];
   return kCanvasCompositeOperatorNames[op];
@@ -155,8 +143,8 @@ bool ParseImageEncodingMimeType(const String& mime_type_name,
 String ImageEncodingMimeTypeName(ImageEncodingMimeType mime_type) {
   DCHECK_GE(mime_type, 0);
   DCHECK_LT(mime_type, 3);
-  const char* const kMimeTypeNames[3] = {"image/png", "image/jpeg",
-                                         "image/webp"};
+  constexpr std::array<const char* const, 3> kMimeTypeNames = {
+      "image/png", "image/jpeg", "image/webp"};
   return kMimeTypeNames[mime_type];
 }
 
@@ -179,7 +167,8 @@ bool ParseLineCap(const String& s, LineCap& cap) {
 String LineCapName(LineCap cap) {
   DCHECK_GE(cap, 0);
   DCHECK_LT(cap, 3);
-  const char* const kNames[3] = {"butt", "round", "square"};
+  constexpr std::array<const char* const, 3> kNames = {"butt", "round",
+                                                       "square"};
   return kNames[cap];
 }
 
@@ -202,14 +191,16 @@ bool ParseLineJoin(const String& s, LineJoin& join) {
 String LineJoinName(LineJoin join) {
   DCHECK_GE(join, 0);
   DCHECK_LT(join, 3);
-  const char* const kNames[3] = {"miter", "round", "bevel"};
+  constexpr std::array<const char* const, 3> kNames = {"miter", "round",
+                                                       "bevel"};
   return kNames[join];
 }
 
 String TextAlignName(TextAlign align) {
   DCHECK_GE(align, 0);
   DCHECK_LT(align, 5);
-  const char* const kNames[5] = {"start", "end", "left", "center", "right"};
+  constexpr std::array<const char* const, 5> kNames = {"start", "end", "left",
+                                                       "center", "right"};
   return kNames[align];
 }
 
@@ -240,8 +231,8 @@ bool ParseTextAlign(const String& s, TextAlign& align) {
 String TextBaselineName(TextBaseline baseline) {
   DCHECK_GE(baseline, 0);
   DCHECK_LT(baseline, 6);
-  const char* const kNames[6] = {"alphabetic", "top",         "middle",
-                                 "bottom",     "ideographic", "hanging"};
+  constexpr std::array<const char* const, 6> kNames = {
+      "alphabetic", "top", "middle", "bottom", "ideographic", "hanging"};
   return kNames[baseline];
 }
 
