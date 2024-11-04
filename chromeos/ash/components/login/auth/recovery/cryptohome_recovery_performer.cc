@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
@@ -86,7 +87,8 @@ void CryptohomeRecoveryPerformer::OnGetTokenFailure(
   LOGIN_LOG(EVENT) << "Failed to fetch access token for recovery, error: "
                    << error.ToString();
   RecordRecoveryResult(
-      AuthEventsRecorder::CryptohomeRecoveryResult::kOAuthTokenFetchError);
+      AuthEventsRecorder::CryptohomeRecoveryResult::kOAuthTokenFetchError,
+      user_context_->GetAuthFactorsData());
   std::move(callback_).Run(
       std::move(user_context_),
       AuthenticationError{AuthFailure::CRYPTOHOME_RECOVERY_OAUTH_TOKEN_ERROR});
@@ -101,7 +103,8 @@ void CryptohomeRecoveryPerformer::OnNetworkFetchEpoch(
     CryptohomeRecoveryServerStatusCode status) {
   if (status != CryptohomeRecoveryServerStatusCode::kSuccess) {
     RecordRecoveryResult(
-        AuthEventsRecorder::CryptohomeRecoveryResult::kEpochFetchError);
+        AuthEventsRecorder::CryptohomeRecoveryResult::kEpochFetchError,
+        user_context_->GetAuthFactorsData());
     std::move(callback_).Run(std::move(user_context_),
                              AuthenticationError(AuthFailure(status)));
     return;
@@ -123,7 +126,8 @@ void CryptohomeRecoveryPerformer::OnGetRecoveryRequest(
     LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
                      << error->get_cryptohome_code();
     RecordRecoveryResult(
-        AuthEventsRecorder::CryptohomeRecoveryResult::kGetRecoveryRequestError);
+        AuthEventsRecorder::CryptohomeRecoveryResult::kGetRecoveryRequestError,
+        context->GetAuthFactorsData());
     std::move(callback_).Run(std::move(context), std::move(error));
     return;
   }
@@ -145,7 +149,8 @@ void CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse(
     CryptohomeRecoveryServerStatusCode status) {
   if (status != CryptohomeRecoveryServerStatusCode::kSuccess) {
     RecordRecoveryResult(AuthEventsRecorder::CryptohomeRecoveryResult::
-                             kRecoveryResponseFetchError);
+                             kRecoveryResponseFetchError,
+                         user_context_->GetAuthFactorsData());
     std::move(callback_).Run(std::move(user_context_),
                              AuthenticationError(AuthFailure(status)));
     return;
@@ -165,7 +170,8 @@ void CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery(
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     RecordRecoveryResult(
-        GetRecoveryResultFromCryptohomeError(error->get_cryptohome_code()));
+        GetRecoveryResultFromCryptohomeError(error->get_cryptohome_code()),
+        context->GetAuthFactorsData());
     std::move(callback_).Run(std::move(context), std::move(error));
     return;
   }
@@ -174,14 +180,16 @@ void CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery(
                     "for decryption";
   }
   LOGIN_LOG(EVENT) << "Authenticated successfully";
-  RecordRecoveryResult(
-      AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded);
+  RecordRecoveryResult(AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded,
+                       context->GetAuthFactorsData());
   std::move(callback_).Run(std::move(context), std::nullopt);
 }
 
 void CryptohomeRecoveryPerformer::RecordRecoveryResult(
-    AuthEventsRecorder::CryptohomeRecoveryResult result) {
-  AuthEventsRecorder::Get()->OnRecoveryDone(result, timer_->Elapsed());
+    AuthEventsRecorder::CryptohomeRecoveryResult result,
+    const SessionAuthFactors& auth_factors) {
+  AuthEventsRecorder::Get()->OnRecoveryDone(result, auth_factors,
+                                            timer_->Elapsed());
   timer_.reset();
 }
 

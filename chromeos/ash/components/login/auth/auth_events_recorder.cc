@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -59,6 +60,9 @@ constexpr char kNbPasswordAttemptsHistogramName[] =
 
 constexpr char kRecoveryResultHistogramName[] =
     "Login.CryptohomeRecoveryResult";
+
+constexpr char kPasswordlessRecoveryResultHistogramName[] =
+    "Login.CryptohomePasswordlessRecoveryResult";
 
 constexpr char kRecoveryDurationHistogramPrefix[] =
     "Login.CryptohomeRecoveryDuration.";
@@ -441,9 +445,14 @@ void AuthEventsRecorder::RecordSessionAuthFactors(
 }
 
 void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
+                                        const SessionAuthFactors& auth_factors,
                                         const base::TimeDelta& time) {
   base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
   base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
+  if (!auth_factors.FindAnyPasswordFactor()) {
+    base::UmaHistogramEnumeration(kPasswordlessRecoveryResultHistogramName,
+                                  result);
+  }
   AddAuthEvent(GetCrashKeyStringWithStatus(
       "recovery_done", result == CryptohomeRecoveryResult::kSucceeded));
 }

@@ -383,26 +383,46 @@ TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactorsCryptohomePin) {
 TEST_F(AuthEventsRecorderTest, OnRecoveryDone) {
   base::HistogramTester histogram_tester;
 
+  SessionAuthFactors factors(
+      {MakeLocalPasswordFactor(), MakePinAuthFactor(), MakeRecoveryFactor()});
+
   auto one_second = base::Seconds(1);
   recorder_->OnRecoveryDone(
-      AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded, one_second);
+      AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded, factors,
+      one_second);
   histogram_tester.ExpectBucketCount(
       "Login.CryptohomeRecoveryResult",
       static_cast<int>(
           AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded),
       1);
+
+  histogram_tester.ExpectBucketCount(
+      "Login.CryptohomePasswordlessRecoveryResult",
+      static_cast<int>(
+          AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded),
+      0);
+
   histogram_tester.ExpectTimeBucketCount(
       "Login.CryptohomeRecoveryDuration.Success", one_second, 1);
+
+  SessionAuthFactors passwordless_factors(
+      {MakePinAuthFactor(), MakeRecoveryFactor()});
 
   auto two_seconds = base::Seconds(2);
   recorder_->OnRecoveryDone(
       AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError,
-      two_seconds);
+      passwordless_factors, two_seconds);
   histogram_tester.ExpectBucketCount(
       "Login.CryptohomeRecoveryResult",
       static_cast<int>(
           AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError),
       1);
+  histogram_tester.ExpectBucketCount(
+      "Login.CryptohomePasswordlessRecoveryResult",
+      static_cast<int>(
+          AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError),
+      1);
+
   histogram_tester.ExpectTimeBucketCount(
       "Login.CryptohomeRecoveryDuration.Failure", two_seconds, 1);
 }
