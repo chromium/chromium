@@ -1058,12 +1058,15 @@ export class TextLayerElement extends PolymerElement {
                                                    .paragraphIndex])}`,
       `justify-content: ${this.getLineAlignment(translatedLineData.alignment)}`,
       `font-size: ${lineFontSizePixels}px`,
-      `width: ${toPercent(lineBoundingBox.box.width)}`,
-      `height: ${toPercent(lineBoundingBox.box.height)}`,
-      `top: ${
-          toPercent(lineBoundingBox.box.y - (lineBoundingBox.box.height / 2))}`,
-      `left: ${
-          toPercent(lineBoundingBox.box.x - (lineBoundingBox.box.width / 2))}`,
+      `width: calc(${toPercent(lineBoundingBox.box.width)} + 4px)`,
+      `height: calc(${toPercent(lineBoundingBox.box.height)} + 2px)`,
+      `top: calc(${
+          toPercent(
+              lineBoundingBox.box.y -
+              (lineBoundingBox.box.height / 2))} - 1px)`,
+      `left: calc(${
+          toPercent(
+              lineBoundingBox.box.x - (lineBoundingBox.box.width / 2))} - 2px)`,
       `text-shadow: ${
           this.getOutlineStyleForLine(translatedLine, lineFontSizePixels)}`,
       `transform: rotate(${lineBoundingBox.rotation}rad)`,
