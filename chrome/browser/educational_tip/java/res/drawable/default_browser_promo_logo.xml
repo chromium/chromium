@@ -10,10 +10,6 @@ found in the LICENSE file.
     android:height="72dp"
     android:viewportWidth="72"
     android:viewportHeight="72">
-  <path
-      android:pathData="M11.31,0L60.69,0A11.31,11.31 0,0 1,72 11.31L72,60.69A11.31,11.31 0,0 1,60.69 72L11.31,72A11.31,11.31 0,0 1,0 60.69L0,11.31A11.31,11.31 0,0 1,11.31 0z"
-      android:fillColor="@color/material_primary_95"
-      android:fillAlpha="0.05"/>
   <group>
     <clip-path
         android:pathData="M24,24h24v24h-24z"/>
