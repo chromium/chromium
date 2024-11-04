@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "components/sync/service/local_data_description.h"
 
 class Browser;

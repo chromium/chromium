@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/service/local_data_description.h"
 
@@ -80,28 +81,55 @@ class BatchUploadService : public KeyedService {
   // Callback to clear the overridden avatar text on timeout.
   void OnAvatarOverrideTextTimeout();
 
-  // Resets the state of the service related to the dialog.
-  void Reset();
+  // Resets part of the state related to the dialog lifetime.
+  void ResetDialogState();
+
+  // This state is divided into two parts:
+  // - `DialogState`: that is active from triggering the request of opening the
+  // dialog until the dialog is closed or resulted in not opening.
+  // - `SavingBrowserState`: that is active after the dialog was accepted.
+  // Accepting the dialog closes it and resets `DialogState`. However
+  // post-accepting (saving), the avatar button of the browser that was showing
+  // the dialog expands and shows a saving text for few seconds. This state
+  // holds needed information for that modification. The dialog is still allowed
+  // to be opened while this state is active.
+  struct ResettableState {
+    // Fields related to the dialog currently showing.
+    struct DialogState {
+      // Controller lifetime is bind to when the dialog is currently showing.
+      BatchUploadController controller_;
+      // Browser that is showing the dialog.
+      raw_ptr<Browser> browser_;
+      // Called when the decision about showing the dialog is made.
+      // Returns whether it was shown or not.
+      base::OnceCallback<void(bool)> dialog_shown_callback_;
+
+      DialogState();
+      ~DialogState();
+    };
+
+    // Fields related to the effect on the browser post accepting the dialog.
+    struct SavingBrowserState {
+      // Callback that will clear the modified text on the avatar button.
+      base::ScopedClosureRunner avatar_override_clear_callback_;
+      // Timer to clear the avatar override text.
+      base::OneShotTimer avatar_override_timer_;
+    };
+
+    std::unique_ptr<DialogState> dialog_state_;
+    std::unique_ptr<SavingBrowserState> saving_browser_state_;
+
+    ResettableState();
+    ~ResettableState();
+  };
 
   raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<syncer::SyncService> sync_service_;
   std::unique_ptr<BatchUploadDelegate> delegate_;
 
-  // Controller lifetime is bind to when the dialog is currently showing. There
-  // can only be one controller/dialog existing at the same time per profile.
-  std::unique_ptr<BatchUploadController> controller_;
-  // Browser that is showing the dialog. Nullptr if the dialog is not opened.
-  raw_ptr<Browser> browser_;
-  // When accepting the bubble, the avatar button text is modified and this
-  // callback handles it's lifetime. Executing it will clear the text.
-  base::ScopedClosureRunner avatar_override_clear_callback_;
-  // Timer to clear the avatar override text. Triggered after accepting the
-  // bubble.
-  base::OneShotTimer avatar_override_timer_;
-
-  // Called when the decision about showing the dialog is made.
-  // Returns whether it was shown or not.
-  base::OnceCallback<void(bool)> dialog_shown_callback_;
+  // Full state of the flow from requesting opening the dialog to saving
+  // data/canceling the flow.
+  ResettableState state_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_

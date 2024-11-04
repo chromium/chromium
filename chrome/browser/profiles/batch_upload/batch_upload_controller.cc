@@ -63,7 +63,6 @@ bool BatchUploadController::ShowDialog(
   CHECK(selected_items_callback);
 
   if (!HasLocalDataToShow(local_data_descriptions)) {
-    std::move(selected_items_callback).Run({});
     return false;
   }
 

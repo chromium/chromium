@@ -78,7 +78,8 @@ TEST(BatchUploadControllerTest, EmptyController) {
   // No local_descriptions means no local data; we do not show the dialog.
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .Times(0);
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  // Callback is not called as the controller immedialy returns false.
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
   // Not showing the bubble should still call the done_callback with no move
   // request.
   EXPECT_FALSE(controller.ShowDialog(mock, nullptr, {}, mock_callback.Get()));
@@ -129,9 +130,9 @@ TEST(BatchUploadControllerTest, ProvideWithoutLocalData) {
   // Even if the provider exists, having no data should not show the dialog.
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .Times(0);
-  // Not showing the bubble should still call the done_callback with an empty
-  // map..
-  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  // Not showing the bubble should just return directly without invoking the
+  // callback.
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
   std::map<syncer::DataType, syncer::LocalDataDescription> input;
   input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
   EXPECT_FALSE(controller.ShowDialog(mock, nullptr, std::move(input),

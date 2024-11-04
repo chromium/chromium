@@ -69,13 +69,14 @@ void BatchUploadService::OpenBatchUpload(
     return;
   }
 
-  // Create the controller in preparation for showing the dialog once all the
-  // local data descriptions are ready in `OnLocalDataDescriptionsReady()`.
-  // Allows to make sure that while getting the local data descriptions, no
-  // other dialog opening is triggered.
-  controller_ = std::make_unique<BatchUploadController>();
-  browser_ = browser;
-  dialog_shown_callback_ = std::move(success_callback);
+  // Create the state of the dialog that may be shown, creating the controller
+  // in preparation for showing the dialog once all the local data descriptions
+  // are ready in `OnGetLocalDataDescriptionsReady()`. Allows to make sure that
+  // while getting the local data descriptions, no other dialog opening is
+  // triggered.
+  state_.dialog_state_ = std::make_unique<ResettableState::DialogState>();
+  state_.dialog_state_->browser_ = browser;
+  state_.dialog_state_->dialog_shown_callback_ = std::move(success_callback);
 
   RequestLocalDataDescriptions();
 }
@@ -96,27 +97,30 @@ void BatchUploadService::RequestLocalDataDescriptions() {
 void BatchUploadService::OnGetLocalDataDescriptionsReady(
     std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
   if (local_data_map.empty()) {
-    Reset();
-    std::move(dialog_shown_callback_).Run(false);
+    std::move(state_.dialog_state_->dialog_shown_callback_).Run(false);
+    ResetDialogState();
     return;
   }
 
-  bool opened = controller_->ShowDialog(
-      *delegate_, browser_,
+  bool opened = state_.dialog_state_->controller_.ShowDialog(
+      *delegate_, state_.dialog_state_->browser_,
       std::move(local_data_map), /*selected_items_callback=*/
       base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
                      base::Unretained(this)));
-  std::move(dialog_shown_callback_).Run(opened);
+  std::move(state_.dialog_state_->dialog_shown_callback_).Run(opened);
+  if (!opened) {
+    ResetDialogState();
+  }
 }
 
 void BatchUploadService::OnBatchUplaodDialogResult(
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>&
         item_ids_to_move) {
-  CHECK(controller_);
+  CHECK(state_.dialog_state_);
 
-  Browser* browser = browser_.get();
-  Reset();
+  Browser* browser = state_.dialog_state_->browser_.get();
+  ResetDialogState();
 
   if (item_ids_to_move.empty()) {
     return;
@@ -124,6 +128,8 @@ void BatchUploadService::OnBatchUplaodDialogResult(
 
   sync_service_->TriggerLocalDataMigration(item_ids_to_move);
 
+  state_.saving_browser_state_ =
+      std::make_unique<ResettableState::SavingBrowserState>();
   TriggerAvatarButtonSavingDataText(browser);
 }
 
@@ -147,8 +153,9 @@ bool BatchUploadService::IsUserEligibleToOpenDialog() const {
 
 void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
   CHECK(browser);
+  CHECK(state_.saving_browser_state_);
   // Show the text.
-  avatar_override_clear_callback_ =
+  state_.saving_browser_state_->avatar_override_clear_callback_ =
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider()
           ->GetAvatarToolbarButton()
@@ -157,7 +164,7 @@ void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
                   IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT),
               std::nullopt);
   // Prepare the timer to stop the overridden text from showing.
-  avatar_override_timer_.Start(
+  state_.saving_browser_state_->avatar_override_timer_.Start(
       FROM_HERE, kBatchUploadAvatarButtonOverrideTextDuration,
       base::BindOnce(&BatchUploadService::OnAvatarOverrideTextTimeout,
                      // Unretained is fine here since the timer is a field
@@ -166,15 +173,22 @@ void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
 }
 
 void BatchUploadService::OnAvatarOverrideTextTimeout() {
-  CHECK(avatar_override_clear_callback_);
-  avatar_override_clear_callback_.RunAndReset();
+  CHECK(state_.saving_browser_state_ &&
+        state_.saving_browser_state_->avatar_override_clear_callback_);
+  state_.saving_browser_state_->avatar_override_clear_callback_.RunAndReset();
+  state_.saving_browser_state_.reset();
 }
 
 bool BatchUploadService::IsDialogOpened() const {
-  return controller_ != nullptr;
+  return state_.dialog_state_ != nullptr;
 }
 
-void BatchUploadService::Reset() {
-  controller_.reset();
-  browser_ = nullptr;
+void BatchUploadService::ResetDialogState() {
+  state_.dialog_state_.reset();
 }
+
+BatchUploadService::ResettableState::ResettableState() = default;
+BatchUploadService::ResettableState::~ResettableState() = default;
+
+BatchUploadService::ResettableState::DialogState::DialogState() = default;
+BatchUploadService::ResettableState::DialogState::~DialogState() = default;
