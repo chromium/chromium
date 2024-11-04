@@ -8374,9 +8374,6 @@ crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 # Fix importer 2024-10-22
 crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-dedicated-worker.https.tentative.window.html [ Pass Timeout ]
 
-# Disabled to allow crrev.com/c/5975681 to land and will then be updated.
-crbug.com/370716587 http/tests/devtools/a11y-axe-core/performance/performance_event_log_a11y_test.js [ Failure Pass ]
-
 # Gardener 2024-10-23
 crbug.com/375006417 [ Linux ] external/wpt/fledge/tentative/trusted-scoring-signals.https.window.html?50-last [ Failure Pass Timeout ]
 
