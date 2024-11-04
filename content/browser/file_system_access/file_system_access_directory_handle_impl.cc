@@ -133,6 +133,17 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
   storage::FileSystemURL child_url;
   blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
       GetChildURL(basename, &child_url);
+  GetFileResolved(basename, create, std::move(callback),
+                  std::move(get_child_url_result), std::move(child_url));
+}
+
+void FileSystemAccessDirectoryHandleImpl::GetFileResolved(
+    const std::string& basename,
+    bool create,
+    GetFileCallback callback,
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+    storage::FileSystemURL child_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
     std::move(callback).Run(std::move(get_child_url_result),
                             mojo::NullRemote());
@@ -216,6 +227,17 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectory(
   storage::FileSystemURL child_url;
   blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
       GetChildURL(basename, &child_url);
+  GetDirectoryResolved(basename, create, std::move(callback),
+                       std::move(get_child_url_result), std::move(child_url));
+}
+
+void FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(
+    const std::string& basename,
+    bool create,
+    GetDirectoryCallback callback,
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+    storage::FileSystemURL child_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
     std::move(callback).Run(std::move(get_child_url_result),
                             mojo::NullRemote());
@@ -323,6 +345,17 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
   storage::FileSystemURL child_url;
   blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
       GetChildURL(basename, &child_url);
+  RemoveEntryResolved(basename, recurse, std::move(callback),
+                      std::move(get_child_url_result), std::move(child_url));
+}
+
+void FileSystemAccessDirectoryHandleImpl::RemoveEntryResolved(
+    const std::string& basename,
+    bool recurse,
+    RemoveEntryCallback callback,
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+    storage::FileSystemURL child_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
     std::move(callback).Run(std::move(get_child_url_result));
     return;

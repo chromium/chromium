@@ -85,6 +85,12 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       storage::FileSystemURL* result);
 
  private:
+  void GetFileResolved(
+      const std::string& basename,
+      bool create,
+      GetFileCallback callback,
+      blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+      storage::FileSystemURL child_url);
   // This method creates the file if it does not currently exists. I.e. it is
   // the implementation for passing create=true to GetFile.
   void GetFileWithWritePermission(const storage::FileSystemURL& child_url,
@@ -97,6 +103,12 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void DidGetFile(const storage::FileSystemURL& url,
                   GetFileCallback callback,
                   base::File::Error result);
+  void GetDirectoryResolved(
+      const std::string& basename,
+      bool create,
+      GetDirectoryCallback callback,
+      blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+      storage::FileSystemURL child_url);
   // This method creates the directory if it does not currently exists. I.e. it
   // is the implementation for passing create=true to GetDirectory.
   void GetDirectoryWithWritePermission(const storage::FileSystemURL& child_url,
@@ -110,6 +122,12 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       base::File::Error result,
       std::vector<filesystem::mojom::DirectoryEntry> file_list,
       bool has_more_entries);
+  void RemoveEntryResolved(
+      const std::string& basename,
+      bool recurse,
+      RemoveEntryCallback callback,
+      blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
+      storage::FileSystemURL child_url);
   void CurrentBatchEntriesReady(
       scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
           listener_holder,
