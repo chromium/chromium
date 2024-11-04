@@ -405,7 +405,7 @@ Style notes:
         Switch Access enabled
       </message>
       <message name="IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_DESCRIPTION" desc="The message shown on a notification when the internal touchpad is disabled.">
-        Press Esc 5 times to enable the touchpad
+        Press Shift 5 times to enable the touchpad
       </message>
       <message name="IDS_ASH_STATUS_TRAY_TOUCHPAD_DISABLED_TURN_ON" desc="Title of the dialog for disabling the internal touchpad.">
         Turn on

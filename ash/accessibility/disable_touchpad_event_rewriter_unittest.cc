@@ -85,9 +85,9 @@ class DisableTouchpadEventRewriterTest : public AshTestBase {
       const DisableTouchpadEventRewriterTest&) = delete;
   ~DisableTouchpadEventRewriterTest() override = default;
 
-  void PressAndReleaseEscapeKey() {
-    generator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-    generator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  void PressAndReleaseShiftKey() {
+    generator()->PressKey(ui::VKEY_SHIFT, ui::EF_NONE);
+    generator()->ReleaseKey(ui::VKEY_SHIFT, ui::EF_NONE);
   }
 
   void SetUp() override {
@@ -175,19 +175,19 @@ TEST_F(DisableTouchpadEventRewriterTest, MouseButtonsCanceledInAlwaysMode) {
   EXPECT_EQ(0U, event_recorder()->events().size());
 }
 
-TEST_F(DisableTouchpadEventRewriterTest, DisableAfterFiveEscapeKeyPresses) {
+TEST_F(DisableTouchpadEventRewriterTest, DisableAfterFiveShiftKeyPresses) {
   event_rewriter()->SetEnabled(true);
 
-  int escapeKeyPressCount = 0;
+  int shiftKeyPressCount = 0;
 
-  // Simulate pressing and releasing the escape key 5 times.
+  // Simulate pressing and releasing the shift key 5 times.
   for (int i = 0; i < 5; ++i) {
-    PressAndReleaseEscapeKey();
-    generator()->AdvanceClock(base::Milliseconds(500));
-    ++escapeKeyPressCount;
+    PressAndReleaseShiftKey();
+    generator()->AdvanceClock(base::Milliseconds(100));
+    ++shiftKeyPressCount;
 
     // After the 5th press, check if the rewriter is disabled.
-    if (escapeKeyPressCount == 5) {
+    if (shiftKeyPressCount == 5) {
       EXPECT_FALSE(event_rewriter()->IsEnabled());
     } else {
       EXPECT_TRUE(event_rewriter()->IsEnabled());
@@ -196,46 +196,45 @@ TEST_F(DisableTouchpadEventRewriterTest, DisableAfterFiveEscapeKeyPresses) {
 }
 
 TEST_F(DisableTouchpadEventRewriterTest,
-       EscapePressesExceedTimeWindowStaysEnabled) {
+       ShiftPressesExceedTimeWindowStaysEnabled) {
   event_rewriter()->SetEnabled(true);
 
-  // Simulate pressing and releasing the escape key 4 times.
+  // Simulate pressing and releasing the shift key 4 times.
   for (int i = 0; i < 4; ++i) {
-    PressAndReleaseEscapeKey();
-    generator()->AdvanceClock(base::Milliseconds(500));
+    PressAndReleaseShiftKey();
+    generator()->AdvanceClock(base::Milliseconds(100));
     EXPECT_TRUE(event_rewriter()->IsEnabled());
   }
 
-  // Exceed escape key time window on final key press.
-  generator()->AdvanceClock(base::Seconds(2));
-  PressAndReleaseEscapeKey();
+  // Exceed shift key time window on final key press.
+  generator()->AdvanceClock(base::Seconds(3));
+  PressAndReleaseShiftKey();
   EXPECT_TRUE(event_rewriter()->IsEnabled());
 }
 
-TEST_F(DisableTouchpadEventRewriterTest,
-       ResetEscapeKeyCountOnNonEscapeKeyPress) {
+TEST_F(DisableTouchpadEventRewriterTest, ResetShiftKeyCountOnNonShiftKeyPress) {
   event_rewriter()->SetEnabled(true);
 
-  // Simulate pressing escape key and releasing the escape key 3 times.
+  // Simulate pressing shift key and releasing the shift key 3 times.
   for (int i = 0; i < 3; ++i) {
-    PressAndReleaseEscapeKey();
+    PressAndReleaseShiftKey();
     EXPECT_TRUE(event_rewriter()->IsEnabled());
   }
 
-  // Press non escape key resets the escape key  count.
+  // Press non shift key resets the shift key  count.
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
 
   EXPECT_TRUE(event_rewriter()->IsEnabled());
 
-  int escapeKeyPressCount = 0;
+  int shiftKeyPressCount = 0;
 
   for (int i = 0; i < 5; ++i) {
-    PressAndReleaseEscapeKey();
-    generator()->AdvanceClock(base::Milliseconds(500));
-    ++escapeKeyPressCount;
+    PressAndReleaseShiftKey();
+    generator()->AdvanceClock(base::Milliseconds(100));
+    ++shiftKeyPressCount;
 
-    if (escapeKeyPressCount == 5) {
+    if (shiftKeyPressCount == 5) {
       EXPECT_FALSE(event_rewriter()->IsEnabled());
     } else {
       EXPECT_TRUE(event_rewriter()->IsEnabled());

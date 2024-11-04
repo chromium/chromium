@@ -1945,7 +1945,7 @@
     When a mouse is connected
   </message>
   <message name="IDS_SETTINGS_RE_ENABLE_TOUCHPAD" desc="A label to show how to re-enable the internal touchpad.">
-    Press esc 5 times to re-enable it
+    Press shift 5 times to re-enable it
   </message>
   <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_NEVER" desc="A dropdown item that lets the user never disable the internal touchpad.">
     Never
