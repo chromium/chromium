@@ -1559,7 +1559,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 
   // Install web app
   Profile* profile = browser()->profile();
-  const GURL kWebAppURL("http://www.webapp.com");
+  const GURL kWebAppURL("https://www.webapp.com");
   auto web_app_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppURL);
   web_app_info->scope = kWebAppURL.GetWithoutFilename();
