@@ -741,32 +741,6 @@ void FormFiller::FillOrPreviewForm(
       LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
                      << GetSkipFieldFillLogMessage(skip_reason);
       if (fill_event_id && !IsCheckable(autofill_field->check_status())) {
-        // This lambda calculates a hash of the value Autofill would have used
-        // if the field was skipped due to being pre-filled on page load. If the
-        // field was not skipped due to being pre-filled, `std::nullopt` is
-        // returned.
-        const auto value_that_would_have_been_filled_in_a_prefilled_field_hash =
-            [&]() -> std::optional<size_t> {
-          if (skip_reasons[autofill_field->global_id()] ==
-                  DenseSet<FieldFillingSkipReason>{
-                      FieldFillingSkipReason::kValuePrefilled} &&
-              action_persistence == mojom::ActionPersistence::kFill &&
-              !is_refill) {
-            std::string failure_to_fill;
-            const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
-                filling_context ? filling_context->forced_fill_values
-                                : std::map<FieldGlobalId, std::u16string>();
-            const FieldFillingData filling_content = GetFieldFillingData(
-                *autofill_field, profile_or_credit_card, forced_fill_values,
-                result_fields[i], cvc.has_value() ? *cvc : u"",
-                action_persistence, &failure_to_fill);
-            if (!filling_content.value_to_fill.empty()) {
-              return base::FastHash(
-                  base::UTF16ToUTF8(filling_content.value_to_fill));
-            }
-          }
-          return std::nullopt;
-        };
         autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
             .fill_event_id = *fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
@@ -774,8 +748,6 @@ void FormFiller::FillOrPreviewForm(
             .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
             .filling_method = FillingMethod::kNone,
-            .value_that_would_have_been_filled_in_a_prefilled_field_hash =
-                value_that_would_have_been_filled_in_a_prefilled_field_hash(),
         });
       }
       continue;

@@ -403,38 +403,14 @@ TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields().front(), &profile).fields();
 
-  auto expect_hash = [&](const FormFieldData& field,
-                         std::optional<size_t> expected_hash) {
-    AutofillField* autofill_field = nullptr;
-    FormStructure* form_structure = nullptr;
-    ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
-        form.global_id(), field.global_id(), &form_structure, &autofill_field));
-    ASSERT_TRUE(autofill_field);
-    EXPECT_THAT(
-        autofill_field->field_log_events(),
-        Contains(VariantWith<FillFieldLogEvent>(Field(
-            "value_that_would_have_been_filled_in_a_prefilled_field_hash",
-            &FillFieldLogEvent::
-                value_that_would_have_been_filled_in_a_prefilled_field_hash,
-            testing::Conditional(expected_hash.has_value(),
-                                 testing::Optional(expected_hash),
-                                 Eq(std::nullopt))))));
-  };
-
   EXPECT_THAT(filled_fields[0],
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  expect_hash(filled_fields[0], std::nullopt);
   EXPECT_THAT(filled_fields[1],
               AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
-  expect_hash(filled_fields[1], std::nullopt);
   EXPECT_THAT(filled_fields[2],
               AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
-  expect_hash(filled_fields[2], std::nullopt);
   EXPECT_FALSE(filled_fields[3].is_autofilled());
   EXPECT_EQ(filled_fields[3].value(), form.fields()[3].value());
-  expect_hash(filled_fields[3],
-              base::FastHash(base::UTF16ToUTF8(
-                  profile.GetInfo(kSkippedType, kAppLocale))));
   EXPECT_THAT(filled_fields[4], AutofilledWith(profile.GetInfo(
                                     ADDRESS_HOME_COUNTRY, kAppLocale)));
 }

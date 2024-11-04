@@ -83,11 +83,6 @@ void LogPreFillMetrics(const FormStructure& form) {
           FormTypeToStringView(form_type_of_field);
       LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
                               field->Type().GetStorableType());
-      LogPreFilledValueChanged(
-          form_type_name, field->initial_value_changed(),
-          field->value(ValueSemantics::kCurrent), field->field_log_events(),
-          field->possible_types(), field->Type().GetStorableType(),
-          field->is_autofilled());
       LogPreFilledFieldClassifications(form_type_name,
                                        field->initial_value_changed(),
                                        field->may_use_prefilled_placeholder());
