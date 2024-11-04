@@ -8206,8 +8206,6 @@
     "DirectCompositorThreadIpc": [
         {
             "platforms": [
-                "android",
-                "android_webview",
                 "linux"
             ],
             "experiments": [
@@ -16659,6 +16657,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
@@ -16679,6 +16678,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
