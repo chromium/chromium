@@ -626,7 +626,7 @@ TEST_F(SunfishTest, ActionButtonRank) {
       ActionButtonRank(ActionButtonType::kSunfish, 0));
   auto action_buttons = session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 2u);
-  EXPECT_EQ(action_buttons[1]->GetText(), u"Sunfish");
+  EXPECT_EQ(action_buttons[1]->label_for_testing()->GetText(), u"Sunfish");
 
   // Add another default action button, which should appear in the leftmost
   // position.
@@ -635,9 +635,9 @@ TEST_F(SunfishTest, ActionButtonRank) {
       ActionButtonRank(ActionButtonType::kOther, 0));
   action_buttons = session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 3u);
-  EXPECT_EQ(action_buttons[0]->GetText(), u"Default 2");
-  EXPECT_EQ(action_buttons[1]->GetText(), u"Default 1");
-  EXPECT_EQ(action_buttons[2]->GetText(), u"Sunfish");
+  EXPECT_EQ(action_buttons[0]->label_for_testing()->GetText(), u"Default 2");
+  EXPECT_EQ(action_buttons[1]->label_for_testing()->GetText(), u"Default 1");
+  EXPECT_EQ(action_buttons[2]->label_for_testing()->GetText(), u"Sunfish");
 
   // Add a scanner action button, which should appear to the immediate left of
   // the Sunfish action button.
@@ -646,10 +646,10 @@ TEST_F(SunfishTest, ActionButtonRank) {
       ActionButtonRank(ActionButtonType::kScanner, 0));
   action_buttons = session_test_api.GetActionButtons();
   EXPECT_EQ(action_buttons.size(), 4u);
-  EXPECT_EQ(action_buttons[0]->GetText(), u"Default 2");
-  EXPECT_EQ(action_buttons[1]->GetText(), u"Default 1");
-  EXPECT_EQ(action_buttons[2]->GetText(), u"Scanner");
-  EXPECT_EQ(action_buttons[3]->GetText(), u"Sunfish");
+  EXPECT_EQ(action_buttons[0]->label_for_testing()->GetText(), u"Default 2");
+  EXPECT_EQ(action_buttons[1]->label_for_testing()->GetText(), u"Default 1");
+  EXPECT_EQ(action_buttons[2]->label_for_testing()->GetText(), u"Scanner");
+  EXPECT_EQ(action_buttons[3]->label_for_testing()->GetText(), u"Sunfish");
 }
 
 // Tests the behavior of the region overlay in default capture mode.
@@ -1011,8 +1011,10 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   // type / rank and use it here.
   std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(Property(&ActionButtonView::GetText, u"Copy text")));
+  ASSERT_THAT(
+      action_buttons,
+      ElementsAre(Property(&ActionButtonView::label_for_testing,
+                           Property(&views::Label::GetText, u"Copy text"))));
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
   ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -1046,7 +1048,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
       controller->capture_mode_session());
   EXPECT_THAT(
       session_test_api.GetActionButtons(),
-      Not(Contains(Property(&ActionButtonView::GetText, u"Copy text"))));
+      Not(Contains(Property(&ActionButtonView::label_for_testing,
+                            Property(&views::Label::GetText, u"Copy text")))));
 }
 
 // Tests that the copy text button is not shown if the selected region changes
@@ -1072,7 +1075,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
       controller->capture_mode_session());
   EXPECT_THAT(
       session_test_api.GetActionButtons(),
-      Not(Contains(Property(&ActionButtonView::GetText, u"Copy text"))));
+      Not(Contains(Property(&ActionButtonView::label_for_testing,
+                            Property(&views::Label::GetText, u"Copy text")))));
 }
 
 }  // namespace ash

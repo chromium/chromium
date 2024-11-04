@@ -4,26 +4,48 @@
 
 #include "ash/capture_mode/action_button_view.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/style/pill_button.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
+#include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
 
+// Action button insets when it is shown in full (text and icon).
+constexpr auto kFullActionButtonInsets = gfx::Insets::TLBR(8, 12, 8, 16);
+
+// Action button insets when it is collapsed (icon only).
+constexpr auto kCollapsedActionButtonInsets = gfx::Insets(8);
+
+// The horizontal spacing between the icon and label in an action button.
+constexpr int kActionButtonIconLabelSpacing = 8;
+
 // The corner radius for an action button.
 constexpr int kActionButtonRadius = 18;
+
+// The size of the icon in an action button.
+constexpr int kActionButtonIconSize = 20;
 
 }  // namespace
 
@@ -31,26 +53,39 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
                                    std::u16string text,
                                    const gfx::VectorIcon* icon,
                                    ActionButtonRank rank)
-    : PillButton(std::move(callback),
-                 text,
-                 Type::kDefaultLargeWithIconLeading,
-                 icon),
+    : views::Button(std::move(callback)),
       rank_(rank),
       // Since this view has fully circular rounded corners, we can't use a
       // nine patch layer for the shadow. We have to use the
       // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
       shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
+  box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, kFullActionButtonInsets,
+      kActionButtonIconLabelSpacing));
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kActionButtonRadius));
   shadow_->SetRoundedCornerRadius(kActionButtonRadius);
   capture_mode_util::SetHighlightBorder(
       this, kActionButtonRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
+
+  icon_ = AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          *icon, kColorAshButtonIconColor, kActionButtonIconSize)));
+  label_ = AddChildView(std::make_unique<views::Label>(text));
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
+
+  SetAccessibleName(text);
 }
 
 ActionButtonView::~ActionButtonView() = default;
 
 void ActionButtonView::AddedToWidget() {
-  PillButton::AddedToWidget();
+  views::Button::AddedToWidget();
 
   // Attach the shadow at the bottom of the widget layer.
   ui::Layer* shadow_layer = shadow_->GetLayer();
@@ -67,6 +102,14 @@ void ActionButtonView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // The shadow layer is a sibling of this view's layer, and should have the
   // same bounds.
   shadow_->SetContentBounds(layer()->bounds());
+}
+
+void ActionButtonView::CollapseToIconButton() {
+  if (!label_->GetVisible()) {
+    return;
+  }
+  label_->SetVisible(false);
+  box_layout_->set_inside_border_insets(kCollapsedActionButtonInsets);
 }
 
 BEGIN_METADATA(ActionButtonView)

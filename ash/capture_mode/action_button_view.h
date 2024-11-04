@@ -10,12 +10,19 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/style/pill_button.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/button.h"
 
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+namespace views {
+class BoxLayout;
+class ImageView;
+class Label;
+}  // namespace views
 
 namespace ash {
 
@@ -23,10 +30,8 @@ class SystemShadow;
 
 // A view that displays an action button. The action button may show both an
 // icon and text or be collapsed into just an icon.
-// TODO(crbug.com/374356291): Implement functionality to collapse the action
-// button.
-class ASH_EXPORT ActionButtonView : public PillButton {
-  METADATA_HEADER(ActionButtonView, PillButton)
+class ASH_EXPORT ActionButtonView : public views::Button {
+  METADATA_HEADER(ActionButtonView, views::Button)
 
  public:
   ActionButtonView(views::Button::PressedCallback callback,
@@ -39,15 +44,31 @@ class ASH_EXPORT ActionButtonView : public PillButton {
 
   ActionButtonRank rank() const { return rank_; }
 
-  // PillButton:
+  // views::Button:
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
+  // Collapses the action button, hiding its label so that only the icon
+  // shows.
+  void CollapseToIconButton();
+
+  const views::ImageView* icon_for_testing() const { return icon_; }
+  const views::Label* label_for_testing() const { return label_; }
 
  private:
   // Rank used to determine ordering of action buttons.
   const ActionButtonRank rank_;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  raw_ptr<views::BoxLayout> box_layout_ = nullptr;
+
+  // The action button icon.
+  raw_ptr<views::ImageView> icon_ = nullptr;
+
+  // The label containing the action button text. This label is hidden when the
+  // action button is collapsed.
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 }  // namespace ash
