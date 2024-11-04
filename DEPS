@@ -1969,11 +1969,23 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/jdk',
-              'version': 'BXZwbslDFpYhPRuG8hBh2z7ApP36ZG-ZfkBWrkpnPl4C',
+              'version': 'sewpT0JmZAgFX_ZzmWhbYPmcPGeDa9os_4Q74ZFbo5sC',
           },
       ],
       # Needed on Linux for use on chromium_presubmit (for checkstyle).
       'condition': '(checkout_android or checkout_linux) and non_git_source',
+      'dep_type': 'cipd',
+  },
+
+  # Deprecated - used by code search until it gains jdk21 support. https://crbug.com/363263205
+  'src/third_party/jdk17/current': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/jdk',
+              'version': 'BXZwbslDFpYhPRuG8hBh2z7ApP36ZG-ZfkBWrkpnPl4C',
+          },
+      ],
+      'condition': 'checkout_android_prebuilts_build_tools',
       'dep_type': 'cipd',
   },
 

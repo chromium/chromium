@@ -1,0 +1,13 @@
+Name: Java Development Kit
+Short Name: JDK
+URL: https://openjdk.java.net/
+Version: 17
+License: GPL v2
+Security Critical: no
+Shipped: no
+
+Description:
+JDK17 needed only for Kythe. https://crbug.com/363263205
+
+Local Modifications:
+None
